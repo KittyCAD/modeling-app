@@ -47,6 +47,7 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import { MachineManager } from '@src/lib/MachineManager'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -70,6 +71,14 @@ export class App {
    * Access this through `kclManager.wasmInstance`, not directly.
    */
   public wasmPromise = initialiseWasm()
+
+  /** Machines to send models to print or cut on the local network */
+  machineManager = window.electron
+    ? new MachineManager({
+        getMachineApiIp: window.electron.getMachineApiIp,
+        listMachines: window.electron.listMachines,
+      })
+    : new MachineManager() // Instantiate with no-op functions
 
   private commandBarActor = createActor(commandBarMachine, {
     input: { commands: [], wasmInstancePromise: this.wasmPromise },
