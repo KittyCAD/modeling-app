@@ -1,19 +1,22 @@
+import { computed } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { useApp } from '@src/lib/boot'
 import type { components } from '@src/lib/machine-api'
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
   const app = useApp()
-  const {
-    machines,
-    machines: { length: machineCount },
-  } = app.machineManager
+  useSignals()
+  const machines = app.machineManager.machinesSignal.value
+  const machineCount = computed(
+    () => app.machineManager.machinesSignal.value.length
+  )
   const reason = app.machineManager.noMachinesReason()
   return {
     id: 'network-machines',
     'data-testid': `network-machine-toggle`,
-    label: `${machineCount}`,
-    hideLabel: machineCount === 0,
+    label: `${machineCount.value}`,
+    hideLabel: machineCount.value === 0,
     toolTip: {
       children: `Network machines (${machineCount}) ${reason ? `: ${reason}` : ''}`,
     },

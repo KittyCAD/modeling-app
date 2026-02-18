@@ -28,7 +28,7 @@ const noOpConstructorProps: MachineManagerCtor = {
  * which can have models sent to them.
  */
 export class MachineManager implements IMachineManager {
-  #callbacks: MachineManagerCtor
+  private callbacks: MachineManagerCtor
   #machines = signal<MachinesListing>([])
   readonly machines = this.#machines.value
   readonly machinesSignal = this.#machines
@@ -41,7 +41,7 @@ export class MachineManager implements IMachineManager {
   started = computed(() => this.#pulseTimeout.value !== undefined)
 
   constructor(callbacks = noOpConstructorProps) {
-    this.#callbacks = callbacks
+    this.callbacks = callbacks
   }
 
   /** Starts an interval to refresh the network machine listings */
@@ -61,9 +61,9 @@ export class MachineManager implements IMachineManager {
   }
 
   private async update() {
-    this.machineApiIp = await this.#callbacks.getMachineApiIp()
+    this.machineApiIp = await this.callbacks.getMachineApiIp()
     if (this.machineApiIp !== null) {
-      this.#machines.value = await this.#callbacks.listMachines(
+      this.#machines.value = await this.callbacks.listMachines(
         this.machineApiIp
       )
     }
