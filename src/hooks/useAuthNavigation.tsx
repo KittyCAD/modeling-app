@@ -38,6 +38,12 @@ export function useAuthNavigation() {
       }
 
       void navigate(PATHS.SIGN_IN + (location.search || ''))
+    } else if (
+      authState.matches('loggedOut') &&
+      location.pathname.includes(PATHS.SIGN_IN) &&
+      !isDesktop()
+    ) {
+      window.location.href = generateSignInUrl()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])
