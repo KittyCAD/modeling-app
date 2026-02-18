@@ -1,15 +1,14 @@
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { useApp } from '@src/lib/boot'
 import type { components } from '@src/lib/machine-api'
-import { useContext } from 'react'
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
+  const app = useApp()
   const {
-    noMachinesReason,
     machines,
     machines: { length: machineCount },
-  } = useContext(MachineManagerContext)
-  const reason = noMachinesReason()
+  } = app.machineManager
+  const reason = app.machineManager.noMachinesReason()
   return {
     id: 'network-machines',
     'data-testid': `network-machine-toggle`,

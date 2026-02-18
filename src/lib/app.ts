@@ -81,7 +81,11 @@ export class App {
     : new MachineManager() // Instantiate with no-op functions
 
   private commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: this.wasmPromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: this.wasmPromise,
+      machineManager: this.machineManager,
+    },
   }).start()
   /** The command system for the app */
   public commands = {
