@@ -44,19 +44,21 @@ export class MachineManager implements IMachineManager {
     this.callbacks = callbacks
   }
 
-  /** Starts an interval to refresh the network machine listings */
-  async start() {
-    const updateLoop = () => {
-      clearTimeout(this.#pulseTimeout.value)
-      this.update().then(() => {
+  updateLoop = () => {
+    clearTimeout(this.#pulseTimeout.value)
+    this.update()
+      .then(() => {
         this.#pulseTimeout.value = setTimeout(
-          updateLoop,
+          this.updateLoop,
           this.pulseTimeoutDurationMS
         )
       })
-    }
+      .catch(reportRejection)
+  }
 
-    this.update().then(updateLoop).catch(reportRejection)
+  /** Starts an interval to refresh the network machine listings */
+  async start() {
+    this.update().then(this.updateLoop).catch(reportRejection)
   }
 
   stop() {
