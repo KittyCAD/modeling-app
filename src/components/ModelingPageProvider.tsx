@@ -291,6 +291,7 @@ export const ModelingPageProvider = ({
       const newCurrentProjection = context.modeling.cameraProjection.current
       if (
         sceneInfra.camControls &&
+        !kclManager.modelingState?.matches('Sketch') &&
         newCurrentProjection !== sceneInfra.camControls.engineCameraProjection
       ) {
         sceneInfra.camControls.engineCameraProjection = newCurrentProjection
