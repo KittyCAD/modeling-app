@@ -26,7 +26,7 @@ use crate::{
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
-    front::PointCtor,
+    front::{ObjectId, PointCtor},
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -35,7 +35,10 @@ use crate::{
         Type, UnaryExpression, UnaryOperator,
     },
     std::{
-        args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine, sketch2::create_segments_in_engine,
+        args::{FromKclValue, TyF64},
+        shapes::SketchOrSurface,
+        sketch::ensure_sketch_plane_in_engine,
+        sketch2::create_segments_in_engine,
     },
 };
 
@@ -43,8 +46,8 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
 }
 
-fn sketch_on_cache_name(range: SourceRange) -> String {
-    format!("__kcl_sketch_on_{}_{}", range.module_id(), range.start())
+fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
+    format!("__kcl_sketch_{}_on", sketch_id.0)
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -1164,68 +1167,77 @@ impl Node<SketchBlock> {
         }
 
         let range = SourceRange::from(self);
-        let on_cache_name = sketch_on_cache_name(range);
 
-        // Evaluate arguments.
-        let mut labeled = IndexMap::new();
-        for labeled_arg in &self.arguments {
-            let source_range = SourceRange::from(&labeled_arg.arg);
-            let metadata = Metadata { source_range };
-            let is_on_arg = matches!(&labeled_arg.label, Some(label) if label.name == "on");
-            let value = if is_on_arg && exec_state.sketch_mode() {
-                match exec_state.stack().get(&on_cache_name, source_range).cloned() {
-                    Ok(cached) => cached,
-                    Err(_) => {
-                        let value_cf = ctx
-                            .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                            .await?;
-                        control_continue!(value_cf)
-                    }
-                }
-            } else {
+        let (sketch_id, arg_on) = if !exec_state.sketch_mode() {
+            // Evaluate arguments.
+            //
+            // Sketch mode only executes the sketch block body. Arguments must
+            // be evaluated in engine execution so that things like Planes and
+            // Faces can be created in the engine.
+            let mut labeled = IndexMap::new();
+            for labeled_arg in &self.arguments {
+                let source_range = SourceRange::from(labeled_arg.arg.clone());
+                let metadata = Metadata { source_range };
                 let value_cf = ctx
                     .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
                     .await?;
-                control_continue!(value_cf)
-            };
-            if is_on_arg && !exec_state.sketch_mode() {
-                if exec_state.stack().cur_frame_contains(&on_cache_name) {
-                    let cached_on = value.clone();
-                    exec_state
-                        .mut_stack()
-                        .update(&on_cache_name, move |cached, _| *cached = cached_on.clone());
-                } else {
-                    exec_state
-                        .mut_stack()
-                        .add(on_cache_name.clone(), value.clone(), source_range)?;
-                }
-            }
-            let arg = Arg::new(value, source_range);
-            match &labeled_arg.label {
-                Some(label) => {
-                    labeled.insert(label.name.clone(), arg);
-                }
-                None => {
-                    let name = labeled_arg.arg.ident_name();
-                    if let Some(name) = name {
-                        labeled.insert(name.to_owned(), arg);
-                    } else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                            vec![SourceRange::from(&labeled_arg.arg)],
-                        )));
+                let value = control_continue!(value_cf);
+                let arg = Arg::new(value, source_range);
+                match &labeled_arg.label {
+                    Some(label) => {
+                        labeled.insert(label.name.clone(), arg);
+                    }
+                    None => {
+                        let name = labeled_arg.arg.ident_name();
+                        if let Some(name) = name {
+                            labeled.insert(name.to_owned(), arg);
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                                vec![SourceRange::from(&labeled_arg.arg)],
+                            )));
+                        }
                     }
                 }
             }
-        }
-        let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
-        args.labeled = labeled;
+            let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+            args.labeled = labeled;
 
-        // Create the sketch block scene object. This needs to happen before
-        // scene objects created inside the sketch block so that its ID is
-        // stable across sketch block edits. In order to create the sketch block
-        // scene object, we need to make sure the plane scene object is created.
-        let arg_on: SketchOrSurface = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+            // Create the sketch block scene object. This needs to happen before
+            // scene objects created inside the sketch block so that its ID is
+            // stable across sketch block edits. In order to create the sketch block
+            // scene object, we need to make sure the plane scene object is created.
+            let arg_on: KclValue = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+
+            // Generate an ID for the sketch block. This must be done first so that
+            // no matter how many IDs are generated due to arguments or objects in
+            // the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(sketch_id, range);
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            // Store in memory so that it's cached.
+            exec_state.mut_stack().add(on_cache_name, arg_on.clone(), range)?;
+
+            (sketch_id, arg_on)
+        } else {
+            // In sketch mode, we can't re-evaluate arguments. Instead, look
+            // them up from cache.
+
+            // Generate an ID for the sketch block. This must be done first so that
+            // no matter how many IDs are generated due to arguments or objects in
+            // the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(sketch_id, range);
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            let arg_on = exec_state.stack().get(&on_cache_name, range)?.clone();
+
+            (sketch_id, arg_on)
+        };
+        let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on) else {
+            let message = "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])));
+        };
         let mut sketch_surface = arg_on.into_sketch_surface();
         // Ensure that the plane has an ObjectId. Always create an Object so
         // that we're consistent with IDs.
@@ -1254,7 +1266,7 @@ impl Node<SketchBlock> {
             match &mut sketch_surface {
                 SketchSurface::Plane(plane) => {
                     // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, &args).await?;
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
                 }
                 SketchSurface::Face(_) => {
                     // All faces should already be created in the engine.
@@ -1273,15 +1285,13 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
-        let sketch_id = {
+        {
             use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
-
-            let sketch_id = exec_state.next_object_id();
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             let sketch_scene_object = Object {
@@ -1297,7 +1307,7 @@ impl Node<SketchBlock> {
                 artifact_id,
                 source: range.into(),
             };
-            exec_state.add_scene_object(sketch_scene_object, range);
+            exec_state.set_scene_object(sketch_scene_object);
 
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
@@ -1306,9 +1316,7 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
-
-            sketch_id
-        };
+        }
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
