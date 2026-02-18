@@ -8,7 +8,6 @@ import React from 'react'
  */
 export const app = new App()
 export const AppContext = React.createContext(app)
-window.app = app
 
 /**
  * Hook to gain access to the global app instance's singletons
