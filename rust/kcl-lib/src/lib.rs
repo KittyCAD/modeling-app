@@ -157,7 +157,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
     // Re-export trim module items
     pub use crate::frontend::{
-        FrontendState,
+        FrontendState, SetProgramOutcome,
         api::{
             Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
             Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,

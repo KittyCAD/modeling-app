@@ -21,6 +21,8 @@ on:
       - '**.rs'
       - .github/workflows/kcl-python-bindings.yml
   workflow_dispatch:
+  schedule:
+    - cron: 0 * * * * # hourly
 permissions:
   contents: read
 concurrency:

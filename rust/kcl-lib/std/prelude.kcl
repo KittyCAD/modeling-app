@@ -625,3 +625,44 @@ export fn assert(
   /// If the value was false, the program will terminate with this error message
   error?: string,
 ) {}
+
+
+/// Given a face index, find its ID.
+/// ```
+/// // Cylinder
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 4.09, tag = $seg01)
+///   |> extrude(length = 5)
+/// 
+/// // Delete the face at index 2
+/// // (the top face)
+/// deleteFace(cylinder, faces = [faceId(cylinder, index = 2)])
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn faceId(
+  /// The solid whose faces we're trying to find
+  @body: Solid,
+  /// Face to identify.
+  /// The index is a stable ordering of faces, used when you can't get the
+  /// usual ID of a face.
+  index: number(Count),
+): TaggedFace {}
+
+/// Given an edge index, find its ID.
+/// ```
+/// // Cylinder
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 4.09, tag = $seg01)
+///   |> extrude(length = 5)
+///   // Fillet the edge at index 2, i.e. the top edge.
+///   |> fillet(radius = 1, tags = [edgeId(index = 2)])
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn edgeId(
+  /// The solid whose edges we're trying to find
+  @body: Solid,
+  /// Edge to identify.
+  /// The index is a stable ordering of edges, used when you can't get the
+  /// usual ID of an edge.
+  index: number(Count),
+): Edge {}

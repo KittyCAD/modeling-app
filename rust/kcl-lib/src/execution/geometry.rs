@@ -1937,6 +1937,15 @@ impl ExtrudeSurface {
         }
     }
 
+    pub fn set_surface_tag(&mut self, tag: &TagNode) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane.tag = Some(tag.clone()),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc.tag = Some(tag.clone()),
+            ExtrudeSurface::Chamfer(chamfer) => chamfer.tag = Some(tag.clone()),
+            ExtrudeSurface::Fillet(fillet) => fillet.tag = Some(tag.clone()),
+        }
+    }
+
     pub fn get_tag(&self) -> Option<Node<TagDeclarator>> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
