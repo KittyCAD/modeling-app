@@ -17,11 +17,11 @@ import type {
   ViewUpdate,
 } from '@codemirror/view'
 import type * as LSP from 'vscode-languageserver-protocol'
-import type {
+import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
+import {
   CompletionTriggerKind,
-  PublishDiagnosticsParams,
+  DiagnosticSeverity,
 } from 'vscode-languageserver-protocol'
-import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 
 import type { LanguageServerClient } from '../client'
@@ -444,7 +444,38 @@ export class LanguageServerPlugin implements PluginValue {
       }
     )
 
-    return completeFromList(options)(context)
+    const completionResult = completeFromList(options)(context)
+    if (completionResult) {
+      return completionResult
+    }
+
+    // `completeFromList` intentionally returns `null` for non-explicit
+    // completions when there is no token before the cursor. For LSP
+    // trigger-character requests (such as whitespace), we still want
+    // to show server-provided options.
+    const isWhitespaceTriggerCharacter =
+      typeof triggerCharacter === 'string' && /\s/.test(triggerCharacter)
+    const charBeforeCursor = context.state.doc.sliceString(
+      Math.max(0, context.pos - 1),
+      context.pos
+    )
+    const isWhitespaceContext = /\s/.test(charBeforeCursor)
+    const includesPipeOperator = options.some((option) => option.label === '|>')
+    if (
+      includesPipeOperator &&
+      (isWhitespaceContext ||
+        (triggerKind === CompletionTriggerKind.TriggerCharacter &&
+          isWhitespaceTriggerCharacter)) &&
+      options.length > 0
+    ) {
+      return {
+        from: context.pos,
+        options,
+        filter: false,
+      }
+    }
+
+    return null
   }
 
   async requestDefinition(

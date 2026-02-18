@@ -35,6 +35,27 @@ fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
     );
 }
 
+#[track_caller]
+fn source_and_cursor_position(input_with_cursor: &str) -> (String, tower_lsp::lsp_types::Position) {
+    const CURSOR_MARKER: &str = "<cursor>";
+
+    let marker_index = input_with_cursor
+        .find(CURSOR_MARKER)
+        .expect("expected a <cursor> marker in completion test input");
+
+    let mut source = input_with_cursor.to_string();
+    source.replace_range(marker_index..(marker_index + CURSOR_MARKER.len()), "");
+
+    let prefix = &input_with_cursor[..marker_index];
+    let line = prefix.as_bytes().iter().filter(|b| **b == b'\n').count() as u32;
+    let line_prefix = prefix
+        .rsplit_once('\n')
+        .map_or(prefix, |(_, after_newline)| after_newline);
+    let character = line_prefix.encode_utf16().count() as u32;
+
+    (source, tower_lsp::lsp_types::Position { line, character })
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 12)]
 async fn test_updating_kcl_lsp_files() {
     let server = kcl_lsp_server(false).await.unwrap();
@@ -968,6 +989,125 @@ x = b"#
     } else {
         panic!("Expected array of completions");
     }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_codemirror_pipe_completion_after_whitespace() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let test_cases = vec![
+        ("expression_with_trailing_space", "startSketchOn(XY) <cursor>"),
+        ("expression_with_indented_blank_line", "startSketchOn(XY)\n  <cursor>\n"),
+        (
+            "pipe_expression_with_trailing_space",
+            "startSketchOn(XY) |> startProfile(at=[0,0]) <cursor>",
+        ),
+        (
+            "pipe_expression_with_indented_blank_line",
+            "startSketchOn(XY)\n  |> startProfile(at=[0,0])\n  <cursor>\n",
+        ),
+    ];
+
+    for (index, (case_name, input_with_cursor)) in test_cases.iter().enumerate() {
+        let (source, position) = source_and_cursor_position(input_with_cursor);
+        let uri = format!("file:///codemirror-pipe-whitespace-{index}.kcl");
+
+        server
+            .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+                text_document: tower_lsp::lsp_types::TextDocumentItem {
+                    uri: uri.as_str().try_into().unwrap(),
+                    language_id: "kcl".to_string(),
+                    version: 1,
+                    text: source,
+                },
+            })
+            .await;
+
+        let completions = server
+            .completion(tower_lsp::lsp_types::CompletionParams {
+                text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                    text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                        uri: uri.as_str().try_into().unwrap(),
+                    },
+                    position,
+                },
+                context: None,
+                partial_result_params: Default::default(),
+                work_done_progress_params: Default::default(),
+            })
+            .await
+            .unwrap()
+            .unwrap();
+
+        let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+            panic!("Expected array of completions for test case `{case_name}`");
+        };
+
+        let pipe_completion = completions
+            .iter()
+            .find(|completion| completion.label == "|>")
+            .unwrap_or_else(|| panic!("Expected `|>` completion for test case `{case_name}`"));
+
+        assert_eq!(
+            pipe_completion.insert_text.as_deref(),
+            Some("|> "),
+            "Expected `|> ` insertion text for test case `{case_name}`"
+        );
+        assert_eq!(
+            pipe_completion.kind,
+            Some(tower_lsp::lsp_types::CompletionItemKind::OPERATOR),
+            "Expected operator completion kind for test case `{case_name}`"
+        );
+
+        server
+            .did_close(tower_lsp::lsp_types::DidCloseTextDocumentParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: uri.as_str().try_into().unwrap(),
+                },
+            })
+            .await;
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_codemirror_pipe_completion_not_shown_without_whitespace() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let (source, position) = source_and_cursor_position("startSketchOn(XY)<cursor>");
+    let uri = "file:///codemirror-pipe-no-whitespace.kcl";
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: uri.try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: source,
+            },
+        })
+        .await;
+
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: uri.try_into().unwrap(),
+                },
+                position,
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Expected array of completions");
+    };
+
+    assert!(!completions.iter().any(|completion| completion.label == "|>"));
 }
 
 #[tokio::test(flavor = "multi_thread")]

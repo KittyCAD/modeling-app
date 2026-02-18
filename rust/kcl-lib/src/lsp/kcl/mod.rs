@@ -968,7 +968,12 @@ impl LanguageServer for Backend {
                 })),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
-                    trigger_characters: Some(vec![".".to_string()]),
+                    trigger_characters: Some(vec![
+                        ".".to_string(),
+                        " ".to_string(),
+                        "\n".to_string(),
+                        "\t".to_string(),
+                    ]),
                     work_done_progress_options: Default::default(),
                     all_commit_characters: None,
                     ..Default::default()
@@ -1274,38 +1279,19 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> RpcResult<Option<CompletionResponse>> {
-        let mut completions = vec![CompletionItem {
-            label: PIPE_OPERATOR.to_string(),
-            label_details: None,
-            kind: Some(CompletionItemKind::OPERATOR),
-            detail: Some("A pipe operator.".to_string()),
-            documentation: Some(Documentation::MarkupContent(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: "A pipe operator.".to_string(),
-            })),
-            deprecated: Some(false),
-            preselect: None,
-            sort_text: None,
-            filter_text: None,
-            insert_text: Some("|> ".to_string()),
-            insert_text_format: Some(InsertTextFormat::PLAIN_TEXT),
-            insert_text_mode: None,
-            text_edit: None,
-            additional_text_edits: None,
-            command: None,
-            commit_characters: None,
-            data: None,
-            tags: None,
-        }];
+        let pipe_operator_completion = pipe_operator_completion_item();
+        let mut completions = vec![];
 
         // Get the current line up to cursor
         let Some(current_code) = self
             .code_map
             .get(params.text_document_position.text_document.uri.as_ref())
         else {
+            completions.push(pipe_operator_completion);
             return Ok(Some(CompletionResponse::Array(completions)));
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            completions.push(pipe_operator_completion);
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
@@ -1330,22 +1316,30 @@ impl LanguageServer for Backend {
             }
         }
 
+        let ast = self
+            .ast_map
+            .get(params.text_document_position.text_document.uri.as_ref());
+        let position = position_to_char_index(params.text_document_position.position, current_code);
+        let cursor = position_to_char_boundary(params.text_document_position.position, current_code);
+
+        if let Some(ast) = ast.as_ref()
+            && ast.ast.in_comment(position)
+        {
+            // If we are in a code comment we don't want to show completions.
+            return Ok(None);
+        }
+
+        if should_suggest_pipe_operator(current_code, cursor, ast.as_ref().map(|program| &program.ast)) {
+            completions.push(pipe_operator_completion);
+        }
+
         completions.extend(self.stdlib_completions.values().cloned());
         completions.extend(self.kcl_keywords.values().cloned());
 
         // Add more to the completions if we have more.
-        let Some(ast) = self
-            .ast_map
-            .get(params.text_document_position.text_document.uri.as_ref())
-        else {
+        let Some(ast) = ast else {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
-
-        let position = position_to_char_index(params.text_document_position.position, current_code);
-        if ast.ast.in_comment(position) {
-            // If we are in a code comment we don't want to show completions.
-            return Ok(None);
-        }
 
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
@@ -1860,6 +1854,105 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     std::cmp::min(char_position, end_of_file)
 }
 
+/// Convert a position to a character boundary index from the start of the file.
+/// Unlike `position_to_char_index`, this may point one-past-the-last byte (`code.len()`).
+fn position_to_char_boundary(position: Position, code: &str) -> usize {
+    let mut char_position = 0;
+    for (index, line) in code.lines().enumerate() {
+        if index == position.line as usize {
+            char_position += position.character as usize;
+            break;
+        } else {
+            char_position += line.len() + 1;
+        }
+    }
+
+    std::cmp::min(char_position, code.len())
+}
+
+fn pipe_operator_completion_item() -> CompletionItem {
+    CompletionItem {
+        label: PIPE_OPERATOR.to_string(),
+        label_details: None,
+        kind: Some(CompletionItemKind::OPERATOR),
+        detail: Some("A pipe operator.".to_string()),
+        documentation: Some(Documentation::MarkupContent(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: "A pipe operator.".to_string(),
+        })),
+        deprecated: Some(false),
+        preselect: None,
+        sort_text: None,
+        filter_text: None,
+        insert_text: Some("|> ".to_string()),
+        insert_text_format: Some(InsertTextFormat::PLAIN_TEXT),
+        insert_text_mode: None,
+        text_edit: None,
+        additional_text_edits: None,
+        command: None,
+        commit_characters: None,
+        data: None,
+        tags: None,
+    }
+}
+
+fn should_suggest_pipe_operator(
+    code: &str,
+    cursor: usize,
+    ast: Option<&Node<crate::parsing::ast::types::Program>>,
+) -> bool {
+    if cursor == 0 || cursor > code.len() {
+        return false;
+    }
+
+    let prefix = &code[..cursor];
+    let Some(last_typed_char) = prefix.chars().next_back() else {
+        return false;
+    };
+
+    // Only suggest `|>` after the user has inserted whitespace.
+    if !last_typed_char.is_whitespace() {
+        return false;
+    }
+
+    let trimmed_prefix_len = prefix.trim_end_matches(|c: char| c.is_whitespace()).len();
+    if trimmed_prefix_len == 0 {
+        return false;
+    }
+
+    let last_significant_prefix = &prefix[..trimmed_prefix_len];
+    let Some(last_significant_char) = last_significant_prefix.chars().next_back() else {
+        return false;
+    };
+
+    // Pipes follow complete expressions, which commonly end with these characters.
+    let ends_like_expression = last_significant_char.is_alphanumeric()
+        || matches!(
+            last_significant_char,
+            '_' | ')' | ']' | '}' | '"' | '\'' | '%' // common expression terminators in KCL
+        );
+    if !ends_like_expression {
+        return false;
+    }
+
+    let last_significant_pos = trimmed_prefix_len - 1;
+    let Some(ast) = ast else {
+        return true;
+    };
+
+    if ast.in_comment(last_significant_pos) {
+        return false;
+    }
+
+    let Some(expr) = ast.get_expr_for_position(last_significant_pos) else {
+        return false;
+    };
+
+    // If the cursor is still inside an expression (e.g. inside a string literal),
+    // don't suggest starting a new pipe tail yet.
+    cursor > expr.end()
+}
+
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let mem = cache::read_old_memory().await?;
     let value = mem.stack.get(name, SourceRange::default()).ok()?;
@@ -1917,5 +2010,15 @@ return 42"#;
         let position = Position::new(0, 0);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 0);
+    }
+
+    #[test]
+    fn test_position_to_char_boundary_at_end() {
+        let code = r#"def foo():
+return 42"#;
+
+        let position = Position::new(1, 9);
+        let boundary = position_to_char_boundary(position, code);
+        assert_eq!(boundary, code.len());
     }
 }

@@ -6,6 +6,7 @@
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "commonjs",
+    "types": ["node"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
