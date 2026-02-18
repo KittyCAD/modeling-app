@@ -445,7 +445,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'delete-face',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Delete Face', groupId: 'modeling' },
                   }),
