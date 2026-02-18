@@ -30,7 +30,9 @@ const noOpConstructorProps: MachineManagerCtor = {
 export class MachineManager implements IMachineManager {
   private callbacks: MachineManagerCtor
   #machines = signal<MachinesListing>([])
-  readonly machines = this.#machines.value
+  get machines() {
+    return this.#machines.value
+  }
   readonly machinesSignal = this.#machines
   machineApiIp: string | null = null
   #currentMachine = signal<components['schemas']['MachineInfoResponse'] | null>(
