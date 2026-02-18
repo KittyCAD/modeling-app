@@ -18,7 +18,7 @@ export const useNetworkMachineStatus = (): StatusBarItemType => {
     label: `${machineCount.value}`,
     hideLabel: machineCount.value === 0,
     toolTip: {
-      children: `Network machines (${machineCount}) ${reason ? `: ${reason}` : ''}`,
+      children: `Network machines (${machineCount.value}) ${reason ? `: ${reason}` : ''}`,
     },
     element: 'popover',
     icon: 'printer3d',
