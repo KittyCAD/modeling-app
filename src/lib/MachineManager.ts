@@ -58,7 +58,7 @@ export class MachineManager implements IMachineManager {
 
   /** Starts an interval to refresh the network machine listings */
   async start() {
-    this.update().then(this.updateLoop).catch(reportRejection)
+    return this.update().then(this.updateLoop).catch(reportRejection)
   }
 
   stop() {
