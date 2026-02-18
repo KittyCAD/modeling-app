@@ -716,6 +716,23 @@ pub struct Face {
     pub meta: Vec<Metadata>,
 }
 
+/// A bounded edge.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct BoundedEdge {
+    /// The id of the face this edge belongs to.
+    pub face_id: uuid::Uuid,
+    /// The id of the edge.
+    pub edge_id: uuid::Uuid,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub lower_bound: f32,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub upper_bound: f32,
+}
+
 /// Kind of plane.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
@@ -1917,6 +1934,15 @@ impl ExtrudeSurface {
             ExtrudeSurface::ExtrudeArc(ea) => ea.face_id = face_id,
             ExtrudeSurface::Fillet(f) => f.face_id = face_id,
             ExtrudeSurface::Chamfer(c) => c.face_id = face_id,
+        }
+    }
+
+    pub fn set_surface_tag(&mut self, tag: &TagNode) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane.tag = Some(tag.clone()),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc.tag = Some(tag.clone()),
+            ExtrudeSurface::Chamfer(chamfer) => chamfer.tag = Some(tag.clone()),
+            ExtrudeSurface::Fillet(fillet) => fillet.tag = Some(tag.clone()),
         }
     }
 

@@ -9,7 +9,7 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -28,16 +28,12 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
-  const {
-    commandBarActor,
-    engineCommandManager,
-    kclManager,
-    sceneEntitiesManager,
-    useCommandBarState,
-  } = useSingletons()
+  const { commands } = useApp()
+  const { engineCommandManager, kclManager, sceneEntitiesManager } =
+    useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
@@ -204,7 +200,7 @@ function CommandBarSelectionInput({
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}

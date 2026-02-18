@@ -14,9 +14,9 @@ import type {
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
-  SceneGraph,
   SceneGraphDelta,
   SegmentCtor,
+  SetProgramOutcome,
   SketchCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -38,7 +38,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
-import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export default class RustContext {
@@ -295,21 +294,15 @@ export default class RustContext {
   async hackSetProgram(
     program_ast: Node<Program>,
     settings: DeepPartial<Configuration>
-  ): Promise<{
-    sceneGraph: SceneGraph
-    execOutcome: ExecOutcome
-  }> {
+  ): Promise<SetProgramOutcome> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SceneGraph, ExecOutcome] = await instance.hack_set_program(
+      const result: SetProgramOutcome = await instance.hack_set_program(
         JSON.stringify(program_ast),
         JSON.stringify(settings)
       )
-      return {
-        sceneGraph: result[0],
-        execOutcome: result[1],
-      }
+      return result
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
       const err = { message: e }

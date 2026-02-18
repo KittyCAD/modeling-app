@@ -9,9 +9,9 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Segment, SegmentRepr, Sketch, SketchConstraint, SketchVar, SketchVarId,
-        Solid, TagIdentifier, UnsolvedExpr,
+        AbstractSegment, BoundedEdge, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry,
+        GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata, Plane, Segment, SegmentRepr, Sketch,
+        SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier, UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -84,6 +84,10 @@ pub enum KclValue {
     },
     Face {
         value: Box<Face>,
+    },
+    BoundedEdge {
+        value: BoundedEdge,
+        meta: Vec<Metadata>,
     },
     Segment {
         value: Box<AbstractSegment>,
@@ -318,6 +322,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
+            KclValue::BoundedEdge { meta, .. } => to_vec_sr(&meta),
         }
     }
 }
@@ -352,6 +357,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
             KclValue::Type { meta, .. } => to_vec_sr(meta),
+            KclValue::BoundedEdge { meta, .. } => to_vec_sr(meta),
         }
     }
 }
@@ -389,6 +395,7 @@ impl KclValue {
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
+            KclValue::BoundedEdge { meta, .. } => meta.clone(),
         }
     }
 
@@ -425,6 +432,7 @@ impl KclValue {
             | KclValue::Function { .. }
             | KclValue::Module { .. }
             | KclValue::Type { .. }
+            | KclValue::BoundedEdge { .. }
             | KclValue::KclNone { .. } => false,
         }
     }
@@ -462,6 +470,7 @@ impl KclValue {
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
             KclValue::KclNone { .. } => "none".to_owned(),
+            KclValue::BoundedEdge { .. } => "a bounded edge".to_owned(),
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 if value.is_empty() {
                     "an empty array".to_owned()
@@ -936,6 +945,7 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
+            | KclValue::BoundedEdge { .. }
             | KclValue::Type { .. } => None,
         }
     }

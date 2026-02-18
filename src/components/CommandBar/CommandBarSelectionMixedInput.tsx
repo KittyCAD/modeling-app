@@ -8,7 +8,7 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -31,15 +31,11 @@ export default function CommandBarSelectionMixedInput({
   onSubmit: (data: unknown) => void
   wasmInstance: ModuleType
 }) {
-  const {
-    commandBarActor,
-    engineCommandManager,
-    kclManager,
-    sceneEntitiesManager,
-    useCommandBarState,
-  } = useSingletons()
+  const { commands } = useApp()
+  const { engineCommandManager, kclManager, sceneEntitiesManager } =
+    useSingletons()
   const inputRef = useRef<HTMLInputElement>(null)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
   const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
@@ -277,7 +273,7 @@ export default function CommandBarSelectionMixedInput({
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}

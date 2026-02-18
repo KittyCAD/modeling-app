@@ -169,11 +169,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // FIXME: No KCL code, unable to wait for engine execution
-    await page.waitForTimeout(10000)
-
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
     // Put the cursor in the code editor
     await page.locator('.cm-content').click()
 

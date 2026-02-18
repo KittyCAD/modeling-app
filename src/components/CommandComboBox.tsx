@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({
@@ -17,7 +17,7 @@ function CommandComboBox({
 }) {
   const [query, setQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState<typeof options>()
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
@@ -47,7 +47,7 @@ function CommandComboBox({
   }, [query, sortedOptions])
 
   function handleSelection(command: Command) {
-    commandBarActor.send({ type: 'Select command', data: { command } })
+    commands.send({ type: 'Select command', data: { command } })
   }
 
   return (
@@ -67,7 +67,7 @@ function CommandComboBox({
               event.key === 'Escape'
             ) {
               event.preventDefault()
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           placeholder={

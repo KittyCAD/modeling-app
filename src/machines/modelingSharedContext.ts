@@ -8,6 +8,7 @@ import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
@@ -81,6 +82,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   wasmInstance: ModuleType
   sceneEntitiesManager: SceneEntities
   engineCommandManager: ConnectionManager
+  commandBarActor: CommandBarActorType
 }) {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',

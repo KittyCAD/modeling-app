@@ -19,7 +19,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,

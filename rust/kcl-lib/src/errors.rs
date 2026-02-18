@@ -1,17 +1,23 @@
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
+
 use indexmap::IndexMap;
 pub use kcl_error::{CompilationError, Severity, Suggestion, Tag};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
     ModuleId, SourceRange,
     exec::KclValue,
     execution::DefaultPlanes,
     lsp::{IntoDiagnostic, ToLspRange},
     modules::{ModulePath, ModuleSource},
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::{ArtifactCommand, ArtifactGraph, Operation},
+    front::{Number, Object, ObjectId},
 };
 
 mod details;
@@ -152,6 +158,16 @@ pub struct KclErrorWithOutputs {
     pub _artifact_commands: Vec<ArtifactCommand>,
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
@@ -166,6 +182,9 @@ impl KclErrorWithOutputs {
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
         #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
+        #[cfg(feature = "artifact-graph")] scene_objects: Vec<Object>,
+        #[cfg(feature = "artifact-graph")] source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+        #[cfg(feature = "artifact-graph")] var_solutions: Vec<(SourceRange, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -180,6 +199,13 @@ impl KclErrorWithOutputs {
             _artifact_commands: artifact_commands,
             #[cfg(feature = "artifact-graph")]
             artifact_graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions,
+            scene_graph: Default::default(),
             filenames,
             source_files,
             default_planes,
@@ -196,6 +222,13 @@ impl KclErrorWithOutputs {
             _artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: Default::default(),
+            scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
             default_planes: Default::default(),
