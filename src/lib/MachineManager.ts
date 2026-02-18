@@ -37,7 +37,7 @@ export class MachineManager implements IMachineManager {
     null
   )
   pulseTimeoutDurationMS = 1_000
-  #pulseTimeout = signal<ReturnType<typeof setInterval> | undefined>(undefined)
+  #pulseTimeout = signal<ReturnType<typeof setTimeout> | undefined>(undefined)
   started = computed(() => this.#pulseTimeout.value !== undefined)
 
   constructor(callbacks = noOpConstructorProps) {
@@ -46,18 +46,22 @@ export class MachineManager implements IMachineManager {
 
   /** Starts an interval to refresh the network machine listings */
   async start() {
-    this.update()
-      .then(() => {
-        this.#pulseTimeout.value = setInterval(
-          () => void this.update(),
+    const updateLoop = () => {
+      clearTimeout(this.#pulseTimeout.value)
+      this.update().then(() => {
+        this.#pulseTimeout.value = setTimeout(
+          updateLoop,
           this.pulseTimeoutDurationMS
         )
       })
-      .catch(reportRejection)
+    }
+
+    this.update().then(updateLoop).catch(reportRejection)
   }
 
   stop() {
-    clearInterval(this.#pulseTimeout.value)
+    clearTimeout(this.#pulseTimeout.value)
+    this.#pulseTimeout.value = undefined
   }
 
   private async update() {
