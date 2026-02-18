@@ -254,6 +254,10 @@ export class App {
               context.textEditor.blinkingCursor.current
             )
           },
+          setAppFontSize: ({ context }) => {
+            const multiplier = context.app.appFontSize.current
+            document.documentElement.style.fontSize = `${multiplier * 100}%`
+          },
           setEngineHighlightEdges: ({ context }) => {
             engineCommandManager
               .setHighlightEdges(context.modeling.highlightEdges.current)

@@ -332,6 +332,36 @@ export function createSettings() {
           )
         },
       }),
+      /**
+       * A multiplier for the app's base font size.
+       * 1.0 is the default; values like 1.25 or 1.5 make text larger,
+       * while 0.8 makes it smaller. Useful for users who need larger
+       * text without zooming the entire UI.
+       */
+      appFontSize: new Setting<number>({
+        defaultValue: 1.0,
+        description:
+          'A multiplier for the base font size of the app (e.g. 1.25 = 25% larger)',
+        validate: (v) =>
+          typeof v === 'number' && v >= 0.5 && v <= 3.0,
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.appFontSize.current,
+          options: (cmdContext, settingsContext) =>
+            [0.5, 0.75, 0.875, 1.0, 1.125, 1.25, 1.5, 1.75, 2.0].map(
+              (v) => ({
+                name: `${v}x${v === 1.0 ? ' (default)' : ''}`,
+                value: v,
+                isCurrent:
+                  v ===
+                  settingsContext.app.appFontSize[
+                    cmdContext.argumentsToSubmit.level as SettingsLevel
+                  ],
+              })
+            ),
+        },
+      }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
         validate: (_v) => true,
