@@ -11,8 +11,8 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultActionLibrary = () => {
-  const { commands } = useApp()
-  const { kclManager, settingsActor } = useSingletons()
+  const { commands, settings } = useApp()
+  const { kclManager } = useSingletons()
 
   return Object.freeze({
     export: {
@@ -36,7 +36,7 @@ export const useDefaultActionLibrary = () => {
       shortcut: 'Mod + Alt + L',
       execute: () =>
         sendAddFileToProjectCommandForCurrentProject(
-          settingsActor,
+          settings.actor,
           commands.actor
         ),
     },
