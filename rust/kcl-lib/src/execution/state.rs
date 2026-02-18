@@ -568,6 +568,12 @@ impl ExecState {
             Default::default(),
             #[cfg(feature = "artifact-graph")]
             self.global.artifacts.graph.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.scene_objects.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.source_range_to_object.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.var_solutions.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
