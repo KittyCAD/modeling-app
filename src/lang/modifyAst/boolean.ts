@@ -285,7 +285,10 @@ export function addSplit({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const normalizedTargets = normalizeSelectionsForBoolean(targets, artifactGraph)
+  const normalizedTargets = normalizeSelectionsForBoolean(
+    targets,
+    artifactGraph
+  )
 
   // 2. Prepare unlabeled and labeled arguments
   const lastChildLookup = true

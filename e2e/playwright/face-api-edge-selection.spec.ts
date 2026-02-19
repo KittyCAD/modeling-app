@@ -1,11 +1,10 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 
-
 /**
  * Test KCL code - creates a scene with solid3d, surface, and split edges
  */
-    const testCode = `sketch001 = startSketchOn(YZ)
+const testCode = `sketch001 = startSketchOn(YZ)
     profile001 = startProfile(sketch001, at = [-21.99, 8.01])
     |> angledLine(angle = 0deg, length = 8.96, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 9.8)
@@ -37,10 +36,9 @@ import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
     solid001 = subtract(extrude001, tools = extrude003)
 `
 
-
 /**
  * Tests for edge selection using the global index API.
- * 
+ *
  * These tests verify that we can correctly select edges in different scenarios:
  * - Solid3D edges (from extrude001, solid001)
  * - Surface edges (from extrude002 with bodyType = SURFACE)
@@ -89,7 +87,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state as CmdBarSerialised)
 
       // Click profile using ratio clicks
-      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, { format: 'ratio' })
+      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
+        format: 'ratio',
+      })
       await clickProfile()
 
       // Update state after profile selection
@@ -108,7 +108,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click edge using ratio clicks
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.1907, 0.3477, { format: 'ratio', steps: 5 })
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.1907, 0.3477, {
+        format: 'ratio',
+        steps: 5,
+      })
       await mv()
       await clickEdge()
 
@@ -123,7 +126,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Move to review stage
       state.currentArgKey = ''
       state.currentArgValue = ''
-    //   state.highlightedHeaderArg = undefined
+      //   state.highlightedHeaderArg = undefined
       state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
@@ -165,7 +168,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click profile using ratio clicks
-      const [clickProfile2] = scene.makeMouseHelpers(0.3343, 0.3750, { format: 'ratio' })
+      const [clickProfile2] = scene.makeMouseHelpers(0.3343, 0.375, {
+        format: 'ratio',
+      })
       await clickProfile2()
 
       // Update state after profile selection
@@ -184,7 +189,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click edge using ratio clicks
-      const [clickEdge2] = scene.makeMouseHelpers(0.6671, 0.6136, { format: 'ratio' })
+      const [clickEdge2] = scene.makeMouseHelpers(0.6671, 0.6136, {
+        format: 'ratio',
+      })
       await clickEdge2()
 
       // Update state after edge selection
@@ -243,7 +250,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     )
 
     // Click on the split edge using ratio clicks to select it first
-    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, { format: 'ratio' })
+    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
+      format: 'ratio',
+    })
     await clickEdge()
 
     // Base state object that we'll mutate as we progress
@@ -292,4 +301,3 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
   })
 })
-
