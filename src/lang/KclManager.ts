@@ -179,10 +179,10 @@ export class ZDSProject {
     return this.projectIORef.name
   }
   private app: App
-  public editors = signal(new Map<string, KclManager>())
+  public editors = new Map<string, KclManager>()
   #executingPath = signal<string | null>(null)
   public executingEditor = computed(
-    () => this.editors.value.get(this.#executingPath.value || '') ?? null
+    () => this.editors.get(this.#executingPath.value || '') ?? null
   )
 
   constructor(projectRef: Project, app: App) {
@@ -218,7 +218,7 @@ export class ZDSProject {
     if (newPath === null) {
       return
     }
-    const found = this.editors.value.get(newPath)
+    const found = this.editors.get(newPath)
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
@@ -234,8 +234,8 @@ export class ZDSProject {
   }
 
   // Saving some keystrokes
-  private get = this.editors.value.get.bind(this.editors.value)
-  private set = this.editors.value.set.bind(this.editors.value)
+  private get = this.editors.get.bind(this.editors)
+  private set = this.editors.set.bind(this.editors)
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
@@ -262,14 +262,14 @@ export class ZDSProject {
   }
 
   closeEditor(path: string) {
-    const found = this.editors.value.delete(path)
+    const found = this.editors.delete(path)
     if (!found) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
     }
   }
 
   closeAllEditors() {
-    this.editors.value.clear()
+    this.editors.clear()
   }
 }
 
