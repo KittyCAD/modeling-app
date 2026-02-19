@@ -1,5 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager } from '@src/lang/KclManager'
+import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -49,6 +49,7 @@ import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import type { Project } from '@src/lib/project'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -63,6 +64,7 @@ declare global {
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
+  project = signal<ZDSProject | null>(null)
   singletons: ReturnType<typeof this.buildSingletons>
 
   /**
@@ -137,6 +139,25 @@ export class App {
   constructor() {
     this.singletons = this.buildSingletons()
     this.settingsActor.subscribe(this.onSettingsUpdate)
+  }
+
+  // TODO: Remove providedEditor once the app can handle not always having a KclManager
+  openProject(
+    projectIORef: Project,
+    initialOpenFile?: string,
+    providedEditor?: KclManager
+  ) {
+    this.project.value?.closeAllEditors()
+    this.project.value = ZDSProject.open(
+      projectIORef,
+      this,
+      initialOpenFile,
+      providedEditor
+    )
+  }
+  closeProject() {
+    this.project.value?.closeAllEditors()
+    this.project.value = null
   }
 
   /**
