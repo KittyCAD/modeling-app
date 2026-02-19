@@ -54,7 +54,6 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
-  isArray,
   isNonNullable,
   isOverlap,
   uuidv4,
@@ -76,40 +75,73 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+interface PlaceholderEntityGetPrimitiveIndex {
+  index?: number
+  primitive_index?: number
+  face_index?: number
+}
+
+type UnknownModelingResponse<T extends object, U extends string> = {
+  resp: {
+    data: {
+      modeling_response: {
+        type: U
+        data: T
+      }
+    }
+  }
+}
+
+const isUnknownModelingResponseTo = <T extends object, const U extends string>(
+  response: unknown,
+  typeIdent: U
+): response is UnknownModelingResponse<T, U> => {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'resp' in response &&
+    typeof response.resp === 'object' &&
+    response.resp !== null &&
+    'data' in response.resp &&
+    typeof response.resp.data === 'object' &&
+    response.resp.data !== null &&
+    'modeling_response' in response.resp.data &&
+    typeof response.resp.data.modeling_response === 'object' &&
+    response.resp.data.modeling_response !== null &&
+    'type' in response.resp.data.modeling_response &&
+    response.resp.data.modeling_response.type === typeIdent
+  )
+}
+
 async function getPrimitiveSelectionForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
 ): Promise<EnginePrimitiveSelection | null> {
-  const fallbackResponse = await engineCommandManager.sendSceneCommand({
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
-      // This command is available in engine builds that expose primitive index lookup
-      // but is not yet included in the SDK type union.
+      // @kittycad/lib does not yet expose this.
+      // @ts-expect-error
       type: 'entity_get_primitive_index',
       entity_id: entityId,
-    } as any,
-  } as WebSocketRequest)
+    },
+  })
 
-  if (!fallbackResponse) {
+  if (
+    !isUnknownModelingResponseTo<
+      PlaceholderEntityGetPrimitiveIndex,
+      'entity_get_primitive_index'
+    >(websocketResponse, 'entity_get_primitive_index')
+  )
     return null
-  }
+  const entityGetPrimitiveIndex =
+    websocketResponse.resp.data.modeling_response.data
 
-  const singleResponse = isArray(fallbackResponse)
-    ? fallbackResponse[0]
-    : fallbackResponse
-  if (!isModelingResponse(singleResponse)) return null
-
-  const modelingResponse = singleResponse.resp.data.modeling_response as {
-    type?: string
-    data?: Record<string, unknown>
-  }
-
-  if (modelingResponse.type !== 'entity_get_primitive_index') return null
   const rawIndex =
-    modelingResponse.data?.index ??
-    modelingResponse.data?.primitive_index ??
-    modelingResponse.data?.face_index
+    entityGetPrimitiveIndex.index ??
+    entityGetPrimitiveIndex.primitive_index ??
+    entityGetPrimitiveIndex.face_index
 
   if (typeof rawIndex !== 'number') {
     return null
@@ -125,21 +157,14 @@ async function getPrimitiveSelectionForEntity(
     },
   })
   if (parentResponse) {
-    const singleParentResponse = isArray(parentResponse)
-      ? parentResponse[0]
-      : parentResponse
-    if (isModelingResponse(singleParentResponse)) {
-      const parentModelingResponse = singleParentResponse.resp.data
-        .modeling_response as {
-        type?: string
-        data?: Record<string, unknown>
-      }
-      if (parentModelingResponse.type === 'entity_get_parent_id') {
-        const maybeParent = parentModelingResponse.data?.entity_id
-        if (typeof maybeParent === 'string') {
-          parentEntityId = maybeParent
-        }
-      }
+    if (
+      isUnknownModelingResponseTo<
+        { entity_id: string },
+        'entity_get_parent_id'
+      >(parentResponse, 'entity_get_parent_id')
+    ) {
+      const entityGetParentId = parentResponse.resp.data.modeling_response.data
+      parentEntityId = entityGetParentId.entity_id
     }
   }
 
@@ -209,11 +234,6 @@ export async function getEventForSelectWithPoint(
       engineCommandManager
     )
     if (primitiveSelection !== null) {
-      console.log('Fallback primitive face index from engine', {
-        entityId: primitiveSelection.entityId,
-        parentEntityId: primitiveSelection.parentEntityId,
-        primitiveFaceIndex: primitiveSelection.primitiveIndex,
-      })
       return {
         type: 'Set selection',
         data: {
@@ -907,9 +927,6 @@ export async function sendSelectEventToEngine(
     return undefined
   }
 
-  if (isArray(res)) {
-    res = res[0]
-  }
   const singleRes = res
   if (isModelingResponse(singleRes)) {
     const mr = singleRes.resp.data.modeling_response

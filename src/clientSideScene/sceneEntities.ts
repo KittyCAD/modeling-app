@@ -4038,9 +4038,6 @@ export class SceneEntities {
       return {} as GetSketchModePlane
     }
 
-    if (isArray(resp)) {
-      resp = resp[0]
-    }
     const singleResp = resp
     let faceInfo: GetSketchModePlane | undefined
     if (isModelingResponse(singleResp)) {
