@@ -450,7 +450,7 @@ export const useToolbarConfig = () => {
                     data: { name: 'Delete Face', groupId: 'modeling' },
                   }),
                 icon: 'deleteFace',
-                status: 'available',
+                status: 'experimental',
                 title: 'Delete Face',
                 description:
                   'Delete a face from a body (a solid, or a polysurface).',
