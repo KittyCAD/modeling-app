@@ -29,85 +29,105 @@ pub struct PhysicalPropertiesResponse {
 #[pymethods]
 impl PhysicalPropertiesResponse {
     fn get_center_of_mass(&self) -> PyResult<super::Point3d> {
-        let point = self
-            .center_of_mass
-            .clone()
-            .ok_or(PyException::new_err("Center of mass was not requested"))?
-            .center_of_mass;
-        Ok(super::Point3d::from(point))
+        crate::catch_panic(|| {
+            let point = self
+                .center_of_mass
+                .clone()
+                .ok_or(PyException::new_err("Center of mass was not requested"))?
+                .center_of_mass;
+            Ok(super::Point3d::from(point))
+        })
     }
 
     fn get_center_of_mass_unit(&self) -> PyResult<UnitLength> {
-        let unit = self
-            .center_of_mass
-            .clone()
-            .ok_or(PyException::new_err("Center of mass was not requested"))?
-            .output_unit;
-        Ok(unit)
+        crate::catch_panic(|| {
+            let unit = self
+                .center_of_mass
+                .clone()
+                .ok_or(PyException::new_err("Center of mass was not requested"))?
+                .output_unit;
+            Ok(unit)
+        })
     }
 
     fn get_volume(&self) -> PyResult<f64> {
-        Ok(self
-            .volume
-            .as_ref()
-            .ok_or(PyException::new_err("Volume was not requested"))?
-            .volume)
+        crate::catch_panic(|| {
+            Ok(self
+                .volume
+                .as_ref()
+                .ok_or(PyException::new_err("Volume was not requested"))?
+                .volume)
+        })
     }
 
     fn get_volume_unit(&self) -> PyResult<UnitVolume> {
-        Ok(self
-            .volume
-            .as_ref()
-            .ok_or(PyException::new_err("Volume was not requested"))?
-            .output_unit)
+        crate::catch_panic(|| {
+            Ok(self
+                .volume
+                .as_ref()
+                .ok_or(PyException::new_err("Volume was not requested"))?
+                .output_unit)
+        })
     }
 
     fn get_surface_area(&self) -> PyResult<f64> {
-        Ok(self
-            .surface_area
-            .as_ref()
-            .ok_or(PyException::new_err("Surface area was not requested"))?
-            .surface_area)
+        crate::catch_panic(|| {
+            Ok(self
+                .surface_area
+                .as_ref()
+                .ok_or(PyException::new_err("Surface area was not requested"))?
+                .surface_area)
+        })
     }
 
     fn get_surface_area_unit(&self) -> PyResult<UnitArea> {
-        Ok(self
-            .surface_area
-            .as_ref()
-            .ok_or(PyException::new_err("Surface area was not requested"))?
-            .output_unit)
+        crate::catch_panic(|| {
+            Ok(self
+                .surface_area
+                .as_ref()
+                .ok_or(PyException::new_err("Surface area was not requested"))?
+                .output_unit)
+        })
     }
 
     fn get_density(&self) -> PyResult<f64> {
-        Ok(self
-            .density
-            .as_ref()
-            .ok_or(PyException::new_err("Density was not requested"))?
-            .density)
+        crate::catch_panic(|| {
+            Ok(self
+                .density
+                .as_ref()
+                .ok_or(PyException::new_err("Density was not requested"))?
+                .density)
+        })
     }
 
     fn get_density_unit(&self) -> PyResult<UnitDensity> {
-        Ok(self
-            .density
-            .as_ref()
-            .ok_or(PyException::new_err("Density was not requested"))?
-            .output_unit)
+        crate::catch_panic(|| {
+            Ok(self
+                .density
+                .as_ref()
+                .ok_or(PyException::new_err("Density was not requested"))?
+                .output_unit)
+        })
     }
 
     fn get_mass(&self) -> PyResult<f64> {
-        Ok(self
-            .mass
-            .as_ref()
-            .ok_or(PyException::new_err("Mass was not requested"))?
-            .mass)
+        crate::catch_panic(|| {
+            Ok(self
+                .mass
+                .as_ref()
+                .ok_or(PyException::new_err("Mass was not requested"))?
+                .mass)
+        })
     }
 
     fn get_mass_unit(&self) -> PyResult<UnitMass> {
-        Ok(self
-            .mass
-            .as_ref()
-            .ok_or(PyException::new_err("Mass was not requested"))?
-            .output_unit)
+        crate::catch_panic(|| {
+            Ok(self
+                .mass
+                .as_ref()
+                .ok_or(PyException::new_err("Mass was not requested"))?
+                .output_unit)
+        })
     }
 }
 
@@ -116,28 +136,34 @@ impl PhysicalPropertiesResponse {
 impl PhysicalPropertiesRequest {
     #[new]
     /// Create a default PhysicalPropertiesRequest with no requests set.
-    fn new() -> Self {
-        Self::default()
+    fn new() -> PyResult<Self> {
+        crate::catch_panic_value(Self::default)
     }
 
     /// Requests the volume of the model.
-    fn set_volume(&mut self, output_unit: UnitVolume) {
-        self.volume = Some(
-            kcmc::Volume::builder()
-                .output_unit(output_unit)
-                .entity_ids(Default::default())
-                .build(),
-        );
+    fn set_volume(&mut self, output_unit: UnitVolume) -> PyResult<()> {
+        crate::catch_panic(|| {
+            self.volume = Some(
+                kcmc::Volume::builder()
+                    .output_unit(output_unit)
+                    .entity_ids(Default::default())
+                    .build(),
+            );
+            Ok(())
+        })
     }
 
     /// Requests the center of mass of the model.
-    fn set_center_of_mass(&mut self, output_unit: UnitLength) {
-        self.center_of_mass = Some(
-            kcmc::CenterOfMass::builder()
-                .output_unit(output_unit)
-                .entity_ids(Default::default())
-                .build(),
-        );
+    fn set_center_of_mass(&mut self, output_unit: UnitLength) -> PyResult<()> {
+        crate::catch_panic(|| {
+            self.center_of_mass = Some(
+                kcmc::CenterOfMass::builder()
+                    .output_unit(output_unit)
+                    .entity_ids(Default::default())
+                    .build(),
+            );
+            Ok(())
+        })
     }
 
     /// Requests the mass of the model.
@@ -147,28 +173,33 @@ impl PhysicalPropertiesRequest {
         material_density: f64,
         material_density_unit: UnitDensity,
     ) -> PyResult<()> {
-        if material_density <= 0.0 {
-            return Err(PyException::new_err("material_density must be greater than 0"));
-        }
-        self.mass = Some(
-            kcmc::Mass::builder()
-                .output_unit(output_unit)
-                .entity_ids(Default::default())
-                .material_density(material_density)
-                .material_density_unit(material_density_unit)
-                .build(),
-        );
-        Ok(())
+        crate::catch_panic(|| {
+            if material_density <= 0.0 {
+                return Err(PyException::new_err("material_density must be greater than 0"));
+            }
+            self.mass = Some(
+                kcmc::Mass::builder()
+                    .output_unit(output_unit)
+                    .entity_ids(Default::default())
+                    .material_density(material_density)
+                    .material_density_unit(material_density_unit)
+                    .build(),
+            );
+            Ok(())
+        })
     }
 
     /// Requests the surface area of the model.
-    fn set_surface_area(&mut self, output_unit: UnitArea) {
-        self.surface_area = Some(
-            kcmc::SurfaceArea::builder()
-                .output_unit(output_unit)
-                .entity_ids(Default::default())
-                .build(),
-        );
+    fn set_surface_area(&mut self, output_unit: UnitArea) -> PyResult<()> {
+        crate::catch_panic(|| {
+            self.surface_area = Some(
+                kcmc::SurfaceArea::builder()
+                    .output_unit(output_unit)
+                    .entity_ids(Default::default())
+                    .build(),
+            );
+            Ok(())
+        })
     }
 
     /// Requests the density of the model.
@@ -178,17 +209,19 @@ impl PhysicalPropertiesRequest {
         material_mass: f64,
         material_mass_unit: UnitMass,
     ) -> PyResult<()> {
-        if material_mass <= 0.0 {
-            return Err(PyException::new_err("material_mass must be greater than 0"));
-        }
-        self.density = Some(
-            kcmc::Density::builder()
-                .output_unit(output_unit)
-                .entity_ids(Default::default())
-                .material_mass(material_mass)
-                .material_mass_unit(material_mass_unit)
-                .build(),
-        );
-        Ok(())
+        crate::catch_panic(|| {
+            if material_mass <= 0.0 {
+                return Err(PyException::new_err("material_mass must be greater than 0"));
+            }
+            self.density = Some(
+                kcmc::Density::builder()
+                    .output_unit(output_unit)
+                    .entity_ids(Default::default())
+                    .material_mass(material_mass)
+                    .material_mass_unit(material_mass_unit)
+                    .build(),
+            );
+            Ok(())
+        })
     }
 }

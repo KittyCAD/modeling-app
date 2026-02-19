@@ -1,6 +1,6 @@
 //! For creating equivalents to the core kcmc types that support Python.
 use kittycad_modeling_cmds as kcmc;
-use pyo3::{pyclass, pymethods};
+use pyo3::{pyclass, pymethods, PyResult};
 use serde::{Deserialize, Serialize};
 
 pub mod physical_properties;
@@ -23,8 +23,8 @@ impl Point3d {
     #[new]
     /// Create a new point from its 3 components x, y and z
     /// All of them take floating point values.
-    fn new(x: f32, y: f32, z: f32) -> Self {
-        Self { x, y, z }
+    fn new(x: f32, y: f32, z: f32) -> PyResult<Self> {
+        crate::catch_panic_value(|| Self { x, y, z })
     }
 }
 
@@ -41,8 +41,8 @@ pub struct CameraLookAt {
 #[pymethods]
 impl CameraLookAt {
     #[new]
-    fn new(vantage: Point3d, center: Point3d, up: Point3d) -> Self {
-        Self { vantage, center, up }
+    fn new(vantage: Point3d, center: Point3d, up: Point3d) -> PyResult<Self> {
+        crate::catch_panic_value(|| Self { vantage, center, up })
     }
 }
 

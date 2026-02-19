@@ -12,6 +12,7 @@ kcl_dir = os.path.join(
 )
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
+many_parens_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "many_parens.kcl")
 
 engine_error_file = os.path.join(
     tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
@@ -74,6 +75,22 @@ async def test_kcl_parse_code():
         assert len(code) > 0
         result = kcl.parse_code(code)
         assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse_code_with_many_parens():
+    # Read from a file.
+    with open(many_parens_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        with pytest.raises(Exception) as exc_info:
+            kcl.parse_code(code)
+
+        message = str(exc_info.value)
+        assert len(message) > 0
+        # Ensure we don't regress to a generic, opaque panic payload.
+        assert "panic with non-string payload" not in message
 
 
 @pytest.mark.asyncio

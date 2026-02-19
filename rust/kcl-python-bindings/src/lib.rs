@@ -1,5 +1,9 @@
 #![allow(clippy::useless_conversion)]
-use std::path::Path;
+use std::{
+    any::Any,
+    panic::{catch_unwind, AssertUnwindSafe},
+    path::Path,
+};
 
 use anyhow::Result;
 use kcl_lib::{
@@ -31,6 +35,47 @@ fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
     static RT: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
     RT.get_or_init(|| tokio::runtime::Runtime::new().unwrap())
+}
+
+fn panic_payload_to_string(payload: &(dyn Any + Send)) -> String {
+    if let Some(message) = payload.downcast_ref::<String>() {
+        return message.clone();
+    }
+    if let Some(message) = payload.downcast_ref::<&'static str>() {
+        return (*message).to_string();
+    }
+    "panic with non-string payload".to_string()
+}
+
+pub(crate) fn panic_to_py_exception(payload: Box<dyn Any + Send>) -> PyErr {
+    let message = panic_payload_to_string(payload.as_ref());
+    PyException::new_err(format!("Rust panic: {message}"))
+}
+
+fn join_error_to_py_exception(error: tokio::task::JoinError) -> PyErr {
+    if error.is_panic() {
+        panic_to_py_exception(error.into_panic())
+    } else {
+        PyException::new_err(error.to_string())
+    }
+}
+
+pub(crate) fn catch_panic<T>(f: impl FnOnce() -> PyResult<T>) -> PyResult<T> {
+    catch_unwind(AssertUnwindSafe(f)).map_err(panic_to_py_exception)?
+}
+
+pub(crate) fn catch_panic_value<T>(f: impl FnOnce() -> T) -> PyResult<T> {
+    catch_panic(|| Ok(f()))
+}
+
+async fn run_with_panic_handling<T>(
+    future: impl std::future::Future<Output = PyResult<T>> + Send + 'static,
+) -> PyResult<T>
+where
+    T: Send + 'static,
+{
+    let handle = catch_panic_value(|| tokio().spawn(future))?;
+    handle.await.map_err(join_error_to_py_exception)?
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
@@ -92,129 +137,119 @@ async fn new_context_state(
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn parse(path: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let _program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let _program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            Ok(true)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        Ok(true)
+    })
+    .await
 }
 
 /// Parse the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn parse_code(code: String) -> PyResult<bool> {
-    let _program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    catch_panic(|| {
+        let _program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-    Ok(true)
+        Ok(true)
+    })
 }
 
 /// Execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute(path: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(Some(path), false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            ctx.close().await;
-            Ok(())
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        Ok(())
+    })
+    .await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code(code: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    run_with_panic_handling(async move {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(None, false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            ctx.close().await;
-            Ok(())
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        Ok(())
+    })
+    .await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    run_with_panic_handling(async move {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None, true)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(None, true)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            ctx.close().await;
-            Ok(true)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        Ok(true)
+    })
+    .await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<bool> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path), true)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(Some(path), true)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            ctx.close().await;
-            Ok(true)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        Ok(true)
+    })
+    .await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -224,10 +259,13 @@ async fn import_and_snapshot(
     format: InputFormat3d,
     image_format: ImageFormat,
 ) -> PyResult<Vec<u8>> {
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new())
-        .await?
-        .pop();
-    Ok(img.unwrap())
+    run_with_panic_handling(async move {
+        let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new())
+            .await?
+            .pop();
+        Ok(img.unwrap())
+    })
+    .await
 }
 
 fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
@@ -238,10 +276,12 @@ fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn relevant_file_extensions() -> PyResult<Vec<String>> {
-    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
-        .iter()
-        .map(|s| s.to_string())
-        .collect::<Vec<String>>())
+    catch_panic(|| {
+        Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>())
+    })
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -252,16 +292,14 @@ async fn import_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
-            import(&ctx, filepaths, format).await?;
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    run_with_panic_handling(async move {
+        let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
+        import(&ctx, filepaths, format).await?;
+        let result = take_snaps(&ctx, image_format, snapshot_options).await;
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 /// Make an absolute path not absolute. We need to do this to re-root files
@@ -310,8 +348,11 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let img = execute_and_snapshot_views(path, image_format, Vec::new()).await?.pop();
-    Ok(img.unwrap())
+    run_with_panic_handling(async move {
+        let img = execute_and_snapshot_views(path, image_format, Vec::new()).await?.pop();
+        Ok(img.unwrap())
+    })
+    .await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -321,65 +362,64 @@ async fn execute_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(Some(path), false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+        let result = take_snaps(&ctx, image_format, snapshot_options).await;
 
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
-    Ok(snaps.pop().unwrap())
+    run_with_panic_handling(async move {
+        let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
+        Ok(snaps.pop().unwrap())
+    })
+    .await
 }
 
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(Some(path), false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let result = measure_model_properties(&ctx, request).await;
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        let result = measure_model_properties(&ctx, request).await;
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 /// Execute the kcl code and measure physical properties of the resulting model.
@@ -389,25 +429,22 @@ async fn execute_code_and_measure(
     code: String,
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    run_with_panic_handling(async move {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(None, false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let result = measure_model_properties(&ctx, request).await;
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        let result = measure_model_properties(&ctx, request).await;
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 /// Customize a snapshot.
@@ -429,14 +466,14 @@ pub struct SnapshotOptions {
 impl SnapshotOptions {
     #[new]
     /// Takes a kcl.CameraLookAt, and a padding number.
-    fn new(camera: Option<bridge::CameraLookAt>, padding: f32) -> Self {
-        Self { camera, padding }
+    fn new(camera: Option<bridge::CameraLookAt>, padding: f32) -> PyResult<Self> {
+        catch_panic_value(|| Self { camera, padding })
     }
 
     #[staticmethod]
     /// Takes a padding number.
-    fn isometric_view(padding: f32) -> Self {
-        Self::new(None, padding)
+    fn isometric_view(padding: f32) -> PyResult<Self> {
+        catch_panic_value(|| Self { camera: None, padding })
     }
 }
 
@@ -450,26 +487,23 @@ async fn execute_code_and_snapshot_views(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    run_with_panic_handling(async move {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(None, false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+        let result = take_snaps(&ctx, image_format, snapshot_options).await;
 
-            ctx.close().await;
-            result
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 async fn take_snaps(
@@ -675,151 +709,148 @@ async fn measure_model_properties(
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    tokio()
-        .spawn(async move {
-            let (code, path) = get_code_and_file_path(&path)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            let program = kcl_lib::Program::parse_no_errs(&code)
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+    run_with_panic_handling(async move {
+        let (code, path) = get_code_and_file_path(&path)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        let program = kcl_lib::Program::parse_no_errs(&code)
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path.clone()), false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(Some(path.clone()), false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
+        let settings = program
+            .meta_settings()
+            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
+            .unwrap_or_default();
+        let units: UnitLength = settings.default_length_units.into();
 
-            // This will not return until there are files.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(
-                        kittycad_modeling_cmds::Export::builder()
-                            .entity_ids(vec![])
-                            .format(OutputFormat3d::new(
-                                &export_format,
-                                kcmc::format::OutputFormat3dOptions::new(units),
-                            ))
-                            .build(),
-                    ),
-                )
-                .await?;
+        // This will not return until there are files.
+        let resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &kittycad_modeling_cmds::ModelingCmd::Export(
+                    kittycad_modeling_cmds::Export::builder()
+                        .entity_ids(vec![])
+                        .format(OutputFormat3d::new(
+                            &export_format,
+                            kcmc::format::OutputFormat3dOptions::new(units),
+                        ))
+                        .build(),
+                ),
+            )
+            .await?;
 
-            ctx.close().await;
-            drop(ctx);
+        ctx.close().await;
+        drop(ctx);
 
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
+        let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {resp:?}"
+            )));
+        };
 
-            Ok(files)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        Ok(files)
+    })
+    .await
 }
 
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    tokio()
-        .spawn(async move {
-            let program =
-                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    run_with_panic_handling(async move {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None, false)
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-            // Execute the program.
-            ctx.run(&program, &mut state)
-                .await
-                .map_err(|err| into_miette(err, &code))?;
+        let (ctx, mut state) = new_context_state(None, false)
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // Execute the program.
+        ctx.run(&program, &mut state)
+            .await
+            .map_err(|err| into_miette(err, &code))?;
 
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse("", &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
+        let settings = program
+            .meta_settings()
+            .map_err(|err| into_miette_for_parse("", &code, err))?
+            .unwrap_or_default();
+        let units: UnitLength = settings.default_length_units.into();
 
-            // This will not return until there are files.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(
-                        kittycad_modeling_cmds::Export::builder()
-                            .entity_ids(vec![])
-                            .format(OutputFormat3d::new(
-                                &export_format,
-                                kcmc::format::OutputFormat3dOptions::new(units),
-                            ))
-                            .build(),
-                    ),
-                )
-                .await?;
+        // This will not return until there are files.
+        let resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &kittycad_modeling_cmds::ModelingCmd::Export(
+                    kittycad_modeling_cmds::Export::builder()
+                        .entity_ids(vec![])
+                        .format(OutputFormat3d::new(
+                            &export_format,
+                            kcmc::format::OutputFormat3dOptions::new(units),
+                        ))
+                        .build(),
+                ),
+            )
+            .await?;
 
-            ctx.close().await;
-            drop(ctx);
+        ctx.close().await;
+        drop(ctx);
 
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
+        let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {resp:?}"
+            )));
+        };
 
-            Ok(files)
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+        Ok(files)
+    })
+    .await
 }
 
 /// Format the kcl code. This will return the formatted code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn format(code: String) -> PyResult<String> {
-    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-    let recasted = program.recast();
+    catch_panic(|| {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let recasted = program.recast();
 
-    Ok(recasted)
+        Ok(recasted)
+    })
 }
 
 /// Format a whole directory of kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn format_dir(dir: String) -> PyResult<()> {
-    tokio()
-        .spawn(async move {
-            kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
-                .await
-                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
-        })
-        .await
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+    run_with_panic_handling(async move {
+        kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
+            .await
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
+    })
+    .await
 }
 
 /// Lint the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn lint(code: String) -> PyResult<Vec<Discovered>> {
-    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-    let lints = program
-        .lint(checks::lint_variables)
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    catch_panic(|| {
+        let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let lints = program
+            .lint(checks::lint_variables)
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
 
-    Ok(lints)
+        Ok(lints)
+    })
 }
 
 /// Result from linting and fixing automatically.
@@ -839,12 +870,12 @@ pub struct FixedLints {
 impl FixedLints {
     #[getter]
     fn unfixed_lints(&self) -> PyResult<Vec<Discovered>> {
-        Ok(self.unfixed_lints.clone())
+        catch_panic_value(|| self.unfixed_lints.clone())
     }
 
     #[getter]
     fn new_code(&self) -> PyResult<String> {
-        Ok(self.new_code.clone())
+        catch_panic_value(|| self.new_code.clone())
     }
 }
 
@@ -853,11 +884,13 @@ impl FixedLints {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn lint_and_fix_all(code: String) -> PyResult<FixedLints> {
-    let (new_code, unfixed_lints) =
-        kcl_lib::lint::lint_and_fix_all(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-    Ok(FixedLints {
-        new_code,
-        unfixed_lints,
+    catch_panic(|| {
+        let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_all(code)
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        Ok(FixedLints {
+            new_code,
+            unfixed_lints,
+        })
     })
 }
 
@@ -867,74 +900,78 @@ fn lint_and_fix_all(code: String) -> PyResult<FixedLints> {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> PyResult<FixedLints> {
-    let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_families(code, &families_to_fix)
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-    Ok(FixedLints {
-        new_code,
-        unfixed_lints,
+    catch_panic(|| {
+        let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_families(code, &families_to_fix)
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        Ok(FixedLints {
+            new_code,
+            unfixed_lints,
+        })
     })
 }
 
 /// The kcl python module.
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    // Add our types to the module.
-    m.add_class::<ImageFormat>()?;
-    m.add_class::<RawFile>()?;
-    m.add_class::<FileExportFormat>()?;
-    m.add_class::<Discovered>()?;
-    m.add_class::<PhysicalPropertiesRequest>()?;
-    m.add_class::<PhysicalPropertiesResponse>()?;
-    m.add_class::<SnapshotOptions>()?;
-    m.add_class::<bridge::Point3d>()?;
-    m.add_class::<bridge::CameraLookAt>()?;
-    m.add_class::<kcmc::format::InputFormat3d>()?;
-    m.add_class::<FindingFamily>()?;
+    catch_panic(|| {
+        // Add our types to the module.
+        m.add_class::<ImageFormat>()?;
+        m.add_class::<RawFile>()?;
+        m.add_class::<FileExportFormat>()?;
+        m.add_class::<Discovered>()?;
+        m.add_class::<PhysicalPropertiesRequest>()?;
+        m.add_class::<PhysicalPropertiesResponse>()?;
+        m.add_class::<SnapshotOptions>()?;
+        m.add_class::<bridge::Point3d>()?;
+        m.add_class::<bridge::CameraLookAt>()?;
+        m.add_class::<kcmc::format::InputFormat3d>()?;
+        m.add_class::<FindingFamily>()?;
 
-    m.add_class::<kcmc::units::UnitAngle>()?;
-    m.add_class::<kcmc::units::UnitArea>()?;
-    m.add_class::<kcmc::units::UnitDensity>()?;
-    m.add_class::<kcmc::units::UnitLength>()?;
-    m.add_class::<kcmc::units::UnitMass>()?;
-    m.add_class::<kcmc::units::UnitVolume>()?;
+        m.add_class::<kcmc::units::UnitAngle>()?;
+        m.add_class::<kcmc::units::UnitArea>()?;
+        m.add_class::<kcmc::units::UnitDensity>()?;
+        m.add_class::<kcmc::units::UnitLength>()?;
+        m.add_class::<kcmc::units::UnitMass>()?;
+        m.add_class::<kcmc::units::UnitVolume>()?;
 
-    // These are fine to add top level since we rename them in pyo3 derives.
-    m.add_class::<kcmc::format::step::import::Options>()?;
-    m.add_class::<kcmc::format::step::export::Options>()?;
-    m.add_class::<kcmc::format::gltf::import::Options>()?;
-    m.add_class::<kcmc::format::gltf::export::Options>()?;
-    m.add_class::<kcmc::format::obj::import::Options>()?;
-    m.add_class::<kcmc::format::obj::export::Options>()?;
-    m.add_class::<kcmc::format::ply::import::Options>()?;
-    m.add_class::<kcmc::format::ply::export::Options>()?;
-    m.add_class::<kcmc::format::stl::import::Options>()?;
-    m.add_class::<kcmc::format::stl::export::Options>()?;
-    m.add_class::<kcmc::format::sldprt::import::Options>()?;
+        // These are fine to add top level since we rename them in pyo3 derives.
+        m.add_class::<kcmc::format::step::import::Options>()?;
+        m.add_class::<kcmc::format::step::export::Options>()?;
+        m.add_class::<kcmc::format::gltf::import::Options>()?;
+        m.add_class::<kcmc::format::gltf::export::Options>()?;
+        m.add_class::<kcmc::format::obj::import::Options>()?;
+        m.add_class::<kcmc::format::obj::export::Options>()?;
+        m.add_class::<kcmc::format::ply::import::Options>()?;
+        m.add_class::<kcmc::format::ply::export::Options>()?;
+        m.add_class::<kcmc::format::stl::import::Options>()?;
+        m.add_class::<kcmc::format::stl::export::Options>()?;
+        m.add_class::<kcmc::format::sldprt::import::Options>()?;
 
-    // Add our functions to the module.
-    m.add_function(wrap_pyfunction!(parse, m)?)?;
-    m.add_function(wrap_pyfunction!(parse_code, m)?)?;
-    m.add_function(wrap_pyfunction!(execute, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code, m)?)?;
-    m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
-    m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
-    m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
-    m.add_function(wrap_pyfunction!(format, m)?)?;
-    m.add_function(wrap_pyfunction!(format_dir, m)?)?;
-    m.add_function(wrap_pyfunction!(lint, m)?)?;
-    m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
-    m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
-    m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
-    Ok(())
+        // Add our functions to the module.
+        m.add_function(wrap_pyfunction!(parse, m)?)?;
+        m.add_function(wrap_pyfunction!(parse_code, m)?)?;
+        m.add_function(wrap_pyfunction!(execute, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_code, m)?)?;
+        m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
+        m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
+        m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
+        m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
+        m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
+        m.add_function(wrap_pyfunction!(format, m)?)?;
+        m.add_function(wrap_pyfunction!(format_dir, m)?)?;
+        m.add_function(wrap_pyfunction!(lint, m)?)?;
+        m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
+        m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
+        m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
+        Ok(())
+    })
 }
 
 // Define a function to gather stub information.
