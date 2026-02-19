@@ -47,6 +47,7 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -133,6 +134,7 @@ export class App {
 
   constructor() {
     this.singletons = this.buildSingletons()
+    this.settingsActor.subscribe(this.onSettingsUpdate)
   }
 
   /**
@@ -294,5 +296,93 @@ export class App {
       useLayout,
       setLayout,
     }
+  }
+
+  /**
+   * Until we update these dependents of the settings to take settings
+   * as a dependency input, we must subscribe to updates from the outside.
+   */
+  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settingsActor>) => {
+    const { context } = snapshot
+
+    // Update line wrapping
+    const newWrapping = context.textEditor.textWrapping.current
+    if (newWrapping !== this.lastSettings.value?.textEditor.textWrapping) {
+      this.singletons.kclManager.setEditorLineWrapping(newWrapping)
+    }
+
+    // Update engine highlighting
+    const newHighlighting = context.modeling.highlightEdges.current
+    if (newHighlighting !== this.lastSettings.value?.modeling.highlightEdges) {
+      this.singletons.engineCommandManager
+        .setHighlightEdges(newHighlighting)
+        .catch(reportRejection)
+    }
+
+    // Update cursor blinking
+    const newBlinking = context.textEditor.blinkingCursor.current
+    if (newBlinking !== this.lastSettings.value?.textEditor.blinkingCursor) {
+      document.documentElement.style.setProperty(
+        `--cursor-color`,
+        newBlinking ? 'auto' : 'transparent'
+      )
+      this.singletons.kclManager.setCursorBlinking(newBlinking)
+    }
+
+    // Update theme
+    const newTheme = context.app.theme.current
+    if (newTheme !== this.lastSettings.value?.app.theme) {
+      const resolvedTheme = getResolvedTheme(newTheme)
+      const opposingTheme = getOppositeTheme(newTheme)
+      this.singletons.sceneInfra.theme = opposingTheme
+      this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+      this.singletons.kclManager.setEditorTheme(resolvedTheme)
+      this.singletons.engineCommandManager
+        .setTheme(newTheme)
+        .catch(reportRejection)
+    }
+
+    // Execute AST
+    try {
+      const relevantSetting = (s: SaveSettingsPayload | undefined) => {
+        const hasScaleGrid =
+          s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+        const hasHighlightEdges =
+          s?.modeling?.highlightEdges !==
+          context.modeling.highlightEdges.current
+        return hasScaleGrid || hasHighlightEdges
+      }
+
+      const settingsIncludeNewRelevantValues = relevantSetting(
+        this.lastSettings.value
+      )
+
+      // Unit changes requires a re-exec of code
+      if (settingsIncludeNewRelevantValues) {
+        this.singletons.kclManager.executeCode().catch(reportRejection)
+      }
+    } catch (e) {
+      console.error('Error executing AST after settings change', e)
+    }
+
+    this.singletons.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+      context.app.allowOrbitInSketchMode.current
+
+    const newCurrentProjection = context.modeling.cameraProjection.current
+    if (
+      this.singletons.sceneInfra.camControls &&
+      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
+      newCurrentProjection !==
+        this.singletons.sceneInfra.camControls.engineCameraProjection
+    ) {
+      this.singletons.sceneInfra.camControls.engineCameraProjection =
+        newCurrentProjection
+    }
+
+    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
+    // of the last settings to know if they've changed.
+    this.lastSettings.value = getAllCurrentSettings(
+      getOnlySettingsFromContext(context)
+    )
   }
 }
