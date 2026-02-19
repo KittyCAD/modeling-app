@@ -48,6 +48,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
