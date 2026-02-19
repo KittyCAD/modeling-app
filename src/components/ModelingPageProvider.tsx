@@ -25,14 +25,13 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth, commands, settings, lastSettings } = useApp()
+  const { auth, commands, settings } = useApp()
   const {
     engineCommandManager,
     kclManager,
     rustContext,
     sceneInfra,
     systemIOActor,
-    sceneEntitiesManager,
   } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()

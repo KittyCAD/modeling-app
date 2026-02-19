@@ -102,7 +102,7 @@ export class App {
     },
   }).start()
   // TODO: refactor this to not require keeping around the last settings to compare to
-  public lastSettings = signal<SaveSettingsPayload>(
+  private lastSettings = signal<SaveSettingsPayload>(
     getAllCurrentSettings(
       getOnlySettingsFromContext(this.settingsActor.getSnapshot().context)
     )
