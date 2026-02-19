@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { vi, describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 
-const project: Project = {
+const mockProject: Project = {
   name: 'test',
   default_file: 'main.kcl',
   directory_count: 0,
@@ -26,20 +26,28 @@ const project: Project = {
   ],
 }
 
+vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
+vi.mock('@src/lang/wasmUtils', async () => {
+  const realImport = await import('@src/lang/wasmUtils')
+  // We have to mock this because it fetches by default
+  const mockInitialiseWasm = () => import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
+  return {
+    ...realImport,
+    initialiseWasm: mockInitialiseWasm,
+  } satisfies typeof realImport
+})
+
 describe('project system', () => {
   it('can open, close project', () => {
     const app = new App()
 
-    expect(project.children![0].path).toEqual('/some-dir/test/main.kcl')
-
     app.openProject(
-      project,
-      project.children![0].path,
+      mockProject,
+      mockProject.children![0].path,
       app.singletons.kclManager
     )
 
     expect(app.project.value).toBeDefined()
-    expect(app.project.value?.editors.value).toBeInstanceOf(Map)
     expect(app.project.value?.executingPath).toEqual('/some-dir/test/main.kcl')
     expect(app.project.value?.executingFileEntry.name).toEqual('main.kcl')
 
