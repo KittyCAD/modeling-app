@@ -8,7 +8,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { use, useEffect, useRef } from 'react'
 import { editorTheme } from '@src/editor/plugins/theme'
 import { getResolvedTheme } from '@src/lib/theme'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { varMentions } from '@src/lib/varCompletionExtension'
@@ -23,9 +23,8 @@ export function KclInput(props: {
   onCancel: () => void
   style?: React.CSSProperties
 }) {
-  const { settings: settingsSystem } = useApp()
-  const { rustContext, kclManager } = useSingletons()
-  const settings = settingsSystem.useSettings()
+  const { useSettings, rustContext, kclManager } = useSingletons()
+  const settings = useSettings()
   const wasmInstance = use(rustContext.wasmInstancePromise)
 
   const variables = kclManager.variablesSignal.value

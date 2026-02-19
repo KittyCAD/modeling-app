@@ -32,14 +32,15 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
-  const { auth, billing, settings } = useApp()
-  const { engineCommandManager, kclManager, systemIOActor } = useSingletons()
+  const { auth, billing } = useApp()
+  const { engineCommandManager, kclManager, systemIOActor, useSettings } =
+    useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
-  const settingsValues = settings.useSettings()
+  const settings = useSettings()
   const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
@@ -64,8 +65,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory =
-        settingsValues.app.projectDirectory.current
+      const applicationProjectDirectory = settings.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
         applicationProjectDirectory
@@ -174,12 +174,12 @@ export function SystemIOMachineLogicListenerDesktop() {
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
             requestedProjectDirectoryPath:
-              settingsValues.app.projectDirectory.current || '',
+              settings.app.projectDirectory.current || '',
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settingsValues.app.projectDirectory.current, pathname])
+    }, [settings.app.projectDirectory.current, pathname])
   }
 
   const useDefaultProjectName = () => {
@@ -188,11 +188,11 @@ export function SystemIOMachineLogicListenerDesktop() {
         type: SystemIOMachineEvents.setDefaultProjectFolderName,
         data: {
           requestedDefaultProjectFolderName:
-            settingsValues.projects.defaultProjectName.current || '',
+            settings.projects.defaultProjectName.current || '',
         },
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settingsValues.projects.defaultProjectName.current])
+    }, [settings.projects.defaultProjectName.current])
   }
 
   const useWatchingApplicationProjectDirectory = () => {
@@ -225,8 +225,8 @@ export function SystemIOMachineLogicListenerDesktop() {
           })
         }
       },
-      settingsValues.app.projectDirectory.current
-        ? [settingsValues.app.projectDirectory.current]
+      settings.app.projectDirectory.current
+        ? [settings.app.projectDirectory.current]
         : []
     )
   }
@@ -288,11 +288,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(
-    mlEphantManagerActor,
-    systemIOActor,
-    settingsValues
-  )
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

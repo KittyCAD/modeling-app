@@ -1,4 +1,4 @@
-import { useApp } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 
 /**
@@ -7,9 +7,9 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
  * @returns {Themes.Light | Themes.Dark}
  */
 export function useResolvedTheme() {
-  const { settings } = useApp()
-  const settingsValues = settings.useSettings()
-  return settingsValues.app.theme.current === Themes.System
+  const { useSettings } = useSingletons()
+  const settings = useSettings()
+  return settings.app.theme.current === Themes.System
     ? getSystemTheme()
-    : settingsValues.app.theme.current
+    : settings.app.theme.current
 }

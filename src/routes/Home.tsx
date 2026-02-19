@@ -68,9 +68,9 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
-  const settingsActor = settings.actor
+  const { auth, billing, commands } = useApp()
+  const { kclManager, useSettings, systemIOActor, settingsActor } =
+    useSingletons()
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -95,8 +95,8 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
-  const settingsValues = settings.useSettings()
-  const onboardingStatus = settingsValues.app.onboardingStatus.current
+  const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus.current
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -107,7 +107,7 @@ const Home = () => {
           groupId: 'projects',
           name: 'Create project',
           argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
+            name: settings.projects.defaultProjectName.current,
           },
         },
       })
@@ -221,7 +221,7 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settingsValues}
+          settings={settings}
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />

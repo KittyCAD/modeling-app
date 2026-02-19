@@ -81,9 +81,8 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
-  const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
-  const settingsActor = settings.actor
+  const { commands } = useApp()
+  const { kclManager, settingsActor } = useSingletons()
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 

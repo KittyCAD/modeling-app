@@ -38,9 +38,7 @@ function ModelingArea() {
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultAreaLibrary = () => {
-  const { settings } = useApp()
-  const { getLayout, kclManager, setLayout } = useSingletons()
-  const getSettings = settings.get
+  const { getLayout, getSettings, kclManager, setLayout } = useSingletons()
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()

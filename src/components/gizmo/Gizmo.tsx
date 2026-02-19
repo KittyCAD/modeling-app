@@ -3,13 +3,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import CubeGizmo from '@src/components/gizmo/CubeGizmo'
 import AxisGizmo from '@src/components/gizmo/AxisGizmo'
-import { useApp } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 
 export default function Gizmo() {
-  const { settings } = useApp()
+  const { useSettings } = useSingletons()
   const menuItems = useViewControlMenuItems()
-  const settingsValues = settings.useSettings()
-  const gizmoType = settingsValues.modeling.gizmoType.current
+  const settings = useSettings()
+  const gizmoType = settings.modeling.gizmoType.current
 
   return (
     <div className="relative">

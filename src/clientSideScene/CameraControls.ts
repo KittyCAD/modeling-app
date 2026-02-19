@@ -166,12 +166,7 @@ export class CameraControls {
     return ndc.unproject(camera || this.camera)
   }
 
-  get engineCameraProjection(): CameraProjectionType {
-    return this.camera instanceof OrthographicCamera
-      ? 'orthographic'
-      : 'perspective'
-  }
-  set engineCameraProjection(projection: CameraProjectionType) {
+  setEngineCameraProjection(projection: CameraProjectionType) {
     if (projection === 'orthographic') {
       this.useOrthographicCamera()
     } else {

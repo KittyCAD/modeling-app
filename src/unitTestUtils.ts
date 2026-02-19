@@ -67,11 +67,7 @@ export async function buildTheWorldAndConnectToEngine() {
     input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
-    input: {
-      commandBarActor,
-      ...createSettings(),
-      wasmInstancePromise: instancePromise,
-    },
+    input: { commandBarActor, ...createSettings() },
   })
   const rustContext = new RustContext(
     engineCommandManager,
@@ -168,11 +164,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
-    input: {
-      commandBarActor,
-      ...createSettings(),
-      wasmInstancePromise: instancePromise,
-    },
+    input: { commandBarActor, ...createSettings() },
   })
   const rustContext = new RustContext(
     engineCommandManager,
