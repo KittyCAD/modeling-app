@@ -164,7 +164,6 @@ export async function getEventForSelectWithPoint(
     rustContext: RustContext
   }
 ): Promise<ModelingMachineEvent | null> {
-  console.log('data from select_with_point event', data)
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
