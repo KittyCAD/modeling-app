@@ -307,10 +307,9 @@ export class App {
     const { context } = snapshot
 
     // Update line wrapping
-    const newWrapping = context.textEditor.textWrapping.current
-    if (newWrapping !== this.lastSettings.value?.textEditor.textWrapping) {
-      this.singletons.kclManager.setEditorLineWrapping(newWrapping)
-    }
+    this.singletons.kclManager.setEditorLineWrapping(
+      context.textEditor.textWrapping.current
+    )
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
@@ -325,27 +324,23 @@ export class App {
 
     // Update cursor blinking
     const newBlinking = context.textEditor.blinkingCursor.current
-    if (newBlinking !== this.lastSettings.value?.textEditor.blinkingCursor) {
-      document.documentElement.style.setProperty(
-        `--cursor-color`,
-        newBlinking ? 'auto' : 'transparent'
-      )
-      this.singletons.kclManager.setCursorBlinking(newBlinking)
-    }
+    document.documentElement.style.setProperty(
+      `--cursor-color`,
+      newBlinking ? 'auto' : 'transparent'
+    )
+    this.singletons.kclManager.setCursorBlinking(newBlinking)
 
     // Update theme
     const newTheme = context.app.theme.current
-    if (newTheme !== this.lastSettings.value?.app.theme) {
-      const resolvedTheme = getResolvedTheme(newTheme)
-      const opposingTheme = getOppositeTheme(newTheme)
-      this.singletons.sceneInfra.theme = opposingTheme
-      this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-      this.singletons.kclManager.setEditorTheme(resolvedTheme)
-      if (this.singletons.engineCommandManager.connection) {
-        this.singletons.engineCommandManager
-          .setTheme(newTheme)
-          .catch(reportRejection)
-      }
+    const resolvedTheme = getResolvedTheme(newTheme)
+    const opposingTheme = getOppositeTheme(newTheme)
+    this.singletons.sceneInfra.theme = opposingTheme
+    this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.singletons.kclManager.setEditorTheme(resolvedTheme)
+    if (this.singletons.engineCommandManager.connection) {
+      this.singletons.engineCommandManager
+        .setTheme(newTheme)
+        .catch(reportRejection)
     }
 
     // Execute AST
@@ -380,9 +375,7 @@ export class App {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
-      newCurrentProjection !==
-        this.singletons.sceneInfra.camControls.engineCameraProjection
+      !this.singletons.kclManager.modelingState?.matches('Sketch')
     ) {
       this.singletons.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
