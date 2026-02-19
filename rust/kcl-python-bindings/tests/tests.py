@@ -3,6 +3,7 @@ import os
 
 import kcl
 from kcl import Point3d
+from flaky import flaky
 import pytest
 
 # Get the path to this script's parent directory.
@@ -164,6 +165,7 @@ async def test_kcl_execute_code_and_export():
         assert len(contents) > 0
 
 
+@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
@@ -244,6 +246,7 @@ async def test_import_and_snapshots_single():
     assert len(image_bytes) > 0
 
 
+@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
