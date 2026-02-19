@@ -87,7 +87,7 @@ import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import {
   editorTheme,
   themeCompartment,
@@ -123,6 +123,9 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { App } from '@src/lib/app'
+import type { FileEntry, Project } from '@src/lib/project'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -162,6 +165,113 @@ declare global {
 // page.evaluate) So that's why this exists.
 window.EditorSelection = EditorSelection
 window.EditorView = EditorView
+
+/**
+ * A project contains 0 or more editors, one of which is the "executing" one
+ * that connects to the geometry engine.
+ */
+export class ZDSProject {
+  public projectIORef: Project
+  get path() {
+    return this.projectIORef.path
+  }
+  get name() {
+    return this.projectIORef.name
+  }
+  private app: App
+  public editors = signal(new Map<string, KclManager>())
+  #executingPath = signal<string | null>(null)
+  public executingEditor = computed(
+    () => this.editors.value.get(this.#executingPath.value || '') ?? null
+  )
+
+  constructor(projectRef: Project, app: App) {
+    this.projectIORef = projectRef
+    this.app = app
+  }
+
+  /** Open a project, with the option to open an initial editor too */
+  static open(
+    projectRef: Project,
+    app: App,
+    initialOpenFilePath?: string,
+    // TODO: This shouldn't be necessary to pass in, once we make the app okay without a permanent KclManager.
+    initialOpenEditor?: KclManager
+  ) {
+    const newProject = new ZDSProject(projectRef, app)
+    if (initialOpenFilePath) {
+      newProject.openEditor(initialOpenFilePath, initialOpenEditor)
+      newProject.executingPath = initialOpenFilePath
+    }
+    return newProject
+  }
+
+  get executingPath() {
+    return this.#executingPath.value
+  }
+  get executingPathSignal() {
+    return this.#executingPath
+  }
+  set executingPath(newPath: string | null) {
+    // TODO: Clear current executing editor's execution status
+
+    if (newPath === null) {
+      return
+    }
+    const found = this.editors.value.get(newPath)
+    if (found) {
+      // TODO: Reconfigure the editor to be an executing one
+    }
+    this.#executingPath.value = newPath
+  }
+  /** The currently-executing file's info as a FileEntry */
+  get executingFileEntry(): FileEntry {
+    return {
+      name: getStringAfterLastSeparator(this.#executingPath.value ?? ''),
+      path: this.#executingPath.value ?? '',
+      children: [],
+    }
+  }
+
+  // Saving some keystrokes
+  private get = this.editors.value.get.bind(this.editors.value)
+  private set = this.editors.value.set.bind(this.editors.value)
+
+  // TODO: Remove providedEditor, replace with options about if the editor is the executing one
+  // once the app can handle not having a KclManager.
+  openEditor(path: string, providedEditor?: KclManager) {
+    const found = this.get(path)
+    if (found) {
+      console.warn(`Attempted to overwrite editor with path "${path}"`)
+      return found
+    }
+
+    const newEditor =
+      providedEditor ??
+      new KclManager(
+        this.app.singletons.engineCommandManager,
+        this.app.wasmPromise,
+        {
+          rustContext: this.app.singletons.rustContext,
+          sceneInfra: this.app.singletons.sceneInfra,
+        }
+      )
+
+    this.set(path, newEditor)
+    return newEditor
+  }
+
+  closeEditor(path: string) {
+    const found = this.editors.value.delete(path)
+    if (!found) {
+      console.warn(`Attempted to close nonexistent editor with path "${path}"`)
+    }
+  }
+
+  closeAllEditors() {
+    this.editors.value.clear()
+  }
+}
 
 const PERSIST_CODE_KEY = 'persistCode'
 
