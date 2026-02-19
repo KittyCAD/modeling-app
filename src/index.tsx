@@ -17,13 +17,12 @@ import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTransla
 import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
-launchApp(app).catch(reportRejection)
+launchApp(app)
 
 /** The initialization sequence for this app */
-async function launchApp(app: App) {
+function launchApp(app: App) {
   initSingletonBehavior(app)
   if (window.electron) {
-    await app.machineManager.start()
     initElectronBehavior(window.electron)
   }
   mountAppToReact(app)

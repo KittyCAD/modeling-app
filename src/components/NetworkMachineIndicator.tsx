@@ -3,9 +3,14 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { useApp } from '@src/lib/boot'
 import type { components } from '@src/lib/machine-api'
+import { useEffect } from 'react'
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
   const app = useApp()
+  useEffect(() => {
+    // Start the machineManager if it hasn't been started yet.
+    app.machineManager.start()
+  }, [app.machineManager])
   useSignals()
   const machines = app.machineManager.machinesSignal.value
   const machineCount = computed(
