@@ -314,7 +314,10 @@ export class App {
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
-    if (newHighlighting !== this.lastSettings.value?.modeling.highlightEdges) {
+    if (
+      newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
+      this.singletons.engineCommandManager.connection
+    ) {
       this.singletons.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
@@ -338,9 +341,11 @@ export class App {
       this.singletons.sceneInfra.theme = opposingTheme
       this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
       this.singletons.kclManager.setEditorTheme(resolvedTheme)
-      this.singletons.engineCommandManager
-        .setTheme(newTheme)
-        .catch(reportRejection)
+      if (this.singletons.engineCommandManager.connection) {
+        this.singletons.engineCommandManager
+          .setTheme(newTheme)
+          .catch(reportRejection)
+      }
     }
 
     // Execute AST
@@ -359,7 +364,10 @@ export class App {
       )
 
       // Unit changes requires a re-exec of code
-      if (settingsIncludeNewRelevantValues) {
+      if (
+        settingsIncludeNewRelevantValues &&
+        this.singletons.engineCommandManager.connection
+      ) {
         this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {
