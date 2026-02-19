@@ -56,38 +56,6 @@ export const MachineManagerProvider = ({
     return 'Machine API server was discovered, but no machines are available'
   }
 
-  useEffect(() => {
-    if (!window.electron) return
-    const electron = window.electron
-
-    const update = async () => {
-      const _machineApiIp = await electron.getMachineApiIp()
-      if (_machineApiIp === null) return
-
-      setMachineApiIp(_machineApiIp)
-
-      const _machines = await electron.listMachines(_machineApiIp)
-      setMachines(_machines)
-    }
-
-    // Start a background job to update the machines every ten seconds.
-    // If MDNS is already watching, this timeout will wait until it's done to trigger the
-    // finding again.
-    let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
-    const timeoutLoop = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(
-        toSync(async () => {
-          await update()
-          timeoutLoop()
-        }, reportRejection),
-        1000
-      )
-    }
-    timeoutLoop()
-    update().catch(reportRejection)
-  }, [])
-
   // Update engineCommandManager's copy of this data.
   useEffect(() => {
     const machineManagerNext = {

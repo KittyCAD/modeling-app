@@ -473,35 +473,6 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   return handle.user_code
 })
 
-// Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
-ipcMain.handle('find_machine_api', () => {
-  const timeoutAfterMs = 5000
-  return new Promise((resolve, reject) => {
-    // if it takes too long reject this promise
-    setTimeout(() => resolve(null), timeoutAfterMs)
-    const bonjourEt = new Bonjour({}, (error: Error) => {
-      console.log('An issue with Bonjour services was encountered!')
-      console.error(error)
-      resolve(null)
-    })
-    bonjourEt.find(
-      { protocol: 'tcp', type: 'machine-api' },
-      (service: Service) => {
-        console.log('Found machine API!', JSON.stringify(service))
-        if (!service.addresses || service.addresses?.length === 0) {
-          console.log('No addresses found for machine API!')
-          return resolve(null)
-        }
-        const ip = service.addresses[0]
-        const port = service.port
-        // We want to return the ip address of the machine API.
-        console.log(`Machine API found at ${ip}:${port}`)
-        resolve(`${ip}:${port}`)
-      }
-    )
-  })
-})
-
 // Given the route create the new context menu
 // internal menu state will be reset since it creates a new one from
 // the initial state

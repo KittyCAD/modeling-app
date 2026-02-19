@@ -260,9 +260,6 @@ const listMachines = async (
   })
 }
 
-const getMachineApiIp = async (): Promise<string | null> =>
-  ipcRenderer.invoke('find_machine_api')
-
 const getArgvParsed = () => {
   return ipcRenderer.invoke('argv.parser')
 }
@@ -380,7 +377,6 @@ contextBridge.exposeInMainWorld('electron', {
   },
   kittycad,
   listMachines,
-  getMachineApiIp,
   onUpdateChecking,
   onUpdateNotAvailable,
   onUpdateDownloadStart,
