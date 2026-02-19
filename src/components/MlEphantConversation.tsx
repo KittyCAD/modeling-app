@@ -202,7 +202,7 @@ export const MlEphantConversationInput = (
   const onClick = () => {
     if (props.disabled) return
 
-    if (!value && attachments.length === 0) return
+    if (!value) return
     if (!refDiv.current) return
 
     props.onProcess(value, mode, attachments)
