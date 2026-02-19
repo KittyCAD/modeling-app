@@ -131,7 +131,19 @@ export class Setting<T = unknown> {
   }
 }
 
-const MS_IN_MINUTE = 1000 * 60
+const FEATURES_CACHE_TTL = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
 
 /**
  * Helper function to fetch user features and determine if the corresponding setting should be visible
@@ -157,11 +169,30 @@ function hideWithoutFeatureFlag(
         return defaultHide
       }
 
-      // Use the KittyCAD library to fetch user features
-      const client = createKCClient(token)
-      const featuresData = await kcCall(() =>
-        users.user_features_get({ client })
-      )
+      const now = Date.now()
+      const cacheValid =
+        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL
+
+      type FeaturesResult = CachedFeaturesData | Error
+      let featuresData: FeaturesResult
+
+      if (cacheValid) {
+        featuresData = featuresCache!.data
+      } else if (featuresFetchPromise) {
+        featuresData = await featuresFetchPromise
+      } else {
+        const client = createKCClient(token)
+        featuresFetchPromise = kcCall(() =>
+          users.user_features_get({ client })
+        ).then((result) => {
+          featuresFetchPromise = null
+          if (isCachedFeaturesData(result)) {
+            featuresCache = { data: result, fetchedAt: Date.now() }
+          }
+          return result
+        })
+        featuresData = await featuresFetchPromise
+      }
 
       if (featuresData instanceof Error) {
         console.error('Error fetching user features:', featuresData.message)
@@ -184,6 +215,8 @@ function hideWithoutFeatureFlag(
     }
   }
 }
+
+const MS_IN_MINUTE = 60 * 1_000
 
 export function createSettings() {
   const settings = {
