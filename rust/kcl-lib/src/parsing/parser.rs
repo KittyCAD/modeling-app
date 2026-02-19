@@ -926,119 +926,52 @@ pub enum NonCodeOr<T> {
     Code(T),
 }
 
-/// Parse a KCL array of elements.
-fn array(i: &mut TokenSlice) -> ModalResult<Expr> {
-    alt((
-        array_empty.map(Box::new).map(Expr::ArrayExpression),
-        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
-        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
-    ))
-    .parse_next(i)
+struct ArrayFrame {
+    /// Opening `[` token for this array frame.
+    open: Token,
+    /// Interleaved code and non-code entries collected inside this frame.
+    entries: Vec<NonCodeOr<Expr>>,
+    /// Start offset of the most recent parsed value, used for stable error ranges.
+    last_value_start: Option<usize>,
+    /// Whether the parser is currently expecting a new value (vs separator/close).
+    expect_value: bool,
 }
 
-/// Match an empty array.
-fn array_empty(i: &mut TokenSlice) -> ModalResult<Node<ArrayExpression>> {
-    let open = open_bracket(i)?;
-    let start = open.start;
-    ignore_whitespace(i);
-    let end = close_bracket(i)?.end;
-    Ok(Node::new(
-        ArrayExpression {
-            elements: Default::default(),
-            non_code_meta: Default::default(),
-            digest: None,
-        },
-        start,
-        end,
-        open.module_id,
-    ))
-}
-
-/// Match something that separates elements of an array.
-fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
-    alt((
-        // Normally you need a comma.
-        comma_sep,
-        // But, if the array is ending, no need for a comma.
-        peek((
-            opt(whitespace),
-            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
-            opt(whitespace),
-            close_bracket,
-        ))
-        .void(),
-    ))
-    .parse_next(i)
-}
-
-pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayExpression>> {
-    let open = open_bracket(i)?;
-    let start = open.start;
-    ignore_whitespace(i);
-    let elements: Vec<_> = repeat(
-        0..,
-        alt((
-            terminated(expression.map(NonCodeOr::Code), array_separator),
-            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
-        )),
-    )
-    .context(expected("array contents, a list of elements (like [1, 2, 3])"))
-    .parse_next(i)?;
-    ignore_trailing_comma(i);
-    ignore_whitespace(i);
-
-    let maybe_end = close_bracket(i).map_err(|e| {
-        if let Ok(mut err) = e.clone().into_inner() {
-            let start_range = open.as_source_range();
-            let end_range = i.as_source_range();
-            err.cause = Some(CompilationError::fatal(
-                SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
-                "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            ));
-            ErrMode::Cut(err)
-        } else {
-            // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
-            e
-        }
-    });
-
-    if maybe_end.is_err() {
-        // if there is a closing bracket at some point, but it wasn't the next token, it's likely that they forgot a comma between some
-        // of the elements
-        let maybe_closing_bracket: ModalResult<((), Token)> = peek(repeat_till(
-            0..,
-            none_of(|token: Token| {
-                // bail out early if we encounter something that is for sure not allowed in an
-                // array, otherwise we could seek to find a closing bracket until the end of the
-                // file
-                RESERVED_WORDS
-                    .keys()
-                    .chain([",,", "{", "}", "["].iter())
-                    .any(|word| *word == token.value)
-            })
-            .void(),
-            one_of(|term: Token| term.value == "]"),
-        ))
-        .parse_next(i);
-        let has_closing_bracket = maybe_closing_bracket.is_ok();
-        if has_closing_bracket {
-            let start_range = i.as_source_range();
-            // safe to unwrap here because we checked it was Ok above
-            let end_range = maybe_closing_bracket.unwrap().1.as_source_range();
-            let e = ContextError {
-                context: vec![],
-                cause: Some(CompilationError::fatal(
-                    SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
-                    "Unexpected character encountered. You might be missing a comma in between elements.",
-                )),
-            };
-            return Err(ErrMode::Cut(e));
+impl ArrayFrame {
+    fn new(open: Token) -> Self {
+        Self {
+            open,
+            entries: Vec::new(),
+            last_value_start: None,
+            expect_value: true,
         }
     }
-    let end = maybe_end?.end;
+}
 
-    // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
-    let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
+fn collect_array_non_code(i: &mut TokenSlice, entries: &mut Vec<NonCodeOr<Expr>>) {
+    // Keep comments/newlines in-order in the same entry stream as code.
+    ignore_whitespace(i);
+    loop {
+        let checkpoint = i.checkpoint();
+        match non_code_node.parse_next(i) {
+            Ok(nc) => {
+                entries.push(NonCodeOr::NonCode(nc));
+                ignore_whitespace(i);
+            }
+            Err(_) => {
+                i.reset(&checkpoint);
+                break;
+            }
+        }
+    }
+}
+
+fn build_array_expression_from_entries(
+    open: Token,
+    close: Token,
+    entries: Vec<NonCodeOr<Expr>>,
+) -> Node<ArrayExpression> {
+    let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = entries.into_iter().enumerate().fold(
         (Vec::new(), BTreeMap::new()),
         |(mut elements, mut non_code_nodes), (i, e)| {
             match e {
@@ -1057,40 +990,213 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         start_nodes: Vec::new(),
         digest: None,
     };
-    Ok(Node::new(
+    Node::new(
         ArrayExpression {
             elements,
             non_code_meta,
             digest: None,
         },
-        start,
-        end,
+        open.start,
+        close.end,
         open.module_id,
-    ))
+    )
 }
 
-fn array_end_start(i: &mut TokenSlice) -> ModalResult<Node<ArrayRangeExpression>> {
-    let open = open_bracket(i)?;
-    let start = open.start;
-    ignore_whitespace(i);
-    let start_element = expression.parse_next(i)?;
-    ignore_whitespace(i);
-    let end_inclusive = alt((end_inclusive_range.map(|_| true), end_exclusive_range.map(|_| false))).parse_next(i)?;
-    ignore_whitespace(i);
-    let end_element = expression.parse_next(i)?;
-    ignore_whitespace(i);
-    let end = close_bracket(i)?.end;
-    Ok(Node::new(
-        ArrayRangeExpression {
-            start_element,
-            end_element,
-            end_inclusive,
-            digest: None,
-        },
-        start,
-        end,
-        open.module_id,
-    ))
+fn take_single_array_code_expr(entries: &mut Vec<NonCodeOr<Expr>>) -> Option<Expr> {
+    let mut code_expr = None;
+    for entry in entries.drain(..) {
+        if let NonCodeOr::Code(expr) = entry {
+            if code_expr.is_some() {
+                return None;
+            }
+            code_expr = Some(expr);
+        }
+    }
+    code_expr
+}
+
+/// Returns Some(true) for `..`, Some(false) for `..<`, and None for neither.
+fn parse_optional_array_range_operator(i: &mut TokenSlice) -> Option<bool> {
+    let checkpoint = i.checkpoint();
+    if end_inclusive_range.parse_next(i).is_ok() {
+        return Some(true);
+    }
+    i.reset(&checkpoint);
+    if end_exclusive_range.parse_next(i).is_ok() {
+        return Some(false);
+    }
+    i.reset(&checkpoint);
+    None
+}
+
+fn array_missing_closing_bracket_error(open: &Token, end: usize) -> ErrMode<ContextError> {
+    ErrMode::Cut(
+        CompilationError::fatal(
+            SourceRange::from([open.start, end, open.module_id.as_usize()]),
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+        )
+        .into(),
+    )
+}
+
+/// Parse arrays iteratively with an explicit stack.
+///
+/// This parser handles all array inputs (empty arrays, element lists, and ranges)
+/// so nested arrays never rely on recursive descent.
+pub(crate) fn array(i: &mut TokenSlice) -> ModalResult<Expr> {
+    // Phase 1: initialize the stack with the first opening bracket.
+    let open = open_bracket.parse_next(i)?;
+    // Each frame corresponds to one currently-open `[` ... `]` section.
+    let mut stack = vec![ArrayFrame::new(open)];
+
+    // Invariant: stack is never empty at the beginning of the loop.
+    loop {
+        // Phase 2: read one parser state transition for the top frame.
+        {
+            let frame = stack.last_mut().unwrap();
+            // Attach leading trivia to the current frame before parsing the next structural token.
+            collect_array_non_code(i, &mut frame.entries);
+        }
+
+        if stack.last().unwrap().expect_value {
+            // Value position: `]` closes empty arrays / arrays after trailing commas.
+            if let Ok(close) = close_bracket.parse_next(i) {
+                let frame = stack.pop().unwrap();
+                let expr = Expr::ArrayExpression(Box::new(build_array_expression_from_entries(
+                    frame.open,
+                    close,
+                    frame.entries,
+                )));
+                if let Some(parent) = stack.last_mut() {
+                    parent.last_value_start = Some(expr.start());
+                    parent.entries.push(NonCodeOr::Code(expr));
+                    parent.expect_value = false;
+                    continue;
+                }
+                return Ok(expr);
+            }
+
+            let value_start = i.as_source_range().start();
+
+            // `}` can never begin an array element; keep the array-specific error here.
+            if i.first()
+                .is_some_and(|token| token.token_type == TokenType::Brace && token.value == "}")
+            {
+                let frame = stack.last().unwrap();
+                return Err(array_missing_closing_bracket_error(&frame.open, value_start));
+            }
+
+            // Nested child arrays are parsed by pushing another frame, never by recursion.
+            if i.first()
+                .is_some_and(|token| token.token_type == TokenType::Brace && token.value == "[")
+            {
+                let open = open_bracket.parse_next(i)?;
+                stack.push(ArrayFrame::new(open));
+                continue;
+            }
+
+            // Non-array values still use the normal expression parser.
+            let value = expression.parse_next(i)?;
+            let frame = stack.last_mut().unwrap();
+            frame.last_value_start = Some(value_start);
+            frame.entries.push(NonCodeOr::Code(value));
+            frame.expect_value = false;
+            continue;
+        }
+
+        // Separator/close position: handle ranges, commas, or `]`.
+        if let Some(end_inclusive) = parse_optional_array_range_operator(i) {
+            let frame = stack.last_mut().unwrap();
+            // `[start .. end]` / `[start ..< end]` must have exactly one start expression.
+            let Some(start_element) = take_single_array_code_expr(&mut frame.entries) else {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(
+                        SourceRange::new(frame.open.start, frame.open.end, frame.open.module_id),
+                        "Array ranges must have exactly one start expression before `..` or `..<`",
+                    )
+                    .into(),
+                ));
+            };
+            ignore_non_code(i);
+            let end_element = expression.parse_next(i)?;
+            ignore_non_code(i);
+            let close = close_bracket.parse_next(i)?;
+            let frame = stack.pop().unwrap();
+            let expr = Expr::ArrayRangeExpression(Box::new(Node::new(
+                ArrayRangeExpression {
+                    start_element,
+                    end_element,
+                    end_inclusive,
+                    digest: None,
+                },
+                frame.open.start,
+                close.end,
+                frame.open.module_id,
+            )));
+            if let Some(parent) = stack.last_mut() {
+                parent.last_value_start = Some(expr.start());
+                parent.entries.push(NonCodeOr::Code(expr));
+                parent.expect_value = false;
+                continue;
+            }
+            return Ok(expr);
+        }
+
+        // Comma advances to the next value slot in the same frame.
+        if comma_sep.parse_next(i).is_ok() {
+            stack.last_mut().unwrap().expect_value = true;
+            continue;
+        }
+
+        // `]` closes this frame and bubbles the finished expression to its parent frame.
+        if let Ok(close) = close_bracket.parse_next(i) {
+            let frame = stack.pop().unwrap();
+            let expr = Expr::ArrayExpression(Box::new(build_array_expression_from_entries(
+                frame.open,
+                close,
+                frame.entries,
+            )));
+            if let Some(parent) = stack.last_mut() {
+                parent.last_value_start = Some(expr.start());
+                parent.entries.push(NonCodeOr::Code(expr));
+                parent.expect_value = false;
+                continue;
+            }
+            return Ok(expr);
+        }
+
+        // Phase 3: surface a targeted syntax error when no valid transition matches.
+        // If a closing `]` exists later, this is likely a missing comma between elements.
+        let maybe_closing_bracket: ModalResult<((), Token)> = peek(repeat_till(
+            0..,
+            none_of(|token: Token| {
+                RESERVED_WORDS
+                    .keys()
+                    .chain([",,", "{", "}", "["].iter())
+                    .any(|word| *word == token.value)
+            })
+            .void(),
+            one_of(|term: Token| term.value == "]"),
+        ))
+        .parse_next(i);
+        if let Ok((_, close_tok)) = maybe_closing_bracket {
+            let frame = stack.last().unwrap();
+            let start = frame.last_value_start.unwrap_or_else(|| i.as_source_range().start());
+            let end_range = close_tok.as_source_range();
+            let err = ContextError {
+                context: vec![],
+                cause: Some(CompilationError::fatal(
+                    SourceRange::from([start, end_range.end(), end_range.module_id().as_usize()]),
+                    "Unexpected character encountered. You might be missing a comma in between elements.",
+                )),
+            };
+            return Err(ErrMode::Cut(err));
+        }
+
+        let frame = stack.last().unwrap();
+        let end = frame.last_value_start.unwrap_or_else(|| i.as_source_range().start());
+        return Err(array_missing_closing_bracket_error(&frame.open, end));
+    }
 }
 
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
@@ -2432,12 +2538,23 @@ fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
 }
 
 fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
-    delimited(
-        terminated(open_paren, opt(whitespace)),
-        expression,
-        preceded(opt(whitespace), close_paren),
-    )
-    .parse_next(i)
+    // Consume all leading `(` iteratively so deeply parenthesized inputs don't recurse.
+    terminated(open_paren, opt(whitespace)).parse_next(i)?;
+    let mut open_paren_count = 1usize;
+
+    while terminated(open_paren, opt(whitespace)).parse_next(i).is_ok() {
+        open_paren_count += 1;
+    }
+
+    // Parse the inner expression once, then pop one `)` for each opening paren.
+    let expr = expression.parse_next(i)?;
+
+    while open_paren_count > 0 {
+        preceded(opt(whitespace), close_paren).parse_next(i)?;
+        open_paren_count -= 1;
+    }
+
+    Ok(expr)
 }
 
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
@@ -2476,8 +2593,8 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         name.map(Box::new).map(Expr::Name),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
-        binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
+        binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
     ))
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
@@ -2876,6 +2993,11 @@ fn tag(i: &mut TokenSlice) -> ModalResult<Node<TagDeclarator>> {
 /// Helper function. Matches any number of whitespace tokens and ignores them.
 fn ignore_whitespace(i: &mut TokenSlice) {
     let _: ModalResult<()> = repeat(0.., whitespace).parse_next(i);
+}
+
+/// Ignore any amount of whitespace and/or non-code tokens (comments/newlines).
+fn ignore_non_code(i: &mut TokenSlice) {
+    let _: ModalResult<()> = repeat(0.., alt((whitespace.void(), non_code_node.void()))).parse_next(i);
 }
 
 // A helper function to ignore a trailing comma.
@@ -4245,10 +4367,7 @@ mySk1 = startSketchOn(XY)
     fn test_bracketed_binary_expression() {
         let input = "(2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-        let actual = match binary_expr_in_parens.parse(tokens.as_slice()) {
-            Ok(x) => x,
-            Err(e) => panic!("{e:?}"),
-        };
+        let actual = binary_expr_in_parens.parse(tokens.as_slice()).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Sub);
     }
 
@@ -4260,11 +4379,54 @@ mySk1 = startSketchOn(XY)
             "sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))",
         ] {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let _actual = match expression.parse(tokens.as_slice()) {
-                Ok(x) => x,
-                Err(e) => panic!("{e:?}"),
-            };
+            let _actual = expression.parse(tokens.as_slice()).unwrap();
         }
+    }
+
+    #[test]
+    fn test_deeply_nested_parenthesized_expression() {
+        let depth = 4096;
+        let input = format!("{}x{}", "(".repeat(depth), ")".repeat(depth));
+        let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+        let _actual = expression.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression() {
+        let depth = 4096;
+        let input = format!("{}x{}", "[".repeat(depth), "]".repeat(depth));
+        let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+        let _actual = expression.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements() {
+        let depth = 2048;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[{input}, 0]");
+        }
+        let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+        let _actual = expression.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements_nested_second() {
+        let depth = 2048;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[0, {input}]");
+        }
+        let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+        let _actual = expression.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_comments() {
+        let depth = 1024;
+        let input = format!("{}x{}", "[/*c*/".repeat(depth), "]".repeat(depth));
+        let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+        let _actual = expression.parse(tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -5414,7 +5576,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1, 2, 3]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = super::array(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -5426,7 +5588,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = super::array(&mut tokens.as_slice()).unwrap();
     }
 
     #[allow(unused)]
@@ -5439,7 +5601,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = super::array(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -5451,7 +5613,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = super::array(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -5459,7 +5621,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1/* comment*/]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = super::array(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]

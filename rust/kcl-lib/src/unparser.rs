@@ -3156,9 +3156,10 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let expr = crate::parsing::parser::array_elem_by_elem
-                .parse(tokens.as_slice())
-                .unwrap();
+            let expr = match crate::parsing::parser::array.parse(tokens.as_slice()).unwrap() {
+                Expr::ArrayExpression(expr) => expr,
+                _ => panic!("expected array expression"),
+            };
             let mut actual = String::new();
             expr.recast(&mut actual, &FormatOptions::new(), 0, ExprContext::Other);
             assert_eq!(
