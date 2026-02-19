@@ -210,4 +210,73 @@ circ = {angle_start = 0, angle_end = 360, radius = 5}
         "found 'angle_start'",
         None
     );
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/10114
+    /// Renaming a function (snake_case to camelCase) must rename the definition AND all call sites.
+    #[tokio::test]
+    async fn z0001_fn_renames_all_call_sites() {
+        let kcl = r#"
+fn ZOO_O() {
+  return 1
+}
+a = ZOO_O()
+b = ZOO_O()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description.contains("ZOO_O") && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for ZOO_O with a suggestion")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        // All occurrences must be renamed to zooO
+        assert!(
+            !applied.contains("ZOO_O"),
+            "Applied suggestion should not contain ZOO_O; got:\n{applied}"
+        );
+        let count = applied.matches("zooO").count();
+        assert_eq!(
+            count, 3,
+            "Expected 3 occurrences of zooO (1 definition + 2 calls); got {count}. Applied:\n{applied}"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// Same as above but with a helper called from inside another function (like ZOO_O called from ZOO).
+    /// Regression for https://github.com/KittyCAD/modeling-app/issues/10114
+    #[tokio::test]
+    async fn z0001_fn_renames_all_call_sites_nested_calls() {
+        let kcl = r#"
+fn ZOO_O() {
+  return 1
+}
+fn ZOO() {
+  a = ZOO_O()
+  b = ZOO_O()
+  return [a, b]
+}
+result = ZOO()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description.contains("ZOO_O") && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for ZOO_O with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert!(
+            !applied.contains("ZOO_O"),
+            "Applied suggestion should not contain ZOO_O; got:\n{applied}"
+        );
+        let count = applied.matches("zooO").count();
+        assert_eq!(
+            count, 3,
+            "Expected 3 occurrences of zooO (1 definition + 2 calls in ZOO); got {count}. Applied:\n{applied}"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }
