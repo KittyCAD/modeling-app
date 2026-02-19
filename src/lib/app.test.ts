@@ -1,4 +1,4 @@
-import { vi, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 
@@ -25,17 +25,6 @@ const mockProject: Project = {
     },
   ],
 }
-
-vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
-vi.mock('@src/lang/wasmUtils', async () => {
-  const realImport = await import('@src/lang/wasmUtils')
-  // We have to mock this because it fetches by default
-  const mockInitialiseWasm = () => import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
-  return {
-    ...realImport,
-    initialiseWasm: mockInitialiseWasm,
-  } satisfies typeof realImport
-})
 
 describe('project system', () => {
   it('can open, close project', () => {
