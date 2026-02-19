@@ -48,6 +48,8 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
+import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -113,7 +115,7 @@ export class App {
     },
   }).start()
   // TODO: refactor this to not require keeping around the last settings to compare to
-  public lastSettings = signal<SaveSettingsPayload>(
+  private lastSettings = signal<SaveSettingsPayload>(
     getAllCurrentSettings(
       getOnlySettingsFromContext(this.settingsActor.getSnapshot().context)
     )
@@ -146,6 +148,7 @@ export class App {
 
   constructor() {
     this.singletons = this.buildSingletons()
+    this.settingsActor.subscribe(this.onSettingsUpdate)
   }
 
   /**
@@ -307,5 +310,94 @@ export class App {
       useLayout,
       setLayout,
     }
+  }
+
+  /**
+   * Until we update these dependents of the settings to take settings
+   * as a dependency input, we must subscribe to updates from the outside.
+   */
+  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settingsActor>) => {
+    const { context } = snapshot
+
+    // Update line wrapping
+    this.singletons.kclManager.setEditorLineWrapping(
+      context.textEditor.textWrapping.current
+    )
+
+    // Update engine highlighting
+    const newHighlighting = context.modeling.highlightEdges.current
+    if (
+      newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
+      this.singletons.engineCommandManager.connection
+    ) {
+      this.singletons.engineCommandManager
+        .setHighlightEdges(newHighlighting)
+        .catch(reportRejection)
+    }
+
+    // Update cursor blinking
+    const newBlinking = context.textEditor.blinkingCursor.current
+    document.documentElement.style.setProperty(
+      `--cursor-color`,
+      newBlinking ? 'auto' : 'transparent'
+    )
+    this.singletons.kclManager.setCursorBlinking(newBlinking)
+
+    // Update theme
+    const newTheme = context.app.theme.current
+    const resolvedTheme = getResolvedTheme(newTheme)
+    const opposingTheme = getOppositeTheme(newTheme)
+    this.singletons.sceneInfra.theme = opposingTheme
+    this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.singletons.kclManager.setEditorTheme(resolvedTheme)
+    if (this.singletons.engineCommandManager.connection) {
+      this.singletons.engineCommandManager
+        .setTheme(newTheme)
+        .catch(reportRejection)
+    }
+
+    // Execute AST
+    try {
+      const relevantSetting = (s: SaveSettingsPayload | undefined) => {
+        const hasScaleGrid =
+          s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+        const hasHighlightEdges =
+          s?.modeling?.highlightEdges !==
+          context.modeling.highlightEdges.current
+        return hasScaleGrid || hasHighlightEdges
+      }
+
+      const settingsIncludeNewRelevantValues = relevantSetting(
+        this.lastSettings.value
+      )
+
+      // Unit changes requires a re-exec of code
+      if (
+        settingsIncludeNewRelevantValues &&
+        this.singletons.engineCommandManager.connection
+      ) {
+        this.singletons.kclManager.executeCode().catch(reportRejection)
+      }
+    } catch (e) {
+      console.error('Error executing AST after settings change', e)
+    }
+
+    this.singletons.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+      context.app.allowOrbitInSketchMode.current
+
+    const newCurrentProjection = context.modeling.cameraProjection.current
+    if (
+      this.singletons.sceneInfra.camControls &&
+      !this.singletons.kclManager.modelingState?.matches('Sketch')
+    ) {
+      this.singletons.sceneInfra.camControls.engineCameraProjection =
+        newCurrentProjection
+    }
+
+    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
+    // of the last settings to know if they've changed.
+    this.lastSettings.value = getAllCurrentSettings(
+      getOnlySettingsFromContext(context)
+    )
   }
 }
