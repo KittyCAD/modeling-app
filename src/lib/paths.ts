@@ -176,7 +176,7 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(targetPath: string): string {
-  return targetPath.split(fsZds.sep).pop() || ''
+  return targetPath.split(window.electron ? fsZds.sep : '/').pop() || ''
 }
 
 /**
