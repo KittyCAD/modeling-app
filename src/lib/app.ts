@@ -53,6 +53,7 @@ import { reportRejection } from '@src/lib/trap'
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
+    app: App
     kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
