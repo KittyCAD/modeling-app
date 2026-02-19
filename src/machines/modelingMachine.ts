@@ -1440,7 +1440,11 @@ export const modelingMachine = setup({
           graphSelectionsV2: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && kclManager.isShiftDown) {
+          if (
+            !setSelections.selection &&
+            !setSelections.selectionV2 &&
+            kclManager.isShiftDown
+          ) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1477,6 +1481,169 @@ export const modelingMachine = setup({
               }
             } else {
               selections = selectionRanges
+            }
+          } else if (setSelections.selectionV2 && kclManager.isShiftDown) {
+            // Handle V2 selections with Shift key (for multiple selection)
+            // Check this BEFORE the V1 selection branch to prioritize V2
+            const newEntityRef = setSelections.selectionV2.entityRef
+            if (!newEntityRef) {
+              // No entityRef, can't add/remove
+              selections = selectionRanges
+            } else {
+              // Check if this V2 selection is already selected
+              const alreadySelected = (
+                selectionRanges.graphSelectionsV2 || []
+              ).some((existingSel) => {
+                const existingRef = existingSel.entityRef
+                if (!existingRef || existingRef.type !== newEntityRef.type) {
+                  return false
+                }
+                // Compare based on type
+                switch (newEntityRef.type) {
+                  case 'solid3d':
+                    return (
+                      existingRef.type === 'solid3d' &&
+                      existingRef.solid3dId === newEntityRef.solid3dId
+                    )
+                  case 'solid2d':
+                    return (
+                      existingRef.type === 'solid2d' &&
+                      existingRef.solid2dId === newEntityRef.solid2dId
+                    )
+                  case 'face':
+                    return (
+                      existingRef.type === 'face' &&
+                      existingRef.faceId === newEntityRef.faceId
+                    )
+                  case 'plane':
+                    return (
+                      existingRef.type === 'plane' &&
+                      existingRef.planeId === newEntityRef.planeId
+                    )
+                  case 'edge':
+                    // For edges, compare faces, disambiguators, and index
+                    // TODO let's come up with a neater way of comparing if the same selection has already been made.
+                    if (existingRef.type !== 'edge') return false
+                    const facesMatch =
+                      JSON.stringify(existingRef.faces.sort()) ===
+                      JSON.stringify(newEntityRef.faces.sort())
+                    const disambiguatorsMatch =
+                      JSON.stringify(
+                        (existingRef.disambiguators || []).sort()
+                      ) ===
+                      JSON.stringify((newEntityRef.disambiguators || []).sort())
+                    const indexMatch = existingRef.index === newEntityRef.index
+                    return facesMatch && disambiguatorsMatch && indexMatch
+                  case 'vertex':
+                    // Similar to edge
+                    if (existingRef.type !== 'vertex') return false
+                    const vFacesMatch =
+                      JSON.stringify(existingRef.faces.sort()) ===
+                      JSON.stringify(newEntityRef.faces.sort())
+                    const vDisambiguatorsMatch =
+                      JSON.stringify(
+                        (existingRef.disambiguators || []).sort()
+                      ) ===
+                      JSON.stringify((newEntityRef.disambiguators || []).sort())
+                    const vIndexMatch = existingRef.index === newEntityRef.index
+                    return vFacesMatch && vDisambiguatorsMatch && vIndexMatch
+                  case 'solid2dEdge':
+                    return (
+                      existingRef.type === 'solid2dEdge' &&
+                      existingRef.edgeId === newEntityRef.edgeId
+                    )
+                  default:
+                    return false
+                }
+              })
+
+              let updatedSelectionsV2: typeof selectionRanges.graphSelectionsV2
+              if (alreadySelected) {
+                // Remove it - filter out the matching selection
+                updatedSelectionsV2 = (
+                  selectionRanges.graphSelectionsV2 || []
+                ).filter((existingSel) => {
+                  const existingRef = existingSel.entityRef
+                  if (!existingRef || existingRef.type !== newEntityRef.type) {
+                    return true
+                  }
+                  switch (newEntityRef.type) {
+                    case 'solid3d':
+                      return (
+                        existingRef.type !== 'solid3d' ||
+                        existingRef.solid3dId !== newEntityRef.solid3dId
+                      )
+                    case 'solid2d':
+                      return (
+                        existingRef.type !== 'solid2d' ||
+                        existingRef.solid2dId !== newEntityRef.solid2dId
+                      )
+                    case 'face':
+                      return (
+                        existingRef.type !== 'face' ||
+                        existingRef.faceId !== newEntityRef.faceId
+                      )
+                    case 'plane':
+                      return (
+                        existingRef.type !== 'plane' ||
+                        existingRef.planeId !== newEntityRef.planeId
+                      )
+                    case 'edge':
+                      if (existingRef.type !== 'edge') return true
+                      const facesMatch =
+                        JSON.stringify(existingRef.faces.sort()) ===
+                        JSON.stringify(newEntityRef.faces.sort())
+                      const disambiguatorsMatch =
+                        JSON.stringify(
+                          (existingRef.disambiguators || []).sort()
+                        ) ===
+                        JSON.stringify(
+                          (newEntityRef.disambiguators || []).sort()
+                        )
+                      const indexMatch =
+                        existingRef.index === newEntityRef.index
+                      return !(facesMatch && disambiguatorsMatch && indexMatch)
+                    case 'vertex':
+                      if (existingRef.type !== 'vertex') return true
+                      const vFacesMatch =
+                        JSON.stringify(existingRef.faces.sort()) ===
+                        JSON.stringify(newEntityRef.faces.sort())
+                      const vDisambiguatorsMatch =
+                        JSON.stringify(
+                          (existingRef.disambiguators || []).sort()
+                        ) ===
+                        JSON.stringify(
+                          (newEntityRef.disambiguators || []).sort()
+                        )
+                      const vIndexMatch =
+                        existingRef.index === newEntityRef.index
+                      return !(
+                        vFacesMatch &&
+                        vDisambiguatorsMatch &&
+                        vIndexMatch
+                      )
+                    case 'solid2dEdge':
+                      return (
+                        existingRef.type !== 'solid2dEdge' ||
+                        existingRef.edgeId !== newEntityRef.edgeId
+                      )
+                    default:
+                      return true
+                  }
+                })
+              } else {
+                // Add it
+                updatedSelectionsV2 = [
+                  ...(selectionRanges.graphSelectionsV2 || []),
+                  setSelections.selectionV2,
+                ]
+              }
+
+              selections = {
+                graphSelections: selectionRanges.graphSelections,
+                otherSelections: selectionRanges.otherSelections,
+                graphSelectionsV2: updatedSelectionsV2 || [],
+              }
             }
           } else if (setSelections.selection && kclManager.isShiftDown) {
             // selecting and deselecting multiple objects
