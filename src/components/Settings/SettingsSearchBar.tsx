@@ -9,7 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useApp } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
@@ -23,7 +23,7 @@ export type SettingsSearchItem = {
 }
 
 export function SettingsSearchBar() {
-  const { settings } = useApp()
+  const { useSettings } = useSingletons()
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
     'Ctrl+.',
@@ -35,25 +35,24 @@ export function SettingsSearchBar() {
   )
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const settingsValues = settings.useSettings()
+  const settings = useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settingsValues).flatMap(
-        ([category, categorySettings]) =>
-          Object.entries(categorySettings).flatMap(([settingName, setting]) => {
-            const s = setting
-            return (['project', 'user'] satisfies SettingsLevel[])
-              .filter(
-                (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
-              )
-              .map((l) => ({
-                category: decamelize(category, { separator: ' ' }),
-                name: settingName,
-                description: s.description ?? '',
-                displayName: decamelize(settingName, { separator: ' ' }),
-                level: l,
-              }))
-          })
+      ...Object.entries(settings).flatMap(([category, categorySettings]) =>
+        Object.entries(categorySettings).flatMap(([settingName, setting]) => {
+          const s = setting
+          return (['project', 'user'] satisfies SettingsLevel[])
+            .filter(
+              (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
+            )
+            .map((l) => ({
+              category: decamelize(category, { separator: ' ' }),
+              name: settingName,
+              description: s.description ?? '',
+              displayName: decamelize(settingName, { separator: ' ' }),
+              level: l,
+            }))
+        })
       ),
       ...Object.entries(interactionMap).flatMap(
         ([category, categoryKeybindings]) =>
@@ -66,7 +65,7 @@ export function SettingsSearchBar() {
           }))
       ),
     ],
-    [settingsValues]
+    [settings]
   )
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 

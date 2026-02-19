@@ -12,7 +12,7 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
@@ -23,7 +23,6 @@ import {
 } from '@src/lib/layout'
 
 export function useViewControlMenuItems() {
-  const { settings } = useApp()
   const {
     engineCommandManager,
     getLayout,
@@ -31,20 +30,22 @@ export function useViewControlMenuItems() {
     rustContext,
     sceneEntitiesManager,
     sceneInfra,
+    settingsActor,
+    useSettings,
   } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
   )
 
-  const settingsValues = settings.useSettings()
+  const settings = useSettings()
   const shouldLockView =
     modelingState.matches('Sketch') &&
-    !settingsValues.app.allowOrbitInSketchMode.current
+    !settings.app.allowOrbitInSketchMode.current
 
   const sketching = modelingState.matches('Sketch')
-  const snapToGrid = settingsValues.modeling.snapToGrid.current
-  const gizmoType = settingsValues.modeling.gizmoType.current
+  const snapToGrid = settings.modeling.snapToGrid.current
+  const gizmoType = settings.modeling.gizmoType.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -80,7 +81,7 @@ export function useViewControlMenuItems() {
           resetCameraPosition({
             sceneInfra,
             engineCommandManager,
-            settingsActor: settings.actor,
+            settingsActor,
           }).catch(reportRejection)
         }}
         disabled={shouldLockView}
@@ -133,7 +134,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          settings.send({
+          settingsActor.send({
             type: 'set.modeling.gizmoType',
             data: {
               level: 'user',
@@ -176,7 +177,7 @@ export function useViewControlMenuItems() {
               icon={snapToGrid ? 'checkmark' : undefined}
               hotkey={SNAP_TO_GRID_HOTKEY}
               onClick={() => {
-                settings.send({
+                settingsActor.send({
                   type: 'set.modeling.snapToGrid',
                   data: {
                     level: 'project',
@@ -205,7 +206,7 @@ export function useViewControlMenuItems() {
       rustContext,
       sceneEntitiesManager,
       sceneInfra,
-      settings,
+      settingsActor,
     ]
   )
   return menuItems

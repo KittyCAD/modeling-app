@@ -4,6 +4,7 @@ import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
+
 import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
@@ -21,7 +22,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import {
@@ -41,11 +42,11 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings } = useApp()
-    const { appActor, kclManager, systemIOActor } = useSingletons()
+    const { appActor, kclManager, settingsActor, useSettings, systemIOActor } =
+      useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
-    const context = settings.useSettings()
+    const context = useSettings()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -70,7 +71,7 @@ export const AllSettingsFields = forwardRef(
         navigate,
         kclManager,
         systemIOActor,
-        settingsActor: settings.actor,
+        settingsActor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
@@ -128,7 +129,7 @@ export const AllSettingsFields = forwardRef(
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
-                          settings.send({
+                          settingsActor.send({
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: searchParamTab,
@@ -206,7 +207,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  settings.send({
+                  settingsActor.send({
                     type: 'Reset settings',
                     level: searchParamTab,
                   })

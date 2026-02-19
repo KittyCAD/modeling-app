@@ -1,5 +1,5 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -11,12 +11,12 @@ export const useOnPageIdle = ({
   startCallback: () => void
   idleCallback: () => void
 }) => {
-  const { settings } = useApp()
-  const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
-  const settingsValues = settings.useSettings()
+  const { engineCommandManager, kclManager, sceneInfra, useSettings } =
+    useSingletons()
+  const settings = useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
-    settingsValues.app.streamIdleMode.current
+    settings.app.streamIdleMode.current
   )
   const { state: modelingMachineState } = useModelingContext()
   const IDLE_TIME_MS = Number(streamIdleMode)

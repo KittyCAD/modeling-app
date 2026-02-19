@@ -67,7 +67,7 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
-  const { settings } = useApp()
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
@@ -77,18 +77,19 @@ export function useNextClick(newStatus: OnboardingStatus) {
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
-    settings.send({
+    settingsActor.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
     void navigate(targetRoute)
-  }, [filePath, newStatus, navigate, settings])
+  }, [filePath, newStatus, navigate, settingsActor])
 }
 
 export function useDismiss() {
-  const { settings } = useApp()
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
+  const send = settingsActor.send
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
@@ -97,11 +98,11 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      settings.send({
+      send({
         type: 'set.app.onboardingStatus',
         data: { level: 'user', value: dismissalType },
       })
-      waitFor(settings.actor, (state) => state.matches('idle'))
+      waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
           void navigate(filePath)
           toast.success(
@@ -113,7 +114,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [settings, filePath, navigate]
+    [send, filePath, navigate, settingsActor]
   )
 
   return settingsCallback
@@ -384,7 +385,7 @@ function TutorialToastCard(props: TutorialToastCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
 ) {
-  const { settings } = useApp()
+  const { settingsActor } = useSingletons()
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -448,7 +449,7 @@ export function TutorialRequestToast(
           }}
           data-negative-button="dismiss"
           name="dismiss"
-          onClick={() => onDismissOnboardingInvite(settings.actor)}
+          onClick={() => onDismissOnboardingInvite(settingsActor)}
         >
           Not right now
         </ActionButton>

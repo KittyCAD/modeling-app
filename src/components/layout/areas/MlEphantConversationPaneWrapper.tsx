@@ -18,9 +18,10 @@ import {
 import { BillingTransition } from '@src/machines/billingMachine'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
-  const { auth, billing, settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
-  const settingsValues = settings.useSettings()
+  const { billing } = useApp()
+  const { kclManager, systemIOActor, useSettings } = useSingletons()
+  const { auth } = useApp()
+  const settings = useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
   const {
@@ -61,7 +62,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           sendBillingUpdate,
           theProject: theProject.current,
           loaderFile,
-          settings: settingsValues,
+          settings,
           user,
         }}
       />
