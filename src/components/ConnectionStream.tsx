@@ -21,10 +21,7 @@ import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -36,7 +33,7 @@ const TIME_TO_CONNECT = 30_000
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
-  const { settings } = useApp()
+  const { settings, project } = useApp()
   const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
@@ -46,7 +43,7 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const projectIORef = project.value?.projectIORef
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -181,9 +178,9 @@ export const ConnectionStream = (props: {
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
-            if (project && project.path) {
+            if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
-                projectDirectoryWithoutEndingSlash: project.path,
+                projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }
           })
@@ -199,7 +196,7 @@ export const ConnectionStream = (props: {
       numberOfConnectionAttempts.current,
       props.authToken,
       sceneInfra.camControls.wasDragging,
-      project?.path,
+      projectIORef?.path,
     ]
   )
 

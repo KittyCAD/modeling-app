@@ -3,13 +3,13 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
-import type { IndexLoaderData } from '@src/lib/types'
+import type { ZDSProject } from '@src/lang/KclManager'
 
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
 
 interface AppHeaderProps extends React.PropsWithChildren {
-  project?: Omit<IndexLoaderData, 'code'>
+  project?: ZDSProject | null
   className?: string
   enableMenu?: boolean
   style?: React.CSSProperties
@@ -41,8 +41,8 @@ export const AppHeader = ({
     >
       <ProjectSidebarMenu
         enableMenu={enableMenu}
-        project={project?.project}
-        file={project?.file}
+        project={project?.projectIORef}
+        file={project?.executingFileEntry}
       >
         {projectMenuChildren}
       </ProjectSidebarMenu>

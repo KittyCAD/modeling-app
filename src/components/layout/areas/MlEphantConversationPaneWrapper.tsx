@@ -7,9 +7,7 @@ import styles from './KclEditorMenu.module.css'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { IndexLoaderData } from '@src/lib/types'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   MlEphantConversationToMarkdown,
@@ -18,7 +16,7 @@ import {
 import { BillingTransition } from '@src/machines/billingMachine'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
-  const { auth, billing, settings } = useApp()
+  const { auth, billing, settings, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
@@ -28,7 +26,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const { file: loaderFile } = useLoaderData<IndexLoaderData>()
+  const loaderFile = project.value?.executingFileEntry
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   const sendBillingUpdate = () => {

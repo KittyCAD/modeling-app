@@ -3,12 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
@@ -40,7 +35,6 @@ import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -74,7 +68,7 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
-  const { auth, billing, settings } = useApp()
+  const { auth, billing, settings, project } = useApp()
   const {
     systemIOActor,
     engineCommandManager,
@@ -90,7 +84,6 @@ export function OpenedProject() {
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -107,8 +100,8 @@ export function OpenedProject() {
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = loaderData.project?.name || null
-  const projectPath = loaderData.project?.path || null
+  const projectName = project.value?.name || null
+  const projectPath = project.value?.path || null
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -140,9 +133,9 @@ export function OpenedProject() {
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      loaderData.file || null
+      project.value?.executingPath ? project.value.executingFileEntry : null
     )
-  }, [onProjectOpen, projectName, projectPath, loaderData.file])
+  }, [onProjectOpen, projectName, projectPath, project.value])
 
   useEffect(() => {
     // Clear conversation
@@ -341,7 +334,7 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={loaderData}
+            project={project.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}

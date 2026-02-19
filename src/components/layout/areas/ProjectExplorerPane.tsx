@@ -1,6 +1,5 @@
 import type { Project } from '@src/lib/project'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import type { IndexLoaderData } from '@src/lib/types'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
@@ -8,7 +7,6 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import {
-  PATHS,
   getEXTNoPeriod,
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
@@ -21,29 +19,27 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useRef, useState, useEffect, use } from 'react'
 import toast from 'react-hot-toast'
-import { useRouteLoaderData } from 'react-router-dom'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands } = useApp()
+  const { commands, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const projectRef = useRef(loaderData.project)
+  const projectRef = useRef(project.value?.projectIORef)
   const [theProject, setTheProject] = useState<Project | null>(null)
-  const { project, file } = loaderData
+  const file = project.value?.executingFileEntry
   const {
     state: modelingMachineState,
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
   useEffect(() => {
-    projectRef.current = loaderData?.project
+    projectRef.current = project.value?.projectIORef
 
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
@@ -65,7 +61,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
     setTheProject(duplicated)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, loaderData])
+  }, [projects, project.value?.projectIORef])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
