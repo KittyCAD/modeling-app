@@ -12,6 +12,7 @@ import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
+import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -24,6 +25,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  useSignals()
   const { auth, commands, settings, project } = useApp()
   const {
     engineCommandManager,
@@ -150,7 +152,7 @@ export const ModelingPageProvider = ({
     if (window.electron && projectIORef?.children && file?.path) {
       const projectPath = projectIORef.path
       const filePath = file.path
-      let children = projectIORef.children
+      let children = structuredClone(projectIORef.children)
       while (children.length > 0) {
         const v = children.pop()
         if (!v) {

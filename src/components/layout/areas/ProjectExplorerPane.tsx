@@ -23,14 +23,16 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
+import { useSignalEffect, useSignals } from '@preact/signals-react/runtime'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
+  useSignals()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
-  const projectRef = useRef(project.value?.projectIORef)
+  const projectRef = project.value?.projectIORef
   const [theProject, setTheProject] = useState<Project | null>(null)
   const file = project.value?.executingFileEntry
   const {
@@ -38,18 +40,16 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
-  useEffect(() => {
-    projectRef.current = project.value?.projectIORef
-
+  useSignalEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!project.value || !file) {
       return
     }
 
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
     const theProject = projects.find((p) => {
-      return p.name === project.name
+      return p.name === project.value?.name
     })
 
     if (!theProject) {
@@ -57,11 +57,10 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     }
 
     // Duplicate the state to not edit the raw data
-    const duplicated = JSON.parse(JSON.stringify(theProject))
+    const duplicated = structuredClone(theProject)
     addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
     setTheProject(duplicated)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, project.value?.projectIORef])
+  })
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -85,11 +84,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
     // Only open the file if it is a kcl file.
     if (
-      projectRef.current?.name &&
+      projectRef?.name &&
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
-      const name = projectRef.current.name.slice()
+      const name = projectRef.name.slice()
 
       const navigateHelper = () => {
         systemIOActor.send({

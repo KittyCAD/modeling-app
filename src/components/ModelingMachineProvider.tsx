@@ -43,6 +43,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -59,6 +60,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  useSignals()
   const { commands, settings, project } = useApp()
   const {
     engineCommandManager,
