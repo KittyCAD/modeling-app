@@ -17,13 +17,13 @@ import {
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useRef, useState, useEffect, use } from 'react'
+import { useState, use, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
-import { useSignalEffect, useSignals } from '@preact/signals-react/runtime'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project } = useApp()
@@ -40,7 +40,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
-  useSignalEffect(() => {
+  useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
     if (!project.value || !file) {
@@ -48,19 +48,19 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     }
 
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const theProject = projects.find((p) => {
+    const foundProject = projects.find((p) => {
       return p.name === project.value?.name
     })
 
-    if (!theProject) {
+    if (!foundProject) {
       return
     }
 
     // Duplicate the state to not edit the raw data
-    const duplicated = structuredClone(theProject)
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
+    const duplicated = structuredClone(foundProject)
+    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-  })
+  }, [projects, project.value])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
