@@ -246,10 +246,6 @@ export class App {
       systemId: 'root',
     })
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    kclManager.sceneEntitiesManager.getSettings = this.settings.get
-
     const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)

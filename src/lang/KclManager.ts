@@ -654,7 +654,8 @@ export class KclManager extends EventTarget {
       systemDeps.engineCommandManager,
       this.sceneInfra,
       this,
-      systemDeps.rustContext
+      systemDeps.rustContext,
+      getSettings
     )
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
