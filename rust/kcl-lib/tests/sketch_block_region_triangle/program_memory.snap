@@ -8,6 +8,16 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
     "type": "TagIdentifier",
     "value": "line1"
   },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
   "r": {
     "type": "Sketch",
     "value": {
@@ -65,12 +75,12 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             0.32339081423467236
           ],
           "tag": {
-            "commentStart": 65,
-            "end": 70,
+            "commentStart": 157,
+            "end": 162,
             "moduleId": 0,
-            "start": 65,
+            "start": 157,
             "type": "TagDeclarator",
-            "value": "line1"
+            "value": "line2"
           },
           "to": [
             1.586666666243411,
@@ -106,12 +116,12 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             4.8082184890674515
           ],
           "tag": {
-            "commentStart": 65,
-            "end": 70,
+            "commentStart": 295,
+            "end": 300,
             "moduleId": 0,
-            "start": 65,
+            "start": 295,
             "type": "TagDeclarator",
-            "value": "line1"
+            "value": "line3"
           },
           "to": [
             -0.2210474503658385,
@@ -172,6 +182,14 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
         "line1": {
           "type": "TagIdentifier",
           "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
         }
       },
       "artifactId": "[uuid]",
@@ -189,7 +207,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 0,
+                "objectId": 4,
                 "kind": {
                   "line": {
                     "start": [
@@ -254,8 +272,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       }
                     },
-                    "start_object_id": 0,
-                    "end_object_id": 0,
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -309,7 +327,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 0,
+                "objectId": 7,
                 "kind": {
                   "line": {
                     "start": [
@@ -374,8 +392,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       }
                     },
-                    "start_object_id": 0,
-                    "end_object_id": 0,
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -429,7 +447,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 0,
+                "objectId": 11,
                 "kind": {
                   "line": {
                     "start": [
@@ -494,8 +512,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       }
                     },
-                    "start_object_id": 0,
-                    "end_object_id": 0,
+                    "start_object_id": 9,
+                    "end_object_id": 10,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
