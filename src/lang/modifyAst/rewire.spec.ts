@@ -99,7 +99,7 @@ hole002 = hole::hole(
     expect(hole002Init.unlabeled.name.name).toBe('extrude001')
   })
 
-  it('resolves transitive deleted-parent chains', () => {
+  it('rewires a deleted reference through intermediate deleted parents', () => {
     const beforeDeleteAst = parseProgram(`sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5)
 extrude001 = extrude(profile001, length = 5)
