@@ -50,11 +50,11 @@ trace.zip
 /public/kcl-samples/step/main.kcl
 /public/kcl-samples/internal
 /rust/kcl-lib/tests/kcl_samples/internal
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
 /src/lang/std/artifactMapCache
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 
 ## generated files
 src/**/*.typegen.ts

@@ -934,6 +934,9 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
     m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
+
+    m.add("PanicException", _py.get_type::<pyo3::panic::PanicException>())?;
+
     Ok(())
 }
 
