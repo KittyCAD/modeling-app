@@ -279,4 +279,45 @@ result = ZOO()
         );
         crate::execution::parse_execute(&applied).await.unwrap();
     }
+
+    /// When renaming a global to camelCase, a function parameter with the same name (shadowing)
+    /// must not be renamed: only the global and references outside the function should change.
+    #[tokio::test]
+    async fn z0001_shadowing_param_not_renamed() {
+        let kcl = r#"
+GLOBAL_VAR = 1
+fn f(GLOBAL_VAR) {
+  return GLOBAL_VAR + 1
+}
+y = GLOBAL_VAR
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description.contains("GLOBAL_VAR") && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for GLOBAL_VAR with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        // Global and top-level reference renamed
+        assert!(
+            applied.contains("globalVar = 1"),
+            "Global declaration should be renamed; got:\n{applied}"
+        );
+        assert!(
+            applied.contains("y = globalVar"),
+            "Top-level reference should be renamed; got:\n{applied}"
+        );
+        // Parameter and references inside f must stay GLOBAL_VAR (shadowing)
+        assert!(
+            applied.contains("fn f(GLOBAL_VAR)"),
+            "Parameter must not be renamed (shadowing); got:\n{applied}"
+        );
+        assert!(
+            applied.contains("return GLOBAL_VAR + 1"),
+            "Reference to param inside f must not be renamed; got:\n{applied}"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }
