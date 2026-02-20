@@ -775,6 +775,20 @@ impl Program {
         }
     }
 
+    /// Like `rename_identifiers` but a local variable name is only excluded for body items that
+    /// appear *after* its declaration. So a use-before-declaration of the same name (referring to
+    /// an outer binding) gets renamed; uses after the local declaration do not.
+    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+        for item in &mut self.body {
+            let refs: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+            item.rename_identifiers(old_name, new_name, &refs);
+            if let BodyItem::VariableDeclaration(vd) = item {
+                excluded_owned.push(vd.declaration.id.name.clone());
+            }
+        }
+    }
+
     /// Replace a variable declaration with the given name with a new one.
     pub fn replace_variable(&mut self, name: &str, declarator: Node<VariableDeclarator>) {
         for item in &mut self.body {
@@ -3921,28 +3935,13 @@ impl FunctionExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
-    /// Parameter names and local variable names of this function are excluded so they are not renamed (they shadow outer bindings).
+    /// Parameter names are excluded for the whole body; local variable names are excluded only for
+    /// references that appear after their declaration (so use-before-local-declaration is still renamed).
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
-        let body_local_names: Vec<String> = self
-            .body
-            .inner
-            .body
-            .iter()
-            .filter_map(|item| {
-                let BodyItem::VariableDeclaration(vd) = item else {
-                    return None;
-                };
-                Some(vd.declaration.id.name.clone())
-            })
-            .collect();
-        let excluded_for_body: Vec<&str> = excluded
-            .iter()
-            .copied()
-            .chain(param_names.iter().copied())
-            .chain(body_local_names.iter().map(String::as_str))
-            .collect();
-        self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
+        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        self.body
+            .rename_identifiers_order_aware(old_name, new_name, &excluded_for_body);
     }
 
     pub fn signature(&self) -> String {

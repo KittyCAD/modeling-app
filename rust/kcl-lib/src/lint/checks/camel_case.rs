@@ -280,31 +280,44 @@ result = ZOO()
         crate::execution::parse_execute(&applied).await.unwrap();
     }
 
-    /// When renaming globals to camelCase, a function parameter with the same name (shadowing)
-    /// must not be renamed. We apply the lint suggestion for all three globals and assert the result.
+    /// When renaming globals to camelCase, (1) a function parameter with the same name (e.g.
+    /// GLOBAL_VAR_FN_PARAM) must not be renamed; (2) a local that shadows a global (e.g.
+    /// GLOBAL_AND_LOCAL_VAR) must not be renamed for the declaration or uses after it; (3) a
+    /// global used in a function before a local with the same name is declared (VAR_USED_BEFORE_IS_LOCAL)
+    /// has that first use renamed (it refers to the global); the local declaration and uses after it are not.
+    /// We apply the lint suggestion for all four globals and assert the result.
     #[tokio::test]
     async fn z0001_shadowing_param_not_renamed() {
         let kcl = r#"
-GLOBAL_VAR = 1
-GLOBAL_VAR_2 = 2
-GLOBAL_VAR_3 = 3
-fn f(GLOBAL_VAR) {
-  GLOBAL_VAR_2 = 1
-  return GLOBAL_VAR + GLOBAL_VAR_2 + GLOBAL_VAR_3
+GLOBAL_VAR_FN_PARAM = 1
+GLOBAL_AND_LOCAL_VAR = 2
+GLOBAL_VAR = 3
+VAR_USED_BEFORE_IS_LOCAL = 4
+fn f(GLOBAL_VAR_FN_PARAM) {
+  GLOBAL_AND_LOCAL_VAR = 5 + VAR_USED_BEFORE_IS_LOCAL
+  VAR_USED_BEFORE_IS_LOCAL = 6
+  return GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + GLOBAL_VAR + VAR_USED_BEFORE_IS_LOCAL
 }
-y = GLOBAL_VAR + GLOBAL_VAR_2 + GLOBAL_VAR_3
+y = GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + GLOBAL_VAR + VAR_USED_BEFORE_IS_LOCAL
 "#;
         let expected = r#"
-globalVar = 1
-globalVar2 = 2
-globalVar3 = 3
-fn f(GLOBAL_VAR) {
-  GLOBAL_VAR_2 = 1
-  return GLOBAL_VAR + GLOBAL_VAR_2 + globalVar3
+globalVarFnParam = 1
+globalAndLocalVar = 2
+globalVar = 3
+varUsedBeforeIsLocal = 4
+fn f(GLOBAL_VAR_FN_PARAM) {
+  GLOBAL_AND_LOCAL_VAR = 5 + varUsedBeforeIsLocal
+  VAR_USED_BEFORE_IS_LOCAL = 6
+  return GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + globalVar + VAR_USED_BEFORE_IS_LOCAL
 }
-y = globalVar + globalVar2 + globalVar3
+y = globalVarFnParam + globalAndLocalVar + globalVar + varUsedBeforeIsLocal
 "#;
-        let names = ["GLOBAL_VAR", "GLOBAL_VAR_2", "GLOBAL_VAR_3"];
+        let names = [
+            "GLOBAL_VAR_FN_PARAM",
+            "GLOBAL_AND_LOCAL_VAR",
+            "GLOBAL_VAR",
+            "VAR_USED_BEFORE_IS_LOCAL",
+        ];
         let mut applied = kcl.to_string();
         for name in names {
             let prog = crate::Program::parse_no_errs(&applied).unwrap();
