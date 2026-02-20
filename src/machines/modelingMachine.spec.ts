@@ -27,6 +27,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { MachineManager } from '@src/lib/MachineManager'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
@@ -36,6 +37,7 @@ let rustContextInThisFile: RustContext = null!
 let sceneInfraInThisFile: SceneInfra = null!
 let sceneEntitiesManagerInThisFile: SceneEntities = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
+let machineManagerInThisFile: MachineManager = null!
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -56,6 +58,7 @@ beforeEach(async () => {
     sceneEntitiesManager,
     rustContext,
     commandBarActor,
+    machineManager,
   } = await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
@@ -64,6 +67,7 @@ beforeEach(async () => {
   sceneInfraInThisFile = sceneInfra
   sceneEntitiesManagerInThisFile = sceneEntitiesManager
   commandBarActorInThisFile = commandBarActor
+  machineManagerInThisFile = machineManager
 })
 
 afterAll(() => {
@@ -162,6 +166,7 @@ describe('modelingMachine.test.ts', () => {
           sceneEntitiesManager: sceneEntitiesManagerInThisFile,
           engineCommandManager: engineCommandManagerInThisFile,
           commandBarActor: commandBarActorInThisFile,
+          machineManager: machineManagerInThisFile,
         })
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
         contextCopied.sceneInfra = sceneInfraInThisFile
@@ -955,6 +960,7 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1089,6 +1095,7 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1233,6 +1240,7 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1364,6 +1372,7 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
+              machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile

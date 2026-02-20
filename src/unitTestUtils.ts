@@ -24,6 +24,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { MachineManager } from '@src/lib/MachineManager'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -63,8 +64,13 @@ export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
+  const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: instancePromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: instancePromise,
+      machineManager,
+    },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
@@ -133,6 +139,7 @@ export async function buildTheWorldAndConnectToEngine() {
     sceneEntitiesManager,
     commandBarActor,
     settingsActor,
+    machineManager,
   }
 }
 
@@ -164,8 +171,13 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
   const engineCommandManager = new ConnectionManager()
+  const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: instancePromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: instancePromise,
+      machineManager,
+    },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
@@ -209,5 +221,6 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     sceneEntitiesManager,
     commandBarActor,
     settingsActor,
+    machineManager,
   }
 }
