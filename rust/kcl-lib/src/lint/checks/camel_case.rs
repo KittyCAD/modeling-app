@@ -317,7 +317,11 @@ y = globalVar + globalVar2 + globalVar3
             };
             applied = discovered.apply_suggestion(&applied).expect("suggestion should apply");
         }
-        assert_eq!(applied.trim(), expected.trim(), "applied suggestion should match expected");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
         crate::execution::parse_execute(&applied).await.unwrap();
     }
 }
