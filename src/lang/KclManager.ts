@@ -1738,7 +1738,8 @@ export class KclManager extends EventTarget {
   }
   get currentFileName() {
     return (
-      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+      this._currentFilePath?.split(window.electron?.path.sep || '/').pop() ||
+      null
     )
   }
 
