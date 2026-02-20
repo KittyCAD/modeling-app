@@ -13,11 +13,9 @@ import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/network/connectionManager'
 import RustContext from '@src/lib/rustContext'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { KclManager } from '@src/lang/KclManager'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -84,27 +82,21 @@ export async function buildTheWorldAndConnectToEngine() {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
+  const kclManager = new KclManager({
+    engineCommandManager,
+    wasmInstancePromise: instancePromise,
     rustContext,
-    sceneInfra,
+    settings: settingsActor,
   })
   engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
+  engineCommandManager.sceneInfra = kclManager.sceneInfra
   engineCommandManager.rustContext = rustContext
 
-  const sceneEntitiesManager = new SceneEntities(
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
-  sceneEntitiesManager.commandBarActor = commandBarActor
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
+  kclManager.sceneEntitiesManager.commandBarActor = commandBarActor
 
   const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
+  kclManager.sceneInfra.camControls.getSettings = getSettings
+  kclManager.sceneEntitiesManager.getSettings = getSettings
 
   await new Promise((resolve, reject) => {
     engineCommandManager
@@ -134,9 +126,9 @@ export async function buildTheWorldAndConnectToEngine() {
     instance: await instancePromise,
     engineCommandManager,
     rustContext,
-    sceneInfra,
+    sceneInfra: kclManager.sceneInfra,
     kclManager,
-    sceneEntitiesManager,
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
     commandBarActor,
     settingsActor,
     machineManager,
@@ -191,34 +183,28 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
+  const kclManager = new KclManager({
+    engineCommandManager,
+    wasmInstancePromise: instancePromise,
     rustContext,
-    sceneInfra,
+    settings: settingsActor,
   })
   engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
+  engineCommandManager.sceneInfra = kclManager.sceneInfra
   engineCommandManager.rustContext = rustContext
-  const sceneEntitiesManager = new SceneEntities(
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
 
   settingsActor.start()
   const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
+  kclManager.sceneInfra.camControls.getSettings = getSettings
+  kclManager.sceneEntitiesManager.getSettings = getSettings
 
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
     engineCommandManager,
     rustContext,
-    sceneInfra,
+    sceneInfra: kclManager.sceneInfra,
     kclManager,
-    sceneEntitiesManager,
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
     commandBarActor,
     settingsActor,
     machineManager,
