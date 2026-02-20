@@ -166,6 +166,7 @@ export class App {
       engineCommandManager,
       settings: this.settingsActor,
       wasmInstancePromise: this.wasmPromise,
+      commandBar: this.commandBarActor,
     })
 
     // These are all late binding because of their circular dependency.
@@ -250,8 +251,6 @@ export class App {
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
-    // TODO: proper dependency management
-    kclManager.sceneEntitiesManager.commandBarActor = this.commandBarActor
     this.commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands

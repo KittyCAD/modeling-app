@@ -127,6 +127,7 @@ import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -151,6 +152,7 @@ interface SystemDeps {
   engineCommandManager: ConnectionManager
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
+  commandBar: CommandBarActorType
 }
 
 export enum KclManagerEvents {
@@ -655,6 +657,7 @@ export class KclManager extends EventTarget {
       this.sceneInfra,
       this,
       systemDeps.rustContext,
+      this.systemDeps.commandBar,
       getSettings
     )
 
