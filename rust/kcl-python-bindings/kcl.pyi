@@ -214,6 +214,50 @@ class ObjImportOptions:
         Set the options to their defaults.
         """
 
+class PhysicalPropertiesRequest:
+    r"""
+    Set of physical properties you'd like to run on the model.
+    """
+    def __new__(cls) -> PhysicalPropertiesRequest:
+        r"""
+        Create a default PhysicalPropertiesRequest with no requests set.
+        """
+    def set_volume(self, output_unit:UnitVolume) -> None:
+        r"""
+        Requests the volume of the model.
+        """
+    def set_center_of_mass(self, output_unit:UnitLength) -> None:
+        r"""
+        Requests the center of mass of the model.
+        """
+    def set_mass(self, output_unit:UnitMass, material_density:builtins.float, material_density_unit:UnitDensity) -> None:
+        r"""
+        Requests the mass of the model.
+        """
+    def set_surface_area(self, output_unit:UnitArea) -> None:
+        r"""
+        Requests the surface area of the model.
+        """
+    def set_density(self, output_unit:UnitDensity, material_mass:builtins.float, material_mass_unit:UnitMass) -> None:
+        r"""
+        Requests the density of the model.
+        """
+
+class PhysicalPropertiesResponse:
+    r"""
+    Resulting data from a `PhysicalPropertiesRequest`.
+    """
+    def get_center_of_mass(self) -> Point3d: ...
+    def get_center_of_mass_unit(self) -> UnitLength: ...
+    def get_volume(self) -> builtins.float: ...
+    def get_volume_unit(self) -> UnitVolume: ...
+    def get_surface_area(self) -> builtins.float: ...
+    def get_surface_area_unit(self) -> UnitArea: ...
+    def get_density(self) -> builtins.float: ...
+    def get_density_unit(self) -> UnitDensity: ...
+    def get_mass(self) -> builtins.float: ...
+    def get_mass_unit(self) -> UnitMass: ...
+
 class PlyExportOptions:
     r"""
     Options for exporting PLY.
@@ -233,6 +277,19 @@ class PlyImportOptions:
         """
 
 class Point3d:
+    @property
+    def x(self) -> builtins.float: ...
+    @property
+    def y(self) -> builtins.float: ...
+    @property
+    def z(self) -> builtins.float: ...
+    @x.setter
+    def x(self, value: builtins.float) -> None: ...
+    @y.setter
+    def y(self, value: builtins.float) -> None: ...
+    @z.setter
+    def z(self, value: builtins.float) -> None: ...
+    def __eq__(self, other:builtins.object) -> builtins.bool: ...
     def __new__(cls, x:builtins.float, y:builtins.float, z:builtins.float) -> Point3d:
         r"""
         Create a new point from its 3 components x, y and z
@@ -673,6 +730,11 @@ async def execute_and_export(path:builtins.str, export_format:FileExportFormat) 
     Execute a kcl file and export it to a specific file format.
     """
 
+async def execute_and_measure(path:builtins.str, request:PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+    r"""
+    Execute a kcl file and measure physical properties of the resulting model.
+    """
+
 async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
@@ -688,6 +750,11 @@ async def execute_code(code:builtins.str) -> None:
 async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
+    """
+
+async def execute_code_and_measure(code:builtins.str, request:PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+    r"""
+    Execute the kcl code and measure physical properties of the resulting model.
     """
 
 async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
@@ -759,3 +826,13 @@ def relevant_file_extensions() -> builtins.list[builtins.str]:
     Get the allowed relevant file extensions (imports + kcl).
     """
 
+
+class PanicException(BaseException):
+    r"""
+    The exception raised when Rust code called from Python panics.
+
+    Like SystemExit, this exception is derived from BaseException so that
+    it will typically propagate all the way through the stack and cause the
+    Python interpreter to exit.
+    """
+    ...

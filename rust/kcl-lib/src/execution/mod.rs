@@ -7,7 +7,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
+    StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
@@ -1399,9 +1400,12 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
-
-        if !self.is_mock() {
+        /// Write the memory of an execution to the cache for reuse in mock
+        /// execution.
+        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+            if ctx.is_mock() {
+                return;
+            }
             let mut stack = exec_state.stack().deep_clone();
             stack.restore_env(env_ref);
             let state = cache::SketchModeState {
@@ -1414,6 +1418,21 @@ impl ExecutorContext {
             };
             cache::write_old_memory(state).await;
         }
+
+        let env_ref = match result {
+            Ok(env_ref) => env_ref,
+            Err((err, env_ref)) => {
+                // Preserve memory on execution failures so follow-up mock
+                // execution can still reuse stable IDs before the error.
+                if let Some(env_ref) = env_ref {
+                    write_old_memory(self, exec_state, env_ref).await;
+                }
+                return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
+            }
+        };
+
+        write_old_memory(self, exec_state, env_ref).await;
+
         let session_data = self.engine.get_session_data().await;
 
         Ok((env_ref, session_data))
@@ -1616,9 +1635,9 @@ impl ExecutorContext {
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options {
-                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: if deterministic_time {
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {e}"),
@@ -1627,8 +1646,8 @@ impl ExecutorContext {
                         })?)
                     } else {
                         None
-                    },
-                },
+                    })
+                    .build(),
             ))
             .await?;
 
@@ -1650,12 +1669,6 @@ impl ArtifactId {
 
     /// A placeholder artifact ID that will be filled in later.
     pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-
-    /// The constraint artifact ID is a special. They don't need to be
-    /// represented in the artifact graph.
-    pub fn constraint() -> Self {
         Self(Uuid::nil())
     }
 }
@@ -2919,5 +2932,34 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_parameter() {
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5, amount = 2)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        // If the parameter isn't used, there's no warning.
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 0);
     }
 }

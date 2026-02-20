@@ -31,6 +31,8 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 
 ## Functions and constants
 
+* [`CCW`](/docs/kcl-std/consts/std-CCW)
+* [`CW`](/docs/kcl-std/consts/std-CW)
 * [`END`](/docs/kcl-std/consts/std-END)
 * [`MERGE`](/docs/kcl-std/consts/std-MERGE)
 * [`NEW`](/docs/kcl-std/consts/std-NEW)
@@ -46,6 +48,8 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`assert`](/docs/kcl-std/functions/std-assert)
 * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
 * [`clone`](/docs/kcl-std/functions/std-clone)
+* [`edgeId`](/docs/kcl-std/functions/std-edgeId)
+* [`faceId`](/docs/kcl-std/functions/std-faceId)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 

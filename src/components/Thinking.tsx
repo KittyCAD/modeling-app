@@ -668,6 +668,9 @@ export const Thinking = (props: {
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
+  const isProgrammaticScrollRef = useRef(false)
+  const userHasInteractedWithPaneRef = useRef(false)
+  const [userHasManuallyScrolled, setUserHasManuallyScrolled] = useState(false)
   const [anyRowCollapse, setAnyRowCollapse] = useState<IRowCollapse[]>([])
   const collapseAndClearAllRows = useCallback(() => {
     anyRowCollapse.forEach((row) => {
@@ -681,23 +684,58 @@ export const Thinking = (props: {
       return 'reasoning' in x || 'files' in x
     }) ?? []
 
+  // Resume reasoning autoscroll when a new prompt is sent
   useEffect(() => {
-    if (props.onlyShowImmediateThought === true) {
+    if (reasoningThoughts.length === 0) {
+      userHasInteractedWithPaneRef.current = false
+      setUserHasManuallyScrolled(false)
+    }
+  }, [reasoningThoughts.length])
+
+  const onReasoningPaneInteraction = useCallback(() => {
+    isProgrammaticScrollRef.current = false
+    userHasInteractedWithPaneRef.current = true
+  }, [])
+
+  const onReasoningScroll = useCallback(() => {
+    const el = refViewFull.current
+    if (!el) return
+
+    if (isProgrammaticScrollRef.current) {
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 4
+      if (atBottom) {
+        isProgrammaticScrollRef.current = false
+      }
+      return
+    }
+    // Show the scrollbar after user has manually scrolled
+    if (userHasInteractedWithPaneRef.current) {
+      setUserHasManuallyScrolled(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (props.onlyShowImmediateThought === true || userHasManuallyScrolled) {
       return
     }
 
-    // Always autoscroll to the bottom of the reasoning view
+    // Autoscroll to the bottom until the user manually scrolls
     requestAnimationFrame(() => {
       if (refViewFull.current === null) {
         return
       }
 
+      isProgrammaticScrollRef.current = true
       refViewFull.current.scrollTo({
         top: refViewFull.current.scrollHeight,
         behavior: 'smooth',
       })
     })
-  }, [reasoningThoughts.length, props.onlyShowImmediateThought])
+  }, [
+    reasoningThoughts.length,
+    props.onlyShowImmediateThought,
+    userHasManuallyScrolled,
+  ])
 
   if (props.thoughts === undefined) {
     return (
@@ -739,8 +777,14 @@ export const Thinking = (props: {
     <div
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
+      role="region"
       style={{ maxHeight: '20lh' }}
-      className="select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      className={`relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`}
+      onScroll={onReasoningScroll}
+      onWheel={onReasoningPaneInteraction}
+      onTouchStart={onReasoningPaneInteraction}
+      onPointerDown={onReasoningPaneInteraction}
+      onKeyDown={onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {anyRowCollapse.length > 0 && (

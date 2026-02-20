@@ -227,7 +227,6 @@ description: Artifact commands module_return_using_var.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

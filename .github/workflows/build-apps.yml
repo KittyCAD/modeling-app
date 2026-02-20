@@ -44,7 +44,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v12
+        uses: dawidd6/action-download-artifact@v14
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -161,7 +161,7 @@ jobs:
             platform: macos
           - os: namespace-profile-windows-4-cores
             platform: windows
-          - os: namespace-profile-ubuntu-2-cores
+          - os: ubuntu-22.04
             platform: linux
     runs-on: ${{ matrix.os }}
     name: build-apps (${{ matrix.platform }})

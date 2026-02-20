@@ -76,7 +76,6 @@
     "vscode-uri": "^3.1.0",
     "web-vitals": "^3.5.2",
     "why-is-node-running": "^3.2.2",
-    "win-ca": "^3.5.1",
     "xstate": "^5.19.2",
     "yargs": "^17.7.2"
   },

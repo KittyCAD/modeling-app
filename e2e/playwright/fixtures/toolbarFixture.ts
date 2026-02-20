@@ -103,7 +103,7 @@ export class ToolbarFixture {
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
-    this.featureTreePane = page.locator('#feature-tree-pane')
+    this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one

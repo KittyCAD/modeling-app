@@ -5,20 +5,17 @@ use kittycad_modeling_cmds::{
     self as kcmc, ok_response::OkModelingCmdResponse, units::UnitLength, websocket::OkWebSocketResponseData,
 };
 
-use super::{
-    args::TyF64,
-    sketch::{FaceTag, PlaneData},
-};
+use super::{args::TyF64, sketch::PlaneData};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneInfo, PlaneKind, types::RuntimeType},
-    std::Args,
+    std::{Args, faces::FaceSpecifier},
 };
 
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    let face = args.get_kw_arg("face", &RuntimeType::tagged_face(), exec_state)?;
+    let face = args.get_kw_arg("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
 
     inner_plane_of(solid, face, exec_state, &args)
         .await
@@ -28,7 +25,7 @@ pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 
 pub(crate) async fn inner_plane_of(
     solid: crate::execution::Solid,
-    face: FaceTag,
+    face: FaceSpecifier,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
@@ -92,7 +89,7 @@ pub(crate) async fn inner_plane_of(
         .await?;
 
     // Query the engine to learn what plane, if any, this face is on.
-    let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
+    let face_id = face.face_id(&solid, exec_state, args, true).await?;
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar::builder().object_id(face_id).build());
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
@@ -242,12 +239,7 @@ async fn make_offset_plane_in_engine(
 
     // Create new default planes.
     let default_size = 100.0;
-    let color = Color {
-        r: 0.6,
-        g: 0.6,
-        b: 0.6,
-        a: 0.3,
-    };
+    let color = Color::from_rgba(0.6, 0.6, 0.6, 0.3);
 
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane.id);
     exec_state

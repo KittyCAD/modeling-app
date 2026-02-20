@@ -1,9 +1,10 @@
 [package]
 name = "kcl-error"
-version = "0.1.123"
+version = "0.1.128"
 edition = "2024"
 description = "KCL error definitions"
 license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
 
 [dependencies]
 miette = { workspace = true }

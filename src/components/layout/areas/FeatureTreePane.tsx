@@ -1,31 +1,38 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { ComponentProps } from 'react'
-import { use, useCallback, useMemo, useRef, memo } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
+import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import {
+  findOperationArtifact,
+  findOperationPlaneArtifact,
+  isOffsetPlane,
+} from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
+  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  onHide,
   groupOperationTypeStreaks,
   stdLibMap,
+  onUnhide,
 } from '@src/lib/operations'
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
@@ -42,22 +49,21 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
-import { toUtf16 } from '@src/lang/errors'
+import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<
   Singletons,
-  | 'kclManager'
-  | 'sceneInfra'
-  | 'sceneEntitiesManager'
-  | 'rustContext'
-  | 'commandBarActor'
->
+  'kclManager' | 'sceneInfra' | 'sceneEntitiesManager' | 'rustContext'
+> & { commandBarActor: CommandBarActorType }
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -71,7 +77,13 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
         Menu={FeatureTreeMenu}
-        onClose={props.onClose}
+        onClose={() => {
+          // Gotcha: because our layout system is a goofy first draft,
+          // it doesn't know how to handle Splits as children of Panes very well,
+          // so the onClose here needs to explicitly state the Split to close,
+          // since this layout will be used in a Simple layout now.
+          props.onClose?.('feature-tree')
+        }}
       />
       <FeatureTreePaneContents />
     </LayoutPanel>
@@ -93,8 +105,8 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 }
 
 export const FeatureTreePaneContents = memo(() => {
+  const { commands } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     getLayout,
     kclManager,
@@ -103,19 +115,23 @@ export const FeatureTreePaneContents = memo(() => {
     sceneInfra,
     setLayout,
   } = useSingletons()
-  const { send: modelingSend, state: modelingState } = useModelingContext()
+  const {
+    send: modelingSend,
+    state: modelingState,
+    actor: modelingActor,
+  } = useModelingContext()
   const systemDeps: SystemDeps = {
     kclManager,
     sceneInfra,
     sceneEntitiesManager,
     rustContext,
-    commandBarActor,
+    commandBarActor: commands.actor,
   }
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange,
+        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
         kclManager,
         modelingSend,
       })
@@ -139,7 +155,7 @@ export const FeatureTreePaneContents = memo(() => {
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
-      ? kclManager.execState.operations
+      ? kclManager.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
@@ -213,6 +229,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
+                  modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
@@ -223,6 +240,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
+                  modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
@@ -241,32 +259,6 @@ interface VisibilityToggleProps {
 }
 
 /**
- * A button that toggles the visibility of an entity
- * tied to an artifact in the feature tree.
- * For now just used for default planes.
- */
-const VisibilityToggle = (props: VisibilityToggleProps) => {
-  const visible = props.visible
-  const handleToggleVisible = useCallback(() => {
-    props.onVisibilityChange()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.onVisibilityChange])
-
-  return (
-    <button
-      onClick={handleToggleVisible}
-      className="p-0 m-0 border-transparent dark:border-transparent"
-      data-testid="feature-tree-visibility-toggle"
-    >
-      <CustomIcon
-        name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className="w-6 h-6"
-      />
-    </button>
-  )
-}
-
-/**
  * A grouping of operation items into a disclosure (or dropdown)
  */
 function OperationItemGroup({
@@ -274,6 +266,7 @@ function OperationItemGroup({
   code,
   sketchNoFace,
   systemDeps,
+  modelingActor,
   engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
@@ -302,6 +295,7 @@ function OperationItemGroup({
                 code={code}
                 sketchNoFace={sketchNoFace}
                 systemDeps={systemDeps}
+                modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
               />
@@ -337,37 +331,24 @@ const OperationItemWrapper = memo(
     errors,
     customSuffix,
     className,
-    selectable = true,
-    greyedOut = false,
+    Tooltip,
     ...props
-  }: React.HTMLAttributes<HTMLButtonElement> & {
+  }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
     visibilityToggle?: VisibilityToggleProps
     customSuffix?: React.JSX.Element
     menuItems?: ComponentProps<typeof ContextMenu>['items']
     errors?: Diagnostic[]
-    selectable?: boolean
-    greyedOut?: boolean
     onContextMenu?: (e: MouseEvent) => void
+    Tooltip?: ReactNode
+    isSelected?: boolean
   } & OpValueProps) => {
-    const menuRef = useRef<HTMLDivElement>(null)
-
     return (
-      <div
-        ref={menuRef}
-        className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-        data-testid="feature-tree-operation-item"
-      >
-        <button
-          {...props}
-          className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
-        >
-          <CustomIcon
-            name={icon}
-            className="w-6 h-6 block self-start"
-            aria-hidden
-          />
-          <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+      <RowItemWithIconMenuAndToggle
+        {...props}
+        icon={icon}
+        LabelSecondary={
+          <>
             {variableName && valueDetail ? (
               <>
                 <span className="text-sm">{variableName}</span>
@@ -378,41 +359,23 @@ const OperationItemWrapper = memo(
                   {getOperationCalculatedDisplay(valueDetail.calculated)}
                 </code>
               </>
-            ) : (
-              <span className="text-sm">{variableName ?? name}</span>
-            )}
-            {customSuffix && customSuffix}
-          </div>
-          {errors && errors.length > 0 && (
+            ) : null}
+            {customSuffix ?? null}
+          </>
+        }
+        Warning={
+          errors && errors.length > 0 ? (
             <em className="text-destroy-80 text-xs">has error</em>
-          )}
-          {valueDetail || variableName ? (
-            <Tooltip
-              delay={500}
-              position="bottom-left"
-              wrapperClassName="left-0 right-0"
-              contentClassName="text-sm max-w-full"
-            >
-              <VariableTooltipContents
-                variableName={variableName}
-                valueDetail={valueDetail}
-                name={name}
-                type={type}
-              />
-            </Tooltip>
-          ) : null}
-        </button>
-        {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
-        {menuItems && (
-          <ContextMenu
-            menuTargetElement={menuRef}
-            items={menuItems}
-            callback={(e) => {
-              props.onContextMenu?.(e)
-            }}
-          />
-        )}
-      </div>
+          ) : null
+        }
+        Tooltip={Tooltip}
+        Toggle={
+          visibilityToggle ? <VisibilityToggle {...visibilityToggle} /> : null
+        }
+        menuItems={menuItems}
+      >
+        {variableName ?? name}
+      </RowItemWithIconMenuAndToggle>
     )
   }
 )
@@ -449,6 +412,7 @@ interface OperationProps {
   sketchNoFace: boolean
   systemDeps: SystemDeps
   engineCommandManager: Singletons['engineCommandManager']
+  modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
 }
 /**
@@ -461,6 +425,7 @@ const OperationItem = ({
   sketchNoFace,
   onSelect,
   systemDeps,
+  modelingActor,
   engineCommandManager,
 }: OperationProps) => {
   const { getLayout, setLayout } = useSingletons()
@@ -469,6 +434,16 @@ const OperationItem = ({
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
+  const sourceRange =
+    'sourceRange' in item &&
+    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
+  const isSelected = useMemo(() => {
+    const selected =
+      sourceRange &&
+      kclManager.editorState.selection.main.from >= sourceRange[0] &&
+      kclManager.editorState.selection.main.to <= sourceRange[1]
+    return selected
+  }, [kclManager.editorState.selection, sourceRange])
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])
@@ -701,7 +676,7 @@ const OperationItem = ({
               onClick={() => {
                 const exportDxf = async () => {
                   if (item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(item, {
+                  await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -709,14 +684,29 @@ const OperationItem = ({
                     base64Decode,
                     browserSaveFile,
                   })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (item.type !== 'StdLibCall') return
+                  await exportSketchToDxf(item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
                 }
                 void exportDxf()
               }}
@@ -827,14 +817,36 @@ const OperationItem = ({
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
+  const operationArtifact =
+    item.type === 'StdLibCall' && kclManager.artifactGraph
+      ? findOperationArtifact(item, kclManager.artifactGraph)
+      : undefined
+  const hideOperation = operationArtifact
+    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
+    : undefined
+
   return (
     <OperationItemWrapper
-      selectable={enabled}
       icon={getOperationIcon(item)}
       name={name}
       type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      Tooltip={
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          <VariableTooltipContents
+            variableName={variableName}
+            valueDetail={valueDetail}
+            name={name}
+            type={item.type}
+          />
+        </Tooltip>
+      }
       menuItems={menuItems}
       onClick={() => {
         void selectOperation()
@@ -843,8 +855,45 @@ const OperationItem = ({
         void selectOperation()
       }}
       onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      isSelected={isSelected}
       errors={errors}
-      greyedOut={!enabled}
+      disabled={!enabled}
+      visibilityToggle={
+        item.type === 'StdLibCall' && item.name === 'helix'
+          ? {
+              visible: hideOperation === undefined,
+              onVisibilityChange: () => {
+                selectOperation()
+                  .then(() => {
+                    if (hideOperation === undefined) {
+                      onHide({
+                        ast: kclManager.ast,
+                        artifactGraph: kclManager.artifactGraph,
+                        modelingActor,
+                      })
+                    } else if (operationArtifact !== undefined) {
+                      onUnhide({
+                        hideOperation,
+                        targetArtifact: operationArtifact,
+                        systemDeps,
+                      })
+                        .then((result) => {
+                          if (err(result)) {
+                            toast.error(
+                              result.message || 'Error while unhiding'
+                            )
+                          }
+                        })
+                        .catch((e) => {
+                          toast.error(e.message || 'Error while unhiding')
+                        })
+                    }
+                  })
+                  .catch(reportRejection)
+              },
+            }
+          : undefined
+      }
     />
   )
 }
@@ -938,7 +987,6 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={true}
           onClick={() => onClickPlane(plane.id)}
           menuItems={[
             <ContextMenuItem

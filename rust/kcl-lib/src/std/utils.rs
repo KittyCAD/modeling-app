@@ -1,4 +1,4 @@
-use std::f64::consts::PI;
+use std::f64::consts::{PI, TAU};
 
 use kittycad_modeling_cmds::{shared::Angle, units::UnitLength};
 
@@ -90,17 +90,17 @@ pub(crate) fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
         return Angle::from_radians(provisional);
     }
     if provisional > PI {
-        return Angle::from_radians(provisional - 2.0 * PI);
+        return Angle::from_radians(provisional - TAU);
     }
     if provisional < -PI {
-        return Angle::from_radians(provisional + 2.0 * PI);
+        return Angle::from_radians(provisional + TAU);
     }
     Angle::default()
 }
 
 pub(crate) fn normalize_rad(angle: f64) -> f64 {
-    let draft = angle % (2.0 * PI);
-    if draft < 0.0 { draft + 2.0 * PI } else { draft }
+    let draft = angle % (TAU);
+    if draft < 0.0 { draft + TAU } else { draft }
 }
 
 fn calculate_intersection_of_two_lines(line1: &[Coords2d; 2], line2_angle: f64, line2_point: Coords2d) -> Coords2d {
@@ -455,7 +455,7 @@ fn get_angle(point1: Coords2d, point2: Coords2d) -> f64 {
     let delta_y = point2[1] - point1[1];
     let angle = libm::atan2(delta_y, delta_x);
 
-    let result = if angle < 0.0 { angle + 2.0 * PI } else { angle };
+    let result = if angle < 0.0 { angle + TAU } else { angle };
     result * (180.0 / PI)
 }
 
@@ -467,9 +467,9 @@ fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
     if provisional > -PI && provisional <= PI {
         provisional
     } else if provisional > PI {
-        provisional - 2.0 * PI
+        provisional - TAU
     } else if provisional < -PI {
-        provisional + 2.0 * PI
+        provisional + TAU
     } else {
         provisional
     }
@@ -763,7 +763,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, -1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference * 3.0 / 4.0; // 3 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -776,7 +776,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, 1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -789,7 +789,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, -1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference * 3.0 / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -802,7 +802,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, 1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }

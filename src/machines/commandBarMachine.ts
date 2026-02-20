@@ -1,4 +1,3 @@
-import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { KclManager } from '@src/lang/KclManager'
 import type {
   Command,
@@ -7,6 +6,7 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
@@ -18,6 +18,7 @@ export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
+  machineManager: MachineManager
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
@@ -93,7 +94,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set machine manager'; data: MachineManager }
   | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
@@ -113,12 +113,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set machine manager': assign({
-      machineManager: ({ event, context }) => {
-        if (event.type !== 'Set machine manager') return context.machineManager
-        return event.data
       },
     }),
     'Set kclManager': assign({
@@ -533,13 +527,6 @@ export const commandBarMachine = setup({
     },
     argumentsToSubmit: {},
     reviewValidationError: undefined,
-    machineManager: {
-      machines: [],
-      machineApiIp: null,
-      currentMachine: null,
-      setCurrentMachine: () => {},
-      noMachinesReason: () => undefined,
-    },
   }),
   id: 'Command Bar',
   initial: 'Closed',
@@ -687,11 +674,6 @@ export const commandBarMachine = setup({
     },
   },
   on: {
-    'Set machine manager': {
-      reenter: false,
-      actions: 'Set machine manager',
-    },
-
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

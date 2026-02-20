@@ -27,7 +27,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
@@ -45,13 +45,10 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    settingsActor,
-    systemIOActor,
-  } = useSingletons()
+  const { settings } = useApp()
+  const { engineCommandManager, kclManager, rustContext, systemIOActor } =
+    useSingletons()
+  const settingsActor = settings.actor
   const networkStatus = useNetworkStatus(engineCommandManager)
   const router = useMemo(
     () =>
@@ -194,9 +191,9 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { engineCommandManager, kclManager, rustContext, useToken } =
-    useSingletons()
-  const token = useToken()
+  const { auth } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const token = auth.useToken()
   const coreDumpManager = useMemo(
     () =>
       new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),

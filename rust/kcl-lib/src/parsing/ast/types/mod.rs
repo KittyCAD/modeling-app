@@ -1329,6 +1329,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1886,6 +1908,14 @@ impl Annotation {
             None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
+
+    /// Get a property by name. This is O(n) in the number of properties.
+    pub(crate) fn property(&self, name: &str) -> Option<&Node<ObjectProperty>> {
+        match &self.properties {
+            Some(props) => props.iter().find(|p| p.key.name == name),
+            None => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -2079,29 +2109,32 @@ impl ImportStatement {
         }
 
         match &self.path {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let name = s.to_string_lossy();
-                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
-                    let name = &name[..name.len() - 9];
-                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
-                    return Some(name[start..].to_owned());
-                }
-
-                let name = s.file_name()?;
-                if name.contains('\\') || name.contains('/') {
-                    return None;
-                }
-
-                // Remove the extension if it exists.
-                let extension = s.extension();
-                Some(if let Some(extension) = extension {
-                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
-                } else {
-                    name
-                })
-            }
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => Self::non_std_module_name(s),
             ImportPath::Std { path } => path.last().cloned(),
         }
+    }
+
+    /// Given the path to a non-std module, extract the module name if possible.
+    pub(crate) fn non_std_module_name(path: &TypedPath) -> Option<String> {
+        let name = path.to_string_lossy();
+        if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+            let name = &name[..name.len() - 9];
+            let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+            return Some(name[start..].to_owned());
+        }
+
+        let name = path.file_name()?;
+        if name.contains('\\') || name.contains('/') {
+            return None;
+        }
+
+        // Remove the extension if it exists.
+        let extension = path.extension();
+        Some(if let Some(extension) = extension {
+            name.trim_end_matches(extension).trim_end_matches('.').to_string()
+        } else {
+            name
+        })
     }
 }
 
@@ -3688,6 +3721,9 @@ impl DefaultParamVal {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
+    /// Whether it's experimental.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub experimental: bool,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -3732,6 +3768,10 @@ impl From<&Parameter> for SourceRange {
         }
         sr
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 fn is_true(b: &bool) -> bool {
@@ -4412,6 +4452,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4432,6 +4473,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4453,6 +4495,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4463,6 +4506,7 @@ cylinder = startSketchOn(-XZ)
                             digest: None,
                         },
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

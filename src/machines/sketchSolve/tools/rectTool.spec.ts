@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { createActor, waitFor, fromPromise } from 'xstate'
 import { machine } from '@src/machines/sketchSolve/tools/rectTool'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
@@ -24,6 +24,8 @@ function createTestMachine(mockActors?: {
   >
 }) {
   const sceneInfra = createMockSceneInfra()
+  const setCallbacksMock = vi.fn()
+  sceneInfra.setCallbacks = setCallbacksMock
   const rustContext = createMockRustContext()
   const kclManager = createMockKclManager()
 
@@ -47,6 +49,7 @@ function createTestMachine(mockActors?: {
   return {
     machine: testMachine,
     sceneInfra,
+    setCallbacksMock,
     rustContext,
     kclManager,
   }
@@ -92,7 +95,7 @@ describe('rectTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to awaiting first point', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
@@ -103,7 +106,7 @@ describe('rectTool - XState', () => {
         },
       }).start()
 
-      expect(sceneInfra.setCallbacks).toHaveBeenCalled()
+      expect(setCallbacksMock).toHaveBeenCalled()
       actor.stop()
     })
   })
@@ -125,6 +128,88 @@ describe('rectTool - XState', () => {
 
       await waitFor(actor, (state) => state.matches('awaiting second point'))
       expect(actor.getSnapshot().context.draft).toBeDefined()
+      actor.stop()
+    })
+
+    it('should transition to awaiting third point in angled mode after setting second point', async () => {
+      const { machine, sceneInfra, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [3, 4] })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+      expect(actor.getSnapshot().context.secondPoint).toEqual([3, 4])
+
+      actor.stop()
+    })
+
+    it('should remain in awaiting second point in angled mode when second point equals first point', async () => {
+      const { machine, sceneInfra, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [1, 2] })
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches('awaiting second point')).toBe(true)
+      expect(snapshot.context.secondPoint).toBeUndefined()
+
+      actor.stop()
+    })
+
+    it('should remain in awaiting third point in angled mode when third click equals second point', async () => {
+      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [3, 4] })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+
+      const lastSetCallbacksCall =
+        setCallbacksMock.mock.calls[setCallbacksMock.mock.calls.length - 1]
+      const callbacks = lastSetCallbacksCall?.[0]
+      callbacks?.onClick?.({
+        mouseEvent: { which: 1 },
+        intersectionPoint: { twoD: { x: 3, y: 4 } },
+      })
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches('awaiting third point')).toBe(true)
+      expect(snapshot.context.secondPoint).toEqual([3, 4])
+
       actor.stop()
     })
   })
@@ -176,6 +261,35 @@ describe('rectTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.origin).toEqual([0, 0])
+      expect(context.draft).toBeUndefined()
+      actor.stop()
+    })
+
+    it('should clear draft and second point when finalizing angled mode from third point state', async () => {
+      const { machine, sceneInfra, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [3, 4] })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+
+      actor.send({ type: 'finalize' })
+      await waitFor(actor, (state) => state.matches('awaiting first point'))
+
+      const context = actor.getSnapshot().context
+      expect(context.origin).toEqual([0, 0])
+      expect(context.secondPoint).toBeUndefined()
       expect(context.draft).toBeUndefined()
       actor.stop()
     })

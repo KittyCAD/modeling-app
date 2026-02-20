@@ -100,6 +100,11 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import {
+  operationsAnnotation,
+  operationsStateField,
+  setOperationsEffect,
+} from '@src/editor/plugins/operations'
 import { setKclVersion } from '@src/lib/kclVersion'
 import {
   baseEditorExtensions,
@@ -251,7 +256,8 @@ export class KclManager extends EventTarget {
   }
   livePathsToWatch = signal<string[]>([])
 
-  private _execState: ExecState = emptyExecState()
+  private _execState = signal<ExecState>(emptyExecState())
+
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
@@ -273,6 +279,9 @@ export class KclManager extends EventTarget {
     this.redoDepth.value =
       redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
+  get operations() {
+    return this._editorView.state.field(operationsStateField)
+  }
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
@@ -355,11 +364,14 @@ export class KclManager extends EventTarget {
   }
 
   private set execState(execState) {
-    this._execState = execState
+    this._execState.value = execState
     this.variables = execState.variables
   }
 
   get execState() {
+    return this._execState.value
+  }
+  get execStateSignal() {
     return this._execState
   }
 
@@ -575,33 +587,40 @@ export class KclManager extends EventTarget {
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
-          const { sceneGraph, execOutcome } =
+          const setProgramOutcome =
             await this.singletons.rustContext.hackSetProgram(
               this.ast,
               await jsAppSettings(this.singletons.rustContext.settingsActor)
             )
 
-          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-          // Always invalidate IDs for direct edits since we don't know what the user changed
-          const sceneGraphDelta: SceneGraphDelta = {
-            new_graph: sceneGraph,
-            new_objects: [],
-            invalidates_ids: true,
-            exec_outcome: execOutcome,
-          }
+          if (setProgramOutcome.type === 'Success') {
+            // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+            // Always invalidate IDs for direct edits since we don't know what the user changed
+            const sceneGraphDelta: SceneGraphDelta = {
+              new_graph: setProgramOutcome.sceneGraph,
+              new_objects: [],
+              invalidates_ids: true,
+              exec_outcome: setProgramOutcome.execOutcome,
+            }
 
-          const kclSource: SourceDelta = {
-            text: newCode,
-          }
+            const kclSource: SourceDelta = {
+              text: newCode,
+            }
 
-          // Send event to sketch solve machine via modeling machine
-          this.sendModelingEvent({
-            type: 'update sketch outcome',
-            data: {
-              kclSource,
-              sceneGraphDelta,
-            },
-          })
+            // Send event to sketch solve machine via modeling machine
+            this.sendModelingEvent({
+              type: 'update sketch outcome',
+              data: {
+                kclSource,
+                sceneGraphDelta,
+              },
+            })
+          } else {
+            console.debug(
+              'Error when executing after user edit:',
+              setProgramOutcome
+            )
+          }
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
@@ -733,6 +752,18 @@ export class KclManager extends EventTarget {
       // Reset the switched files boolean.
       this._switchedFiles = false
     }
+  }
+
+  /**
+   */
+  private dispatchUpdateOperations(newOperations: Operation[]) {
+    this.editorView.dispatch({
+      effects: [setOperationsEffect.of(newOperations)],
+      annotations: [
+        operationsAnnotation.of(true),
+        Transaction.addToHistory.of(false),
+      ],
+    })
   }
 
   /**
@@ -933,6 +964,8 @@ export class KclManager extends EventTarget {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
+    this.dispatchUpdateOperations(execState.operations)
+
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
@@ -999,7 +1032,7 @@ export class KclManager extends EventTarget {
     })
 
     this.logs = logs
-    this._execState = execState
+    this._execState.value = execState
     this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
@@ -1705,6 +1738,11 @@ export class KclManager extends EventTarget {
       this._currentFilePath = path
       this.lastWrite = null
     }
+  }
+  get currentFileName() {
+    return (
+      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+    )
   }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {

@@ -31,7 +31,7 @@ import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { CameraSystem } from '@src/lib/cameraControls'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
@@ -42,6 +42,7 @@ import {
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -200,6 +201,7 @@ export const ClientSideScene = ({
       ></div>
       <Overlays />
       <SketchSolveToolIconOverlay />
+      <EditingConstraintInput />
     </>
   )
 }
@@ -507,7 +509,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { kclManager, commandBarActor } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
@@ -629,7 +632,7 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain with named value',
@@ -760,7 +763,8 @@ const throttled = (sceneInfra: SceneInfra) =>
   }, 1000 / 15)
 
 export const CamDebugSettings = () => {
-  const { sceneInfra, commandBarActor } = useSingletons()
+  const { commands } = useApp()
+  const { sceneInfra } = useSingletons()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties
   )
@@ -785,7 +789,7 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commandBarActor.send({
+          commands.send({
             type: 'Find and select command',
             data: {
               groupId: 'settings',

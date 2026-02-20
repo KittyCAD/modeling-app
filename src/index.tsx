@@ -14,14 +14,14 @@ import type { App } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
-import { app } from '@src/lib/boot'
+import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
 launchApp(app)
 
 /** The initialization sequence for this app */
 function launchApp(app: App) {
-  initSingletonBehavior(app.singletons)
+  initSingletonBehavior(app)
   if (window.electron) {
     initElectronBehavior(window.electron)
   }
@@ -29,7 +29,8 @@ function launchApp(app: App) {
 }
 
 /** initialize behaviors that rely on singletons */
-function initSingletonBehavior(singletons: App['singletons']) {
+function initSingletonBehavior(app: App) {
+  const { singletons } = app
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(
     singletons.kclManager,
@@ -43,7 +44,7 @@ function initSingletonBehavior(singletons: App['singletons']) {
       singletons.appActor.start()
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
-      singletons.commandBarActor.send({
+      app.commands.send({
         type: 'Add commands',
         data: {
           commands: [
@@ -117,7 +118,7 @@ function mountAppToReact(app: App) {
   )
 
   root.render(
-    <app.ReactContext.Provider value={app.singletons}>
+    <AppContext.Provider value={app}>
       <HotkeysProvider>
         <AppStreamProvider>
           <Router />
@@ -144,7 +145,7 @@ function mountAppToReact(app: App) {
           <ModalContainer />
         </AppStreamProvider>
       </HotkeysProvider>
-    </app.ReactContext.Provider>
+    </AppContext.Provider>
   )
 
   // If you want to start measuring performance in your app, pass a function

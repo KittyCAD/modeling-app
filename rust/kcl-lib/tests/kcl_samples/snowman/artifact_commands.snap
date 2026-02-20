@@ -189,7 +189,6 @@ description: Artifact commands snowman.kcl
                 "z": 40.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -403,7 +402,6 @@ description: Artifact commands snowman.kcl
                 "z": 108.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -617,7 +615,6 @@ description: Artifact commands snowman.kcl
                 "z": 156.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -831,7 +828,6 @@ description: Artifact commands snowman.kcl
                 "z": 124.8
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1028,7 +1024,6 @@ description: Artifact commands snowman.kcl
                 "z": 108.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1225,7 +1220,6 @@ description: Artifact commands snowman.kcl
                 "z": 91.2
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1473,7 +1467,6 @@ description: Artifact commands snowman.kcl
                 "z": 159.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1670,7 +1663,6 @@ description: Artifact commands snowman.kcl
                 "z": 159.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1960,7 +1952,6 @@ description: Artifact commands snowman.kcl
                 "z": 156.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2500,7 +2491,6 @@ description: Artifact commands snowman.kcl
                 "z": 112.2
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2707,7 +2697,6 @@ description: Artifact commands snowman.kcl
                 "z": 112.2
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2963,7 +2952,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2996,7 +2984,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3029,7 +3016,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3062,7 +3048,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3095,7 +3080,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3128,7 +3112,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3161,7 +3144,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3194,7 +3176,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3227,7 +3208,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3260,7 +3240,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3293,7 +3272,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3326,7 +3304,6 @@ description: Artifact commands snowman.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {

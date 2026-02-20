@@ -2668,7 +2668,6 @@ description: Artifact commands coilover-assembly.kcl
                 "z": 200.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2817,6 +2816,7 @@ description: Artifact commands coilover-assembly.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },

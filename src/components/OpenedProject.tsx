@@ -37,7 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -74,20 +74,18 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  const { auth, billing, settings } = useApp()
   const {
-    billingActor,
     systemIOActor,
-    getSettings,
-    settingsActor,
     engineCommandManager,
     sceneInfra,
     kclManager,
     useLayout,
     setLayout,
     getLayout,
-    useSettings,
-    useToken,
   } = useSingletons()
+  const settingsActor = settings.actor
+  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
@@ -156,8 +154,8 @@ export function OpenedProject() {
 
   useHotKeyListener(kclManager)
 
-  const settings = useSettings()
-  const authToken = useToken()
+  const settingsValues = settings.useSettings()
+  const authToken = auth.useToken()
   const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
@@ -198,7 +196,7 @@ export function OpenedProject() {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
@@ -213,8 +211,8 @@ export function OpenedProject() {
   // and they're on the web
   useEffect(() => {
     const onboardingStatus =
-      settings.app.onboardingStatus.current ||
-      settings.app.onboardingStatus.default
+      settingsValues.app.onboardingStatus.current ||
+      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !isDesktop() && // Only show if we're in the browser,
       authToken && // we're logged in,
@@ -225,12 +223,13 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
-            onboardingStatus: settings.app.onboardingStatus.current,
+            onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settings.app.theme.current),
+            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
+            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -241,14 +240,15 @@ export function OpenedProject() {
       )
     }
   }, [
-    settings.app.onboardingStatus,
-    settings.app.theme,
+    settingsValues.app.onboardingStatus,
+    settingsValues.app.theme,
     location,
     navigate,
     searchParams.size,
     authToken,
     kclManager,
     systemIOActor,
+    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -358,7 +358,7 @@ export function OpenedProject() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settings.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.app.showDebugPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />
