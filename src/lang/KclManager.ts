@@ -105,6 +105,7 @@ import {
 } from '@src/editor/plugins/ast'
 import {
   operationsAnnotation,
+  operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { setKclVersion } from '@src/lib/kclVersion'
@@ -285,6 +286,9 @@ export class KclManager extends EventTarget {
     this.redoDepth.value =
       redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
+  get operations() {
+    return this._editorView.state.field(operationsStateField)
+  }
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
