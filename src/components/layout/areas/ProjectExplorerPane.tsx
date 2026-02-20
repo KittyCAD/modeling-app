@@ -60,7 +60,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     const duplicated = structuredClone(foundProject)
     addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-  }, [projects, project.value])
+  }, [file, projects, project.value])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -120,7 +120,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     } else if (
       window.electron &&
       isRelevantFile(entry.path) &&
-      projectRef.current?.path
+      projectRef?.path
     ) {
       // Allow insert if it is a importable file
       const electron = window.electron
@@ -128,7 +128,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef?.path + electron.path.sep,
               ''
             )
             commands.send({
