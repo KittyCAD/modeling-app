@@ -60,6 +60,7 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -68,6 +69,7 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  useSignals()
   const { auth, billing, settings, project } = useApp()
   const {
     systemIOActor,

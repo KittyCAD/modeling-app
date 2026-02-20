@@ -47,6 +47,7 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
@@ -76,8 +77,20 @@ export class App {
    */
   public wasmPromise = initialiseWasm()
 
+  /** Machines to send models to print or cut on the local network */
+  machineManager = window.electron
+    ? new MachineManager({
+        getMachineApiIp: window.electron.getMachineApiIp,
+        listMachines: window.electron.listMachines,
+      })
+    : new MachineManager() // Instantiate with no-op functions
+
   private commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: this.wasmPromise },
+    input: {
+      commands: [],
+      wasmInstancePromise: this.wasmPromise,
+      machineManager: this.machineManager,
+    },
   }).start()
   /** The command system for the app */
   public commands = {

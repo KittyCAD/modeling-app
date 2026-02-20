@@ -155,7 +155,7 @@ export const FeatureTreePaneContents = memo(() => {
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
-      ? kclManager.execState?.operations
+      ? kclManager.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
@@ -818,14 +818,11 @@ const OperationItem = ({
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
   const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.execState?.artifactGraph
-      ? findOperationArtifact(item, kclManager.execState.artifactGraph)
+    item.type === 'StdLibCall' && kclManager.artifactGraph
+      ? findOperationArtifact(item, kclManager.artifactGraph)
       : undefined
   const hideOperation = operationArtifact
-    ? getHideOpByArtifactId(
-        kclManager.execState?.operations ?? [],
-        operationArtifact.id
-      )
+    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
     : undefined
 
   return (
