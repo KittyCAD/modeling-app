@@ -3921,10 +3921,27 @@ impl FunctionExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
-    /// Parameter names of this function are excluded so they are not renamed (they shadow outer bindings).
+    /// Parameter names and local variable names of this function are excluded so they are not renamed (they shadow outer bindings).
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
-        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        let body_local_names: Vec<String> = self
+            .body
+            .inner
+            .body
+            .iter()
+            .filter_map(|item| {
+                let BodyItem::VariableDeclaration(vd) = item else {
+                    return None;
+                };
+                Some(vd.declaration.id.name.clone())
+            })
+            .collect();
+        let excluded_for_body: Vec<&str> = excluded
+            .iter()
+            .copied()
+            .chain(param_names.iter().copied())
+            .chain(body_local_names.iter().map(String::as_str))
+            .collect();
         self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
     }
 

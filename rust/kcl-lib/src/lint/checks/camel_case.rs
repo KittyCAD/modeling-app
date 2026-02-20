@@ -280,44 +280,44 @@ result = ZOO()
         crate::execution::parse_execute(&applied).await.unwrap();
     }
 
-    /// When renaming a global to camelCase, a function parameter with the same name (shadowing)
-    /// must not be renamed: only the global and references outside the function should change.
+    /// When renaming globals to camelCase, a function parameter with the same name (shadowing)
+    /// must not be renamed. We apply the lint suggestion for all three globals and assert the result.
     #[tokio::test]
     async fn z0001_shadowing_param_not_renamed() {
         let kcl = r#"
 GLOBAL_VAR = 1
+GLOBAL_VAR_2 = 2
+GLOBAL_VAR_3 = 3
 fn f(GLOBAL_VAR) {
-  return GLOBAL_VAR + 1
+  GLOBAL_VAR_2 = 1
+  return GLOBAL_VAR + GLOBAL_VAR_2 + GLOBAL_VAR_3
 }
-y = GLOBAL_VAR
+y = GLOBAL_VAR + GLOBAL_VAR_2 + GLOBAL_VAR_3
 "#;
-        let prog = crate::Program::parse_no_errs(kcl).unwrap();
-        let lints = prog.lint(lint_variables).unwrap();
-        let rename_finding = lints
-            .iter()
-            .find(|d| d.description.contains("GLOBAL_VAR") && d.suggestion.is_some());
-        let Some(discovered) = rename_finding else {
-            panic!("Expected a Z0001 finding for GLOBAL_VAR with a suggestion; lints: {lints:?}")
-        };
-        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
-        // Global and top-level reference renamed
-        assert!(
-            applied.contains("globalVar = 1"),
-            "Global declaration should be renamed; got:\n{applied}"
-        );
-        assert!(
-            applied.contains("y = globalVar"),
-            "Top-level reference should be renamed; got:\n{applied}"
-        );
-        // Parameter and references inside f must stay GLOBAL_VAR (shadowing)
-        assert!(
-            applied.contains("fn f(GLOBAL_VAR)"),
-            "Parameter must not be renamed (shadowing); got:\n{applied}"
-        );
-        assert!(
-            applied.contains("return GLOBAL_VAR + 1"),
-            "Reference to param inside f must not be renamed; got:\n{applied}"
-        );
+        let expected = r#"
+globalVar = 1
+globalVar2 = 2
+globalVar3 = 3
+fn f(GLOBAL_VAR) {
+  GLOBAL_VAR_2 = 1
+  return GLOBAL_VAR + GLOBAL_VAR_2 + globalVar3
+}
+y = globalVar + globalVar2 + globalVar3
+"#;
+        let names = ["GLOBAL_VAR", "GLOBAL_VAR_2", "GLOBAL_VAR_3"];
+        let mut applied = kcl.to_string();
+        for name in names {
+            let prog = crate::Program::parse_no_errs(&applied).unwrap();
+            let lints = prog.lint(lint_variables).unwrap();
+            let rename_finding = lints
+                .iter()
+                .find(|d| d.description == format!("found '{name}'") && d.suggestion.is_some());
+            let Some(discovered) = rename_finding else {
+                panic!("Expected a Z0001 finding for {name} with a suggestion; lints: {lints:?}")
+            };
+            applied = discovered.apply_suggestion(&applied).expect("suggestion should apply");
+        }
+        assert_eq!(applied.trim(), expected.trim(), "applied suggestion should match expected");
         crate::execution::parse_execute(&applied).await.unwrap();
     }
 }
