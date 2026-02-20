@@ -22,6 +22,9 @@ const getFirstParentReference = (
       if (parent || node.type !== 'Name') {
         return
       }
+      // We only treat local variable names as dependency candidates.
+      // Example: in `fillet(extrude001, radius = 1)`, `extrude001` is a feature reference,
+      // but `fillet` is the operation name and must never be treated as a parent feature.
       if (!isLocalFeatureReference(node)) {
         return
       }
@@ -110,6 +113,9 @@ export function rewireAfterDelete(
       if (node.type !== 'Name') {
         return
       }
+      // Rewire only value references to deleted features, never function targets.
+      // Example: `hole::hole(hole001, ...)` may rebind `hole001`, but `hole::hole`
+      // itself must stay unchanged. Rewriting callees would corrupt operation names.
       if (!isLocalFeatureReference(node)) {
         return
       }
