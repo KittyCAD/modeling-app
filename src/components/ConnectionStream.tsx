@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { btnName } from '@src/lib/cameraControls'
 import { err, reportRejection } from '@src/lib/trap'
@@ -36,12 +36,12 @@ const TIME_TO_CONNECT = 30_000
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
-  const { engineCommandManager, kclManager, sceneInfra, useSettings } =
-    useSingletons()
+  const { settings } = useApp()
+  const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -60,22 +60,22 @@ export const ConnectionStream = (props: {
     useTryConnect()
   const settingsEngine: SettingsViaQueryString = useMemo(
     () => ({
-      theme: settings.app.theme.current,
-      enableSSAO: settings.modeling.enableSSAO.current,
-      highlightEdges: settings.modeling.highlightEdges.current,
-      showScaleGrid: settings.modeling.showScaleGrid.current,
-      cameraProjection: settings.modeling.cameraProjection.current,
-      cameraOrbit: settings.modeling.cameraOrbit.current,
+      theme: settingsValues.app.theme.current,
+      enableSSAO: settingsValues.modeling.enableSSAO.current,
+      highlightEdges: settingsValues.modeling.highlightEdges.current,
+      showScaleGrid: settingsValues.modeling.showScaleGrid.current,
+      cameraProjection: settingsValues.modeling.cameraProjection.current,
+      cameraOrbit: settingsValues.modeling.cameraOrbit.current,
       backfaceColor: DEFAULT_BACKFACE_COLOR,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      settings.app.theme.current,
-      settings.modeling.enableSSAO.current,
-      settings.modeling.highlightEdges.current,
-      settings.modeling.showScaleGrid.current,
-      settings.modeling.cameraProjection.current,
-      settings.modeling.cameraOrbit.current,
+      settingsValues.app.theme.current,
+      settingsValues.modeling.enableSSAO.current,
+      settingsValues.modeling.highlightEdges.current,
+      settingsValues.modeling.showScaleGrid.current,
+      settingsValues.modeling.cameraProjection.current,
+      settingsValues.modeling.cameraOrbit.current,
     ]
   )
   const safariObjectFitClass = useMemo(() => {
@@ -407,12 +407,12 @@ export const ConnectionStream = (props: {
   const style = useMemo(
     () => ({
       backgroundColor:
-        getResolvedTheme(settings.app.theme.current) === Themes.Light
+        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
           ? 'rgb(250, 250, 250)'
           : 'rgb(30, 30, 30)',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settings.app.theme.current]
+    [settingsValues.app.theme.current]
   )
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
@@ -453,8 +453,10 @@ export const ConnectionStream = (props: {
         No canvas support
       </canvas>
       <ClientSideScene
-        cameraControls={settings.modeling.mouseControls.current}
-        enableTouchControls={settings.modeling.enableTouchControls.current}
+        cameraControls={settingsValues.modeling.mouseControls.current}
+        enableTouchControls={
+          settingsValues.modeling.enableTouchControls.current
+        }
       />
       <ViewControlContextMenu
         event="mouseup"

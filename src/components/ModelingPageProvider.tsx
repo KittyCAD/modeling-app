@@ -25,21 +25,20 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth, commands } = useApp()
+  const { auth, commands, settings } = useApp()
   const {
     engineCommandManager,
     kclManager,
     rustContext,
     sceneInfra,
     systemIOActor,
-    useSettings,
-    settingsActor,
   } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = auth.useToken()
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
+  const settingsActor = settings.actor
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
 
@@ -143,7 +142,7 @@ export const ModelingPageProvider = ({
     kclManager,
     navigate,
     sceneInfra,
-    settings,
+    settings: settingsValues,
     settingsActor,
   })
   useMenuListener(cb)
@@ -184,7 +183,8 @@ export const ModelingPageProvider = ({
       kclManager,
       settings: {
         defaultUnit:
-          settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+          settingsValues.modeling.defaultUnit.current ??
+          DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
