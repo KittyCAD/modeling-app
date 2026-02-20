@@ -17,7 +17,7 @@ const getPath: IZooDesignStudioFS['getPath'] = async (type) => {
 }
 
 let impl: IZooDesignStudioFS = noopfs.impl
-if (process.title !== 'browser') {
+if (typeof process !== 'undefined' && process.title !== 'browser') {
   impl = {
     resolve: path.resolve.bind(path),
     join: path.join.bind(path),
