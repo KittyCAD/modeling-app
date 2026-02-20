@@ -1554,15 +1554,7 @@ impl Node<SketchBlock> {
             return_value.continue_()
         })
     }
-}
 
-impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
-        exec_state.mut_stack().push_new_env_for_call(parent);
-    }
-}
-
-impl Node<SketchBlock> {
     async fn load_sketch2_into_current_scope(
         &self,
         exec_state: &mut ExecState,
@@ -1577,10 +1569,6 @@ impl Node<SketchBlock> {
         let (env_ref, exports) = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
 
         for name in exports {
-            if name.starts_with(memory::TYPE_PREFIX) || name.starts_with(memory::MODULE_PREFIX) {
-                continue;
-            }
-
             let value = exec_state
                 .stack()
                 .memory
@@ -1589,6 +1577,12 @@ impl Node<SketchBlock> {
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
+    }
+}
+
+impl SketchBlock {
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
+        exec_state.mut_stack().push_new_env_for_call(parent);
     }
 }
 
