@@ -35,7 +35,10 @@ import type {
   BaseUnit,
   KclSettingsAnnotation,
 } from '@src/lib/settings/settingsTypes'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
@@ -640,9 +643,12 @@ export class KclManager extends EventTarget {
   constructor(systemDeps: SystemDeps) {
     super()
     this.systemDeps = systemDeps
+    const getSettings = () =>
+      getSettingsFromActorContext(this.systemDeps.settings)
     this.sceneInfra = new SceneInfra(
       systemDeps.engineCommandManager,
-      systemDeps.wasmInstancePromise
+      systemDeps.wasmInstancePromise,
+      getSettings
     )
     this.sceneEntitiesManager = new SceneEntities(
       systemDeps.engineCommandManager,

@@ -248,7 +248,6 @@ export class App {
 
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
-    kclManager.sceneInfra.camControls.getSettings = this.settings.get
     kclManager.sceneEntitiesManager.getSettings = this.settings.get
 
     const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
