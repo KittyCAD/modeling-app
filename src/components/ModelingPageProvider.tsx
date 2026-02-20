@@ -12,7 +12,6 @@ import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
-import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -25,7 +24,6 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  useSignals()
   const { auth, commands, settings, project } = useApp()
   const {
     engineCommandManager,

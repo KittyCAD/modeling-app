@@ -17,24 +17,22 @@ import {
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useState, use, useEffect } from 'react'
+import { useState, use, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
-import { useSignals } from '@preact/signals-react/runtime'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
-  useSignals()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
-  const projectRef = project.value?.projectIORef
+  const projectRef = useRef(project.value?.projectIORef)
   const [theProject, setTheProject] = useState<Project | null>(null)
-  const file = project.value?.executingFileEntry
+  const file = useRef(project.value?.executingFileEntry)
   const {
     state: modelingMachineState,
     send: modelingSend,
@@ -84,11 +82,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
     // Only open the file if it is a kcl file.
     if (
-      projectRef?.name &&
+      projectRef.current?.name &&
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
-      const name = projectRef.name.slice()
+      const name = projectRef.current.name.slice()
 
       const navigateHelper = () => {
         systemIOActor.send({
@@ -120,7 +118,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     } else if (
       window.electron &&
       isRelevantFile(entry.path) &&
-      projectRef?.path
+      projectRef.current?.path
     ) {
       // Allow insert if it is a importable file
       const electron = window.electron
@@ -128,7 +126,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef?.path + electron.path.sep,
+              projectRef.current?.path + electron.path.sep,
               ''
             )
             commands.send({
@@ -176,12 +174,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         }
         onClose={props.onClose}
       />
-      {theProject && file ? (
+      {theProject && file.current ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer
             wasmInstance={wasmInstance}
             project={theProject}
-            file={file}
+            file={file.current}
             createFilePressed={createFilePressed}
             createFolderPressed={createFolderPressed}
             refreshExplorerPressed={refreshExplorerPressed}
