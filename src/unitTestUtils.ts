@@ -87,6 +87,7 @@ export async function buildTheWorldAndConnectToEngine() {
     wasmInstancePromise: instancePromise,
     rustContext,
     settings: settingsActor,
+    commandBar: commandBarActor,
   })
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = kclManager.sceneInfra
@@ -188,6 +189,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     wasmInstancePromise: instancePromise,
     rustContext,
     settings: settingsActor,
+    commandBar: commandBarActor,
   })
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = kclManager.sceneInfra
