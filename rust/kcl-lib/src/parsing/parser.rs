@@ -51,12 +51,27 @@ const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
 const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
+/// Syntactic paren/brace/bracket nesting limit for the token scan.
+const MAX_NESTING_DEPTH: u16 = 512;
+/// Nesting limit for recursive parser calls. This is lower than
+/// `MAX_NESTING_DEPTH` because parser combinators can use much more stack
+/// space.
+const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
+const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
+
+    // Check token nesting before parsing to fail fast on pathological inputs
+    // that could cause stack overflows.
+    if let Some(err) = ParseContext::check_max_nesting(&i) {
+        ParseContext::err(err);
+        let ctxt = ParseContext::take();
+        return (None, ctxt.errors).into();
+    }
 
     let result = match program.parse(i) {
         Ok(result) => Some(result),
@@ -84,6 +99,28 @@ struct ParseContext {
     pub errors: Vec<CompilationError>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Tracks current recursive parser depth so we can reject pathological input
+    // before it risks stack overflows.
+    nesting_depth: u16,
+}
+
+#[derive(Debug)]
+struct NestingGuard {
+    should_decrement: bool,
+}
+
+impl Drop for NestingGuard {
+    fn drop(&mut self) {
+        if !self.should_decrement {
+            return;
+        }
+        CTXT.with_borrow_mut(|ctxt| {
+            let Some(ctxt) = ctxt.as_mut() else {
+                return;
+            };
+            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
+        });
+    }
 }
 
 impl ParseContext {
@@ -92,6 +129,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            nesting_depth: 0,
         }
     }
 
@@ -105,6 +143,54 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn enter_nesting(source_range: SourceRange) -> ModalResult<NestingGuard> {
+        CTXT.with_borrow_mut(|ctxt| {
+            // Some parser unit tests call individual parser functions directly
+            // (without `run_parser`), so we skip depth accounting if no context exists.
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Ok(NestingGuard {
+                    should_decrement: false,
+                });
+            };
+
+            // `nesting_depth` counts active recursive parser frames. This limit is
+            // lower than MAX_NESTING_DEPTH because parser combinators can use much
+            // more stack per frame than simple delimiter nesting.
+            if ctxt.nesting_depth > MAX_RECURSIVE_PARSER_DEPTH {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
+                ));
+            }
+            ctxt.nesting_depth += 1;
+            Ok(NestingGuard { should_decrement: true })
+        })
+    }
+
+    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationError> {
+        let mut depth = 0;
+        for token in tokens.iter() {
+            if token.token_type != TokenType::Brace {
+                continue;
+            }
+            match token.value.as_str() {
+                "(" | "[" | "{" => {
+                    depth += 1;
+                    if depth > MAX_NESTING_DEPTH {
+                        return Some(CompilationError::fatal(
+                            token.as_source_range(),
+                            MAX_NESTING_DEPTH_MESSAGE,
+                        ));
+                    }
+                }
+                ")" | "]" | "}" => {
+                    depth = depth.saturating_sub(1);
+                }
+                _ => {}
+            }
+        }
+        None
     }
 
     fn handle_attribute(attr: &Node<Annotation>) {
@@ -459,6 +545,7 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<N
 }
 
 fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let head = expression_but_not_pipe.parse_next(i)?;
     let head_checkpoint = i.checkpoint();
 
@@ -798,6 +885,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
 
 /// Parse a KCL operand that can be used with an operator.
 fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
@@ -1125,7 +1213,10 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         .parse_next(i)
     {
         Ok(expr) => expr,
-        Err(_) => {
+        Err(err) => {
+            if matches!(err, ErrMode::Cut(_)) {
+                return Err(err);
+            }
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     SourceRange::from(sep),
@@ -1522,6 +1613,8 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 //     return x
 // }
 fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
+
     fn return_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -2466,6 +2559,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
         if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -2889,6 +2983,7 @@ fn require_whitespace(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -3206,6 +3301,7 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
             if tys.len() == 1
@@ -4268,6 +4364,69 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn test_deeply_nested_parenthesized_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_unary_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x", "-".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[{input}, 0]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements_nested_second() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[0, {input}]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_object_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "{a=".repeat(depth), "}".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_call_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "f(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_comments() {
+        // One above the limit to ensure we validate the boundary correctly.
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[/*c*/".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
     fn test_arithmetic() {
         let input = "1 * (2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
@@ -4890,7 +5049,11 @@ mySk1 = startSketchOn(XY)
     #[track_caller]
     fn assert_err_contains(p: &str, expected: &str) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs().next().unwrap().message;
+        let err = &result
+            .unwrap_errs()
+            .next()
+            .expect("Expected an error but found none")
+            .message;
         assert!(err.contains(expected), "actual='{err}'");
     }
 
