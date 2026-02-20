@@ -121,7 +121,7 @@ jobs:
         run: |
           export VERSION=255.255.0
           npm run files:set-version
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
+          # yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
 
       - name: Set windows codesign config
         if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' }}
