@@ -17,7 +17,7 @@ describe('discoverMachineApi', () => {
       (
         _options: { protocol: 'tcp' | 'udp'; type: string },
         _onup: (service: Service) => void
-      ) => ({ stop }) as Browser
+      ) => ({ stop }) as unknown as Browser
     )
 
     const resultPromise = discoverMachineApi({
