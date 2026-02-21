@@ -3497,10 +3497,7 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         },
-        path: vec![ast::Node::no_src(ast::Identifier {
-            name: "sketch2".to_owned(),
-            digest: None,
-        })],
+        path: Default::default(),
         abs_path: false,
         digest: None,
     }
