@@ -205,7 +205,7 @@ export class App {
   /** Instantiate an App with all the default subsystems */
   static fromDefaults(): App {
     const defaults = App.getDefaultSystems()
-    return App.fromSubystemObject(defaults)
+    return App.fromSubsystemsObject(defaults)
   }
 
   /**
@@ -219,11 +219,11 @@ export class App {
       ? App.getDefaultSystems(provided.wasmPromise) // Allows us to instantiate without WASM!
       : App.getDefaultSystems()
     const combined = Object.assign(defaults, provided)
-    return App.fromSubystemObject(combined)
+    return App.fromSubsystemsObject(combined)
   }
 
   // If anyone can find a way that we can "spread operator" these args I'd ❤ u
-  static fromSubystemObject(
+  static fromSubsystemsObject(
     subsystems: ReturnType<typeof App.getDefaultSystems>
   ) {
     return new App(
