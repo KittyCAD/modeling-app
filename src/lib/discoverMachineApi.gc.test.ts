@@ -34,11 +34,18 @@ const runProbe = async (
         '--expose-gc',
         '-r',
         'ts-node/register/transpile-only',
+        '-r',
+        'tsconfig-paths/register',
         probeScriptPath,
         mode,
       ],
       {
         cwd: process.cwd(),
+        env: {
+          ...process.env,
+          TS_NODE_BASEURL: '.',
+          TS_NODE_PROJECT: 'tsconfig.json',
+        },
         stdio: ['ignore', 'pipe', 'pipe'],
       }
     )

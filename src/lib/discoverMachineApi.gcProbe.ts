@@ -1,6 +1,6 @@
 import { Bonjour } from 'bonjour-service'
 
-import { discoverMachineApi } from './discoverMachineApi'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
