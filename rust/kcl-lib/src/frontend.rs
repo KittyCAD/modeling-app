@@ -3646,7 +3646,7 @@ mod tests {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
 }
 
 bad = missing_name
@@ -3738,7 +3738,7 @@ bad = missing_name
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [1in, 2in])
+  point(at = [1in, 2in])
 }
 "
         );
@@ -3775,7 +3775,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [3in, 4in])
+  point(at = [3in, 4in])
 }
 "
         );
@@ -3854,7 +3854,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+  line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
         );
@@ -3903,7 +3903,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [1mm, 2mm], end = [13mm, 14mm])
+  line(start = [1mm, 2mm], end = [13mm, 14mm])
 }
 "
         );
@@ -3992,7 +3992,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
+  arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
 }
 "
         );
@@ -4054,7 +4054,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
+  arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
 }
 "
         );
@@ -4117,7 +4117,7 @@ s = sketch(on = XY) {}
             "@settings(experimentalFeatures = allow)
 
 s = sketch(on = XY) {
-  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+  line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
         );
@@ -4196,7 +4196,7 @@ s = sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+  line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
         );
@@ -4251,7 +4251,7 @@ s = sketch(on = XY) {}
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
 
@@ -4296,7 +4296,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
+  line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
 }
 "
         );
@@ -4313,7 +4313,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
 
@@ -4357,7 +4357,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
+  line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
 }
 "
         );
@@ -4379,12 +4379,12 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 1, var 2])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   line1.start.at[0] == 0
   line1.start.at[1] == 0
-  sketch2::coincident([line1.end, line2.start])
-  sketch2::equalLength([line1, line2])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
 }
 ";
 
@@ -4427,12 +4427,12 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
-  line2 = sketch2::line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
+  line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
 line1.start.at[0] == 0
 line1.start.at[1] == 0
-  sketch2::coincident([line1.end, line2.start])
-  sketch2::equalLength([line1, line2])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
 }
 "
         );
@@ -4453,9 +4453,9 @@ line1.start.at[1] == 0
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 3, var 4])
-  sketch2::point(at = [var 5, var 6])
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
 }
 ";
 
@@ -4484,8 +4484,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1mm, var 2mm])
-  sketch2::point(at = [var 5mm, var 6mm])
+  point(at = [var 1mm, var 2mm])
+  point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -4502,9 +4502,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  point1 = sketch2::point(at = [var 3, var 4])
-  sketch2::point(at = [var 5, var 6])
+  point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
 }
 ";
 
@@ -4533,8 +4533,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1mm, var 2mm])
-  sketch2::point(at = [var 5mm, var 6mm])
+  point(at = [var 1mm, var 2mm])
+  point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -4551,9 +4551,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  point1 = sketch2::point(at = [var 3, var 4])
-  sketch2::point(at = [var 5, var 6])
+  point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
 }
 ";
 
@@ -4584,7 +4584,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 5mm, var 6mm])
+  point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -4601,10 +4601,10 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [var 3, var 4])
-  sketch2::coincident([point1, point2])
-  sketch2::point(at = [var 5, var 6])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  coincident([point1, point2])
+  point(at = [var 5, var 6])
 }
 ";
 
@@ -4633,9 +4633,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1mm, var 2mm])
-  point2 = sketch2::point(at = [var 3mm, var 4mm])
-  sketch2::point(at = [var 5mm, var 6mm])
+  point1 = point(at = [var 1mm, var 2mm])
+  point2 = point(at = [var 3mm, var 4mm])
+  point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -4652,9 +4652,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::coincident([line1.end, line2.start])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  coincident([line1.end, line2.start])
 }
 ";
 
@@ -4682,7 +4682,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 }
 "
         );
@@ -4703,9 +4703,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::distance([line1.end, line2.start]) == 10mm
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  distance([line1.end, line2.start]) == 10mm
 }
 ";
 
@@ -4733,7 +4733,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 }
 "
         );
@@ -4754,9 +4754,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::coincident([line1, line2])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  coincident([line1, line2])
 }
 ";
 
@@ -4785,8 +4785,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = sketch2::line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
 }
 "
         );
@@ -4803,8 +4803,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [3, 4])
+  point1 = point(at = [var 1, var 2])
+  point(at = [3, 4])
 }
 ";
 
@@ -4836,9 +4836,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [3, 4])
-  sketch2::coincident([point1, point2])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [3, 4])
+  coincident([point1, point2])
 }
 "
         );
@@ -4859,8 +4859,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
 }
 ";
 
@@ -4892,9 +4892,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::coincident([line1.end, line2.start])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  coincident([line1.end, line2.start])
 }
 "
         );
@@ -5070,8 +5070,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 3, var 4])
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
 }
 ";
 
@@ -5109,9 +5109,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [var 3, var 4])
-sketch2::distance([point1, point2]) == 2mm
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+distance([point1, point2]) == 2mm
 }
 "
         );
@@ -5132,8 +5132,8 @@ sketch2::distance([point1, point2]) == 2mm
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 3, var 4])
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
 }
 ";
 
@@ -5171,9 +5171,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [var 3, var 4])
-sketch2::horizontalDistance([point1, point2]) == 2mm
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+horizontalDistance([point1, point2]) == 2mm
 }
 "
         );
@@ -5194,7 +5194,7 @@ sketch2::horizontalDistance([point1, point2]) == 2mm
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
 }
 ";
 
@@ -5243,8 +5243,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-sketch2::radius(arc1) == 5mm
+  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+radius(arc1) == 5mm
 }
 "
         );
@@ -5265,8 +5265,8 @@ sketch2::radius(arc1) == 5mm
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 3, var 4])
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
 }
 ";
 
@@ -5304,9 +5304,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [var 3, var 4])
-sketch2::verticalDistance([point1, point2]) == 2mm
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+verticalDistance([point1, point2]) == 2mm
 }
 "
         );
@@ -5332,7 +5332,7 @@ sketch2::verticalDistance([point1, point2]) == 2mm
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
+  point(at = [var 1, var 2])
 }
 ";
         let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
@@ -5360,7 +5360,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
         let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
@@ -5393,7 +5393,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
 }
 ";
 
@@ -5442,8 +5442,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-sketch2::diameter(arc1) == 10mm
+  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+diameter(arc1) == 10mm
 }
 "
         );
@@ -5469,7 +5469,7 @@ sketch2::diameter(arc1) == 10mm
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
+  point(at = [var 1, var 2])
 }
 ";
         let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
@@ -5497,7 +5497,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
         let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
@@ -5530,7 +5530,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
 
@@ -5559,8 +5559,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::horizontal(line1)
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  horizontal(line1)
 }
 "
         );
@@ -5581,7 +5581,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
 
@@ -5610,8 +5610,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::vertical(line1)
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  vertical(line1)
 }
 "
         );
@@ -5632,8 +5632,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
 }
 ";
 
@@ -5665,9 +5665,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::equalLength([line1, line2])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  equalLength([line1, line2])
 }
 "
         );
@@ -5688,8 +5688,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
 }
 ";
 
@@ -5721,9 +5721,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::parallel([line1, line2])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  parallel([line1, line2])
 }
 "
         );
@@ -5744,8 +5744,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
 }
 ";
 
@@ -5777,9 +5777,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
-  sketch2::perpendicular([line1, line2])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  perpendicular([line1, line2])
 }
 "
         );
@@ -5954,21 +5954,21 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::coincident([line3.end, line1.start])
-  sketch2::equalLength([line3, line1])
-  sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2*x
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+distance([line1.start, line1.end]) == 2*x
 }
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-sketch2::distance([line1.start, line1.end]) == x
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+distance([line1.start, line1.end]) == x
 }
 ";
 
@@ -6058,21 +6058,21 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = sketch2::line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::coincident([line3.end, line1.start])
-  sketch2::equalLength([line3, line1])
-  sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+distance([line1.start, line1.end]) == 2 * x
 }
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-sketch2::distance([line1.start, line1.end]) == x
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+distance([line1.start, line1.end]) == x
 }
 "
         );
@@ -6101,21 +6101,21 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::coincident([line3.end, line1.start])
-  sketch2::equalLength([line3, line1])
-  sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+distance([line1.start, line1.end]) == 2 * x
 }
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-sketch2::distance([line1.start, line1.end]) == x
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+distance([line1.start, line1.end]) == x
 }
 "
         );
@@ -6190,21 +6190,21 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::coincident([line3.end, line1.start])
-  sketch2::equalLength([line3, line1])
-  sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+distance([line1.start, line1.end]) == 2 * x
 }
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
-sketch2::distance([line1.start, line1.end]) == x
+  line1 = line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
+distance([line1.start, line1.end]) == x
 }
 "
         );
@@ -6233,21 +6233,21 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::coincident([line3.end, line1.start])
-  sketch2::equalLength([line3, line1])
-  sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+distance([line1.start, line1.end]) == 2 * x
 }
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
-sketch2::distance([line1.start, line1.end]) == x
+  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
+distance([line1.start, line1.end]) == x
 }
 "
         );

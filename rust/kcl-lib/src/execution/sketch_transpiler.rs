@@ -617,15 +617,15 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
         // Expected transpiled output
         // Note: Coordinates are from actual execution, may have small rounding differences
         let expected_output = r#"sketch(on = XY) {
-  line1 = sketch2::line(start = [var -3.71mm, var 5.81mm], end = [var -7.51mm, var 0.89mm])
-  line2 = sketch2::line(start = [var -7.51mm, var 0.89mm], end = [var -4.04mm, var -4.86mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -4.04mm, var -4.86mm], end = [var 3.64mm, var -4.86mm])
-  sketch2::coincident([line2.end, line3.start])
-  line4 = sketch2::line(start = [var 3.64mm, var -4.86mm], end = [var 3.64mm, var 1.43mm])
-  sketch2::coincident([line3.end, line4.start])
-  sketch2::horizontal(line3)
-  sketch2::vertical(line4)
+  line1 = line(start = [var -3.71mm, var 5.81mm], end = [var -7.51mm, var 0.89mm])
+  line2 = line(start = [var -7.51mm, var 0.89mm], end = [var -4.04mm, var -4.86mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -4.04mm, var -4.86mm], end = [var 3.64mm, var -4.86mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3.64mm, var -4.86mm], end = [var 3.64mm, var 1.43mm])
+  coincident([line3.end, line4.start])
+  horizontal(line3)
+  vertical(line4)
 }"#;
 
         // Try to transpile - this should succeed and match the expected output
@@ -673,13 +673,13 @@ profile001 = startProfile(sketch001, at = [2.25, 4.48])
         // Note: Coordinates are from actual execution, may have small rounding differences
         // Also note: yLine should be vertical on line2, and equalLength should be on line3
         let expected_output = r#"sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 2.25mm, var 4.48mm], end = [var -5.21mm, var 2.89mm])
-  line2 = sketch2::line(start = [var -5.21mm, var 2.89mm], end = [var -5.21mm, var -4.57mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -5.21mm, var -4.57mm], end = [var 2.16mm, var -2.6mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::vertical(line2)
-  sketch2::equalLength([line3, line1])
+  line1 = line(start = [var 2.25mm, var 4.48mm], end = [var -5.21mm, var 2.89mm])
+  line2 = line(start = [var -5.21mm, var 2.89mm], end = [var -5.21mm, var -4.57mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -5.21mm, var -4.57mm], end = [var 2.16mm, var -2.6mm])
+  coincident([line2.end, line3.start])
+  vertical(line2)
+  equalLength([line3, line1])
 }"#;
 
         // Try to transpile - this should succeed and match the expected output
