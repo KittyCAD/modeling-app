@@ -50,6 +50,7 @@ import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import type { User } from '@kittycad/lib/dist/types/src'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -61,6 +62,14 @@ declare global {
 }
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
+
+export type AppAuthSystem = {
+  actor: ActorRefFrom<typeof authMachine>
+  send: ActorRefFrom<typeof authMachine>['send']
+  useAuthState: () => SnapshotFrom<typeof authMachine>
+  useToken: () => string
+  useUser: () => User | undefined
+}
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
@@ -94,17 +103,6 @@ export class App {
     actor: this.commandBarActor,
     send: this.commandBarActor.send.bind(this),
     useState: () => useSelector(this.commandBarActor, (state) => state),
-  }
-
-  private authActor = createActor(authMachine).start()
-  /** Auth system. Use `send` method to act with auth. */
-  auth = {
-    actor: this.authActor,
-    send: (...args: Parameters<typeof this.authActor.send>) =>
-      this.authActor.send(...args),
-    useAuthState: () => useSelector(this.authActor, (state) => state),
-    useToken: () => useSelector(this.authActor, (state) => state.context.token),
-    useUser: () => useSelector(this.authActor, (state) => state.context.user),
   }
 
   private settingsActor = createActor(settingsMachine, {
@@ -146,9 +144,38 @@ export class App {
     useContext: () => useSelector(this.billingActor, ({ context }) => context),
   }
 
-  constructor() {
+  constructor(
+    /** Auth system. Use `send` method to act with auth. */
+    public auth: AppAuthSystem
+  ) {
     this.singletons = this.buildSingletons()
     this.settingsActor.subscribe(this.onSettingsUpdate)
+  }
+
+  /**
+   * The default app subsystems during normal runtime.
+   * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
+   */
+  static getDefaults() {
+    const authActor = createActor(authMachine).start()
+    const auth: AppAuthSystem = {
+      actor: authActor,
+      send: (...args: Parameters<typeof authActor.send>) =>
+        authActor.send(...args),
+      useAuthState: () => useSelector(authActor, (state) => state),
+      useToken: () => useSelector(authActor, (state) => state.context.token),
+      useUser: () => useSelector(authActor, (state) => state.context.user),
+    }
+
+    return {
+      auth,
+    }
+  }
+
+  /** Instantiate an App with all the default subsystems */
+  static fromDefaults() {
+    const defaults = App.getDefaults()
+    return new App(defaults.auth)
   }
 
   /**
