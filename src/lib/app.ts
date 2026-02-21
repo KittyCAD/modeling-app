@@ -12,7 +12,7 @@ import type {
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup, spawnChild } from 'xstate'
+import { assign, createActor, setup } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -24,7 +24,6 @@ import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
   settingsMachine,
@@ -219,10 +218,15 @@ export class App {
           },
         })
     }
-    const { SYSTEM_IO } = ACTOR_IDS
-    const appMachineActors = {
-      [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-    } as const
+
+    const systemIOActor = createActor(
+      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+      {
+        input: {
+          wasmInstancePromise: this.wasmPromise,
+        },
+      }
+    ).start()
 
     const appMachine = setup({
       types: {} as {
@@ -239,14 +243,6 @@ export class App {
         commandBarActor: this.commandBarActor,
         layout: defaultLayout,
       },
-      entry: [
-        spawnChild(appMachineActors[SYSTEM_IO], {
-          systemId: SYSTEM_IO,
-          input: {
-            wasmInstancePromise: this.wasmPromise,
-          },
-        }),
-      ],
       on: {
         [AppMachineEventType.SetLayout]: {
           actions: [
@@ -272,7 +268,6 @@ export class App {
     sceneInfra.camControls.getSettings = this.settings.get
     sceneEntitiesManager.getSettings = this.settings.get
 
-    const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
