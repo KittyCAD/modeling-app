@@ -37,6 +37,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -53,15 +54,14 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { machineManager, commands, settings } = useApp()
+  useSignals()
+  const { machineManager, commands, settings, layout } = useApp()
   const {
     engineCommandManager,
-    getLayout,
     kclManager,
     rustContext,
     sceneEntitiesManager,
     sceneInfra,
-    setLayout,
   } = useSingletons()
   const settingsActor = settings.actor
   const systemDeps = useMemo(
@@ -151,9 +151,9 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(getLayout())
+    const rootLayout = structuredClone(layout.signal.value)
     const toggle = (id: DefaultLayoutPaneID) =>
-      setLayout(
+      layout.set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: id,

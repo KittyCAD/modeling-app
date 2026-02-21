@@ -1,9 +1,9 @@
+import type { KclManager } from '@src/lang/KclManager'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
-import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
@@ -18,6 +18,7 @@ import {
   SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
@@ -428,9 +429,9 @@ export const systemIOMachine = setup({
           requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
-          rootContext: AppMachineContext
           requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
+          kclManager: KclManager
+          engineCommandManager: ConnectionManager
         }
       }): Promise<{
         message: string
@@ -477,7 +478,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           wasmInstancePromise: Promise<ModuleType>
         }
       }): Promise<{
@@ -496,7 +496,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           requestedSubRoute?: string
           wasmInstancePromise: Promise<ModuleType>
@@ -517,7 +516,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
@@ -539,7 +537,6 @@ export const systemIOMachine = setup({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
-            rootContext: AppMachineContext
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -559,7 +556,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedFolderName: string
           folderName: string
           absolutePathToParentDirectory: string
@@ -582,7 +578,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedFileNameWithExtension: string
           fileNameWithExtension: string
           absolutePathToParentDirectory: string
@@ -601,7 +596,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedPath: string
           requestedProjectName?: string | undefined
         }
@@ -619,7 +613,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -635,7 +628,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -651,7 +643,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
         }
@@ -668,7 +659,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
           successMessage?: string
@@ -966,7 +956,8 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
-            wasmInstancePromise: context.wasmInstancePromise,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
           }
         },
         onDone: {
@@ -991,8 +982,8 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            rootContext: self.system.get('root').getSnapshot().context,
-            wasmInstancePromise: context.wasmInstancePromise,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
           }
         },
         onDone: {

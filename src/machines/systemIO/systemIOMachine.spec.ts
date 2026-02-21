@@ -10,8 +10,12 @@ import { createActor, waitFor } from 'xstate'
 import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -24,8 +28,11 @@ beforeEach(async () => {
     return
   }
 
-  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const { instance, engineCommandManager, kclManager } =
+    await buildTheWorldAndNoEngineConnection()
   instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  kclManagerInThisFile = kclManager
 })
 
 describe('systemIOMachine - XState', () => {
@@ -33,7 +40,11 @@ describe('systemIOMachine - XState', () => {
     describe('when initialized', () => {
       it('should contain the default context values', () => {
         const actor = createActor(systemIOMachineDesktop, {
-          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            kclManager: kclManagerInThisFile,
+            engineCommandManager: engineCommandManagerInThisFile,
+          },
         }).start()
         const context = actor.getSnapshot().context
         expect(context.folders).toStrictEqual([])
@@ -52,7 +63,11 @@ describe('systemIOMachine - XState', () => {
       })
       it('should be in idle state', () => {
         const actor = createActor(systemIOMachineDesktop, {
-          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            kclManager: kclManagerInThisFile,
+            engineCommandManager: engineCommandManagerInThisFile,
+          },
         }).start()
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
@@ -61,7 +76,11 @@ describe('systemIOMachine - XState', () => {
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {
         const actor = createActor(systemIOMachineDesktop, {
-          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            kclManager: kclManagerInThisFile,
+            engineCommandManager: engineCommandManagerInThisFile,
+          },
         }).start()
         actor.send({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -80,7 +99,11 @@ describe('systemIOMachine - XState', () => {
       it('should set new project directory path', async () => {
         const kclSamplesPath = path.join('public', 'kcl-samples')
         const actor = createActor(systemIOMachineDesktop, {
-          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            kclManager: kclManagerInThisFile,
+            engineCommandManager: engineCommandManagerInThisFile,
+          },
         }).start()
         actor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
@@ -94,7 +117,11 @@ describe('systemIOMachine - XState', () => {
       it('should set a new default project folder name', async () => {
         const expected = 'coolcoolcoolProjectName'
         const actor = createActor(systemIOMachineDesktop, {
-          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            kclManager: kclManagerInThisFile,
+            engineCommandManager: engineCommandManagerInThisFile,
+          },
         }).start()
         actor.send({
           type: SystemIOMachineEvents.setDefaultProjectFolderName,

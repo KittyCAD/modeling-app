@@ -12,13 +12,11 @@ import type {
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup } from 'xstate'
-
+import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
@@ -35,7 +33,6 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { AppMachineEventType } from '@src/lib/types'
 import {
   defaultLayout,
   defaultLayoutConfig,
@@ -44,7 +41,7 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -145,6 +142,20 @@ export class App {
     useContext: () => useSelector(this.billingActor, ({ context }) => context),
   }
 
+  private layoutSignal = signal<Layout>(defaultLayout)
+  layout = {
+    signal: this.layoutSignal,
+    value: this.layoutSignal.value,
+    get: () => this.layoutSignal.value,
+    set: (l: Layout) => {
+      this.layoutSignal.value = structuredClone(l)
+    },
+    reset: () => {
+      this.layoutSignal.value = structuredClone(defaultLayoutConfig)
+    },
+    saveEffect: effect(() => saveLayout({ layout: this.layoutSignal.value })),
+  }
+
   constructor() {
     this.singletons = this.buildSingletons()
     this.settingsActor.subscribe(this.onSettingsUpdate)
@@ -224,44 +235,11 @@ export class App {
       {
         input: {
           wasmInstancePromise: this.wasmPromise,
+          kclManager,
+          engineCommandManager,
         },
       }
     ).start()
-
-    const appMachine = setup({
-      types: {} as {
-        events: AppMachineEvent
-        context: AppMachineContext
-      },
-    }).createMachine({
-      id: 'modeling-app',
-      context: {
-        kclManager: kclManager,
-        engineCommandManager: engineCommandManager,
-        sceneInfra: sceneInfra,
-        sceneEntitiesManager: sceneEntitiesManager,
-        commandBarActor: this.commandBarActor,
-        layout: defaultLayout,
-      },
-      on: {
-        [AppMachineEventType.SetLayout]: {
-          actions: [
-            assign({ layout: ({ event }) => structuredClone(event.layout) }),
-            ({ event }) => saveLayout({ layout: event.layout }),
-          ],
-        },
-        [AppMachineEventType.ResetLayout]: {
-          actions: [
-            assign({ layout: structuredClone(defaultLayoutConfig) }),
-            ({ context }) => saveLayout({ layout: context.layout }),
-          ],
-        },
-      },
-    })
-
-    const appActor = createActor(appMachine, {
-      systemId: 'root',
-    })
 
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
@@ -286,24 +264,13 @@ export class App {
       },
     })
 
-    const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
-      state.context.layout
-    const getLayout = () => appActor.getSnapshot().context.layout
-    const useLayout = () => useSelector(appActor, layoutSelector)
-    const setLayout = (layout: Layout) =>
-      appActor.send({ type: AppMachineEventType.SetLayout, layout })
-
     return {
       engineCommandManager,
       rustContext,
       sceneInfra,
       kclManager,
       sceneEntitiesManager,
-      appActor,
       systemIOActor,
-      getLayout,
-      useLayout,
-      setLayout,
     }
   }
 

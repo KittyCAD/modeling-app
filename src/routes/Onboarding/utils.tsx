@@ -41,7 +41,7 @@ import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/lib/app'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
@@ -580,18 +580,17 @@ export function useOnboardingPanes(
   onMount: DefaultLayoutPaneID[] | undefined = [],
   onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
-  const { getLayout, setLayout } = useSingletons()
+  const { layout } = useApp()
   useEffect(() => {
-    setLayout(
-      setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
+    layout.set(
+      setOpenPanes(structuredClone(layout.value || defaultLayout), onMount)
     )
 
     return () =>
-      setLayout(
-        setOpenPanes(structuredClone(getLayout() || defaultLayout), onUnmount)
+      layout.set(
+        setOpenPanes(structuredClone(layout.value || defaultLayout), onUnmount)
       )
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [onMount, onUnmount])
+  }, [onMount, onUnmount, layout])
 }
 
 export function isModelingCmdGroupReady(

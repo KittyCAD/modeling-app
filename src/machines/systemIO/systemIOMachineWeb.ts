@@ -5,9 +5,7 @@ import {
 } from '@src/lib/constants'
 import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
-import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
@@ -19,64 +17,49 @@ import { fromPromise } from 'xstate'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
-    [SystemIOMachineActors.createKCLFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileNameWithExtension: string
-          requestedCode: string
-          rootContext: AppMachineContext
-          requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
-        }
-      }) => {
-        const wasmInstance = await input.wasmInstancePromise
-        // Browser version doesn't navigate, just overwrites the current file
-        // clearImportSearchParams()
-        const projectSettings =
-          readLocalStorageProjectSettingsFile(wasmInstance)
-        if (err(projectSettings)) {
-          return Promise.reject(
-            'Unable to read project settings from local storage'
-          )
-        }
-        const codeToWrite = newKclFile(
-          input.requestedCode,
-          projectSettings?.settings?.modeling?.base_unit ||
-            DEFAULT_DEFAULT_LENGTH_UNIT,
-          wasmInstance
+    [SystemIOMachineActors.createKCLFile]: fromPromise(async ({ input }) => {
+      const wasmInstance = await input.kclManager.wasmInstancePromise
+      // Browser version doesn't navigate, just overwrites the current file
+      // clearImportSearchParams()
+      const projectSettings = readLocalStorageProjectSettingsFile(wasmInstance)
+      if (err(projectSettings)) {
+        return Promise.reject(
+          'Unable to read project settings from local storage'
         )
-        if (err(codeToWrite)) return Promise.reject(codeToWrite)
-        input.rootContext.kclManager.updateCodeEditor(codeToWrite, {
-          shouldExecute: true,
-        })
-
-        // Needed for zoom_to_fit to work until #6545 is fixed:
-        // https://github.com/KittyCAD/modeling-app/issues/6545
-        await input.rootContext.kclManager.hidePlanes()
-
-        // Alternatively, this makes it work too:
-        // await engineViewIsometricWithGeometryPresent({
-        //   engineCommandManager: input.rootContext.engineCommandManager,
-        //   padding: 0.2,
-        // })
-
-        await engineStreamZoomToFit({
-          engineCommandManager: input.rootContext.engineCommandManager,
-          padding: 0.2,
-        })
-
-        return {
-          message: 'File overwritten successfully',
-          fileName: input.requestedFileNameWithExtension,
-          projectName: '',
-          subRoute: input.requestedSubRoute || '',
-        }
       }
-    ),
+      const codeToWrite = newKclFile(
+        input.requestedCode,
+        projectSettings?.settings?.modeling?.base_unit ||
+          DEFAULT_DEFAULT_LENGTH_UNIT,
+        wasmInstance
+      )
+      if (err(codeToWrite)) return Promise.reject(codeToWrite)
+      input.kclManager.updateCodeEditor(codeToWrite, {
+        shouldExecute: true,
+      })
+
+      // Needed for zoom_to_fit to work until #6545 is fixed:
+      // https://github.com/KittyCAD/modeling-app/issues/6545
+      await input.kclManager.hidePlanes()
+
+      // Alternatively, this makes it work too:
+      // await engineViewIsometricWithGeometryPresent({
+      //   engineCommandManager: input.rootContext.engineCommandManager,
+      //   padding: 0.2,
+      // })
+
+      await engineStreamZoomToFit({
+        engineCommandManager: input.engineCommandManager,
+        padding: 0.2,
+      })
+
+      return {
+        message: 'File overwritten successfully',
+        fileName: input.requestedFileNameWithExtension,
+        projectName: '',
+        subRoute: input.requestedSubRoute || '',
+      }
+    }),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       const json = localStorage.getItem(LOCAL_STORAGE_ML_CONVERSATIONS)
       if (json === null) {
@@ -97,7 +80,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           args.input.event.data.conversationId
         )
         const json = mlConversationsToJson(next)
-        await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
+        localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
         return next
       }
     ),

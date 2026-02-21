@@ -1,5 +1,5 @@
 import { useApp, useSingletons } from '@src/lib/boot'
-
+import { useLiveSignal } from '@preact/signals-react/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
@@ -38,14 +38,15 @@ function ModelingArea() {
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultAreaLibrary = () => {
-  const { settings } = useApp()
-  const { getLayout, kclManager, setLayout } = useSingletons()
+  const { settings, layout } = useApp()
+  const { kclManager } = useSingletons()
+  const currentLayout = useLiveSignal(layout.signal.value)
   const getSettings = settings.get
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
-      const rootLayout = structuredClone(getLayout())
-      setLayout(
+      const rootLayout = structuredClone(currentLayout.value)
+      layout.set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: DefaultLayoutPaneID.Code,
@@ -54,7 +55,7 @@ export const useDefaultAreaLibrary = () => {
       )
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
-    [kclManager, setLayout, getLayout]
+    [kclManager, layout, currentLayout]
   )
 
   return useMemo(
