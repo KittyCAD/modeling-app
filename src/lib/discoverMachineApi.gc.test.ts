@@ -1,69 +1,39 @@
-import { spawn } from 'node:child_process'
-import path from 'node:path'
+import type { Bonjour, Browser, Service } from 'bonjour-service'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { describe, expect, it } from 'vitest'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 
-interface ProbeResult {
-  code: number | null
-  stderr: string
-  timedOut: boolean
-}
+afterEach(() => {
+  vi.useRealTimers()
+})
 
-const runProbe = async (timeoutMs: number): Promise<ProbeResult> => {
-  const probeScriptPath = path.join(
-    process.cwd(),
-    'src/lib/discoverMachineApi.gcProbe.ts'
-  )
+describe('discoverMachineApi', () => {
+  it('stops the bonjour browser once after the timeout', async () => {
+    vi.useFakeTimers()
 
-  return new Promise((resolve) => {
-    const child = spawn(
-      process.execPath,
-      [
-        '--expose-gc',
-        '-r',
-        'ts-node/register/transpile-only',
-        '-r',
-        'tsconfig-paths/register',
-        probeScriptPath,
-        '40',
-        '10',
-      ],
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          TS_NODE_BASEURL: '.',
-          TS_NODE_PROJECT: 'tsconfig.json',
-        },
-        stdio: ['ignore', 'pipe', 'pipe'],
-      }
+    const stop = vi.fn()
+    const destroy = vi.fn()
+    const find = vi.fn(
+      (
+        _options: { protocol: 'tcp' | 'udp'; type: string },
+        _onup: (service: Service) => void
+      ) => ({ stop }) as Browser
     )
 
-    let stderr = ''
-    let timedOut = false
-
-    const timeout = setTimeout(() => {
-      timedOut = true
-      child.kill('SIGKILL')
-    }, timeoutMs)
-
-    child.stderr.on('data', (chunk: Buffer) => {
-      stderr += chunk.toString()
+    const resultPromise = discoverMachineApi({
+      timeoutAfterMs: 10,
+      createBonjour: () =>
+        ({
+          find,
+          destroy,
+        }) as unknown as Bonjour,
     })
 
-    child.on('close', (code) => {
-      clearTimeout(timeout)
-      resolve({ code, stderr, timedOut })
-    })
-  })
-}
+    await vi.advanceTimersByTimeAsync(10)
 
-describe('discoverMachineApi gc regression', () => {
-  it('exits after repeated discovery calls', async () => {
-    const result = await runProbe(20_000)
-
-    expect(result.timedOut).toBe(false)
-    expect(result.code).toBe(0)
-    expect(result.stderr).toBe('')
+    await expect(resultPromise).resolves.toBeNull()
+    expect(stop).toHaveBeenCalledTimes(1)
+    expect(destroy).toHaveBeenCalledTimes(1)
+    expect(find).toHaveBeenCalledTimes(1)
   })
 })
