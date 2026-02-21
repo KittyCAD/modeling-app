@@ -1,5 +1,3 @@
-import { useContext } from 'react'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
@@ -42,7 +40,7 @@ export const useDefaultActionLibrary = () => {
     },
     make: {
       useDisabled: () => {
-        const machineManager = useContext(MachineManagerContext)
+        const { machineManager } = useApp()
         return machineManager.noMachinesReason()
       },
       shortcut: 'Ctrl + Shift + M',

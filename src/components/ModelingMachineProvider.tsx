@@ -1,13 +1,6 @@
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import {
-  createContext,
-  use,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
@@ -27,7 +20,6 @@ import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
 import { useApp, useSingletons } from '@src/lib/boot'
 import { getDeleteKeys } from '@src/lib/utils'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
@@ -61,7 +53,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { commands, settings } = useApp()
+  const { machineManager, commands, settings } = useApp()
   const {
     engineCommandManager,
     getLayout,
@@ -131,8 +123,6 @@ export const ModelingMachineProvider = ({
   //     (typeof settingsMachine)['context']
   //   >
   // )
-
-  const machineManager = useContext(MachineManagerContext)
 
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,

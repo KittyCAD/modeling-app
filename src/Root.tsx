@@ -1,7 +1,6 @@
 import { Auth } from '@src/Auth'
 import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
-import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
 import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/SystemIOProviderDesktop'
 import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
@@ -36,14 +35,12 @@ function RootLayout() {
           >
             <LspProvider>
               <AppStateProvider>
-                <MachineManagerProvider>
-                  {isDesktop() ? (
-                    <SystemIOMachineLogicListenerDesktop />
-                  ) : (
-                    <SystemIOMachineLogicListenerWeb />
-                  )}
-                  <Outlet />
-                </MachineManagerProvider>
+                {isDesktop() ? (
+                  <SystemIOMachineLogicListenerDesktop />
+                ) : (
+                  <SystemIOMachineLogicListenerWeb />
+                )}
+                <Outlet />
               </AppStateProvider>
             </LspProvider>
           </MlEphantManagerReactContext.Provider>
