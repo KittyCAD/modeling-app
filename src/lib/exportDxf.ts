@@ -11,6 +11,38 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ToastOptions } from 'react-hot-toast'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+
+function getSketchArtifactId(
+  value: OpKclValue | null | undefined
+): string | null {
+  if (!value) return null
+  if (value.type === 'Sketch' && value.value?.artifactId) {
+    return value.value.artifactId
+  }
+  return null
+}
+
+// Helper function to find the plane artifact for a subtract2d operation
+// by resolving the sketch artifact ID from the operation args.
+function findPlaneArtifactForSubtract2d(
+  operation: StdLibCallOp,
+  kclManager: KclManager
+): Artifact | null {
+  const sketchId = getSketchArtifactId(operation.unlabeledArg?.value)
+  if (!sketchId) return null
+
+  const sketchArtifact = kclManager.artifactGraph.get(sketchId)
+  const planeArtifact = getPlaneFromArtifact(
+    sketchArtifact,
+    kclManager.artifactGraph
+  )
+
+  if (planeArtifact instanceof Error) return null
+  return kclManager.artifactGraph.get(planeArtifact.id) ?? null
+}
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
@@ -48,11 +80,21 @@ export async function exportSketchToDxf(
   let toastId: string | undefined = undefined
 
   try {
-    // Get the plane artifact associated with this sketch operation
-    const planeArtifact = findOperationPlaneLikeArtifact(
-      operation,
-      kclManager.artifactGraph
-    )
+    // For subtract2d operations, find the plane artifact from the same sketch
+    let planeArtifact
+    if (operation.name === 'subtract2d') {
+      planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
+      if (!planeArtifact) {
+        toast.error('Could not find sketch to export from subtract2d operation')
+        return new Error('Could not find plane artifact for subtract2d')
+      }
+    } else {
+      // Get the plane artifact associated with this sketch operation
+      planeArtifact = findOperationPlaneLikeArtifact(
+        operation,
+        kclManager.artifactGraph
+      )
+    }
 
     if (!planeArtifact) {
       toast.error('Could not find sketch for DXF export')
