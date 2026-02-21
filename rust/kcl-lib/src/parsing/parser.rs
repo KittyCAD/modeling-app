@@ -158,7 +158,7 @@ impl ParseContext {
             // `nesting_depth` counts active recursive parser frames. This limit is
             // lower than MAX_NESTING_DEPTH because parser combinators can use much
             // more stack per frame than simple delimiter nesting.
-            if ctxt.nesting_depth > MAX_RECURSIVE_PARSER_DEPTH {
+            if ctxt.nesting_depth >= MAX_RECURSIVE_PARSER_DEPTH {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
                 ));
