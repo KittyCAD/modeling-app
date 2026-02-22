@@ -1168,7 +1168,7 @@ impl Node<SketchBlock> {
 
         let range = SourceRange::from(self);
 
-        let (sketch_id, arg_on) = if !exec_state.sketch_mode() {
+        let (sketch_id, sketch_surface) = if !exec_state.sketch_mode() {
             // Evaluate arguments.
             //
             // Sketch mode only executes the sketch block body. Arguments must
@@ -1203,45 +1203,64 @@ impl Node<SketchBlock> {
             let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
             args.labeled = labeled;
 
-            // Create the sketch block scene object. This needs to happen before
-            // scene objects created inside the sketch block so that its ID is
-            // stable across sketch block edits. In order to create the sketch block
-            // scene object, we need to make sure the plane scene object is created.
-            let arg_on: KclValue = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+            let arg_on_value: KclValue = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
 
-            // Generate an ID for the sketch block. This must be done first so that
-            // no matter how many IDs are generated due to arguments or objects in
-            // the body, the sketch ID is always stable.
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])));
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            match &mut sketch_surface {
+                SketchSurface::Plane(plane) => {
+                    // Ensure that it's been created in the engine.
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
+                }
+                SketchSurface::Face(_) => {
+                    // All faces should already be created in the engine.
+                }
+            }
+
+            // Generate an ID for the sketch block. This must be done after
+            // arguments so that we get the same result when the arguments are
+            // cached. This must be done before the sketch block body so that no
+            // matter how many IDs are generated due to objects in the body, the
+            // sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
+            #[cfg(feature = "artifact-graph")]
             exec_state.add_placeholder_scene_object(sketch_id, range);
             let on_cache_name = sketch_on_cache_name(sketch_id);
             // Store in memory so that it's cached.
-            exec_state.mut_stack().add(on_cache_name, arg_on.clone(), range)?;
+            exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
 
-            (sketch_id, arg_on)
+            (sketch_id, sketch_surface)
         } else {
             // In sketch mode, we can't re-evaluate arguments. Instead, look
             // them up from cache.
 
-            // Generate an ID for the sketch block. This must be done first so that
-            // no matter how many IDs are generated due to arguments or objects in
-            // the body, the sketch ID is always stable.
+            // Generate an ID for the sketch block. This must be done before the
+            // sketch block body so that no matter how many IDs are generated
+            // due to objects in the body, the sketch ID is always stable.
             let sketch_id = exec_state.next_object_id();
+            #[cfg(feature = "artifact-graph")]
             exec_state.add_placeholder_scene_object(sketch_id, range);
             let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on = exec_state.stack().get(&on_cache_name, range)?.clone();
+            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
 
-            (sketch_id, arg_on)
-        };
-        let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on) else {
-            let message = "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-            debug_assert!(false, "{message}");
-            return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])));
-        };
-        let mut sketch_surface = arg_on.into_sketch_surface();
-        // Ensure that the plane has an ObjectId. Always create an Object so
-        // that we're consistent with IDs.
-        if exec_state.sketch_mode() {
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])));
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
             if sketch_surface.object_id().is_none() {
                 #[cfg(not(feature = "artifact-graph"))]
                 {
@@ -1262,17 +1281,9 @@ impl Node<SketchBlock> {
                     sketch_surface.set_object_id(last_object.id);
                 }
             }
-        } else {
-            match &mut sketch_surface {
-                SketchSurface::Plane(plane) => {
-                    // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
-                }
-                SketchSurface::Face(_) => {
-                    // All faces should already be created in the engine.
-                }
-            }
-        }
+
+            (sketch_id, sketch_surface)
+        };
         let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
             object_id
         } else {
@@ -1282,6 +1293,8 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = on_object_id;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
