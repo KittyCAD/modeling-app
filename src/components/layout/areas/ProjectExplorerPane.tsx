@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -42,6 +43,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
+
   useEffect(() => {
     projectRef.current = loaderData?.project
 
@@ -51,8 +53,15 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
+    if (projects === undefined) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      return
+    }
+
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const theProject = projects.find((p) => {
+    const theProject = projects.find((p: Project) => {
       return p.name === project.name
     })
 
@@ -128,12 +137,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       projectRef.current?.path
     ) {
       // Allow insert if it is a importable file
-      const electron = window.electron
       toast.custom(
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef.current?.path + fsZds.sep,
               ''
             )
             commands.send({
