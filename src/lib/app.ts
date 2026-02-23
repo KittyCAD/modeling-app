@@ -11,7 +11,7 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom, SnapshotFrom } from 'xstate'
+import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { assign, createActor, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -92,43 +92,65 @@ export type AppSettingsSystem = {
   useSettings: () => SettingsType
 }
 
+export type AppBillingSystem = {
+  actor: ActorRefFrom<typeof billingMachine>
+  send: ActorRefFrom<typeof billingMachine>['send']
+  useContext: () => ContextFrom<typeof billingMachine>
+}
+export type AppCtor = {
+  /**
+   * THE bundle of WASM, a cornerstone of our app. We use this for:
+   * - settings parse/unparse
+   * - KCL parsing, execution, linting, and LSP
+   *
+   * Access this through `kclManager.wasmInstance`, not directly.
+   */
+  wasmPromise: Promise<ModuleType>
+  /** Auth system. Use `send` method to act with auth. */
+  auth: AppAuthSystem
+  /** Machines to send models to print or cut on the local network */
+  machineManager: MachineManager
+  /** The command system for the app */
+  commands: AppCommandSystem
+  /** The settings system for the application */
+  settings: AppSettingsSystem
+  /** The billing system for the application */
+  billing: AppBillingSystem
+}
+
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
+
+  /**
+   * THE bundle of WASM, a cornerstone of our app. We use this for:
+   * - settings parse/unparse
+   * - KCL parsing, execution, linting, and LSP
+   *
+   * Access this through `kclManager.wasmInstance`, not directly.
+   */
+  wasmPromise: Promise<ModuleType>
+  /** Auth system. Use `send` method to act with auth. */
+  auth: AppAuthSystem
+  /** Machines to send models to print or cut on the local network */
+  machineManager: MachineManager
+  /** The command system for the app */
+  commands: AppCommandSystem
+  /** The settings system for the application */
+  settings: AppSettingsSystem
+  /** The billing system for the app, which today focuses on Zookeeper credits */
+  billing: AppBillingSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: Signal<SaveSettingsPayload>
 
-  private billingActor = createActor(billingMachine, {
-    input: {
-      ...BILLING_CONTEXT_DEFAULTS,
-      urlUserService: () => withAPIBaseURL(''),
-    },
-  }).start()
-  /** The billing system for the app, which today focuses on Zookeeper credits */
-  billing = {
-    actor: this.billingActor,
-    send: this.billingActor.send.bind(this),
-    useContext: () => useSelector(this.billingActor, ({ context }) => context),
-  }
+  constructor(subsystems: AppCtor) {
+    this.wasmPromise = subsystems.wasmPromise
+    this.auth = subsystems.auth
+    this.machineManager = subsystems.machineManager
+    this.billing = subsystems.billing
+    this.commands = subsystems.commands
+    this.settings = subsystems.settings
 
-  constructor(
-    /**
-     * THE bundle of WASM, a cornerstone of our app. We use this for:
-     * - settings parse/unparse
-     * - KCL parsing, execution, linting, and LSP
-     *
-     * Access this through `kclManager.wasmInstance`, not directly.
-     */
-    public wasmPromise: Promise<ModuleType>,
-    /** Auth system. Use `send` method to act with auth. */
-    public auth: AppAuthSystem,
-    /** Machines to send models to print or cut on the local network */
-    public machineManager: MachineManager,
-    /** The command system for the app */
-    public commands: AppCommandSystem,
-    /** The settings system for the application */
-    public settings: AppSettingsSystem
-  ) {
     this.singletons = this.buildSingletons()
     this.lastSettings = signal<SaveSettingsPayload>(
       getAllCurrentSettings(
@@ -193,19 +215,32 @@ export class App {
         }),
     }
 
+    const billingActor = createActor(billingMachine, {
+      input: {
+        ...BILLING_CONTEXT_DEFAULTS,
+        urlUserService: () => withAPIBaseURL(''),
+      },
+    }).start()
+    const billing: AppBillingSystem = {
+      actor: billingActor,
+      send: billingActor.send.bind(this),
+      useContext: () => useSelector(billingActor, ({ context }) => context),
+    }
+
     return {
       wasmPromise,
       auth,
       machineManager,
       commands,
       settings,
+      billing,
     }
   }
 
   /** Instantiate an App with all the default subsystems */
   static fromDefaults(): App {
     const defaults = App.getDefaultSystems()
-    return App.fromSubsystemsObject(defaults)
+    return new App(defaults)
   }
 
   /**
@@ -219,20 +254,7 @@ export class App {
       ? App.getDefaultSystems(provided.wasmPromise) // Allows us to instantiate without WASM!
       : App.getDefaultSystems()
     const combined = Object.assign(defaults, provided)
-    return App.fromSubsystemsObject(combined)
-  }
-
-  // If anyone can find a way that we can "spread operator" these args I'd ❤ u
-  static fromSubsystemsObject(
-    subsystems: ReturnType<typeof App.getDefaultSystems>
-  ) {
-    return new App(
-      subsystems.wasmPromise,
-      subsystems.auth,
-      subsystems.machineManager,
-      subsystems.commands,
-      subsystems.settings
-    )
+    return new App(combined)
   }
 
   /**
