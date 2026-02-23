@@ -1,3 +1,16 @@
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+// Earliest as possible, configure the fs layer.
+// In the future we can have the user switch between them at run-time, but
+// for now, there is no intention.
+let fsModulePromise = Promise.resolve()
+if (window.electron) {
+  fsModulePromise = moduleFsViaModuleImport({
+    type: StorageName.ElectronFS,
+    options: {},
+  })
+}
+
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -17,7 +30,7 @@ import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTransla
 import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
-launchApp(app)
+void fsModulePromise.then(() => launchApp(app))
 
 /** The initialization sequence for this app */
 function launchApp(app: App) {
