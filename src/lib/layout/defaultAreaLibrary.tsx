@@ -1,5 +1,4 @@
 import { useApp, useSingletons } from '@src/lib/boot'
-import { useLiveSignal } from '@preact/signals-react/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
@@ -56,7 +55,7 @@ export const useDefaultAreaLibrary = () => {
       )
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
-    [kclManager, layout, layout.signal.value]
+    [kclManager, layout]
   )
 
   return useMemo(
