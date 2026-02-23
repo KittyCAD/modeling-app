@@ -1,13 +1,6 @@
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import {
-  createContext,
-  use,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
@@ -25,9 +18,8 @@ import { reportRejection } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getDeleteKeys } from '@src/lib/utils'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
@@ -61,8 +53,8 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { machineManager, commands, settings } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     getLayout,
     kclManager,
@@ -70,20 +62,19 @@ export const ModelingMachineProvider = ({
     sceneEntitiesManager,
     sceneInfra,
     setLayout,
-    settingsActor,
-    useCommandBarState,
-    useSettings,
   } = useSingletons()
+  const settingsActor = settings.actor
   const systemDeps = useMemo(
     () => ({
       sceneInfra,
       rustContext,
       sceneEntitiesManager,
-      commandBarActor,
+      commandBarActor: commands.actor,
     }),
-    [sceneInfra, rustContext, sceneEntitiesManager, commandBarActor]
+    [sceneInfra, rustContext, sceneEntitiesManager, commands.actor]
   )
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
     modeling: {
@@ -93,7 +84,7 @@ export const ModelingMachineProvider = ({
       useNewSketchMode,
       snapToGrid,
     },
-  } = useSettings()
+  } = settingsValues
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData<IndexLoaderData>()
   const projects = useFolders()
@@ -133,8 +124,6 @@ export const ModelingMachineProvider = ({
   //   >
   // )
 
-  const machineManager = useContext(MachineManagerContext)
-
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,
     {
@@ -145,7 +134,7 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
-        commandBarActor,
+        commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
         // React Suspense will await this
@@ -432,7 +421,7 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
 
   // Global Esc handler for sketch solve mode when command bar is closed
   useHotkeys(

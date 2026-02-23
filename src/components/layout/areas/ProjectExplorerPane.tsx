@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -13,7 +14,7 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import {
   useFolders,
   useProjectDirectoryPath,
@@ -28,7 +29,8 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commandBarActor, kclManager, systemIOActor } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
@@ -41,6 +43,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
+
   useEffect(() => {
     projectRef.current = loaderData?.project
 
@@ -50,8 +53,15 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
+    if (projects === undefined) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      return
+    }
+
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const theProject = projects.find((p) => {
+    const theProject = projects.find((p: Project) => {
       return p.name === project.name
     })
 
@@ -127,15 +137,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       projectRef.current?.path
     ) {
       // Allow insert if it is a importable file
-      const electron = window.electron
       toast.custom(
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef.current?.path + fsZds.sep,
               ''
             )
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: {
                 name: 'Insert',

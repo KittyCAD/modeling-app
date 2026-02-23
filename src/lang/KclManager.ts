@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
@@ -102,6 +103,7 @@ import {
 } from '@src/editor/plugins/ast'
 import {
   operationsAnnotation,
+  operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { setKclVersion } from '@src/lib/kclVersion'
@@ -278,6 +280,9 @@ export class KclManager extends EventTarget {
     this.redoDepth.value =
       redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
+  get operations() {
+    return this._editorView.state.field(operationsStateField)
+  }
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
@@ -583,33 +588,40 @@ export class KclManager extends EventTarget {
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
-          const { sceneGraph, execOutcome } =
+          const setProgramOutcome =
             await this.singletons.rustContext.hackSetProgram(
               this.ast,
               await jsAppSettings(this.singletons.rustContext.settingsActor)
             )
 
-          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-          // Always invalidate IDs for direct edits since we don't know what the user changed
-          const sceneGraphDelta: SceneGraphDelta = {
-            new_graph: sceneGraph,
-            new_objects: [],
-            invalidates_ids: true,
-            exec_outcome: execOutcome,
-          }
+          if (setProgramOutcome.type === 'Success') {
+            // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+            // Always invalidate IDs for direct edits since we don't know what the user changed
+            const sceneGraphDelta: SceneGraphDelta = {
+              new_graph: setProgramOutcome.sceneGraph,
+              new_objects: [],
+              invalidates_ids: true,
+              exec_outcome: setProgramOutcome.execOutcome,
+            }
 
-          const kclSource: SourceDelta = {
-            text: newCode,
-          }
+            const kclSource: SourceDelta = {
+              text: newCode,
+            }
 
-          // Send event to sketch solve machine via modeling machine
-          this.sendModelingEvent({
-            type: 'update sketch outcome',
-            data: {
-              kclSource,
-              sceneGraphDelta,
-            },
-          })
+            // Send event to sketch solve machine via modeling machine
+            this.sendModelingEvent({
+              type: 'update sketch outcome',
+              data: {
+                kclSource,
+                sceneGraphDelta,
+              },
+            })
+          } else {
+            console.debug(
+              'Error when executing after user edit:',
+              setProgramOutcome
+            )
+          }
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
@@ -1730,7 +1742,8 @@ export class KclManager extends EventTarget {
   }
   get currentFileName() {
     return (
-      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+      this._currentFilePath?.split(window.electron?.path.sep || '/').pop() ||
+      null
     )
   }
 
@@ -1819,7 +1832,6 @@ export class KclManager extends EventTarget {
   ) {
     if (this.isBufferMode) return
     if (window.electron && path !== null) {
-      const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -1836,8 +1848,8 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          electron
-            .writeFile(path, newCode)
+          fsZds
+            .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)

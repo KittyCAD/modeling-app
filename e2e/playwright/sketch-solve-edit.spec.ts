@@ -57,12 +57,12 @@ mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
 sketch(on = XZ) {
-  sketch2::line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
-  sketch2::line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
-  sketch2::line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
-  sketch2::point(at = [var -1.44mm, var 1.16mm])
-  sketch2::point(at = [var -0.41mm, var 0.26mm])
-  sketch2::point(at = [var -0.36mm, var -1.23mm])
+  line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
+  line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
+  line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
+  point(at = [var -1.44mm, var 1.16mm])
+  point(at = [var -0.41mm, var 0.26mm])
+  point(at = [var -0.36mm, var -1.23mm])
 }
 `
 
@@ -90,12 +90,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Place cursor in sketch block and verify Edit Sketch button', async () => {
-      await editor.scrollToText(
-        'sketch2::line(start = [var -0.88mm, var 0.54mm]'
-      )
-      await page
-        .getByText('sketch2::line(start = [var -0.88mm, var 0.54mm]')
-        .click()
+      await editor.scrollToText('line(start = [var -0.88mm, var 0.54mm]')
+      await page.getByText('line(start = [var -0.88mm, var 0.54mm]').click()
 
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
@@ -316,7 +312,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.getByTestId('coincident').click()
 
       await editor.expectEditor.toContain(
-        'sketch2::coincident([line1.start, line3.end])'
+        'coincident([line1.start, line3.end])'
       )
       await page.waitForTimeout(100)
     })
@@ -352,7 +348,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       // await page.waitForTimeout(100)
       await page.getByTestId('Parallel').click()
 
-      await editor.expectEditor.toContain('sketch2::parallel([line1, line2])')
+      await editor.expectEditor.toContain('parallel([line1, line2])')
     })
   })
 
@@ -369,10 +365,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       const code = `@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
-  sketch2::horizontal(line1)
-  line2 = sketch2::line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
-  sketch2::coincident([line2.start, line1.end])
+  line1 = line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
+  horizontal(line1)
+  line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
+  coincident([line2.start, line1.end])
 }`
       await context.addInitScript(async (code) => {
         localStorage.setItem('persistCode', code)
@@ -409,7 +405,7 @@ sketch(on = XY) {
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await page.waitForTimeout(1000)
-      await editor.expectEditor.not.toContain('sketch2::horizontal(line1)')
+      await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
@@ -421,7 +417,7 @@ sketch(on = XY) {
       await page.getByRole('button', { name: 'Delete' }).click()
       await page.waitForTimeout(1000)
       await editor.expectEditor.not.toContain(
-        'sketch2::coincident([line2.start, line1.end])'
+        'coincident([line2.start, line1.end])'
       )
     })
 

@@ -9,6 +9,7 @@ import type {
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { MachineManager } from '@src/lib/MachineManager'
 
 const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
@@ -82,18 +83,12 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   sceneEntitiesManager: SceneEntities
   engineCommandManager: ConnectionManager
   commandBarActor: CommandBarActorType
+  machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',
     currentTool: 'none',
     toastId: null,
-    machineManager: {
-      machines: [],
-      machineApiIp: null,
-      currentMachine: null,
-      setCurrentMachine: () => {},
-      noMachinesReason: () => undefined,
-    },
     selection: [],
     selectionRanges: {
       graphSelections: [],

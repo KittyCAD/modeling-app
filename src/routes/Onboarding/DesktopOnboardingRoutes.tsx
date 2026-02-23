@@ -33,7 +33,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -414,7 +414,7 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
@@ -433,11 +433,11 @@ function PromptToEditPrompt() {
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(
-    isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    isModelingCmdGroupReady(commands.actor.getSnapshot())
   )
   useOnModelingCmdGroupReadyOnce(() => {
     setIsReady(true)
-    commandBarActor.send({
+    commands.send({
       type: 'Find and select command',
       data: {
         groupId: 'modeling',
