@@ -55,7 +55,9 @@ export class ZDSFacet<Input = unknown, Output = readonly Input[]>
     return this
   }
 
+  // TS shenanigans
   declare extension: Extension
+  declare tag: Output
 }
 
 /// Extension values can be
@@ -67,3 +69,31 @@ export class ZDSFacet<Input = unknown, Output = readonly Input[]>
 /// `extension` property. Extensions can be nested in arrays
 /// arbitrarily deep—they will be flattened when processed.
 export type Extension = { extension: Extension } | readonly Extension[]
+
+type ExtensionInfo = {
+  title: string
+  description: string
+}
+
+/**
+ * A configurable extension has the ability to be reconfigured at runtime
+ */
+export class ExtensionConfigurable {
+  private extensionSignal = signal<Extension>([])
+  get extension() {
+    return this.extensionSignal.value
+  }
+
+  constructor(
+    public meta: ExtensionInfo,
+    initialExtensionValue?: Extension
+  ) {
+    if (initialExtensionValue) {
+      this.extensionSignal.value = initialExtensionValue
+    }
+  }
+
+  reconfigure(newExtension: Extension) {
+    this.extensionSignal.value = newExtension
+  }
+}

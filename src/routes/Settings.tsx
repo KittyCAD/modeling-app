@@ -25,7 +25,7 @@ export const Settings = () => {
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
   const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel | 'keybindings') ??
+    (searchParams.get('tab') as SettingsLevel | 'keybindings' | 'extensions') ??
     (isFileSettings ? 'project' : 'user')
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -105,7 +105,8 @@ export const Settings = () => {
                 gridTemplateRows: '1fr',
               }}
             >
-              {searchParamTab !== 'keybindings' ? (
+              {searchParamTab !== 'keybindings' &&
+              searchParamTab !== 'extensions' ? (
                 <>
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
@@ -117,6 +118,8 @@ export const Settings = () => {
                     ref={scrollRef}
                   />
                 </>
+              ) : searchParamTab === 'extensions' ? (
+                <>EXTENSIONS YAY</>
               ) : (
                 <>
                   <KeybindingsSectionsList scrollRef={scrollRef} />

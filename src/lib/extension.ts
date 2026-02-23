@@ -6,7 +6,7 @@ import {
   AreaTypeDefinition,
   LayoutTransformationSet,
 } from '@src/lib/layout'
-import { Extension, ZDSFacet } from './facet'
+import { Extension, ExtensionConfigurable, ZDSFacet } from './facet'
 import { Field } from './field'
 import { isDesktop } from './isDesktop'
 import {
@@ -41,36 +41,30 @@ export const statusBar: Extension = [statusBarFacet, statusBarField]
 // Now use the status bar extension in a narrower extension that registers
 // a status bar item, also providing reactivity hooks through signals.
 export const versionClicky = signal(0)
-export const appVersion: Extension = [
+const appVersionCompartment = signal<Extension>([
   statusBarFacet.extendDynamic(
     computed(() => ({
       global: [
-        isDesktop()
-          ? {
-              id: 'version',
-              element: 'externalLink',
-              label: `v${APP_VERSION}`,
-              href: getReleaseUrl(),
-              toolTip: {
-                children: 'View the release notes on GitHub',
-              },
-            }
-          : {
-              id: 'download-desktop-app',
-              element: 'externalLink',
-              label: `Download the app ${versionClicky.value}`,
-              href: withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`),
-              icon: 'download',
-              toolTip: {
-                children:
-                  "The present web app is limited in features. We don't want you to miss out!",
-              },
-            },
+        {
+          id: 'download-desktop-app',
+          element: 'externalLink',
+          label: `Download the app ${versionClicky.value}`,
+          href: withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`),
+          icon: 'download',
+          toolTip: {
+            children:
+              "The present web app is limited in features. We don't want you to miss out!",
+          },
+        },
       ],
       local: [],
     }))
   ),
-]
+])
+export const appVersion = new ExtensionConfigurable({
+  title: 'Status Bar: App Version',
+  description: 'Shows the current app version in the status bar',
+})
 
 const areaLibrary = ZDSFacet.define<
   [string, AreaTypeDefinition],

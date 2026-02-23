@@ -35,6 +35,15 @@ export function SettingsTabs({
           )}
         </RadioGroup.Option>
       )}
+      <RadioGroup.Option value="extensions">
+        {({ checked }) => (
+          <SettingsTabButton
+            checked={checked}
+            icon="function"
+            text="Extensions"
+          />
+        )}
+      </RadioGroup.Option>
       <RadioGroup.Option value="keybindings">
         {({ checked }) => (
           <SettingsTabButton

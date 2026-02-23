@@ -1,7 +1,7 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { uuidv4 } from '@src/lib/utils'
 
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -49,17 +49,8 @@ import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import React from 'react'
-import {
-  ExtensionConfig,
-  StatusBarConfig,
-  statusBarField,
-} from '@src/lib/extension'
-import { Signal, signal } from '@preact/signals-core'
-import { computed } from '@preact/signals-core'
-import { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { appVerionStatusExtension } from '@src/components/StatusBar/defaultStatusBarItems'
-import { Extension, ZDSFacet } from './facet'
+import { signal } from '@preact/signals-core'
+import { Extension } from './facet'
 import { Field, FieldSet } from './field'
 
 // We set some of our singletons on the window for debugging and E2E tests
