@@ -955,7 +955,6 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            rootContext: self.system.get('root').getSnapshot().context,
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
           }
@@ -1071,7 +1070,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             wasmInstancePromise: context.wasmInstancePromise,
           }
         },
@@ -1096,7 +1094,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedSubRoute: event.data.requestedSubRoute,
@@ -1135,7 +1132,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
@@ -1183,7 +1179,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
@@ -1231,7 +1226,6 @@ export const systemIOMachine = setup({
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1257,7 +1251,6 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1279,7 +1272,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedPath: event.data.requestedPath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1301,7 +1293,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedAbsolutePath: event.data.requestedAbsolutePath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1323,7 +1314,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedAbsolutePath: event.data.requestedAbsolutePath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1349,7 +1339,6 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1399,7 +1388,6 @@ export const systemIOMachine = setup({
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
@@ -1447,7 +1435,6 @@ export const systemIOMachine = setup({
             context,
             requestedPath: event.data.requestedPath,
             requestedProjectName: event.data.requestedProjectName,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1483,7 +1470,6 @@ export const systemIOMachine = setup({
             context,
             src: event.data.src,
             target: event.data.target,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1507,7 +1493,6 @@ export const systemIOMachine = setup({
             src: event.data.src,
             target: event.data.target,
             successMessage: event.data.successMessage,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1532,7 +1517,6 @@ export const systemIOMachine = setup({
             target: event.data.target,
             requestedProjectName: event.data.requestedProjectName,
             successMessage: event.data.successMessage,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {

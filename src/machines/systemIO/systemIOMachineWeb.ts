@@ -44,7 +44,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
 
       // Alternatively, this makes it work too:
       // await engineViewIsometricWithGeometryPresent({
-      //   engineCommandManager: input.rootContext.engineCommandManager,
+      //   engineCommandManager: input.kclManager.systemDeps.engineCommandManager,
       //   padding: 0.2,
       // })
 
