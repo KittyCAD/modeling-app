@@ -41,6 +41,11 @@ fn run_on_manifest(manifest_path: std::path::PathBuf, args: &Args) -> Result<()>
             update_kcl_lib_dependency_versions(&mut doc, next_version);
         }
     }
+    if crate_name == "kcl-test-server" {
+        if let Some(next_version) = next_version.as_ref() {
+            update_kcl_test_server_dependency_versions(&mut doc, next_version);
+        }
+    }
 
     std::fs::write(manifest_path, doc.to_string()).context("Could not write updated Cargo.toml")?;
     Ok(())
@@ -84,6 +89,16 @@ fn update_kcl_lib_dependency_versions(cargo_dot_toml: &mut DocumentMut, next_ver
     for dependency in ["kcl-derive-docs", "kcl-error"] {
         if !update_dependency_version(cargo_dot_toml, dependency, next_version) {
             eprintln!("Warning: could not find dependency `{dependency}` in kcl-lib [dependencies]");
+        }
+    }
+}
+
+fn update_kcl_test_server_dependency_versions(cargo_dot_toml: &mut DocumentMut, next_version: &semver::Version) {
+    // Make kcl-test-server depend on the new versions so that crates that
+    // depend on kcl-test-server also update these.
+    for dependency in ["kcl-lib"] {
+        if !update_dependency_version(cargo_dot_toml, dependency, next_version) {
+            eprintln!("Warning: could not find dependency `{dependency}` in kcl-test-server [dependencies]");
         }
     }
 }
@@ -294,6 +309,31 @@ kcl-error = "0.1"
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]
+                .as_value()
+                .and_then(Value::as_str),
+            Some("0.2.129")
+        );
+    }
+
+    #[test]
+    fn test_update_kcl_test_server_dependency_versions() {
+        const KCL_TEST_SERVER_EXAMPLE: &str = r#"
+[package]
+name = "kcl-test-server"
+version = "0.2.128"
+
+[dependencies]
+kcl-lib = { version = "0.1", path = "../kcl-lib" }
+        "#;
+
+        let mut cargo_dot_toml = KCL_TEST_SERVER_EXAMPLE.parse::<DocumentMut>().unwrap();
+        let next_version = update_semver(Some(SemverBump::Patch), &mut cargo_dot_toml)
+            .unwrap()
+            .unwrap();
+        update_kcl_test_server_dependency_versions(&mut cargo_dot_toml, &next_version);
+
+        assert_eq!(
+            cargo_dot_toml["dependencies"]["kcl-lib"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
             Some("0.2.129")
