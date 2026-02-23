@@ -14,8 +14,10 @@ import {
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
+  useSignals()
   const { auth, billing, settings, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const settingsValues = settings.useSettings()
@@ -26,7 +28,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const loaderFile = project?.executingFileEntry
+  const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   const sendBillingUpdate = () => {

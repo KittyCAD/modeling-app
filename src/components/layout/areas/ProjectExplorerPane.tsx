@@ -67,7 +67,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     const duplicated = structuredClone(foundProject)
     addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-  }, [file, projects, project])
+  }, [file, projects, project, systemIOActor])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)

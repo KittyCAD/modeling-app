@@ -13,6 +13,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import fsZds from '@src/lib/fs-zds'
+import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -25,6 +26,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  useSignals()
   const { auth, commands, settings, project } = useApp()
   const {
     engineCommandManager,
@@ -40,7 +42,7 @@ export const ModelingPageProvider = ({
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
-  const file = project?.executingFileEntry
+  const file = project?.executingFileEntry.value
   const filePath = useAbsoluteFilePath()
 
   useEffect(() => {

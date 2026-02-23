@@ -135,7 +135,7 @@ export function OpenedProject() {
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      project?.executingPath ? project.executingFileEntry : null
+      project?.executingPath ? project.executingFileEntry.value : null
     )
   }, [onProjectOpen, projectName, projectPath, project])
 

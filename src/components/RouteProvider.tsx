@@ -13,16 +13,18 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  useSignals()
   const { settings, project } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
   const loadedProject = project?.projectIORefSignal.value
-  const loadedFile = project?.executingFileEntry
+  const loadedFile = project?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined

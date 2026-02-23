@@ -38,7 +38,7 @@ describe('project system', () => {
 
     expect(app.project).toBeDefined()
     expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
-    expect(app.project?.executingFileEntry.name).toEqual('main.kcl')
+    expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 
     app.closeProject()
 

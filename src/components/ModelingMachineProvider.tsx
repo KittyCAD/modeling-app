@@ -35,6 +35,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -51,6 +52,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  useSignals()
   const { machineManager, commands, settings, project } = useApp()
   const {
     engineCommandManager,
@@ -88,7 +90,7 @@ export const ModelingMachineProvider = ({
   const theProject = useRef<Project | undefined>(
     project?.projectIORefSignal.value
   )
-  const file = project?.executingFileEntry
+  const file = project?.executingFileEntry.value
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
