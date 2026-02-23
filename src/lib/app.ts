@@ -145,7 +145,9 @@ export class App {
   private layoutSignal = signal<Layout>(defaultLayout)
   layout = {
     signal: this.layoutSignal,
-    value: this.layoutSignal.value,
+  get value() {
+    return this.layoutSignal.value;
+  },
     get: () => this.layoutSignal.value,
     set: (l: Layout) => {
       this.layoutSignal.value = structuredClone(l)
