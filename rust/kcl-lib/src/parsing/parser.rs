@@ -114,12 +114,13 @@ impl Drop for NestingGuard {
         if !self.should_decrement {
             return;
         }
-        CTXT.with_borrow_mut(|ctxt| {
-            let Some(ctxt) = ctxt.as_mut() else {
-                return;
-            };
-            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
-        });
+        // Don't panic in a drop if we're already panicking.
+        if ParseContext::exit_nesting().is_err() && !std::thread::panicking() {
+            debug_assert!(
+                false,
+                "ParseContext should always be present when a NestingGuard is active"
+            );
+        }
     }
 }
 
@@ -165,6 +166,20 @@ impl ParseContext {
             }
             ctxt.nesting_depth += 1;
             Ok(NestingGuard { should_decrement: true })
+        })
+    }
+
+    /// Normally, you should use a `NestingGuard`, so you shouldn't need to call
+    /// this directly.
+    ///
+    /// Returns an error if there is no `ParseContext` in thread-local storage.
+    fn exit_nesting() -> Result<(), ()> {
+        CTXT.with_borrow_mut(|ctxt| {
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Err(());
+            };
+            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
+            Ok(())
         })
     }
 
