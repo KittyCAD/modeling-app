@@ -3,7 +3,7 @@ import type {
   ImageEntry,
   ImageManager,
 } from '@src/clientSideScene/image/ImageManager'
-import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/ImageRenderer'
+import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
 import type { Coords2d } from '@src/lang/util'
 import { Vector2 } from 'three'
 import {

@@ -12,12 +12,11 @@ import {
   type ImageEntry,
   getImageFilePath,
 } from '@src/clientSideScene/image/ImageManager'
+import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { ImageTransformHandler } from '@src/clientSideScene/image/ImageTransformHandler'
 import { getEXTNoPeriod } from '@src/lib/paths'
-
-export const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
 const IMAGE_RENDER_ORDER_BASE = -1000
 
 type ImageMesh = Mesh<PlaneGeometry, MeshBasicMaterial>
