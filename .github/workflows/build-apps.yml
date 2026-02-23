@@ -238,7 +238,7 @@ jobs:
             out/*-x86_64-linux.*
 
       - uses: actions/upload-artifact@v6
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
           path: |
