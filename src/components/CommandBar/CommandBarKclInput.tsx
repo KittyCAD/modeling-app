@@ -22,9 +22,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { kclManager, rustContext } from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -72,12 +70,14 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const { commands, settings } = useApp()
+  const { kclManager, rustContext } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const {
     context: { selectionRanges },
   } = useModelingContext()
@@ -155,7 +155,7 @@ function CommandBarKclInput({
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeyWrapper(
     ['mod + k', 'esc'],
-    () => commandBarActor.send({ type: 'Close' }),
+    () => commands.send({ type: 'Close' }),
     kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
@@ -239,10 +239,10 @@ function CommandBarKclInput({
   useEffect(() => {
     miniEditor.dispatch({
       effects: themeCompartment.reconfigure(
-        editorTheme[getResolvedTheme(settings.app.theme.current)]
+        editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
       ),
     })
-  }, [settings.app.theme])
+  }, [settingsValues.app.theme])
 
   useEffect(() => {
     if (editorRef.current) {

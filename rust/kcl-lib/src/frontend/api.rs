@@ -3,6 +3,7 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::units::UnitLength;
 use serde::{Deserialize, Serialize};
 
 pub use crate::ExecutorSettings as Settings;
@@ -18,7 +19,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
@@ -204,6 +205,18 @@ impl Number {
         Number {
             value,
             units: self.units,
+        }
+    }
+}
+
+impl From<(f64, UnitLength)> for Number {
+    fn from((value, units): (f64, UnitLength)) -> Self {
+        // Direct conversion from UnitLength to NumericSuffix (never panics)
+        // The From<UnitLength> for NumericSuffix impl is in execution::types
+        let units_suffix = NumericSuffix::from(units);
+        Number {
+            value,
+            units: units_suffix,
         }
     }
 }

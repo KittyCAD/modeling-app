@@ -7,7 +7,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
+    StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
@@ -29,6 +30,7 @@ pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
 pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -68,6 +70,7 @@ pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
 mod sketch_solve;
+mod sketch_transpiler;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -318,6 +321,10 @@ impl TagIdentifier {
             self.info.push((*oe, ot.clone()));
         }
     }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        self.get_cur_info().map(|info| info.geometry.clone())
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -365,8 +372,8 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch the tag is on.
-    pub sketch: uuid::Uuid,
+    /// The geometry the tag is on.
+    pub geometry: Geometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -572,22 +579,24 @@ impl ExecutorContext {
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+            .commands_ws(kittycad::modeling::CommandsWsParams {
+                api_call_id: None,
+                fps: None,
+                order_independent_transparency: None,
+                post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                pool: None,
+                pr: None,
+                unlocked_framerate: None,
+                webrtc: Some(false),
+                video_res_width: None,
+                video_res_height: None,
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =
@@ -629,6 +638,29 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
         }
+    }
+
+    /// Create a new mock executor context for WASM LSP servers.
+    /// This is a convenience function that creates a mock engine and FileManager from a FileSystemManager.
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_mock_for_lsp(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
+        use crate::mock_engine;
+
+        let mock_engine = Arc::new(Box::new(
+            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
+        ) as Box<dyn EngineManager>);
+
+        let fs = Arc::new(FileManager::new(fs_manager));
+
+        Ok(ExecutorContext {
+            engine: mock_engine,
+            fs,
+            settings,
+            context_type: ContextType::Mock,
+        })
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -1368,9 +1400,12 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
-
-        if !self.is_mock() {
+        /// Write the memory of an execution to the cache for reuse in mock
+        /// execution.
+        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+            if ctx.is_mock() {
+                return;
+            }
             let mut stack = exec_state.stack().deep_clone();
             stack.restore_env(env_ref);
             let state = cache::SketchModeState {
@@ -1383,6 +1418,21 @@ impl ExecutorContext {
             };
             cache::write_old_memory(state).await;
         }
+
+        let env_ref = match result {
+            Ok(env_ref) => env_ref,
+            Err((err, env_ref)) => {
+                // Preserve memory on execution failures so follow-up mock
+                // execution can still reuse stable IDs before the error.
+                if let Some(env_ref) = env_ref {
+                    write_old_memory(self, exec_state, env_ref).await;
+                }
+                return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
+            }
+        };
+
+        write_old_memory(self, exec_state, env_ref).await;
+
         let session_data = self.engine.get_session_data().await;
 
         Ok((env_ref, session_data))
@@ -1585,9 +1635,9 @@ impl ExecutorContext {
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options {
-                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: if deterministic_time {
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {e}"),
@@ -1596,8 +1646,8 @@ impl ExecutorContext {
                         })?)
                     } else {
                         None
-                    },
-                },
+                    })
+                    .build(),
             ))
             .await?;
 
@@ -1619,12 +1669,6 @@ impl ArtifactId {
 
     /// A placeholder artifact ID that will be filled in later.
     pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-
-    /// The constraint artifact ID is a special. They don't need to be
-    /// represented in the artifact graph.
-    pub fn constraint() -> Self {
         Self(Uuid::nil())
     }
 }
@@ -2888,5 +2932,34 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_parameter() {
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5, amount = 2)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        // If the parameter isn't used, there's no warning.
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 0);
     }
 }

@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -112,8 +113,45 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "center_object_id": 4,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed"
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
                 }
               }
             }
@@ -126,6 +164,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -194,8 +233,45 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "start_object_id": 8,
                     "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineX"
                 }
               }
             }
@@ -208,6 +284,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -276,8 +353,45 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "start_object_id": 12,
                     "end_object_id": 13,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineY"
                 }
               }
             }
@@ -290,6 +404,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 6,
                 "kind": {
                   "point": {
@@ -327,6 +442,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p0"
                 }
               }
             }
@@ -339,6 +490,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 18,
                 "kind": {
                   "point": {
@@ -376,6 +528,42 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "freedom": "Fixed"
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p1"
                 }
               }
             }

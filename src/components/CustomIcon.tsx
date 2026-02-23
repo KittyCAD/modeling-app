@@ -252,6 +252,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  body: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 7C16 8.65685 13.3137 10 10 10C6.68629 10 4 8.65685 4 7M16 7C16 5.34315 13.3137 4 10 4C6.68629 4 4 5.34315 4 7M16 7V13C16 14.6569 13.3137 16 10 16C6.68629 16 4 14.6569 4 13V7"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   booleanExclude: (
     <svg
       viewBox="0 0 20 20"
@@ -556,6 +564,19 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  construction: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="construction"
+    >
+      <path
+        d="M9.92951 15.8695L8.65685 17.1421L7.94975 16.435L9.2224 15.1624L9.92951 15.8695ZM14.1721 11.6268L11.6268 14.1722L10.9197 13.465L13.465 10.9197L14.1721 11.6268ZM17.1421 8.65686L15.8695 9.92951L15.1624 9.2224L16.435 7.94975L17.1421 8.65686ZM8.65685 12.8995L6.53553 15.0208L6.18198 12.5459L8.65685 12.8995ZM13.6066 5.12132L13.9602 7.5962L11.4853 7.24264L13.6066 5.12132ZM12.1924 3.70711L3.70711 12.1924L3 11.4853L11.4853 3L12.1924 3.70711Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   dimension: (
     <svg
       viewBox="0 0 20 20"
@@ -768,6 +789,19 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  paperclip: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="paperclip"
+    >
+      <path
+        d="M11.5897 4.45703L4.97939 11.0664C4.00728 12.0385 4.00659 13.6156 4.97841 14.5879C5.95067 15.5601 7.52861 15.5601 8.50087 14.5879L15.1991 7.88867C15.8824 7.20531 15.8823 6.09748 15.1991 5.41406C14.5157 4.73082 13.4079 4.73074 12.7245 5.41406L6.6249 11.5137C6.23449 11.9042 6.23451 12.5372 6.6249 12.9277C7.0154 13.3181 7.64848 13.3181 8.03896 12.9277L11.9286 9.03906L12.6356 9.74609L8.74599 13.6348C7.96499 14.4157 6.6989 14.4156 5.91786 13.6348C5.13695 12.8537 5.13694 11.5877 5.91786 10.8066L12.0175 4.70703C13.0914 3.63318 14.8322 3.63327 15.9061 4.70703C16.9799 5.78097 16.98 7.52182 15.9061 8.5957L9.2079 15.2949C7.84512 16.6577 5.63416 16.6577 4.27138 15.2949C2.90904 13.9321 2.90972 11.722 4.27236 10.3594L10.8817 3.75L11.5897 4.45703Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   fix: (
     <svg
       viewBox="0 0 20 20"
@@ -779,6 +813,30 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M16 10H14.0205L12.4326 12.75L11.5674 12.25L12.8662 10H10.6211L9.03418 12.75L8.60059 12.5L8.16797 12.25L9.4668 10H7.28809L5.70117 12.75L5.26758 12.5L4.83496 12.25L6.13379 10H4V9H16V10ZM16 8H4V7H16V8Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  flipSurface: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="flip surface"
+    >
+      <rect x="7" y="3" width="1" height="5.5" fill="currentColor" />
+      <rect
+        width="5"
+        height="5"
+        transform="matrix(0.866025 0.5 -0.866025 0.5 13.3922 9.5)"
+        fill="currentColor"
+      />
+      <path
+        d="M6 7.76758L4.73242 8.5L7.33008 10L9.92773 8.5L9 7.96387V6.96387L11.6602 8.5L7.33008 11L3 8.5L6 6.76855V7.76758Z"
+        fill="currentColor"
+      />
+      <path
+        d="M14 17.6963H13V15.124L13.3926 15.3506L13.8926 15.0625L14 15V17.6963Z"
         fill="currentColor"
       />
     </svg>
@@ -974,6 +1032,22 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M14 10.5H6V9.5H14V10.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  horizontalDimension: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="horizontal dimension"
+      transform="translate(-10, 5) rotate(45 10 10)"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
         fill="currentColor"
       />
     </svg>
@@ -1598,6 +1672,39 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  rectangleAngled: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle angled"
+    >
+      <g transform="rotate(-45 10 10)">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
+          fill="currentColor"
+        />
+      </g>
+    </svg>
+  ),
+  rectangleCenter: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle center"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
+        fill="currentColor"
+      />
+      <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+    </svg>
+  ),
   refresh: (
     <svg
       viewBox="0 0 20 20"
@@ -1845,6 +1952,22 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  trimTool: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m7.848 8.25 1.536.887M7.848 8.25a3 3 0 1 1-5.196-3 3 3 0 0 1 5.196 3Zm1.536.887a2.165 2.165 0 0 1 1.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 1 1-5.196 3 3 3 0 0 1 5.196-3Zm1.536-.887a2.165 2.165 0 0 0 1.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863 2.077-1.199m0-3.328a4.323 4.323 0 0 1 2.068-1.379l5.325-1.628a4.5 4.5 0 0 1 2.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.33 4.33 0 0 0 10.607 12m3.736 0 7.794 4.5-.802.215a4.5 4.5 0 0 1-2.48-.043l-5.326-1.629a4.324 4.324 0 0 1-2.068-1.379M14.343 12l-2.882 1.664"
+      />
+    </svg>
+  ),
   vertical: (
     <svg
       viewBox="0 0 20 20"
@@ -1856,6 +1979,22 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10 16H9V4H10V16Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  verticalDimension: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="vertical dimension"
+      transform="translate(5, -10) rotate(-45 10 10)"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
         fill="currentColor"
       />
     </svg>

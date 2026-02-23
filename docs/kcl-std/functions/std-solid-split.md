@@ -1,11 +1,11 @@
 ---
 title: "split"
 subtitle: "Function in std::solid"
-excerpt: "Split a body into two parts: the part that overlaps with a tool, and the part that doesn't."
+excerpt: "Split a body into two parts: the part that overlaps with a tool, and the part that doesn't. NOTE: Currently `merge = true` is required. You must set this argument. In the future, this restriction will be removed."
 layout: manual
 ---
 
-Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
+Split a body into two parts: the part that overlaps with a tool, and the part that doesn't. NOTE: Currently `merge = true` is required. You must set this argument. In the future, this restriction will be removed.
 
 ```kcl
 split(
@@ -63,7 +63,7 @@ fn square(@plane, offset, y) {
 cube = [
   square(XY, offset = 0, y = false),
   square(XZ, offset = 0, y = true)
-  |> flipSurface(),
+    |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),

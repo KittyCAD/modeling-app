@@ -2365,7 +2365,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2826,7 +2826,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.9529412,
           "g": 0.8862745,
           "b": 0.84705883,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3027,54 +3027,6 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 9.5
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3091,333 +3043,31 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 12.99038105676658,
-          "y": 7.499999999999999,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -0.0,
-            "y": -0.0
-          },
-          "radius": 15.0,
-          "start": {
-            "unit": "degrees",
-            "value": 30.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 44.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 22.140902993759195,
-            "y": 14.378470524396711,
-            "z": 0.0
-          },
-          "end": {
-            "x": 51.99784935904458,
-            "y": 9.16862378081392,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 52.286154029554915,
-            "y": 7.348339730691455,
-            "z": 0.0
-          },
-          "end": {
-            "x": 52.510756075444824,
-            "y": 5.519102860532103,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 23.926525577767556,
-            "y": 11.157122109954464,
-            "z": 0.0
-          },
-          "end": {
-            "x": 12.99038105676658,
-            "y": 7.499999999999999,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
+        "type": "twist_extrude",
+        "target": "[uuid]",
+        "distance": 18.5,
+        "faces": null,
+        "center_2d": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 23.0
+          "y": 0.0
         },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
+        "total_rotation_angle": {
+          "unit": "degrees",
+          "value": -50.0
         },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+        "angle_step_size": {
+          "unit": "degrees",
+          "value": 12.0
         },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 15.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -0.0,
-            "y": -0.0
-          },
-          "radius": 15.0,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 14.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 26.363819717520748,
-            "y": 1.381669244813717,
-            "z": 0.0
-          },
-          "end": {
-            "x": 49.61577037749596,
-            "y": -18.058663567595307,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 48.95530752112637,
-            "y": -19.779228132360153,
-            "z": 0.0
-          },
-          "end": {
-            "x": 48.23520016352932,
-            "y": -21.475694754402248,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 26.29954002962208,
-            "y": -2.3009116085381756,
-            "z": 0.0
-          },
-          "end": {
-            "x": 15.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "loft",
-        "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "v_degree": 2,
-        "bez_approximate_rational": false,
-        "base_curve_index": null,
         "tolerance": 0.0000001,
         "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -3456,7 +3106,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.9529412,
           "g": 0.8862745,
           "b": 0.84705883,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3682,7 +3332,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.007843138,
           "g": 0.105882354,
           "b": 0.33333334,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3915,7 +3565,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.85882354,
           "g": 0.78431374,
           "b": 0.61960787,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

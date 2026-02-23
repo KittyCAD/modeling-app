@@ -1,14 +1,17 @@
-use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use std::{
+    f64::consts::TAU,
+    ops::{Add, AddAssign, Mul, Sub, SubAssign},
+};
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
@@ -20,7 +23,11 @@ use crate::{
     },
     front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;
@@ -60,7 +67,7 @@ impl Geometry {
     pub fn original_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.sketch.original_id,
+            Geometry::Solid(e) => e.original_id(),
         }
     }
 }
@@ -154,6 +161,73 @@ impl ImportedGeometry {
         }
 
         Ok(self.id)
+    }
+}
+
+/// Data for a solid, sketch, or an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
+pub enum HideableGeometry {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    HelixSet(Vec<Helix>),
+    // TODO: Sketches should be groups of profiles that relate to a plane,
+    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
+    // are not hideable.
+    // SketchSet(Vec<Sketch>),
+}
+
+impl From<HideableGeometry> for crate::execution::KclValue {
+    fn from(value: HideableGeometry) -> Self {
+        match value {
+            HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HideableGeometry {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            HideableGeometry::ImportedGeometry(s) => {
+                let id = s.id(ctx).await?;
+
+                Ok(vec![id])
+            }
+            HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
+        }
     }
 }
 
@@ -642,6 +716,23 @@ pub struct Face {
     pub meta: Vec<Metadata>,
 }
 
+/// A bounded edge.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct BoundedEdge {
+    /// The id of the face this edge belongs to.
+    pub face_id: uuid::Uuid,
+    /// The id of the edge.
+    pub edge_id: uuid::Uuid,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub lower_bound: f32,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub upper_bound: f32,
+}
+
 /// Kind of plane.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
@@ -717,7 +808,7 @@ impl ProfileClosed {
 }
 
 /// Has the profile been closed?
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[derive(Debug, Serialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
 pub enum ProfileClosed {
     /// It's definitely open.
@@ -742,29 +833,26 @@ impl Sketch {
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
             ModelingCmdReq {
-                cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &self.on {
-                    // We pass in the normal for the plane here.
-                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                cmd: ModelingCmd::from(
                     mcmd::EnableSketchMode::builder()
                         .animated(false)
                         .ortho(false)
                         .entity_id(self.on.id())
                         .adjust_camera(false)
-                        .planar_normal(normal.into())
-                        .build()
-                } else {
-                    mcmd::EnableSketchMode::builder()
-                        .animated(false)
-                        .ortho(false)
-                        .entity_id(self.on.id())
-                        .adjust_camera(false)
-                        .build()
-                }),
+                        .maybe_planar_normal(if let SketchSurface::Plane(plane) = &self.on {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            Some(normal.into())
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
                 cmd_id: exec_state.next_uuid().into(),
             },
             inner_cmd,
             ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build()),
                 cmd_id: exec_state.next_uuid().into(),
             },
         ]
@@ -812,6 +900,61 @@ impl SketchSurface {
             SketchSurface::Plane(plane) => plane.object_id = Some(object_id),
             SketchSurface::Face(face) => face.object_id = object_id,
         }
+    }
+}
+
+/// A Sketch, Face, or TaggedFace.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Extrudable {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Face.
+    Face(FaceTag),
+}
+
+impl Extrudable {
+    /// Get the relevant id.
+    pub async fn id_to_extrude(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+        }
+    }
+
+    pub fn as_sketch(&self) -> Option<Sketch> {
+        match self {
+            Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
+                None => None,
+            },
+        }
+    }
+
+    pub fn is_closed(&self) -> ProfileClosed {
+        match self {
+            Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
+                _ => ProfileClosed::Maybe,
+            },
+        }
+    }
+}
+
+impl From<Sketch> for Extrudable {
+    fn from(value: Sketch) -> Self {
+        Extrudable::Sketch(Box::new(value))
     }
 }
 
@@ -867,11 +1010,13 @@ impl Sketch {
     ) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
+        let mut sketch_copy = self.clone();
+        sketch_copy.tags.clear();
         tag_identifier.info.push((
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                sketch: self.id,
+                geometry: Geometry::Sketch(sketch_copy),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
@@ -928,8 +1073,9 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch.
-    pub sketch: Sketch,
+    /// How this solid was created.
+    #[serde(rename = "sketch")]
+    pub creator: SolidCreator,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -946,7 +1092,55 @@ pub struct Solid {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorFace {
+    /// The face id that served as the base.
+    pub face_id: uuid::Uuid,
+    /// The solid id that owned the face.
+    pub solid_id: uuid::Uuid,
+    /// The sketch used for the operation.
+    pub sketch: Sketch,
+}
+
+/// How a solid was created.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "creatorType", rename_all = "camelCase")]
+pub enum SolidCreator {
+    /// Created from a sketch.
+    Sketch(Sketch),
+    /// Created by extruding or modifying a face.
+    Face(CreatorFace),
+    /// Created procedurally without a sketch.
+    Procedural,
+}
+
 impl Solid {
+    pub fn sketch(&self) -> Option<&Sketch> {
+        match &self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_mut(&mut self) -> Option<&mut Sketch> {
+        match &mut self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_id(&self) -> Option<uuid::Uuid> {
+        self.sketch().map(|sketch| sketch.id)
+    }
+
+    pub fn original_id(&self) -> uuid::Uuid {
+        self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
     }
@@ -1016,7 +1210,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
+#[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -1380,6 +1574,17 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A cubic Bezier curve.
+    Bezier {
+        #[serde(flatten)]
+        base: BasePath,
+        /// First control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control1: [f64; 2],
+        /// Second control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control2: [f64; 2],
+    },
 }
 
 impl Path {
@@ -1397,6 +1602,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
             Path::Ellipse { base, .. } => base.geo_meta.id,
             Path::Conic { base, .. } => base.geo_meta.id,
+            Path::Bezier { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1414,6 +1620,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Ellipse { base, .. } => base.geo_meta.id = id,
             Path::Conic { base, .. } => base.geo_meta.id = id,
+            Path::Bezier { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1431,6 +1638,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
             Path::Ellipse { base, .. } => base.tag.clone(),
             Path::Conic { base, .. } => base.tag.clone(),
+            Path::Bezier { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1448,6 +1656,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base,
             Path::Ellipse { base, .. } => base,
             Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 
@@ -1503,7 +1712,7 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
+            Self::Circle { radius, .. } => Some(TAU * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1514,7 +1723,7 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                Some(2.0 * std::f64::consts::PI * radius)
+                Some(TAU * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
@@ -1530,6 +1739,10 @@ impl Path {
             }
             Self::Conic { .. } => {
                 // Not supported.
+                None
+            }
+            Self::Bezier { .. } => {
+                // Not supported - Bezier curve length requires numerical integration.
                 None
             }
         };
@@ -1550,6 +1763,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => Some(base),
             Path::Ellipse { base, .. } => Some(base),
             Path::Conic { base, .. } => Some(base),
+            Path::Bezier { base, .. } => Some(base),
         }
     }
 
@@ -1602,7 +1816,8 @@ impl Path {
             | Path::ToPoint { .. }
             | Path::Horizontal { .. }
             | Path::AngledLineTo { .. }
-            | Path::Base { .. } => {
+            | Path::Base { .. }
+            | Path::Bezier { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
@@ -1722,6 +1937,15 @@ impl ExtrudeSurface {
         }
     }
 
+    pub fn set_surface_tag(&mut self, tag: &TagNode) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane.tag = Some(tag.clone()),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc.tag = Some(tag.clone()),
+            ExtrudeSurface::Chamfer(chamfer) => chamfer.tag = Some(tag.clone()),
+            ExtrudeSurface::Fillet(fillet) => fillet.tag = Some(tag.clone()),
+        }
+    }
+
     pub fn get_tag(&self) -> Option<Node<TagDeclarator>> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
@@ -1812,8 +2036,12 @@ pub struct ConstrainablePoint2d {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
+    /// The engine ID.
+    pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: UnsolvedSegmentKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<TagIdentifier>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -1832,6 +2060,7 @@ pub enum UnsolvedSegmentKind {
         ctor: Box<LineCtor>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
+        construction: bool,
     },
     Arc {
         start: UnsolvedPoint2dExpr,
@@ -1841,6 +2070,7 @@ pub enum UnsolvedSegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
+        construction: bool,
     },
 }
 
@@ -1848,10 +2078,29 @@ pub enum UnsolvedSegmentKind {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
+    /// The engine ID.
+    pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: SegmentKind,
+    pub surface: SketchSurface,
+    /// The engine ID of the sketch that this is a part of.
+    pub sketch_id: Uuid,
+    #[serde(skip)]
+    pub sketch: Option<Sketch>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<TagIdentifier>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+impl Segment {
+    pub fn is_construction(&self) -> bool {
+        match &self.kind {
+            SegmentKind::Point { .. } => true,
+            SegmentKind::Line { construction, .. } => *construction,
+            SegmentKind::Arc { construction, .. } => *construction,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -1874,6 +2123,7 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_freedom: Option<Freedom>,
+        construction: bool,
     },
     Arc {
         start: [TyF64; 2],
@@ -1889,6 +2139,7 @@ pub enum SegmentKind {
         end_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
     },
 }
 
@@ -1903,8 +2154,8 @@ pub struct AbstractSegment {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 pub enum SegmentRepr {
-    Unsolved { segment: UnsolvedSegment },
-    Solved { segment: Segment },
+    Unsolved { segment: Box<UnsolvedSegment> },
+    Solved { segment: Box<Segment> },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -1921,4 +2172,20 @@ pub struct SketchConstraint {
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
     Distance { points: [ConstrainablePoint2d; 2] },
+    Radius { points: [ConstrainablePoint2d; 2] },
+    Diameter { points: [ConstrainablePoint2d; 2] },
+    HorizontalDistance { points: [ConstrainablePoint2d; 2] },
+    VerticalDistance { points: [ConstrainablePoint2d; 2] },
+}
+
+impl SketchConstraintKind {
+    pub fn name(&self) -> &'static str {
+        match self {
+            SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::Radius { .. } => "radius",
+            SketchConstraintKind::Diameter { .. } => "diameter",
+            SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
+            SketchConstraintKind::VerticalDistance { .. } => "verticalDistance",
+        }
+    }
 }

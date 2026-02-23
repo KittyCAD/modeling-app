@@ -10,8 +10,11 @@ import {
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
+import type { BrowserContext, Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -163,7 +166,6 @@ test.describe(
           page
         )
         await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await page.waitForTimeout(10000)
         await editor.expectEditor.toContain(
           `
           import "nested/twice/main.kcl" as main
@@ -173,17 +175,32 @@ test.describe(
       })
     })
 
-    test(`Insert the bracket part into an assembly and transform it`, async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+    async function testBracketInsertionThenTransformsThenDeletion(
+      context: BrowserContext,
+      page: Page,
+      homePage: HomePageFixture,
+      scene: SceneFixture,
+      editor: EditorFixture,
+      toolbar: ToolbarFixture,
+      cmdBar: CmdBarFixture,
+      selectionType: 'scene' | 'feature-tree'
+    ) {
+      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
+      async function selectBracket() {
+        if (selectionType === 'scene') {
+          const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
+            format: 'ratio',
+          })
+          await clickBracketInScene()
+          return
+        } else if (selectionType === 'feature-tree') {
+          const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+          await op.click()
+        } else {
+          const _exhaustiveCheck: never = selectionType
+          throw new Error('unreachable')
+        }
+      }
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -198,7 +215,7 @@ test.describe(
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1200, height: 800 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.Code)
@@ -224,10 +241,7 @@ test.describe(
 
       await test.step('Set translate on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-
-        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-translate').click()
+        await toolbar.selectTransform('translate')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'objects',
@@ -238,11 +252,12 @@ test.describe(
           highlightedHeaderArg: 'objects',
           commandName: 'Translate',
         })
+        await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
           },
           commandName: 'Translate',
           reviewValidationError:
@@ -254,36 +269,76 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
             X: '',
           },
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
         })
-        await page.keyboard.insertText('100')
+        await page.keyboard.insertText('1')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
-            X: '100',
+            Objects: selectedObjects,
+            X: '1',
           },
           commandName: 'Translate',
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(`translate(bracket, x = 100)`, {
+        await editor.expectEditor.toContain(`translate(bracket, x = 1)`, {
           shouldNormalise: true,
         })
       })
 
+      await test.step('Edit translate on module', async () => {
+        const op = await toolbar.getFeatureTreeOperation('Translate', 0)
+        await op.dblclick()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '1',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.clickOptionalArgument('y')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'y',
+          currentArgValue: '0',
+          headerArguments: {
+            X: '1',
+            Y: '',
+          },
+          highlightedHeaderArg: 'y',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '1',
+            Y: '2',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `translate(bracket, x = 1, y = 2)`,
+          {
+            shouldNormalise: true,
+          }
+        )
+      })
+
       await test.step('Set scale on module', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-
-        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-scale').click()
+        await toolbar.selectTransform('scale')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'objects',
@@ -294,11 +349,12 @@ test.describe(
           highlightedHeaderArg: 'objects',
           commandName: 'Scale',
         })
+        await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
           },
           commandName: 'Scale',
           reviewValidationError:
@@ -308,9 +364,9 @@ test.describe(
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '1',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -321,18 +377,61 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
             X: '1.1',
           },
           commandName: 'Scale',
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
-          `translate(bracket, x = 100)
+          `translate(bracket, x = 1, y = 2)
           scale(bracket, x = 1.1)`,
           { shouldNormalise: true }
+        )
+      })
+
+      await test.step('Edit scale on module', async () => {
+        const op = await toolbar.getFeatureTreeOperation('Scale', 0)
+        await op.dblclick()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '1.1',
+          },
+          commandName: 'Scale',
+        })
+        await cmdBar.clickOptionalArgument('y')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'y',
+          currentArgValue: '1',
+          headerArguments: {
+            X: '1.1',
+            Y: '',
+          },
+          highlightedHeaderArg: 'y',
+          commandName: 'Scale',
+        })
+        await page.keyboard.insertText('1.2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '1.1',
+            Y: '1.2',
+          },
+          commandName: 'Scale',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `scale(bracket, x = 1.1, y = 1.2)`,
+          {
+            shouldNormalise: true,
+          }
         )
       })
 
@@ -340,9 +439,7 @@ test.describe(
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
-        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-rotate').click()
+        await toolbar.selectTransform('rotate')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'objects',
@@ -353,11 +450,12 @@ test.describe(
           highlightedHeaderArg: 'objects',
           commandName: 'Rotate',
         })
+        await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
           },
           commandName: 'Rotate',
           reviewValidationError:
@@ -369,7 +467,7 @@ test.describe(
           currentArgKey: 'roll',
           currentArgValue: '0',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
             Roll: '',
           },
           highlightedHeaderArg: 'roll',
@@ -380,21 +478,64 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: selectedObjects,
             Roll: '0.1',
           },
           commandName: 'Rotate',
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
-          translate(bracket, x = 100)
-          scale(bracket, x = 1.1)
+          translate(bracket, x = 1, y = 2)
+          scale(bracket, x = 1.1, y = 1.2)
           rotate(bracket, roll = 0.1)
           `,
           { shouldNormalise: true }
+        )
+      })
+
+      await test.step('Edit rotate on module', async () => {
+        const op = await toolbar.getFeatureTreeOperation('Rotate', 0)
+        await op.dblclick()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '0.1',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.clickOptionalArgument('yaw')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'yaw',
+          currentArgValue: '0',
+          headerArguments: {
+            Roll: '0.1',
+            Yaw: '',
+          },
+          highlightedHeaderArg: 'yaw',
+          commandName: 'Rotate',
+        })
+        await page.keyboard.insertText('0.2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '0.1',
+            Yaw: '0.2',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `rotate(bracket, roll = 0.1, yaw = 0.2)`,
+          {
+            shouldNormalise: true,
+          }
         )
       })
 
@@ -412,9 +553,8 @@ test.describe(
         await opt.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        const opb = await toolbar.getFeatureTreeOperation('bracket', 0)
-        await opb.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
+        await selectBracket()
+        await page.keyboard.press('Delete')
         await scene.settled(cmdBar)
         await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -425,6 +565,52 @@ test.describe(
         await editor.expectEditor.not.toContain('scale')
         await editor.expectEditor.not.toContain('rotate')
       })
+    }
+
+    test(`Insert the bracket part into an assembly and transform it (feature-tree selection)`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) throw new Error('tronApp is missing.')
+      await testBracketInsertionThenTransformsThenDeletion(
+        context,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        'feature-tree'
+      )
+    })
+
+    test(`Insert the bracket part into an assembly and transform it (scene selection)`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) throw new Error('tronApp is missing.')
+      await testBracketInsertionThenTransformsThenDeletion(
+        context,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        'scene'
+      )
     })
 
     test(`Insert foreign parts into assembly and delete them`, async ({
@@ -704,7 +890,7 @@ foreign
           currentArgKey: 'variableName',
           currentArgValue: '',
           headerArguments: {
-            Objects: '1 other',
+            Objects: '1 plane',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -714,7 +900,7 @@ foreign
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: '1 plane',
             VariableName: 'clone001',
           },
           commandName: 'Clone',

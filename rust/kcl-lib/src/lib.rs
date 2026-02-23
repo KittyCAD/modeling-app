@@ -95,7 +95,7 @@ pub use errors::{
 };
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
-    clear_mem_cache, typed_path::TypedPath,
+    clear_mem_cache, transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
@@ -155,16 +155,25 @@ pub mod pretty {
 
 pub mod front {
     pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
+    // Re-export trim module items
     pub use crate::frontend::{
-        FrontendState,
+        FrontendState, SetProgramOutcome,
         api::{
             Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
             Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
         },
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
-            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment,
-            SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
+            Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
+            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
+        },
+        trim::{
+            ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
+            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
+            execute_trim_loop_with_context, get_next_trim_spawn, get_position_coords_for_line,
+            get_position_coords_from_arc, get_trim_spawn_terminations, is_point_on_arc, is_point_on_line_segment,
+            line_arc_intersection, line_segment_intersection, perpendicular_distance_to_segment,
+            project_point_onto_arc, project_point_onto_segment,
         },
     };
 }

@@ -672,9 +672,9 @@ sketch001 = startSketchOn(XZ)
         format: 'ratio',
       })
       await toolbar.startSketchBtn.click()
-      await page.waitForTimeout(20_000) // Wait for unavoidable animation
+      await page.waitForTimeout(1_000) // Wait for unavoidable animation
       await clickCenter()
-      await page.waitForTimeout(1000) // Wait for unavoidable animation
+      await page.waitForTimeout(1_000) // Wait for unavoidable animation
 
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')

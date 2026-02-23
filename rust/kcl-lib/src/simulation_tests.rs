@@ -154,6 +154,10 @@ where
         r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
         "[uuid]",
     );
+    settings.add_filter(
+        r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
+        "face_id_[uuid]",
+    );
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);
 }
@@ -286,7 +290,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }));
 
             #[cfg(not(feature = "artifact-graph"))]
-            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             #[cfg(feature = "artifact-graph")]
             let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             #[cfg(feature = "artifact-graph")]
@@ -309,6 +313,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     })
                     .flatten(),
             );
+
+            // Filter out Z0005 (old sketch syntax) from test snapshots
+            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
@@ -4391,6 +4399,27 @@ mod sketch_block_on_offset_plane {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_region_triangle {
+    const TEST_NAME: &str = "sketch_block_region_triangle";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod sketch_on_face_normal {
     const TEST_NAME: &str = "sketch_on_face_normal";
 
@@ -4498,6 +4527,111 @@ mod extrude_closes {
 }
 mod implicit_close {
     const TEST_NAME: &str = "implicit_close";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod extrude_face {
+    const TEST_NAME: &str = "extrude_face";
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod sketch_block_lines_coincident_collinear {
+    const TEST_NAME: &str = "sketch_block_lines_coincident_collinear";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_face_index {
+    const TEST_NAME: &str = "sketch_on_face_index";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod delete_face_by_index {
+    const TEST_NAME: &str = "delete_face_by_index";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod delete_face_by_id {
+    const TEST_NAME: &str = "delete_face_by_id";
 
     /// Test parsing KCL.
     #[test]

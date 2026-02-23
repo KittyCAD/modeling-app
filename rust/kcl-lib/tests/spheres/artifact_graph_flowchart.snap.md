@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[36, 73, 0]"]
+    2["Path<br>[36, 73, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     3["Segment<br>[79, 103, 0]"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
@@ -12,7 +12,7 @@ flowchart LR
     6[Solid2d]
   end
   subgraph path10 [Path]
-    10["Path<br>[259, 284, 0]"]
+    10["Path<br>[259, 284, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     11["Segment<br>[290, 314, 0]"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
@@ -24,13 +24,13 @@ flowchart LR
   end
   1["Plane<br>[15, 32, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  7["Sweep Revolve<br>[218, 235, 0]"]
+  7["Sweep Revolve<br>[218, 235, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
   8[Wall]
     %% face_code_ref=Missing NodePath
   9["Plane<br>[238, 255, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  15["Sweep Revolve<br>[436, 453, 0]"]
+  15["Sweep Revolve<br>[436, 453, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
   16[Wall]
     %% face_code_ref=Missing NodePath

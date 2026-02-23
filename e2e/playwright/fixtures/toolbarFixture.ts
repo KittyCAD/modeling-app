@@ -30,6 +30,7 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  splitButton!: Locator
   translateButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
@@ -81,6 +82,7 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.splitButton = page.getByTestId('split')
     this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
@@ -101,7 +103,7 @@ export class ToolbarFixture {
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
-    this.featureTreePane = page.locator('#feature-tree-pane')
+    this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one
@@ -247,13 +249,27 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
-  selectBoolean = async (
-    operation: 'union' | 'subtract' | 'intersect' | 'split'
-  ) => {
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
     await this.page
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectSurface = async (operation: 'flip-surface') => {
+    await this.page
+      .getByRole('button', { name: 'caret down surface: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }

@@ -9,17 +9,10 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneInfra,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -32,11 +25,20 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { auth, commands, settings } = useApp()
+  const {
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    sceneInfra,
+    systemIOActor,
+  } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
-  const token = useToken()
-  const settings = useSettings()
+  const token = auth.useToken()
+  const settingsValues = settings.useSettings()
+  const settingsActor = settings.actor
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
 
@@ -47,29 +49,46 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(engineCommandManager)
+    } = createNamedViewsCommand(engineCommandManager, settingsActor)
 
-    const commands = [
+    const {
+      topViewCommand,
+      frontViewCommand,
+      rightViewCommand,
+      backViewCommand,
+      bottomViewCommand,
+      leftViewCommand,
+      zoomToFitCommand,
+    } = createStandardViewsCommands(engineCommandManager)
+
+    const namedViewCommands = [
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
+      topViewCommand,
+      frontViewCommand,
+      rightViewCommand,
+      backViewCommand,
+      bottomViewCommand,
+      leftViewCommand,
+      zoomToFitCommand,
     ]
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: {
-        commands,
+        commands: namedViewCommands,
       },
     })
     return () => {
       // Remove commands if you go to the home page
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: {
-          commands,
+          commands: namedViewCommands,
         },
       })
     }
-  }, [])
+  }, [commands, engineCommandManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -82,7 +101,7 @@ export const ModelingPageProvider = ({
       PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
+    commands.send({
       type: 'Remove commands',
       data: {
         commands: [
@@ -93,14 +112,14 @@ export const ModelingPageProvider = ({
       },
     })
     if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [RouteTelemetryCommand, RouteSettingsCommand],
         },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [
@@ -115,13 +134,17 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
+  const cb = modelingMenuCallbackMostActions({
+    authActor: auth.actor,
+    commandBarActor: commands.actor,
     engineCommandManager,
-    sceneInfra
-  )
+    filePath,
+    kclManager,
+    navigate,
+    sceneInfra,
+    settings: settingsValues,
+    settingsActor,
+  })
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
@@ -160,7 +183,8 @@ export const ModelingPageProvider = ({
       kclManager,
       settings: {
         defaultUnit:
-          settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+          settingsValues.modeling.defaultUnit.current ??
+          DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
@@ -172,19 +196,19 @@ export const ModelingPageProvider = ({
   }, [kclManager, project, file])
 
   useEffect(() => {
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: { commands: kclCommandMemo },
     })
 
     return () => {
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: { commands: kclCommandMemo },
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
-  }, [commandBarActor.send, kclCommandMemo])
+  }, [commands.send, kclCommandMemo])
 
   return <div>{children}</div>
 }

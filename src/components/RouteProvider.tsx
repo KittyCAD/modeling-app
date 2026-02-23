@@ -16,21 +16,18 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import {
-  kclManager,
-  engineCommandManager,
-  sceneInfra,
-  settingsActor,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { useSelector } from '@xstate/react'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  const { settings } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsActor = settings.actor
+  useSignals()
   useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [first, setFirstState] = useState(true)
@@ -40,10 +37,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
-  const livePathsToWatch = useSelector(
-    kclEditorActor,
-    (state) => state.context.livePathsToWatch
-  )
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -99,27 +92,21 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
           const lastWrittenCode = kclManager.lastWrite?.code
           if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
-            // Nothing written out yet by ourselves, or it's not the same as the current file content
-            // -> this must be an external change -> re-execute.
-            kclManager.updateCodeEditor(code)
-
-            toast('Reloading file from disk')
-            // If we can use emojis this looks nice:
-            // toast('Reloading file from disk', { icon: '📁' })
-
-            await kclManager.executeCode()
-
-            // Only reset camera if we're not in sketch mode, in sketch mode we always want to keep ortho camera
             const isInSketchMode =
               kclManager.modelingState?.matches('Sketch') ||
               kclManager.modelingState?.matches('sketchSolveMode')
-            if (!isInSketchMode) {
-              await resetCameraPosition({
-                sceneInfra,
-                engineCommandManager,
-                settingsActor,
-              })
-            }
+
+            // Nothing written out yet by ourselves, or it's not the same as the current file content
+            // -> this must be an external change -> re-execute.
+            kclManager.updateCodeEditor(code, {
+              shouldExecute: !isInSketchMode,
+              shouldResetCamera: !isInSketchMode,
+              // We explicitly do not write to the file here since we are loading from
+              // the file system and not the editor.
+              shouldWriteToDisk: false,
+            })
+
+            toast('Reloading file from disk', { icon: '📁' })
           }
         }
       } else {
@@ -154,11 +141,11 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    livePathsToWatch
+    kclManager.livePathsToWatch.value
   )
 
   useFileSystemWatcher(
-    async (eventType: string, path: string) => {
+    async (eventType: string) => {
       // If there is a projectPath but it no longer exists it means
       // it was externally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in

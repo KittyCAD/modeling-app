@@ -20,7 +20,14 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 ## Snapshot and export
 
-When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
+When you submit a PR to add or modify KCL samples, you need to run a few commands to generate the required artifacts. Note: You must have a ZOO_API_TOKEN set in your env for this to work.
+
+```
+cd rust
+just overwrite-sim-test-sample samplename
+```
+
+ex. `just overwrite-sim-test-sample angle-gauge`
 
 ---
 #### [angle-gauge](angle-gauge/main.kcl) ([screenshot](screenshots/angle-gauge.png))
@@ -45,12 +52,18 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![box](screenshots/box.png)](box/main.kcl)
 #### [bracket](bracket/main.kcl) ([screenshot](screenshots/bracket.png))
 [![bracket](screenshots/bracket.png)](bracket/main.kcl)
+#### [bracket-with-slot](bracket-with-slot/main.kcl) ([screenshot](screenshots/bracket-with-slot.png))
+[![bracket-with-slot](screenshots/bracket-with-slot.png)](bracket-with-slot/main.kcl)
 #### [c-shape-solid](c-shape-solid/main.kcl) ([screenshot](screenshots/c-shape-solid.png))
 [![c-shape-solid](screenshots/c-shape-solid.png)](c-shape-solid/main.kcl)
+#### [camshaft](camshaft/main.kcl) ([screenshot](screenshots/camshaft.png))
+[![camshaft](screenshots/camshaft.png)](camshaft/main.kcl)
 #### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([screenshot](screenshots/car-wheel-assembly.png))
 [![car-wheel-assembly](screenshots/car-wheel-assembly.png)](car-wheel-assembly/main.kcl)
 #### [cassette](cassette/main.kcl) ([screenshot](screenshots/cassette.png))
 [![cassette](screenshots/cassette.png)](cassette/main.kcl)
+#### [ceiling-fan](ceiling-fan/main.kcl) ([screenshot](screenshots/ceiling-fan.png))
+[![ceiling-fan](screenshots/ceiling-fan.png)](ceiling-fan/main.kcl)
 #### [clock](clock/main.kcl) ([screenshot](screenshots/clock.png))
 [![clock](screenshots/clock.png)](clock/main.kcl)
 #### [coilover-assembly](coilover-assembly/main.kcl) ([screenshot](screenshots/coilover-assembly.png))
@@ -61,6 +74,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![color-cube](screenshots/color-cube.png)](color-cube/main.kcl)
 #### [cone](cone/main.kcl) ([screenshot](screenshots/cone.png))
 [![cone](screenshots/cone.png)](cone/main.kcl)
+#### [contra-rotor](contra-rotor/main.kcl) ([screenshot](screenshots/contra-rotor.png))
+[![contra-rotor](screenshots/contra-rotor.png)](contra-rotor/main.kcl)
 #### [counterdrilled-weldment](counterdrilled-weldment/main.kcl) ([screenshot](screenshots/counterdrilled-weldment.png))
 [![counterdrilled-weldment](screenshots/counterdrilled-weldment.png)](counterdrilled-weldment/main.kcl)
 #### [countersunk-plate](countersunk-plate/main.kcl) ([screenshot](screenshots/countersunk-plate.png))
@@ -81,6 +96,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![dining-table](screenshots/dining-table.png)](dining-table/main.kcl)
 #### [dodecahedron](dodecahedron/main.kcl) ([screenshot](screenshots/dodecahedron.png))
 [![dodecahedron](screenshots/dodecahedron.png)](dodecahedron/main.kcl)
+#### [dog-house-great-dane](dog-house-great-dane/main.kcl) ([screenshot](screenshots/dog-house-great-dane.png))
+[![dog-house-great-dane](screenshots/dog-house-great-dane.png)](dog-house-great-dane/main.kcl)
 #### [enclosure](enclosure/main.kcl) ([screenshot](screenshots/enclosure.png))
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
 #### [end-effector-gripper-fingers](end-effector-gripper-fingers/main.kcl) ([screenshot](screenshots/end-effector-gripper-fingers.png))
@@ -103,6 +120,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![french-press](screenshots/french-press.png)](french-press/main.kcl)
 #### [gallows-bracket](gallows-bracket/main.kcl) ([screenshot](screenshots/gallows-bracket.png))
 [![gallows-bracket](screenshots/gallows-bracket.png)](gallows-bracket/main.kcl)
+#### [gas-impeller](gas-impeller/main.kcl) ([screenshot](screenshots/gas-impeller.png))
+[![gas-impeller](screenshots/gas-impeller.png)](gas-impeller/main.kcl)
 #### [gear-rack](gear-rack/main.kcl) ([screenshot](screenshots/gear-rack.png))
 [![gear-rack](screenshots/gear-rack.png)](gear-rack/main.kcl)
 #### [gingerbread-man](gingerbread-man/main.kcl) ([screenshot](screenshots/gingerbread-man.png))
@@ -147,10 +166,14 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![keyboard](screenshots/keyboard.png)](keyboard/main.kcl)
 #### [kitt](kitt/main.kcl) ([screenshot](screenshots/kitt.png))
 [![kitt](screenshots/kitt.png)](kitt/main.kcl)
+#### [lattice-cubic](lattice-cubic/main.kcl) ([screenshot](screenshots/lattice-cubic.png))
+[![lattice-cubic](screenshots/lattice-cubic.png)](lattice-cubic/main.kcl)
 #### [lego](lego/main.kcl) ([screenshot](screenshots/lego.png))
 [![lego](screenshots/lego.png)](lego/main.kcl)
 #### [linear-shelf-system](linear-shelf-system/main.kcl) ([screenshot](screenshots/linear-shelf-system.png))
 [![linear-shelf-system](screenshots/linear-shelf-system.png)](linear-shelf-system/main.kcl)
+#### [liquid-impeller](liquid-impeller/main.kcl) ([screenshot](screenshots/liquid-impeller.png))
+[![liquid-impeller](screenshots/liquid-impeller.png)](liquid-impeller/main.kcl)
 #### [makeup-mirror](makeup-mirror/main.kcl) ([screenshot](screenshots/makeup-mirror.png))
 [![makeup-mirror](screenshots/makeup-mirror.png)](makeup-mirror/main.kcl)
 #### [manhole-cover](manhole-cover/main.kcl) ([screenshot](screenshots/manhole-cover.png))
@@ -175,10 +198,14 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![pillow-block-bearing](screenshots/pillow-block-bearing.png)](pillow-block-bearing/main.kcl)
 #### [pipe](pipe/main.kcl) ([screenshot](screenshots/pipe.png))
 [![pipe](screenshots/pipe.png)](pipe/main.kcl)
+#### [pipe-elbow-90deg](pipe-elbow-90deg/main.kcl) ([screenshot](screenshots/pipe-elbow-90deg.png))
+[![pipe-elbow-90deg](screenshots/pipe-elbow-90deg.png)](pipe-elbow-90deg/main.kcl)
 #### [pipe-flange-assembly](pipe-flange-assembly/main.kcl) ([screenshot](screenshots/pipe-flange-assembly.png))
 [![pipe-flange-assembly](screenshots/pipe-flange-assembly.png)](pipe-flange-assembly/main.kcl)
 #### [pipe-manifold](pipe-manifold/main.kcl) ([screenshot](screenshots/pipe-manifold.png))
 [![pipe-manifold](screenshots/pipe-manifold.png)](pipe-manifold/main.kcl)
+#### [pipe-straight](pipe-straight/main.kcl) ([screenshot](screenshots/pipe-straight.png))
+[![pipe-straight](screenshots/pipe-straight.png)](pipe-straight/main.kcl)
 #### [pipe-with-bend](pipe-with-bend/main.kcl) ([screenshot](screenshots/pipe-with-bend.png))
 [![pipe-with-bend](screenshots/pipe-with-bend.png)](pipe-with-bend/main.kcl)
 #### [poopy-shoe](poopy-shoe/main.kcl) ([screenshot](screenshots/poopy-shoe.png))
@@ -189,6 +216,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![propeller](screenshots/propeller.png)](propeller/main.kcl)
 #### [prosthetic-hip](prosthetic-hip/main.kcl) ([screenshot](screenshots/prosthetic-hip.png))
 [![prosthetic-hip](screenshots/prosthetic-hip.png)](prosthetic-hip/main.kcl)
+#### [racing-seat-brackets](racing-seat-brackets/main.kcl) ([screenshot](screenshots/racing-seat-brackets.png))
+[![racing-seat-brackets](screenshots/racing-seat-brackets.png)](racing-seat-brackets/main.kcl)
 #### [rack-blanking-panel](rack-blanking-panel/main.kcl) ([screenshot](screenshots/rack-blanking-panel.png))
 [![rack-blanking-panel](screenshots/rack-blanking-panel.png)](rack-blanking-panel/main.kcl)
 #### [radial-flow-centrifugal-impeller](radial-flow-centrifugal-impeller/main.kcl) ([screenshot](screenshots/radial-flow-centrifugal-impeller.png))
@@ -217,6 +246,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![single-impeller-blade](screenshots/single-impeller-blade.png)](single-impeller-blade/main.kcl)
 #### [sls](sls/main.kcl) ([screenshot](screenshots/sls.png))
 [![sls](screenshots/sls.png)](sls/main.kcl)
+#### [snowman](snowman/main.kcl) ([screenshot](screenshots/snowman.png))
+[![snowman](screenshots/snowman.png)](snowman/main.kcl)
 #### [socket-head-cap-screw](socket-head-cap-screw/main.kcl) ([screenshot](screenshots/socket-head-cap-screw.png))
 [![socket-head-cap-screw](screenshots/socket-head-cap-screw.png)](socket-head-cap-screw/main.kcl)
 #### [sphere](sphere/main.kcl) ([screenshot](screenshots/sphere.png))
@@ -275,6 +306,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![truss-structure](screenshots/truss-structure.png)](truss-structure/main.kcl)
 #### [tube-manifold](tube-manifold/main.kcl) ([screenshot](screenshots/tube-manifold.png))
 [![tube-manifold](screenshots/tube-manifold.png)](tube-manifold/main.kcl)
+#### [twisted-wire-sculpture](twisted-wire-sculpture/main.kcl) ([screenshot](screenshots/twisted-wire-sculpture.png))
+[![twisted-wire-sculpture](screenshots/twisted-wire-sculpture.png)](twisted-wire-sculpture/main.kcl)
 #### [utility-sink](utility-sink/main.kcl) ([screenshot](screenshots/utility-sink.png))
 [![utility-sink](screenshots/utility-sink.png)](utility-sink/main.kcl)
 #### [v-block](v-block/main.kcl) ([screenshot](screenshots/v-block.png))
@@ -291,6 +324,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![wind-turbine-blade-root-inserts](screenshots/wind-turbine-blade-root-inserts.png)](wind-turbine-blade-root-inserts/main.kcl)
 #### [wing-spar](wing-spar/main.kcl) ([screenshot](screenshots/wing-spar.png))
 [![wing-spar](screenshots/wing-spar.png)](wing-spar/main.kcl)
+#### [wood-screw](wood-screw/main.kcl) ([screenshot](screenshots/wood-screw.png))
+[![wood-screw](screenshots/wood-screw.png)](wood-screw/main.kcl)
 #### [zoo-logo](zoo-logo/main.kcl) ([screenshot](screenshots/zoo-logo.png))
 [![zoo-logo](screenshots/zoo-logo.png)](zoo-logo/main.kcl)
 

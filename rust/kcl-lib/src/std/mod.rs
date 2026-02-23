@@ -15,6 +15,7 @@ pub mod faces;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
+pub mod ids;
 pub mod loft;
 pub mod math;
 pub mod mirror;
@@ -26,6 +27,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub(crate) mod sketch2;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -188,6 +190,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::transform::scale(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::scale"),
         ),
+        ("transform", "hide") => (
+            |e, a| Box::pin(crate::std::transform::hide(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::hide"),
+        ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::offsetPlane"),
@@ -276,9 +282,25 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::array::concat(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::concat"),
         ),
+        ("array", "slice") => (
+            |e, a| Box::pin(crate::std::array::slice(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::array::slice"),
+        ),
+        ("array", "flatten") => (
+            |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::array::flatten"),
+        ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::clone"),
+        ),
+        ("prelude", "faceId") => (
+            |e, a| Box::pin(crate::std::ids::face_id(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::faceId"),
+        ),
+        ("prelude", "edgeId") => (
+            |e, a| Box::pin(crate::std::ids::edge_id(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::edgeId"),
         ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a).map(|r| r.map(KclValue::continue_))),
@@ -351,6 +373,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "getCommonEdge") => (
             |e, a| Box::pin(crate::std::edge::get_common_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getCommonEdge"),
+        ),
+        ("sketch", "getBoundedEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_bounded_edge(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::getBoundedEdge"),
         ),
         ("sketch", "getNextAdjacentEdge") => (
             |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a).map(|r| r.map(KclValue::continue_))),
@@ -504,6 +530,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
+        ("sketch2", "radius") => (
+            |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::radius"),
+        ),
+        ("sketch2", "diameter") => (
+            |e, a| Box::pin(crate::std::constraints::diameter(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::diameter"),
+        ),
+        ("sketch2", "horizontalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::horizontal_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::horizontalDistance"),
+        ),
+        ("sketch2", "verticalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::vertical_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::verticalDistance"),
+        ),
         ("sketch2", "equalLength") => (
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),
@@ -523,6 +565,26 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch2", "vertical") => (
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
+        ),
+        ("sketch2", "region") => (
+            |e, a| Box::pin(crate::std::sketch2::region(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::region"),
+        ),
+        ("solid", "isSurface") => (
+            |e, a| Box::pin(crate::std::surfaces::is_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSurface"),
+        ),
+        ("solid", "isSolid") => (
+            |e, a| Box::pin(crate::std::surfaces::is_solid(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSolid"),
+        ),
+        ("solid", "deleteFace") => (
+            |e, a| Box::pin(crate::std::surfaces::delete_face(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::deleteFace"),
+        ),
+        ("solid", "blend") => (
+            |e, a| Box::pin(crate::std::surfaces::blend(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::blend"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
@@ -547,6 +609,10 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         ("types", "TaggedEdge") => (PrimitiveType::TaggedEdge, StdFnProps::default("std::types::TaggedEdge")),
         ("types", "TaggedFace") => (PrimitiveType::TaggedFace, StdFnProps::default("std::types::TaggedFace")),
+        ("types", "BoundedEdge") => (
+            PrimitiveType::BoundedEdge,
+            StdFnProps::default("std::types::BoundedEdge"),
+        ),
         _ => unreachable!(),
     }
 }
@@ -558,3 +624,18 @@ const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;
 /// WARNING: This must match the tolerance in engine/cpp/engine/scene/constants.h
 #[allow(clippy::excessive_precision)]
 const EQUAL_POINTS_DIST_EPSILON: f64 = 2.3283064365386962890625e-10;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CircularDirection {
+    Counterclockwise,
+    Clockwise,
+}
+
+impl CircularDirection {
+    pub fn is_clockwise(self) -> bool {
+        match self {
+            CircularDirection::Counterclockwise => false,
+            CircularDirection::Clockwise => true,
+        }
+    }
+}

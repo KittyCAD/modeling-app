@@ -202,6 +202,78 @@ export fn concat(
   items: [any],
 ): [any] {}
 
+/// Get a subarray from `start` (inclusive) to `end` (exclusive).
+///
+/// Returns a new array containing the elements in the requested range.
+/// Negative indexes count from the end of the array, so `-1` is the last
+/// element, `-2` is the second-to-last element, and so on.
+///
+/// If `start` is omitted, it defaults to `0`. If `end` is omitted, it
+/// defaults to the length of the array.
+///
+/// It is an error to omit both `start` and `end`. Arrays are immutable, so
+/// there's no need to copy the whole array.
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], start = 1, end = 3)
+/// assert(s[0], isEqualTo = 2)
+/// assert(s[1], isEqualTo = 3)
+/// assert(count(s), isEqualTo = 2)
+/// ```
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], end = -2)
+/// assert(s[0], isEqualTo = 1)
+/// assert(s[1], isEqualTo = 2)
+/// assert(s[2], isEqualTo = 3)
+/// assert(count(s), isEqualTo = 3)
+/// ```
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], start = -2)
+/// assert(s[0], isEqualTo = 4)
+/// assert(s[1], isEqualTo = 5)
+/// assert(count(s), isEqualTo = 2)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn slice(
+  /// The array to slice.
+  @array: [any],
+  /// The starting index (inclusive). Defaults to `0`.
+  start?: number(Count),
+  /// The ending index (exclusive). Defaults to the array length.
+  end?: number(Count),
+): [any] {}
+
+/// Flatten an array by one level.
+///
+/// Returns a new array where any nested arrays are expanded into the top-level
+/// array. This only flattens one level deep.
+///
+/// ```kcl
+/// arr = [1, [2, 3], 4]
+/// flat = flatten(arr)
+/// assert(flat[0], isEqualTo = 1)
+/// assert(flat[1], isEqualTo = 2)
+/// assert(flat[2], isEqualTo = 3)
+/// assert(flat[3], isEqualTo = 4)
+/// ```
+///
+/// ```kcl
+/// arr = [[1, 2], [3, [4]]]
+/// flat = flatten(arr)
+/// // Only one level of flattening occurs.
+/// assert(flat[0], isEqualTo = 1)
+/// assert(flat[1], isEqualTo = 2)
+/// assert(flat[2], isEqualTo = 3)
+/// assert(flat[3][0], isEqualTo = 4)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn flatten(
+  /// The array to flatten by one level.
+  @array: [any],
+): [any] {}
+
 /// Find the number of elements in an array.
 /// ```kcl
 /// arr1 = [10, 20, 30]

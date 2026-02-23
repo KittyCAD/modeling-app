@@ -12,14 +12,7 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import {
-  billingActor,
-  engineCommandManager,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
@@ -39,13 +32,15 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
+  const { auth, billing, settings } = useApp()
+  const { engineCommandManager, kclManager, systemIOActor } = useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
-  const settings = useSettings()
-  const token = useToken()
+  const settingsValues = settings.useSettings()
+  const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -69,7 +64,8 @@ export function SystemIOMachineLogicListenerDesktop() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory = settings.app.projectDirectory.current
+      const applicationProjectDirectory =
+        settingsValues.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
         applicationProjectDirectory
@@ -178,12 +174,12 @@ export function SystemIOMachineLogicListenerDesktop() {
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
             requestedProjectDirectoryPath:
-              settings.app.projectDirectory.current || '',
+              settingsValues.app.projectDirectory.current || '',
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settings.app.projectDirectory.current, pathname])
+    }, [settingsValues.app.projectDirectory.current, pathname])
   }
 
   const useDefaultProjectName = () => {
@@ -192,11 +188,11 @@ export function SystemIOMachineLogicListenerDesktop() {
         type: SystemIOMachineEvents.setDefaultProjectFolderName,
         data: {
           requestedDefaultProjectFolderName:
-            settings.projects.defaultProjectName.current || '',
+            settingsValues.projects.defaultProjectName.current || '',
         },
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settings.projects.defaultProjectName.current])
+    }, [settingsValues.projects.defaultProjectName.current])
   }
 
   const useWatchingApplicationProjectDirectory = () => {
@@ -229,8 +225,8 @@ export function SystemIOMachineLogicListenerDesktop() {
           })
         }
       },
-      settings.app.projectDirectory.current
-        ? [settings.app.projectDirectory.current]
+      settingsValues.app.projectDirectory.current
+        ? [settingsValues.app.projectDirectory.current]
         : []
     )
   }
@@ -239,7 +235,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billingActor,
+    billing.actor,
     token,
     engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
@@ -292,7 +288,11 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    systemIOActor,
+    settingsValues
+  )
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

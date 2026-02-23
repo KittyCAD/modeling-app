@@ -112,7 +112,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -141,7 +141,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -170,7 +170,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -199,7 +199,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -228,7 +228,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -265,7 +265,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -302,7 +302,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -339,7 +339,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -376,7 +376,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -413,7 +413,7 @@ description: Operations executed sketch_block_on_face.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -690,6 +690,54 @@ description: Operations executed sketch_block_on_face.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 
 function CommandBarTextareaInput({
   arg,
@@ -17,8 +17,9 @@ function CommandBarTextareaInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const commandBarState = useCommandBarState()
-  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
+  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useTextareaAutoGrow(inputRef)
@@ -87,7 +88,7 @@ function CommandBarTextareaInput({
                 new Event('submit', { bubbles: true })
               )
             } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           autoFocus

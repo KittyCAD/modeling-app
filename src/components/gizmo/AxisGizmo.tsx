@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
@@ -24,8 +24,10 @@ import { reportRejection } from '@src/lib/trap'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 
 export default function AxisGizmo() {
+  const { settings } = useApp()
+  const { sceneInfra } = useSingletons()
   const { state: modelingState } = useModelingContext()
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
@@ -39,7 +41,7 @@ export default function AxisGizmo() {
   useEffect(() => {
     disableOrbitRef.current =
       modelingState.matches('Sketch') &&
-      !settings.app.allowOrbitInSketchMode.current
+      !settingsValues.app.allowOrbitInSketchMode.current
     if (wrapperRef.current) {
       wrapperRef.current.style.filter = disableOrbitRef.current
         ? 'grayscale(100%)'
@@ -49,7 +51,7 @@ export default function AxisGizmo() {
         : 'auto'
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settings.app.allowOrbitInSketchMode.current])
+  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -122,7 +124,7 @@ export default function AxisGizmo() {
       disposeMouseEvents()
       sceneInfra.camControls.cameraChange.remove(animate)
     }
-  }, [])
+  }, [sceneInfra])
 
   return (
     <div

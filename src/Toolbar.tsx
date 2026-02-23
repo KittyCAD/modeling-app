@@ -14,7 +14,6 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { kclManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -23,10 +22,14 @@ import type {
   ToolbarItemResolvedDropdown,
   ToolbarModeName,
 } from '@src/lib/toolbar'
-import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import {
+  isToolbarItemResolvedDropdown,
+  useToolbarConfig,
+} from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -43,6 +46,9 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
+    const { commands } = useApp()
+    const { kclManager } = useSingletons()
+    const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -108,9 +114,9 @@ const Toolbar_ = memo(
         props.state,
         props.send,
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        commandBarActor.send,
+        commands.send,
         sketchPathId,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         kclManager.editorView.hasFocus,
       ]
     )
@@ -234,12 +240,12 @@ const Toolbar_ = memo(
         data-current-mode={currentMode}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
       >
         <ul
           ref={toolbarButtonsRef}
           className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center '
+            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
           }
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
@@ -325,7 +331,7 @@ const Toolbar_ = memo(
                       }
                       name={selectedIcon.title}
                       // aria-description is still in ARIA 1.3 draft.
-                      // eslint-disable-next-line jsx-a11y/aria-props
+
                       aria-description={selectedIcon.description}
                       onClick={() =>
                         selectedIcon.onClick(selectedIcon.callbackProps)
@@ -392,7 +398,7 @@ const Toolbar_ = memo(
                   }
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
+
                   aria-description={itemConfig.description}
                   aria-pressed={itemConfig.isActive}
                   disabled={
@@ -681,6 +687,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
+  const { kclManager } = useSingletons()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()

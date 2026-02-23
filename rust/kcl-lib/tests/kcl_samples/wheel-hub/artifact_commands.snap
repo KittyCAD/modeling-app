@@ -1552,7 +1552,7 @@ description: Artifact commands wheel-hub.kcl
           "r": 0.07058824,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

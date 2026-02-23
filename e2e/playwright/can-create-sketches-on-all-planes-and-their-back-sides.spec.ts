@@ -205,8 +205,20 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
 
         // TODO: can we remove these feature tree checks? They seem out of place.
         await toolbar.openFeatureTreePane()
+        await toolbar
+          .getDefaultPlaneVisibilityButton('XY')
+          .locator('..')
+          .hover()
         await toolbar.getDefaultPlaneVisibilityButton('XY').click()
+        await toolbar
+          .getDefaultPlaneVisibilityButton('XZ')
+          .locator('..')
+          .hover()
         await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+        await toolbar
+          .getDefaultPlaneVisibilityButton('YZ')
+          .locator('..')
+          .hover()
         await toolbar.getDefaultPlaneVisibilityButton('YZ').click()
         await expect(
           toolbar

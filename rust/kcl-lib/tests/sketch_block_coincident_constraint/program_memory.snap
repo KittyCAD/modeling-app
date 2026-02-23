@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -80,8 +81,45 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "start_object_id": 2,
                     "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
                 }
               }
             }
@@ -94,6 +132,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -162,8 +201,45 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "start_object_id": 5,
                     "end_object_id": 6,
                     "start_freedom": "Free",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line5"
                 }
               }
             }

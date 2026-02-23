@@ -21,7 +21,10 @@ use super::{
 use crate::{
     IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::{annotations, types::ArrayLen},
+    execution::{
+        annotations::{self, EXPERIMENTAL},
+        types::ArrayLen,
+    },
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -2169,6 +2172,45 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     ))
 }
 
+/// Same as `char::is_ascii_digit`, but accepts an owned `char` instead of a
+/// shared reference.
+fn is_char_ascii_digit(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
+fn is_stdlib_import_path(path_str: &str) -> bool {
+    path_str.starts_with("std") && !path_str.ends_with(".kcl")
+}
+
+fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
+    path_str.split("::").map(str::to_owned).collect()
+}
+
+/// Given an import path, is it a safe identifier? We support Unicode
+/// identifiers.
+fn is_path_safe_identifier(path_str: &str) -> bool {
+    if is_stdlib_import_path(path_str) {
+        // stdlib case
+        let segments = to_stdlib_identifier_segments(path_str);
+        // The rest of the segments will be checked elsewhere to give a better
+        // error message.
+        let Some(name) = segments.last() else {
+            return false;
+        };
+        return !name.starts_with('_')
+            && !name.starts_with(is_char_ascii_digit)
+            && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+    }
+    // Non-stdlib case
+    let typed_path = TypedPath::new(path_str);
+    let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
+        return false;
+    };
+    !name.starts_with('_')
+        && !name.starts_with(is_char_ascii_digit)
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -2179,30 +2221,12 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ));
     }
 
-    if var_name
-        && (path_string.starts_with("_")
-            || path_string.contains('-')
-            || path_string.chars().filter(|c| *c == '.').count() > 1)
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
-        ));
-    }
+    let is_kcl_path = path_string.ends_with(".kcl");
 
-    let path = if path_string.ends_with(".kcl") {
-        if path_string
-            .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    path_range,
-                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
-                )
-                .into(),
-            ));
-        }
-
+    // Check these conditions first so that the error messages are more helpful.
+    // Users should be told about the file location restrictions before the
+    // details of aliasing the identifier.
+    if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -2213,8 +2237,13 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        // Make sure they are not using an absolute path.
-        if path_string.starts_with('/') || path_string.starts_with('\\') {
+        // Make sure they are not using an absolute path. We normalize all paths
+        // to Unix elsewhere, but here, we also check for Windows paths to make
+        // the error more helpful.
+        if path_string.starts_with('/')
+            || path_string.starts_with('\\')
+            || typed_path::TypedPath::derive(&path_string).is_absolute()
+        {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2232,14 +2261,23 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                     .into(),
             ));
         }
+    }
 
+    // This check applies to all file types.
+    if var_name && !is_path_safe_identifier(&path_string) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
+        ));
+    }
+
+    let path = if is_kcl_path {
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std") {
+    } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
-        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+        let segments: Vec<String> = to_stdlib_identifier_segments(&path_string);
 
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
@@ -3423,11 +3461,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
                 }
+                let mut experimental = false;
                 if let Some(attr) = attr {
+                    if let Some(property) = attr.property(EXPERIMENTAL)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        experimental = value;
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
+                    experimental,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5058,6 +5103,7 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5071,6 +5117,7 @@ e
             ),
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5085,6 +5132,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5095,6 +5143,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5110,6 +5159,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5120,6 +5170,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5208,7 +5259,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
             [17, 30],
         );
         assert_err(
@@ -5238,18 +5289,41 @@ e
         assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
         assert_err(
             r#"import "_foo.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 17],
         );
         assert_err(
             r#"import "foo-bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
+        );
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_with_alias() {
+        let code = r#"import "my file.kcl" as myFile"#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_without_alias() {
+        assert_err_contains(
+            r#"import "my file.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
+        );
+    }
+
+    #[test]
+    fn import_kcl_starting_with_name_starting_with_number_without_alias() {
+        assert_err_contains(
+            r#"import "0th.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
         );
     }
 

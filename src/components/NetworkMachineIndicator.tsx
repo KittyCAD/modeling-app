@@ -1,22 +1,30 @@
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { computed } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { useApp } from '@src/lib/boot'
 import type { components } from '@src/lib/machine-api'
-import { useContext } from 'react'
+import { reportRejection } from '@src/lib/trap'
+import { useEffect } from 'react'
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
-  const {
-    noMachinesReason,
-    machines,
-    machines: { length: machineCount },
-  } = useContext(MachineManagerContext)
-  const reason = noMachinesReason()
+  const app = useApp()
+  useEffect(() => {
+    // Start the machineManager if it hasn't been started yet.
+    app.machineManager.start().catch(reportRejection)
+  }, [app.machineManager])
+  useSignals()
+  const machines = app.machineManager.machinesSignal.value
+  const machineCount = computed(
+    () => app.machineManager.machinesSignal.value.length
+  )
+  const reason = app.machineManager.noMachinesReason()
   return {
     id: 'network-machines',
     'data-testid': `network-machine-toggle`,
-    label: `${machineCount}`,
-    hideLabel: machineCount === 0,
+    label: `${machineCount.value}`,
+    hideLabel: machineCount.value === 0,
     toolTip: {
-      children: `Network machines (${machineCount}) ${reason ? `: ${reason}` : ''}`,
+      children: `Network machines (${machineCount.value}) ${reason ? `: ${reason}` : ''}`,
     },
     element: 'popover',
     icon: 'printer3d',

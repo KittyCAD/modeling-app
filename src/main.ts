@@ -4,7 +4,6 @@ import path from 'path'
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
-import type { Service } from 'bonjour-service'
 import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
@@ -33,6 +32,8 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -43,9 +44,22 @@ import {
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificates'
+
+// Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
+// https://github.com/electron/electron/issues/41551#issuecomment-3590685943
+// Only applied to tests to avoid interfering with users who may be using Wayland
+if (
+  os.platform() === 'linux' &&
+  process.env.NODE_ENV === 'test' &&
+  process.env.CI === 'true'
+) {
+  app.commandLine.appendSwitch('ignore-gpu-blocklist')
+  app.commandLine.appendSwitch('ozone-platform', 'x11')
+}
 
 // If we're on Windows, pull the local system TLS CAs in
-require('win-ca')
+configureWindowsSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
 /** All Electron windows will share this WASM module */
@@ -316,6 +330,8 @@ app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
 
+  registerFileProtocolCsp()
+
   // Create the mainWindow
   mainWindow = createWindow()
   // Set menu application to null to avoid default electron menu
@@ -459,30 +475,12 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
-  const timeoutAfterMs = 5000
-  return new Promise((resolve, reject) => {
-    // if it takes too long reject this promise
-    setTimeout(() => resolve(null), timeoutAfterMs)
-    const bonjourEt = new Bonjour({}, (error: Error) => {
+  return discoverMachineApi({
+    createBonjour: (onError) => new Bonjour({}, onError),
+    onError: (error) => {
       console.log('An issue with Bonjour services was encountered!')
       console.error(error)
-      resolve(null)
-    })
-    bonjourEt.find(
-      { protocol: 'tcp', type: 'machine-api' },
-      (service: Service) => {
-        console.log('Found machine API!', JSON.stringify(service))
-        if (!service.addresses || service.addresses?.length === 0) {
-          console.log('No addresses found for machine API!')
-          return resolve(null)
-        }
-        const ip = service.addresses[0]
-        const port = service.port
-        // We want to return the ip address of the machine API.
-        console.log(`Machine API found at ${ip}:${port}`)
-        resolve(`${ip}:${port}`)
-      }
-    )
+    },
   })
 })
 

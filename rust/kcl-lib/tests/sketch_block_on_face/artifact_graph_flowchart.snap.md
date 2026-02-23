@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[81, 106, 0]"]
+    2["Path<br>[81, 106, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[112, 145, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -15,9 +15,21 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     8[Solid2d]
   end
+  subgraph path24 [Path]
+    24["Path<br>[305, 890, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    25["Segment<br>[305, 890, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    26["Segment<br>[305, 890, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    27["Segment<br>[305, 890, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    28["Segment<br>[305, 890, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  end
   1["Plane<br>[58, 75, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  9["Sweep Extrusion<br>[244, 265, 0]"]
+  9["Sweep Extrusion<br>[244, 265, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   10[Wall]
     %% face_code_ref=Missing NodePath
@@ -39,7 +51,27 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Opposite"]
   23["SweepEdge Adjacent"]
-  24["SketchBlock<br>[305, 1016, 0]"]
+  29["SketchBlock<br>[305, 890, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  30["SketchBlockConstraint Horizontal<br>[599, 616, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  31["SketchBlockConstraint Vertical<br>[619, 634, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  32["SketchBlockConstraint Horizontal<br>[637, 654, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  33["SketchBlockConstraint Vertical<br>[657, 672, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  34["SketchBlockConstraint Coincident<br>[675, 711, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  35["SketchBlockConstraint Coincident<br>[714, 750, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  36["SketchBlockConstraint Coincident<br>[753, 789, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  37["SketchBlockConstraint Coincident<br>[792, 828, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  38["SketchBlockConstraint LinesEqualLength<br>[831, 858, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  39["SketchBlockConstraint LinesEqualLength<br>[861, 888, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   2 --- 3
@@ -82,7 +114,8 @@ flowchart LR
   10 --- 16
   10 --- 17
   23 <--x 10
-  10 <--x 24
+  10 --- 24
+  10 <--x 29
   17 <--x 11
   11 --- 18
   11 --- 19
@@ -96,4 +129,8 @@ flowchart LR
   18 <--x 15
   20 <--x 15
   22 <--x 15
+  24 --- 25
+  24 --- 26
+  24 --- 27
+  24 --- 28
 ```

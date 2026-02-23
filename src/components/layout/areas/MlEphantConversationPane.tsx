@@ -2,7 +2,7 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/app'
 import { useEffect, useState, useRef } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
@@ -54,7 +54,11 @@ export const MlEphantConversationPane = (props: {
     conversation = undefined
   }
 
-  const onProcess = async (request: string, mode: MlCopilotMode) => {
+  const onProcess = async (
+    request: string,
+    mode: MlCopilotMode,
+    attachments: File[]
+  ) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -109,6 +113,7 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+      additionalFiles: attachments,
     })
 
     props.sendBillingUpdate()
@@ -300,8 +305,12 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
-      onProcess={(request: string, mode: MlCopilotMode) => {
-        onProcess(request, mode).catch(reportRejection)
+      onProcess={(
+        request: string,
+        mode: MlCopilotMode,
+        attachments: File[]
+      ) => {
+        onProcess(request, mode, attachments).catch(reportRejection)
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}

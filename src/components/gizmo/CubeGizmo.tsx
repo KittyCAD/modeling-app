@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
 export default function CubeGizmo() {
+  const { settings } = useApp()
+  const { sceneInfra } = useSingletons()
   const { state: modelingState } = useModelingContext()
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
 
   const resolvedTheme = useResolvedTheme()
 
@@ -37,7 +39,7 @@ export default function CubeGizmo() {
       renderer.current?.dispose()
       renderer.current = null
     }
-  }, [])
+  }, [sceneInfra])
 
   // perspective changed
   // useEffect(() => {
@@ -52,12 +54,12 @@ export default function CubeGizmo() {
   useEffect(() => {
     const disabled =
       modelingState.matches('Sketch') &&
-      !settings.app.allowOrbitInSketchMode.current
+      !settingsValues.app.allowOrbitInSketchMode.current
 
     setDisabledOrbit(disabled)
     renderer.current?.setDisabled(disabled)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settings.app.allowOrbitInSketchMode.current])
+  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
 
   return (
     <div

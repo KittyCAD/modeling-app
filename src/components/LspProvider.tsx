@@ -30,8 +30,7 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { kclManager } from '@src/lib/singletons'
-import { useToken } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
@@ -74,10 +73,12 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
+  const { auth } = useApp()
+  const { kclManager } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const token = useToken()
+  const token = auth.useToken()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -134,7 +135,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, kclManager.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -188,7 +189,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       kclManager.editorView.dispatch({
         effects: kclLspCompartment.reconfigure(Prec.highest([])),
       })
-  }, [kclLSP])
+  }, [kclLSP, kclManager.editorView])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -252,7 +253,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady])
+  }, [copilotLspClient, isCopilotLspReady, kclManager])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {

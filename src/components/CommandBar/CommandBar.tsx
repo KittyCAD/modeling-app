@@ -8,19 +8,18 @@ import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
+import type { Command, CommandArgument } from '@src/lib/commandTypes'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const commandBarState = useCommandBarState()
+  const { commands: cmd } = useApp()
+  const { kclManager } = useSingletons()
+  const commandBarState = cmd.useState()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -40,7 +39,7 @@ export const CommandBar = () => {
   // but importantly not when the query parameters change
   useEffect(() => {
     if (commandBarState.matches('Closed')) return
-    commandBarActor.send({ type: 'Close' })
+    cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
@@ -50,34 +49,32 @@ export const CommandBar = () => {
     () => {
       if (commandBarState.context.commands.length === 0) return
       if (commandBarState.matches('Closed')) {
-        commandBarActor.send({ type: 'Open' })
+        cmd.send({ type: 'Open' })
       } else {
-        commandBarActor.send({ type: 'Close' })
+        cmd.send({ type: 'Close' })
       }
     },
     kclManager
   )
-  useHotkeyWrapper(
-    ['esc'],
-    () => commandBarActor.send({ type: 'Close' }),
-    kclManager,
-    {
-      enableOnFormTags: true,
-      enableOnContentEditable: true,
-    }
-  )
+  useHotkeyWrapper(['esc'], () => cmd.send({ type: 'Close' }), kclManager, {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
 
   function stepBack() {
-    const entries = Object.entries(selectedCommand?.args || {}).filter(
-      ([argName, arg]) => {
-        const { value, isRequired, isHidden } = evaluateCommandBarArg(
-          argName,
-          arg,
-          commandBarState.context
-        )
-        return !isHidden && (value || isRequired)
-      }
-    )
+    const entries = (
+      Object.entries(selectedCommand?.args || {}) as [
+        string,
+        CommandArgument<unknown>,
+      ][]
+    ).filter(([argName, arg]) => {
+      const { value, isRequired, isHidden } = evaluateCommandBarArg(
+        argName,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden && (value || isRequired)
+    })
 
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
@@ -87,14 +84,14 @@ export const CommandBar = () => {
           ...entries[entries.length - 1][1],
         }
 
-        commandBarActor.send({
+        cmd.send({
           type: 'Edit argument',
           data: {
             arg: currentArg,
           },
         })
       } else {
-        commandBarActor.send({ type: 'Deselect command' })
+        cmd.send({ type: 'Deselect command' })
       }
     } else {
       const index = entries.findIndex(
@@ -103,12 +100,12 @@ export const CommandBar = () => {
 
       if (index === 0) {
         // We're on the first entry, just close
-        commandBarActor.send({ type: 'Close' })
+        cmd.send({ type: 'Close' })
       } else {
         // Either go to the previous argument if we could locate the current one,
         // or to the last one (likely a case of unconfirmed optional arg)
         const prevIndex = index === -1 ? entries.length - 1 : index - 1
-        commandBarActor.send({
+        cmd.send({
           type: 'Change current argument',
           data: {
             arg: { name: entries[prevIndex][0], ...entries[prevIndex][1] },
@@ -123,7 +120,7 @@ export const CommandBar = () => {
       show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
         if (selectedCommand?.onCancel) selectedCommand.onCancel()
-        commandBarActor.send({ type: 'Clear' })
+        cmd.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
@@ -133,7 +130,7 @@ export const CommandBar = () => {
           isArgumentThatShouldBeHardToDismiss
         }
         onClose={() => {
-          commandBarActor.send({ type: 'Close' })
+          cmd.send({ type: 'Close' })
         }}
         className={
           'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
@@ -156,7 +153,7 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command) => {
+                options={commands.filter((command: Command) => {
                   return (
                     // By default everything is undefined
                     // If marked explicitly as false hide
@@ -185,7 +182,7 @@ export const CommandBar = () => {
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
                 data-testid="command-bar-close-button"
-                onClick={() => commandBarActor.send({ type: 'Close' })}
+                onClick={() => cmd.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
               >
                 <CustomIcon

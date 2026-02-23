@@ -1,10 +1,5 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  useSettings,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -16,10 +11,12 @@ export const useOnPageIdle = ({
   startCallback: () => void
   idleCallback: () => void
 }) => {
-  const settings = useSettings()
+  const { settings } = useApp()
+  const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
+  const settingsValues = settings.useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
-    settings.app.streamIdleMode.current
+    settingsValues.app.streamIdleMode.current
   )
   const { state: modelingMachineState } = useModelingContext()
   const IDLE_TIME_MS = Number(streamIdleMode)
@@ -49,7 +46,7 @@ export const useOnPageIdle = ({
         intervalId.current = null
       }
     }
-  }, [])
+  }, [kclManager])
 
   useEffect(() => {
     timeoutStart.current = streamIdleMode ? Date.now() : null
@@ -103,7 +100,13 @@ export const useOnPageIdle = ({
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [IDLE_TIME_MS, idleCallback, modelingMachineState])
+  }, [
+    IDLE_TIME_MS,
+    idleCallback,
+    modelingMachineState,
+    engineCommandManager,
+    sceneInfra.camControls,
+  ])
 
   useEffect(() => {
     if (!streamIdleMode) return

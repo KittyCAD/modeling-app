@@ -7,7 +7,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { kclManager } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -23,6 +23,8 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
+  const { settings } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
   const navigate = useNavigate()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -32,6 +34,8 @@ export function HelpMenu() {
       onboardingStatus: onboardingStartPath,
       navigate,
       kclManager,
+      systemIOActor,
+      settingsActor: settings.actor,
     }
     acceptOnboarding(props).catch((reason) =>
       catchOnboardingWarnError(reason, props)

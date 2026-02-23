@@ -52,7 +52,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: |
           npm install
@@ -122,7 +122,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: .nvmrc
       - name: Update apt repositories
         if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'arm-unknown-linux-gnueabihf' || matrix.os == 'namespace-profile-ubuntu-2-cores'
         run: sudo apt-get update
@@ -157,9 +157,11 @@ jobs:
         if: matrix.target == 'arm-unknown-linux-gnueabihf'
         run: sudo apt-get install gcc-arm-linux-gnueabihf
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
@@ -235,9 +237,11 @@ jobs:
           rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server

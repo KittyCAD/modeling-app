@@ -31,6 +31,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -46,6 +47,7 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
@@ -95,15 +97,47 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    sketches,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const faceSelections = sketches.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
   )
-  if (err(vars)) {
-    return vars
+  for (const faceSelection of faceSelections) {
+    const res = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(res)) {
+      return res
+    }
+    modifiedAst = res.modifiedAst
+    const expr = createLocalName(res.tags[0])
+    vars.exprs.push(expr)
+  }
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   // Extra labeled args expressions
@@ -250,6 +284,7 @@ export function addSweep({
   relativeTo,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -260,6 +295,7 @@ export function addSweep({
   relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -309,6 +345,9 @@ export function addSweep({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
@@ -317,6 +356,7 @@ export function addSweep({
     ...relativeToExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,

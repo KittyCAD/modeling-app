@@ -10,15 +10,12 @@ import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextar
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { use } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
   const {
     context: { currentArgument },
   } = commandBarState
@@ -26,7 +23,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   function onSubmit(data: unknown) {
     if (!currentArgument) return
 
-    commandBarActor.send({
+    commands.send({
       type: 'Submit argument',
       data: {
         [currentArgument.name]: data,
@@ -37,7 +34,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   function clear() {
     if (!currentArgument) return
 
-    commandBarActor.send({
+    commands.send({
       type: 'Submit argument',
       data: {
         [currentArgument.name]: undefined,
@@ -70,6 +67,7 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   // @ts-ignore
   switch (arg.inputType) {

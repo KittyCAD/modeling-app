@@ -42,8 +42,6 @@ import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
-
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -102,6 +100,11 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import {
+  operationsAnnotation,
+  operationsStateField,
+  setOperationsEffect,
+} from '@src/editor/plugins/operations'
 import { setKclVersion } from '@src/lib/kclVersion'
 import {
   baseEditorExtensions,
@@ -119,6 +122,8 @@ import {
   type TransactionSpecNoChanges,
 } from '@src/editor/HistoryView'
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -249,8 +254,10 @@ export class KclManager extends EventTarget {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
+  livePathsToWatch = signal<string[]>([])
 
-  private _execState: ExecState = emptyExecState()
+  private _execState = signal<ExecState>(emptyExecState())
+
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
@@ -272,6 +279,9 @@ export class KclManager extends EventTarget {
     this.redoDepth.value =
       redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
+  get operations() {
+    return this._editorView.state.field(operationsStateField)
+  }
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
@@ -354,11 +364,14 @@ export class KclManager extends EventTarget {
   }
 
   private set execState(execState) {
-    this._execState = execState
+    this._execState.value = execState
     this.variables = execState.variables
   }
 
   get execState() {
+    return this._execState.value
+  }
+  get execStateSignal() {
     return this._execState
   }
 
@@ -550,7 +563,7 @@ export class KclManager extends EventTarget {
       if (shouldWriteToFile) {
         // Need to close over `this._currentFilePath`'s value before deferrment,
         // otherwise the deferred write could have a changed value after rapid navigation
-        void this.deferredWriteToFile({ newCode, path: this._currentFilePath })
+        void this.writeToFile(newCode, this._currentFilePath)
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
@@ -574,33 +587,40 @@ export class KclManager extends EventTarget {
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
-          const { sceneGraph, execOutcome } =
+          const setProgramOutcome =
             await this.singletons.rustContext.hackSetProgram(
               this.ast,
               await jsAppSettings(this.singletons.rustContext.settingsActor)
             )
 
-          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-          // Always invalidate IDs for direct edits since we don't know what the user changed
-          const sceneGraphDelta: SceneGraphDelta = {
-            new_graph: sceneGraph,
-            new_objects: [],
-            invalidates_ids: true,
-            exec_outcome: execOutcome,
-          }
+          if (setProgramOutcome.type === 'Success') {
+            // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+            // Always invalidate IDs for direct edits since we don't know what the user changed
+            const sceneGraphDelta: SceneGraphDelta = {
+              new_graph: setProgramOutcome.sceneGraph,
+              new_objects: [],
+              invalidates_ids: true,
+              exec_outcome: setProgramOutcome.execOutcome,
+            }
 
-          const kclSource: SourceDelta = {
-            text: newCode,
-          }
+            const kclSource: SourceDelta = {
+              text: newCode,
+            }
 
-          // Send event to sketch solve machine via modeling machine
-          this.sendModelingEvent({
-            type: 'update sketch outcome',
-            data: {
-              kclSource,
-              sceneGraphDelta,
-            },
-          })
+            // Send event to sketch solve machine via modeling machine
+            this.sendModelingEvent({
+              type: 'update sketch outcome',
+              data: {
+                kclSource,
+                sceneGraphDelta,
+              },
+            })
+          } else {
+            console.debug(
+              'Error when executing after user edit:',
+              setProgramOutcome
+            )
+          }
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
@@ -616,12 +636,6 @@ export class KclManager extends EventTarget {
       }
     },
     300
-  )
-
-  private deferredWriteToFile = deferredCallback(
-    ({ newCode, path }: { newCode: string; path: string | null }) =>
-      this.writeToFile(newCode, path),
-    1_000
   )
 
   private createEditorExtensions() {
@@ -738,6 +752,18 @@ export class KclManager extends EventTarget {
       // Reset the switched files boolean.
       this._switchedFiles = false
     }
+  }
+
+  /**
+   */
+  private dispatchUpdateOperations(newOperations: Operation[]) {
+    this.editorView.dispatch({
+      effects: [setOperationsEffect.of(newOperations)],
+      annotations: [
+        operationsAnnotation.of(true),
+        Transaction.addToHistory.of(false),
+      ],
+    })
   }
 
   /**
@@ -876,7 +902,7 @@ export class KclManager extends EventTarget {
       .map((file) => {
         return file.value
       })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+    this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -886,6 +912,7 @@ export class KclManager extends EventTarget {
           ast,
           sourceCode: this.code,
           instance: await this._wasmInstancePromise,
+          rustContext: this.singletons.rustContext,
         })
       )
       if (this._sceneEntitiesManager) {
@@ -937,6 +964,8 @@ export class KclManager extends EventTarget {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
+    this.dispatchUpdateOperations(execState.operations)
+
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
@@ -953,6 +982,13 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+
+    // Update project thumbnail after successful execution
+    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      createThumbnailPNGOnDesktop({
+        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+      })
+    }
   }
 
   /**
@@ -996,7 +1032,7 @@ export class KclManager extends EventTarget {
     })
 
     this.logs = logs
-    this._execState = execState
+    this._execState.value = execState
     this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
@@ -1444,6 +1480,7 @@ export class KclManager extends EventTarget {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
+
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -1702,6 +1739,11 @@ export class KclManager extends EventTarget {
       this.lastWrite = null
     }
   }
+  get currentFileName() {
+    return (
+      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+    )
+  }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
     shouldExecute: false,
@@ -1799,8 +1841,9 @@ export class KclManager extends EventTarget {
           time: Date.now(),
         }
         this.timeoutWriter = setTimeout(() => {
-          if (!this._currentFilePath)
+          if (!path) {
             return reject(new Error('currentFilePath not set'))
+          }
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true

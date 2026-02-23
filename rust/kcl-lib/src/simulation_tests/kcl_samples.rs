@@ -12,6 +12,8 @@ use walkdir::WalkDir;
 
 use super::Test;
 
+const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
+
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
     static ref INPUTS_DIR: PathBuf = Path::new("../../public/kcl-samples").to_path_buf();
@@ -269,10 +271,11 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
-    let categories = if let Some(categories_line) = lines[2]
-        .trim_start_matches(COMMENT_PREFIX)
-        .trim()
-        .strip_prefix("Categories: ")
+    let categories = if let Some(third_line) = lines.get(2)
+        && let Some(categories_line) = third_line
+            .trim_start_matches(COMMENT_PREFIX)
+            .trim()
+            .strip_prefix("Categories: ")
     {
         categories_line.split(',').map(|s| s.trim().to_string()).collect()
     } else {
@@ -324,7 +327,8 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
-                        ext == "kcl"
+                        let ext = ext.to_str().unwrap().to_lowercase();
+                        ALLOWED_FILETYPES.contains(&ext.as_str())
                     } else {
                         false
                     }

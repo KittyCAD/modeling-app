@@ -54,7 +54,7 @@ use crate::{
     parsing::{
         PIPE_OPERATOR,
         ast::types::{Expr, Node, VariableKind},
-        token::TokenStream,
+        token::{RESERVED_WORDS, TokenStream},
     },
 };
 
@@ -110,6 +110,8 @@ pub struct Backend {
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
     pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
+    /// KCL keywords
+    pub kcl_keywords: HashMap<String, CompletionItem>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -179,6 +181,7 @@ impl Backend {
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
         let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
+        let kcl_keywords = get_keywords();
 
         Ok(Self {
             client,
@@ -186,6 +189,7 @@ impl Backend {
             stdlib_completions,
             stdlib_signatures,
             stdlib_args,
+            kcl_keywords,
             zoo_client,
             can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
@@ -438,7 +442,10 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            let discovered_findings = ast.lint_all().into_iter().flatten().collect::<Vec<_>>();
+            let mut discovered_findings: Vec<_> = ast.lint_all().into_iter().flatten().collect();
+            // Filter out Z0005 (old sketch syntax) from LSP diagnostics
+            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            discovered_findings.retain(|finding| finding.finding.code != "Z0005");
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 
@@ -764,7 +771,16 @@ impl Backend {
             return Ok(());
         }
 
-        match executor_ctx.run_with_caching(ast.clone()).await {
+        // Use run_mock for mock contexts, run_with_caching for live contexts
+        let result = if executor_ctx.is_mock() {
+            executor_ctx
+                .run_mock(ast, &crate::execution::MockConfig::default())
+                .await
+        } else {
+            executor_ctx.run_with_caching(ast.clone()).await
+        };
+
+        match result {
             Err(err) => {
                 self.add_to_diagnostics(params, &[err], false).await;
 
@@ -1315,6 +1331,7 @@ impl LanguageServer for Backend {
         }
 
         completions.extend(self.stdlib_completions.values().cloned());
+        completions.extend(self.kcl_keywords.values().cloned());
 
         // Add more to the completions if we have more.
         let Some(ast) = self
@@ -1612,11 +1629,36 @@ impl LanguageServer for Backend {
     }
 
     async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
-        let actions = params
-            .context
-            .diagnostics
+        // Get the actual diagnostics from our map to ensure we have the full diagnostic info
+        let filename = params.text_document.uri.to_string();
+        let stored_diagnostics = self
+            .diagnostics_map
+            .get(&filename)
+            .map(|d| d.clone())
+            .unwrap_or_default();
+
+        // Use stored diagnostics if available, otherwise fall back to params.context.diagnostics
+        let diagnostics_to_check: Vec<_> = if stored_diagnostics.is_empty() {
+            params.context.diagnostics.clone()
+        } else {
+            // Match params.context.diagnostics with stored diagnostics by range
+            params
+                .context
+                .diagnostics
+                .iter()
+                .filter_map(|param_diag| {
+                    stored_diagnostics
+                        .iter()
+                        .find(|stored_diag| stored_diag.range == param_diag.range)
+                        .cloned()
+                })
+                .collect()
+        };
+
+        let actions = diagnostics_to_check
             .into_iter()
             .filter_map(|diagnostic| {
+                // Handle regular suggestions (like camelCase)
                 let (suggestion, range) = diagnostic
                     .data
                     .as_ref()
@@ -1728,6 +1770,37 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
     }
 
     signatures
+}
+
+/// Get KCL keywords
+pub fn get_keywords() -> HashMap<String, CompletionItem> {
+    RESERVED_WORDS
+        .keys()
+        .map(|k| (k.to_string(), keyword_to_completion(k.to_string())))
+        .collect()
+}
+
+fn keyword_to_completion(kw: String) -> CompletionItem {
+    CompletionItem {
+        label: kw,
+        label_details: None,
+        kind: Some(CompletionItemKind::KEYWORD),
+        detail: None,
+        documentation: None,
+        deprecated: Some(false),
+        preselect: None,
+        sort_text: None,
+        filter_text: None,
+        insert_text: None,
+        insert_text_format: None,
+        insert_text_mode: None,
+        text_edit: None,
+        additional_text_edits: None,
+        command: None,
+        commit_characters: None,
+        data: None,
+        tags: None,
+    }
 }
 
 #[derive(Clone, Debug)]

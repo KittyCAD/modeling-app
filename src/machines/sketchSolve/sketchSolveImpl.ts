@@ -11,7 +11,7 @@ import {
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
-import { Group, OrthographicCamera, Mesh } from 'three'
+import { Group, Mesh } from 'three'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -23,12 +23,12 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 
-import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
-import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -49,6 +49,8 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -59,18 +61,14 @@ export type SpawnToolActor = <K extends EquipTool>(
   src: K,
   options?: {
     id?: string
-    input?: {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    }
+    input?: ToolInput
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
+  | { type: 'camera scale change' }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
@@ -81,17 +79,24 @@ export type SketchSolveMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
     }
   | {
       type: 'update selected ids'
       data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
     }
+  | {
+      type: 'update hovered id'
+      data: { hoveredId: number | null }
+    }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
       type: 'update sketch outcome'
       data: {
-        kclSource: SourceDelta
+        sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         /**
          * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
@@ -113,13 +118,31 @@ export type SketchSolveMachineEvent =
     }
   | { type: 'clear draft entities' }
   | { type: 'delete draft entities' }
+  | {
+      type: 'start editing constraint'
+      data: { constraintId: number }
+    }
+  | { type: 'stop editing constraint' }
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
+  | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
+
+export const equipTools = Object.freeze({
+  trimTool,
+  // both use the same tool, opened with a different flag
+  angledRectTool: rectTool,
+  centerRectTool: rectTool,
+  cornerRectTool: rectTool,
+  dimensionTool,
+  pointTool,
+  lineTool,
+  centerArcTool,
+})
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -127,14 +150,16 @@ export type SketchSolveContext = {
   pendingToolName?: EquipTool
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
+  hoveredId: number | null
   sketchExecOutcome?: {
-    kclSource: SourceDelta
+    sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
   draftEntities?: {
     segmentIds: Array<number>
     constraintIds: Array<number>
   }
+  editingConstraintId?: number
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchId: number
   // Dependencies passed from parent
@@ -143,13 +168,6 @@ export type SketchSolveContext = {
   rustContext: RustContext
   kclManager: KclManager
 }
-export const equipTools = Object.freeze({
-  centerRectTool,
-  dimensionTool,
-  pointTool,
-  lineTool,
-  centerArcTool,
-})
 
 export type SolveActionArgs = ActionArgs<
   SketchSolveContext,
@@ -268,7 +286,19 @@ export function updateSegmentGroup({
     return
   }
 
+  // Determine isDraft and isConstruction separately
   const isDraft = draftEntityIds?.includes(idNum) ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
 
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
@@ -291,6 +321,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -302,6 +333,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -313,6 +345,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -337,6 +370,20 @@ function initSegmentGroup({
   isDraft?: boolean
   objects?: Array<ApiObject>
 }): Group | Error {
+  // Determine isDraft and isConstruction separately
+  const isDraftValue = isDraft ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[id]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
+
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
   if (objects) {
@@ -353,7 +400,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -362,7 +410,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -371,7 +420,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -399,15 +449,9 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds: Array<number>
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
   )
@@ -448,9 +492,46 @@ export function updateSceneGraphFromDelta({
     if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
       return
     }
-    // sketch is no a drawable object, and
-    // TODO constraints have not been implemented yet
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    // sketch is not a drawable object
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+
+    // Combine selectedIds and duringAreaSelectIds for highlighting
+    const allSelectedIds = Array.from(
+      new Set([...selectedIds, ...duringAreaSelectIds])
+    )
+
+    // Render constraints
+    if (obj.kind.type === 'Constraint') {
+      const foundObject = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
+      if (!constraintGroup) {
+        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj, objects)
+        if (constraintGroup) {
+          const sketchSceneGroup =
+            context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+          if (sketchSceneGroup) {
+            constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
+            constraintGroup.layers.set(SKETCH_LAYER)
+            sketchSceneGroup.add(constraintGroup)
+          }
+        }
+      }
+      if (constraintGroup) {
+        segmentUtilsMap.DimensionConstraint.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra,
+          selectedIds,
+          context.hoveredId
+        )
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
@@ -489,11 +570,6 @@ export function updateSceneGraphFromDelta({
     if (!ctor) {
       return
     }
-
-    // Combine selectedIds and duringAreaSelectIds for highlighting
-    const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
-    )
 
     // Get draft entity IDs from context
     const draftEntityIds = context.draftEntities
@@ -596,9 +672,8 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   }
 }
 
-export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
-  const sketchSegments =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
+  const sketchSegments = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSegments || !(sketchSegments instanceof Group)) {
     // no segments to clean
     return
@@ -651,15 +726,9 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
@@ -672,7 +741,26 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     : undefined
 
   sceneGraphDelta.new_graph.objects.forEach((obj) => {
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+    if (obj.kind.type === 'Constraint') {
+      const foundObject = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
+      if (constraintGroup) {
+        segmentUtilsMap.DimensionConstraint.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra,
+          allSelectedIds,
+          context.hoveredId
+        )
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
@@ -717,12 +805,42 @@ export function initializeInitialSceneGraph({
 
     return {
       sketchExecOutcome: {
-        kclSource,
+        sourceDelta: kclSource,
         sceneGraphDelta,
       },
     }
   }
   return {}
+}
+
+export function onCameraScaleChange({ context }: SolveActionArgs): void {
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+    return
+  }
+
+  const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
+
+  const constraintGroups = sketchSolveGroup.children.filter(
+    (child) => child.userData.type === CONSTRAINT_TYPE && child instanceof Group
+  )
+  constraintGroups.forEach((group) => {
+    const objId = group.userData.object_id
+    const obj = objects[objId]
+    if (obj) {
+      segmentUtilsMap.DimensionConstraint.update(
+        group as Group,
+        obj,
+        objects,
+        scaleFactor,
+        context.sceneInfra,
+        context.selectedIds,
+        context.hoveredId
+      )
+    }
+  })
 }
 
 // Debounced editor update function - persists across calls
@@ -737,6 +855,15 @@ const debouncedEditorUpdate = deferredCallback(
 
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
+
+  if (!event.data.sourceDelta) {
+    console.error(
+      'updateSketchOutcome: ERROR - No sourceDelta provided',
+      event.data
+    )
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
+  }
 
   // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({
@@ -756,12 +883,12 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // by calling the debounced function again with new text before the delay expires
     // If a new update comes in within 200ms, the previous one is cancelled
     debouncedEditorUpdate({
-      text: event.data.kclSource.text,
+      text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.kclSource.text, {
+    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
       shouldExecute: false,
       // Persist changes to disk unless explicitly disabled
       shouldWriteToDisk: event.data.writeToDisk || false,
@@ -770,7 +897,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
 
   return {
     sketchExecOutcome: {
-      kclSource: event.data.kclSource,
+      sourceDelta: event.data.sourceDelta,
       sceneGraphDelta: event.data.sceneGraphDelta,
     },
   }
@@ -805,7 +932,7 @@ export async function deleteDraftEntities({
 
   try {
     const result = await context.rustContext.deleteObjects(
-      0,
+      SKETCH_FILE_VERSION,
       context.sketchId,
       constraintIds,
       segmentIds,
@@ -817,7 +944,7 @@ export async function deleteDraftEntities({
       self.send({
         type: 'update sketch outcome',
         data: {
-          kclSource: result.kclSource,
+          sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
         },
       })
@@ -855,7 +982,7 @@ export async function deleteDraftEntitiesPromise({
 
   try {
     const result = await context.rustContext.deleteObjects(
-      0,
+      SKETCH_FILE_VERSION,
       context.sketchId,
       constraintIds,
       segmentIds,
@@ -903,6 +1030,7 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
 
@@ -911,4 +1039,18 @@ export function spawnTool(
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
+}
+
+export type ToolInput = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
+}
+
+const toolVariants: Record<string, string> = {
+  angledRectTool: 'angled',
+  centerRectTool: 'center',
+  cornerRectTool: 'corner',
 }

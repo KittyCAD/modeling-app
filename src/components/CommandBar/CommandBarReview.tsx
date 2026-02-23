@@ -3,12 +3,14 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { useApp } from '@src/lib/boot'
 import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
   const {
     context: { argumentsToSubmit, selectedCommand, reviewValidationError },
   } = commandBarState
@@ -17,7 +19,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
-  useHotkeys('esc', () => commandBarActor.send({ type: 'Close' }), {
+  useHotkeys('esc', () => commands.send({ type: 'Close' }), {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
@@ -42,7 +44,8 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
-        commandBarActor.send({
+        if (!arg) return
+        commands.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -59,15 +62,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   function submitCommand(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    commandBarActor.send({
+    commands.send({
       type: 'Submit command',
       output: { argumentsToSubmit },
     })
   }
 
-  const availableOptionalArgs = useMemo(() => {
+  const availableOptionalArgs = useMemo<
+    Record<string, CommandArgument<unknown>> | undefined
+  >(() => {
     if (!selectedCommand?.args) return undefined
-    const s = { ...selectedCommand.args }
+    const s = {
+      ...selectedCommand.args,
+    } as Record<string, CommandArgument<unknown>>
     for (const [name, arg] of Object.entries(s)) {
       const { isHidden, isRequired, value } = evaluateCommandBarArg(
         name,
@@ -130,7 +137,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                     data-testid={`cmd-bar-add-optional-arg-${argName}`}
                     type="button"
                     onClick={() => {
-                      commandBarActor.send({
+                      commands.send({
                         type: 'Edit argument',
                         data: { arg: { ...arg, name: argName } },
                       })

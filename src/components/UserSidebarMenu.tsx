@@ -13,20 +13,20 @@ import usePlatform from '@src/hooks/usePlatform'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { authActor } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const { auth } = useApp()
   const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const send = authActor.send
   const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
 
@@ -170,7 +170,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               Sign out{hideEnvironmentItems ? '' : ` of ${fullEnvironmentName}`}
             </span>
           ),
-          onClick: () => send({ type: 'Log out' }),
+          onClick: () => auth.send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
         {
@@ -178,7 +178,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: <span>Sign out of all environments</span>,
-          onClick: () => send({ type: 'Log out all' }),
+          onClick: () => auth.send({ type: 'Log out all' }),
           className:
             hideEnvironmentItems || !hasMultipleEnvironments ? 'hidden' : '',
         },
@@ -188,7 +188,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [platform, location, filePath, navigate, send, hasMultipleEnvironments]
+    [platform, location, filePath, navigate, auth.send, hasMultipleEnvironments]
   )
 
   // This image host goes down sometimes. We will instead rewrite the

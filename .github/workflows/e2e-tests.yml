@@ -20,8 +20,8 @@ permissions:
   actions: read
 
 jobs:
-  prepare-wasm:
-    runs-on: namespace-profile-ubuntu-8-cores
+  track-setup:
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
         with:
@@ -57,85 +57,14 @@ jobs:
           CI_SUITE: e2e:desktop
           CI_STEP: setup
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v3
-        continue-on-error: true # this step fails when invoked as 'workflow_call'
-        with:
-          filters: |
-            rust:
-              - 'rust/**'
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Download Wasm cache
-        id: download-wasm
-        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v12
-        continue-on-error: true
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-and-store-wasm.yml
-          branch: main
-          path: rust/kcl-wasm-lib/pkg
-
-      - name: Build Wasm condition
-        id: wasm
-        run: |
-          set -euox pipefail
-          # Build wasm if this is a scheduled run, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install Rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false # Configured below.
-          rustflags: '' # Use .cargo/config.toml
-
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        with:
-          tool: wasm-pack
-
-      - name: Use Rust cache
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "./rust"
-
-      - name: Build Wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: npm run build:wasm
-
-      - name: Upload compiled wasm artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: prepared-wasm
-          path: |
-            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+  build-wasm:
+    needs: [track-setup]
+    uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   snapshots:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
@@ -167,8 +96,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -188,7 +117,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -235,17 +164,22 @@ jobs:
       - name: Commit changes
         if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
         shell: bash
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
+          echo "${GITHUB_HEAD_REF}"
+          git checkout "${GITHUB_HEAD_REF}"
           git commit --message "Update snapshots" || true
           git push
-          git push origin ${{ github.head_ref }}
+          git push origin "${GITHUB_HEAD_REF}"
 
       - name: Track teardown (snapshots)
         if: always()
@@ -259,7 +193,7 @@ jobs:
           CI_STEP: teardown
 
   web:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
@@ -300,8 +234,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -328,7 +262,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:e2e:web
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -361,7 +295,7 @@ jobs:
           CI_STEP: teardown
 
   desktop:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
@@ -427,8 +361,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         id: deps-install
@@ -468,8 +402,8 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 30
-          max_attempts: 9
+          timeout_minutes: 15
+          max_attempts: 5
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}

@@ -556,7 +556,7 @@ export fn hollow(
 ///   scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
 ///   return {
 ///     translate = [0, 0, replicaId * 10],
-///     scale = [scale, scale, 0],
+///     scale = [scale, scale, 1],
 ///   }
 /// }
 /// // Each layer is just a pretty thin cylinder.
@@ -1353,6 +1353,8 @@ export fn flipSurface(
 ): [Solid; 1+] {}
 
 /// Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
+/// NOTE: Currently `merge = true` is required. You must set this argument.
+/// In the future, this restriction will be removed.
 ///
 /// ```kcl
 /// sideLen = 4
@@ -1396,3 +1398,182 @@ export fn split(
   /// The tools to split the bodies along.
   tools?: [Solid],
 ): [Solid; 1+] {}
+
+
+/// Given a KCL value that is a "body" (currently typed as `Solid`), returns `true` if the value is a solid and `false` otherwise. 
+///
+/// ```kcl
+/// fn square(@plane, origin, side, body_type) {
+///   return startSketchOn(plane)
+///     |> startProfile(at = origin)
+///     |> yLine(length = side)
+///     |> xLine(length = side)
+///     |> yLine(length = -side)
+///     |> xLine(length = -side)
+///     |> extrude(length = side, bodyType = body_type)
+/// }
+/// 
+/// originX0Y0 = [0, 0]
+/// originX10Y0 = [10, 0]
+/// 
+/// cube = square(
+///   XY,
+///   origin = originX0Y0,
+///   side = 5,
+///   body_type = "solid",
+/// )
+/// openBoxSurface = square(
+///   XY,
+///   origin = originX10Y0,
+///   side = 6,
+///   body_type = "surface",
+/// )
+/// 
+/// assertIs(isSolid(cube))
+/// assertIs(isSurface(openBoxSurface))
+/// 
+/// // surface is not a solid
+/// assertIs(!isSolid(openBoxSurface))
+/// 
+/// // solid is not a surface
+/// assertIs(!isSurface(cube))
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn isSolid(
+  /// Value to check if it is a solid or not
+  @val: Solid,
+): bool {}
+
+
+/// Given a KCL value that is a 'body' (currently typed as `Solid`), returns `true` if the value is a surface and `false` otherwise. 
+///
+/// ```kcl
+/// fn square(@plane, origin, side, body_type) {
+///   return startSketchOn(plane)
+///     |> startProfile(at = origin)
+///     |> yLine(length = side)
+///     |> xLine(length = side)
+///     |> yLine(length = -side)
+///     |> xLine(length = -side)
+///     |> extrude(length = side, bodyType = body_type)
+/// }
+/// 
+/// originX0Y0 = [0, 0]
+/// originX10Y0 = [10, 0]
+/// 
+/// cube = square(
+///   XY,
+///   origin = originX0Y0,
+///   side = 5,
+///   body_type = "solid",
+/// )
+/// openBoxSurface = square(
+///   XY,
+///   origin = originX10Y0,
+///   side = 6,
+///   body_type = "surface",
+/// )
+/// 
+/// assertIs(isSolid(cube))
+/// assertIs(isSurface(openBoxSurface))
+/// 
+/// // surface is not a solid
+/// assertIs(!isSolid(openBoxSurface))
+/// 
+/// // solid is not a surface
+/// assertIs(!isSurface(cube))
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn isSurface(
+  /// Value to check if it is a surface or not
+  @val: Solid,
+): bool {}
+
+/// Delete a face from a body (a solid, or a polysurface).
+/// ```
+/// // Make an extruded triangle.
+/// startSketchOn(XY)
+/// |> startProfile(at = [0, 15])
+/// |> xLine(length = 10, tag = $a)
+/// |> yLine(length = 8)
+/// |> close()
+/// |> extrude(length = 2)
+/// // Delete some faces.
+/// |> deleteFace(faces = [a, END])
+/// ```
+/// ```kcl
+/// // Make an extruded square.
+/// startSketchOn(XY)
+/// |> polygon(radius = 10, numSides = 4, center = [0, 0])
+/// |> extrude(length = 2)
+/// // Delete some faces. Because there's no tags, we can delete by face _index_.
+/// |> deleteFace(faceIndices = [0, 5])
+/// ```
+/// ```kcl
+/// sideLen = 4
+/// 
+/// // Helper function to make a square surface body.
+/// fn square(@plane, offset, y) {
+///   at = if y {
+///     [-offset, 0]
+///   } else {
+///     [0, offset]
+///   }
+///   return startSketchOn(plane)
+///     |> startProfile(at)
+///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
+///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
+/// }
+/// 
+/// // Make a cube polysurface from 6 squares.
+/// cube = [
+///   square(XY, offset = 0, y = false),
+///   square(XZ, offset = 0, y = true) |> flipSurface(),
+///   square(YZ, offset = 0, y = false),
+///   square(XY, offset = sideLen, y = false),
+///   square(XZ, offset = -sideLen, y = true),
+///   square(YZ, offset = sideLen, y = false)
+/// ]
+///
+/// // Via split + merge, create a solid cube from the 6 square surfaces (faces of the cube).
+/// cubeSolid = split(cube, merge = true)
+///
+/// // We can delete faces using their face index, because there's no tags on this cube.
+/// deleteFace(cubeSolid, faceIndices = [0, 1])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn deleteFace(
+  /// Target to delete a surface from.
+  @body: Solid,
+  /// Face to delete. This is the usual face representation, e.g. a tagged face.
+  faces?: [TaggedFace; 1+],
+  /// Face to delete.
+  /// The index is a stable ordering of faces, used when you can't get the
+  /// usual ID (UUID) of a face.
+  faceIndices?: [number(Count); 1+],
+): Solid {}
+
+/// Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-2, 0])
+///   |> angledLine(angle = 0deg, length = 4, tag = $rectangleSegmentA001)
+///   |> extrude(length = 2, bodyType = SURFACE)
+///   |> translate(y = 3, z = 2)
+/// 
+/// sketch002 = startSketchOn(XZ)
+/// profile002 = startProfile(sketch002, at = [-1, 0])
+///   |> angledLine(angle = 0deg, length = 2, tag = $rectangleSegmentA002)
+///   |> extrude(length = 2, bodyType = SURFACE)
+///   |> flipSurface()
+/// 
+/// edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001, lowerBound = 0.1, upperBound = 0.9)
+/// edge002 = getBoundedEdge(profile002, edge = rectangleSegmentA002)
+/// 
+/// blend([edge001, edge002])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn blend(
+   /// The two edges that will be blended.
+   @edges: [BoundedEdge; 2],
+): Solid {}
