@@ -1,4 +1,5 @@
 import type { LoaderFunction } from 'react-router-dom'
+import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
@@ -49,10 +50,7 @@ export const fileLoader =
 
     const heuristicProjectFilePath =
       window.electron && params.id
-        ? params.id
-            .split(window.electron.sep)
-            .slice(0, -1)
-            .join(window.electron.sep)
+        ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
         : undefined
 
     const wasmInstance = await kclManager.wasmInstancePromise
@@ -85,7 +83,7 @@ export const fileLoader =
         let fileExists = isDesktop()
         if (currentFilePath && fileExists && window.electron) {
           try {
-            await window.electron.stat(currentFilePath)
+            await fsZds.stat(currentFilePath)
           } catch (e) {
             if (e === 'ENOENT') {
               fileExists = false
@@ -118,7 +116,7 @@ export const fileLoader =
           )
         }
 
-        code = await window.electron.readFile(currentFilePath, {
+        code = await fsZds.readFile(currentFilePath, {
           encoding: 'utf-8',
         })
         code = normalizeLineEndings(code)

@@ -1,33 +1,19 @@
-// Polyfill window.electron fs functions as needed when in a nodejs context
-// (INTENDED FOR VITEST SHENANIGANS.)
-
 import type { Abortable } from 'events'
 import type { ObjectEncodingOptions, OpenMode } from 'fs'
-import * as nodePath from '@chainner/node-path'
-import type { IElectronAPI } from '@root/interface'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import fsZds from '@src/lib/fs-zds'
 
-export interface IFs {
-  readdir: IElectronAPI['readdir']
-  readFile: IElectronAPI['readFile']
-  stat: IElectronAPI['stat']
-}
-
-let testNodeFs
-if (process.env.NODE_ENV === 'test' && process.env.VITEST) {
-  const fs = require('node:fs/promises')
-  testNodeFs = fs
-}
+import electronfs from '@src/lib/fs-zds/electronfs'
+import noopfs from '@src/lib/fs-zds/noopfs'
 
 /// FileSystemManager is a class that provides a way to read files from the
 /// local file system. The module's singleton instance assumes that you are in a
 /// project since it is solely used by the std lib when executing code.
 export class FileSystemManager {
-  private _nodePath: IElectronAPI['path']
-  private _fs: IFs | undefined
+  private _fs: IZooDesignStudioFS
   private _dir: string | null = null
 
-  constructor(nodePath: IElectronAPI['path'], fs: IFs | undefined) {
-    this._nodePath = nodePath
+  constructor(fs: IZooDesignStudioFS) {
     this._fs = fs
   }
 
@@ -40,28 +26,36 @@ export class FileSystemManager {
   }
 
   get path() {
-    return this._nodePath
+    return {
+      resolve: this._fs.resolve,
+      join: this._fs.join,
+      relative: this._fs.relative,
+      extname: this._fs.extname,
+      sep: this._fs.sep,
+      basename: this._fs.basename,
+      dirname: this._fs.dirname,
+    }
   }
 
-  join(dir: string, path: string): string {
-    if (path.startsWith(dir)) {
-      path = path.slice(dir.length)
+  join(dir: string, targetPath: string): string {
+    if (targetPath.startsWith(dir)) {
+      targetPath = targetPath.slice(dir.length)
     }
-    return this._nodePath.join(dir, path)
+    return fsZds.join(dir, targetPath)
   }
 
   /**
    * Called from WASM.
    */
   async readFile(
-    path: string,
+    targetPath: string,
     options?: {
       encoding?: null | undefined
       flag?: OpenMode | undefined
     } | null
   ): Promise<Buffer>
   async readFile(
-    path: string,
+    targetPath: string,
     options:
       | {
           encoding: BufferEncoding
@@ -70,7 +64,7 @@ export class FileSystemManager {
       | BufferEncoding
   ): Promise<string>
   async readFile(
-    path: string,
+    targetPath: string,
     options?:
       | (ObjectEncodingOptions &
           Abortable & {
@@ -78,26 +72,17 @@ export class FileSystemManager {
           })
       | BufferEncoding
       | null
-  ): Promise<string | Buffer> {
-    // Using local file system only works from desktop and nodejs
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const filePath = this.join(this.dir, path)
-    return this._fs.readFile(filePath, options)
+  ): Promise<string | Uint8Array<ArrayBufferLike>> {
+    const filePath = this.join(this.dir, targetPath)
+    const data = await this._fs.readFile(filePath, options || undefined)
+    return data
   }
 
   /**
    * Called from WASM.
    */
-  async exists(path: string): Promise<boolean> {
-    // Using local file system only works from desktop.
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const file = this.join(this.dir, path)
+  async exists(targetPath: string): Promise<boolean> {
+    const file = this.join(this.dir, targetPath)
     try {
       await this._fs.stat(file)
     } catch (e) {
@@ -111,13 +96,8 @@ export class FileSystemManager {
   /**
    * Called from WASM.
    */
-  async getAllFiles(path: string): Promise<string[]> {
-    // Using local file system only works from desktop.
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const filepath = this.join(this.dir, path)
+  async getAllFiles(targetPath: string): Promise<string[]> {
+    const filepath = this.join(this.dir, targetPath)
     return await this._fs
       .readdir(filepath)
       .catch((error: Error) => {
@@ -129,11 +109,16 @@ export class FileSystemManager {
   }
 }
 
+// A similar initialization happens in @src/index.ts. It has to happen here too
+// because this code runs in a web worker.
 const fsInstance =
-  (typeof window !== 'undefined' ? window.electron : undefined) ?? testNodeFs
-export const fsManager = new FileSystemManager(nodePath, fsInstance)
+  typeof window !== 'undefined' && window.electron !== undefined
+    ? electronfs.impl
+    : noopfs.impl
+
+export const fsManager = new FileSystemManager(fsInstance)
 
 /**
  * The project directory is set on this.
  */
-export const projectFsManager = new FileSystemManager(nodePath, fsInstance)
+export const projectFsManager = new FileSystemManager(fsInstance)

@@ -12,6 +12,7 @@ import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
+import fsZds from '@src/lib/fs-zds'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -162,15 +163,12 @@ export const ModelingPageProvider = ({
           continue
         }
 
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
+        const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            name: relativeFilePath.replaceAll(fsZds.sep, '/'),
+            value: relativeFilePath.replaceAll(fsZds.sep, '/'),
           })
         }
       }
