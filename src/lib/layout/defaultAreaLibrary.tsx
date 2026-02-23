@@ -18,6 +18,7 @@ import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
+import { useSignals } from '@preact/signals-react/runtime'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -38,14 +39,14 @@ function ModelingArea() {
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultAreaLibrary = () => {
+  useSignals()
   const { settings, layout } = useApp()
   const { kclManager } = useSingletons()
-  const currentLayout = useLiveSignal(layout.signal.value)
   const getSettings = settings.get
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
-      const rootLayout = structuredClone(currentLayout.value)
+      const rootLayout = structuredClone(layout.signal.value)
       layout.set(
         togglePaneLayoutNode({
           rootLayout,
@@ -55,7 +56,7 @@ export const useDefaultAreaLibrary = () => {
       )
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
-    [kclManager, layout, currentLayout]
+    [kclManager, layout, layout.signal.value]
   )
 
   return useMemo(
