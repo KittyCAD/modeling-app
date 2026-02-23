@@ -117,7 +117,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -262,7 +262,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:e2e:web
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -402,8 +402,8 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 30
-          max_attempts: 9
+          timeout_minutes: 15
+          max_attempts: 5
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}

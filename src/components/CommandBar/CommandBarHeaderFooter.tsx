@@ -13,7 +13,7 @@ import type {
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -27,8 +27,9 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
-  const { commandBarActor, kclManager, useCommandBarState } = useSingletons()
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const { kclManager } = useSingletons()
+  const commandBarState = commands.useState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
@@ -90,7 +91,7 @@ function CommandBarHeaderFooter({
         const argName = Object.keys(nonHiddenArgs)[parseInt(b.keys[0], 10) - 1]
         const arg = nonHiddenArgs[argName]
         if (!argName || !arg) return
-        commandBarActor.send({
+        commands.send({
           type: 'Change current argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -158,7 +159,7 @@ function CommandBarHeaderFooter({
                     type="button"
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
-                      commandBarActor.send({
+                      commands.send({
                         type: isReviewing
                           ? 'Edit argument'
                           : 'Change current argument',

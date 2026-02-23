@@ -41,7 +41,7 @@ import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/lib/app'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
@@ -67,7 +67,7 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
-  const { settingsActor } = useSingletons()
+  const { settings } = useApp()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
@@ -77,19 +77,18 @@ export function useNextClick(newStatus: OnboardingStatus) {
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
-    settingsActor.send({
+    settings.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
     void navigate(targetRoute)
-  }, [filePath, newStatus, navigate, settingsActor])
+  }, [filePath, newStatus, navigate, settings])
 }
 
 export function useDismiss() {
-  const { settingsActor } = useSingletons()
+  const { settings } = useApp()
   const filePath = useAbsoluteFilePath()
-  const send = settingsActor.send
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
@@ -98,11 +97,11 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      send({
+      settings.send({
         type: 'set.app.onboardingStatus',
         data: { level: 'user', value: dismissalType },
       })
-      waitFor(settingsActor, (state) => state.matches('idle'))
+      waitFor(settings.actor, (state) => state.matches('idle'))
         .then(() => {
           void navigate(filePath)
           toast.success(
@@ -114,7 +113,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [send, filePath, navigate, settingsActor]
+    [settings, filePath, navigate]
   )
 
   return settingsCallback
@@ -385,7 +384,7 @@ function TutorialToastCard(props: TutorialToastCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
 ) {
-  const { settingsActor } = useSingletons()
+  const { settings } = useApp()
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -449,7 +448,7 @@ export function TutorialRequestToast(
           }}
           data-negative-button="dismiss"
           name="dismiss"
-          onClick={() => onDismissOnboardingInvite(settingsActor)}
+          onClick={() => onDismissOnboardingInvite(settings.actor)}
         >
           Not right now
         </ActionButton>
@@ -615,24 +614,24 @@ export function useOnModelingCmdGroupReadyOnce(
   callback: () => void,
   deps: React.DependencyList
 ) {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   const [isReadyOnce, setReadyOnce] = useState(false)
 
   // Set up a subscription to the command bar actor's
   // modeling command group
   useEffect(() => {
-    const isReadyNow = isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    const isReadyNow = isModelingCmdGroupReady(commands.actor.getSnapshot())
     if (isReadyNow) {
       setReadyOnce(true)
     } else {
-      const subscription = commandBarActor.subscribe((state) => {
+      const subscription = commands.actor.subscribe((state) => {
         if (isModelingCmdGroupReady(state)) {
           setReadyOnce(true)
         }
       })
       return () => subscription.unsubscribe()
     }
-  }, [commandBarActor])
+  }, [commands.actor])
 
   // Fire the callback when the modeling command group is ready
   useEffect(() => {
