@@ -98,10 +98,7 @@ jobs:
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
         env:
-          AZURE_TRUSTED_SIGNING_ENDPOINT: ${{ secrets.AZURE_TRUSTED_SIGNING_ENDPOINT }}
-          AZURE_TRUSTED_SIGNING_ACCOUNT_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
-          AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME }}
-          AZURE_TRUSTED_SIGNING_PUBLISHER_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_PUBLISHER_NAME }}
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
@@ -126,10 +123,7 @@ jobs:
       - name: Set windows codesign config
         if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' }}
         env:
-          AZURE_TRUSTED_SIGNING_ENDPOINT: ${{ secrets.AZURE_TRUSTED_SIGNING_ENDPOINT }}
-          AZURE_TRUSTED_SIGNING_ACCOUNT_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
-          AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME }}
-          AZURE_TRUSTED_SIGNING_PUBLISHER_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_PUBLISHER_NAME }}
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           npm run files:set-windows-codesign-config
 
@@ -193,6 +187,39 @@ jobs:
 
       - run: npm install
 
+      - name: Prepare certificate and variables (Windows only)
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        run: |
+          echo "${{secrets.SM_SERVICE_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
+          cat /c/Certificate_pkcs12.p12
+          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+          echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
+          echo "SM_API_KEY=${{ secrets.SM_SERVICE_API_KEY }}" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_FILE=C:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_SERVICE_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
+          echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
+          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Setup certicate with SSM KSP (Windows only)
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        run: |
+          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
+          msiexec /i smtools-windows-x64.msi /quiet /qn
+          smksp_registrar.exe list
+          smctl.exe keypair ls
+          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
+          smksp_cert_sync.exe
+          smctl windows certsync --keypair-alias=${{ secrets.WINDOWS_CERTIFICATE_ZOO_KEYPAIR_ALIAS }}
+        # This last line `smctl windows certsync` was added after windows codesign failures started happening
+        # with staging-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
+        # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
+        # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
+        # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
+        # TODO: we still need to make sign-win.js errors fail the workflow, see issue #6276
+        shell: cmd
+
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
@@ -210,9 +237,6 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           CSC_FOR_PULL_REQUEST: ${{ env.FORCE_RELEASE_BUILD }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
