@@ -7,7 +7,6 @@ files:
   - "!node_modules/win-ca/pem/**"
 mac:
   category: public.app-category.developer-tools
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: dmg
       arch:
@@ -26,7 +25,6 @@ mac:
       role: Editor
       rank: Owner
 win:
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: nsis
       arch:
@@ -46,7 +44,6 @@ nsis:
   installerIcon: "assets/icon.ico"
   include: "./scripts/installer.nsh"
 linux:
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: appImage
       arch:
