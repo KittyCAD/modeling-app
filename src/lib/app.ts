@@ -97,7 +97,19 @@ export type AppBillingSystem = {
   send: ActorRefFrom<typeof billingMachine>['send']
   useContext: () => ContextFrom<typeof billingMachine>
 }
-export type AppCtor = {
+
+/** All of the subsystems needed to run the ZDS app */
+export interface AppSubsystems {
+  wasmPromise: Promise<ModuleType>
+  auth: AppAuthSystem
+  machineManager: MachineManager
+  commands: AppCommandSystem
+  settings: AppSettingsSystem
+  billing: AppBillingSystem
+}
+
+export class App implements AppSubsystems {
+  singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
    * - settings parse/unparse
@@ -116,34 +128,11 @@ export type AppCtor = {
   settings: AppSettingsSystem
   /** The billing system for the application */
   billing: AppBillingSystem
-}
-
-export class App {
-  singletons: ReturnType<typeof this.buildSingletons>
-
-  /**
-   * THE bundle of WASM, a cornerstone of our app. We use this for:
-   * - settings parse/unparse
-   * - KCL parsing, execution, linting, and LSP
-   *
-   * Access this through `kclManager.wasmInstance`, not directly.
-   */
-  wasmPromise: Promise<ModuleType>
-  /** Auth system. Use `send` method to act with auth. */
-  auth: AppAuthSystem
-  /** Machines to send models to print or cut on the local network */
-  machineManager: MachineManager
-  /** The command system for the app */
-  commands: AppCommandSystem
-  /** The settings system for the application */
-  settings: AppSettingsSystem
-  /** The billing system for the app, which today focuses on Zookeeper credits */
-  billing: AppBillingSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: Signal<SaveSettingsPayload>
 
-  constructor(subsystems: AppCtor) {
+  constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
     this.auth = subsystems.auth
     this.machineManager = subsystems.machineManager
