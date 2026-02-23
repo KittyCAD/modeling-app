@@ -583,14 +583,12 @@ export function useOnboardingPanes(
   const { layout } = useApp()
   useEffect(() => {
     layout.set(
-      layout.set(
-        setOpenPanes(structuredClone(layout.get() || defaultLayout), onMount)
-      )
+      setOpenPanes(structuredClone(layout.get() || defaultLayout), onMount)
     )
 
     return () =>
       layout.set(
-        setOpenPanes(structuredClone(layout.value || defaultLayout), onUnmount)
+        setOpenPanes(structuredClone(layout.get() || defaultLayout), onUnmount)
       )
   }, [onMount, onUnmount, layout])
 }
