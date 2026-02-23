@@ -20,6 +20,7 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
@@ -754,11 +755,11 @@ export const ProjectExplorer = ({
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
                   )
-                  const oldPath = window.electron?.path.join(
+                  const oldPath = fsZds.join(
                     absolutePathToParentDirectory,
                     name
                   )
-                  const newPath = window.electron?.path.join(
+                  const newPath = fsZds.join(
                     absolutePathToParentDirectory,
                     requestedName
                   )

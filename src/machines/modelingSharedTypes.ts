@@ -1,4 +1,4 @@
-import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'

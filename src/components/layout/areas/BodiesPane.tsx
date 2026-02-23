@@ -1,6 +1,5 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import {
@@ -26,21 +25,19 @@ import { toUtf16 } from '@src/lang/errors'
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
-  useSignals()
   const { kclManager } = useSingletons()
-  const execState = kclManager.execStateSignal.value
-  const bodies = execState?.artifactGraph
-    ? getBodiesFromArtifactGraph(execState.artifactGraph)
+  const bodies = kclManager.artifactGraph
+    ? getBodiesFromArtifactGraph(kclManager.artifactGraph)
     : undefined
   const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
 
-  if (execState?.operations) {
+  if (kclManager.operations) {
     let i = 0
     for (let [id, artifact] of bodies || new Map()) {
       bodiesWithProps.set(id, {
         artifact,
         label: `Body ${i + 1}`,
-        hideOperation: getHideOpByArtifactId(execState.operations, id),
+        hideOperation: getHideOpByArtifactId(kclManager.operations, id),
       })
       i++
     }
@@ -81,7 +78,6 @@ function BodyItem({
   artifact,
   hideOperation,
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
-  useSignals()
   const { kclManager, rustContext } = useSingletons()
   const systemDeps = useMemo(
     () => ({ kclManager, rustContext }),

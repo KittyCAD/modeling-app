@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useContext, useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -9,7 +9,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { useLspContext } from '@src/components/LspProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
@@ -99,13 +98,12 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commands, settings } = useApp()
+  const { machineManager, commands, settings } = useApp()
   const { engineCommandManager, kclManager } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const machineManager = useContext(MachineManagerContext)
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
