@@ -6,7 +6,7 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { OrthographicCamera, Vector3 } from 'three'
-import { useSingletons } from "@src/lib/boot"
+import { useSingletons } from '@src/lib/boot'
 
 export function ImagesList() {
   useSignals()
@@ -74,16 +74,19 @@ export function ImagesList() {
     [images, imageManager]
   )
 
-  const handleDelete = useCallback(async (imagePath: string) => {
-    try {
-      await imageManager.deleteImage(imagePath)
-      setImages((prev) => prev.filter((img) => img.fileName !== imagePath))
-      toast.success(`Deleted image: ${imagePath}`)
-    } catch (error) {
-      console.error('Failed to delete image:', error)
-      toast.error(`Failed to delete image: ${imagePath}`)
-    }
-  }, [imageManager])
+  const handleDelete = useCallback(
+    async (imagePath: string) => {
+      try {
+        await imageManager.deleteImage(imagePath)
+        setImages((prev) => prev.filter((img) => img.fileName !== imagePath))
+        toast.success(`Deleted image: ${imagePath}`)
+      } catch (error) {
+        console.error('Failed to delete image:', error)
+        toast.error(`Failed to delete image: ${imagePath}`)
+      }
+    },
+    [imageManager]
+  )
 
   const handleFocus = useCallback(
     (imagePath: string) => {
@@ -233,7 +236,10 @@ interface ImageItemProps {
   onDragStart: (imagePath: string, event: DragEvent<HTMLDivElement>) => void
   onDragOver: (imagePath: string, position: 'before' | 'after') => void
   onDragLeave: (imagePath: string) => void
-  onDrop: (imagePath: string, position: 'before' | 'after') => void | Promise<void>
+  onDrop: (
+    imagePath: string,
+    position: 'before' | 'after'
+  ) => void | Promise<void>
   onDragEnd: () => void
   onFocus?: (imagePath: string) => void
 }

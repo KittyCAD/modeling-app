@@ -28,7 +28,7 @@ interface ImagesJSON {
   images: ImageEntry[]
 }
 
-type SettingsActor = App["settingsActor"]
+type SettingsActor = App['settingsActor']
 
 export class ImageManager {
   static isSupportedImageFile(file: File): boolean {

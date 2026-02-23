@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { ImageManager } from '@src/clientSideScene/image/ImageManager'
-import { useSingletons } from "@src/lib/boot"
+import { useSingletons } from '@src/lib/boot'
 
 type ModelingState = ReturnType<typeof useModelingContext>['state']
 
