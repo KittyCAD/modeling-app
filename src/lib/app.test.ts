@@ -36,12 +36,12 @@ describe('project system', () => {
       app.singletons.kclManager
     )
 
-    expect(app.project.value).toBeDefined()
-    expect(app.project.value?.executingPath).toEqual('/some-dir/test/main.kcl')
-    expect(app.project.value?.executingFileEntry.name).toEqual('main.kcl')
+    expect(app.project).toBeDefined()
+    expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+    expect(app.project?.executingFileEntry.name).toEqual('main.kcl')
 
     app.closeProject()
 
-    expect(app.project.value).toBeNull()
+    expect(app.project).toBeUndefined()
   })
 })

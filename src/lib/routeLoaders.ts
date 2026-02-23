@@ -162,8 +162,6 @@ export const fileLoader =
         : null
 
       const project = maybeProjectInfo ?? defaultProjectData
-      // TODO: don't pass in kclManager once the app can handle not having a kclManager,
-      // just instantiate it inside.
       app.openProject(
         project,
         currentFilePath || PROJECT_ENTRYPOINT,

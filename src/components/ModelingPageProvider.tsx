@@ -38,8 +38,8 @@ export const ModelingPageProvider = ({
   const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
-  const projectIORef = project.value?.projectIORef
-  const file = project.value?.executingFileEntry
+  const projectIORef = project?.projectIORefSignal
+  const file = project?.executingFileEntry
   const filePath = useAbsoluteFilePath()
 
   useEffect(() => {
@@ -147,10 +147,10 @@ export const ModelingPageProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (window.electron && projectIORef?.children && file?.path) {
-      const projectPath = projectIORef.path
+    if (window.electron && projectIORef?.value.children && file?.path) {
+      const projectPath = projectIORef.value.path
       const filePath = file.path
-      let children = structuredClone(projectIORef.children)
+      let children = structuredClone(projectIORef.value.children)
       while (children.length > 0) {
         const v = children.pop()
         if (!v) {
@@ -178,9 +178,9 @@ export const ModelingPageProvider = ({
     return kclCommands({
       authToken: token ?? '',
       projectData: {
-        project: projectIORef,
+        project: projectIORef?.value,
         file,
-        code: project.value?.executingEditor.value?.state.doc.toString() ?? '',
+        code: project?.executingEditor.value?.state.doc.toString() ?? '',
       },
       kclManager,
       settings: {
@@ -189,7 +189,7 @@ export const ModelingPageProvider = ({
           DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
-      project: projectIORef,
+      project: projectIORef?.value,
       rustContext,
       systemIOActor,
       wasmInstance,

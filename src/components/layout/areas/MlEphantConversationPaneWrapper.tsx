@@ -26,7 +26,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const loaderFile = project.value?.executingFileEntry
+  const loaderFile = project?.executingFileEntry
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   const sendBillingUpdate = () => {

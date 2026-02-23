@@ -102,8 +102,8 @@ export function OpenedProject() {
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = project.value?.name || null
-  const projectPath = project.value?.path || null
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -135,9 +135,9 @@ export function OpenedProject() {
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      project.value?.executingPath ? project.value.executingFileEntry : null
+      project?.executingPath ? project.executingFileEntry : null
     )
-  }, [onProjectOpen, projectName, projectPath, project.value])
+  }, [onProjectOpen, projectName, projectPath, project])
 
   useEffect(() => {
     // Clear conversation
@@ -336,7 +336,7 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={project.value}
+            project={project}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}

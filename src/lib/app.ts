@@ -65,7 +65,7 @@ declare global {
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
-  project = signal<ZDSProject | null>(null)
+  project?: ZDSProject
   singletons: ReturnType<typeof this.buildSingletons>
 
   /**
@@ -160,17 +160,32 @@ export class App {
     initialOpenFile?: string,
     providedEditor?: KclManager
   ) {
-    this.project.value?.closeAllEditors()
-    this.project.value = ZDSProject.open(
-      projectIORef,
+    const projectIORefSignal = signal(projectIORef)
+    this.project = ZDSProject.open(
+      projectIORefSignal,
       this,
       initialOpenFile,
       providedEditor
     )
+
+    this.project.executingPath
+
+    // TODO: Rework the systemIOActor to fit into the system better,
+    // so that the project doesn't need to subscribe to it.
+    this.singletons.systemIOActor.subscribe(({ context }) => {
+      const foundProject = context.folders.find(
+        (p) =>
+          p.name === projectIORefSignal.value.name &&
+          p.path === projectIORefSignal.value.path
+      )
+      if (foundProject) {
+        projectIORefSignal.value = foundProject
+      }
+    })
   }
   closeProject() {
-    this.project.value?.closeAllEditors()
-    this.project.value = null
+    this.project?.closeAllEditors()
+    this.project = undefined
   }
 
   /**
@@ -266,6 +281,7 @@ export class App {
           systemId: SYSTEM_IO,
           input: {
             wasmInstancePromise: this.wasmPromise,
+            app: this,
           },
         }),
       ],

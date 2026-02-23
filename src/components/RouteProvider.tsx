@@ -21,8 +21,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = project.value?.projectIORef
-  const loadedFile = project.value?.executingFileEntry
+  const loadedProject = project?.projectIORefSignal.value
+  const loadedFile = project?.executingFileEntry
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined

@@ -7,6 +7,7 @@ import type { ZDSProject } from '@src/lang/KclManager'
 
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
+import { useSignals } from '@preact/signals-react/runtime'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   project?: ZDSProject | null
@@ -26,6 +27,7 @@ export const AppHeader = ({
   nativeFileMenuCreated,
   projectMenuChildren,
 }: AppHeaderProps) => {
+  useSignals()
   const { auth } = useApp()
   const user = auth.useUser()
 
@@ -41,8 +43,8 @@ export const AppHeader = ({
     >
       <ProjectSidebarMenu
         enableMenu={enableMenu}
-        project={project?.projectIORef}
-        file={project?.executingFileEntry}
+        project={project?.projectIORefSignal.value}
+        file={project?.executingFileEntry.value}
       >
         {projectMenuChildren}
       </ProjectSidebarMenu>

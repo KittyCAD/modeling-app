@@ -8,7 +8,7 @@ export function useAbsoluteFilePath() {
     PATHS.FILE +
     '/' +
     encodeURIComponent(
-      app.project.value?.executingPathSignal.value ?? BROWSER_PATH
+      app.project?.executingPathSignal.value?.value ?? BROWSER_PATH
     )
   )
 }

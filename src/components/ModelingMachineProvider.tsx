@@ -85,8 +85,10 @@ export const ModelingMachineProvider = ({
   } = settingsValues
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const projects = useFolders()
-  const theProject = useRef<Project | undefined>(project.value?.projectIORef)
-  const file = project.value?.executingFileEntry
+  const theProject = useRef<Project | undefined>(
+    project?.projectIORefSignal.value
+  )
+  const file = project?.executingFileEntry
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?

@@ -43,7 +43,7 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const projectIORef = project.value?.projectIORef
+  const projectIORef = project?.projectIORefSignal.value
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)

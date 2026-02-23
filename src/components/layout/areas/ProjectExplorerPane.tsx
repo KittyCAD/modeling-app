@@ -30,9 +30,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
-  const projectRef = useRef(project.value?.projectIORef)
+  const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
-  const file = useRef(project.value?.executingFileEntry)
+  const file = project?.executingFileEntry.value
   const {
     state: modelingMachineState,
     send: modelingSend,
@@ -41,13 +41,13 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project.value || !file) {
+    if (!project || !file) {
       return
     }
 
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
     const foundProject = projects.find((p) => {
-      return p.name === project.value?.name
+      return p.name === project?.name
     })
 
     if (!foundProject) {
@@ -58,7 +58,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     const duplicated = structuredClone(foundProject)
     addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-  }, [file, projects, project.value])
+  }, [file, projects, project])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -82,11 +82,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
     // Only open the file if it is a kcl file.
     if (
-      projectRef.current?.name &&
+      projectRef.current?.value.name &&
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
-      const name = projectRef.current.name.slice()
+      const name = projectRef.current.value.name.slice()
 
       const navigateHelper = () => {
         systemIOActor.send({
@@ -118,7 +118,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     } else if (
       window.electron &&
       isRelevantFile(entry.path) &&
-      projectRef.current?.path
+      projectRef.current?.value.path
     ) {
       // Allow insert if it is a importable file
       const electron = window.electron
@@ -126,7 +126,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef.current?.value.path + electron.path.sep,
               ''
             )
             commands.send({
@@ -174,12 +174,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         }
         onClose={props.onClose}
       />
-      {theProject && file.current ? (
+      {theProject && file ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer
             wasmInstance={wasmInstance}
             project={theProject}
-            file={file.current}
+            file={file}
             createFilePressed={createFilePressed}
             createFolderPressed={createFolderPressed}
             refreshExplorerPressed={refreshExplorerPressed}

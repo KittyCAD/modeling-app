@@ -72,8 +72,7 @@ function Welcome() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName:
-          app.project.value?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -81,7 +80,7 @@ function Welcome() {
         ),
       },
     })
-  }, [systemIOActor, app.project.value?.name])
+  }, [systemIOActor, app.project?.name])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
