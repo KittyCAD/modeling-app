@@ -24,6 +24,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { MachineManager } from '@src/lib/MachineManager'
 
 /**
@@ -84,7 +85,13 @@ export async function buildTheWorldAndConnectToEngine() {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
+
+  const imageManager = new ImageManager()
+  const sceneInfra = new SceneInfra(
+    engineCommandManager,
+    instancePromise,
+    imageManager
+  )
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -106,6 +113,7 @@ export async function buildTheWorldAndConnectToEngine() {
   sceneInfra.camControls.getSettings = getSettings
   sceneEntitiesManager.getSettings = getSettings
 
+  imageManager.init(settingsActor)
   await new Promise((resolve, reject) => {
     engineCommandManager
       .start({
@@ -191,7 +199,13 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
+
+  const imageManager = new ImageManager()
+  const sceneInfra = new SceneInfra(
+    engineCommandManager,
+    instancePromise,
+    imageManager
+  )
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -199,6 +213,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
+
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
@@ -212,6 +227,8 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   sceneEntitiesManager.getSettings = getSettings
 
   kclManager.sceneEntitiesManager = sceneEntitiesManager
+  imageManager.init(settingsActor)
+
   return {
     instance: await instancePromise,
     engineCommandManager,

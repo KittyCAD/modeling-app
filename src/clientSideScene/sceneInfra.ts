@@ -44,6 +44,13 @@ import type {
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { signal } from '@preact/signals-core'
+import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
+import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
+import {
+  IMAGE_TRANSFORM_CORNER,
+  IMAGE_TRANSFORM_EDGE,
+  IMAGE_TRANSFORM_ROTATE,
+} from '@src/clientSideScene/image/ImageTransformUI'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -304,13 +311,24 @@ export class SceneInfra {
   hoveredObject: null | Object3D = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+
   // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
-  selected: {
+
+  // Selection
+  private _selected: {
     mouseDownVector: Vector2
     object: Object3D
     hasBeenDragged: boolean
   } | null = null
+  readonly selectedSignal = signal(0)
+  set selected(value) {
+    this._selected = value
+    this.selectedSignal.value++
+  }
+  get selected() {
+    return this._selected
+  }
   areaSelect: {
     mouseDownVector: Vector2
     startPoint: {
@@ -327,9 +345,12 @@ export class SceneInfra {
   private lastFrameTime = 0
   private animationFrameId = -1
 
+  readonly imageRenderer: ImageRenderer
+
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInitPromise: Promise<ModuleType>
+    wasmInitPromise: Promise<ModuleType>,
+    imageManager: ImageManager
   ) {
     this.wasmInstancePromise = wasmInitPromise
     // SCENE
@@ -382,6 +403,8 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
+
+    this.imageRenderer = new ImageRenderer(imageManager, this)
   }
 
   // Called after canvas is attached to the DOM and on each resize.
@@ -551,45 +574,53 @@ export class SceneInfra {
         this.ndc2screenSpace(this.selected.mouseDownVector),
         10 // Drag threshold in pixels
       )
-      if (!this.selected.hasBeenDragged && hasBeenDragged) {
-        this.selected.hasBeenDragged = true
-        // Fire onDragStart event when drag threshold is first exceeded
+
+      if (
+        !this.imageRenderer.transformHandler.processDrag(
+          this.selected,
+          planeIntersectPoint?.twoD
+        )
+      ) {
+        if (!this.selected.hasBeenDragged && hasBeenDragged) {
+          this.selected.hasBeenDragged = true
+          // Fire onDragStart event when drag threshold is first exceeded
+          if (
+            planeIntersectPoint &&
+            planeIntersectPoint.twoD &&
+            planeIntersectPoint.threeD
+          ) {
+            await this.onDragStartCallback({
+              mouseEvent,
+              intersectionPoint: {
+                twoD: planeIntersectPoint.twoD,
+                threeD: planeIntersectPoint.threeD,
+              },
+              intersects,
+              selected: this.selected.object,
+            })
+          }
+        }
         if (
+          this.selected.hasBeenDragged &&
           planeIntersectPoint &&
           planeIntersectPoint.twoD &&
           planeIntersectPoint.threeD
         ) {
-          await this.onDragStartCallback({
+          const selected = this.selected
+          await this.onDragCallback({
             mouseEvent,
             intersectionPoint: {
               twoD: planeIntersectPoint.twoD,
               threeD: planeIntersectPoint.threeD,
             },
             intersects,
-            selected: this.selected.object,
+            selected: selected.object,
+          })
+          this.updateMouseState({
+            type: 'isDragging',
+            on: selected.object,
           })
         }
-      }
-      if (
-        this.selected.hasBeenDragged &&
-        planeIntersectPoint &&
-        planeIntersectPoint.twoD &&
-        planeIntersectPoint.threeD
-      ) {
-        const selected = this.selected
-        await this.onDragCallback({
-          mouseEvent,
-          intersectionPoint: {
-            twoD: planeIntersectPoint.twoD,
-            threeD: planeIntersectPoint.threeD,
-          },
-          intersects,
-          selected: selected.object,
-        })
-        this.updateMouseState({
-          type: 'isDragging',
-          on: selected.object,
-        })
       }
     } else if (this.areaSelect) {
       // Handle area select drag
@@ -749,22 +780,53 @@ export class SceneInfra {
       )
     }
 
-    // Convert the map values to an array and sort by distance
+    // Convert the map values to an array and sort by priority/renderOrder/distance
     return Array.from(intersectionsMap.values()).sort((a, b) => {
-      // Deprioritize axis selection to allow selecting segments that lie on axes
-      const aIsAxis = isAxisObject(a.object)
-      const bIsAxis = isAxisObject(b.object)
-      if (aIsAxis && !bIsAxis) return 1
-      if (!aIsAxis && bIsAxis) return -1
-      // Otherwise sort by distance
+      const aPriority = getIntersectionPriority(a.object)
+      const bPriority = getIntersectionPriority(b.object)
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority
+      }
+      const aIsImage = Boolean(a.object.userData?.image)
+      const bIsImage = Boolean(b.object.userData?.image)
+      if (aIsImage && bIsImage) {
+        const aRenderOrder = a.object.renderOrder ?? 0
+        const bRenderOrder = b.object.renderOrder ?? 0
+        if (aRenderOrder !== bRenderOrder) {
+          return bRenderOrder - aRenderOrder
+        }
+      }
+      // Priority is the same -> sort by distance
       return a.distance - b.distance
     })
   }
 
   updateMouseState(mouseState: MouseState) {
-    if (this.lastMouseState.type === mouseState.type) return
-    this.lastMouseState = mouseState
-    this.modelingSend({ type: 'Set mouse state', data: mouseState })
+    //if (this.lastMouseState.type === mouseState.type) return
+
+    let mouseStateChanged = false
+    if (this.lastMouseState.type !== mouseState.type) {
+      mouseStateChanged = true
+    } else {
+      // types are the same
+      if (
+        (mouseState.type === 'isDragging' ||
+          mouseState.type === 'isHovering') &&
+        // this part of the condition is only needed for TS to be happy for this.lastMouseState.on
+        (this.lastMouseState.type === 'isDragging' ||
+          this.lastMouseState.type === 'isHovering')
+      ) {
+        if (mouseState.on !== this.lastMouseState.on) {
+          mouseStateChanged = true
+        }
+      }
+      // should timeoutEnd care about pathToNodeString change?
+    }
+
+    if (mouseStateChanged) {
+      this.lastMouseState = mouseState
+      this.modelingSend({ type: 'Set mouse state', data: mouseState })
+    }
   }
 
   /**
@@ -869,9 +931,19 @@ export class SceneInfra {
         : null
     }
 
-    // If nothing was selected, initialize area select
-    if (!this.selected) {
-      const planeIntersectPoint = this.getPlaneIntersectPoint()
+    const planeIntersectPoint = this.getPlaneIntersectPoint()
+
+    if (
+      this.selected &&
+      this.imageRenderer.transformHandler.startDrag(
+        this.selected,
+        planeIntersectPoint?.twoD
+      )
+    ) {
+      // See if we're starting to drag an image
+    }
+    // Otherwise, If nothing was selected, initialize area select
+    else if (!this.selected) {
       if (
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
@@ -895,8 +967,11 @@ export class SceneInfra {
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
+    const imageDragged = this.imageRenderer.transformHandler.processDragEnd()
     if (this.selected) {
-      if (this.selected.hasBeenDragged) {
+      if (imageDragged) {
+        // An image has been dragged currently, drag end captured, so don't do anything else.
+      } else if (this.selected.hasBeenDragged) {
         await this.onDragEndCallback({
           intersectionPoint: planeIntersectPoint
             ? {
@@ -1043,6 +1118,16 @@ export class SceneInfra {
 function isAxisObject(object: Object3D | undefined): boolean {
   if (!object) return false
   return object.name === X_AXIS || object.name === Y_AXIS
+}
+
+function getIntersectionPriority(object: Object3D | undefined): number {
+  if (!object) return 3
+  const type = object.userData?.type
+  if (type === IMAGE_TRANSFORM_CORNER) return 0
+  if (type === IMAGE_TRANSFORM_EDGE) return 1
+  if (type === IMAGE_TRANSFORM_ROTATE) return 2
+  if (isAxisObject(object)) return 4
+  return 3
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

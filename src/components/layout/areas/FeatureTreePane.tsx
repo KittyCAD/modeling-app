@@ -49,6 +49,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
+import { ImagesList } from '@src/clientSideScene/image/ImagesList'
 import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
@@ -246,6 +247,7 @@ export const FeatureTreePaneContents = memo(() => {
                 />
               )
             })}
+            <ImagesList />
           </>
         )}
       </section>

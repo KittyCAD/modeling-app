@@ -39,6 +39,8 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
+import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -154,7 +156,13 @@ export const ClientSideScene = ({
   }, [])
 
   let cursor = 'default'
-  if (state.matches('Sketch')) {
+  const imageTransformCursor =
+    context.mouseState.type === 'isHovering'
+      ? getImageTransformCursor(context.mouseState.on)
+      : null
+  if (imageTransformCursor) {
+    cursor = imageTransformCursor
+  } else if (state.matches('Sketch')) {
     if (
       context.mouseState.type === 'isHovering' &&
       getParentGroup(context.mouseState.on, [
@@ -186,7 +194,7 @@ export const ClientSideScene = ({
   }
 
   return (
-    <>
+    <ClientSideFileDropper>
       <div
         ref={containerRef}
         style={{ cursor: cursor }}
@@ -202,7 +210,7 @@ export const ClientSideScene = ({
       <Overlays />
       <SketchSolveToolIconOverlay />
       <EditingConstraintInput />
-    </>
+    </ClientSideFileDropper>
   )
 }
 
