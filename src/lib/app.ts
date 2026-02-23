@@ -50,6 +50,7 @@ import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -168,7 +169,13 @@ export class App {
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
+    const imageManager = new ImageManager()
+    imageManager.init(this.settingsActor)
+    const sceneInfra = new SceneInfra(
+      engineCommandManager,
+      this.wasmPromise,
+      imageManager
+    )
     const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
       rustContext,
       sceneInfra,
@@ -302,6 +309,7 @@ export class App {
       engineCommandManager,
       rustContext,
       sceneInfra,
+      imageManager,
       kclManager,
       sceneEntitiesManager,
       appActor,

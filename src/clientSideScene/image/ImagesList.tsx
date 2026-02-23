@@ -5,8 +5,8 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { imageManager, sceneInfra } from '@src/lib/singletons'
 import { OrthographicCamera, Vector3 } from 'three'
+import { useSingletons } from "@src/lib/boot"
 
 export function ImagesList() {
   useSignals()
@@ -17,6 +17,7 @@ export function ImagesList() {
     position: 'before' | 'after'
   } | null>(null)
   const { state: modelingState } = useModelingContext()
+  const { imageManager, sceneInfra } = useSingletons()
   const isSketchMode =
     modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
 
@@ -40,7 +41,7 @@ export function ImagesList() {
         )
       )
     },
-    [images]
+    [images, imageManager]
   )
 
   const handleLockToggle = useCallback(
@@ -57,7 +58,7 @@ export function ImagesList() {
         )
       )
     },
-    [images]
+    [images, imageManager]
   )
 
   const handleMove = useCallback(
@@ -70,7 +71,7 @@ export function ImagesList() {
       await imageManager.moveImage(imagePath, targetIndex)
       setImages([...(imageManager.getImages()?.list || [])])
     },
-    [images]
+    [images, imageManager]
   )
 
   const handleDelete = useCallback(async (imagePath: string) => {
@@ -82,7 +83,7 @@ export function ImagesList() {
       console.error('Failed to delete image:', error)
       toast.error(`Failed to delete image: ${imagePath}`)
     }
-  }, [])
+  }, [imageManager])
 
   const handleFocus = useCallback(
     (imagePath: string) => {
@@ -126,7 +127,7 @@ export function ImagesList() {
       camera.updateProjectionMatrix()
       cameraControls.update(true)
     },
-    [images]
+    [images, sceneInfra]
   )
 
   const handleDragStart = useCallback(
@@ -177,7 +178,7 @@ export function ImagesList() {
       draggingRef.current = null
       setDragOver(null)
     },
-    [images]
+    [images, imageManager]
   )
 
   const handleDragEnd = useCallback(() => {
@@ -232,7 +233,7 @@ interface ImageItemProps {
   onDragStart: (imagePath: string, event: DragEvent<HTMLDivElement>) => void
   onDragOver: (imagePath: string, position: 'before' | 'after') => void
   onDragLeave: (imagePath: string) => void
-  onDrop: (imagePath: string, position: 'before' | 'after') => void
+  onDrop: (imagePath: string, position: 'before' | 'after') => void | Promise<void>
   onDragEnd: () => void
   onFocus?: (imagePath: string) => void
 }
@@ -298,7 +299,7 @@ function ImageItem({
         const rect = event.currentTarget.getBoundingClientRect()
         const position =
           event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
-        onDrop(image.fileName, position)
+        void onDrop(image.fileName, position)
       }}
       onDragEnd={onDragEnd}
     >

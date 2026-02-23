@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { ImageManager } from '@src/clientSideScene/image/ImageManager'
-import { imageManager, sceneInfra } from '@src/lib/singletons'
+import { useSingletons } from "@src/lib/boot"
 
 type ModelingState = ReturnType<typeof useModelingContext>['state']
 
@@ -48,6 +48,7 @@ export function ClientSideFileDropper({
   const [isExternalDragOver, setIsExternalDragOver] = useState(false)
   const dragCounter = useRef(0)
   const { state } = useModelingContext()
+  const { sceneInfra, imageManager } = useSingletons()
 
   const handleFileDrop = async (e: React.DragEvent) => {
     const files = e.dataTransfer.files

@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals-core'
 import type { IElectronAPI } from '@root/interface'
+import type { App } from '@src/lib/app'
 import { joinOSPaths } from '@src/lib/paths'
-import type { settingsActor } from '@src/lib/singletons'
 
 export const IMAGES_FOLDER_NAME = 'zds_images'
 const IMAGES_JSON_FILE_NAME = 'images.json'
@@ -28,7 +28,7 @@ interface ImagesJSON {
   images: ImageEntry[]
 }
 
-type SettingsActor = typeof settingsActor
+type SettingsActor = App["settingsActor"]
 
 export class ImageManager {
   static isSupportedImageFile(file: File): boolean {
