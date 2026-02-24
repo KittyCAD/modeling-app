@@ -82,6 +82,9 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       nodePolyfills({
         include: ['path'],
+        globals: {
+          process: false
+        }
       }),
       react({
         babel: {

@@ -14,7 +14,7 @@ export const external = [
   ...Object.keys(
     'dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}
   ),
-  'node:fs/promises',
+  'node:fs/promises'
 ]
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
