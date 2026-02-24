@@ -26,7 +26,6 @@ mac:
       role: Editor
       rank: Owner
 win:
-  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: nsis
       arch:
@@ -45,7 +44,6 @@ nsis:
   allowElevation: true
   installerIcon: "assets/icon.ico"
   include: "./scripts/installer.nsh"
-  buildUniversalInstaller: false
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
