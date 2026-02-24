@@ -22,8 +22,6 @@ const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
 
-// NOTE TO SELF OR ANYONE ELSE IN CASE: RETURN PROMISE.REJECT IN FAILURE CASES!
-
 const walk = async (
   targetPath: string,
   onTargetNode?: (part: string) => void
@@ -269,7 +267,6 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
     for (const part of parts) {
       // Indicative we're at /
       if (part === '') continue
-      // await
       current = (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
