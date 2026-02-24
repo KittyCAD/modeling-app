@@ -628,7 +628,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       if (
         input.app.project?.executingPathSignal.value?.value.includes(oldPath)
       ) {
-        input.app.project?.executingPathSignal.value?.value.replace(
+        const v = input.app.project.executingPathSignal.value.value
+        input.app.project.executingPathSignal.value.value = v.replace(
           oldPath,
           newPath
         )

@@ -27,7 +27,9 @@ beforeEach(async () => {
   }
 
   const { instance } = await buildTheWorldAndNoEngineConnection()
-  appInstanceInThisFile = new App()
+  appInstanceInThisFile = App.fromProvided({
+    wasmPromise: Promise.resolve(instance),
+  })
   instanceInThisFile = instance
 })
 

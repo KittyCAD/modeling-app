@@ -336,7 +336,8 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={project}
+            project={project?.projectIORefSignal.value}
+            file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}

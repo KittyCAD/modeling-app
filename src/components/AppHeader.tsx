@@ -3,14 +3,13 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
-import type { ZDSProject } from '@src/lang/KclManager'
-
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
-import { useSignals } from '@preact/signals-react/runtime'
+import type { FileEntry, Project } from '@src/lib/project'
 
 interface AppHeaderProps extends React.PropsWithChildren {
-  project?: ZDSProject | null
+  project?: Project
+  file?: FileEntry
   className?: string
   enableMenu?: boolean
   style?: React.CSSProperties
@@ -20,6 +19,7 @@ interface AppHeaderProps extends React.PropsWithChildren {
 
 export const AppHeader = ({
   project,
+  file,
   children,
   className = '',
   style,
@@ -27,7 +27,6 @@ export const AppHeader = ({
   nativeFileMenuCreated,
   projectMenuChildren,
 }: AppHeaderProps) => {
-  useSignals()
   const { auth } = useApp()
   const user = auth.useUser()
 
@@ -41,11 +40,7 @@ export const AppHeader = ({
       data-native-file-menu={nativeFileMenuCreated}
       style={style}
     >
-      <ProjectSidebarMenu
-        enableMenu={enableMenu}
-        project={project?.projectIORefSignal.value}
-        file={project?.executingFileEntry.value}
-      >
+      <ProjectSidebarMenu enableMenu={enableMenu} project={project} file={file}>
         {projectMenuChildren}
       </ProjectSidebarMenu>
       <div className="flex items-center gap-2 py-1.5 ml-auto">
