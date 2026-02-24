@@ -75,6 +75,7 @@ export type EditingCallbacks = {
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
+  private planeGeometry = new PlaneGeometry(1, 1)
 
   private static readonly HOVER_COLOR = packRgbToColor(
     SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
@@ -182,7 +183,7 @@ export class ConstraintUtils {
 
       // Hit areas for click detection (invisible but raycasted)
       const leadLine1HitArea = new Mesh(
-        new PlaneGeometry(1, 1),
+        this.planeGeometry,
         this.materials.hitArea
       )
       leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
@@ -190,7 +191,7 @@ export class ConstraintUtils {
       group.add(leadLine1HitArea)
 
       const leadLine2HitArea = new Mesh(
-        new PlaneGeometry(1, 1),
+        this.planeGeometry,
         this.materials.hitArea
       )
       leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
@@ -198,7 +199,7 @@ export class ConstraintUtils {
       group.add(leadLine2HitArea)
 
       const line1HitArea = new Mesh(
-        new PlaneGeometry(1, 1),
+        this.planeGeometry,
         this.materials.hitArea
       )
       line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
@@ -206,7 +207,7 @@ export class ConstraintUtils {
       group.add(line1HitArea)
 
       const line2HitArea = new Mesh(
-        new PlaneGeometry(1, 1),
+        this.planeGeometry,
         this.materials.hitArea
       )
       line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
@@ -214,7 +215,7 @@ export class ConstraintUtils {
       group.add(line2HitArea)
 
       const labelHitArea = new Mesh(
-        new PlaneGeometry(1, 1),
+        this.planeGeometry,
         this.materials.hitArea
       )
       labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
