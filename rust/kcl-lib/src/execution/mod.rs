@@ -75,6 +75,8 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
 /// control flow otherwise. If it's an early return, it's returned as a

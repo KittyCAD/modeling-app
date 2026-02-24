@@ -13,7 +13,7 @@ use crate::{
     ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
-    execution::MockConfig,
+    execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
     front::{ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
@@ -212,7 +212,7 @@ impl SketchApi for FrontendState {
         let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new("on")),
+                label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
                 arg: plane_ast,
             }],
             body: Default::default(),

@@ -11,9 +11,9 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EarlyReturn, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
-        SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr,
-        UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem,
+        SKETCH_BLOCK_PARAM_ON, Segment, SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind,
+        TagIdentifier, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue, early_return,
         fn_call::{Arg, Args},
@@ -98,7 +98,7 @@ fn sketch_on_frontend_plane(
         let Some(label) = &arg.label else {
             continue;
         };
-        if label.name != "on" {
+        if label.name != SKETCH_BLOCK_PARAM_ON {
             continue;
         }
         if let Some(name) = default_plane_name_from_expr(&arg.arg) {
@@ -1583,7 +1583,8 @@ impl Node<SketchBlock> {
             let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
             args.labeled = labeled;
 
-            let arg_on_value: KclValue = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+            let arg_on_value: KclValue =
+                args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
 
             let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
                 let message =
