@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { fsManager } from '@src/lang/std/fileSystemManager'
@@ -251,7 +252,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedFiles: RequestedKCLFile[] = Object.entries(
         outputsRecord
       ).map(([relativePath, fileContents]) => {
-        const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+        const lastSep = relativePath.lastIndexOf(fsZds.sep ?? '')
         let pathPart = relativePath.slice(0, lastSep)
         let filePart = relativePath.slice(lastSep)
         if (lastSep < 0) {
@@ -262,7 +263,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           requestedCode: fileContents,
           requestedFileName: filePart,
           requestedProjectName:
-            projectNameCurrentlyOpened + window.electron?.sep + pathPart,
+            projectNameCurrentlyOpened + fsZds.sep + pathPart,
         }
       })
 
