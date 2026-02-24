@@ -176,8 +176,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { ActorRefFrom } from 'xstate'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
   type updateExtraSegments as updateExtraSegmentsFn,
   type getEventForSegmentSelection as getEventForSegmentSelectionFn,
@@ -198,26 +197,29 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: CommandBarActorType
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
-
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    commandBarActor: CommandBarActorType,
+    getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.kclManager = kclManager
     this.rustContext = rustContext
+    this.commandBarActor = commandBarActor
+    this.getSettings = getSettings
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
