@@ -45,6 +45,7 @@ nsis:
   allowElevation: true
   installerIcon: "assets/icon.ico"
   include: "./scripts/installer.nsh"
+  buildUniversalInstaller: true
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
