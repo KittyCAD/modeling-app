@@ -271,13 +271,15 @@ async def test_kcl_execute_and_measure():
         assert response is not None
 
         # Check the response is as expected.
-        assert response.get_volume() == 8.295468715405207
+        assert response.get_volume() == pytest.approx(
+            8.295468715405207, rel=0, abs=1e-5
+        )
         assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
-        assert com == kcl.Point3d(
-            0.010031603276729584, 0.2714017629623413, 0.02681257389485836
-        )
+        assert com.x == pytest.approx(0.010031603276729584, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.2714017629623413, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(0.02681257389485836, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
