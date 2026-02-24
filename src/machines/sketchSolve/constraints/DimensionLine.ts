@@ -51,78 +51,73 @@ export const CONSTRAINT_COLOR = {
 
 export function createDimensionLine(
   obj: ApiObject,
-  objects: ApiObject[],
   resources: DimensionLineResources
 ): Group | null {
   if (obj.kind.type !== 'Constraint') return null
 
-  if (getEndPoints(obj, objects)) {
-    const constraint = obj.kind.constraint
-    const group = new Group()
-    group.name = obj.id.toString()
-    group.userData = {
-      type: CONSTRAINT_TYPE,
-      constraintType: constraint.type,
-      object_id: obj.id,
-    }
-
-    const materials = resources.materials
-
-    const lineGeom1 = new LineGeometry()
-    lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
-    const line1 = new Line2(lineGeom1, materials.default.line)
-    line1.userData.type = DISTANCE_CONSTRAINT_BODY
-    group.add(line1)
-
-    const lineGeom2 = new LineGeometry()
-    lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
-    const line2 = new Line2(lineGeom2, materials.default.line)
-    line2.userData.type = DISTANCE_CONSTRAINT_BODY
-    group.add(line2)
-
-    // Arrow tip is at origin, so position directly at start/end
-    const arrow1 = new Mesh(resources.arrowGeometry, materials.default.arrow)
-    arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
-    group.add(arrow1)
-
-    const arrow2 = new Mesh(resources.arrowGeometry, materials.default.arrow)
-    arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
-    group.add(arrow2)
-
-    // Label sprite with canvas texture (sized dynamically in updateLabel)
-    const canvas = document.createElement('canvas')
-    canvas.width = 1
-    canvas.height = LABEL_CANVAS_HEIGHT
-    const texture = new CanvasTexture(canvas)
-    const spriteMaterial = new SpriteMaterial({
-      map: texture,
-      transparent: true,
-    })
-    const label = new Sprite(spriteMaterial) as SpriteLabel
-    label.userData.type = DISTANCE_CONSTRAINT_LABEL
-    group.add(label)
-
-    // Hit areas for click detection (invisible but raycasted)
-
-    const line1HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-    line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-    line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-    group.add(line1HitArea)
-
-    const line2HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-    line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-    line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-    group.add(line2HitArea)
-
-    const labelHitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-    labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-    labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
-    group.add(labelHitArea)
-
-    return group
+  const constraint = obj.kind.constraint
+  const group = new Group()
+  group.name = obj.id.toString()
+  group.userData = {
+    type: CONSTRAINT_TYPE,
+    constraintType: constraint.type,
+    object_id: obj.id,
   }
 
-  return null
+  const materials = resources.materials
+
+  const lineGeom1 = new LineGeometry()
+  lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
+  const line1 = new Line2(lineGeom1, materials.default.line)
+  line1.userData.type = DISTANCE_CONSTRAINT_BODY
+  group.add(line1)
+
+  const lineGeom2 = new LineGeometry()
+  lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
+  const line2 = new Line2(lineGeom2, materials.default.line)
+  line2.userData.type = DISTANCE_CONSTRAINT_BODY
+  group.add(line2)
+
+  // Arrow tip is at origin, so position directly at start/end
+  const arrow1 = new Mesh(resources.arrowGeometry, materials.default.arrow)
+  arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
+  group.add(arrow1)
+
+  const arrow2 = new Mesh(resources.arrowGeometry, materials.default.arrow)
+  arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
+  group.add(arrow2)
+
+  // Label sprite with canvas texture (sized dynamically in updateLabel)
+  const canvas = document.createElement('canvas')
+  canvas.width = 1
+  canvas.height = LABEL_CANVAS_HEIGHT
+  const texture = new CanvasTexture(canvas)
+  const spriteMaterial = new SpriteMaterial({
+    map: texture,
+    transparent: true,
+  })
+  const label = new Sprite(spriteMaterial) as SpriteLabel
+  label.userData.type = DISTANCE_CONSTRAINT_LABEL
+  group.add(label)
+
+  // Hit areas for click detection (invisible but raycasted)
+
+  const line1HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
+  line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+  line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
+  group.add(line1HitArea)
+
+  const line2HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
+  line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+  line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
+  group.add(line2HitArea)
+
+  const labelHitArea = new Mesh(resources.planeGeometry, materials.hitArea)
+  labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+  labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
+  group.add(labelHitArea)
+
+  return group
 }
 
 export function updateDimensionLine(
@@ -130,140 +125,128 @@ export function updateDimensionLine(
   end: Vector3,
   group: Group,
   obj: ApiObject,
-  objects: ApiObject[],
   scale: number,
   sceneInfra: SceneInfra,
   selectedIds: number[],
   hoveredId: number | null,
+  distance: Number,
   resources: DimensionLineResources
 ) {
-  const points = getEndPoints(obj, objects)
-  if (points) {
-    const { distance } = points
+  const dimensionLengthPx = start.distanceTo(end) / scale
+  const midpoint = start.clone().add(end).multiplyScalar(0.5)
 
-    const dimensionLengthPx = start.distanceTo(end) / scale
-    const midpoint = start.clone().add(end).multiplyScalar(0.5)
+  const label = group.children.find(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+  ) as SpriteLabel | undefined
+  if (label) {
+    // Need to update label position even if it's not shown because it's used to
+    // place the input box when double clicking on it.
+    label.position.copy(midpoint)
+  }
 
-    const label = group.children.find(
-      (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-    ) as SpriteLabel | undefined
-    if (label) {
-      // Need to update label position even if it's not shown because it's used to
-      // place the input box when double clicking on it.
-      label.position.copy(midpoint)
+  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
+    group.visible = false
+    return
+  }
+
+  group.visible = true
+  const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+
+  const theme = getResolvedTheme(sceneInfra.theme)
+  const constraintColor = CONSTRAINT_COLOR[theme]
+  resources.updateMaterials(constraintColor)
+
+  // Pick material set based on hover/selected state
+  const isSelected = selectedIds.includes(obj.id)
+  const isHovered = hoveredId === obj.id
+  const materialSet = isHovered
+    ? resources.materials.hovered
+    : isSelected
+      ? resources.materials.selected
+      : resources.materials.default
+
+  // Swap materials on lines and arrows
+  for (const child of group.children) {
+    if (child instanceof Line2) {
+      child.material = materialSet.line
+    } else if (
+      child instanceof Mesh &&
+      child.userData.type === DISTANCE_CONSTRAINT_ARROW
+    ) {
+      child.material = materialSet.arrow
     }
+  }
 
-    if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
-      group.visible = false
-      return
+  for (const child of group.children) {
+    if (child.userData.type === DISTANCE_CONSTRAINT_LABEL) {
+      child.visible = showLabel
+    } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
+      child.visible = showLabel
+    } else if (
+      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+      child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
+    ) {
+      child.visible = showLabel
+    } else {
+      child.visible = true
     }
+  }
 
-    group.visible = true
-    const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+  // Main constraint lines with gap at center for label
+  const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
+  const dir = end.clone().sub(start).normalize()
+  const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
+  const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
 
-    const theme = getResolvedTheme(sceneInfra.theme)
-    const constraintColor = CONSTRAINT_COLOR[theme]
-    resources.updateMaterials(constraintColor)
+  const lines = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
+  )
+  const line1 = lines[0] as Line2
+  const line2 = lines[1] as Line2
 
-    // Pick material set based on hover/selected state
-    const isSelected = selectedIds.includes(obj.id)
-    const isHovered = hoveredId === obj.id
-    const materialSet = isHovered
-      ? resources.materials.hovered
-      : isSelected
-        ? resources.materials.selected
-        : resources.materials.default
+  line1.geometry.setPositions([start.x, start.y, 0, gapStart.x, gapStart.y, 0])
+  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
 
-    // Swap materials on lines and arrows
-    for (const child of group.children) {
-      if (child instanceof Line2) {
-        child.material = materialSet.line
-      } else if (
-        child instanceof Mesh &&
-        child.userData.type === DISTANCE_CONSTRAINT_ARROW
-      ) {
-        child.material = materialSet.arrow
-      }
-    }
+  // Arrows
+  const angle = Math.atan2(dir.y, dir.x) // TODO
+  const arrows = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
+  ) as Mesh[]
+  const arrow1 = arrows[0]
+  const arrow2 = arrows[1]
 
-    for (const child of group.children) {
-      if (child.userData.type === DISTANCE_CONSTRAINT_LABEL) {
-        child.visible = showLabel
-      } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
-        child.visible = showLabel
-      } else if (
-        child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-      ) {
-        child.visible = showLabel
-      } else {
-        child.visible = true
-      }
-    }
+  // Arrow tip is at origin, so position directly at start/end
+  arrow1.position.copy(start)
+  arrow1.rotation.z = angle + Math.PI / 2
+  arrow1.scale.setScalar(scale)
 
-    // Main constraint lines with gap at center for label
-    const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
-    const dir = end.clone().sub(start).normalize()
-    const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
-    const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
+  arrow2.position.copy(end)
+  arrow2.rotation.z = angle - Math.PI / 2
+  arrow2.scale.setScalar(scale)
 
-    const lines = group.children.filter(
-      (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
+  if (showLabel) {
+    updateLabel(group, obj, constraintColor, distance, scale)
+  }
+
+  // Update hit areas for lines
+  const hitAreas = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
+  ) as Mesh[]
+
+  // Update main constraint body hit areas
+  const bodyHitAreas = hitAreas.filter(
+    (hitArea) => hitArea.userData.subtype === DISTANCE_CONSTRAINT_BODY
+  )
+  if (bodyHitAreas[0]) {
+    updateLineHitArea(
+      bodyHitAreas[0],
+      start,
+      gapStart,
+      HIT_AREA_WIDTH_PX * scale
     )
-    const line1 = lines[0] as Line2
-    const line2 = lines[1] as Line2
-
-    line1.geometry.setPositions([
-      start.x,
-      start.y,
-      0,
-      gapStart.x,
-      gapStart.y,
-      0,
-    ])
-    line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
-
-    // Arrows
-    const angle = Math.atan2(dir.y, dir.x) // TODO
-    const arrows = group.children.filter(
-      (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
-    ) as Mesh[]
-    const arrow1 = arrows[0]
-    const arrow2 = arrows[1]
-
-    // Arrow tip is at origin, so position directly at start/end
-    arrow1.position.copy(start)
-    arrow1.rotation.z = angle + Math.PI / 2
-    arrow1.scale.setScalar(scale)
-
-    arrow2.position.copy(end)
-    arrow2.rotation.z = angle - Math.PI / 2
-    arrow2.scale.setScalar(scale)
-
-    if (showLabel) {
-      updateLabel(group, obj, constraintColor, distance, scale)
-    }
-
-    // Update hit areas for lines
-    const hitAreas = group.children.filter(
-      (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
-    ) as Mesh[]
-
-    // Update main constraint body hit areas
-    const bodyHitAreas = hitAreas.filter(
-      (hitArea) => hitArea.userData.subtype === DISTANCE_CONSTRAINT_BODY
-    )
-    if (bodyHitAreas[0]) {
-      updateLineHitArea(
-        bodyHitAreas[0],
-        start,
-        gapStart,
-        HIT_AREA_WIDTH_PX * scale
-      )
-    }
-    if (bodyHitAreas[1]) {
-      updateLineHitArea(bodyHitAreas[1], gapEnd, end, HIT_AREA_WIDTH_PX * scale)
-    }
+  }
+  if (bodyHitAreas[1]) {
+    updateLineHitArea(bodyHitAreas[1], gapEnd, end, HIT_AREA_WIDTH_PX * scale)
   }
 }
 

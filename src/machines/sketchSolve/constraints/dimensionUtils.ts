@@ -61,6 +61,20 @@ export function isDistanceConstraint(kind: ApiObjectKind): kind is {
   )
 }
 
+export function isRadiusConstraint(kind: ApiObjectKind): kind is {
+  type: 'Constraint'
+  constraint: Extract<ApiConstraint, { type: 'Radius' }>
+} {
+  return kind.type === 'Constraint' && kind.constraint.type === 'Radius'
+}
+
+export function isDiameterConstraint(kind: ApiObjectKind): kind is {
+  type: 'Constraint'
+  constraint: Extract<ApiConstraint, { type: 'Diameter' }>
+} {
+  return kind.type === 'Constraint' && kind.constraint.type === 'Diameter'
+}
+
 export function calculateDimensionLabelScreenPosition(
   constraintId: number,
   modelingState: StateFrom<typeof modelingMachine>,

@@ -1,5 +1,5 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { type Group, Vector3, Mesh } from 'three'
+import type { ApiArc, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { type Group, Vector3, Mesh, Vector2 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import {
@@ -12,7 +12,12 @@ import {
 import { getResolvedTheme } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
-import { getEndPoints } from '@src/machines/sketchSolve/constraints/dimensionUtils'
+import {
+  getEndPoints,
+  isDiameterConstraint,
+  isDistanceConstraint,
+  isRadiusConstraint,
+} from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import {
   CONSTRAINT_COLOR,
   createDimensionLine,
@@ -34,46 +39,55 @@ export type EditingCallbacks = {
 export class ConstraintUtils {
   private resources = new DimensionLineResources()
 
-  public init(obj: ApiObject, objects: ApiObject[]): Group | null {
-    if (obj.kind.type !== 'Constraint') return null
-
-    const group = createDimensionLine(obj, objects, this.resources)
+  public init(obj: ApiObject): Group | null {
+    if (
+      !isDistanceConstraint(obj.kind) &&
+      !isRadiusConstraint(obj.kind) &&
+      !isDiameterConstraint(obj.kind)
+    ) {
+      return null
+    }
+    const group = createDimensionLine(obj, this.resources)
     if (group) {
-      const materials = this.resources.materials
-
-      const leadGeom1 = new LineGeometry()
-      leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine1 = new Line2(leadGeom1, materials.default.line)
-      leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine1)
-
-      const leadGeom2 = new LineGeometry()
-      leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine2 = new Line2(leadGeom2, materials.default.line)
-      leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine2)
-
-      // Hit areas for click detection (invisible but raycasted)
-      const leadLine1HitArea = new Mesh(
-        this.resources.planeGeometry,
-        materials.hitArea
-      )
-      leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-      leadLine1HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine1HitArea)
-
-      const leadLine2HitArea = new Mesh(
-        this.resources.planeGeometry,
-        materials.hitArea
-      )
-      leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-      leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine2HitArea)
-
-      return group
+      if (isDistanceConstraint(obj.kind)) {
+        this.createLeaderLines(group)
+      }
     }
 
-    return null
+    return group
+  }
+
+  private createLeaderLines(group: Group) {
+    const materials = this.resources.materials
+
+    const leadGeom1 = new LineGeometry()
+    leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
+    const leadLine1 = new Line2(leadGeom1, materials.default.line)
+    leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    group.add(leadLine1)
+
+    const leadGeom2 = new LineGeometry()
+    leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
+    const leadLine2 = new Line2(leadGeom2, materials.default.line)
+    leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    group.add(leadLine2)
+
+    // Hit areas for click detection (invisible but raycasted)
+    const leadLine1HitArea = new Mesh(
+      this.resources.planeGeometry,
+      materials.hitArea
+    )
+    leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+    leadLine1HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
+    group.add(leadLine1HitArea)
+
+    const leadLine2HitArea = new Mesh(
+      this.resources.planeGeometry,
+      materials.hitArea
+    )
+    leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+    leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
+    group.add(leadLine2HitArea)
   }
 
   public update(
@@ -85,124 +99,114 @@ export class ConstraintUtils {
     selectedIds: number[],
     hoveredId: number | null
   ) {
-    const points = getEndPoints(obj, objects)
-    if (points) {
-      const { p1, p2 } = points
+    if (isDistanceConstraint(obj.kind)) {
+      const points = getEndPoints(obj, objects)
+      if (points) {
+        const { p1, p2, distance } = points
 
-      // Get constraint type to determine dimension line direction
+        const { start, end, perp } = getDirections(obj, p1, p2, scale)
 
-      const { start, end, perp } = getDirections(obj, p1, p2, scale)
-
-      const dimensionLengthPx = start.distanceTo(end) / scale
-      if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
-        group.visible = false
-        return
-      }
-
-      group.visible = true
-      const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
-
-      const theme = getResolvedTheme(sceneInfra.theme)
-      const constraintColor = CONSTRAINT_COLOR[theme]
-      this.resources.updateMaterials(constraintColor)
-
-      // Pick material set based on hover/selected state
-      const isSelected = selectedIds.includes(obj.id)
-      const isHovered = hoveredId === obj.id
-      const materialSet = isHovered
-        ? this.resources.materials.hovered
-        : isSelected
-          ? this.resources.materials.selected
-          : this.resources.materials.default
-
-      // Swap materials on lines and arrows
-      for (const child of group.children) {
-        if (child instanceof Line2) {
-          child.material = materialSet.line
-        } else if (
-          child instanceof Mesh &&
-          child.userData.type === DISTANCE_CONSTRAINT_ARROW
-        ) {
-          child.material = materialSet.arrow
+        const dimensionLengthPx = start.distanceTo(end) / scale
+        if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
+          group.visible = false
+          return
         }
-      }
 
-      // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
-      for (const child of group.children) {
-        const isLabelVisual =
-          child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
-          child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
-          (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-            child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
+        group.visible = true
+        const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
 
-        child.visible = isLabelVisual ? showLabel : true
-      }
+        const theme = getResolvedTheme(sceneInfra.theme)
+        const constraintColor = CONSTRAINT_COLOR[theme]
+        this.resources.updateMaterials(constraintColor)
 
-      updateDimensionLine(
-        start,
-        end,
-        group,
-        obj,
-        objects,
-        scale,
-        sceneInfra,
-        selectedIds,
-        hoveredId,
-        this.resources
-      )
+        // Pick material set based on hover/selected state
+        const isSelected = selectedIds.includes(obj.id)
+        const isHovered = hoveredId === obj.id
+        const materialSet = isHovered
+          ? this.resources.materials.hovered
+          : isSelected
+            ? this.resources.materials.selected
+            : this.resources.materials.default
 
-      // Leader lines
-      const extension = perp
-        .clone()
-        .normalize()
-        .multiplyScalar(LEADER_LINE_OVERHANG * scale)
-      const leadEnd1 = start.clone().add(extension)
-      const leadEnd2 = end.clone().add(extension)
+        // Swap materials on lines and arrows
+        for (const child of group.children) {
+          if (child instanceof Line2) {
+            child.material = materialSet.line
+          } else if (
+            child instanceof Mesh &&
+            child.userData.type === DISTANCE_CONSTRAINT_ARROW
+          ) {
+            child.material = materialSet.arrow
+          }
+        }
 
-      const leadLines = group.children.filter(
-        (child) => child.userData.type === DISTANCE_CONSTRAINT_LEADER_LINE
-      )
-      const leadLine1 = leadLines[0] as Line2
-      const leadLine2 = leadLines[1] as Line2
+        // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
+        for (const child of group.children) {
+          const isLabelVisual =
+            child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
+            child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
+            (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+              child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
 
-      leadLine1.geometry.setPositions([
-        p1.x,
-        p1.y,
-        0,
-        leadEnd1.x,
-        leadEnd1.y,
-        0,
-      ])
-      leadLine2.geometry.setPositions([
-        p2.x,
-        p2.y,
-        0,
-        leadEnd2.x,
-        leadEnd2.y,
-        0,
-      ])
+          child.visible = isLabelVisual ? showLabel : true
+        }
 
-      // Update hit areas for leader lines
-      const leaderHitAreas = group.children.filter(
-        (child) =>
-          child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-          child.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
-      ) as Mesh[]
-      if (leaderHitAreas[0]) {
-        updateLineHitArea(
-          leaderHitAreas[0],
-          p1,
-          leadEnd1,
-          HIT_AREA_WIDTH_PX * scale
+        updateDimensionLine(
+          start,
+          end,
+          group,
+          obj,
+          scale,
+          sceneInfra,
+          selectedIds,
+          hoveredId,
+          distance,
+          this.resources
         )
+
+        updateLeaderLines(start, end, perp, p1, p2, group, scale)
       }
-      if (leaderHitAreas[1]) {
-        updateLineHitArea(
-          leaderHitAreas[1],
-          p2,
-          leadEnd2,
-          HIT_AREA_WIDTH_PX * scale
-        )
+    } else if (isRadiusConstraint(obj.kind) || isDiameterConstraint(obj.kind)) {
+      const arc = objects[obj.kind.constraint.arc]
+      if (arc?.kind.type === 'Segment' && arc.kind.segment.type === 'Arc') {
+        const center = objects[arc.kind.segment.center]
+        const start = objects[arc.kind.segment.start]
+        const end = objects[arc.kind.segment.end]
+
+        if (
+          center?.kind.type === 'Segment' &&
+          center.kind.segment.type === 'Point' &&
+          start?.kind.type === 'Segment' &&
+          start.kind.segment.type === 'Point' &&
+          end?.kind.type === 'Segment' &&
+          end.kind.segment.type === 'Point'
+        ) {
+          const p1 = start.kind.segment.position
+          const p2 = end.kind.segment.position
+          const c = center.kind.segment.position
+
+          const s1 = new Vector3(p1.x.value, p1.y.value, 0)
+          const s2 = new Vector3(p2.x.value, p2.y.value, 0)
+
+          const cc = new Vector3(c.x.value, c.y.value, 0)
+          const s3 = isRadiusConstraint(obj.kind) ? 
+          cc
+          :
+          cc.sub(s1.clone().sub(cc))
+
+          updateDimensionLine(
+            s1,
+            s3,
+            group,
+            obj,
+            scale,
+            sceneInfra,
+            selectedIds,
+            hoveredId,
+            isRadiusConstraint(obj.kind) ? obj.kind.constraint.radius : obj.kind.constraint.diameter,
+            this.resources
+          )
+        }
       }
     }
   }
@@ -251,4 +255,54 @@ function getDirections(
   }
 
   return { start, end, perp }
+}
+
+function updateLeaderLines(
+  start: Vector3,
+  end: Vector3,
+  perp: Vector3,
+  p1: Vector3,
+  p2: Vector3,
+  group: Group,
+  scale: number
+) {
+  // Leader lines
+  const extension = perp
+    .clone()
+    .normalize()
+    .multiplyScalar(LEADER_LINE_OVERHANG * scale)
+  const leadEnd1 = start.clone().add(extension)
+  const leadEnd2 = end.clone().add(extension)
+
+  const leadLines = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_LEADER_LINE
+  )
+  const leadLine1 = leadLines[0] as Line2
+  const leadLine2 = leadLines[1] as Line2
+
+  leadLine1.geometry.setPositions([p1.x, p1.y, 0, leadEnd1.x, leadEnd1.y, 0])
+  leadLine2.geometry.setPositions([p2.x, p2.y, 0, leadEnd2.x, leadEnd2.y, 0])
+
+  // Update hit areas for leader lines
+  const leaderHitAreas = group.children.filter(
+    (child) =>
+      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+      child.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
+  ) as Mesh[]
+  if (leaderHitAreas[0]) {
+    updateLineHitArea(
+      leaderHitAreas[0],
+      p1,
+      leadEnd1,
+      HIT_AREA_WIDTH_PX * scale
+    )
+  }
+  if (leaderHitAreas[1]) {
+    updateLineHitArea(
+      leaderHitAreas[1],
+      p2,
+      leadEnd2,
+      HIT_AREA_WIDTH_PX * scale
+    )
+  }
 }
