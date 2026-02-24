@@ -18,7 +18,7 @@ engine_error_file = os.path.join(
     tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
 )
 cube_step_file = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "..", "files", "cube.step"
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
 car_wheel_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -238,7 +238,7 @@ async def test_import_and_snapshots_single():
     # Read from a file.
     step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
-    print(cube_step_file)
+    print("The cube_step_file is", cube_step_file)
     image_bytes = await kcl.import_and_snapshot(
         [cube_step_file], input_format, kcl.ImageFormat.Jpeg
     )
