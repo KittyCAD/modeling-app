@@ -18,7 +18,7 @@ use crate::{
         control_continue, early_return,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
-        memory,
+        memory::{self, SKETCH_PREFIX},
         sketch_solve::{
             FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
             substitute_sketch_var_in_segment, substitute_sketch_vars,
@@ -47,7 +47,7 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
 }
 
 fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
-    format!("__kcl_sketch_{}_on", sketch_id.0)
+    format!("{SKETCH_PREFIX}{}_on", sketch_id.0)
 }
 
 #[cfg(feature = "artifact-graph")]
