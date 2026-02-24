@@ -198,26 +198,17 @@ export class ConstraintUtils {
       leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine2HitArea)
 
-      const line1HitArea = new Mesh(
-        this.planeGeometry,
-        this.materials.hitArea
-      )
+      const line1HitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
       line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
       group.add(line1HitArea)
 
-      const line2HitArea = new Mesh(
-        this.planeGeometry,
-        this.materials.hitArea
-      )
+      const line2HitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
       line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
       group.add(line2HitArea)
 
-      const labelHitArea = new Mesh(
-        this.planeGeometry,
-        this.materials.hitArea
-      )
+      const labelHitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
       labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
       group.add(labelHitArea)
@@ -304,33 +295,26 @@ export class ConstraintUtils {
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
+      this.updateMaterials(constraintColor)
 
       // Pick material set based on hover/selected state
       const isSelected = selectedIds.includes(obj.id)
       const isHovered = hoveredId === obj.id
-      const matSet = isHovered
+      const materialSet = isHovered
         ? this.materials.hovered
         : isSelected
           ? this.materials.selected
           : this.materials.default
 
-      // Update default materials with theme color
-      this.materials.default.line.color.set(constraintColor)
-      this.materials.default.arrow.color.set(constraintColor)
-      const linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
-      this.materials.default.line.linewidth = linewidth
-      this.materials.hovered.line.linewidth = linewidth
-      this.materials.selected.line.linewidth = linewidth
-
       // Swap materials on lines and arrows
       for (const child of group.children) {
         if (child instanceof Line2) {
-          child.material = matSet.line
+          child.material = materialSet.line
         } else if (
           child instanceof Mesh &&
           child.userData.type === DISTANCE_CONSTRAINT_ARROW
         ) {
-          child.material = matSet.arrow
+          child.material = materialSet.arrow
         }
       }
 
@@ -445,7 +429,8 @@ export class ConstraintUtils {
 
       // Update leader line hit areas
       const leaderHitAreas = hitAreas.filter(
-        (ha) => ha.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
+        (hitArea) =>
+          hitArea.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
       )
       if (leaderHitAreas[0]) {
         updateLineHitArea(
@@ -466,7 +451,7 @@ export class ConstraintUtils {
 
       // Update main constraint body hit areas
       const bodyHitAreas = hitAreas.filter(
-        (ha) => ha.userData.subtype === DISTANCE_CONSTRAINT_BODY
+        (hitArea) => hitArea.userData.subtype === DISTANCE_CONSTRAINT_BODY
       )
       if (bodyHitAreas[0]) {
         updateLineHitArea(
@@ -485,6 +470,16 @@ export class ConstraintUtils {
         )
       }
     }
+  }
+
+  private updateMaterials(constraintColor: number) {
+    // Update default materials with theme color
+    this.materials.default.line.color.set(constraintColor)
+    this.materials.default.arrow.color.set(constraintColor)
+    const linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+    this.materials.default.line.linewidth = linewidth
+    this.materials.hovered.line.linewidth = linewidth
+    this.materials.selected.line.linewidth = linewidth
   }
 
   private updateLabel(
