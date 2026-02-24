@@ -6,40 +6,30 @@ import type {
 import {
   Group,
   Vector3,
-  BufferGeometry,
-  MeshBasicMaterial,
   Mesh,
-  Float32BufferAttribute,
-  DoubleSide,
   Sprite,
   SpriteMaterial,
   CanvasTexture,
   Color,
-  PlaneGeometry,
   type Texture,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import {
   DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_BODY,
   DISTANCE_CONSTRAINT_LABEL,
   DISTANCE_CONSTRAINT_LEADER_LINE,
   DISTANCE_CONSTRAINT_HIT_AREA,
-  SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
-import {
-  packRgbToColor,
-  SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
-} from '@src/lib/constants'
+
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
+import { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -65,7 +55,6 @@ const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this scr
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
-const debug_hit_areas = false
 const debug_label_canvas = false
 
 export type EditingCallbacks = {
@@ -74,51 +63,7 @@ export type EditingCallbacks = {
 }
 
 export class ConstraintUtils {
-  private arrowGeometry: BufferGeometry | undefined
-  private planeGeometry = new PlaneGeometry(1, 1)
-
-  private static readonly HOVER_COLOR = packRgbToColor(
-    SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
-  )
-
-  private readonly materials = {
-    default: {
-      arrow: new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide }),
-      line: new LineMaterial({
-        color: 0xff0000,
-        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-        worldUnits: false,
-      }),
-    },
-    hovered: {
-      arrow: new MeshBasicMaterial({
-        color: SKETCH_SELECTION_COLOR,
-        side: DoubleSide,
-      }),
-      line: new LineMaterial({
-        color: SKETCH_SELECTION_COLOR,
-        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-        worldUnits: false,
-      }),
-    },
-    selected: {
-      arrow: new MeshBasicMaterial({
-        color: ConstraintUtils.HOVER_COLOR,
-        side: DoubleSide,
-      }),
-      line: new LineMaterial({
-        color: ConstraintUtils.HOVER_COLOR,
-        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-        worldUnits: false,
-      }),
-    },
-    hitArea: new MeshBasicMaterial({
-      color: 0x00ff00,
-      transparent: true,
-      opacity: debug_hit_areas ? 0.3 : 0,
-      side: DoubleSide,
-    }),
-  }
+  private resources = new DimensionLineResources()
 
   public init(obj: ApiObject, objects: ApiObject[]): Group | null {
     if (obj.kind.type !== 'Constraint') return null
@@ -133,38 +78,44 @@ export class ConstraintUtils {
         object_id: obj.id,
       }
 
+      const materials = this.resources.materials
+
       const leadGeom1 = new LineGeometry()
       leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine1 = new Line2(leadGeom1, this.materials.default.line)
+      const leadLine1 = new Line2(leadGeom1, materials.default.line)
       leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine1)
 
       const leadGeom2 = new LineGeometry()
       leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine2 = new Line2(leadGeom2, this.materials.default.line)
+      const leadLine2 = new Line2(leadGeom2, materials.default.line)
       leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine2)
 
       const lineGeom1 = new LineGeometry()
       lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const line1 = new Line2(lineGeom1, this.materials.default.line)
+      const line1 = new Line2(lineGeom1, materials.default.line)
       line1.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line1)
 
       const lineGeom2 = new LineGeometry()
       lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const line2 = new Line2(lineGeom2, this.materials.default.line)
+      const line2 = new Line2(lineGeom2, materials.default.line)
       line2.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line2)
 
-      this.arrowGeometry = this.arrowGeometry || createArrowGeometry()
-
       // Arrow tip is at origin, so position directly at start/end
-      const arrow1 = new Mesh(this.arrowGeometry, this.materials.default.arrow)
+      const arrow1 = new Mesh(
+        this.resources.arrowGeometry,
+        materials.default.arrow
+      )
       arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow1)
 
-      const arrow2 = new Mesh(this.arrowGeometry, this.materials.default.arrow)
+      const arrow2 = new Mesh(
+        this.resources.arrowGeometry,
+        materials.default.arrow
+      )
       arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow2)
 
@@ -183,32 +134,41 @@ export class ConstraintUtils {
 
       // Hit areas for click detection (invisible but raycasted)
       const leadLine1HitArea = new Mesh(
-        this.planeGeometry,
-        this.materials.hitArea
+        this.resources.planeGeometry,
+        materials.hitArea
       )
       leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       leadLine1HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine1HitArea)
 
       const leadLine2HitArea = new Mesh(
-        this.planeGeometry,
-        this.materials.hitArea
+        this.resources.planeGeometry,
+        materials.hitArea
       )
       leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine2HitArea)
 
-      const line1HitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
+      const line1HitArea = new Mesh(
+        this.resources.planeGeometry,
+        materials.hitArea
+      )
       line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
       group.add(line1HitArea)
 
-      const line2HitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
+      const line2HitArea = new Mesh(
+        this.resources.planeGeometry,
+        materials.hitArea
+      )
       line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
       group.add(line2HitArea)
 
-      const labelHitArea = new Mesh(this.planeGeometry, this.materials.hitArea)
+      const labelHitArea = new Mesh(
+        this.resources.planeGeometry,
+        materials.hitArea
+      )
       labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
       labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
       group.add(labelHitArea)
@@ -295,16 +255,16 @@ export class ConstraintUtils {
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
-      this.updateMaterials(constraintColor)
+      this.resources.updateMaterials(constraintColor)
 
       // Pick material set based on hover/selected state
       const isSelected = selectedIds.includes(obj.id)
       const isHovered = hoveredId === obj.id
       const materialSet = isHovered
-        ? this.materials.hovered
+        ? this.resources.materials.hovered
         : isSelected
-          ? this.materials.selected
-          : this.materials.default
+          ? this.resources.materials.selected
+          : this.resources.materials.default
 
       // Swap materials on lines and arrows
       for (const child of group.children) {
@@ -472,16 +432,6 @@ export class ConstraintUtils {
     }
   }
 
-  private updateMaterials(constraintColor: number) {
-    // Update default materials with theme color
-    this.materials.default.line.color.set(constraintColor)
-    this.materials.default.arrow.color.set(constraintColor)
-    const linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
-    this.materials.default.line.linewidth = linewidth
-    this.materials.hovered.line.linewidth = linewidth
-    this.materials.selected.line.linewidth = linewidth
-  }
-
   private updateLabel(
     group: Group,
     obj: ApiObject,
@@ -606,24 +556,6 @@ type SpriteLabel = Sprite & {
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
-}
-
-// Arrow with tip at origin, pointing +Y, base extends into -Y
-function createArrowGeometry(): BufferGeometry {
-  const geom = new BufferGeometry()
-  const vertices = new Float32Array([
-    -3.5,
-    -10,
-    0, // bottom left
-    0,
-    0,
-    0, // tip at origin
-    3.5,
-    -10,
-    0, // bottom right
-  ])
-  geom.setAttribute('position', new Float32BufferAttribute(vertices, 3))
-  return geom
 }
 
 function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
