@@ -24,8 +24,10 @@ pub enum Axis2dOrEdgeReference {
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
-    /// Tagged edge.
+    /// Tagged edge (simple: Uuid or Tag).
     Edge(EdgeReference),
+    /// Edge reference with faces, disambiguators, and index.
+    EdgeReference(ModelingEdgeReference),
 }
 
 /// A 2D axis or a raw point2d.

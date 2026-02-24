@@ -154,12 +154,9 @@ async fn inner_mirror_2d(
                 )));
             };
         }
+        // EdgeReference variant exists for revolve, but mirror2d doesn't support edgeRef
         Axis2dOrEdgeReference::EdgeReference(_) => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) or a tagged edge instead."
-                    .to_owned(),
-                vec![args.source_range],
-            )));
+            unreachable!("mirror2d does not support EdgeReference, only Axis or Edge")
         }
     }
 

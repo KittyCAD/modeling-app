@@ -1653,10 +1653,11 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::EntityMakeHelixFromEdge(helix) => {
-            let edge_id = ArtifactId::new(helix.edge_id);
+            // When using EdgeReference, we can't extract a single edge UUID easily,
+            // so we set axis_id to None. The edge_reference contains faces, disambiguators, and index.
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
-                axis_id: Some(edge_id),
+                axis_id: None,
                 code_ref,
                 trajectory_sweep_id: None,
                 consumed: false,
