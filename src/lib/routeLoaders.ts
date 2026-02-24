@@ -226,6 +226,13 @@ export const fileLoader =
       project,
     })
 
+    // TODO: Remove this browser-only code path when we turn on WebFS
+    app.openProject(
+      project,
+      decodeURIComponent(BROWSER_PATH) || PROJECT_ENTRYPOINT,
+      app.singletons.kclManager
+    )
+
     return {
       code,
       project,
