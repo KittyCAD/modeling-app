@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { loadWasm } from '@src/unitTestUtils'
 
 const mockProject: Project = {
   name: 'test',
@@ -28,9 +28,9 @@ const mockProject: Project = {
 }
 
 describe('project system', () => {
-  it('can open, close project', () => {
+  it('can open, close project', async () => {
     const app = App.fromProvided({
-      wasmPromise: Promise.resolve({} as ModuleType),
+      wasmPromise: loadWasm(),
     })
 
     app.openProject(
