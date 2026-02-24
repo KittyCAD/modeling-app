@@ -220,18 +220,25 @@ jobs:
         run: ls -R out
 
       - uses: actions/upload-artifact@v6
+        if: ${{ matrix.platform == 'linux' }}
         with:
-          name: out-arm64-${{ matrix.platform }}
+          name: out-arm64-linux
           path: |
-            out/*-arm64-mac.*
             out/*-arm64-linux.*
 
       - uses: actions/upload-artifact@v6
+        if: ${{ matrix.platform == 'linux' }}
         with:
-          name: out-x64-${{ matrix.platform }}
+          name: out-x64-linux
           path: |
-            out/*-x64-mac.*
             out/*-x86_64-linux.*
+
+      - uses: actions/upload-artifact@v6
+        if: ${{ matrix.platform == 'macos' }}
+        with:
+          name: out-universal-macos
+          path: |
+            out/*universal-mac.*
 
       - uses: actions/upload-artifact@v6
         if: ${{ matrix.platform == 'windows' }}
@@ -317,6 +324,7 @@ jobs:
             --arg notes "${NOTES}" \
             --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
             --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
+            # TODO
             --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-win.exe" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
