@@ -49,8 +49,8 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 
 export type EquipTool = keyof typeof equipTools
 

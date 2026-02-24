@@ -9,7 +9,7 @@ import {
   type Vector3,
   Color,
 } from 'three'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import type { SpriteLabel } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import {
   getEndPoints,
@@ -203,7 +203,7 @@ export function updateDimensionLine(
 
     // Main constraint lines with gap at center for label
     const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
-    const dir = end.clone().sub(start)
+    const dir = end.clone().sub(start).normalize()
     const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
     const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
 

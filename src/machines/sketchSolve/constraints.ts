@@ -26,8 +26,6 @@ import {
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
 
-export const CONSTRAINT_TYPE = 'CONSTRAINT'
-
 export type EditingCallbacks = {
   cancel: () => void
   submit: (value: string) => void | Promise<void>
@@ -92,45 +90,8 @@ export class ConstraintUtils {
       const { p1, p2 } = points
 
       // Get constraint type to determine dimension line direction
-      const constraintType =
-        obj.kind.type === 'Constraint' ? obj.kind.constraint.type : 'Distance'
 
-      // Direction along the dimension line
-      let dir: Vector3
-      // Perpendicular direction for offset
-      let perp: Vector3
-      // Start and end points on the dimension line (after offset)
-      let start: Vector3
-      let end: Vector3
-
-      if (constraintType === 'HorizontalDistance') {
-        // Place distance on the bottom if the points are under the X axis
-        const isBottom = (p1.y + p2.y) / 2 < 0
-        dir = new Vector3(p1.x < p2.x ? 1 : -1, 0, 0)
-        perp = new Vector3(0, isBottom ? -1 : 1, 0)
-        const offsetY =
-          (isBottom ? Math.min(p1.y, p2.y) : Math.max(p1.y, p2.y)) +
-          SEGMENT_OFFSET_PX * scale * (isBottom ? -1 : 1)
-        start = new Vector3(p1.x, offsetY, 0)
-        end = new Vector3(p2.x, offsetY, 0)
-      } else if (constraintType === 'VerticalDistance') {
-        // Place distance on the left side if the points are more on the left side..
-        const isLeft = (p1.x + p2.x) / 2 < 0
-        dir = new Vector3(0, p1.y < p2.y ? 1 : -1, 0)
-        perp = new Vector3(isLeft ? -1 : 1, 0, 0)
-        const offsetX =
-          (isLeft ? Math.min(p1.x, p2.x) : Math.max(p1.x, p2.x)) +
-          SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
-        start = new Vector3(offsetX, p1.y, 0)
-        end = new Vector3(offsetX, p2.y, 0)
-      } else {
-        // "Distance": line is parallel to the segment
-        dir = p2.clone().sub(p1).normalize()
-        perp = new Vector3(-dir.y, dir.x, 0)
-        const offset = perp.clone().multiplyScalar(SEGMENT_OFFSET_PX * scale)
-        start = p1.clone().add(offset)
-        end = p2.clone().add(offset)
-      }
+      const { start, end, perp } = getDirections(obj, p1, p2, scale)
 
       const dimensionLengthPx = start.distanceTo(end) / scale
       if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
@@ -166,19 +127,15 @@ export class ConstraintUtils {
         }
       }
 
+      // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
       for (const child of group.children) {
-        if (child.userData.type === DISTANCE_CONSTRAINT_LABEL) {
-          child.visible = showLabel
-        } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
-          child.visible = showLabel
-        } else if (
-          child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-          child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-        ) {
-          child.visible = showLabel
-        } else {
-          child.visible = true
-        }
+        const isLabelVisual =
+          child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
+          child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
+          (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+            child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
+
+        child.visible = isLabelVisual ? showLabel : true
       }
 
       updateDimensionLine(
@@ -249,4 +206,49 @@ export class ConstraintUtils {
       }
     }
   }
+}
+
+function getDirections(
+  obj: ApiObject,
+  p1: Vector3,
+  p2: Vector3,
+  scale: number
+) {
+  const constraintType =
+    obj.kind.type === 'Constraint' ? obj.kind.constraint.type : 'Distance'
+
+  // Perpendicular direction for offset
+  let perp: Vector3
+  // Start and end points on the dimension line (after offset)
+  let start: Vector3
+  let end: Vector3
+
+  if (constraintType === 'HorizontalDistance') {
+    // Place distance on the bottom if the points are under the X axis
+    const isBottom = (p1.y + p2.y) / 2 < 0
+    perp = new Vector3(0, isBottom ? -1 : 1, 0)
+    const offsetY =
+      (isBottom ? Math.min(p1.y, p2.y) : Math.max(p1.y, p2.y)) +
+      SEGMENT_OFFSET_PX * scale * (isBottom ? -1 : 1)
+    start = new Vector3(p1.x, offsetY, 0)
+    end = new Vector3(p2.x, offsetY, 0)
+  } else if (constraintType === 'VerticalDistance') {
+    // Place distance on the left side if the points are more on the left side..
+    const isLeft = (p1.x + p2.x) / 2 < 0
+    perp = new Vector3(isLeft ? -1 : 1, 0, 0)
+    const offsetX =
+      (isLeft ? Math.min(p1.x, p2.x) : Math.max(p1.x, p2.x)) +
+      SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
+    start = new Vector3(offsetX, p1.y, 0)
+    end = new Vector3(offsetX, p2.y, 0)
+  } else {
+    // "Distance": line is parallel to the segment
+    const dir = p2.clone().sub(p1).normalize()
+    perp = new Vector3(-dir.y, dir.x, 0)
+    const offset = perp.clone().multiplyScalar(SEGMENT_OFFSET_PX * scale)
+    start = p1.clone().add(offset)
+    end = p2.clone().add(offset)
+  }
+
+  return { start, end, perp }
 }

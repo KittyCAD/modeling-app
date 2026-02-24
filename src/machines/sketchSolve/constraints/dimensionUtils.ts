@@ -11,6 +11,8 @@ import { Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
+export const CONSTRAINT_TYPE = 'CONSTRAINT'
+
 export function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
   if (!isDistanceConstraint(obj.kind)) {
     return null

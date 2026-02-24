@@ -61,7 +61,7 @@ import {
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 
 /**
  * Helper function to build a segment ctor with drag applied.
