@@ -234,6 +234,7 @@ jobs:
             out/*-x86_64-linux.*
 
       - uses: actions/upload-artifact@v6
+        if: ${{ matrix.platform == 'windows' }}
         with:
           name: out-universal-windows
           path: |
