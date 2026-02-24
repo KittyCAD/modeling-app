@@ -47,7 +47,7 @@ import type {
 } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { MachineManager } from '@src/lib/MachineManager'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -5177,12 +5177,10 @@ export const modelingMachine = setup({
             "machineManager is null. It shouldn't be at this point. Aborting operation."
           )
           return new Error('Machine manager is not set')
-        } else {
-          input.machineManager.currentMachine = input.machine
         }
 
         // Update the rest of the UI that needs to know the current machine
-        input.machineManager.setCurrentMachine(input.machine)
+        input.machineManager.currentMachine = input.machine
 
         const format: OutputFormat3d = {
           type: 'stl',

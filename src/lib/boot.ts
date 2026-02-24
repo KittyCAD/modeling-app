@@ -6,7 +6,7 @@ import React from 'react'
  * from its class definition. This app instance should not be referenced by any tests, but rather
  * created anew.
  */
-export const app = new App()
+export const app = App.fromDefaults()
 export const AppContext = React.createContext(app)
 
 /**
