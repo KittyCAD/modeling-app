@@ -2,14 +2,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
-
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type {
-  BaseUnit,
-  SaveSettingsPayload,
-} from '@src/lib/settings/settingsTypes'
-
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
@@ -287,36 +280,23 @@ export class App implements AppSubsystems {
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
-    const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
+    const kclManager = new KclManager({
       rustContext,
-      sceneInfra,
+      engineCommandManager,
+      settings: this.settings.actor,
+      wasmInstancePromise: this.wasmPromise,
+      commandBar: this.commands.actor,
     })
 
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
     engineCommandManager.kclManager = kclManager
-    engineCommandManager.sceneInfra = sceneInfra
+    engineCommandManager.sceneInfra = kclManager.sceneInfra
     engineCommandManager.rustContext = rustContext
-
-    kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
-      sceneInfra.baseUnit = unit
-    }
-
-    const sceneEntitiesManager = new SceneEntities(
-      engineCommandManager,
-      sceneInfra,
-      kclManager,
-      rustContext
-    )
-    /** 🚨 Circular dependency alert 🚨 */
-    kclManager.sceneEntitiesManager = sceneEntitiesManager
 
     if (typeof window !== 'undefined') {
       ;(window as any).engineCommandManager = engineCommandManager
       ;(window as any).kclManager = kclManager
-      ;(window as any).sceneInfra = sceneInfra
-      ;(window as any).sceneEntitiesManager = sceneEntitiesManager
       ;(window as any).rustContext = rustContext
       ;(window as any).engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
@@ -350,16 +330,9 @@ export class App implements AppSubsystems {
       }
     ).start()
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    sceneInfra.camControls.getSettings = this.settings.get
-    sceneEntitiesManager.getSettings = this.settings.get
-
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
-    // TODO: proper dependency management
-    sceneEntitiesManager.commandBarActor = this.commands.actor
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands
@@ -376,9 +349,9 @@ export class App implements AppSubsystems {
     return {
       engineCommandManager,
       rustContext,
-      sceneInfra,
+      sceneInfra: kclManager.sceneInfra,
       kclManager,
-      sceneEntitiesManager,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       systemIOActor,
     }
   }
@@ -418,8 +391,10 @@ export class App implements AppSubsystems {
     const newTheme = context.app.theme.current
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
-    this.singletons.sceneInfra.theme = opposingTheme
-    this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.singletons.kclManager.sceneInfra.theme = opposingTheme
+    this.singletons.kclManager.sceneEntitiesManager.updateSegmentBaseColor(
+      opposingTheme
+    )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.engineCommandManager.connection) {
       this.singletons.engineCommandManager
@@ -453,15 +428,15 @@ export class App implements AppSubsystems {
       console.error('Error executing AST after settings change', e)
     }
 
-    this.singletons.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
       context.app.allowOrbitInSketchMode.current
 
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
-      this.singletons.sceneInfra.camControls &&
+      this.singletons.kclManager.sceneInfra.camControls &&
       !this.singletons.kclManager.modelingState?.matches('Sketch')
     ) {
-      this.singletons.sceneInfra.camControls.engineCameraProjection =
+      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
     }
 
