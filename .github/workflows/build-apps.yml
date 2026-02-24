@@ -282,12 +282,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-macos
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-macos
+          name: out-universal-macos
           path: out
 
       - uses: actions/download-artifact@v4
@@ -322,9 +317,7 @@ jobs:
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
-            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
-            # TODO
+            --arg mac_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-mac.dmg" \
             --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-win.exe" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
@@ -334,10 +327,10 @@ jobs:
               "notes": $notes,
               "platforms": {
                 "dmg-arm64": {
-                  "url": $mac_arm64_url
+                  "url": $mac_universal_url
                 },
                 "dmg-x64": {
-                  "url": $mac_x64_url
+                  "url": $mac_universal_url
                 },
                 "exe-arm64": {
                   "url": $windows_universal_url
