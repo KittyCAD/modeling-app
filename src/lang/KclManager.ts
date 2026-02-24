@@ -267,14 +267,13 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager(
-        this.app.singletons.engineCommandManager,
-        this.app.wasmPromise,
-        {
-          rustContext: this.app.singletons.rustContext,
-          sceneInfra: this.app.singletons.sceneInfra,
-        }
-      )
+      new KclManager({
+        rustContext: this.app.singletons.rustContext,
+        engineCommandManager: this.app.singletons.engineCommandManager,
+        wasmInstancePromise: this.app.wasmPromise,
+        commandBar: this.app.commands.actor,
+        settings: this.app.settings.actor,
+      })
 
     this.set(signal(path), newEditor)
     return newEditor
