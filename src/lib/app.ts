@@ -273,13 +273,8 @@ export class App implements AppSubsystems {
           p.name === projectIORefSignal.value.name &&
           p.path === projectIORefSignal.value.path
       )
-      if (foundProject) {
-        if (
-          JSON.stringify(projectIORefSignal.value) !==
-          JSON.stringify(foundProject)
-        ) {
-          projectIORefSignal.value = foundProject
-        }
+      if (foundProject && projectIORefSignal.value !== foundProject) {
+        projectIORefSignal.value = foundProject
       }
     })
   }
