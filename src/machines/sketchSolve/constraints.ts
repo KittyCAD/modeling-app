@@ -120,7 +120,7 @@ export class ConstraintUtils {
     }),
   }
 
-  public init(obj: ApiObject, objects: Array<ApiObject>): Group | null {
+  public init(obj: ApiObject, objects: ApiObject[]): Group | null {
     if (obj.kind.type !== 'Constraint') return null
 
     if (getEndPoints(obj, objects)) {
@@ -222,7 +222,7 @@ export class ConstraintUtils {
   public update(
     group: Group,
     obj: ApiObject,
-    objects: Array<ApiObject>,
+    objects: ApiObject[],
     scale: number,
     sceneInfra: SceneInfra,
     selectedIds: number[],
@@ -626,7 +626,7 @@ function createArrowGeometry(): BufferGeometry {
   return geom
 }
 
-function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
+function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
   if (!isDistanceConstraint(obj.kind)) {
     return null
   }
