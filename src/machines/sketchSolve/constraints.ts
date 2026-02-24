@@ -12,9 +12,7 @@ import {
 import { getResolvedTheme } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
-import {
-  getEndPoints,
-} from '@src/machines/sketchSolve/constraints/dimensionUtils'
+import { getEndPoints } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import {
   CONSTRAINT_COLOR,
   createDimensionLine,
