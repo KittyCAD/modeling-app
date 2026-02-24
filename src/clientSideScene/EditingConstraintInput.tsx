@@ -8,7 +8,7 @@ import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
   isDistanceConstraint,
-} from '@src/machines/sketchSolve/constraints'
+} from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useState } from 'react'
