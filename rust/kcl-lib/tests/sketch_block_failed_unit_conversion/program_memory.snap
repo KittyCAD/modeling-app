@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_failed_unit_conversion.kcl
 ---
 {
-  "__kcl_sketch_1_on": {
+  "__sketch_1_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",

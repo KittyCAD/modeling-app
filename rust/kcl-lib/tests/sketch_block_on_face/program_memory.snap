@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_on_face.kcl
 ---
 {
-  "__kcl_sketch_2_on": {
+  "__sketch_2_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
