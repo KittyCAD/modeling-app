@@ -2199,7 +2199,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.128"
+version = "0.2.128"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2218,7 +2218,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.128"
+version = "0.2.128"
 dependencies = [
  "miette",
  "serde",
@@ -2382,7 +2382,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.128"
+version = "0.2.128"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
