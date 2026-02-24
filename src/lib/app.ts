@@ -259,9 +259,9 @@ export class App implements AppSubsystems {
     const kclManager = new KclManager({
       rustContext,
       engineCommandManager,
-      settings: this.settingsActor,
+      settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
-      commandBar: this.commandBarActor,
+      commandBar: this.commands.actor,
     })
 
     // These are all late binding because of their circular dependency.
@@ -311,7 +311,7 @@ export class App implements AppSubsystems {
         engineCommandManager: engineCommandManager,
         sceneInfra: kclManager.sceneInfra,
         sceneEntitiesManager: kclManager.sceneEntitiesManager,
-        commandBarActor: this.commandBarActor,
+        commandBarActor: this.commands.actor,
         layout: defaultLayout,
       },
       entry: [
@@ -346,7 +346,7 @@ export class App implements AppSubsystems {
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
-    this.commandBarActor.send({ type: 'Set kclManager', data: kclManager })
+    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands
     this.commands.actor.send({
