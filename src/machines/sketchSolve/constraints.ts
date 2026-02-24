@@ -189,10 +189,9 @@ export class ConstraintUtils {
           const s2 = new Vector3(p2.x.value, p2.y.value, 0)
 
           const cc = new Vector3(c.x.value, c.y.value, 0)
-          const s3 = isRadiusConstraint(obj.kind) ? 
-          cc
-          :
-          cc.sub(s1.clone().sub(cc))
+          const s3 = isRadiusConstraint(obj.kind)
+            ? cc
+            : cc.sub(s1.clone().sub(cc))
 
           updateDimensionLine(
             s1,
@@ -203,7 +202,9 @@ export class ConstraintUtils {
             sceneInfra,
             selectedIds,
             hoveredId,
-            isRadiusConstraint(obj.kind) ? obj.kind.constraint.radius : obj.kind.constraint.diameter,
+            isRadiusConstraint(obj.kind)
+              ? obj.kind.constraint.radius
+              : obj.kind.constraint.diameter,
             this.resources
           )
         }
