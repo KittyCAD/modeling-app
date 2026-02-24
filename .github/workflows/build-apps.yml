@@ -230,7 +230,6 @@ jobs:
         with:
           name: out-x64-${{ matrix.platform }}
           path: |
-            out/*-x64-win.*
             out/*-x64-mac.*
             out/*-x86_64-linux.*
 
@@ -238,7 +237,7 @@ jobs:
         with:
           name: out-universal-windows
           path: |
-            out/*.exe
+            out/*universal-win.exe
 
       - uses: actions/upload-artifact@v6
         if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
@@ -309,7 +308,6 @@ jobs:
           PUB_DATE: ${{ github.event.repository.updated_at }}
           WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/design-studio/staging' || 'dl.zoo.dev/releases/design-studio' }}
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
-          URL_CODED_NAME_WINDOWS_SUFFIX: '%20Setup%20'
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -318,7 +316,7 @@ jobs:
             --arg notes "${NOTES}" \
             --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
             --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
-            --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}${{ env.URL_CODED_NAME_WINDOWS_SUFFIX }}${VERSION_NO_V}.exe" \
+            --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-win.exe" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
             '{

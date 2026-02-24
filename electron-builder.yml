@@ -26,6 +26,7 @@ mac:
       role: Editor
       rank: Owner
 win:
+  artifactName: "${productName}-${version}-universal-${os}.${ext}"
   target:
     - target: nsis
       arch:
