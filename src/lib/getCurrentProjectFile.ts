@@ -1,3 +1,4 @@
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Stats } from 'fs'
 import * as path from 'path'
 import {
@@ -47,7 +48,7 @@ export default async function getCurrentProjectFile(
   }
 
   // If the path is a directory, let's assume it is a project directory.
-  if (stats.isDirectory()) {
+  if (stats.mode & fsZdsConstants.S_IFDIR) {
     // Walk the directory and look for a kcl file.
     const files = await fs.readdir(sourcePath)
     const kclFiles = files.filter((file) => path.extname(file) === '.kcl')

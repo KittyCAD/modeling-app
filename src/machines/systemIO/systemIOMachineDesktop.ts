@@ -1,4 +1,5 @@
 import type { IElectronAPI } from '@root/interface'
+import fsZds from '@src/lib/fs-zds'
 import {
   createNewProjectDirectory,
   getAppSettingsFilePath,
@@ -6,6 +7,8 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  canReadWriteDirectory,
+  statIsDirectory,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -170,11 +173,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(window.electron, projectDirectoryPath)
+        await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries = await window.electron.readdir(projectDirectoryPath)
         const { value: canReadWriteProjectDirectory } =
-          await window.electron.canReadWriteDirectory(projectDirectoryPath)
+          await canReadWriteDirectory(projectDirectoryPath)
 
         for (let entry of entries) {
           // Skip directories that start with a dot
@@ -188,7 +191,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
           // if it's not a directory ignore.
           // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await window.electron.statIsDirectory(projectPath)
+          const isDirectory = await statIsDirectory(projectPath)
           if (!isDirectory) {
             continue
           }
@@ -351,7 +354,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         const wasmInstance = await input.wasmInstancePromise
 
-        const baseDir = window.electron.join(
+        const baseDir = fsZds.join(
           input.context.projectDirectoryPath,
           newProjectName
         )
@@ -402,9 +405,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!requestProjectDirectoryPath) {
           return { value: true, error: undefined }
         }
-        const result = await window.electron.canReadWriteDirectory(
-          requestProjectDirectoryPath
-        )
+        const result = await canReadWriteDirectory(requestProjectDirectoryPath)
         return result
       }
     ),
@@ -821,7 +822,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }) => {
         if (window.electron) {
-          await window.electron.copy(input.src, input.target, {
+          await fsZds.cp(input.src, input.target, {
             recursive: true,
             force: false,
           })

@@ -747,8 +747,8 @@ async fn test_execute_trim_flow_infrastructure() {
 @settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
 "#;
 
@@ -788,8 +788,8 @@ async fn test_trim_line2_left_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
 "#;
 
@@ -798,9 +798,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var 0mm, var 0mm])
-  sketch2::coincident([line2.end, line1])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line2.end, line1])
 }
 "#;
 
@@ -813,13 +813,13 @@ async fn test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment(
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
-  line2 = sketch2::line(start = [var -5.1mm, var 0.75mm], end = [var 4.01mm, var 0.68mm])
-  line3 = sketch2::line(start = [var 4.26mm, var -3.44mm], end = [var 4.33mm, var 3.61mm])
-  line4 = sketch2::line(start = [var -0.9mm, var 0.43mm], end = [var -1.28mm, var -3.04mm])
-  sketch2::coincident([line2.start, line1])
-  sketch2::coincident([line4.start, line2])
-  sketch2::coincident([line2.end, line3])
+  line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = line(start = [var -5.1mm, var 0.75mm], end = [var 4.01mm, var 0.68mm])
+  line3 = line(start = [var 4.26mm, var -3.44mm], end = [var 4.33mm, var 3.61mm])
+  line4 = line(start = [var -0.9mm, var 0.43mm], end = [var -1.28mm, var -3.04mm])
+  coincident([line2.start, line1])
+  coincident([line4.start, line2])
+  coincident([line2.end, line3])
 }
 "#;
 
@@ -828,12 +828,12 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
-  line2 = sketch2::line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
-  line3 = sketch2::line(start = [var 4.03mm, var -3.44mm], end = [var 4mm, var 3.61mm])
-  line4 = sketch2::line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
-  sketch2::coincident([line2.end, line3])
-  sketch2::coincident([line2.start, line4.start])
+  line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+  line3 = line(start = [var 4.03mm, var -3.44mm], end = [var 4mm, var 3.61mm])
+  line4 = line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
+  coincident([line2.end, line3])
+  coincident([line2.start, line4.start])
 }
 "#;
 
@@ -846,8 +846,8 @@ async fn test_trim_line2_right_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
 "#;
 
@@ -856,9 +856,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 0mm, var 0mm], end = [var -5mm, var 0mm])
-  sketch2::coincident([line2.start, line1])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -5mm, var 0mm])
+  coincident([line2.start, line1])
 }
 "#;
 
@@ -871,8 +871,8 @@ async fn test_trim_line1_bottom() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
 "#;
 
@@ -881,9 +881,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
-  sketch2::coincident([line1.start, line2])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  coincident([line1.start, line2])
 }
 "#;
 
@@ -896,8 +896,8 @@ async fn test_trim_line1_top() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
 "#;
 
@@ -906,9 +906,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
-  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
-  sketch2::coincident([line1.end, line2])
+  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  coincident([line1.end, line2])
 }
 "#;
 
@@ -921,8 +921,8 @@ async fn test_trim_arc2_left_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -931,9 +931,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
-  sketch2::coincident([arc2.end, arc1])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  coincident([arc2.end, arc1])
 }
 "#;
 
@@ -946,8 +946,8 @@ async fn test_trim_arc2_right_side() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -956,9 +956,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  sketch2::coincident([arc2.start, arc1])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  coincident([arc2.start, arc1])
 }
 "#;
 
@@ -971,8 +971,8 @@ async fn test_trim_arc1_bottom() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -981,9 +981,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  sketch2::coincident([arc1.start, arc2])
+  arc1 = arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  coincident([arc1.start, arc2])
 }
 "#;
 
@@ -996,8 +996,8 @@ async fn test_trim_arc1_top() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -1006,9 +1006,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  sketch2::coincident([arc1.end, arc2])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  coincident([arc1.end, arc2])
 }
 "#;
 
@@ -1021,8 +1021,8 @@ async fn test_trim_delete_both_segments() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line2 = sketch2::line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
-  line1 = sketch2::line(start = [var -4mm, var 3mm], end = [var -4mm, var -3mm])
+  line2 = line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
+  line1 = line(start = [var -4mm, var 3mm], end = [var -4mm, var -3mm])
 }
 "#;
 
@@ -1043,12 +1043,12 @@ async fn test_trim_remove_coincident_point_from_segment_end() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = sketch2::line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
-  sketch2::coincident([line2.end, line3.start])
-  sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
+  coincident([line2.end, line3.start])
+  arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
 }
 "#;
 
@@ -1057,12 +1057,12 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
-  line3 = sketch2::line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
-  sketch2::coincident([line2.end, line3.start])
-  arc1 = sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
-  sketch2::coincident([line2.start, arc1])
+  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
+  line3 = line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
+  coincident([line2.end, line3.start])
+  arc1 = arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+  coincident([line2.start, arc1])
 }
 "#;
 
@@ -1076,8 +1076,8 @@ async fn test_trim_should_work_with_different_units() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
-  line2 = sketch2::line(start = [var -20mm, var 0mm], end = [var 50mm, var 0mm])
+  line1 = line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
+  line2 = line(start = [var -20mm, var 0mm], end = [var 50mm, var 0mm])
 }
 "#;
 
@@ -1087,9 +1087,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
-  line2 = sketch2::line(start = [var -10mm, var 0mm], end = [var 50mm, var 0mm])
-  sketch2::coincident([line2.start, line1])
+  line1 = line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
+  line2 = line(start = [var -10mm, var 0mm], end = [var 50mm, var 0mm])
+  coincident([line2.start, line1])
 }
 "#;
 
@@ -1098,8 +1098,8 @@ sketch(on = YZ) {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
-  line2 = sketch2::line(start = [var -2cm, var 0cm], end = [var 5cm, var 0cm])
+  line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
+  line2 = line(start = [var -2cm, var 0cm], end = [var 5cm, var 0cm])
 }
 "#;
 
@@ -1109,9 +1109,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
-  line2 = sketch2::line(start = [var -1cm, var 0cm], end = [var 5cm, var 0cm])
-  sketch2::coincident([line2.start, line1])
+  line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
+  line2 = line(start = [var -1cm, var 0cm], end = [var 5cm, var 0cm])
+  coincident([line2.start, line1])
 }
 "#;
 
@@ -1125,12 +1125,12 @@ async fn test_split_trim_with_point_line_coincident_constraint() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc9 = sketch2::arc(start = [var -5.648mm, var 6.909mm], end = [var -6.864mm, var 2.472mm], center = [var -0.293mm, var 3.056mm])
-  arc2 = sketch2::arc(start = [var -7.463mm, var 5.878mm], end = [var -4.365mm, var 6.798mm], center = [var -6.237mm, var 7.425mm])
-  line5 = sketch2::line(start = [var -7.81mm, var 3.77mm], end = [var -6.845mm, var 3.828mm])
-  line6 = sketch2::line(start = [var -7.47mm, var 2.459mm], end = [var -6.1mm, var 2.489mm])
-  sketch2::coincident([arc9.end, line6])
-  sketch2::coincident([line5.end, arc9])
+  arc9 = arc(start = [var -5.648mm, var 6.909mm], end = [var -6.864mm, var 2.472mm], center = [var -0.293mm, var 3.056mm])
+  arc2 = arc(start = [var -7.463mm, var 5.878mm], end = [var -4.365mm, var 6.798mm], center = [var -6.237mm, var 7.425mm])
+  line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.845mm, var 3.828mm])
+  line6 = line(start = [var -7.47mm, var 2.459mm], end = [var -6.1mm, var 2.489mm])
+  coincident([arc9.end, line6])
+  coincident([line5.end, arc9])
 }
 "#;
 
@@ -1140,14 +1140,14 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc9 = sketch2::arc(start = [var -5.65mm, var 6.91mm], end = [var -6.44mm, var 5.46mm], center = [var -0.29mm, var 3.06mm])
-  arc2 = sketch2::arc(start = [var -7.46mm, var 5.88mm], end = [var -4.37mm, var 6.8mm], center = [var -6.24mm, var 7.42mm])
-  line5 = sketch2::line(start = [var -7.81mm, var 3.77mm], end = [var -6.84mm, var 3.83mm])
-  line6 = sketch2::line(start = [var -7.47mm, var 2.46mm], end = [var -6.1mm, var 2.49mm])
-  arc1 = sketch2::arc(start = [var -6.84mm, var 3.83mm], end = [var -6.86mm, var 2.47mm], center = [var -0.29mm, var 3.06mm])
-  sketch2::coincident([arc9.end, arc2])
-  sketch2::coincident([arc1.start, line5.end])
-  sketch2::coincident([arc1.end, line6])
+  arc9 = arc(start = [var -5.65mm, var 6.91mm], end = [var -6.44mm, var 5.46mm], center = [var -0.29mm, var 3.06mm])
+  arc2 = arc(start = [var -7.46mm, var 5.88mm], end = [var -4.37mm, var 6.8mm], center = [var -6.24mm, var 7.42mm])
+  line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.84mm, var 3.83mm])
+  line6 = line(start = [var -7.47mm, var 2.46mm], end = [var -6.1mm, var 2.49mm])
+  arc1 = arc(start = [var -6.84mm, var 3.83mm], end = [var -6.86mm, var 2.47mm], center = [var -0.29mm, var 3.06mm])
+  coincident([arc9.end, arc2])
+  coincident([arc1.start, line5.end])
+  coincident([arc1.end, line6])
 }
 "#;
 
@@ -1160,9 +1160,9 @@ async fn test_arc_line_trim_replace_point_segment_coincident() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
-  sketch2::coincident([line1.end, arc1])
+  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  coincident([line1.end, arc1])
 }
 "#;
 
@@ -1171,9 +1171,9 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
-  sketch2::coincident([arc1.start, line1.end])
+  arc1 = arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  coincident([arc1.start, line1.end])
 }
 "#;
 
@@ -1186,9 +1186,9 @@ async fn test_split_trim_line_trimmed_between_two_intersections() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line1 = line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
 }
 "#;
 
@@ -1197,12 +1197,12 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
-  line3 = sketch2::line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line3.start, arc1])
+  line1 = line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
+  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line3 = line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.end, line2])
+  coincident([line3.start, arc1])
 }
 "#;
 
@@ -1215,12 +1215,12 @@ async fn test_split_lines_with_point_segment_coincident_points() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.301mm])
-  line2 = sketch2::line(start = [var -6.13mm, var 1.67mm], end = [var 4.25mm, var 5.351mm])
-  arc4 = sketch2::arc(start = [var 3.09mm, var 4.939mm], end = [var 2.691mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
-  sketch2::coincident([arc4.start, line2])
-  sketch2::coincident([line1.end, line2])
-  arc3 = sketch2::arc(start = [var -2.42mm, var 5.38mm], end = [var -0.69mm, var -0.661mm], center = [var 1.286mm, var 3.174mm])
+  line1 = line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.301mm])
+  line2 = line(start = [var -6.13mm, var 1.67mm], end = [var 4.25mm, var 5.351mm])
+  arc4 = arc(start = [var 3.09mm, var 4.939mm], end = [var 2.691mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
+  coincident([arc4.start, line2])
+  coincident([line1.end, line2])
+  arc3 = arc(start = [var -2.42mm, var 5.38mm], end = [var -0.69mm, var -0.661mm], center = [var 1.286mm, var 3.174mm])
 }
 "#;
 
@@ -1229,14 +1229,14 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.3mm])
-  line2 = sketch2::line(start = [var -6.13mm, var 1.67mm], end = [var -3.01mm, var 2.78mm])
-  arc4 = sketch2::arc(start = [var 3.09mm, var 4.94mm], end = [var 2.69mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
-  sketch2::coincident([line1.end, line2])
-  arc3 = sketch2::arc(start = [var -2.42mm, var 5.38mm], end = [var -0.69mm, var -0.66mm], center = [var 1.29mm, var 3.17mm])
-  line3 = sketch2::line(start = [var 3.09mm, var 4.94mm], end = [var 4.25mm, var 5.35mm])
-  sketch2::coincident([line2.end, arc3])
-  sketch2::coincident([line3.start, arc4.start])
+  line1 = line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.3mm])
+  line2 = line(start = [var -6.13mm, var 1.67mm], end = [var -3.01mm, var 2.78mm])
+  arc4 = arc(start = [var 3.09mm, var 4.94mm], end = [var 2.69mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
+  coincident([line1.end, line2])
+  arc3 = arc(start = [var -2.42mm, var 5.38mm], end = [var -0.69mm, var -0.66mm], center = [var 1.29mm, var 3.17mm])
+  line3 = line(start = [var 3.09mm, var 4.94mm], end = [var 4.25mm, var 5.35mm])
+  coincident([line2.end, arc3])
+  coincident([line3.start, arc4.start])
 }
 "#;
 
@@ -1249,11 +1249,11 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -3.2mm, var 6.2mm], end = [var -1.8mm, var -4.7mm], center = [var 1.8mm, var 1.3mm])
-  arc2 = sketch2::arc(start = [var -4.6mm, var -1.6mm], end = [var -6.5mm, var -2mm], center = [var -4.4mm, var -8.2mm])
-  line1 = sketch2::line(start = [var -7.5mm, var 2.5mm], end = [var -5.1mm, var 2.3mm])
-  sketch2::coincident([line1.end, arc1])
-  sketch2::coincident([arc2.start, arc1])
+  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -1.8mm, var -4.7mm], center = [var 1.8mm, var 1.3mm])
+  arc2 = arc(start = [var -4.6mm, var -1.6mm], end = [var -6.5mm, var -2mm], center = [var -4.4mm, var -8.2mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.1mm, var 2.3mm])
+  coincident([line1.end, arc1])
+  coincident([arc2.start, arc1])
 }
 "#;
 
@@ -1267,12 +1267,12 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -3.2mm, var 6.2mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
-  arc2 = sketch2::arc(start = [var -4.58mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
-  line1 = sketch2::line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
-  arc3 = sketch2::arc(start = [var -4.58mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
-  sketch2::coincident([arc1.end, line1.end])
-  sketch2::coincident([arc3.start, arc2.start])
+  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
+  arc2 = arc(start = [var -4.58mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
+  arc3 = arc(start = [var -4.58mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
+  coincident([arc1.end, line1.end])
+  coincident([arc3.start, arc2.start])
 }
 "#;
 
@@ -1289,11 +1289,11 @@ async fn test_split_arc_with_point_segment_coincident_on_one_side_and_intersecti
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc2 = sketch2::arc(start = [var 2.541mm, var -5.65mm], end = [var 1.979mm, var 6.83mm], center = [var -7.28mm, var 0.161mm])
-  arc1 = sketch2::arc(start = [var 5.69mm, var 4.559mm], end = [var -4.011mm, var -3.04mm], center = [var 5.1mm, var -4.678mm])
-  line1 = sketch2::line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
-  line4 = sketch2::line(start = [var -1.029mm, var 2.259mm], end = [var -2.01mm, var -6.62mm])
-  sketch2::coincident([line4.start, arc1])
+  arc2 = arc(start = [var 2.541mm, var -5.65mm], end = [var 1.979mm, var 6.83mm], center = [var -7.28mm, var 0.161mm])
+  arc1 = arc(start = [var 5.69mm, var 4.559mm], end = [var -4.011mm, var -3.04mm], center = [var 5.1mm, var -4.678mm])
+  line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
+  line4 = line(start = [var -1.029mm, var 2.259mm], end = [var -2.01mm, var -6.62mm])
+  coincident([line4.start, arc1])
 }
 "#;
 
@@ -1302,13 +1302,13 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc2 = sketch2::arc(start = [var 2.54mm, var -5.65mm], end = [var 1.98mm, var 6.83mm], center = [var -7.28mm, var 0.16mm])
-  arc1 = sketch2::arc(start = [var 5.69mm, var 4.56mm], end = [var 3.31mm, var 4.4mm], center = [var 5.1mm, var -4.68mm])
-  line1 = sketch2::line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
-  line4 = sketch2::line(start = [var -1.03mm, var 2.26mm], end = [var -2.01mm, var -6.62mm])
-  arc3 = sketch2::arc(start = [var -1.03mm, var 2.26mm], end = [var -4.01mm, var -3.04mm], center = [var 5.1mm, var -4.68mm])
-  sketch2::coincident([arc1.end, arc2])
-  sketch2::coincident([arc3.start, line4.start])
+  arc2 = arc(start = [var 2.54mm, var -5.65mm], end = [var 1.98mm, var 6.83mm], center = [var -7.28mm, var 0.16mm])
+  arc1 = arc(start = [var 5.69mm, var 4.56mm], end = [var 3.31mm, var 4.4mm], center = [var 5.1mm, var -4.68mm])
+  line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
+  line4 = line(start = [var -1.03mm, var 2.26mm], end = [var -2.01mm, var -6.62mm])
+  arc3 = arc(start = [var -1.03mm, var 2.26mm], end = [var -4.01mm, var -3.04mm], center = [var 5.1mm, var -4.68mm])
+  coincident([arc1.end, arc2])
+  coincident([arc3.start, line4.start])
 }
 "#;
 
@@ -1321,26 +1321,26 @@ async fn test_split_straight_segments_migrate_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  segmentToBeTrimmedAndSplit = sketch2::line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
-  startSideCoincidentWithTrimSegStart = sketch2::line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
-  startSideEndPointCoincidentWithTrimSeg = sketch2::line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
-  startSideIntersectionTrimTermination = sketch2::line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
-  endSideIntersectionTrimTermination = sketch2::line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
-  endSideEndPointCoincidentWithTrimSeg = sketch2::line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
-  endSideCoincidentWithTrimSegStart = sketch2::line(start = [var 6mm, var 3mm], end = [var 6mm, var -3mm])
-  sketch2::coincident([
+  segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
+  startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
+  startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
+  startSideIntersectionTrimTermination = line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
+  endSideIntersectionTrimTermination = line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
+  endSideEndPointCoincidentWithTrimSeg = line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
+  endSideCoincidentWithTrimSegStart = line(start = [var 6mm, var 3mm], end = [var 6mm, var -3mm])
+  coincident([
     segmentToBeTrimmedAndSplit.start,
     startSideCoincidentWithTrimSegStart
   ])
-  sketch2::coincident([
+  coincident([
     startSideEndPointCoincidentWithTrimSeg.start,
     segmentToBeTrimmedAndSplit
   ])
-  sketch2::coincident([
+  coincident([
     endSideEndPointCoincidentWithTrimSeg.end,
     segmentToBeTrimmedAndSplit
   ])
-  sketch2::coincident([
+  coincident([
     segmentToBeTrimmedAndSplit.end,
     endSideCoincidentWithTrimSegStart
   ])
@@ -1352,35 +1352,35 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  segmentToBeTrimmedAndSplit = sketch2::line(start = [var -6mm, var 0mm], end = [var -2mm, var 0mm])
-  startSideCoincidentWithTrimSegStart = sketch2::line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
-  startSideEndPointCoincidentWithTrimSeg = sketch2::line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
-  startSideIntersectionTrimTermination = sketch2::line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
-  endSideIntersectionTrimTermination = sketch2::line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
-  endSideEndPointCoincidentWithTrimSeg = sketch2::line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
-  endSideCoincidentWithTrimSegStart = sketch2::line(start = [var 6mm, var 3mm], end = [var 6mm, var -3mm])
-  sketch2::coincident([
+  segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var -2mm, var 0mm])
+  startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
+  startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
+  startSideIntersectionTrimTermination = line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
+  endSideIntersectionTrimTermination = line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
+  endSideEndPointCoincidentWithTrimSeg = line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
+  endSideCoincidentWithTrimSegStart = line(start = [var 6mm, var 3mm], end = [var 6mm, var -3mm])
+  coincident([
     segmentToBeTrimmedAndSplit.start,
     startSideCoincidentWithTrimSegStart
   ])
-  sketch2::coincident([
+  coincident([
     startSideEndPointCoincidentWithTrimSeg.start,
     segmentToBeTrimmedAndSplit
   ])
-  line1 = sketch2::line(start = [var 2mm, var 0mm], end = [var 6mm, var 0mm])
-  sketch2::coincident([
+  line1 = line(start = [var 2mm, var 0mm], end = [var 6mm, var 0mm])
+  coincident([
     segmentToBeTrimmedAndSplit.end,
     startSideIntersectionTrimTermination
   ])
-  sketch2::coincident([
+  coincident([
     line1.start,
     endSideIntersectionTrimTermination
   ])
-  sketch2::coincident([
+  coincident([
     line1.end,
     endSideCoincidentWithTrimSegStart
   ])
-  sketch2::coincident([
+  coincident([
     endSideEndPointCoincidentWithTrimSeg.end,
     line1
   ])
@@ -1396,61 +1396,61 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
-  simpleDeleteLineDisConstraintDeletedAsWell = sketch2::line(start = [var -3mm, var 5mm], end = [var 3.5mm, var 4.5mm])
-  sketch2::coincident([
+  line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
+  simpleDeleteLineDisConstraintDeletedAsWell = line(start = [var -3mm, var 5mm], end = [var 3.5mm, var 4.5mm])
+  coincident([
     line1.end,
     simpleDeleteLineDisConstraintDeletedAsWell.start
   ])
-  simpleDeleteLineDisConstraintDeletedAsWell2 = sketch2::line(start = [var -3.5mm, var 3.5mm], end = [var 3.5mm, var 3.5mm])
-  line4 = sketch2::line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
-  endTrimmedShouldDeleteDisConstraint = sketch2::line(start = [var -3.5mm, var 2mm], end = [var 3mm, var 2mm])
-  sketch2::coincident([
+  simpleDeleteLineDisConstraintDeletedAsWell2 = line(start = [var -3.5mm, var 3.5mm], end = [var 3.5mm, var 3.5mm])
+  line4 = line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
+  endTrimmedShouldDeleteDisConstraint = line(start = [var -3.5mm, var 2mm], end = [var 3mm, var 2mm])
+  coincident([
     line4.end,
     endTrimmedShouldDeleteDisConstraint.start
   ])
-  line6 = sketch2::line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
-  startTrimmedAlsoDeleteDisConstraint = sketch2::line(start = [var -3.22mm, var -0.64mm], end = [var 3.02mm, var -0.75mm])
-  line3 = sketch2::line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
-  sketch2::coincident([
+  line6 = line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
+  startTrimmedAlsoDeleteDisConstraint = line(start = [var -3.22mm, var -0.64mm], end = [var 3.02mm, var -0.75mm])
+  line3 = line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
+  coincident([
     startTrimmedAlsoDeleteDisConstraint.end,
     line3.start
   ])
-  line5 = sketch2::line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = sketch2::line(start = [var -2.67mm, var -3.46mm], end = [var 2.87mm, var -3.54mm])
-  line8 = sketch2::line(start = [var 2.87mm, var -3.54mm], end = [var 5.42mm, var -1.72mm])
-  sketch2::coincident([
+  line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.46mm], end = [var 2.87mm, var -3.54mm])
+  line8 = line(start = [var 2.87mm, var -3.54mm], end = [var 5.42mm, var -1.72mm])
+  coincident([
     splitTrimLineDistanceConstraintMigrated.end,
     line8.start
   ])
-  line9 = sketch2::line(start = [var 1.1mm, var -3.98mm], end = [var 1.28mm, var -5.69mm])
-  line10 = sketch2::line(start = [var 1.98mm, var -4.06mm], end = [var 2.57mm, var -5.65mm])
-  line11 = sketch2::line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
-  sketch2::coincident([
+  line9 = line(start = [var 1.1mm, var -3.98mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.98mm, var -4.06mm], end = [var 2.57mm, var -5.65mm])
+  line11 = line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
+  coincident([
     line9.start,
     splitTrimLineDistanceConstraintMigrated
   ])
-  sketch2::coincident([
+  coincident([
     line10.start,
     splitTrimLineDistanceConstraintMigrated
   ])
-  sketch2::distance([
+  distance([
     simpleDeleteLineDisConstraintDeletedAsWell.start,
     simpleDeleteLineDisConstraintDeletedAsWell.end
   ]) == 6.52mm
-  sketch2::distance([
+  distance([
     simpleDeleteLineDisConstraintDeletedAsWell2.start,
     simpleDeleteLineDisConstraintDeletedAsWell2.end
   ]) == 7mm
-  sketch2::distance([
+  distance([
     endTrimmedShouldDeleteDisConstraint.start,
     endTrimmedShouldDeleteDisConstraint.end
   ]) == 6.5mm
-  sketch2::distance([
+  distance([
     startTrimmedAlsoDeleteDisConstraint.start,
     startTrimmedAlsoDeleteDisConstraint.end
   ]) == 6.24mm
-  sketch2::distance([
+  distance([
     splitTrimLineDistanceConstraintMigrated.start,
     splitTrimLineDistanceConstraintMigrated.end
   ]) == 5.54mm
@@ -1469,43 +1469,43 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
-  line4 = sketch2::line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
-  endTrimmedShouldDeleteDisConstraint = sketch2::line(start = [var -3.5mm, var 2mm], end = [var -2.33mm, var 2mm])
-  sketch2::coincident([
+  line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
+  line4 = line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
+  endTrimmedShouldDeleteDisConstraint = line(start = [var -3.5mm, var 2mm], end = [var -2.33mm, var 2mm])
+  coincident([
     line4.end,
     endTrimmedShouldDeleteDisConstraint.start
   ])
-  line6 = sketch2::line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
-  startTrimmedAlsoDeleteDisConstraint = sketch2::line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
-  line3 = sketch2::line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
-  sketch2::coincident([
+  line6 = line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
+  startTrimmedAlsoDeleteDisConstraint = line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
+  line3 = line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
+  coincident([
     startTrimmedAlsoDeleteDisConstraint.end,
     line3.start
   ])
-  line5 = sketch2::line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = sketch2::line(start = [var -2.67mm, var -3.46mm], end = [var -1.78mm, var -3.62mm])
-  line8 = sketch2::line(start = [var 2.87mm, var -3.72mm], end = [var 5.42mm, var -1.72mm])
-  line9 = sketch2::line(start = [var 1.1mm, var -3.91mm], end = [var 1.28mm, var -5.69mm])
-  line10 = sketch2::line(start = [var 1.99mm, var -3.81mm], end = [var 2.57mm, var -5.65mm])
-  line11 = sketch2::line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
-  sketch2::coincident([
+  line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.46mm], end = [var -1.78mm, var -3.62mm])
+  line8 = line(start = [var 2.87mm, var -3.72mm], end = [var 5.42mm, var -1.72mm])
+  line9 = line(start = [var 1.1mm, var -3.91mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.99mm, var -3.81mm], end = [var 2.57mm, var -5.65mm])
+  line11 = line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
+  coincident([
     endTrimmedShouldDeleteDisConstraint.end,
     line6
   ])
-  sketch2::coincident([
+  coincident([
     startTrimmedAlsoDeleteDisConstraint.start,
     line5
   ])
-  line2 = sketch2::line(start = [var 1.1mm, var -3.91mm], end = [var 2.87mm, var -3.72mm])
-  sketch2::coincident([
+  line2 = line(start = [var 1.1mm, var -3.91mm], end = [var 2.87mm, var -3.72mm])
+  coincident([
     splitTrimLineDistanceConstraintMigrated.end,
     line11
   ])
-  sketch2::coincident([line2.start, line9.start])
-  sketch2::coincident([line2.end, line8.start])
-  sketch2::coincident([line10.start, line2])
-sketch2::distance([
+  coincident([line2.start, line9.start])
+  coincident([line2.end, line8.start])
+  coincident([line10.start, line2])
+distance([
   splitTrimLineDistanceConstraintMigrated.start,
   line2.end
 ]) == 5.54mm
@@ -1521,15 +1521,15 @@ async fn test_split_trim_migrate_angle_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -2.01mm, var 6.12mm], end = [var 0.23mm, var 4.55mm])
-  line2 = sketch2::line(start = [var -4.15mm, var -0mm], end = [var 0.79mm, var -3.47mm])
-  sketch2::parallel([line1, line2])
-  line3 = sketch2::line(start = [var -3.1mm, var 1.3mm], end = [var -2.96mm, var -3.08mm])
-  line4 = sketch2::line(start = [var -0.58mm, var -0.81mm], end = [var -1.13mm, var -4.94mm])
-  line5 = sketch2::line(start = [var -0.11mm, var -3.3mm], end = [var -0.11mm, var -5.63mm])
-  line6 = sketch2::line(start = [var 1.49mm, var -3.48mm], end = [var 3.5mm, var -1.84mm])
-  sketch2::coincident([line6.start, line2.end])
-  sketch2::coincident([line5.start, line2])
+  line1 = line(start = [var -2.01mm, var 6.12mm], end = [var 0.23mm, var 4.55mm])
+  line2 = line(start = [var -4.15mm, var -0mm], end = [var 0.79mm, var -3.47mm])
+  parallel([line1, line2])
+  line3 = line(start = [var -3.1mm, var 1.3mm], end = [var -2.96mm, var -3.08mm])
+  line4 = line(start = [var -0.58mm, var -0.81mm], end = [var -1.13mm, var -4.94mm])
+  line5 = line(start = [var -0.11mm, var -3.3mm], end = [var -0.11mm, var -5.63mm])
+  line6 = line(start = [var 1.49mm, var -3.48mm], end = [var 3.5mm, var -1.84mm])
+  coincident([line6.start, line2.end])
+  coincident([line5.start, line2])
 }
 "#;
 
@@ -1538,19 +1538,19 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -2.05mm, var 6.06mm], end = [var 0.27mm, var 4.61mm])
-  line2 = sketch2::line(start = [var -4.18mm, var -0.05mm], end = [var -3.02mm, var -0.78mm])
-  sketch2::parallel([line1, line2])
-  line3 = sketch2::line(start = [var -3.09mm, var 1.3mm], end = [var -2.95mm, var -3.08mm])
-  line4 = sketch2::line(start = [var -0.59mm, var -0.81mm], end = [var -1.14mm, var -4.94mm])
-  line5 = sketch2::line(start = [var 0.1mm, var -2.99mm], end = [var -0.11mm, var -5.63mm])
-  line6 = sketch2::line(start = [var 1.18mm, var -3.67mm], end = [var 3.5mm, var -1.84mm])
-  line7 = sketch2::line(start = [var -0.81mm, var -2.42mm], end = [var 1.18mm, var -3.67mm])
-  sketch2::coincident([line2.end, line3])
-  sketch2::coincident([line7.start, line4])
-  sketch2::coincident([line7.end, line6.start])
-  sketch2::coincident([line5.start, line7])
-  sketch2::parallel([line1, line7])
+  line1 = line(start = [var -2.05mm, var 6.06mm], end = [var 0.27mm, var 4.61mm])
+  line2 = line(start = [var -4.18mm, var -0.05mm], end = [var -3.02mm, var -0.78mm])
+  parallel([line1, line2])
+  line3 = line(start = [var -3.09mm, var 1.3mm], end = [var -2.95mm, var -3.08mm])
+  line4 = line(start = [var -0.59mm, var -0.81mm], end = [var -1.14mm, var -4.94mm])
+  line5 = line(start = [var 0.1mm, var -2.99mm], end = [var -0.11mm, var -5.63mm])
+  line6 = line(start = [var 1.18mm, var -3.67mm], end = [var 3.5mm, var -1.84mm])
+  line7 = line(start = [var -0.81mm, var -2.42mm], end = [var 1.18mm, var -3.67mm])
+  coincident([line2.end, line3])
+  coincident([line7.start, line4])
+  coincident([line7.end, line6.start])
+  coincident([line5.start, line7])
+  parallel([line1, line7])
 }
 "#;
 
@@ -1563,10 +1563,10 @@ async fn test_split_trim_migrate_horizontal_constraint() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.64mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::horizontal(line1)
+  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  horizontal(line1)
 }
 "#;
 
@@ -1575,14 +1575,14 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::horizontal(line1)
-  line4 = sketch2::line(start = [var 2.12mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line4.start, line3])
-  sketch2::horizontal(line4)
+  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  horizontal(line1)
+  line4 = line(start = [var 2.12mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
+  coincident([line1.end, line2])
+  coincident([line4.start, line3])
+  horizontal(line4)
 }
 "#;
 
@@ -1595,10 +1595,10 @@ async fn test_split_trim_migrate_vertical_constraint() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var -2.66mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::vertical(line1)
+  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var -2.66mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  vertical(line1)
 }
 "#;
 
@@ -1607,14 +1607,14 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::vertical(line1)
-  line4 = sketch2::line(start = [var -0.36mm, var -0.87mm], end = [var -0.36mm, var -2.66mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line4.start, line3])
-  sketch2::vertical(line4)
+  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  vertical(line1)
+  line4 = line(start = [var -0.36mm, var -0.87mm], end = [var -0.36mm, var -2.66mm])
+  coincident([line1.end, line2])
+  coincident([line4.start, line3])
+  vertical(line4)
 }
 "#;
 
@@ -1627,11 +1627,11 @@ async fn test_split_trim_migrate_perpendicular_constraint() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line4 = sketch2::line(start = [var -0.91mm, var 5.79mm], end = [var 1.86mm, var 7.22mm])
-  line1 = sketch2::line(start = [var -1.97mm, var 3.24mm], end = [var 0.55mm, var -2.31mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::perpendicular([line4, line1])
+  line4 = line(start = [var -0.91mm, var 5.79mm], end = [var 1.86mm, var 7.22mm])
+  line1 = line(start = [var -1.97mm, var 3.24mm], end = [var 0.55mm, var -2.31mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  perpendicular([line4, line1])
 }
 "#;
 
@@ -1640,15 +1640,15 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line4 = sketch2::line(start = [var -0.92mm, var 5.82mm], end = [var 1.87mm, var 7.19mm])
-  line1 = sketch2::line(start = [var -2mm, var 3.22mm], end = [var -1.22mm, var 1.64mm])
-  line2 = sketch2::line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = sketch2::line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  sketch2::perpendicular([line4, line1])
-  line5 = sketch2::line(start = [var -0.18mm, var -0.71mm], end = [var 0.6mm, var -2.29mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line5.start, line3])
-  sketch2::perpendicular([line4, line5])
+  line4 = line(start = [var -0.92mm, var 5.82mm], end = [var 1.87mm, var 7.19mm])
+  line1 = line(start = [var -2mm, var 3.22mm], end = [var -1.22mm, var 1.64mm])
+  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
+  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
+  perpendicular([line4, line1])
+  line5 = line(start = [var -0.18mm, var -0.71mm], end = [var 0.6mm, var -2.29mm])
+  coincident([line1.end, line2])
+  coincident([line5.start, line3])
+  perpendicular([line4, line5])
 }
 "#;
 
@@ -1661,21 +1661,21 @@ async fn test_split_arc_duplicate_center_point_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arcToSplit = sketch2::arc(start = [var 10.5mm, var 1mm], end = [var -10.5mm, var 0.5mm], center = [var 0.5mm, var -8.5mm])
-  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
-  line2 = sketch2::line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
-  lineCoincidentWithArcCen = sketch2::line(start = [var 1.5mm, var -9mm], end = [var 11.5mm, var -7.5mm])
-  line4 = sketch2::line(start = [var 11.5mm, var 1mm], end = [var 13mm, var 6.5mm])
-  line5 = sketch2::line(start = [var 7.5mm, var 4mm], end = [var 10mm, var 8mm])
-  sketch2::coincident([line5.start, arcToSplit])
-  sketch2::coincident([line4.start, arcToSplit.start])
-  sketch2::coincident([
+  arcToSplit = arc(start = [var 10.5mm, var 1mm], end = [var -10.5mm, var 0.5mm], center = [var 0.5mm, var -8.5mm])
+  line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
+  line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
+  lineCoincidentWithArcCen = line(start = [var 1.5mm, var -9mm], end = [var 11.5mm, var -7.5mm])
+  line4 = line(start = [var 11.5mm, var 1mm], end = [var 13mm, var 6.5mm])
+  line5 = line(start = [var 7.5mm, var 4mm], end = [var 10mm, var 8mm])
+  coincident([line5.start, arcToSplit])
+  coincident([line4.start, arcToSplit.start])
+  coincident([
     lineCoincidentWithArcCen.start,
     arcToSplit.center
   ])
-  sketch2::distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = sketch2::line(start = [var -0.9mm, var -6.9mm], end = [var 2.9mm, var -11.2mm])
-  sketch2::coincident([arcToSplit.center, line3])
+  distance([arcToSplit.center, line4.end]) == 20mm
+  line3 = line(start = [var -0.9mm, var -6.9mm], end = [var 2.9mm, var -11.2mm])
+  coincident([arcToSplit.center, line3])
 }
 "#;
 
@@ -1684,30 +1684,30 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arcToSplit = sketch2::arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
-  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
-  line2 = sketch2::line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
-  lineCoincidentWithArcCen = sketch2::line(start = [var 0.75mm, var -8.72mm], end = [var 11.5mm, var -7.5mm])
-  line4 = sketch2::line(start = [var 11.03mm, var 1.02mm], end = [var 13.3mm, var 6.85mm])
-  line5 = sketch2::line(start = [var 7.38mm, var 3.8mm], end = [var 10mm, var 8mm])
-  sketch2::coincident([line5.start, arcToSplit])
-  sketch2::coincident([line4.start, arcToSplit.start])
-  sketch2::coincident([
+  arcToSplit = arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
+  line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
+  line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
+  lineCoincidentWithArcCen = line(start = [var 0.75mm, var -8.72mm], end = [var 11.5mm, var -7.5mm])
+  line4 = line(start = [var 11.03mm, var 1.02mm], end = [var 13.3mm, var 6.85mm])
+  line5 = line(start = [var 7.38mm, var 3.8mm], end = [var 10mm, var 8mm])
+  coincident([line5.start, arcToSplit])
+  coincident([line4.start, arcToSplit.start])
+  coincident([
     lineCoincidentWithArcCen.start,
     arcToSplit.center
   ])
-sketch2::distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = sketch2::line(start = [var -0.87mm, var -6.87mm], end = [var 2.91mm, var -11.19mm])
-  sketch2::coincident([arcToSplit.center, line3])
-  arc1 = sketch2::arc(start = [var -5.75mm, var 3.97mm], end = [var -10.28mm, var 0.32mm], center = [var 0.75mm, var -8.72mm])
-  sketch2::coincident([arcToSplit.end, line2])
-  sketch2::coincident([arc1.start, line1])
-  sketch2::coincident([
+distance([arcToSplit.center, line4.end]) == 20mm
+  line3 = line(start = [var -0.87mm, var -6.87mm], end = [var 2.91mm, var -11.19mm])
+  coincident([arcToSplit.center, line3])
+  arc1 = arc(start = [var -5.75mm, var 3.97mm], end = [var -10.28mm, var 0.32mm], center = [var 0.75mm, var -8.72mm])
+  coincident([arcToSplit.end, line2])
+  coincident([arc1.start, line1])
+  coincident([
     lineCoincidentWithArcCen.start,
     arc1.center
   ])
-sketch2::distance([arc1.center, line4.end]) == 20mm
-  sketch2::coincident([arc1.center, line3])
+distance([arc1.center, line4.end]) == 20mm
+  coincident([arc1.center, line3])
 }
 "#;
 
@@ -1720,15 +1720,15 @@ async fn test_trimming_arcs_preserve_distance_constraints() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.87mm, var 2.9mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
-  line1 = sketch2::line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
-  line2 = sketch2::line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
-sketch2::distance([arc1.center, line2.start]) == 3.87mm
-  line3 = sketch2::line(start = [var -5.61mm, var 5.38mm], end = [var 1.03mm, var 5.53mm])
-  line4 = sketch2::line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
-  sketch2::coincident([line3.end, line4.start])
-  line5 = sketch2::line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
-sketch2::distance([line4.end, line3.start]) == 11.98mm
+  arc1 = arc(start = [var 0.87mm, var 2.9mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
+  line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
+  line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
+distance([arc1.center, line2.start]) == 3.87mm
+  line3 = line(start = [var -5.61mm, var 5.38mm], end = [var 1.03mm, var 5.53mm])
+  line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
+distance([line4.end, line3.start]) == 11.98mm
 }
 "#;
 
@@ -1741,16 +1741,16 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
-  line1 = sketch2::line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
-  line2 = sketch2::line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
-sketch2::distance([arc1.center, line2.start]) == 3.87mm
-  line3 = sketch2::line(start = [var -5.61mm, var 5.38mm], end = [var -0.9mm, var 5.49mm])
-  line4 = sketch2::line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
-  line5 = sketch2::line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
-sketch2::distance([line4.end, line3.start]) == 11.98mm
-  sketch2::coincident([line3.end, line5])
-  sketch2::coincident([arc1.start, line1])
+  arc1 = arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
+  line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
+  line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
+distance([arc1.center, line2.start]) == 3.87mm
+  line3 = line(start = [var -5.61mm, var 5.38mm], end = [var -0.9mm, var 5.49mm])
+  line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
+  line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
+distance([line4.end, line3.start]) == 11.98mm
+  coincident([line3.end, line5])
+  coincident([arc1.start, line1])
 }
 "#;
 
@@ -1763,65 +1763,65 @@ async fn test_stress_complex_trim_line_through_many_segments() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
-  line2 = sketch2::line(start = [var 4.84mm, var 6.49mm], end = [var -3.92mm, var 2.05mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -3.92mm, var 2.05mm], end = [var 6.02mm, var 3.98mm])
-  sketch2::coincident([line2.end, line3.start])
-  line4 = sketch2::line(start = [var 6.02mm, var 3.98mm], end = [var -7.23mm, var -1.81mm])
-  sketch2::coincident([line3.end, line4.start])
-  line5 = sketch2::line(start = [var -7.23mm, var -1.81mm], end = [var 6.5mm, var -1.47mm])
-  sketch2::coincident([line4.end, line5.start])
-  line6 = sketch2::line(start = [var 6.5mm, var -1.47mm], end = [var -6.69mm, var -4.73mm])
-  sketch2::coincident([line5.end, line6.start])
-  line7 = sketch2::line(start = [var -6.69mm, var -4.73mm], end = [var 6.77mm, var -4.86mm])
-  sketch2::coincident([line6.end, line7.start])
-  line10 = sketch2::line(start = [var -1.08mm, var -10.86mm], end = [var -4.36mm, var 7.64mm])
-  line11 = sketch2::line(start = [var -4.36mm, var 7.64mm], end = [var 5.28mm, var -8.62mm])
-  sketch2::coincident([line10.end, line11.start])
-  line12 = sketch2::line(start = [var 5.28mm, var -8.62mm], end = [var 6.9mm, var 0.39mm])
-  sketch2::coincident([line11.end, line12.start])
-  line13 = sketch2::line(start = [var 6.9mm, var 0.39mm], end = [var -7.84mm, var 4.45mm])
-  sketch2::coincident([line12.end, line13.start])
-  line14 = sketch2::line(start = [var -7.84mm, var 4.45mm], end = [var 3.05mm, var 7.98mm])
-  sketch2::coincident([line13.end, line14.start])
-  line15 = sketch2::line(start = [var 3.05mm, var 7.98mm], end = [var 0.71mm, var -10.01mm])
-  sketch2::coincident([line14.end, line15.start])
-  line18 = sketch2::line(start = [var 5.24mm, var 2.08mm], end = [var -6.76mm, var 0.49mm])
-  line19 = sketch2::line(start = [var -6.76mm, var 0.49mm], end = [var -1.86mm, var 8.22mm])
-  sketch2::coincident([line18.end, line19.start])
-  line20 = sketch2::line(start = [var -1.86mm, var 8.22mm], end = [var 3.11mm, var -9.16mm])
-  sketch2::coincident([line19.end, line20.start])
-  line21 = sketch2::line(start = [var 3.11mm, var -9.16mm], end = [var 6.97mm, var 7.91mm])
-  sketch2::coincident([line20.end, line21.start])
-  line22 = sketch2::line(start = [var -6.96mm, var 3.03mm], end = [var 7mm, var -3.78mm])
-  line23 = sketch2::line(start = [var -1.99mm, var -2.39mm], end = [var 4.2mm, var 4.73mm])
-  line24 = sketch2::line(start = [var 1.42mm, var 6.72mm], end = [var -4.46mm, var 2.86mm])
-  line25 = sketch2::line(start = [var -6.18mm, var -3.61mm], end = [var -0.4mm, var -8.25mm])
-  line27 = sketch2::line(start = [var 5.45mm, var 7.3mm], end = [var -7.06mm, var 6.28mm])
-  sketch2::arc(start = [var 2.71mm, var -9.71mm], end = [var -3.98mm, var 8.12mm], center = [var -6.86mm, var -3.13mm])
-  sketch2::arc(start = [var -2.95mm, var 1.9mm], end = [var 1.73mm, var -6.79mm], center = [var 7.68mm, var 2.02mm])
-  sketch2::arc(start = [var -6.149mm, var 5.57mm], end = [var 6.911mm, var 3.169mm], center = [var 1.118mm, var 8.38mm])
-  sketch2::arc(start = [var 5.55mm, var 7.909mm], end = [var -7.641mm, var -6.45mm], center = [var 7.51mm, var -7.13mm])
-  sketch2::arc(start = [var 3.69mm, var -3.61mm], end = [var -5.68mm, var -5.96mm], center = [var 0.58mm, var -11.06mm])
-  sketch2::arc(start = [var -1.311mm, var -0.729mm], end = [var -0.609mm, var -8.789mm], center = [var 3.72mm, var -4.352mm])
-  sketch2::arc(start = [var -4.9mm, var 0.12mm], end = [var -5.32mm, var -3.75mm], center = [var -0.74mm, var -2.29mm])
-  line8 = sketch2::line(start = [var -6.79mm, var -6.46mm], end = [var -3.45mm, var -6.7mm])
-  line9 = sketch2::line(start = [var -4.8mm, var -6.07mm], end = [var -4.59mm, var -6.91mm])
-  line16 = sketch2::line(start = [var -7.78mm, var -7.36mm], end = [var -5.25mm, var -7.36mm])
-  line17 = sketch2::line(start = [var -5.25mm, var -7.36mm], end = [var -3.69mm, var -7.72mm])
-  sketch2::coincident([line16.end, line17.start])
-  line26 = sketch2::line(start = [var -3.69mm, var -7.72mm], end = [var -2.49mm, var -7.33mm])
-  sketch2::coincident([line17.end, line26.start])
-  line28 = sketch2::line(start = [var -5.4mm, var -7.99mm], end = [var -3.75mm, var -8.33mm])
-  line29 = sketch2::line(start = [var -4.89mm, var -5.47mm], end = [var -3.84mm, var -6.04mm])
-  line30 = sketch2::line(start = [var -7.42mm, var -8.27mm], end = [var -5.55mm, var -8.51mm])
-  line31 = sketch2::line(start = [var -5.55mm, var -8.51mm], end = [var -3.45mm, var -8.87mm])
-  sketch2::coincident([line30.end, line31.start])
-  line32 = sketch2::line(start = [var -7.54mm, var -9.14mm], end = [var -2.91mm, var -9.29mm])
-  line33 = sketch2::line(start = [var -2.91mm, var -9.92mm], end = [var -7.33mm, var -8.78mm])
-  line34 = sketch2::line(start = [var -5.07mm, var -2.3mm], end = [var -2.79mm, var -3mm])
-  line35 = sketch2::line(start = [var -5.04mm, var -3.12mm], end = [var -2.91mm, var -2.48mm])
+  line1 = line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
+  line2 = line(start = [var 4.84mm, var 6.49mm], end = [var -3.92mm, var 2.05mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.92mm, var 2.05mm], end = [var 6.02mm, var 3.98mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 6.02mm, var 3.98mm], end = [var -7.23mm, var -1.81mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -7.23mm, var -1.81mm], end = [var 6.5mm, var -1.47mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 6.5mm, var -1.47mm], end = [var -6.69mm, var -4.73mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -6.69mm, var -4.73mm], end = [var 6.77mm, var -4.86mm])
+  coincident([line6.end, line7.start])
+  line10 = line(start = [var -1.08mm, var -10.86mm], end = [var -4.36mm, var 7.64mm])
+  line11 = line(start = [var -4.36mm, var 7.64mm], end = [var 5.28mm, var -8.62mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 5.28mm, var -8.62mm], end = [var 6.9mm, var 0.39mm])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 6.9mm, var 0.39mm], end = [var -7.84mm, var 4.45mm])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var -7.84mm, var 4.45mm], end = [var 3.05mm, var 7.98mm])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 3.05mm, var 7.98mm], end = [var 0.71mm, var -10.01mm])
+  coincident([line14.end, line15.start])
+  line18 = line(start = [var 5.24mm, var 2.08mm], end = [var -6.76mm, var 0.49mm])
+  line19 = line(start = [var -6.76mm, var 0.49mm], end = [var -1.86mm, var 8.22mm])
+  coincident([line18.end, line19.start])
+  line20 = line(start = [var -1.86mm, var 8.22mm], end = [var 3.11mm, var -9.16mm])
+  coincident([line19.end, line20.start])
+  line21 = line(start = [var 3.11mm, var -9.16mm], end = [var 6.97mm, var 7.91mm])
+  coincident([line20.end, line21.start])
+  line22 = line(start = [var -6.96mm, var 3.03mm], end = [var 7mm, var -3.78mm])
+  line23 = line(start = [var -1.99mm, var -2.39mm], end = [var 4.2mm, var 4.73mm])
+  line24 = line(start = [var 1.42mm, var 6.72mm], end = [var -4.46mm, var 2.86mm])
+  line25 = line(start = [var -6.18mm, var -3.61mm], end = [var -0.4mm, var -8.25mm])
+  line27 = line(start = [var 5.45mm, var 7.3mm], end = [var -7.06mm, var 6.28mm])
+  arc(start = [var 2.71mm, var -9.71mm], end = [var -3.98mm, var 8.12mm], center = [var -6.86mm, var -3.13mm])
+  arc(start = [var -2.95mm, var 1.9mm], end = [var 1.73mm, var -6.79mm], center = [var 7.68mm, var 2.02mm])
+  arc(start = [var -6.149mm, var 5.57mm], end = [var 6.911mm, var 3.169mm], center = [var 1.118mm, var 8.38mm])
+  arc(start = [var 5.55mm, var 7.909mm], end = [var -7.641mm, var -6.45mm], center = [var 7.51mm, var -7.13mm])
+  arc(start = [var 3.69mm, var -3.61mm], end = [var -5.68mm, var -5.96mm], center = [var 0.58mm, var -11.06mm])
+  arc(start = [var -1.311mm, var -0.729mm], end = [var -0.609mm, var -8.789mm], center = [var 3.72mm, var -4.352mm])
+  arc(start = [var -4.9mm, var 0.12mm], end = [var -5.32mm, var -3.75mm], center = [var -0.74mm, var -2.29mm])
+  line8 = line(start = [var -6.79mm, var -6.46mm], end = [var -3.45mm, var -6.7mm])
+  line9 = line(start = [var -4.8mm, var -6.07mm], end = [var -4.59mm, var -6.91mm])
+  line16 = line(start = [var -7.78mm, var -7.36mm], end = [var -5.25mm, var -7.36mm])
+  line17 = line(start = [var -5.25mm, var -7.36mm], end = [var -3.69mm, var -7.72mm])
+  coincident([line16.end, line17.start])
+  line26 = line(start = [var -3.69mm, var -7.72mm], end = [var -2.49mm, var -7.33mm])
+  coincident([line17.end, line26.start])
+  line28 = line(start = [var -5.4mm, var -7.99mm], end = [var -3.75mm, var -8.33mm])
+  line29 = line(start = [var -4.89mm, var -5.47mm], end = [var -3.84mm, var -6.04mm])
+  line30 = line(start = [var -7.42mm, var -8.27mm], end = [var -5.55mm, var -8.51mm])
+  line31 = line(start = [var -5.55mm, var -8.51mm], end = [var -3.45mm, var -8.87mm])
+  coincident([line30.end, line31.start])
+  line32 = line(start = [var -7.54mm, var -9.14mm], end = [var -2.91mm, var -9.29mm])
+  line33 = line(start = [var -2.91mm, var -9.92mm], end = [var -7.33mm, var -8.78mm])
+  line34 = line(start = [var -5.07mm, var -2.3mm], end = [var -2.79mm, var -3mm])
+  line35 = line(start = [var -5.04mm, var -3.12mm], end = [var -2.91mm, var -2.48mm])
 }
 "#;
 
@@ -2089,15 +2089,15 @@ async fn test_trim_through_segment_invalidates_ids() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc3 = sketch2::arc(start = [var 1.67mm, var 5.51mm], end = [var 5.77mm, var 1.36mm], center = [var 5.3mm, var 4.99mm])
-  sketch2::arc(start = [var 2.35mm, var 4.27mm], end = [var 0.44mm, var 4.55mm], center = [var 1.19mm, var 3.04mm])
-  arc2 = sketch2::arc(start = [var 6.49mm, var 5.09mm], end = [var 5.77mm, var 1.36mm], center = [var 7.56mm, var 2.95mm])
-  sketch2::coincident([arc2.end, arc3.end])
-  line4 = sketch2::line(start = [var 0.95mm, var 2.01mm], end = [var 6.62mm, var 4.2mm])
-  line5 = sketch2::line(start = [var 6.62mm, var 4.29mm], end = [var 2.02mm, var 0.37mm])
-  sketch2::coincident([line4.end, line5.start])
-  line6 = sketch2::line(start = [var 4.36mm, var 2.37mm], end = [var 2.9mm, var 5.83mm])
-  sketch2::coincident([line6.start, line5])
+  arc3 = arc(start = [var 1.67mm, var 5.51mm], end = [var 5.77mm, var 1.36mm], center = [var 5.3mm, var 4.99mm])
+  arc(start = [var 2.35mm, var 4.27mm], end = [var 0.44mm, var 4.55mm], center = [var 1.19mm, var 3.04mm])
+  arc2 = arc(start = [var 6.49mm, var 5.09mm], end = [var 5.77mm, var 1.36mm], center = [var 7.56mm, var 2.95mm])
+  coincident([arc2.end, arc3.end])
+  line4 = line(start = [var 0.95mm, var 2.01mm], end = [var 6.62mm, var 4.2mm])
+  line5 = line(start = [var 6.62mm, var 4.29mm], end = [var 2.02mm, var 0.37mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 4.36mm, var 2.37mm], end = [var 2.9mm, var 5.83mm])
+  coincident([line6.start, line5])
 }
 "#;
 
@@ -2202,9 +2202,9 @@ mod get_trim_spawn_terminations_tests {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.05mm, var 2.44mm], end = [var 2.88mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.77mm, var 1mm], end = [var -1.91mm, var 4.06mm])
-  arc1 = sketch2::arc(start = [var 2.4mm, var 4.48mm], end = [var 3.4mm, var 5.41mm], center = [var 3.99mm, var 3.07mm])
+  line1 = line(start = [var -3.05mm, var 2.44mm], end = [var 2.88mm, var 2.81mm])
+  line2 = line(start = [var -2.77mm, var 1mm], end = [var -1.91mm, var 4.06mm])
+  arc1 = arc(start = [var 2.4mm, var 4.48mm], end = [var 3.4mm, var 5.41mm], center = [var 3.99mm, var 3.07mm])
 }
 "#;
 
@@ -2249,11 +2249,11 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
-  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
-  sketch2::coincident([line2.start, line1.start])
-  sketch2::coincident([arc1.end, line1.end])
+  line1 = line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
+  line2 = line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
+  arc1 = arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
+  coincident([line2.start, line1.start])
+  coincident([arc1.end, line1.end])
 }
 "#;
 
@@ -2294,11 +2294,11 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
-  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
-  sketch2::coincident([arc1.end, line1])
-  sketch2::coincident([line2.start, line1])
+  line1 = line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
+  line2 = line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
+  arc1 = arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
+  coincident([arc1.end, line1])
+  coincident([line2.start, line1])
 }
 "#;
 
@@ -2353,9 +2353,9 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.46mm], end = [var 2.6mm, var 2.9mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.47mm], end = [var -3.94mm, var -0.64mm])
-  arc1 = sketch2::arc(start = [var 2.239mm, var 5.641mm], end = [var 1.651mm, var 2.85mm], center = [var 3.6mm, var 3.889mm])
+  line1 = line(start = [var -3.24mm, var 2.46mm], end = [var 2.6mm, var 2.9mm])
+  line2 = line(start = [var -2.38mm, var 2.47mm], end = [var -3.94mm, var -0.64mm])
+  arc1 = arc(start = [var 2.239mm, var 5.641mm], end = [var 1.651mm, var 2.85mm], center = [var 3.6mm, var 3.889mm])
 }
 "#;
 
@@ -2396,9 +2396,9 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
-  sketch2::arc(start = [var -0.072mm, var 4.051mm], end = [var -0.128mm, var -0.439mm], center = [var 5.32mm, var 1.738mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
+  arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
+  arc(start = [var -0.072mm, var 4.051mm], end = [var -0.128mm, var -0.439mm], center = [var 5.32mm, var 1.738mm])
+  line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
 }
 "#;
 
@@ -2443,11 +2443,11 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
-  arc2 = sketch2::arc(start = [var -0.07mm, var 4.05mm], end = [var -0.13mm, var -0.44mm], center = [var 5.32mm, var 1.74mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
-  sketch2::coincident([line1.end, arc1.end])
-  sketch2::coincident([arc1.start, arc2.start])
+  arc1 = arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
+  arc2 = arc(start = [var -0.07mm, var 4.05mm], end = [var -0.13mm, var -0.44mm], center = [var 5.32mm, var 1.74mm])
+  line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
+  coincident([line1.end, arc1.end])
+  coincident([arc1.start, arc2.start])
 }
 "#;
 
@@ -2488,11 +2488,11 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
-  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
-  sketch2::coincident([line1.end, arc1])
-  sketch2::coincident([arc1, arc2.start])
+  arc1 = arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
+  arc2 = arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
+  line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
+  coincident([line1.end, arc1])
+  coincident([arc1, arc2.start])
 }
 "#;
 
@@ -2547,9 +2547,9 @@ sketch(on = YZ) {
         let kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
-  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
+  arc1 = arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
+  arc2 = arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
+  line1 = line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
 }
 "#;
 
@@ -2591,12 +2591,12 @@ async fn point_on_arc_coincident_should_not_effect_initial_guesses() {
     let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line3 = sketch2::line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
-  line4 = sketch2::line(start = [var 1.06mm, var -3.26mm], end = [var -6.71mm, var -2.8mm])
-  sketch2::coincident([line3.end, line4.start])
-  arc1 = sketch2::arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
-  sketch2::coincident([arc1.center, line3.end])
-  sketch2::coincident([arc1.end, line3])
+  line3 = line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
+  line4 = line(start = [var 1.06mm, var -3.26mm], end = [var -6.71mm, var -2.8mm])
+  coincident([line3.end, line4.start])
+  arc1 = arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
+  coincident([arc1.center, line3.end])
+  coincident([arc1.end, line3])
 }
 "#;
 
@@ -2605,12 +2605,12 @@ sketch(on = XY) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line3 = sketch2::line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
-  line4 = sketch2::line(start = [var -2.31mm, var -3.06mm], end = [var -6.71mm, var -2.8mm])
-  arc1 = sketch2::arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
-  sketch2::coincident([arc1.center, line3.end])
-  sketch2::coincident([arc1.end, line3])
-  sketch2::coincident([line4.start, arc1])
+  line3 = line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
+  line4 = line(start = [var -2.31mm, var -3.06mm], end = [var -6.71mm, var -2.8mm])
+  arc1 = arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
+  coincident([arc1.center, line3.end])
+  coincident([arc1.end, line3])
+  coincident([line4.start, arc1])
 }
 "#;
 
