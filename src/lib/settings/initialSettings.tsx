@@ -135,6 +135,7 @@ export class Setting<T = unknown> {
 }
 
 const MS_IN_MINUTE = 1000 * 60
+const COLOR_INPUT_DEBOUNCE_MS = 500
 
 /**
  * Helper function to fetch user features and determine if the corresponding setting should be visible
@@ -391,6 +392,10 @@ export function createSettings() {
         },
         Component: ({ value, updateValue }) => {
           const hexValue = rgbaToHex(value)
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
           return (
             <div className="flex items-center gap-3">
               <input
@@ -400,7 +405,11 @@ export function createSettings() {
                   const rgb = hexToRgb(event.target.value)
                   if (!rgb) return
                   const alpha = Number.isFinite(value.a) ? value.a : 1
-                  updateValue({ ...rgb, a: alpha })
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue({ ...rgb, a: alpha }),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
                 }}
                 className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
               />
