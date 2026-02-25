@@ -43,7 +43,7 @@ export class RadiusConstraintBuilder {
       if (isPointSegment(centerObject) && isPointSegment(startObject)) {
         const start = pointToVec3(startObject)
         const center = pointToVec3(centerObject)
-        const s3 = isRadiusConstraint(obj)
+        const lineEnd = isRadiusConstraint(obj)
           ? center
           : center.sub(start.clone().sub(center))
 
@@ -55,7 +55,7 @@ export class RadiusConstraintBuilder {
         )
         updateDimensionLine(
           start,
-          s3,
+          lineEnd,
           group,
           obj,
           scale,
