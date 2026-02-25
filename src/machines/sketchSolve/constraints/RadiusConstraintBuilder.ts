@@ -23,8 +23,7 @@ export class RadiusConstraintBuilder {
   }
 
   public init(obj: RadiusConstraint | DiameterConstraint) {
-    const group = createDimensionLine(obj, this.resources)
-    return group
+    return createDimensionLine(obj, this.resources)
   }
 
   public update(

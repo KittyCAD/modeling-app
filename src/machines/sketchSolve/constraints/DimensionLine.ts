@@ -9,7 +9,7 @@ import {
   type Vector3,
   Color,
 } from 'three'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { CONSTRAINT_TYPE, isDiameterConstraint, isRadiusConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
   SpriteLabel,
@@ -40,7 +40,7 @@ export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixe
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
-const DIAMETER_LABEL_OFFSET_PX = 15 // Offset diameter label off the line to avoid the center point
+const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
 export const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
 
@@ -312,7 +312,8 @@ function updateLabel(
 
     const dimensionLabel = parseFloat(distance.value.toFixed(3)).toString()
     const showFnIcon =
-      isDistanceConstraint(obj) && !obj.kind.constraint.source.is_literal
+      (isDistanceConstraint(obj) || isRadiusConstraint(obj) || isDiameterConstraint(obj))
+       && !obj.kind.constraint.source.is_literal
 
     if (
       label.userData.dimensionLabel !== dimensionLabel ||
