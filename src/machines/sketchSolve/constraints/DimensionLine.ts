@@ -9,9 +9,12 @@ import {
   type Vector3,
   Color,
 } from 'three'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimensionUtils'
-import type { SpriteLabel } from '@src/machines/sketchSolve/constraints/dimensionUtils'
-import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/dimensionUtils'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type {
+  ConstraintObject,
+  SpriteLabel,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -47,11 +50,9 @@ export const CONSTRAINT_COLOR = {
 }
 
 export function createDimensionLine(
-  obj: ApiObject,
+  obj: ConstraintObject,
   resources: ConstraintResources
-): Group | null {
-  if (obj.kind.type !== 'Constraint') return null
-
+) {
   const constraint = obj.kind.constraint
   const group = new Group()
   group.name = obj.id.toString()
@@ -278,7 +279,7 @@ function updateLabel(
 
     const dimensionLabel = parseFloat(distance.value.toFixed(3)).toString()
     const showFnIcon =
-      isDistanceConstraint(obj.kind) && !obj.kind.constraint.source.is_literal
+      isDistanceConstraint(obj) && !obj.kind.constraint.source.is_literal
 
     if (
       label.userData.dimensionLabel !== dimensionLabel ||

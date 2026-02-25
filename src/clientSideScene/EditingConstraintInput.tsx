@@ -8,7 +8,7 @@ import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
   isDistanceConstraint,
-} from '@src/machines/sketchSolve/constraints/dimensionUtils'
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useState } from 'react'
@@ -130,7 +130,7 @@ function getInitialDimension(
   let initialDimension = ''
   const constraintObject =
     editingConstraintId && getConstraintObject(editingConstraintId, state)
-  if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
+  if (constraintObject && isDistanceConstraint(constraintObject)) {
     initialDimension = constraintObject.kind.constraint.source.expr
   }
   return initialDimension

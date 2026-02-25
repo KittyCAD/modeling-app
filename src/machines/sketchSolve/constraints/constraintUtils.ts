@@ -1,8 +1,4 @@
-import type {
-  ApiConstraint,
-  ApiObject,
-  ApiObjectKind,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -12,26 +8,6 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
-
-export function getDistanceEndPoints(obj: ApiObject, objects: ApiObject[]) {
-  if (!isDistanceConstraint(obj.kind)) {
-    return null
-  }
-
-  const constraint = obj.kind.constraint
-  const [p1Id, p2Id] = constraint.points
-  const p1Obj = objects[p1Id]
-  const p2Obj = objects[p2Id]
-
-  if (isPointSegment(p1Obj) && isPointSegment(p2Obj)) {
-    return {
-      p1: pointToVec3(p1Obj),
-      p2: pointToVec3(p2Obj),
-      distance: constraint.distance,
-    }
-  }
-  return null
-}
 
 export function isPointSegment(
   obj: ApiObject | undefined
@@ -48,33 +24,50 @@ export function pointToVec3(obj: PointSegment) {
   return new Vector3(position.x.value, position.y.value, 0)
 }
 
-export function isDistanceConstraint(kind: ApiObjectKind): kind is {
-  type: 'Constraint'
-  constraint: Extract<
-    ApiConstraint,
-    { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
-  >
-} {
+type DistanceConstraintTypes =
+  | 'Distance'
+  | 'HorizontalDistance'
+  | 'VerticalDistance'
+
+export type ConstraintObject = ApiObject & {
+  kind: { type: 'Constraint' }
+}
+
+export function isConstraint(obj: ApiObject): obj is ConstraintObject {
+  return obj.kind.type === 'Constraint'
+}
+
+export type DistanceConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: DistanceConstraintTypes } }
+}
+
+export function isDistanceConstraint(
+  obj: ApiObject
+): obj is DistanceConstraint {
   return (
-    kind.type === 'Constraint' &&
-    (kind.constraint.type === 'Distance' ||
-      kind.constraint.type === 'HorizontalDistance' ||
-      kind.constraint.type === 'VerticalDistance')
+    obj.kind.type === 'Constraint' &&
+    (obj.kind.constraint.type === 'Distance' ||
+      obj.kind.constraint.type === 'HorizontalDistance' ||
+      obj.kind.constraint.type === 'VerticalDistance')
   )
 }
 
-export function isRadiusConstraint(kind: ApiObjectKind): kind is {
-  type: 'Constraint'
-  constraint: Extract<ApiConstraint, { type: 'Radius' }>
-} {
-  return kind.type === 'Constraint' && kind.constraint.type === 'Radius'
+export type RadiusConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Radius' } }
 }
 
-export function isDiameterConstraint(kind: ApiObjectKind): kind is {
-  type: 'Constraint'
-  constraint: Extract<ApiConstraint, { type: 'Diameter' }>
-} {
-  return kind.type === 'Constraint' && kind.constraint.type === 'Diameter'
+export type DiameterConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Diameter' } }
+}
+
+export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
+}
+
+export function isDiameterConstraint(
+  obj: ApiObject
+): obj is DiameterConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
 }
 
 export function calculateDimensionLabelScreenPosition(
