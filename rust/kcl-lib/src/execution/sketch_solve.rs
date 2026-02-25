@@ -72,6 +72,31 @@ pub(crate) fn normalize_to_solver_unit(
     })
 }
 
+/// When giving input to the solver, all numbers must be given in the same
+/// units.
+pub(crate) fn normalize_to_solver_angle_unit(
+    value: &KclValue,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+    description: &str,
+) -> Result<KclValue, KclError> {
+    let angle_ty = RuntimeType::Union(vec![
+        RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state))),
+        RuntimeType::angle(),
+    ]);
+    value.coerce(&angle_ty, true, exec_state).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{} must be an angle coercible to the module angle unit {}, but found {}",
+                description,
+                angle_ty.human_friendly_type(),
+                value.human_friendly_type(),
+            ),
+            vec![source_range],
+        ))
+    })
+}
+
 pub(super) fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     surface: &SketchSurface,

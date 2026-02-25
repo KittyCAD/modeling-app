@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcl_ezpz::{Constraint, NonLinearSystemError};
+use kittycad_modeling_cmds as kcmc;
 
 #[cfg(feature = "artifact-graph")]
 use crate::front::{Object, ObjectKind};
@@ -20,8 +21,8 @@ use crate::{
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory::{self, SKETCH_PREFIX},
         sketch_solve::{
-            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
-            substitute_sketch_var_in_segment, substitute_sketch_vars,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_angle_unit,
+            normalize_to_solver_unit, solver_numeric_type, substitute_sketch_var_in_segment, substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -2687,12 +2688,26 @@ impl Node<BinaryExpression> {
                 // One sketch constraint, one number.
                 (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
-                    let number_value = normalize_to_solver_unit(
-                        input_number,
-                        input_number.into(),
-                        exec_state,
-                        "fixed constraint value",
-                    )?;
+                    let number_value = match constraint.kind {
+                        // These constraint kinds expect the RHS to be an angle.
+                        SketchConstraintKind::Angle { .. } => normalize_to_solver_angle_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                        // These constraint kinds expect the RHS to be a distance.
+                        SketchConstraintKind::Distance { .. }
+                        | SketchConstraintKind::Radius { .. }
+                        | SketchConstraintKind::Diameter { .. }
+                        | SketchConstraintKind::HorizontalDistance { .. }
+                        | SketchConstraintKind::VerticalDistance { .. } => normalize_to_solver_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                    };
                     let Some(n) = number_value.as_ty_f64() else {
                         let message = format!(
                             "Expected number after coercion, but found {}",
@@ -2720,6 +2735,105 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
+                        SketchConstraintKind::Angle { line0, line1 } => {
+                            let range = self.as_source_range();
+                            // Line 0 is points A and B.
+                            // Line 1 is points C and D.
+                            let ax = line0.vars[0].x.to_constraint_id(range)?;
+                            let ay = line0.vars[0].y.to_constraint_id(range)?;
+                            let bx = line0.vars[1].x.to_constraint_id(range)?;
+                            let by = line0.vars[1].y.to_constraint_id(range)?;
+                            let cx = line1.vars[0].x.to_constraint_id(range)?;
+                            let cy = line1.vars[0].y.to_constraint_id(range)?;
+                            let dx = line1.vars[1].x.to_constraint_id(range)?;
+                            let dy = line1.vars[1].y.to_constraint_id(range)?;
+                            let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
+                            );
+                            let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
+                            );
+                            let desired_angle = match n.ty {
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Degrees,
+                                } => kcl_ezpz::datatypes::Angle::from_degrees(n.n),
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Radians,
+                                } => kcl_ezpz::datatypes::Angle::from_radians(n.n),
+                                NumericType::Known(crate::exec::UnitType::Count)
+                                | NumericType::Known(crate::exec::UnitType::GenericLength)
+                                | NumericType::Known(crate::exec::UnitType::GenericAngle)
+                                | NumericType::Known(crate::exec::UnitType::Length(_))
+                                | NumericType::Unknown
+                                | NumericType::Any => {
+                                    let message = format!("Expected angle but found {:?}", n);
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(internal_err(message, self));
+                                }
+                            };
+                            let solver_constraint = Constraint::LinesAtAngle(
+                                solver_line0,
+                                solver_line1,
+                                kcl_ezpz::datatypes::AngleKind::Other(desired_angle),
+                            );
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Angle,
+                                };
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Angle(Angle {
+                                    lines: vec![line0.object_id, line1.object_id],
+                                    angle: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert angle units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
                         SketchConstraintKind::Distance { points } => {
                             let range = self.as_source_range();
                             let p0 = &points[0];

@@ -2035,6 +2035,14 @@ pub struct ConstrainablePoint2d {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct ConstrainableLine2d {
+    pub vars: [crate::front::Point2d<SketchVarId>; 2],
+    pub object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
     /// The engine ID.
     pub id: Uuid,
@@ -2171,16 +2179,31 @@ pub struct SketchConstraint {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
-    Distance { points: [ConstrainablePoint2d; 2] },
-    Radius { points: [ConstrainablePoint2d; 2] },
-    Diameter { points: [ConstrainablePoint2d; 2] },
-    HorizontalDistance { points: [ConstrainablePoint2d; 2] },
-    VerticalDistance { points: [ConstrainablePoint2d; 2] },
+    Angle {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+    },
+    Distance {
+        points: [ConstrainablePoint2d; 2],
+    },
+    Radius {
+        points: [ConstrainablePoint2d; 2],
+    },
+    Diameter {
+        points: [ConstrainablePoint2d; 2],
+    },
+    HorizontalDistance {
+        points: [ConstrainablePoint2d; 2],
+    },
+    VerticalDistance {
+        points: [ConstrainablePoint2d; 2],
+    },
 }
 
 impl SketchConstraintKind {
     pub fn name(&self) -> &'static str {
         match self {
+            SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",

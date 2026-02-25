@@ -15,7 +15,7 @@ use crate::{
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
@@ -61,6 +61,7 @@ const ARC_CENTER_PARAM: &str = "center";
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -658,6 +659,7 @@ impl SketchApi for FrontendState {
             Constraint::Radius(radius) => self.add_radius(sketch, radius, &mut new_ast).await?,
             Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, &mut new_ast).await?,
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
+            Constraint::Angle(lines_at_angle) => self.add_angle(sketch, lines_at_angle, &mut new_ast).await?,
         };
 
         let result = self
@@ -891,6 +893,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Radius(radius) => {
                     self.add_radius(sketch, radius, &mut new_ast).await?;
+                }
+                Constraint::Angle(angle) => {
+                    self.add_angle(sketch, angle, &mut new_ast).await?;
                 }
             }
         }
@@ -2105,6 +2110,62 @@ impl FrontendState {
         Ok(sketch_block_range)
     }
 
+    async fn add_angle(
+        &mut self,
+        sketch: ObjectId,
+        angle: Angle,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[l0_id, l1_id] = angle.lines.as_slice() else {
+            return Err(Error {
+                msg: format!("Angle constraint must have exactly 2 lines, got {}", angle.lines.len()),
+            });
+        };
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let l0_ast = self.point_id_to_ast_reference(l0_id, new_ast)?;
+        let l1_ast = self.point_id_to_ast_reference(l1_id, new_ast)?;
+
+        // Create the angle() call.
+        let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![l0_ast, l1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: angle_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: angle.angle.value,
+                    suffix: angle.angle.units,
+                },
+                raw: format_number_literal(angle.angle.value, angle.angle.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", angle.angle.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_radius(
         &mut self,
         sketch: ObjectId,
@@ -2733,6 +2794,7 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
+                Constraint::Angle(angle) => angle.lines.iter().any(|line_id| segment_ids_set.contains(line_id)),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
