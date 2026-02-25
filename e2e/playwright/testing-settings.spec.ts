@@ -681,7 +681,7 @@ test.describe(
     )
 
     test(
-      'Changing backface color setting updates back-face color in scene',
+      'Changing backface color setting updates backface color in scene',
       { tag: ['@macos', '@windows'] },
       async ({ context, page, homePage, scene, cmdBar }) => {
         const u = await getUtils(page)

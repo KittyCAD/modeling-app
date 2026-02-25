@@ -378,7 +378,7 @@ export function createSettings() {
       }),
       backfaceColor: new Setting<RgbaColor>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
-        description: 'Default back-face color for surfaces',
+        description: 'Default backface color for surfaces',
         hideOnLevel: 'project',
         validate: (v) => isValidRgbaColor(v),
         commandConfig: {
