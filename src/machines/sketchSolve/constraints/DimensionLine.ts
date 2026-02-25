@@ -39,6 +39,7 @@ export const LABEL_CANVAS_HEIGHT = 32
 export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
+const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
 export const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
 
@@ -195,6 +196,10 @@ export function updateDimensionLine(
   const dir = end.clone().sub(start).normalize()
   const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
   const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
+  const maxEndInset = Math.max(0, start.distanceTo(end) / 2 - halfGap)
+  const endInset = Math.min(DIMENSION_LINE_END_INSET_PX * scale, maxEndInset)
+  const lineStart = start.clone().add(dir.clone().multiplyScalar(endInset))
+  const lineEnd = end.clone().sub(dir.clone().multiplyScalar(endInset))
 
   const lines = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
@@ -202,8 +207,15 @@ export function updateDimensionLine(
   const line1 = lines[0] as Line2
   const line2 = lines[1] as Line2
 
-  line1.geometry.setPositions([start.x, start.y, 0, gapStart.x, gapStart.y, 0])
-  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
+  line1.geometry.setPositions([
+    lineStart.x,
+    lineStart.y,
+    0,
+    gapStart.x,
+    gapStart.y,
+    0,
+  ])
+  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, lineEnd.x, lineEnd.y, 0])
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO
@@ -238,13 +250,18 @@ export function updateDimensionLine(
   if (bodyHitAreas[0]) {
     updateLineHitArea(
       bodyHitAreas[0],
-      start,
+      lineStart,
       gapStart,
       HIT_AREA_WIDTH_PX * scale
     )
   }
   if (bodyHitAreas[1]) {
-    updateLineHitArea(bodyHitAreas[1], gapEnd, end, HIT_AREA_WIDTH_PX * scale)
+    updateLineHitArea(
+      bodyHitAreas[1],
+      gapEnd,
+      lineEnd,
+      HIT_AREA_WIDTH_PX * scale
+    )
   }
 }
 
