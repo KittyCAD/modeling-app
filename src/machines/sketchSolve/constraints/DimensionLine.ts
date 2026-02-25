@@ -9,7 +9,11 @@ import {
   type Vector3,
   Color,
 } from 'three'
-import { CONSTRAINT_TYPE, isDiameterConstraint, isRadiusConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  CONSTRAINT_TYPE,
+  isDiameterConstraint,
+  isRadiusConstraint,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
   SpriteLabel,
@@ -312,8 +316,10 @@ function updateLabel(
 
     const dimensionLabel = parseFloat(distance.value.toFixed(3)).toString()
     const showFnIcon =
-      (isDistanceConstraint(obj) || isRadiusConstraint(obj) || isDiameterConstraint(obj))
-       && !obj.kind.constraint.source.is_literal
+      (isDistanceConstraint(obj) ||
+        isRadiusConstraint(obj) ||
+        isDiameterConstraint(obj)) &&
+      !obj.kind.constraint.source.is_literal
 
     if (
       label.userData.dimensionLabel !== dimensionLabel ||
