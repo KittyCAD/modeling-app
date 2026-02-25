@@ -282,8 +282,8 @@ export class App implements AppSubsystems {
   buildSingletons() {
     const engineCommandManager = new ConnectionManager()
     const rustContext = new RustContext(
-      engineCommandManager,
       this.wasmPromise,
+      engineCommandManager,
       // HACK: convert settings to not be an XState actor to prevent the need for
       // this dummy-with late binding of the real thing.
       // TODO: https://github.com/KittyCAD/modeling-app/issues/9356

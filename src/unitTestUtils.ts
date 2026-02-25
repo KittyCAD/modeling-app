@@ -78,8 +78,8 @@ export async function buildTheWorldAndConnectToEngine() {
     },
   })
   const rustContext = new RustContext(
-    engineCommandManager,
     instancePromise,
+    engineCommandManager,
     settingsActor
   )
   const kclManager = new KclManager({
@@ -180,8 +180,8 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     },
   })
   const rustContext = new RustContext(
-    engineCommandManager,
     instancePromise,
+    engineCommandManager,
     settingsActor
   )
   const kclManager = new KclManager({

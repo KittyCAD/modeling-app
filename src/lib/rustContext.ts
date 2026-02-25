@@ -41,7 +41,6 @@ import { Signal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export default class RustContext {
-  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -58,8 +57,8 @@ export default class RustContext {
   }
 
   constructor(
+    public readonly wasmInstancePromise: Promise<ModuleType>,
     engineCommandManager: ConnectionManager,
-    wasmInstancePromise: Promise<ModuleType>,
     /**
      * TODO: move settings system upstream of KclManager so this hack isn't necessary.
      * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
@@ -67,7 +66,6 @@ export default class RustContext {
     dummySettingsActor: SettingsActorType
   ) {
     this.engineCommandManager = engineCommandManager
-    this._wasmInstancePromise = wasmInstancePromise
     this._settingsActor = dummySettingsActor
 
     wasmInstancePromise
@@ -77,7 +75,7 @@ export default class RustContext {
 
   /** Create a new context instance */
   private async createContextFromWasm(): Promise<Context> {
-    this.rustInstance = await this._wasmInstancePromise
+    this.rustInstance = await this.wasmInstancePromise
 
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
@@ -90,12 +88,8 @@ export default class RustContext {
 
   /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
   async createNewContext(): Promise<Context> {
-    const instance = await this._wasmInstancePromise
+    const instance = await this.wasmInstancePromise
     return new instance.Context(this.engineCommandManager, projectFsManager)
-  }
-
-  get wasmInstancePromise() {
-    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {
