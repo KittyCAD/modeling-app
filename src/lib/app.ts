@@ -434,7 +434,9 @@ export class App implements AppSubsystems {
         const hasHighlightEdges =
           s?.modeling?.highlightEdges !==
           context.modeling.highlightEdges.current
-        return hasScaleGrid || hasHighlightEdges
+        const hasBackfaceColor =
+          s?.modeling.backfaceColor !== context.modeling.backfaceColor.current
+        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
