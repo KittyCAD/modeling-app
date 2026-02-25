@@ -1,5 +1,8 @@
 #![allow(clippy::useless_conversion)]
-use std::{future::Future, path::Path};
+use std::{
+    future::Future,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 use kcl_lib::{
@@ -82,6 +85,39 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
     Ok((code, path))
 }
 
+enum KclInput {
+    Path(String),
+    Code(String),
+}
+
+struct LoadedAndParsedKcl {
+    code: String,
+    program: kcl_lib::Program,
+    path: Option<PathBuf>,
+    filename: String,
+}
+
+async fn load_and_parse(input: KclInput) -> PyResult<LoadedAndParsedKcl> {
+    let (code, path, filename) = match input {
+        KclInput::Path(input_path) => {
+            let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
+            let filename = path.display().to_string();
+            (code, Some(path), filename)
+        }
+        KclInput::Code(code) => (code, None, String::new()),
+    };
+
+    let program =
+        kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse(&filename, &code, err))?;
+
+    Ok(LoadedAndParsedKcl {
+        code,
+        program,
+        path,
+        filename,
+    })
+}
+
 async fn new_context_state(
     current_file: Option<std::path::PathBuf>,
     mock: bool,
@@ -104,11 +140,7 @@ async fn new_context_state(
 #[pyfunction]
 async fn parse(path: String) -> PyResult<bool> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let _program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let _parsed = load_and_parse(KclInput::Path(path)).await?;
 
         Ok(true)
     })
@@ -129,13 +161,14 @@ fn parse_code(code: String) -> PyResult<bool> {
 #[pyfunction]
 async fn execute(path: String) -> PyResult<()> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            path,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
 
-        let (ctx, mut state) = new_context_state(Some(path), false)
+        let (ctx, mut state) = new_context_state(path, false)
             .await
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
         // Execute the program.
@@ -154,8 +187,7 @@ async fn execute(path: String) -> PyResult<()> {
 #[pyfunction]
 async fn execute_code(code: String) -> PyResult<()> {
     spawn_py(async move {
-        let program =
-            kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let LoadedAndParsedKcl { code, program, .. } = load_and_parse(KclInput::Code(code)).await?;
 
         let (ctx, mut state) = new_context_state(None, false)
             .await
@@ -176,8 +208,7 @@ async fn execute_code(code: String) -> PyResult<()> {
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<bool> {
     spawn_py(async move {
-        let program =
-            kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let LoadedAndParsedKcl { code, program, .. } = load_and_parse(KclInput::Code(code)).await?;
 
         let (ctx, mut state) = new_context_state(None, true)
             .await
@@ -198,13 +229,14 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<bool> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            path,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
 
-        let (ctx, mut state) = new_context_state(Some(path), true)
+        let (ctx, mut state) = new_context_state(path, true)
             .await
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
         // Execute the program.
@@ -321,13 +353,14 @@ async fn execute_and_snapshot_views(
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            path,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
 
-        let (ctx, mut state) = new_context_state(Some(path), false)
+        let (ctx, mut state) = new_context_state(path, false)
             .await
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
         // Execute the program.
@@ -356,13 +389,14 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 #[pyfunction]
 async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            path,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
 
-        let (ctx, mut state) = new_context_state(Some(path), false)
+        let (ctx, mut state) = new_context_state(path, false)
             .await
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
         // Execute the program.
@@ -385,8 +419,7 @@ async fn execute_code_and_measure(
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
     spawn_py(async move {
-        let program =
-            kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let LoadedAndParsedKcl { code, program, .. } = load_and_parse(KclInput::Code(code)).await?;
 
         let (ctx, mut state) = new_context_state(None, false)
             .await
@@ -444,8 +477,7 @@ async fn execute_code_and_snapshot_views(
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
     spawn_py(async move {
-        let program =
-            kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let LoadedAndParsedKcl { code, program, .. } = load_and_parse(KclInput::Code(code)).await?;
 
         let (ctx, mut state) = new_context_state(None, false)
             .await
@@ -667,13 +699,14 @@ async fn measure_model_properties(
 #[pyfunction]
 async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
     spawn_py(async move {
-        let (code, path) = get_code_and_file_path(&path)
-            .await
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        let program = kcl_lib::Program::parse_no_errs(&code)
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            path,
+            filename,
+        } = load_and_parse(KclInput::Path(path)).await?;
 
-        let (ctx, mut state) = new_context_state(Some(path.clone()), false)
+        let (ctx, mut state) = new_context_state(path, false)
             .await
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
         // Execute the program.
@@ -683,7 +716,7 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
 
         let settings = program
             .meta_settings()
-            .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?
             .unwrap_or_default();
         let units: UnitLength = settings.default_length_units.into();
 
@@ -724,8 +757,12 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
 #[pyfunction]
 async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
     spawn_py(async move {
-        let program =
-            kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+        let LoadedAndParsedKcl {
+            code,
+            program,
+            filename,
+            ..
+        } = load_and_parse(KclInput::Code(code)).await?;
 
         let (ctx, mut state) = new_context_state(None, false)
             .await
@@ -737,7 +774,7 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
 
         let settings = program
             .meta_settings()
-            .map_err(|err| into_miette_for_parse("", &code, err))?
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?
             .unwrap_or_default();
         let units: UnitLength = settings.default_length_units.into();
 
