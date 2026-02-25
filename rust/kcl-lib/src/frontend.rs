@@ -10,7 +10,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
-    ExecOutcome, ExecutorContext, KclErrorWithOutputs, Program,
+    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
     execution::MockConfig,
@@ -1025,7 +1025,7 @@ impl FrontendState {
     }
 
     fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> api::Result<ExecOutcome> {
-        if err.error.message().contains("websocket closed early") {
+        if matches!(err.error, KclError::EngineHangup { .. }) {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
             // errors that have nothing to do with the actual problem.
