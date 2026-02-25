@@ -5231,6 +5231,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -5349,6 +5350,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_point = frontend_point
             .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
@@ -5377,6 +5379,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_line = frontend_line
             .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
@@ -5430,6 +5433,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -5486,6 +5490,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_point = frontend_point
             .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
@@ -5514,6 +5519,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_line = frontend_line
             .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)

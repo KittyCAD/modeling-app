@@ -358,6 +358,8 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(default)]
+    pub source: ConstraintSource,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -365,6 +367,8 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(default)]
+    pub source: ConstraintSource,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
