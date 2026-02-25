@@ -129,10 +129,12 @@ export function updateDimensionLine(
   selectedIds: number[],
   hoveredId: number | null,
   distance: Number,
-  resources: ConstraintResources
+  resources: ConstraintResources,
+  labelPosition = 0.5
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
-  const midpoint = start.clone().add(end).multiplyScalar(0.5)
+  const labelPositionClamped = Math.min(1, Math.max(0, labelPosition))
+  const labelCenter = start.clone().lerp(end, labelPositionClamped)
 
   const label = group.children.find(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
@@ -140,7 +142,7 @@ export function updateDimensionLine(
   if (label) {
     // Need to update label position even if it's not shown because it's used to
     // place the input box when double clicking on it.
-    label.position.copy(midpoint)
+    label.position.copy(labelCenter)
   }
 
   if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
@@ -191,12 +193,15 @@ export function updateDimensionLine(
     }
   }
 
-  // Main constraint lines with gap at center for label
+  // Main constraint lines with gap around the label position
   const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
   const dir = end.clone().sub(start).normalize()
-  const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
-  const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
-  const maxEndInset = Math.max(0, start.distanceTo(end) / 2 - halfGap)
+  const gapStart = labelCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
+  const gapEnd = labelCenter.clone().add(dir.clone().multiplyScalar(halfGap))
+  const maxEndInset = Math.max(
+    0,
+    Math.min(start.distanceTo(gapStart), gapEnd.distanceTo(end))
+  )
   const endInset = Math.min(DIMENSION_LINE_END_INSET_PX * scale, maxEndInset)
   const lineStart = start.clone().add(dir.clone().multiplyScalar(endInset))
   const lineEnd = end.clone().sub(dir.clone().multiplyScalar(endInset))

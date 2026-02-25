@@ -59,7 +59,8 @@ export class RadiusConstraintBuilder {
           isRadiusConstraint(obj)
             ? obj.kind.constraint.radius
             : obj.kind.constraint.diameter,
-          this.resources
+          this.resources,
+          isRadiusConstraint(obj) ? 0.5 : 0.28
         )
       }
     }
