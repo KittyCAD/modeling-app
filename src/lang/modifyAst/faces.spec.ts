@@ -425,6 +425,10 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
 surface001 = deleteFace(extrude001, faces = END)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
+
+    // TODO: add case for deleting a face needing a primitive index
+
+    // TODO: maybe one hybrid?
   })
 
   describe('Testing addHole', () => {

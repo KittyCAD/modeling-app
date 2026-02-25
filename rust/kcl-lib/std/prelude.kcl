@@ -666,4 +666,3 @@ export fn edgeId(
   /// usual ID of an edge.
   index: number(Count),
 ): Edge {}
-

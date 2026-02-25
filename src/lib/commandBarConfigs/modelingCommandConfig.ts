@@ -2255,6 +2255,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Delete a face from a body, leaving an open surface.',
     icon: 'deleteFace',
     needsReview: true,
+    status: 'experimental',
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
