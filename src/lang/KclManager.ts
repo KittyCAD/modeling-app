@@ -1,6 +1,6 @@
 import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -36,7 +36,10 @@ import type {
   BaseUnit,
   KclSettingsAnnotation,
 } from '@src/lib/settings/settingsTypes'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
@@ -95,7 +98,7 @@ import {
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
 } from '@src/editor/plugins/theme'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
   setAstEffect,
@@ -125,6 +128,8 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -144,9 +149,12 @@ type UpdateCodeEditorOptions = {
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
-interface Singletons {
+interface SystemDeps {
   rustContext: RustContext
-  sceneInfra: SceneInfra
+  engineCommandManager: ConnectionManager
+  wasmInstancePromise: Promise<ModuleType>
+  settings: SettingsActorType
+  commandBar: CommandBarActorType
 }
 
 export enum KclManagerEvents {
@@ -186,15 +194,14 @@ export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
-  private _wasmInstancePromise: Promise<ModuleType>
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
   get wasmInstancePromise() {
-    return this._wasmInstancePromise
+    return this.systemDeps.wasmInstancePromise
   }
   set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
-    this._wasmInstancePromise = newInstancePromise
-    void this._wasmInstancePromise.then((instance) => {
+    this.systemDeps.wasmInstancePromise = newInstancePromise
+    void this.systemDeps.wasmInstancePromise.then((instance) => {
       this._wasmInstance = instance
     })
   }
@@ -212,9 +219,7 @@ export class KclManager extends EventTarget {
     }
     return this._wasmInstance
   }
-  private _sceneEntitiesManager?: SceneEntities
-  readonly singletons: Singletons
-  engineCommandManager: ConnectionManager
+  readonly systemDeps: SystemDeps
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
@@ -237,6 +242,8 @@ export class KclManager extends EventTarget {
   }
 
   // Derived state
+  sceneEntitiesManager: SceneEntities
+  sceneInfra: SceneInfra
 
   /** The Abstract Syntax Tree generated from parsing the KCL code */
   private _ast = signal<Node<Program>>(createEmptyAst())
@@ -435,29 +442,11 @@ export class KclManager extends EventTarget {
     this.setDiagnostics(this.diagnostics)
   }
 
-  set sceneEntitiesManager(s: SceneEntities) {
-    this._sceneEntitiesManager = s
-  }
-  /**
-   * You probably should provide the `sceneEntitiesManager` singleton instead.
-   *
-   * This is for when you need the sceneEntitiesManager guaranteed to be there,
-   * and you have KclManager available but not other singletons for some reason,
-   * and you can somehow absolutely guarantee that sceneEntities has been set.
-   */
-  get sceneEntitiesManager() {
-    if (!this._sceneEntitiesManager) {
-      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
-      throw new Error('Requested SceneEntities too soon from within KclManager')
-    }
-    return this._sceneEntitiesManager
-  }
-
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
-    if (!isExecuting && this.executeIsStale && this._sceneEntitiesManager) {
+    if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -522,7 +511,7 @@ export class KclManager extends EventTarget {
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
+      this.systemDeps.engineCommandManager.started &&
       update.docChanged &&
       update.transactions.some((tr) => {
         // The old KCL ViewPlugin had checks that seemed to check for
@@ -589,9 +578,9 @@ export class KclManager extends EventTarget {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
           const setProgramOutcome =
-            await this.singletons.rustContext.hackSetProgram(
+            await this.systemDeps.rustContext.hackSetProgram(
               this.ast,
-              await jsAppSettings(this.singletons.rustContext.settingsActor)
+              await jsAppSettings(this.systemDeps.rustContext.settingsActor)
             )
 
           if (setProgramOutcome.type === 'Success') {
@@ -626,9 +615,9 @@ export class KclManager extends EventTarget {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
             await resetCameraPosition({
-              sceneInfra: this.singletons.sceneInfra,
-              engineCommandManager: this.engineCommandManager,
-              settingsActor: this.singletons.rustContext.settingsActor,
+              sceneInfra: this.sceneInfra,
+              engineCommandManager: this.systemDeps.engineCommandManager,
+              settingsActor: this.systemDeps.settings,
             })
           }
         }
@@ -658,15 +647,24 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(
-    engineCommandManager: ConnectionManager,
-    wasmInstance: Promise<ModuleType>,
-    singletons: Singletons
-  ) {
+  constructor(systemDeps: SystemDeps) {
     super()
-    this.engineCommandManager = engineCommandManager
-    this._wasmInstancePromise = wasmInstance
-    this.singletons = singletons
+    this.systemDeps = systemDeps
+    const getSettings = () =>
+      getSettingsFromActorContext(this.systemDeps.settings)
+    this.sceneInfra = new SceneInfra(
+      systemDeps.engineCommandManager,
+      systemDeps.wasmInstancePromise,
+      getSettings
+    )
+    this.sceneEntitiesManager = new SceneEntities(
+      systemDeps.engineCommandManager,
+      this.sceneInfra,
+      this,
+      systemDeps.rustContext,
+      this.systemDeps.commandBar,
+      getSettings
+    )
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView()
@@ -695,7 +693,7 @@ export class KclManager extends EventTarget {
       })
     }
 
-    this._wasmInstancePromise
+    this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
@@ -745,8 +743,8 @@ export class KclManager extends EventTarget {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
-      await this.singletons.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(this.singletons.rustContext.settingsActor),
+      await this.systemDeps.rustContext.clearSceneAndBustCache(
+        await jsAppSettings(this.systemDeps.rustContext.settingsActor),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
@@ -807,13 +805,13 @@ export class KclManager extends EventTarget {
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
       deferredCallback((_a?: null) => {
-        this.engineCommandManager.modelingSend({
+        this.systemDeps.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
       deferredCallback((_a?: null) => {
-        this.engineCommandManager.modelingSend({
+        this.systemDeps.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
       }, 200)(null)
@@ -822,7 +820,7 @@ export class KclManager extends EventTarget {
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
     deferredCallback((_a?: null) => {
       if (this.defaultPlanes) {
-        this.engineCommandManager.modelingSend({
+        this.systemDeps.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
         })
       }
@@ -874,7 +872,7 @@ export class KclManager extends EventTarget {
 
       // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
-      this.engineCommandManager.rejectAllModelingCommands(
+      this.systemDeps.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
@@ -893,7 +891,7 @@ export class KclManager extends EventTarget {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.currentFilePath || undefined,
-      rustContext: this.singletons.rustContext,
+      rustContext: this.systemDeps.rustContext,
     })
 
     const livePathsToWatch = Object.values(execState.filenames)
@@ -912,16 +910,16 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.code,
-          instance: await this._wasmInstancePromise,
-          rustContext: this.singletons.rustContext,
+          instance: await this.systemDeps.wasmInstancePromise,
+          rustContext: this.systemDeps.rustContext,
         })
       )
-      if (this._sceneEntitiesManager) {
+      if (this.sceneEntitiesManager) {
         await setSelectionFilterToDefault({
-          engineCommandManager: this.engineCommandManager,
+          engineCommandManager: this.systemDeps.engineCommandManager,
           kclManager: this,
-          sceneEntitiesManager: this._sceneEntitiesManager,
-          wasmInstance: await this.wasmInstancePromise,
+          sceneEntitiesManager: this.sceneEntitiesManager,
+          wasmInstance: await this.systemDeps.wasmInstancePromise,
         })
       }
     }
@@ -968,7 +966,7 @@ export class KclManager extends EventTarget {
     this.dispatchUpdateOperations(execState.operations)
 
     if (!isInterrupted) {
-      this.singletons.sceneInfra.modelingSend({
+      this.sceneInfra.modelingSend({
         type: 'code edit during sketch',
       })
     }
@@ -976,7 +974,7 @@ export class KclManager extends EventTarget {
       label: 'executeAst',
       message: 'execution done',
     })
-    this.engineCommandManager.addCommandLog({
+    this.systemDeps.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
     })
@@ -1002,7 +1000,7 @@ export class KclManager extends EventTarget {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
-    this.engineCommandManager.addCommandLog({
+    this.systemDeps.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
     })
@@ -1029,7 +1027,7 @@ export class KclManager extends EventTarget {
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      rustContext: this.singletons.rustContext,
+      rustContext: this.systemDeps.rustContext,
     })
 
     this.logs = logs
@@ -1104,7 +1102,7 @@ export class KclManager extends EventTarget {
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast, await this._wasmInstancePromise)
+    const newCode = recast(ast, await this.systemDeps.wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = await this.safeParse(newCode)
@@ -1162,31 +1160,40 @@ export class KclManager extends EventTarget {
   }
 
   get defaultPlanes() {
-    return this.singletons.rustContext.defaultPlanes
+    return this.systemDeps.rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {
     if (!this.defaultPlanes) return Promise.all([])
     const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.xy,
+        false
+      ),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.yz,
+        false
+      ),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.xz,
+        false
+      ),
     ]
     if (all) {
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
+        this.systemDeps.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negXy,
           false
         )
       )
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
+        this.systemDeps.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negYz,
           false
         )
       )
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(
+        this.systemDeps.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negXz,
           false
         )
@@ -1198,19 +1205,37 @@ export class KclManager extends EventTarget {
   hidePlanes(all = false) {
     if (!this.defaultPlanes) return Promise.all([])
     const thePromises = [
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
-      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.xy,
+        true
+      ),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.yz,
+        true
+      ),
+      this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.defaultPlanes.xz,
+        true
+      ),
     ]
     if (all) {
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
+        this.systemDeps.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXy,
+          true
+        )
       )
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
+        this.systemDeps.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negYz,
+          true
+        )
       )
       thePromises.push(
-        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
+        this.systemDeps.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXz,
+          true
+        )
       )
     }
     return Promise.all(thePromises)
@@ -1225,7 +1250,10 @@ export class KclManager extends EventTarget {
       console.warn(`Plane ${planeKey} not found`)
       return
     }
-    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
+    return this.systemDeps.engineCommandManager.setPlaneHidden(
+      planeId,
+      !visible
+    )
   }
 
   /** TODO: this function is hiding unawaited asynchronous work */
@@ -1236,7 +1264,7 @@ export class KclManager extends EventTarget {
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
     setSelectionFilterToDefault({
-      engineCommandManager: this.engineCommandManager,
+      engineCommandManager: this.systemDeps.engineCommandManager,
       kclManager: this,
       sceneEntitiesManager,
       selectionsToRestore,
@@ -1254,7 +1282,7 @@ export class KclManager extends EventTarget {
   ) {
     setSelectionFilter({
       filter,
-      engineCommandManager: this.engineCommandManager,
+      engineCommandManager: this.systemDeps.engineCommandManager,
       kclManager: this,
       sceneEntitiesManager,
       selectionsToRestore,
@@ -1286,9 +1314,8 @@ export class KclManager extends EventTarget {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
-    this.sceneInfraBaseUnitMultiplierSetter(
+    this.sceneInfra.baseUnit =
       settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
-    )
   }
 
   get editorView() {
@@ -1651,7 +1678,7 @@ export class KclManager extends EventTarget {
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
     wasmInstance: ModuleType
   ): void {
-    const sceneEntitiesManager = this._sceneEntitiesManager
+    const sceneEntitiesManager = this.sceneEntitiesManager
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return
@@ -1679,7 +1706,7 @@ export class KclManager extends EventTarget {
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
       systemDeps: {
-        engineCommandManager: this.engineCommandManager,
+        engineCommandManager: this.systemDeps.engineCommandManager,
         sceneEntitiesManager,
         wasmInstance,
       },
@@ -1706,7 +1733,7 @@ export class KclManager extends EventTarget {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineCommandManager.sendSceneCommand(event)
+      this.systemDeps.engineCommandManager.sendSceneCommand(event)
     })
   }
   localStoragePersistCode(): string {
