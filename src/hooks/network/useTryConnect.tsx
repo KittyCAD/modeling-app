@@ -189,6 +189,7 @@ async function tryConnecting({
   setIsSceneReady,
   timeToConnect,
   settings,
+  settingsActor,
   setShowManualConnect,
   sceneInfra,
   engineCommandManager,
@@ -204,6 +205,7 @@ async function tryConnecting({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
+  settingsActor: SettingsActorType
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
   engineCommandManager: ConnectionManager
@@ -240,7 +242,7 @@ async function tryConnecting({
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
-            settingsActor: rustContext.settingsActor,
+            settingsActor,
             engineCommandManager,
             kclManager,
             rustContext,

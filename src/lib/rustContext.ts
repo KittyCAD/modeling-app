@@ -44,30 +44,14 @@ export default class RustContext {
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private engineCommandManager: ConnectionManager
   private projectId = 0
   public readonly planesCreated = new Signal()
 
-  private _settingsActor: SettingsActorType
-  get settingsActor() {
-    return this._settingsActor
-  }
-  set settingsActor(settingsActor: SettingsActorType) {
-    this._settingsActor = settingsActor
-  }
-
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
-    engineCommandManager: ConnectionManager,
-    /**
-     * TODO: move settings system upstream of KclManager so this hack isn't necessary.
-     * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
-     */
-    dummySettingsActor: SettingsActorType
+    private readonly engineCommandManager: ConnectionManager,
+    public readonly settingsActor: SettingsActorType
   ) {
-    this.engineCommandManager = engineCommandManager
-    this._settingsActor = dummySettingsActor
-
     wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
       .catch(reportRejection)

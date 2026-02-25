@@ -1,7 +1,7 @@
 import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
+import RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -43,8 +43,7 @@ import {
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-
+import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
   PlaneVisibilityMap,
@@ -153,8 +152,6 @@ type UpdateCodeEditorOptions = {
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 interface SystemDeps {
-  rustContext: RustContext
-  engineCommandManager: ConnectionManager
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -268,8 +265,6 @@ export class ZDSProject {
     const newEditor =
       providedEditor ??
       new KclManager({
-        rustContext: this.app.singletons.rustContext,
-        engineCommandManager: this.app.singletons.engineCommandManager,
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
@@ -364,6 +359,8 @@ export class KclManager extends EventTarget {
   // Derived state
   sceneEntitiesManager: SceneEntities
   sceneInfra: SceneInfra
+  rustContext: RustContext
+  engineCommandManager: ConnectionManager
 
   /** The Abstract Syntax Tree generated from parsing the KCL code */
   private _ast = signal<Node<Program>>(createEmptyAst())
@@ -631,7 +628,7 @@ export class KclManager extends EventTarget {
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
-      this.systemDeps.engineCommandManager.started &&
+      this.engineCommandManager.started &&
       update.docChanged &&
       update.transactions.some((tr) => {
         // The old KCL ViewPlugin had checks that seemed to check for
@@ -697,11 +694,10 @@ export class KclManager extends EventTarget {
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
-          const setProgramOutcome =
-            await this.systemDeps.rustContext.hackSetProgram(
-              this.ast,
-              await jsAppSettings(this.systemDeps.rustContext.settingsActor)
-            )
+          const setProgramOutcome = await this.rustContext.hackSetProgram(
+            this.ast,
+            await jsAppSettings(this.systemDeps.settings)
+          )
 
           if (setProgramOutcome.type === 'Success') {
             // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
@@ -736,7 +732,7 @@ export class KclManager extends EventTarget {
           if (shouldResetCamera) {
             await resetCameraPosition({
               sceneInfra: this.sceneInfra,
-              engineCommandManager: this.systemDeps.engineCommandManager,
+              engineCommandManager: this.engineCommandManager,
               settingsActor: this.systemDeps.settings,
             })
           }
@@ -772,16 +768,25 @@ export class KclManager extends EventTarget {
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
+    this.engineCommandManager = new ConnectionManager({
+      kclManager: this,
+      settingsActor: this.systemDeps.settings,
+    })
+    this.rustContext = new RustContext(
+      this.wasmInstancePromise,
+      this.engineCommandManager,
+      this.systemDeps.settings
+    )
     this.sceneInfra = new SceneInfra(
-      systemDeps.engineCommandManager,
+      this.engineCommandManager,
       systemDeps.wasmInstancePromise,
       getSettings
     )
     this.sceneEntitiesManager = new SceneEntities(
-      systemDeps.engineCommandManager,
+      this.engineCommandManager,
       this.sceneInfra,
       this,
-      systemDeps.rustContext,
+      this.rustContext,
       this.systemDeps.commandBar,
       getSettings
     )
@@ -863,8 +868,8 @@ export class KclManager extends EventTarget {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
-      await this.systemDeps.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(this.systemDeps.rustContext.settingsActor),
+      await this.rustContext.clearSceneAndBustCache(
+        await jsAppSettings(this.systemDeps.settings),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
@@ -925,13 +930,13 @@ export class KclManager extends EventTarget {
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
       deferredCallback((_a?: null) => {
-        this.systemDeps.engineCommandManager.modelingSend({
+        this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
       deferredCallback((_a?: null) => {
-        this.systemDeps.engineCommandManager.modelingSend({
+        this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
       }, 200)(null)
@@ -940,7 +945,7 @@ export class KclManager extends EventTarget {
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
     deferredCallback((_a?: null) => {
       if (this.defaultPlanes) {
-        this.systemDeps.engineCommandManager.modelingSend({
+        this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
         })
       }
@@ -992,7 +997,7 @@ export class KclManager extends EventTarget {
 
       // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
-      this.systemDeps.engineCommandManager.rejectAllModelingCommands(
+      this.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
@@ -1011,7 +1016,7 @@ export class KclManager extends EventTarget {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.currentFilePath || undefined,
-      rustContext: this.systemDeps.rustContext,
+      rustContext: this.rustContext,
     })
 
     const livePathsToWatch = Object.values(execState.filenames)
@@ -1031,12 +1036,12 @@ export class KclManager extends EventTarget {
           ast,
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
-          rustContext: this.systemDeps.rustContext,
+          rustContext: this.rustContext,
         })
       )
       if (this.sceneEntitiesManager) {
         await setSelectionFilterToDefault({
-          engineCommandManager: this.systemDeps.engineCommandManager,
+          engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this.sceneEntitiesManager,
           wasmInstance: await this.systemDeps.wasmInstancePromise,
@@ -1094,7 +1099,7 @@ export class KclManager extends EventTarget {
       label: 'executeAst',
       message: 'execution done',
     })
-    this.systemDeps.engineCommandManager.addCommandLog({
+    this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
     })
@@ -1120,7 +1125,7 @@ export class KclManager extends EventTarget {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
-    this.systemDeps.engineCommandManager.addCommandLog({
+    this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
     })
@@ -1147,7 +1152,7 @@ export class KclManager extends EventTarget {
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      rustContext: this.systemDeps.rustContext,
+      rustContext: this.rustContext,
     })
 
     this.logs = logs
@@ -1280,40 +1285,31 @@ export class KclManager extends EventTarget {
   }
 
   get defaultPlanes() {
-    return this.systemDeps.rustContext.defaultPlanes
+    return this.rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {
     if (!this.defaultPlanes) return Promise.all([])
     const thePromises = [
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.xy,
-        false
-      ),
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.yz,
-        false
-      ),
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.xz,
-        false
-      ),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
     ]
     if (all) {
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negXy,
           false
         )
       )
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negYz,
           false
         )
       )
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
+        this.engineCommandManager.setPlaneHidden(
           this.defaultPlanes.negXz,
           false
         )
@@ -1325,37 +1321,19 @@ export class KclManager extends EventTarget {
   hidePlanes(all = false) {
     if (!this.defaultPlanes) return Promise.all([])
     const thePromises = [
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.xy,
-        true
-      ),
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.yz,
-        true
-      ),
-      this.systemDeps.engineCommandManager.setPlaneHidden(
-        this.defaultPlanes.xz,
-        true
-      ),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
     ]
     if (all) {
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXy,
-          true
-        )
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
       )
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negYz,
-          true
-        )
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
       )
       thePromises.push(
-        this.systemDeps.engineCommandManager.setPlaneHidden(
-          this.defaultPlanes.negXz,
-          true
-        )
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
       )
     }
     return Promise.all(thePromises)
@@ -1370,10 +1348,7 @@ export class KclManager extends EventTarget {
       console.warn(`Plane ${planeKey} not found`)
       return
     }
-    return this.systemDeps.engineCommandManager.setPlaneHidden(
-      planeId,
-      !visible
-    )
+    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
   }
 
   /** TODO: this function is hiding unawaited asynchronous work */
@@ -1384,7 +1359,7 @@ export class KclManager extends EventTarget {
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
     setSelectionFilterToDefault({
-      engineCommandManager: this.systemDeps.engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       kclManager: this,
       sceneEntitiesManager,
       selectionsToRestore,
@@ -1402,7 +1377,7 @@ export class KclManager extends EventTarget {
   ) {
     setSelectionFilter({
       filter,
-      engineCommandManager: this.systemDeps.engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       kclManager: this,
       sceneEntitiesManager,
       selectionsToRestore,
@@ -1826,7 +1801,7 @@ export class KclManager extends EventTarget {
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
       systemDeps: {
-        engineCommandManager: this.systemDeps.engineCommandManager,
+        engineCommandManager: this.engineCommandManager,
         sceneEntitiesManager,
         wasmInstance,
       },
@@ -1853,7 +1828,7 @@ export class KclManager extends EventTarget {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.systemDeps.engineCommandManager.sendSceneCommand(event)
+      this.engineCommandManager.sendSceneCommand(event)
     })
   }
   localStoragePersistCode(): string {
