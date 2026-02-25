@@ -9,11 +9,13 @@ use crate::front::{Object, ObjectKind};
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
+    exec::Sketch,
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EarlyReturn, EnvironmentRef, ExecState, ExecutorContext, KclValue,
         KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem,
-        SKETCH_BLOCK_PARAM_ON, Segment, SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind,
-        TagIdentifier, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        SKETCH_BLOCK_PARAM_ON, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SegmentRepr,
+        SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr, UnsolvedSegment,
+        UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue, early_return,
         fn_call::{Arg, Args},
@@ -1466,7 +1468,7 @@ impl Node<SketchBlock> {
             variables,
             &sketch_surface,
             sketch_engine_id,
-            sketch,
+            sketch.as_ref(),
             &solve_outcome,
             solution_ty,
             solve_analysis.as_ref(),
@@ -1514,11 +1516,12 @@ impl Node<SketchBlock> {
             });
         }
 
+        let properties = self.sketch_properties(sketch, variables);
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
         let return_value = KclValue::Object {
-            value: variables,
+            value: properties,
             constrainable: Default::default(),
             meta: vec![metadata],
         };
@@ -1690,6 +1693,40 @@ impl Node<SketchBlock> {
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
+    }
+
+    /// Augment the variables in the sketch block with properties that should be
+    /// accessible on the returned sketch object. This includes metadata like
+    /// the sketch so that the engine ID and surface can be accessed.
+    pub(crate) fn sketch_properties(
+        &self,
+        sketch: Option<Sketch>,
+        variables: HashMap<String, KclValue>,
+    ) -> HashMap<String, KclValue> {
+        let Some(sketch) = sketch else {
+            // The sketch block did not produce a Sketch, so we cannot provide
+            // it.
+            return variables;
+        };
+
+        let mut properties = variables;
+
+        let sketch_value = KclValue::Sketch {
+            value: Box::new(sketch),
+        };
+        let mut meta_map = HashMap::with_capacity(1);
+        meta_map.insert(SKETCH_OBJECT_META_SKETCH.to_owned(), sketch_value);
+        let meta_value = KclValue::Object {
+            value: meta_map,
+            constrainable: false,
+            meta: vec![Metadata {
+                source_range: SourceRange::from(self),
+            }],
+        };
+
+        properties.insert(SKETCH_OBJECT_META.to_owned(), meta_value);
+
+        properties
     }
 }
 
