@@ -19,7 +19,7 @@ const HOVER_COLOR = packRgbToColor(
   SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
 )
 
-export class DimensionLineResources {
+export class ConstraintResources {
   arrowGeometry = createArrowGeometry()
   planeGeometry = new PlaneGeometry(1, 1)
 

@@ -13,7 +13,7 @@ import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimension
 import type { SpriteLabel } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import type { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
+import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   DISTANCE_CONSTRAINT_BODY,
@@ -48,7 +48,7 @@ export const CONSTRAINT_COLOR = {
 
 export function createDimensionLine(
   obj: ApiObject,
-  resources: DimensionLineResources
+  resources: ConstraintResources
 ): Group | null {
   if (obj.kind.type !== 'Constraint') return null
 
@@ -127,7 +127,7 @@ export function updateDimensionLine(
   selectedIds: number[],
   hoveredId: number | null,
   distance: Number,
-  resources: DimensionLineResources
+  resources: ConstraintResources
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
   const midpoint = start.clone().add(end).multiplyScalar(0.5)

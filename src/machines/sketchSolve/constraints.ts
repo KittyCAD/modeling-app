@@ -11,7 +11,7 @@ import {
 
 import { getResolvedTheme } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
+import { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   getDistanceEndPoints,
   isDiameterConstraint,
@@ -39,7 +39,7 @@ export type EditingCallbacks = {
 }
 
 export class ConstraintUtils {
-  private resources = new DimensionLineResources()
+  private resources = new ConstraintResources()
 
   public init(obj: ApiObject): Group | null {
     if (
