@@ -213,7 +213,7 @@ export interface SketchEntityUtils {
   update: (args: UpdateSegmentArgs) => undefined | Error
 }
 
-class PointSegment implements SketchEntityUtils {
+class PointSegmentDOM implements SketchEntityUtils {
   /**
    * Updates the inner circle colors based on selection state
    */
@@ -1135,7 +1135,7 @@ export function htmlHelper(
 }
 
 export const segmentUtilsMap = {
-  PointSegment: new PointSegment(),
+  PointSegment: new PointSegmentDOM(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
   DimensionConstraint: new ConstraintUtils(),
