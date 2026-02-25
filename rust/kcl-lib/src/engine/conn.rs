@@ -510,7 +510,7 @@ impl EngineManager for EngineConnection {
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine_hangup(KclErrorDetails::new(
                         "Modeling command failed: websocket closed early".to_string(),
                         vec![source_range],
                     )));
