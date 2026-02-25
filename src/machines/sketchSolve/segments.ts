@@ -7,13 +7,16 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type Themes } from '@src/lib/theme'
 import { hasNumericValue } from '@src/lib/kclHelpers'
-import type { Mesh } from 'three'
 import {
   BufferGeometry,
+  CircleGeometry,
+  DoubleSide,
   EllipseCurve,
   Group,
   Line,
   LineBasicMaterial,
+  Mesh,
+  MeshBasicMaterial,
   Vector2,
   Vector3,
 } from 'three'
@@ -145,6 +148,7 @@ export const SEGMENT_TYPE_LINE = 'LINE'
 export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
+export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -223,7 +227,6 @@ class PointSegmentDOM implements SketchEntityUtils {
           ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
           style="
           pointer-events: none;
-          opacity: 0.12;
           width: 20px;
           height: 20px;
           position: absolute;
@@ -240,6 +243,7 @@ class PointSegmentDOM implements SketchEntityUtils {
               width: 6px;
               height: 6px;
               border-radius: 50%;
+              display: none;
               background: #ffffff;
             "
           ></div>
@@ -250,7 +254,7 @@ class PointSegmentDOM implements SketchEntityUtils {
 
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Point') {
-      return new Error('Invalid input type for PointSegment')
+      return new Error('Invalid input type for PointSegmentDOM')
     }
     const segmentGroup = new Group()
 
@@ -307,6 +311,124 @@ class PointSegmentDOM implements SketchEntityUtils {
       el.dataset.isDraft = String(isDraft)
       el.dataset.freedom = freedom ?? ''
     }
+  }
+}
+
+class PointSegment implements SketchEntityUtils {
+  private readonly pointDom = new PointSegmentDOM()
+  private readonly circleGeometry = new CircleGeometry(3, 12)
+  init = (args: CreateSegmentArgs) => {
+    if (args.input.type !== 'Point') {
+      return new Error('Invalid input type for PointSegment')
+    }
+
+    const segmentGroup = this.pointDom.init(args)
+    if (!(segmentGroup instanceof Group)) {
+      return segmentGroup
+    }
+
+    const pointBody = new Mesh(
+      this.circleGeometry,
+      new MeshBasicMaterial({
+        color: KCL_DEFAULT_COLOR,
+        side: DoubleSide,
+        depthTest: false,
+      })
+    )
+    pointBody.userData.type = POINT_SEGMENT_BODY
+    pointBody.userData.isHovered = false
+    pointBody.name = POINT_SEGMENT_BODY
+    pointBody.renderOrder = 10
+    pointBody.layers.set(SKETCH_LAYER)
+
+    // Keep DOM handle first in children array so existing tests still work.
+    segmentGroup.add(pointBody)
+    segmentGroup.userData.type = SEGMENT_TYPE_POINT
+
+    this.update({
+      input: args.input,
+      theme: args.theme,
+      id: args.id,
+      scale: args.scale,
+      group: segmentGroup,
+      selectedIds: [],
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
+    })
+
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    if (args.input.type !== 'Point') {
+      return new Error('Invalid input type for PointSegment')
+    }
+
+    const { input, group, scale, selectedIds, id, isDraft, isConstruction } =
+      args
+    const { x, y } = input.position
+    if (!(hasNumericValue(x) && hasNumericValue(y))) {
+      return new Error('Invalid position values for PointSegment')
+    }
+
+    const domUpdateResult = this.pointDom.update(args)
+    if (domUpdateResult instanceof Error) {
+      return domUpdateResult
+    }
+
+    const pointBody = group.children.find(
+      (child) => child.userData?.type === POINT_SEGMENT_BODY
+    )
+    if (!(pointBody instanceof Mesh)) {
+      console.error('No point segment body found in group')
+      return
+    }
+
+    pointBody.position.set(x.value / scale, y.value / scale, 0)
+
+    const isSelected = selectedIds.includes(id)
+    const isHovered = pointBody.userData.isHovered === true
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+
+    group.userData.freedom = freedom
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
+    group.userData.type = SEGMENT_TYPE_POINT
+
+    this.updatePointColor(pointBody, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
+  }
+
+  private updatePointColor(
+    mesh: Mesh,
+    {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    }: {
+      isSelected: boolean
+      isHovered: boolean
+      isDraft: boolean
+      freedom?: Freedom | null
+    }
+  ) {
+    if (!(mesh.material instanceof MeshBasicMaterial)) {
+      return
+    }
+
+    const color = getSegmentColor({
+      isDraft,
+      isHovered,
+      isSelected,
+      freedom,
+    })
+    mesh.material.color.set(color)
   }
 }
 
@@ -1034,7 +1156,7 @@ export function htmlHelper(
 }
 
 export const segmentUtilsMap = {
-  PointSegment: new PointSegmentDOM(),
+  PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
   DimensionConstraint: new ConstraintUtils(),
