@@ -39,7 +39,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export default class RustContext {
   private readonly _wasmInstancePromise: Promise<ModuleType>
@@ -243,7 +243,7 @@ export default class RustContext {
 
     try {
       const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(getSettingsFromActorContext(this._settingsActor)),
+        JSON.stringify(jsAppSettings(this._settingsActor)),
         path
       )
 

@@ -413,6 +413,7 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const newBackfaceColor = context.modeling.backfaceColor.current
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.singletons.kclManager.sceneInfra.theme = opposingTheme
@@ -421,9 +422,10 @@ export class App implements AppSubsystems {
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.engineCommandManager.connection) {
-      this.singletons.engineCommandManager
-        .setTheme(newTheme)
-        .catch(reportRejection)
+      Promise.all([
+        this.singletons.engineCommandManager.setTheme(newTheme),
+        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
+      ]).catch(reportRejection)
     }
 
     // Execute AST
@@ -448,7 +450,12 @@ export class App implements AppSubsystems {
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
-        this.singletons.kclManager.executeCode().catch(reportRejection)
+        this.singletons.rustContext
+          .clearSceneAndBustCache(
+            this.singletons.kclManager.currentFilePath || undefined
+          )
+          .then(() => this.singletons.kclManager.executeCode())
+          .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
