@@ -744,7 +744,6 @@ export class KclManager extends EventTarget {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.systemDeps.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(this.systemDeps.rustContext.settingsActor),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
