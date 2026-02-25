@@ -1,10 +1,14 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { expect, vi, describe, test } from 'vitest'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { App } from '@src/lib/app'
 
 describe('useOnPageMounted', () => {
-  const singletons = new App().singletons
+  const singletons = App.fromProvided({
+    wasmPromise: Promise.resolve({} as ModuleType),
+  }).singletons
+
   describe('on mounted', () => {
     test('should run once', () => {
       const callback = vi.fn(() => 1)
