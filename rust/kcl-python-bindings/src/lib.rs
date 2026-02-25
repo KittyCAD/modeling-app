@@ -107,8 +107,7 @@ async fn load_and_parse(input: KclInput) -> PyResult<LoadedAndParsedKcl> {
         KclInput::Code(code) => (code, None, String::new()),
     };
 
-    let program =
-        kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse(&filename, &code, err))?;
+    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse(&filename, &code, err))?;
 
     Ok(LoadedAndParsedKcl {
         code,
