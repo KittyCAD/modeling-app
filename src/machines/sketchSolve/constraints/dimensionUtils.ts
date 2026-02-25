@@ -46,6 +46,21 @@ export function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
   return { p1, p2, distance: constraint.distance }
 }
 
+export function isPointSegment(
+  obj: ApiObject | undefined
+): obj is PointSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+}
+
+export type PointSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Point' } }
+}
+
+export function pointToVec3(obj: PointSegment) {
+  const position = obj.kind.segment.position
+  return new Vector3(position.x.value, position.y.value, 0)
+}
+
 export function isDistanceConstraint(kind: ApiObjectKind): kind is {
   type: 'Constraint'
   constraint: Extract<

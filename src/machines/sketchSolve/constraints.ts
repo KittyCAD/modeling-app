@@ -1,5 +1,5 @@
-import type { ApiArc, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { type Group, Vector3, Mesh, Vector2 } from 'three'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { type Group, Vector3, Mesh } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import {
@@ -16,7 +16,9 @@ import {
   getEndPoints,
   isDiameterConstraint,
   isDistanceConstraint,
+  isPointSegment,
   isRadiusConstraint,
+  pointToVec3,
 } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import {
   CONSTRAINT_COLOR,
@@ -169,32 +171,18 @@ export class ConstraintUtils {
     } else if (isRadiusConstraint(obj.kind) || isDiameterConstraint(obj.kind)) {
       const arc = objects[obj.kind.constraint.arc]
       if (arc?.kind.type === 'Segment' && arc.kind.segment.type === 'Arc') {
-        const center = objects[arc.kind.segment.center]
-        const start = objects[arc.kind.segment.start]
-        const end = objects[arc.kind.segment.end]
+        const centerObject = objects[arc.kind.segment.center]
+        const startObject = objects[arc.kind.segment.start]
 
-        if (
-          center?.kind.type === 'Segment' &&
-          center.kind.segment.type === 'Point' &&
-          start?.kind.type === 'Segment' &&
-          start.kind.segment.type === 'Point' &&
-          end?.kind.type === 'Segment' &&
-          end.kind.segment.type === 'Point'
-        ) {
-          const p1 = start.kind.segment.position
-          const p2 = end.kind.segment.position
-          const c = center.kind.segment.position
-
-          const s1 = new Vector3(p1.x.value, p1.y.value, 0)
-          const s2 = new Vector3(p2.x.value, p2.y.value, 0)
-
-          const cc = new Vector3(c.x.value, c.y.value, 0)
+        if (isPointSegment(centerObject) && isPointSegment(startObject)) {
+          const start = pointToVec3(startObject)
+          const center = pointToVec3(centerObject)
           const s3 = isRadiusConstraint(obj.kind)
-            ? cc
-            : cc.sub(s1.clone().sub(cc))
+            ? center
+            : center.sub(start.clone().sub(center))
 
           updateDimensionLine(
-            s1,
+            start,
             s3,
             group,
             obj,

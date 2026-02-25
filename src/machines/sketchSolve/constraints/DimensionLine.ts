@@ -11,10 +11,7 @@ import {
 } from 'three'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import type { SpriteLabel } from '@src/machines/sketchSolve/constraints/dimensionUtils'
-import {
-  getEndPoints,
-  isDistanceConstraint,
-} from '@src/machines/sketchSolve/constraints/dimensionUtils'
+import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/dimensionUtils'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import type { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
 import { Line2 } from 'three/examples/jsm/lines/Line2'

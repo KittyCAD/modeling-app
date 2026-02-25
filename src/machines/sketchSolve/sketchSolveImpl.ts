@@ -510,7 +510,7 @@ export function updateSceneGraphFromDelta({
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (!constraintGroup) {
-        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj, objects)
+        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
