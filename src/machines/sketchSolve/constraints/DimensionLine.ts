@@ -28,8 +28,8 @@ import {
   DISTANCE_CONSTRAINT_LABEL,
   DISTANCE_CONSTRAINT_HIT_AREA,
 } from '@src/clientSideScene/sceneConstants'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -131,10 +131,7 @@ export function updateDimensionLine(
   obj: ApiObject,
   scale: number,
   sceneInfra: SceneInfra,
-  selectedIds: number[],
-  hoveredId: number | null,
   distance: Number,
-  resources: ConstraintResources,
   isDiameter = false
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
@@ -166,44 +163,15 @@ export function updateDimensionLine(
   group.visible = true
   const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
 
-  const theme = getResolvedTheme(sceneInfra.theme)
-  const constraintColor = CONSTRAINT_COLOR[theme]
-  resources.updateMaterials(constraintColor)
-
-  // Pick material set based on hover/selected state
-  const isSelected = selectedIds.includes(obj.id)
-  const isHovered = hoveredId === obj.id
-  const materialSet = isHovered
-    ? resources.materials.hovered
-    : isSelected
-      ? resources.materials.selected
-      : resources.materials.default
-
-  // Swap materials on lines and arrows
+  // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
   for (const child of group.children) {
-    if (child instanceof Line2) {
-      child.material = materialSet.line
-    } else if (
-      child instanceof Mesh &&
-      child.userData.type === DISTANCE_CONSTRAINT_ARROW
-    ) {
-      child.material = materialSet.arrow
-    }
-  }
+    const isLabelVisual =
+      child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
+      child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
+      (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
 
-  for (const child of group.children) {
-    if (child.userData.type === DISTANCE_CONSTRAINT_LABEL) {
-      child.visible = showLabel
-    } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
-      child.visible = showLabel
-    } else if (
-      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-      child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-    ) {
-      child.visible = showLabel
-    } else {
-      child.visible = true
-    }
+    child.visible = isLabelVisual ? showLabel : true
   }
 
   // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
@@ -255,6 +223,8 @@ export function updateDimensionLine(
   arrow2.scale.setScalar(scale)
 
   if (showLabel) {
+    const theme = getResolvedTheme(sceneInfra.theme)
+    const constraintColor = CONSTRAINT_COLOR[theme]
     updateLabel(group, obj, constraintColor, distance, scale)
   }
 

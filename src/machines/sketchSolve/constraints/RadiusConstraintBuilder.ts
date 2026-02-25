@@ -1,5 +1,4 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   isDiameterConstraint,
@@ -14,6 +13,7 @@ import {
   createDimensionLine,
   updateDimensionLine,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export class RadiusConstraintBuilder {
   private readonly resources: ConstraintResources
@@ -47,6 +47,12 @@ export class RadiusConstraintBuilder {
           ? center
           : center.sub(start.clone().sub(center))
 
+        this.resources.updateConstraintGroup(
+          group,
+          obj.id,
+          selectedIds,
+          hoveredId
+        )
         updateDimensionLine(
           start,
           s3,
@@ -54,12 +60,9 @@ export class RadiusConstraintBuilder {
           obj,
           scale,
           sceneInfra,
-          selectedIds,
-          hoveredId,
           isRadiusConstraint(obj)
             ? obj.kind.constraint.radius
             : obj.kind.constraint.diameter,
-          this.resources,
           isDiameterConstraint(obj)
         )
       }

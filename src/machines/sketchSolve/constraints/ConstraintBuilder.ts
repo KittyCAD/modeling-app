@@ -12,6 +12,8 @@ import {
 
 import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
 import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
+import { getResolvedTheme } from '@src/lib/theme'
+import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
 
 export type EditingCallbacks = {
   cancel: () => void
@@ -44,6 +46,11 @@ export class ConstraintBuilder {
     selectedIds: number[],
     hoveredId: number | null
   ) {
+    // Technically this only needs to be done once per frame, before rendering, not per object.
+    const theme = getResolvedTheme(sceneInfra.theme)
+    const constraintColor = CONSTRAINT_COLOR[theme]
+    this.resources.updateMaterials(constraintColor)
+
     if (isDistanceConstraint(obj)) {
       this.distanceBuilder.update(
         group,

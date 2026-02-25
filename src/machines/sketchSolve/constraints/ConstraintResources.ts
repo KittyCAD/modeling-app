@@ -1,4 +1,7 @@
-import { SEGMENT_WIDTH_PX } from '@src/clientSideScene/sceneConstants'
+import {
+  DISTANCE_CONSTRAINT_ARROW,
+  SEGMENT_WIDTH_PX,
+} from '@src/clientSideScene/sceneConstants'
 import {
   packRgbToColor,
   SKETCH_SELECTION_COLOR,
@@ -8,9 +11,12 @@ import {
   BufferGeometry,
   DoubleSide,
   Float32BufferAttribute,
+  type Group,
+  Mesh,
   MeshBasicMaterial,
   PlaneGeometry,
 } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
 
 const debug_hit_areas = false
@@ -70,6 +76,34 @@ export class ConstraintResources {
     this.materials.default.line.linewidth = linewidth
     this.materials.hovered.line.linewidth = linewidth
     this.materials.selected.line.linewidth = linewidth
+  }
+
+  public updateConstraintGroup(
+    group: Group,
+    objId: number,
+    selectedIds: number[],
+    hoveredId: number | null
+  ) {
+    // Pick material set based on hover/selected state
+    const isSelected = selectedIds.includes(objId)
+    const isHovered = hoveredId === objId
+    const materialSet = isHovered
+      ? this.materials.hovered
+      : isSelected
+        ? this.materials.selected
+        : this.materials.default
+
+    // Swap materials on lines and arrows
+    for (const child of group.children) {
+      if (child instanceof Line2) {
+        child.material = materialSet.line
+      } else if (
+        child instanceof Mesh &&
+        child.userData.type === DISTANCE_CONSTRAINT_ARROW
+      ) {
+        child.material = materialSet.arrow
+      }
+    }
   }
 }
 

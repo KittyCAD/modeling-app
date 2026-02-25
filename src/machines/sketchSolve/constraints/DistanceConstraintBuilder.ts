@@ -6,10 +6,8 @@ import {
   type DistanceConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  CONSTRAINT_COLOR,
   createDimensionLine,
   DIMENSION_HIDE_THRESHOLD_PX,
-  DIMENSION_LABEL_HIDE_THRESHOLD_PX,
   HIT_AREA_WIDTH_PX,
   updateDimensionLine,
   updateLineHitArea,
@@ -17,15 +15,12 @@ import {
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
-  DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_HIT_AREA,
-  DISTANCE_CONSTRAINT_LABEL,
   DISTANCE_CONSTRAINT_LEADER_LINE,
 } from '@src/clientSideScene/sceneConstants'
 import { type Group, Mesh, Vector3 } from 'three'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { getResolvedTheme } from '@src/lib/theme'
 
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
@@ -55,67 +50,20 @@ export class DistanceConstraintBuilder {
     const points = getDistanceEndPoints(obj, objects)
     if (points) {
       const { p1, p2, distance } = points
-
       const { start, end, perp } = getDirections(obj, p1, p2, scale)
-
       const dimensionLengthPx = start.distanceTo(end) / scale
       if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
         group.visible = false
         return
       }
-
       group.visible = true
-      const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
-
-      const theme = getResolvedTheme(sceneInfra.theme)
-      const constraintColor = CONSTRAINT_COLOR[theme]
-      this.resources.updateMaterials(constraintColor)
-
-      // Pick material set based on hover/selected state
-      const isSelected = selectedIds.includes(obj.id)
-      const isHovered = hoveredId === obj.id
-      const materialSet = isHovered
-        ? this.resources.materials.hovered
-        : isSelected
-          ? this.resources.materials.selected
-          : this.resources.materials.default
-
-      // Swap materials on lines and arrows
-      for (const child of group.children) {
-        if (child instanceof Line2) {
-          child.material = materialSet.line
-        } else if (
-          child instanceof Mesh &&
-          child.userData.type === DISTANCE_CONSTRAINT_ARROW
-        ) {
-          child.material = materialSet.arrow
-        }
-      }
-
-      // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
-      for (const child of group.children) {
-        const isLabelVisual =
-          child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
-          child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
-          (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-            child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
-
-        child.visible = isLabelVisual ? showLabel : true
-      }
-
-      updateDimensionLine(
-        start,
-        end,
+      this.resources.updateConstraintGroup(
         group,
-        obj,
-        scale,
-        sceneInfra,
+        obj.id,
         selectedIds,
-        hoveredId,
-        distance,
-        this.resources
+        hoveredId
       )
-
+      updateDimensionLine(start, end, group, obj, scale, sceneInfra, distance)
       this.updateLeaderLines(start, end, perp, p1, p2, group, scale)
     }
   }
