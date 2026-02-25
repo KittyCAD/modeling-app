@@ -40,6 +40,7 @@ export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixe
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
+const DIAMETER_LABEL_OFFSET_PX = 15 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
 export const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
 
@@ -130,11 +131,19 @@ export function updateDimensionLine(
   hoveredId: number | null,
   distance: Number,
   resources: ConstraintResources,
-  labelPosition = 0.5
+  isDiameter = false
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
-  const labelPositionClamped = Math.min(1, Math.max(0, labelPosition))
-  const labelCenter = start.clone().lerp(end, labelPositionClamped)
+  const lineCenter = start.clone().lerp(end, 0.5)
+  const dir = end.clone().sub(start).normalize()
+  const labelCenter = isDiameter
+    ? lineCenter.clone().add(
+        dir
+          .clone()
+          .set(-dir.y, dir.x, 0)
+          .multiplyScalar(DIAMETER_LABEL_OFFSET_PX * scale)
+      )
+    : lineCenter
 
   const label = group.children.find(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
@@ -193,16 +202,18 @@ export function updateDimensionLine(
     }
   }
 
-  // Main constraint lines with gap around the label position
-  const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
-  const dir = end.clone().sub(start).normalize()
-  const gapStart = labelCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
-  const gapEnd = labelCenter.clone().add(dir.clone().multiplyScalar(halfGap))
+  // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
+  const halfGap =
+    showLabel && !isDiameter ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
+  const gapStart = lineCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
+  const gapEnd = lineCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(
     0,
     Math.min(start.distanceTo(gapStart), gapEnd.distanceTo(end))
   )
-  const endInset = Math.min(DIMENSION_LINE_END_INSET_PX * scale, maxEndInset)
+  const endInset = showLabel
+    ? Math.min(DIMENSION_LINE_END_INSET_PX * scale, maxEndInset)
+    : 0
   const lineStart = start.clone().add(dir.clone().multiplyScalar(endInset))
   const lineEnd = end.clone().sub(dir.clone().multiplyScalar(endInset))
 

@@ -2,6 +2,7 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
+  isDiameterConstraint,
   isPointSegment,
   isRadiusConstraint,
   pointToVec3,
@@ -60,7 +61,7 @@ export class RadiusConstraintBuilder {
             ? obj.kind.constraint.radius
             : obj.kind.constraint.diameter,
           this.resources,
-          isRadiusConstraint(obj) ? 0.5 : 0.28
+          isDiameterConstraint(obj)
         )
       }
     }
