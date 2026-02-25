@@ -90,14 +90,14 @@ enum KclInput {
     Code(String),
 }
 
-struct LoadedAndParsedKcl {
+struct KclProgram {
     code: String,
     program: kcl_lib::Program,
     path: Option<PathBuf>,
     filename: String,
 }
 
-async fn load_and_parse(input: KclInput) -> PyResult<LoadedAndParsedKcl> {
+async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
     let (code, path, filename) = match input {
         KclInput::Path(input_path) => {
             let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
@@ -109,7 +109,7 @@ async fn load_and_parse(input: KclInput) -> PyResult<LoadedAndParsedKcl> {
 
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse(&filename, &code, err))?;
 
-    Ok(LoadedAndParsedKcl {
+    Ok(KclProgram {
         code,
         program,
         path,
@@ -142,7 +142,7 @@ struct ExecutedKcl {
 }
 
 async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
-    let LoadedAndParsedKcl {
+    let KclProgram {
         code,
         program,
         path,
