@@ -8,14 +8,15 @@ use crate::{
     errors::KclErrorDetails,
     exec::{KclValue, NumericType, Sketch},
     execution::{
-        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, Segment, SegmentKind, SketchSurface,
+        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH,
+        Segment, SegmentKind, SketchSurface,
         types::{ArrayLen, RuntimeType},
     },
     front::ObjectId,
     parsing::ast::types::TagNode,
     std::{
         Args, CircularDirection,
-        args::TyF64,
+        args::{FromKclValue, TyF64},
         sketch::{StraightLineParams, create_sketch, relative_arc, straight_line},
         utils::{distance, point_to_len_unit, point_to_mm, untype_point},
     },
@@ -197,61 +198,144 @@ pub(crate) async fn create_segments_in_engine(
 }
 
 pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let segments: Vec<KclValue> = args.get_kw_arg(
+    let point = args.get_kw_arg_opt(
+        "point",
+        &RuntimeType::Union(vec![RuntimeType::point2d(), RuntimeType::segment()]),
+        exec_state,
+    )?;
+    let segments = args.get_kw_arg_opt(
         "segments",
         &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Known(2)),
         exec_state,
     )?;
     let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
     let direction = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
-    inner_region(segments, intersection_index, direction, exec_state, args).await
+    let sketch = args.get_kw_arg_opt("sketch", &RuntimeType::any(), exec_state)?;
+    inner_region(point, segments, intersection_index, direction, sketch, exec_state, args).await
+}
+
+/// Helper enum to reduce cloning of Sketch and Segment in the two branches of
+/// region creation.
+#[expect(clippy::large_enum_variant)]
+enum SketchOrSegment {
+    Sketch(Sketch),
+    Segment(Segment),
+}
+
+impl SketchOrSegment {
+    fn sketch(&self) -> Result<&Sketch, KclError> {
+        match self {
+            SketchOrSegment::Sketch(sketch) => Ok(sketch),
+            SketchOrSegment::Segment(segment) => segment.sketch.as_ref().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Segment should have an associated sketch".to_owned(),
+                    vec![],
+                ))
+            }),
+        }
+    }
 }
 
 async fn inner_region(
-    segments: Vec<KclValue>,
+    point: Option<KclValue>,
+    segments: Option<Vec<KclValue>>,
     intersection_index: Option<TyF64>,
     direction: Option<CircularDirection>,
+    sketch: Option<KclValue>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
-    let segments_len = segments.len();
-    let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
-        KclError::new_argument(KclErrorDetails::new(
-            format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
-            vec![args.source_range],
-        ))
-    })?;
-    let Some(seg0) = seg0_value.as_segment() else {
-        return Err(KclError::new_argument(KclErrorDetails::new(
-            "Expected first segment to be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(seg1) = seg1_value.as_segment() else {
-        return Err(KclError::new_argument(KclErrorDetails::new(
-            "Expected second segment to be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let intersection_index = intersection_index.map(|n| n.n as i32).unwrap_or(-1);
-    let direction = direction.unwrap_or(CircularDirection::Counterclockwise);
-
     let region_id = exec_state.next_uuid();
-    let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-    exec_state
-        .batch_modeling_cmd(
-            meta,
-            ModelingCmd::from(
-                mcmd::CreateRegion::builder()
-                    .object_id(seg0.sketch_id)
-                    .segment(seg0.id)
-                    .intersection_segment(seg1.id)
-                    .intersection_index(intersection_index)
-                    .curve_clockwise(direction.is_clockwise())
-                    .build(),
-            ),
-        )
-        .await?;
+
+    let sketch_or_segment = match (point, segments) {
+        (Some(point), None) => {
+            let (sketch, pt) = region_from_point(point, sketch, &args)?;
+
+            let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
+            exec_state
+                .batch_modeling_cmd(
+                    meta,
+                    ModelingCmd::from(
+                        mcmd::CreateRegionFromQueryPoint::builder()
+                            .object_id(sketch.sketch()?.id)
+                            .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .build(),
+                    ),
+                )
+                .await?;
+
+            sketch
+        }
+        (None, Some(segments)) => {
+            if sketch.is_some() {
+                // Don't allow an explicit sketch to be passed in. It creates a
+                // problematic case if it doesn't match the sketch of the
+                // segments.
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Sketch parameter must not be provided when segments parameters is provided".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            let segments_len = segments.len();
+            let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
+                KclError::new_argument(KclErrorDetails::new(
+                    format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
+                    vec![args.source_range],
+                ))
+            })?;
+            let Some(seg0) = seg0_value.into_segment() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    "Expected first segment to be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let Some(seg1) = seg1_value.into_segment() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    "Expected second segment to be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let intersection_index = intersection_index.map(|n| n.n as i32).unwrap_or(-1);
+            let direction = direction.unwrap_or(CircularDirection::Counterclockwise);
+
+            let Some(sketch) = &seg0.sketch else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Expected first segment to have an associated sketch. The sketch must be solved to create a region from it.".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
+            exec_state
+                .batch_modeling_cmd(
+                    meta,
+                    ModelingCmd::from(
+                        mcmd::CreateRegion::builder()
+                            .object_id(sketch.id)
+                            .segment(seg0.id)
+                            .intersection_segment(seg1.id)
+                            .intersection_index(intersection_index)
+                            .curve_clockwise(direction.is_clockwise())
+                            .build(),
+                    ),
+                )
+                .await?;
+
+            SketchOrSegment::Segment(seg0)
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Both point and segments parameters must not be provided. Choose one.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Either point or segments parameter must be provided".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    };
 
     let units = exec_state.length_unit();
     // Dummy to-coordinate.
@@ -265,7 +349,10 @@ async fn inner_region(
             units,
             tag: None,
             geo_meta: GeoMeta {
-                id: seg0.id,
+                id: match &sketch_or_segment {
+                    SketchOrSegment::Sketch(sketch) => sketch.id,
+                    SketchOrSegment::Segment(segment) => segment.id,
+                },
                 metadata: args.source_range.into(),
             },
         },
@@ -280,21 +367,30 @@ async fn inner_region(
             metadata: args.source_range.into(),
         },
     };
-    let mut sketch = seg0.sketch.clone().unwrap_or_else(|| Sketch {
-        id: region_id,
-        original_id: region_id,
-        artifact_id: region_id.into(),
-        on: seg0.surface.clone(),
-        paths: vec![first_path],
-        inner_paths: vec![],
-        units,
-        mirror: Default::default(),
-        clone: Default::default(),
-        meta: vec![args.source_range.into()],
-        tags: Default::default(),
-        start: start_base_path,
-        is_closed: ProfileClosed::Explicitly,
-    });
+    let mut sketch = match sketch_or_segment {
+        SketchOrSegment::Sketch(sketch) => sketch,
+        SketchOrSegment::Segment(segment) => {
+            if let Some(sketch) = segment.sketch {
+                sketch
+            } else {
+                Sketch {
+                    id: region_id,
+                    original_id: region_id,
+                    artifact_id: region_id.into(),
+                    on: segment.surface.clone(),
+                    paths: vec![first_path],
+                    inner_paths: vec![],
+                    units,
+                    mirror: Default::default(),
+                    clone: Default::default(),
+                    meta: vec![args.source_range.into()],
+                    tags: Default::default(),
+                    start: start_base_path,
+                    is_closed: ProfileClosed::Explicitly,
+                }
+            }
+        }
+    };
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
@@ -305,4 +401,94 @@ async fn inner_region(
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
+}
+
+fn region_from_point(
+    point: KclValue,
+    sketch: Option<KclValue>,
+    args: &Args,
+) -> Result<(SketchOrSegment, [TyF64; 2]), KclError> {
+    match point {
+        KclValue::HomArray { .. } | KclValue::Tuple { .. } => {
+            let Some(pt) = <[TyF64; 2]>::from_kcl_val(&point) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Expected 2D point for point parameter".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let Some(sketch_value) = sketch else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Sketch must be provided when point is a 2D point".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let sketch = match sketch_value {
+                KclValue::Sketch { value } => *value,
+                KclValue::Object { value, .. } => {
+                    let Some(meta_value) = value.get(SKETCH_OBJECT_META) else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch to be of type Sketch with a meta field. Sketch must not be empty to create a region.".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    let meta_map = match meta_value {
+                        KclValue::Object { value, .. } => value,
+                        _ => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Expected sketch to be of type Sketch with a meta field that's an object".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
+                    };
+                    let Some(sketch_value) = meta_map.get(SKETCH_OBJECT_META_SKETCH) else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch meta to have a sketch field. Sketch must not be empty to create a region."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    let Some(sketch) = sketch_value.as_sketch() else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch meta to have a sketch field of type Sketch. Sketch must not be empty to create a region.".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    sketch.clone()
+                }
+                _ => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Expected sketch to be of type Sketch".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+            };
+
+            Ok((SketchOrSegment::Sketch(sketch), pt))
+        }
+        KclValue::Segment { value } => match value.repr {
+            crate::execution::SegmentRepr::Unsolved { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Segment provided to point parameter is unsolved; segments must be solved to be used as points"
+                    .to_owned(),
+                vec![args.source_range],
+            ))),
+            crate::execution::SegmentRepr::Solved { segment } => {
+                let pt = match &segment.kind {
+                    SegmentKind::Point { position, .. } => position.clone(),
+                    _ => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected segment to be a point segment".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                };
+
+                Ok((SketchOrSegment::Segment(*segment), pt))
+            }
+        },
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "Expected point to be either a 2D point like `[0, 0]` or a point segment created from `point()`".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
 }
