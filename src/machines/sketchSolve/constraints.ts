@@ -13,7 +13,7 @@ import { getResolvedTheme } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DimensionLineResources } from '@src/machines/sketchSolve/constraints/DimensionLineResources'
 import {
-  getEndPoints,
+  getDistanceEndPoints,
   isDiameterConstraint,
   isDistanceConstraint,
   isPointSegment,
@@ -102,7 +102,7 @@ export class ConstraintUtils {
     hoveredId: number | null
   ) {
     if (isDistanceConstraint(obj.kind)) {
-      const points = getEndPoints(obj, objects)
+      const points = getDistanceEndPoints(obj, objects)
       if (points) {
         const { p1, p2, distance } = points
 

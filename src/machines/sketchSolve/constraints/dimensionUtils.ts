@@ -13,7 +13,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
-export function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
+export function getDistanceEndPoints(obj: ApiObject, objects: ApiObject[]) {
   if (!isDistanceConstraint(obj.kind)) {
     return null
   }
@@ -23,27 +23,14 @@ export function getEndPoints(obj: ApiObject, objects: ApiObject[]) {
   const p1Obj = objects[p1Id]
   const p2Obj = objects[p2Id]
 
-  if (
-    p1Obj?.kind.type !== 'Segment' ||
-    p1Obj.kind.segment.type !== 'Point' ||
-    p2Obj?.kind.type !== 'Segment' ||
-    p2Obj.kind.segment.type !== 'Point'
-  ) {
-    return null
+  if (isPointSegment(p1Obj) && isPointSegment(p2Obj)) {
+    return {
+      p1: pointToVec3(p1Obj),
+      p2: pointToVec3(p2Obj),
+      distance: constraint.distance,
+    }
   }
-
-  const p1 = new Vector3(
-    p1Obj.kind.segment.position.x.value,
-    p1Obj.kind.segment.position.y.value,
-    0
-  )
-  const p2 = new Vector3(
-    p2Obj.kind.segment.position.x.value,
-    p2Obj.kind.segment.position.y.value,
-    0
-  )
-
-  return { p1, p2, distance: constraint.distance }
+  return null
 }
 
 export function isPointSegment(
