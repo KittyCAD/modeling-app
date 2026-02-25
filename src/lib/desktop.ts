@@ -1,13 +1,15 @@
+import type { IElectronAPI } from '@root/interface'
 import type { User } from '@kittycad/lib'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { type IStat } from '@src/lib/fs-zds/interface'
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import type { IElectronAPI } from '@root/interface'
 import { newKclFile } from '@src/lang/project'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   defaultAppSettings,
   parseAppSettings,
@@ -32,13 +34,13 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
-import type { Stats } from 'fs'
 
-const convertStatsToFileMetadata = (
-  stats: Stats | null
+const convertIStatToFileMetadata = (
+  stats: IStat | null
 ): FileMetadata | null => {
   if (!stats) {
     return null
@@ -65,7 +67,7 @@ export async function renameProjectDirectory(
   }
 
   try {
-    await electron.stat(projectPath)
+    await fsZds.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Path ${projectPath} is not a directory`))
@@ -73,12 +75,9 @@ export async function renameProjectDirectory(
   }
 
   // Make sure the new name does not exist.
-  const newPath = fsManager.path.join(
-    fsManager.path.dirname(projectPath),
-    newName
-  )
+  const newPath = fsZds.join(fsZds.dirname(projectPath), newName)
   try {
-    await electron.stat(newPath)
+    await fsZds.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
     // with the same name...
     return Promise.reject(
@@ -89,7 +88,7 @@ export async function renameProjectDirectory(
   } catch (e) {
     // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
     if (e === 'ENOENT') {
-      await electron.rename(projectPath, newPath)
+      await fsZds.rename(projectPath, newPath)
       return newPath
     }
   }
@@ -106,25 +105,22 @@ export async function ensureProjectDirectoryExists(
     return Promise.reject(new Error('projectDir is falsey'))
   }
   try {
-    await electron.stat(projectDir)
+    await fsZds.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await electron.mkdir(projectDir, { recursive: true })
+      await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
 
   return projectDir
 }
 
-export async function mkdirOrNOOP(
-  electron: IElectronAPI,
-  directoryPath: string
-) {
+export async function mkdirOrNOOP(directoryPath: string) {
   try {
-    await electron.stat(directoryPath)
+    await fsZds.stat(directoryPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await electron.mkdir(directoryPath, { recursive: true })
+      await fsZds.mkdir(directoryPath, { recursive: true })
     }
   }
 
@@ -156,18 +152,18 @@ export async function createNewProjectDirectory(
   if (!mainDir) {
     return Promise.reject(new Error('mainDir is falsey'))
   }
-  const projectDir = fsManager.path.join(mainDir, projectName)
+  const projectDir = fsZds.join(mainDir, projectName)
 
   try {
-    await electron.stat(projectDir)
+    await fsZds.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await electron.mkdir(projectDir, { recursive: true })
+      await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
-  const projectFile = fsManager.path.join(projectDir, kclFileName)
+  const projectFile = fsZds.join(projectDir, kclFileName)
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
@@ -177,15 +173,19 @@ export async function createNewProjectDirectory(
     wasmInstance
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
-  await electron.writeFile(projectFile, codeToWrite)
+  await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
   let metadata: FileMetadata | null = null
   try {
-    metadata = convertStatsToFileMetadata(await electron.stat(projectFile))
+    metadata = convertIStatToFileMetadata(await fsZds.stat(projectFile))
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
       return Promise.reject(new Error(`File ${projectFile} does not exist`))
     }
+  }
+  if (metadata === undefined || metadata === null) {
+    console.error('File does not exist')
+    return Promise.reject(new Error(`File ${projectFile} does not exist`))
   }
 
   return {
@@ -195,7 +195,11 @@ export async function createNewProjectDirectory(
     // Because we just created it and it's empty.
     children: null,
     default_file: projectFile,
-    metadata,
+    metadata: {
+      ...metadata,
+      type: 'directory',
+      size: metadata.size,
+    },
     kcl_file_count: 1,
     directory_count: 0,
     // If the mkdir did not crash you have readWriteAccess
@@ -226,10 +230,10 @@ export async function listProjects(
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-  const entries = await electron.readdir(projectDir)
+  const entries = await fsZds.readdir(projectDir)
 
   const { value: canReadWriteProjectDirectory } =
-    await electron.canReadWriteDirectory(projectDir)
+    await canReadWriteDirectory(projectDir)
 
   for (let entry of entries) {
     // Skip directories that start with a dot
@@ -237,11 +241,11 @@ export async function listProjects(
       continue
     }
 
-    const projectPath = electron.path.join(projectDir, entry)
+    const projectPath = fsZds.join(projectDir, entry)
 
     // if it's not a directory ignore.
     // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-    const isDirectory = await electron.statIsDirectory(projectPath)
+    const isDirectory = await statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
     }
@@ -265,7 +269,7 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   electron: IElectronAPI,
-  path: string,
+  targetPath: string,
   canReadWritePath: boolean,
   fileExtensionsForFilter: string[]
 ) => {
@@ -282,24 +286,24 @@ const collectAllFilesRecursiveFrom = async (
 
   // Make sure the filesystem object exists.
   try {
-    await electron.stat(path)
+    await fsZds.stat(targetPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      return Promise.reject(new Error(`Directory ${path} does not exist`))
+      return Promise.reject(new Error(`Directory ${targetPath} does not exist`))
     }
   }
 
   // Make sure the path is a directory.
-  const isPathDir = await electron.statIsDirectory(path)
+  const isPathDir = await statIsDirectory(targetPath)
   if (!isPathDir) {
-    return Promise.reject(new Error(`Path ${path} is not a directory`))
+    return Promise.reject(new Error(`Path ${targetPath} is not a directory`))
   }
 
-  const name = electron.path.basename(path)
+  const name = fsZds.basename(targetPath)
 
   let entry: FileEntry = {
     name: name,
-    path,
+    path: targetPath,
     children: [],
   }
 
@@ -310,7 +314,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-  const entries = await electron.readdir(path)
+  const entries = await fsZds.readdir(targetPath)
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -330,8 +334,8 @@ const collectAllFilesRecursiveFrom = async (
       continue
     }
 
-    const ePath = electron.path.join(path, e)
-    const isEDir = await electron.statIsDirectory(ePath)
+    const ePath = fsZds.join(targetPath, e)
+    const isEDir = await statIsDirectory(ePath)
 
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
@@ -367,28 +371,28 @@ export async function getDefaultKclFileForDir(
   file: FileEntry
 ) {
   // Make sure the dir is a directory.
-  const isFileEntryDir = await electron.statIsDirectory(projectDir)
+  const isFileEntryDir = await statIsDirectory(projectDir)
   if (!isFileEntryDir) {
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
   }
 
-  let defaultFilePath = electron.path.join(projectDir, PROJECT_ENTRYPOINT)
+  let defaultFilePath = fsZds.join(projectDir, PROJECT_ENTRYPOINT)
   try {
-    await electron.stat(defaultFilePath)
+    await fsZds.stat(defaultFilePath)
   } catch (e) {
     if (e === 'ENOENT') {
       // Find a kcl file in the directory.
       if (file.children) {
         for (let entry of file.children) {
           if (entry.name.endsWith('.kcl')) {
-            return electron.path.join(projectDir, entry.name)
+            return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
             return getDefaultKclFileForDir(electron, entry.path, entry)
           }
         }
         // If we didn't find a kcl file, create one.
-        await electron.writeFile(defaultFilePath, '')
+        await fsZds.writeFile(defaultFilePath, new Uint8Array())
         return defaultFilePath
       }
     }
@@ -438,9 +442,9 @@ export async function getProjectInfo(
   wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let stats: Stats | undefined
+  let stats: IStat | undefined
   try {
-    stats = await electron.stat(projectPath)
+    stats = await fsZds.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -450,7 +454,7 @@ export async function getProjectInfo(
   }
 
   // Make sure it is a directory.
-  const projectPathIsDir = await electron.statIsDirectory(projectPath)
+  const projectPathIsDir = await statIsDirectory(projectPath)
 
   if (!projectPathIsDir) {
     return Promise.reject(
@@ -460,7 +464,7 @@ export async function getProjectInfo(
 
   // Detect the projectPath has read write permission
   const { value: canReadWriteProjectPath } =
-    await electron.canReadWriteDirectory(projectPath)
+    await canReadWriteDirectory(projectPath)
 
   const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
   // Return walked early if canReadWriteProjectPath is false
@@ -480,7 +484,7 @@ export async function getProjectInfo(
 
   let project = {
     ...walked,
-    metadata: convertStatsToFileMetadata(stats ?? null),
+    metadata: convertIStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
@@ -507,7 +511,10 @@ export async function writeProjectSettingsFile(
     projectPath
   )
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return electron.writeFile(projectSettingsFilePath, tomlStr)
+  return fsZds.writeFile(
+    projectSettingsFilePath,
+    new TextEncoder().encode(tomlStr)
+  )
 }
 
 const getAppFolderName = (electron: IElectronAPI) => {
@@ -529,26 +536,30 @@ const getAppFolderName = (electron: IElectronAPI) => {
 }
 
 export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+  const isTestEnv = env().NODE_ENV === 'test'
 
-  const appConfig = await electron.getPath('appData')
+  const appConfig = await fsZds.getPath('appData')
+  let fullPath = fsZds.resolve(appConfig, getAppFolderName(electron))
 
-  const fullPath = isTestEnv
-    ? fsManager.path.resolve(testSettingsPath, '..')
-    : fsManager.path.resolve(appConfig, getAppFolderName(electron))
+  if (isTestEnv && electron) {
+    const testSettingsPath = await electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+
+    if (testSettingsPath) {
+      fullPath = fsZds.resolve(testSettingsPath, '..')
+    }
+  }
 
   try {
-    await electron.stat(fullPath)
+    await fsZds.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await electron.mkdir(fullPath, { recursive: true })
+      await fsZds.mkdir(fullPath, { recursive: true })
     }
   }
-  return fsManager.path.join(fullPath, SETTINGS_FILE_NAME)
+  return fsZds.join(fullPath, SETTINGS_FILE_NAME)
 }
 
 export const getEnvironmentConfigurationFolderPath = async (
@@ -576,15 +587,15 @@ export const getEnvironmentConfigurationPath = async (
 ) => {
   const fullPath = await getEnvironmentConfigurationFolderPath(electron)
   try {
-    await electron.stat(fullPath)
+    await fsZds.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await electron.mkdir(fullPath, { recursive: true })
+      await fsZds.mkdir(fullPath, { recursive: true })
     }
   }
   // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
-  return electron.path.join(fullPath, environmentName + '.json')
+  return fsZds.join(fullPath, environmentName + '.json')
 }
 
 export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
@@ -598,14 +609,14 @@ export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
     ? electron.path.resolve(testSettingsPath, '..')
     : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await electron.stat(fullPath)
+    await fsZds.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await electron.mkdir(fullPath, { recursive: true })
+      await fsZds.mkdir(fullPath, { recursive: true })
     }
   }
-  return electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
+  return fsZds.join(fullPath, ENVIRONMENT_FILE_NAME)
 }
 
 const getTelemetryFilePath = async (electron: IElectronAPI) => {
@@ -619,14 +630,14 @@ const getTelemetryFilePath = async (electron: IElectronAPI) => {
     ? electron.path.resolve(testSettingsPath, '..')
     : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await electron.stat(fullPath)
+    await fsZds.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await electron.mkdir(fullPath, { recursive: true })
+      await fsZds.mkdir(fullPath, { recursive: true })
     }
   }
-  return electron.path.join(fullPath, TELEMETRY_FILE_NAME)
+  return fsZds.join(fullPath, TELEMETRY_FILE_NAME)
 }
 
 const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
@@ -640,14 +651,14 @@ const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
     ? electron.path.resolve(testSettingsPath, '..')
     : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await electron.stat(fullPath)
+    await fsZds.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await electron.mkdir(fullPath, { recursive: true })
+      await fsZds.mkdir(fullPath, { recursive: true })
     }
   }
-  return electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
+  return fsZds.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
 const getProjectSettingsFilePath = async (
@@ -655,13 +666,13 @@ const getProjectSettingsFilePath = async (
   projectPath: string
 ) => {
   try {
-    await electron.stat(projectPath)
+    await fsZds.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await electron.mkdir(projectPath, { recursive: true })
+      await fsZds.mkdir(projectPath, { recursive: true })
     }
   }
-  return fsManager.path.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  return fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
 }
 
 export const getInitialDefaultDir = async (electron: IElectronAPI) => {
@@ -673,8 +684,8 @@ export const getInitialDefaultDir = async (electron: IElectronAPI) => {
   if (isTestEnv) {
     return testSettingsPath
   }
-  const dir = await electron.getPath('documents')
-  return electron.path.join(dir, PROJECT_FOLDER)
+  const dir = await fsZds.getPath('documents')
+  return fsZds.join(dir, PROJECT_FOLDER)
 }
 
 export const readProjectSettingsFile = async (
@@ -686,14 +697,14 @@ export const readProjectSettingsFile = async (
 
   // Check if this file exists.
   try {
-    await electron.stat(settingsPath)
+    await fsZds.stat(settingsPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return {}
     }
   }
 
-  const configToml = await fsManager.readFile(settingsPath, {
+  const configToml = await fsZds.readFile(settingsPath, {
     encoding: 'utf-8',
   })
   const configObj = parseProjectSettings(configToml, wasmInstance)
@@ -716,8 +727,9 @@ export const readAppSettingsFile = async (
   > = { directory: await getInitialDefaultDir(electron) }
 
   // The file exists, read it and parse it.
-  if (await fsManager.exists(settingsPath)) {
-    const configToml = await fsManager.readFile(settingsPath, {
+  try {
+    await fsZds.stat(settingsPath)
+    const configToml = await fsZds.readFile(settingsPath, {
       encoding: 'utf-8',
     })
     const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
@@ -745,6 +757,9 @@ export const readAppSettingsFile = async (
       }
       return mergedConfig
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
+    console.log('creating default app settings')
   }
 
   // The file doesn't exist, create a new one.
@@ -774,7 +789,7 @@ export const writeAppSettingsFile = async (
 ) => {
   const appSettingsFilePath = await getAppSettingsFilePath(electron)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return electron.writeFile(appSettingsFilePath, tomlStr)
+  return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 
 export const readEnvironmentConfigurationFile = async (
@@ -782,12 +797,16 @@ export const readEnvironmentConfigurationFile = async (
   environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
   const path = await getEnvironmentConfigurationPath(electron, environmentName)
-  if (electron.exists(path)) {
-    const configurationJSON: string = await electron.readFile(path, {
+  try {
+    await fsZds.stat(path)
+    const configurationJSON: string = await fsZds.readFile(path, {
       encoding: 'utf-8',
     })
     if (!configurationJSON) return null
     return JSON.parse(configurationJSON)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
+    return null
   }
   return null
 }
@@ -805,7 +824,10 @@ export const writeEnvironmentConfigurationToken = async (
   )
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await electron.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -823,7 +845,10 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   )
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await electron.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -883,7 +908,10 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
   )
   environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await electron.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -903,14 +931,17 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
 export const readEnvironmentFile = async (electron: IElectronAPI) => {
   let environmentFilePath = await getEnvironmentFilePath(electron)
 
-  if (electron.exists(environmentFilePath)) {
-    const environment: string = await electron.readFile(environmentFilePath, {
+  try {
+    await fsZds.stat(environmentFilePath)
+    const environment: string = await fsZds.readFile(environmentFilePath, {
       encoding: 'utf-8',
     })
     if (!environment) return ''
     return environment.trim()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
+    return ''
   }
-  return ''
 }
 
 /**
@@ -924,7 +955,10 @@ export const writeEnvironmentFile = async (
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath(electron)
   if (err(environment)) return Promise.reject(environment)
-  const result = electron.writeFile(environmentFilePath, environment)
+  const result = await fsZds.writeFile(
+    environmentFilePath,
+    new TextEncoder().encode(environment)
+  )
   console.log('environment written to disk')
   return result
 }
@@ -932,7 +966,7 @@ export const writeEnvironmentFile = async (
 export const listAllEnvironments = async (electron: IElectronAPI) => {
   const environmentFolder =
     await getEnvironmentConfigurationFolderPath(electron)
-  const files = await electron.readdir(environmentFolder)
+  const files = await fsZds.readdir(environmentFolder)
   const suffix = '.json'
   return files
     .filter((fileName: string) => {
@@ -962,7 +996,7 @@ export const writeTelemetryFile = async (
 ) => {
   const telemetryFilePath = await getTelemetryFilePath(electron)
   if (err(content)) return Promise.reject(content)
-  return electron.writeFile(telemetryFilePath, content)
+  return fsZds.writeFile(telemetryFilePath, new TextEncoder().encode(content))
 }
 
 export const writeRawTelemetryFile = async (
@@ -971,7 +1005,10 @@ export const writeRawTelemetryFile = async (
 ) => {
   const rawTelemetryFilePath = await getRawTelemetryFilePath(electron)
   if (err(content)) return Promise.reject(content)
-  return electron.writeFile(rawTelemetryFilePath, content)
+  return fsZds.writeFile(
+    rawTelemetryFilePath,
+    new TextEncoder().encode(content)
+  )
 }
 
 let appStateStore: Project | undefined = undefined
@@ -996,7 +1033,7 @@ export const writeProjectThumbnailFile = async (
   dataUrl: string,
   projectDirectoryPath: string
 ) => {
-  const filePath = electron.path.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
+  const filePath = fsZds.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
   const data = atob(dataUrl.substring('data:image/png;base64,'.length))
   const asArray = new Uint8Array(data.length)
   for (let i = 0, len = data.length; i < len; ++i) {
@@ -1004,19 +1041,61 @@ export const writeProjectThumbnailFile = async (
   }
 
   // Configure Git to ignore the generated thumbnail
-  const gitignorePath = electron.path.join(projectDirectoryPath, '.gitignore')
-  if (!electron.exists(gitignorePath)) {
-    await electron.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
+  const gitignorePath = fsZds.join(projectDirectoryPath, '.gitignore')
+  try {
+    await fsZds.stat(gitignorePath)
+  } catch {
+    await fsZds.writeFile(
+      gitignorePath,
+      new TextEncoder().encode(`${PROJECT_IMAGE_NAME}\n`)
+    )
   }
 
-  return electron.writeFile(filePath, asArray)
+  return fsZds.writeFile(filePath, asArray)
 }
 
-export function getPathFilenameInVariableCase(path: string) {
+export function getPathFilenameInVariableCase(targetPath: string) {
   // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
-  const basenameNoExt = fsManager.path.basename(
-    path,
-    fsManager.path.extname(path)
-  )
+  const basenameNoExt = fsZds.basename(targetPath, fsZds.extname(targetPath))
   return getInVariableCase(basenameNoExt)
+}
+
+export const canReadWriteDirectory = async (
+  targetPath: string
+): Promise<{ value: boolean; error: unknown }> => {
+  const isDirectory = await statIsDirectory(targetPath)
+  if (!isDirectory) {
+    return {
+      value: false,
+      error: new Error('path is not a directory. Do not send a file path.'),
+    }
+  }
+
+  // bitwise OR to check read and write permissions
+  try {
+    const canReadWrite = await fsZds.access(
+      targetPath,
+      fsZdsConstants.R_OK | fsZdsConstants.W_OK
+    )
+    // This function returns undefined. If it cannot access the path it will throw an error
+    return canReadWrite === undefined
+      ? { value: true, error: undefined }
+      : { value: false, error: undefined }
+  } catch (e) {
+    console.error(e)
+    return { value: false, error: e }
+  }
+}
+
+export async function statIsDirectory(targetPath: string): Promise<boolean> {
+  try {
+    const res = await fsZds.stat(targetPath)
+    return Boolean(res.mode & fsZdsConstants.S_IFDIR)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      console.error('File does not exist', e)
+      return false
+    }
+    return false // either way we don't know if it is a directory
+  }
 }

@@ -128,8 +128,7 @@ export class CameraControls {
   perspectiveFovBeforeOrtho = 45
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
-  // TODO: proper dependency injection
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -166,7 +165,12 @@ export class CameraControls {
     return ndc.unproject(camera || this.camera)
   }
 
-  setEngineCameraProjection(projection: CameraProjectionType) {
+  get engineCameraProjection(): CameraProjectionType {
+    return this.camera instanceof OrthographicCamera
+      ? 'orthographic'
+      : 'perspective'
+  }
+  set engineCameraProjection(projection: CameraProjectionType) {
     if (projection === 'orthographic') {
       this.useOrthographicCamera()
     } else {
@@ -275,9 +279,11 @@ export class CameraControls {
   constructor(
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
+    getSettings: typeof this.getSettings,
     isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
+    this.getSettings = getSettings
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -1541,7 +1547,7 @@ const viewHeightFactor = (fov: number) => {
       /    | viewHeight/2
      /     |
     /      |
-   /↙️fov/2 |
+   /↙fov/2 |
   /________|
   \        |
    \._._._.|

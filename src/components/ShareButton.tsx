@@ -11,8 +11,8 @@ const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
-  const { billing } = useApp()
-  const { commandBarActor, kclManager } = useSingletons()
+  const { billing, commands } = useApp()
+  const { kclManager } = useSingletons()
   const platform = usePlatform()
 
   const [showOptions, setShowOptions] = useState(false)
@@ -33,7 +33,7 @@ export const ShareButton = memo(function ShareButton() {
       return
     }
 
-    commandBarActor.send({
+    commands.send({
       type: 'Find and select command',
       data: {
         name: 'share-file-link',
@@ -41,12 +41,12 @@ export const ShareButton = memo(function ShareButton() {
         isRestrictedToOrg: false,
       },
     })
-  }, [hasOptions, commandBarActor])
+  }, [hasOptions, commands])
 
   const onShareClickProOrOrganization = useCallback(() => {
     setShowOptions(false)
 
-    commandBarActor.send({
+    commands.send({
       type: 'Find and select command',
       data: {
         name: 'share-file-link',
@@ -55,7 +55,7 @@ export const ShareButton = memo(function ShareButton() {
         password,
       },
     })
-  }, [isRestrictedToOrg, password, commandBarActor])
+  }, [isRestrictedToOrg, password, commands])
 
   useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
     scopes: ['modeling'],

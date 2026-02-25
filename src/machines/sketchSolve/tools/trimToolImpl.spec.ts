@@ -36,9 +36,9 @@ describe('Split trim - line trimmed between two intersections', () => {
     const baseKclCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line1 = line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
 }
 `
 
@@ -61,12 +61,12 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
-  line3 = sketch2::line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line3.start, arc1])
+  line1 = line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
+  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line3 = line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.end, line2])
+  coincident([line3.start, arc1])
 }
 `
 
@@ -79,9 +79,9 @@ describe('Trim line that does not intersect anything', () => {
     const baseKclCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line1 = line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
 }
 `
 
@@ -131,17 +131,19 @@ async function executeTrimFlow({
 }): Promise<{ sourceDelta: { text: string } } | Error> {
   // Parse and execute initial KCL code
   const ast = assertParse(kclCode, instanceInThisFile)
-  const { sceneGraph, execOutcome } =
-    await rustContextInThisFile.hackSetProgram(
-      ast,
-      await jsAppSettings(rustContextInThisFile.settingsActor)
-    )
+  const setProgramOutcome = await rustContextInThisFile.hackSetProgram(
+    ast,
+    await jsAppSettings(rustContextInThisFile.settingsActor)
+  )
+  if (setProgramOutcome.type !== 'Success') {
+    return new Error(setProgramOutcome.error.error.details.msg)
+  }
 
   const initialSceneGraphDelta: SceneGraphDelta = {
-    new_graph: sceneGraph,
+    new_graph: setProgramOutcome.sceneGraph,
     new_objects: [],
     invalidates_ids: false,
-    exec_outcome: execOutcome,
+    exec_outcome: setProgramOutcome.execOutcome,
   }
 
   // Track the last result to return it
@@ -190,65 +192,65 @@ describe('Multi-segment trim - trim line through multiple segments', () => {
       const baseKclCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
-  line2 = sketch2::line(start = [var 4.84mm, var 6.49mm], end = [var -3.92mm, var 2.05mm])
-  sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -3.92mm, var 2.05mm], end = [var 6.02mm, var 3.98mm])
-  sketch2::coincident([line2.end, line3.start])
-  line4 = sketch2::line(start = [var 6.02mm, var 3.98mm], end = [var -7.23mm, var -1.81mm])
-  sketch2::coincident([line3.end, line4.start])
-  line5 = sketch2::line(start = [var -7.23mm, var -1.81mm], end = [var 6.5mm, var -1.47mm])
-  sketch2::coincident([line4.end, line5.start])
-  line6 = sketch2::line(start = [var 6.5mm, var -1.47mm], end = [var -6.69mm, var -4.73mm])
-  sketch2::coincident([line5.end, line6.start])
-  line7 = sketch2::line(start = [var -6.69mm, var -4.73mm], end = [var 6.77mm, var -4.86mm])
-  sketch2::coincident([line6.end, line7.start])
-  line10 = sketch2::line(start = [var -1.08mm, var -10.86mm], end = [var -4.36mm, var 7.64mm])
-  line11 = sketch2::line(start = [var -4.36mm, var 7.64mm], end = [var 5.28mm, var -8.62mm])
-  sketch2::coincident([line10.end, line11.start])
-  line12 = sketch2::line(start = [var 5.28mm, var -8.62mm], end = [var 6.9mm, var 0.39mm])
-  sketch2::coincident([line11.end, line12.start])
-  line13 = sketch2::line(start = [var 6.9mm, var 0.39mm], end = [var -7.84mm, var 4.45mm])
-  sketch2::coincident([line12.end, line13.start])
-  line14 = sketch2::line(start = [var -7.84mm, var 4.45mm], end = [var 3.05mm, var 7.98mm])
-  sketch2::coincident([line13.end, line14.start])
-  line15 = sketch2::line(start = [var 3.05mm, var 7.98mm], end = [var 0.71mm, var -10.01mm])
-  sketch2::coincident([line14.end, line15.start])
-  line18 = sketch2::line(start = [var 5.24mm, var 2.08mm], end = [var -6.76mm, var 0.49mm])
-  line19 = sketch2::line(start = [var -6.76mm, var 0.49mm], end = [var -1.86mm, var 8.22mm])
-  sketch2::coincident([line18.end, line19.start])
-  line20 = sketch2::line(start = [var -1.86mm, var 8.22mm], end = [var 3.11mm, var -9.16mm])
-  sketch2::coincident([line19.end, line20.start])
-  line21 = sketch2::line(start = [var 3.11mm, var -9.16mm], end = [var 6.97mm, var 7.91mm])
-  sketch2::coincident([line20.end, line21.start])
-  line22 = sketch2::line(start = [var -6.96mm, var 3.03mm], end = [var 7mm, var -3.78mm])
-  line23 = sketch2::line(start = [var -1.99mm, var -2.39mm], end = [var 4.2mm, var 4.73mm])
-  line24 = sketch2::line(start = [var 1.42mm, var 6.72mm], end = [var -4.46mm, var 2.86mm])
-  line25 = sketch2::line(start = [var -6.18mm, var -3.61mm], end = [var -0.4mm, var -8.25mm])
-  line27 = sketch2::line(start = [var 5.45mm, var 7.3mm], end = [var -7.06mm, var 6.28mm])
-  sketch2::arc(start = [var 2.71mm, var -9.71mm], end = [var -3.98mm, var 8.12mm], center = [var -6.86mm, var -3.13mm])
-  sketch2::arc(start = [var -2.95mm, var 1.9mm], end = [var 1.73mm, var -6.79mm], center = [var 7.68mm, var 2.02mm])
-  sketch2::arc(start = [var -6.149mm, var 5.57mm], end = [var 6.911mm, var 3.169mm], center = [var 1.118mm, var 8.38mm])
-  sketch2::arc(start = [var 5.55mm, var 7.909mm], end = [var -7.641mm, var -6.45mm], center = [var 7.51mm, var -7.13mm])
-  sketch2::arc(start = [var 3.69mm, var -3.61mm], end = [var -5.68mm, var -5.96mm], center = [var 0.58mm, var -11.06mm])
-  sketch2::arc(start = [var -1.311mm, var -0.729mm], end = [var -0.609mm, var -8.789mm], center = [var 3.72mm, var -4.352mm])
-  sketch2::arc(start = [var -4.9mm, var 0.12mm], end = [var -5.32mm, var -3.75mm], center = [var -0.74mm, var -2.29mm])
-  line8 = sketch2::line(start = [var -6.79mm, var -6.46mm], end = [var -3.45mm, var -6.7mm])
-  line9 = sketch2::line(start = [var -4.8mm, var -6.07mm], end = [var -4.59mm, var -6.91mm])
-  line16 = sketch2::line(start = [var -7.78mm, var -7.36mm], end = [var -5.25mm, var -7.36mm])
-  line17 = sketch2::line(start = [var -5.25mm, var -7.36mm], end = [var -3.69mm, var -7.72mm])
-  sketch2::coincident([line16.end, line17.start])
-  line26 = sketch2::line(start = [var -3.69mm, var -7.72mm], end = [var -2.49mm, var -7.33mm])
-  sketch2::coincident([line17.end, line26.start])
-  line28 = sketch2::line(start = [var -5.4mm, var -7.99mm], end = [var -3.75mm, var -8.33mm])
-  line29 = sketch2::line(start = [var -4.89mm, var -5.47mm], end = [var -3.84mm, var -6.04mm])
-  line30 = sketch2::line(start = [var -7.42mm, var -8.27mm], end = [var -5.55mm, var -8.51mm])
-  line31 = sketch2::line(start = [var -5.55mm, var -8.51mm], end = [var -3.45mm, var -8.87mm])
-  sketch2::coincident([line30.end, line31.start])
-  line32 = sketch2::line(start = [var -7.54mm, var -9.14mm], end = [var -2.91mm, var -9.29mm])
-  line33 = sketch2::line(start = [var -2.91mm, var -9.92mm], end = [var -7.33mm, var -8.78mm])
-  line34 = sketch2::line(start = [var -5.07mm, var -2.3mm], end = [var -2.79mm, var -3mm])
-  line35 = sketch2::line(start = [var -5.04mm, var -3.12mm], end = [var -2.91mm, var -2.48mm])
+  line1 = line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
+  line2 = line(start = [var 4.84mm, var 6.49mm], end = [var -3.92mm, var 2.05mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.92mm, var 2.05mm], end = [var 6.02mm, var 3.98mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 6.02mm, var 3.98mm], end = [var -7.23mm, var -1.81mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -7.23mm, var -1.81mm], end = [var 6.5mm, var -1.47mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 6.5mm, var -1.47mm], end = [var -6.69mm, var -4.73mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -6.69mm, var -4.73mm], end = [var 6.77mm, var -4.86mm])
+  coincident([line6.end, line7.start])
+  line10 = line(start = [var -1.08mm, var -10.86mm], end = [var -4.36mm, var 7.64mm])
+  line11 = line(start = [var -4.36mm, var 7.64mm], end = [var 5.28mm, var -8.62mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 5.28mm, var -8.62mm], end = [var 6.9mm, var 0.39mm])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 6.9mm, var 0.39mm], end = [var -7.84mm, var 4.45mm])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var -7.84mm, var 4.45mm], end = [var 3.05mm, var 7.98mm])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 3.05mm, var 7.98mm], end = [var 0.71mm, var -10.01mm])
+  coincident([line14.end, line15.start])
+  line18 = line(start = [var 5.24mm, var 2.08mm], end = [var -6.76mm, var 0.49mm])
+  line19 = line(start = [var -6.76mm, var 0.49mm], end = [var -1.86mm, var 8.22mm])
+  coincident([line18.end, line19.start])
+  line20 = line(start = [var -1.86mm, var 8.22mm], end = [var 3.11mm, var -9.16mm])
+  coincident([line19.end, line20.start])
+  line21 = line(start = [var 3.11mm, var -9.16mm], end = [var 6.97mm, var 7.91mm])
+  coincident([line20.end, line21.start])
+  line22 = line(start = [var -6.96mm, var 3.03mm], end = [var 7mm, var -3.78mm])
+  line23 = line(start = [var -1.99mm, var -2.39mm], end = [var 4.2mm, var 4.73mm])
+  line24 = line(start = [var 1.42mm, var 6.72mm], end = [var -4.46mm, var 2.86mm])
+  line25 = line(start = [var -6.18mm, var -3.61mm], end = [var -0.4mm, var -8.25mm])
+  line27 = line(start = [var 5.45mm, var 7.3mm], end = [var -7.06mm, var 6.28mm])
+  arc(start = [var 2.71mm, var -9.71mm], end = [var -3.98mm, var 8.12mm], center = [var -6.86mm, var -3.13mm])
+  arc(start = [var -2.95mm, var 1.9mm], end = [var 1.73mm, var -6.79mm], center = [var 7.68mm, var 2.02mm])
+  arc(start = [var -6.149mm, var 5.57mm], end = [var 6.911mm, var 3.169mm], center = [var 1.118mm, var 8.38mm])
+  arc(start = [var 5.55mm, var 7.909mm], end = [var -7.641mm, var -6.45mm], center = [var 7.51mm, var -7.13mm])
+  arc(start = [var 3.69mm, var -3.61mm], end = [var -5.68mm, var -5.96mm], center = [var 0.58mm, var -11.06mm])
+  arc(start = [var -1.311mm, var -0.729mm], end = [var -0.609mm, var -8.789mm], center = [var 3.72mm, var -4.352mm])
+  arc(start = [var -4.9mm, var 0.12mm], end = [var -5.32mm, var -3.75mm], center = [var -0.74mm, var -2.29mm])
+  line8 = line(start = [var -6.79mm, var -6.46mm], end = [var -3.45mm, var -6.7mm])
+  line9 = line(start = [var -4.8mm, var -6.07mm], end = [var -4.59mm, var -6.91mm])
+  line16 = line(start = [var -7.78mm, var -7.36mm], end = [var -5.25mm, var -7.36mm])
+  line17 = line(start = [var -5.25mm, var -7.36mm], end = [var -3.69mm, var -7.72mm])
+  coincident([line16.end, line17.start])
+  line26 = line(start = [var -3.69mm, var -7.72mm], end = [var -2.49mm, var -7.33mm])
+  coincident([line17.end, line26.start])
+  line28 = line(start = [var -5.4mm, var -7.99mm], end = [var -3.75mm, var -8.33mm])
+  line29 = line(start = [var -4.89mm, var -5.47mm], end = [var -3.84mm, var -6.04mm])
+  line30 = line(start = [var -7.42mm, var -8.27mm], end = [var -5.55mm, var -8.51mm])
+  line31 = line(start = [var -5.55mm, var -8.51mm], end = [var -3.45mm, var -8.87mm])
+  coincident([line30.end, line31.start])
+  line32 = line(start = [var -7.54mm, var -9.14mm], end = [var -2.91mm, var -9.29mm])
+  line33 = line(start = [var -2.91mm, var -9.92mm], end = [var -7.33mm, var -8.78mm])
+  line34 = line(start = [var -5.07mm, var -2.3mm], end = [var -2.79mm, var -3mm])
+  line35 = line(start = [var -5.04mm, var -3.12mm], end = [var -2.91mm, var -2.48mm])
 }
 `
 

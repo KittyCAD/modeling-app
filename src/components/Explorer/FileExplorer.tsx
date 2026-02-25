@@ -15,6 +15,7 @@ import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import type { Dispatch } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import fsZds from '@src/lib/fs-zds'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -434,7 +435,7 @@ export const FileExplorerRowElement = ({
         }
 
         // Now move the thing!
-        if (shouldDroppedEntryBeMoved(droppedData, row, window.electron?.sep)) {
+        if (shouldDroppedEntryBeMoved(droppedData, row, fsZds.sep)) {
           row.onDrop({ src: droppedData })
         }
 

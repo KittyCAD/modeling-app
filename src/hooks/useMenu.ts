@@ -1,5 +1,5 @@
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
 import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'
@@ -35,9 +35,9 @@ export function useSketchModeMenuEnableDisable(
   isStreamReady: boolean,
   menus: { menuLabel: MenuLabels; commandName?: string; groupId?: string }[]
 ) {
-  const { useCommandBarState } = useSingletons()
-  const commandBarState = useCommandBarState()
-  const commands = commandBarState.context.commands
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
+  const commandList = commandBarState.context.commands
 
   useEffect(() => {
     if (!window.electron) {
@@ -63,7 +63,7 @@ export function useSketchModeMenuEnableDisable(
 
       if (commandName && groupId) {
         // If your menu is tied to a command bar action, see if the command exists in the command bar
-        const foundCommand = commands.find((command) => {
+        const foundCommand = commandList.find((command) => {
           return command.name === commandName && command.groupId === groupId
         })
         if (!foundCommand) {
@@ -92,5 +92,5 @@ export function useSketchModeMenuEnableDisable(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [currentMode, commands])
+  }, [currentMode, commandList])
 }

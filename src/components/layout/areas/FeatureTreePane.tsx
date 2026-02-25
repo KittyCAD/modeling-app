@@ -32,7 +32,7 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
@@ -57,16 +57,13 @@ import {
 } from '@src/lib/featureTree'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<
   Singletons,
-  | 'kclManager'
-  | 'sceneInfra'
-  | 'sceneEntitiesManager'
-  | 'rustContext'
-  | 'commandBarActor'
->
+  'kclManager' | 'sceneInfra' | 'sceneEntitiesManager' | 'rustContext'
+> & { commandBarActor: CommandBarActorType }
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -108,8 +105,8 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 }
 
 export const FeatureTreePaneContents = memo(() => {
+  const { commands } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     getLayout,
     kclManager,
@@ -128,7 +125,7 @@ export const FeatureTreePaneContents = memo(() => {
     sceneInfra,
     sceneEntitiesManager,
     rustContext,
-    commandBarActor,
+    commandBarActor: commands.actor,
   }
 
   const selectOperation = useCallback(
@@ -158,7 +155,7 @@ export const FeatureTreePaneContents = memo(() => {
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
-      ? kclManager.execState?.operations
+      ? kclManager.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
@@ -679,7 +676,7 @@ const OperationItem = ({
               onClick={() => {
                 const exportDxf = async () => {
                   if (item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(item, {
+                  await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -687,14 +684,29 @@ const OperationItem = ({
                     base64Decode,
                     browserSaveFile,
                   })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (item.type !== 'StdLibCall') return
+                  await exportSketchToDxf(item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
                 }
                 void exportDxf()
               }}
@@ -806,14 +818,11 @@ const OperationItem = ({
   const enabled = !sketchNoFace || isOffsetPlane(item)
 
   const operationArtifact =
-    item.type === 'StdLibCall' && kclManager.execState?.artifactGraph
-      ? findOperationArtifact(item, kclManager.execState.artifactGraph)
+    item.type === 'StdLibCall' && kclManager.artifactGraph
+      ? findOperationArtifact(item, kclManager.artifactGraph)
       : undefined
   const hideOperation = operationArtifact
-    ? getHideOpByArtifactId(
-        kclManager.execState?.operations ?? [],
-        operationArtifact.id
-      )
+    ? getHideOpByArtifactId(kclManager.operations ?? [], operationArtifact.id)
     : undefined
 
   return (

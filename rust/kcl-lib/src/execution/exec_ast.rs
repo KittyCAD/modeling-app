@@ -1270,18 +1270,31 @@ impl Node<SketchBlock> {
             // skip any code.
             let original_sketch_mode = std::mem::replace(&mut exec_state.mod_local.sketch_mode, false);
 
-            let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+            // Load `sketch2::*` into the sketch block's parent scope, so calls
+            // like `line(...)` resolve to sketch2 functions. Then execute the
+            // user body in a child scope, so these aliases aren't included in
+            // the returned sketch object.
+            let (result, block_variables) = match self.load_sketch2_into_current_scope(exec_state, ctx, range).await {
+                Ok(()) => {
+                    let parent = exec_state.mut_stack().snapshot();
+                    exec_state.mut_stack().push_new_env_for_call(parent);
+                    let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+                    let block_variables = exec_state
+                        .stack()
+                        .find_all_in_current_env()
+                        .map(|(name, value)| (name.clone(), value.clone()))
+                        .collect::<IndexMap<_, _>>();
+                    exec_state.mut_stack().pop_env();
+                    (result, block_variables)
+                }
+                Err(err) => (Err(err), IndexMap::new()),
+            };
 
             exec_state.mod_local.sketch_mode = original_sketch_mode;
 
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
-            let block_variables = exec_state
-                .stack()
-                .find_all_in_current_env()
-                .map(|(name, value)| (name.clone(), value.clone()))
-                .collect::<IndexMap<_, _>>();
-
+            // Pop the scope used for sketch2 aliases.
             exec_state.mut_stack().pop_env();
 
             (result, block_variables, sketch_block_state)
@@ -1540,6 +1553,30 @@ impl Node<SketchBlock> {
         } else {
             return_value.continue_()
         })
+    }
+
+    async fn load_sketch2_into_current_scope(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
+        let path = vec!["std".to_owned(), "sketch2".to_owned()];
+        let resolved_path = ModulePath::from_std_import_path(&path)?;
+        let module_id = ctx
+            .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
+            .await?;
+        let (env_ref, exports) = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
+
+        for name in exports {
+            let value = exec_state
+                .stack()
+                .memory
+                .get_from(&name, env_ref, source_range, 0)?
+                .clone();
+            exec_state.mut_stack().add(name, value, source_range)?;
+        }
+        Ok(())
     }
 }
 
@@ -4141,6 +4178,35 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 1);
         assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_unqualified_functions_use_sketch2() {
+        let ast = r#"
+@settings(experimentalFeatures = allow)
+s = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+}
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let mem = result.exec_state.stack();
+        let sketch_value = mem
+            .memory
+            .get_from("s", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+
+        let KclValue::Object { value, .. } = sketch_value else {
+            panic!("Expected sketch block to return an object, got {sketch_value:?}");
+        };
+
+        assert!(value.contains_key("line1"));
+        assert!(value.contains_key("line2"));
+        // Ensure sketch2 aliases used during execution are not returned as
+        // sketch block fields.
+        assert!(!value.contains_key("line"));
+        assert!(!value.contains_key("coincident"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

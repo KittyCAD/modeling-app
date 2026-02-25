@@ -13,6 +13,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
+import fsZds from '@src/lib/fs-zds'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -25,22 +26,20 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth } = useApp()
+  const { auth, commands, settings } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     kclManager,
     rustContext,
     sceneInfra,
     systemIOActor,
-    useSettings,
-    settingsActor,
   } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = auth.useToken()
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
+  const settingsActor = settings.actor
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
 
@@ -63,7 +62,7 @@ export const ModelingPageProvider = ({
       zoomToFitCommand,
     } = createStandardViewsCommands(engineCommandManager)
 
-    const commands = [
+    const namedViewCommands = [
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
@@ -75,22 +74,22 @@ export const ModelingPageProvider = ({
       leftViewCommand,
       zoomToFitCommand,
     ]
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: {
-        commands,
+        commands: namedViewCommands,
       },
     })
     return () => {
       // Remove commands if you go to the home page
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: {
-          commands,
+          commands: namedViewCommands,
         },
       })
     }
-  }, [commandBarActor, engineCommandManager, settingsActor])
+  }, [commands, engineCommandManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -103,7 +102,7 @@ export const ModelingPageProvider = ({
       PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
+    commands.send({
       type: 'Remove commands',
       data: {
         commands: [
@@ -114,14 +113,14 @@ export const ModelingPageProvider = ({
       },
     })
     if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [RouteTelemetryCommand, RouteSettingsCommand],
         },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [
@@ -138,13 +137,13 @@ export const ModelingPageProvider = ({
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
-    commandBarActor,
+    commandBarActor: commands.actor,
     engineCommandManager,
     filePath,
     kclManager,
     navigate,
     sceneInfra,
-    settings,
+    settings: settingsValues,
     settingsActor,
   })
   useMenuListener(cb)
@@ -166,15 +165,12 @@ export const ModelingPageProvider = ({
           continue
         }
 
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
+        const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            name: relativeFilePath.replaceAll(fsZds.sep, '/'),
+            value: relativeFilePath.replaceAll(fsZds.sep, '/'),
           })
         }
       }
@@ -185,7 +181,8 @@ export const ModelingPageProvider = ({
       kclManager,
       settings: {
         defaultUnit:
-          settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+          settingsValues.modeling.defaultUnit.current ??
+          DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
@@ -197,19 +194,19 @@ export const ModelingPageProvider = ({
   }, [kclManager, project, file])
 
   useEffect(() => {
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: { commands: kclCommandMemo },
     })
 
     return () => {
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: { commands: kclCommandMemo },
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
-  }, [commandBarActor.send, kclCommandMemo])
+  }, [commands.send, kclCommandMemo])
 
   return <div>{children}</div>
 }

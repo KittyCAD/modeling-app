@@ -1,14 +1,7 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom, AnyActorRef } from 'xstate'
-import {
-  assign,
-  enqueueActions,
-  fromCallback,
-  fromPromise,
-  sendTo,
-  setup,
-} from 'xstate'
+import { assign, fromCallback, fromPromise, sendTo, setup } from 'xstate'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
@@ -31,7 +24,9 @@ import type {
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,
+  loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
+  saveSettings,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
@@ -42,10 +37,12 @@ import {
 } from '@src/lib/theme'
 import { rgbaToHex } from '@src/lib/utils'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
 
@@ -129,21 +126,46 @@ export const settingsMachine = setup({
         context: SettingsMachineContext
         toastCallback?: () => void
       }
-    >(async () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    }),
-    loadUserSettings: fromPromise<SettingsType, SettingsType>(
-      async ({ input }) => {
-        // Implementation moved to singletons.ts to provide necessary singletons.
-        return input
+    >(async ({ input }) => {
+      // Without this, when a user changes the file, it'd
+      // create a detection loop with the file-system watcher.
+      if (input.doNotPersist) return
+
+      const {
+        currentProject,
+        wasmInstancePromise,
+        commandBarActor: _c,
+        ...settings
+      } = input.context
+
+      await saveSettings(wasmInstancePromise, settings, currentProject?.path)
+
+      if (input.toastCallback) {
+        input.toastCallback()
       }
-    ),
+    }),
+    loadUserSettings: fromPromise<
+      SettingsType,
+      { wasmInstancePromise: Promise<ModuleType> }
+    >(async ({ input }) => {
+      const { settings } = await loadAndValidateSettings(
+        input.wasmInstancePromise
+      )
+      return settings
+    }),
     loadProjectSettings: fromPromise<
       SettingsType,
-      { project?: Project; settings: SettingsType }
+      {
+        project?: Project
+        settings: SettingsType
+        wasmInstancePromise: Promise<ModuleType>
+      }
     >(async ({ input }) => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-      return input.settings
+      const { settings } = await loadAndValidateSettings(
+        input.wasmInstancePromise,
+        input.project?.path
+      )
+      return settings
     }),
     watchSystemTheme: fromCallback<{
       type: 'update.themeWatcher'
@@ -228,18 +250,6 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setEngineTheme: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setClientTheme: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setAllowOrbitInSketchMode: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setEditorLineWrapping: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
     toastSuccess: ({ event }) => {
       if (!('data' in event)) {
         return
@@ -265,16 +275,6 @@ export const settingsMachine = setup({
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
       })
-    },
-    'Execute AST': () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    /**
-     * Update the --cursor-color CSS variable
-     * based on the setting textEditor.blinkingCursor.current
-     */
-    setCursorBlinking: ({ context, self }) => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
@@ -384,19 +384,7 @@ export const settingsMachine = setup({
       on: {
         '*': {
           target: 'persisting settings',
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            enqueueActions(({ enqueue, check }) => {
-              if (
-                check(
-                  ({ event }) => event.type === 'set.textEditor.blinkingCursor'
-                )
-              ) {
-                enqueue('setCursorBlinking')
-              }
-            }),
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.app.namedViews': {
@@ -429,30 +417,23 @@ export const settingsMachine = setup({
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.app.theme': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setThemeClass',
-            'setEngineTheme',
-            'setClientTheme',
-            'sendThemeToWatcher',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'sendThemeToWatcher'],
         },
         'set.textEditor.textWrapping': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'setEditorLineWrapping'],
+          actions: ['setSettingAtLevel'],
         },
         'set.textEditor.blinkingCursor': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'setCursorBlinking'],
+          actions: ['setSettingAtLevel'],
         },
 
         'set.app.streamIdleMode': {
@@ -463,11 +444,7 @@ export const settingsMachine = setup({
 
         'set.app.allowOrbitInSketchMode': {
           target: 'persisting settings',
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setAllowOrbitInSketchMode',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.modeling.cameraProjection': {
@@ -505,15 +482,6 @@ export const settingsMachine = setup({
 
           actions: [
             'resetSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -526,15 +494,6 @@ export const settingsMachine = setup({
         'Set all settings': {
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -546,7 +505,7 @@ export const settingsMachine = setup({
 
         'set.modeling.showScaleGrid': {
           target: 'persisting settings',
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'load.project': {
@@ -604,19 +563,13 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
-        input: ({ context }) => getOnlySettingsFromContext(context),
+        input: ({ context }) => ({
+          wasmInstancePromise: context.wasmInstancePromise,
+        }),
         onDone: {
           target: 'idle',
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -646,15 +599,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -668,6 +612,7 @@ export const settingsMachine = setup({
           return {
             settings: getOnlySettingsFromContext(context),
             project: event.type === 'load.project' ? event.project : undefined,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
       },
@@ -678,6 +623,11 @@ export const settingsMachine = setup({
 export function getOnlySettingsFromContext(
   s: SettingsMachineContext
 ): SettingsType {
-  const { currentProject: _c, commandBarActor: _cba, ...settings } = s
+  const {
+    currentProject: _c,
+    commandBarActor: _cba,
+    wasmInstancePromise: _w,
+    ...settings
+  } = s
   return settings
 }

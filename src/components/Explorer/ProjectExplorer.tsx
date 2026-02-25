@@ -20,6 +20,7 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
@@ -34,7 +35,7 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -181,10 +182,12 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { kclManager, systemIOActor, useSettings } = useSingletons()
+  const { settings } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
   const errors = kclManager.errorsSignal.value
-  const settings = useSettings()
-  const applicationProjectDirectory = settings.app.projectDirectory.current
+  const settingsValues = settings.useSettings()
+  const applicationProjectDirectory =
+    settingsValues.app.projectDirectory.current
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -752,11 +755,11 @@ export const ProjectExplorer = ({
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
                   )
-                  const oldPath = window.electron?.path.join(
+                  const oldPath = fsZds.join(
                     absolutePathToParentDirectory,
                     name
                   )
-                  const newPath = window.electron?.path.join(
+                  const newPath = fsZds.join(
                     absolutePathToParentDirectory,
                     requestedName
                   )

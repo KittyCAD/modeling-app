@@ -1,0 +1,96 @@
+// Adjustable L‑Bracket
+// a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.
+// Categories: Manufacturing, Automotive, Aerospace, Construction
+
+// default units
+@settings(defaultLengthUnit = mm)
+
+// model parameters
+halfBracketWidth = 20
+fastenerHoleDiameter = 12
+countersinkOuterDiameter = 22
+
+uprightTabHoleCenterOffsetFromBend = 50
+slotCenterOffsetFromBend = 150
+
+sheetMetalThickness = 4
+insideBendRadius = 8
+outsideBendRadius = insideBendRadius + sheetMetalThickness
+overallBracketWidth = halfBracketWidth * 2
+
+// outline profile
+outlineSketch = startSketchOn(XZ)
+outlineProfile = startProfile(outlineSketch, at = [0, 0])
+  |> yLine(length = uprightTabHoleCenterOffsetFromBend + halfBracketWidth, tag = $seg04)
+  |> xLine(length = sheetMetalThickness, tag = $seg05)
+  |> yLine(length = -uprightTabHoleCenterOffsetFromBend - halfBracketWidth + sheetMetalThickness, tag = $seg02)
+  |> xLine(length = slotCenterOffsetFromBend + halfBracketWidth - sheetMetalThickness, tag = $seg01)
+  |> yLine(length = -sheetMetalThickness, tag = $seg06)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
+  |> close()
+
+// extrude body
+bracketBodySolid = extrude(
+  outlineProfile,
+  length = overallBracketWidth,
+  symmetric = true,
+  tagEnd = $capEnd,
+  tagStart = $capStart,
+)
+
+// bend fillets
+insideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg01, seg02]), radius = insideBendRadius)
+outsideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg03, seg04]), radius = outsideBendRadius)
+
+// end rounds
+freeEndCornerFillets = fillet(
+  bracketBodySolid,
+  tags = [
+    getCommonEdge(faces = [seg05, capEnd]),
+    getCommonEdge(faces = [seg05, capStart]),
+    getCommonEdge(faces = [seg06, capEnd]),
+    getCommonEdge(faces = [seg06, capStart])
+  ],
+  radius = halfBracketWidth,
+)
+
+// tab hole
+bracketWithCountersunkHole = hole::hole(
+  bracketBodySolid,
+  face = seg02,
+  cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
+  holeType =   hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
+)
+
+// slot sketch
+slotWidth = fastenerHoleDiameter
+slotOverallLength = fastenerHoleDiameter * 3
+slotSketch = startSketchOn(XY)
+slotProfile = startProfile(
+       slotSketch,
+       at = [
+         slotCenterOffsetFromBend,
+         -slotWidth / 2
+       ],
+     )
+  |> xLine(length = -slotOverallLength)
+  |> tangentialArc(end = [0, slotWidth], tag = $seg08)
+  |> angledLine(angle = tangentToEnd(seg08), length = slotOverallLength)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// slot cut
+slotCutSolid = extrude(slotProfile, length = sheetMetalThickness)
+
+// boolean cut
+bracketFinished = subtract(bracketWithCountersunkHole, tools = slotCutSolid)
+
+// material appearance
+appearance(
+  [bracketFinished],
+  color = "#c8ff00",
+  roughness = 50,
+  metalness = 0,
+)
