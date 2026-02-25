@@ -46,7 +46,7 @@
     "chokidar": "^5.0.0",
     "codemirror": "^6.0.2",
     "decamelize": "^6.0.1",
-    "diff": "^8.0.2",
+    "diff": "^8.0.3",
     "electron-updater": "^6.8.3",
     "fuse.js": "^7.1.0",
     "hammerjs": "^2.0.8",
