@@ -236,16 +236,9 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: ${{ matrix.platform == 'macos' }}
         with:
-          name: out-universal-macos-dmg
+          name: out-universal-macos
           path: |
-            out/*universal-mac.dmg
-
-      - uses: actions/upload-artifact@v6
-        if: ${{ matrix.platform == 'macos' }}
-        with:
-          name: out-universal-macos-zip
-          path: |
-            out/*universal-mac.zip
+            out/*universal-mac.*
 
       - uses: actions/upload-artifact@v6
         if: ${{ matrix.platform == 'windows' }}
@@ -289,12 +282,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-universal-macos-dmg
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-universal-macos-zip
+          name: out-universal-macos
           path: out
 
       - uses: actions/download-artifact@v4

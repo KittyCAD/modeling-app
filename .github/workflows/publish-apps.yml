@@ -46,14 +46,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-universal-macos-dmg
-          path: out
-          run-id: ${{ steps.tag_workflow_id.outputs.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-universal-macos-zip
+          name: out-universal-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
