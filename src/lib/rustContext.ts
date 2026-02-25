@@ -39,7 +39,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from './settings/settingsUtils'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 
 export default class RustContext {
   private readonly _wasmInstancePromise: Promise<ModuleType>
