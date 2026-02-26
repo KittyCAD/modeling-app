@@ -61,7 +61,10 @@ import {
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  CONSTRAINT_TYPE,
+  isPointSegment as isPointApiSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -1099,7 +1102,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   ): number | null {
     // Handle point segment - check if it has an owner (line endpoint)
     const obj = objects[segmentId]
-    if (obj?.kind?.type === 'Segment' && obj.kind.segment.type === 'Point') {
+    if (isPointApiSegment(obj)) {
       // Skip if point has an owner (it's a line endpoint)
       // Maybe we can enable these selection with a key modifier in the future
       if (

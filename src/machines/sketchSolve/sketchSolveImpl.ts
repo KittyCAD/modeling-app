@@ -53,6 +53,7 @@ import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
   isConstraint,
+  isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export type EquipTool = keyof typeof equipTools
@@ -196,7 +197,7 @@ export function buildSegmentCtorFromObject(
   obj: ApiObject,
   objects: Array<ApiObject>
 ): SegmentCtor | null {
-  if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+  if (isPointSegment(obj)) {
     return {
       type: 'Point',
       position: {
