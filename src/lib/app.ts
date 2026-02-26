@@ -1,5 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager } from '@src/lang/KclManager'
+import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -50,12 +50,14 @@ import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import type { Project } from '@src/lib/project'
 import type { User } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
+    app: App
     kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
@@ -102,6 +104,7 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
+  project?: ZDSProject
   singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -239,6 +242,40 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
+  // TODO: Remove providedEditor once the app can handle not always having a KclManager
+  openProject(
+    projectIORef: Project,
+    initialOpenFile?: string,
+    providedEditor?: KclManager
+  ) {
+    const projectIORefSignal = signal(projectIORef)
+    this.project = ZDSProject.open(
+      projectIORefSignal,
+      this,
+      initialOpenFile,
+      providedEditor
+    )
+
+    this.project.executingPath
+
+    // TODO: Rework the systemIOActor to fit into the system better,
+    // so that the project doesn't need to subscribe to it.
+    this.singletons.systemIOActor.subscribe(({ context }) => {
+      const foundProject = context.folders.find(
+        (p) =>
+          p.name === projectIORefSignal.value.name &&
+          p.path === projectIORefSignal.value.path
+      )
+      if (foundProject && projectIORefSignal.value !== foundProject) {
+        projectIORefSignal.value = foundProject
+      }
+    })
+  }
+  closeProject() {
+    this.project?.closeAllEditors()
+    this.project = undefined
+  }
+
   /**
    * Build the world!
    */
@@ -319,6 +356,7 @@ export class App implements AppSubsystems {
           systemId: SYSTEM_IO,
           input: {
             wasmInstancePromise: this.wasmPromise,
+            app: this,
           },
         }),
       ],
