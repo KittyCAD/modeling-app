@@ -3,6 +3,7 @@ import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { isMobile } from '../isMobile'
 
 /**
  * For now we have strict action types but in future
@@ -37,6 +38,26 @@ export const useDefaultActionLibrary = () => {
           settings.actor,
           commands.actor
         ),
+    },
+    share: {
+      useHidden: () => !isMobile(),
+      useDisabled: () => undefined,
+      shortcut: 'Mod + Alt + S',
+      execute: () =>
+        commands.actor.send({
+          type: 'Find and select command',
+          data: {
+            name: 'share-file-link',
+            groupId: 'code',
+            isRestrictedToOrg: false,
+          },
+        }),
+    },
+    openCommandBar: {
+      useHidden: () => !isMobile(),
+      useDisabled: () => undefined,
+      shortcut: 'Mod + K',
+      execute: () => commands.actor.send({ type: 'Open' }),
     },
     make: {
       useDisabled: () => {
