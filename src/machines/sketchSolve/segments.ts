@@ -52,16 +52,6 @@ function isUniformValue(value: unknown): value is { value: unknown } {
 }
 
 /**
- * Type guard to check if a value is a valid Freedom.
- */
-function isFreedom(value: unknown): value is Freedom {
-  return (
-    typeof value === 'string' &&
-    (value === 'Free' || value === 'Fixed' || value === 'Conflict')
-  )
-}
-
-/**
  * Type guard to check if a value is a Three.js Line object.
  */
 function isLine(value: unknown): value is Line {
