@@ -399,6 +399,10 @@ export const sketchSolveMachine = setup({
                 type: 'Radius',
                 radius: { value: distance, units },
                 arc: segmentsToConstrain[0],
+                source: {
+                  expr: distance.toString(),
+                  is_literal: true,
+                },
               },
               await jsAppSettings(context.rustContext.settingsActor)
             )

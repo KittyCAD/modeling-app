@@ -2895,6 +2895,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        source,
                                     })
                                 } else {
                                     use crate::frontend::sketch::Radius;
@@ -2903,6 +2904,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        source,
                                     })
                                 };
                                 sketch_block_state.sketch_constraints.push(constraint_id);
