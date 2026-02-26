@@ -226,9 +226,6 @@ export async function getEventForSelectWithPoint(
 
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
-    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
-    // we should still return an empty singleCodeCursor to plug into the selection logic
-    // (i.e. if the user is holding shift they can keep selecting)
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       data.entity_id,
       engineCommandManager
@@ -242,6 +239,9 @@ export async function getEventForSelectWithPoint(
         },
       }
     }
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // (i.e. if the user is holding shift they can keep selecting)
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
