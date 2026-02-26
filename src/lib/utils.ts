@@ -735,3 +735,9 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
     Object.getPrototypeOf(value) === Object.prototype
   )
 }
+
+// This function should break intentionally if the URL is invalid. It means
+// we're definitely not expecting something, and don't want to silently fail.
+export const dataUrlToString = (dataUrl: string): string => {
+  return atob(dataUrl.split(',')[1])
+}
