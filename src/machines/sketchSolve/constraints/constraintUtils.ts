@@ -10,7 +10,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
 export function isPointSegment(
-  obj: ApiObject | undefined
+  obj: ApiObject | undefined | null
 ): obj is PointSegment {
   return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
 }
