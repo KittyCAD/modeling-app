@@ -1,11 +1,11 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import {
-  Action,
   ActionType,
   AreaType,
   LayoutType,
-  PaneChild,
+  type Action,
+  type PaneChild,
   type Layout,
   type PaneLayout,
 } from '@src/lib/layout/types'

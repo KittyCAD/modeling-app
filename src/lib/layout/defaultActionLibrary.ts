@@ -3,7 +3,7 @@ import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { isMobile } from '../isMobile'
+import { isMobile } from '@src/lib/isMobile'
 
 /**
  * For now we have strict action types but in future
