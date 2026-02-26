@@ -1,12 +1,7 @@
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
-import {
-  useLocation,
-  useNavigate,
-  useNavigation,
-  useRouteLoaderData,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
@@ -16,18 +11,20 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
 import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
-  const { kclManager, settingsActor } = useSingletons()
   useSignals()
+  const { settings, project } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const loadedProject = project?.projectIORefSignal.value
+  const loadedFile = project?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
@@ -79,7 +76,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // is very high in the context tree, higher than mlEphant's.
       if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
 
-      const isCurrentFile = loadedProject?.file?.path === path
+      const isCurrentFile = loadedFile?.path === path
       if (isCurrentFile) {
         if (window.electron) {
           // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
@@ -150,8 +147,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // loadAndValidateSettings trying to recreate files. I do not
       // wish to change the behavior in case anything else uses it.
       // Go home.
-      if (loadedProject?.project?.path) {
-        if (!(await fsManager.exists(loadedProject?.project?.path))) {
+      if (loadedProject?.path) {
+        if (!(await fsManager.exists(loadedProject.path))) {
           void navigate(PATHS.HOME)
           return
         }
@@ -164,7 +161,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
       const data = await loadAndValidateSettings(
         kclManager.wasmInstancePromise,
-        loadedProject?.project?.path
+        loadedProject?.path
       )
       settingsActor.send({
         type: 'Set all settings',
@@ -172,7 +169,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         doNotPersist: true,
       })
     },
-    [settingsPath, loadedProject?.project?.path].filter(
+    [settingsPath, loadedProject?.path].filter(
       (x: string | undefined) => x !== undefined
     )
   )

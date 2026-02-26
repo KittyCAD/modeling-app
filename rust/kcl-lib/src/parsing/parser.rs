@@ -51,12 +51,27 @@ const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
 const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
+/// Syntactic paren/brace/bracket nesting limit for the token scan.
+const MAX_NESTING_DEPTH: u16 = 512;
+/// Nesting limit for recursive parser calls. This is lower than
+/// `MAX_NESTING_DEPTH` because parser combinators can use much more stack
+/// space.
+const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
+const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
+
+    // Check token nesting before parsing to fail fast on pathological inputs
+    // that could cause stack overflows.
+    if let Some(err) = ParseContext::check_max_nesting(&i) {
+        ParseContext::err(err);
+        let ctxt = ParseContext::take();
+        return (None, ctxt.errors).into();
+    }
 
     let result = match program.parse(i) {
         Ok(result) => Some(result),
@@ -84,6 +99,29 @@ struct ParseContext {
     pub errors: Vec<CompilationError>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Tracks current recursive parser depth so we can reject pathological input
+    // before it risks stack overflows.
+    nesting_depth: u16,
+}
+
+#[derive(Debug)]
+struct NestingGuard {
+    should_decrement: bool,
+}
+
+impl Drop for NestingGuard {
+    fn drop(&mut self) {
+        if !self.should_decrement {
+            return;
+        }
+        // Don't panic in a drop if we're already panicking.
+        if ParseContext::exit_nesting().is_err() && !std::thread::panicking() {
+            debug_assert!(
+                false,
+                "ParseContext should always be present when a NestingGuard is active"
+            );
+        }
+    }
 }
 
 impl ParseContext {
@@ -92,6 +130,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            nesting_depth: 0,
         }
     }
 
@@ -105,6 +144,68 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn enter_nesting(source_range: SourceRange) -> ModalResult<NestingGuard> {
+        CTXT.with_borrow_mut(|ctxt| {
+            // Some parser unit tests call individual parser functions directly
+            // (without `run_parser`), so we skip depth accounting if no context exists.
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Ok(NestingGuard {
+                    should_decrement: false,
+                });
+            };
+
+            // `nesting_depth` counts active recursive parser frames. This limit is
+            // lower than MAX_NESTING_DEPTH because parser combinators can use much
+            // more stack per frame than simple delimiter nesting.
+            if ctxt.nesting_depth >= MAX_RECURSIVE_PARSER_DEPTH {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
+                ));
+            }
+            ctxt.nesting_depth += 1;
+            Ok(NestingGuard { should_decrement: true })
+        })
+    }
+
+    /// Normally, you should use a `NestingGuard`, so you shouldn't need to call
+    /// this directly.
+    ///
+    /// Returns an error if there is no `ParseContext` in thread-local storage.
+    fn exit_nesting() -> Result<(), ()> {
+        CTXT.with_borrow_mut(|ctxt| {
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Err(());
+            };
+            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
+            Ok(())
+        })
+    }
+
+    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationError> {
+        let mut depth = 0;
+        for token in tokens.iter() {
+            if token.token_type != TokenType::Brace {
+                continue;
+            }
+            match token.value.as_str() {
+                "(" | "[" | "{" => {
+                    depth += 1;
+                    if depth > MAX_NESTING_DEPTH {
+                        return Some(CompilationError::fatal(
+                            token.as_source_range(),
+                            MAX_NESTING_DEPTH_MESSAGE,
+                        ));
+                    }
+                }
+                ")" | "]" | "}" => {
+                    depth = depth.saturating_sub(1);
+                }
+                _ => {}
+            }
+        }
+        None
     }
 
     fn handle_attribute(attr: &Node<Annotation>) {
@@ -459,6 +560,7 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<N
 }
 
 fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let head = expression_but_not_pipe.parse_next(i)?;
     let head_checkpoint = i.checkpoint();
 
@@ -798,6 +900,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
 
 /// Parse a KCL operand that can be used with an operator.
 fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
@@ -1125,7 +1228,10 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         .parse_next(i)
     {
         Ok(expr) => expr,
-        Err(_) => {
+        Err(err) => {
+            if matches!(err, ErrMode::Cut(_)) {
+                return Err(err);
+            }
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     SourceRange::from(sep),
@@ -1522,6 +1628,8 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 //     return x
 // }
 fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
+
     fn return_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -2172,6 +2280,45 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     ))
 }
 
+/// Same as `char::is_ascii_digit`, but accepts an owned `char` instead of a
+/// shared reference.
+fn is_char_ascii_digit(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
+fn is_stdlib_import_path(path_str: &str) -> bool {
+    path_str.starts_with("std") && !path_str.ends_with(".kcl")
+}
+
+fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
+    path_str.split("::").map(str::to_owned).collect()
+}
+
+/// Given an import path, is it a safe identifier? We support Unicode
+/// identifiers.
+fn is_path_safe_identifier(path_str: &str) -> bool {
+    if is_stdlib_import_path(path_str) {
+        // stdlib case
+        let segments = to_stdlib_identifier_segments(path_str);
+        // The rest of the segments will be checked elsewhere to give a better
+        // error message.
+        let Some(name) = segments.last() else {
+            return false;
+        };
+        return !name.starts_with('_')
+            && !name.starts_with(is_char_ascii_digit)
+            && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+    }
+    // Non-stdlib case
+    let typed_path = TypedPath::new(path_str);
+    let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
+        return false;
+    };
+    !name.starts_with('_')
+        && !name.starts_with(is_char_ascii_digit)
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -2182,30 +2329,12 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ));
     }
 
-    if var_name
-        && (path_string.starts_with("_")
-            || path_string.contains('-')
-            || path_string.chars().filter(|c| *c == '.').count() > 1)
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
-        ));
-    }
+    let is_kcl_path = path_string.ends_with(".kcl");
 
-    let path = if path_string.ends_with(".kcl") {
-        if path_string
-            .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    path_range,
-                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
-                )
-                .into(),
-            ));
-        }
-
+    // Check these conditions first so that the error messages are more helpful.
+    // Users should be told about the file location restrictions before the
+    // details of aliasing the identifier.
+    if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -2216,8 +2345,13 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        // Make sure they are not using an absolute path.
-        if path_string.starts_with('/') || path_string.starts_with('\\') {
+        // Make sure they are not using an absolute path. We normalize all paths
+        // to Unix elsewhere, but here, we also check for Windows paths to make
+        // the error more helpful.
+        if path_string.starts_with('/')
+            || path_string.starts_with('\\')
+            || typed_path::TypedPath::derive(&path_string).is_absolute()
+        {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2235,14 +2369,23 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                     .into(),
             ));
         }
+    }
 
+    // This check applies to all file types.
+    if var_name && !is_path_safe_identifier(&path_string) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
+        ));
+    }
+
+    let path = if is_kcl_path {
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std") {
+    } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
-        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+        let segments: Vec<String> = to_stdlib_identifier_segments(&path_string);
 
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
@@ -2431,6 +2574,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
         if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -2854,6 +2998,7 @@ fn require_whitespace(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -3171,6 +3316,7 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
             if tys.len() == 1
@@ -3532,17 +3678,6 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             ParseContext::err(CompilationError::err(
                 unlabeled.into(),
                 "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
-            ));
-        }
-        let on_arg = arguments
-            .iter()
-            .find(|arg| arg.label.as_ref().map(|l| l.name == "on").unwrap_or(false));
-        if let Some(on_arg) = on_arg
-            && !matches!(&on_arg.arg, Expr::Name(_))
-        {
-            ParseContext::err(CompilationError::err(
-                SourceRange::from(&on_arg.arg),
-                "The `on` argument to a sketch block must be a variable name or identifier. If you need a more complex expression, assign it to a variable first.",
             ));
         }
         return Ok(Expr::SketchBlock(Box::new(Node {
@@ -4233,6 +4368,69 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn test_deeply_nested_parenthesized_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_unary_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x", "-".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[{input}, 0]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements_nested_second() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[0, {input}]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_object_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "{a=".repeat(depth), "}".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_call_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "f(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_comments() {
+        // One above the limit to ensure we validate the boundary correctly.
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[/*c*/".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
     fn test_arithmetic() {
         let input = "1 * (2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
@@ -4855,7 +5053,11 @@ mySk1 = startSketchOn(XY)
     #[track_caller]
     fn assert_err_contains(p: &str, expected: &str) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs().next().unwrap().message;
+        let err = &result
+            .unwrap_errs()
+            .next()
+            .expect("Expected an error but found none")
+            .message;
         assert!(err.contains(expected), "actual='{err}'");
     }
 
@@ -5224,7 +5426,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
             [17, 30],
         );
         assert_err(
@@ -5254,18 +5456,41 @@ e
         assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
         assert_err(
             r#"import "_foo.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 17],
         );
         assert_err(
             r#"import "foo-bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
+        );
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_with_alias() {
+        let code = r#"import "my file.kcl" as myFile"#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_without_alias() {
+        assert_err_contains(
+            r#"import "my file.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
+        );
+    }
+
+    #[test]
+    fn import_kcl_starting_with_name_starting_with_number_without_alias() {
+        assert_err_contains(
+            r#"import "0th.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
         );
     }
 

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ExecutorContext,
+    front::Plane,
     frontend::api::{
         Expr, FileId, Number, ObjectId, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
@@ -152,11 +153,8 @@ pub struct Sketch {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchCtor {
-    /// Identifier representing the plane or face to sketch on. This could be a
-    /// built-in plane like `XY`, a variable referencing a plane, or a variable
-    /// referencing a face. But currently, it may not be an arbitrary
-    /// expression. Notably, negative planes are not supported.
-    pub on: String,
+    /// The sketch surface.
+    pub on: Plane,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

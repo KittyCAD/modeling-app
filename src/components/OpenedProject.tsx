@@ -3,12 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
@@ -37,10 +32,9 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -66,6 +60,7 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -74,25 +69,23 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  useSignals()
+  const { auth, billing, settings, project } = useApp()
   const {
-    billingActor,
     systemIOActor,
-    getSettings,
-    settingsActor,
     engineCommandManager,
     sceneInfra,
     kclManager,
     useLayout,
     setLayout,
     getLayout,
-    useSettings,
-    useToken,
   } = useSingletons()
+  const settingsActor = settings.actor
+  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -109,8 +102,8 @@ export function OpenedProject() {
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = loaderData.project?.name || null
-  const projectPath = loaderData.project?.path || null
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -142,9 +135,9 @@ export function OpenedProject() {
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      loaderData.file || null
+      project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, loaderData.file])
+  }, [onProjectOpen, projectName, projectPath, project])
 
   useEffect(() => {
     // Clear conversation
@@ -156,8 +149,8 @@ export function OpenedProject() {
 
   useHotKeyListener(kclManager)
 
-  const settings = useSettings()
-  const authToken = useToken()
+  const settingsValues = settings.useSettings()
+  const authToken = auth.useToken()
   const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
@@ -198,7 +191,7 @@ export function OpenedProject() {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
@@ -213,8 +206,8 @@ export function OpenedProject() {
   // and they're on the web
   useEffect(() => {
     const onboardingStatus =
-      settings.app.onboardingStatus.current ||
-      settings.app.onboardingStatus.default
+      settingsValues.app.onboardingStatus.current ||
+      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !isDesktop() && // Only show if we're in the browser,
       authToken && // we're logged in,
@@ -225,10 +218,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
-            onboardingStatus: settings.app.onboardingStatus.current,
+            onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settings.app.theme.current),
+            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,
@@ -242,8 +235,8 @@ export function OpenedProject() {
       )
     }
   }, [
-    settings.app.onboardingStatus,
-    settings.app.theme,
+    settingsValues.app.onboardingStatus,
+    settingsValues.app.theme,
     location,
     navigate,
     searchParams.size,
@@ -343,7 +336,8 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={loaderData}
+            project={project?.projectIORefSignal.value}
+            file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
@@ -360,7 +354,7 @@ export function OpenedProject() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settings.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.app.showDebugPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />

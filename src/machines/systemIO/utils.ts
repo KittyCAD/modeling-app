@@ -1,4 +1,5 @@
 import type { ExecState } from '@src/lang/wasm'
+import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -11,6 +12,7 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
+import fsZds from '@src/lib/fs-zds'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -84,6 +86,7 @@ export enum SystemIOMachineEvents {
   navigateToFile = 'navigate to file',
   createProject = 'create project',
   renameProject = 'rename project',
+  done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
   done_deleteProject = donePrefix + 'delete project',
   createKCLFile = 'create kcl file',
@@ -149,6 +152,7 @@ export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
+  app: App
 }
 
 export type SystemIOContext = SystemIOInput & {
@@ -284,19 +288,14 @@ export const collectProjectFiles = async (args: {
 
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
-          window.electron?.path.relative(
-            basePath,
-            absolutePathToFileNameWithExtension
-          ) ?? ''
+          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
-        const filePromise = window.electron
-          ?.readFile(absolutePathToFileNameWithExtension)
+        const filePromise = fsZds
+          .readFile(absolutePathToFileNameWithExtension)
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
-            const fileType = window.electron?.path.extname(
-              absolutePathToFileNameWithExtension
-            )
+            const fileType = fsZds.extname(absolutePathToFileNameWithExtension)
             if (fileType === FILE_EXT) {
               return {
                 type: 'kcl',
@@ -307,7 +306,7 @@ export const collectProjectFiles = async (args: {
                   execStateNameToIndexMap[absolutePathToFileNameWithExtension],
               }
             }
-            const blob = new Blob([file], {
+            const blob = new Blob([new Uint8Array(file)], {
               type: 'application/octet-stream',
             })
             return {

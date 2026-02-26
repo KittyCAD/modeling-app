@@ -3,6 +3,39 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_on_plane_of.kcl
 ---
 {
+  "__sketch_2_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
+      "origin": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "yAxis": {
+        "x": -0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": "mm"
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": "mm"
+      }
+    }
+  },
   "cube": {
     "type": "Solid",
     "value": {
@@ -197,39 +230,6 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
       "mm": null,
       "type": "Known",
       "type": "Length"
-    }
-  },
-  "plane": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 1,
-      "origin": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "yAxis": {
-        "x": -0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": "mm"
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": "mm"
-      }
     }
   },
   "s": {

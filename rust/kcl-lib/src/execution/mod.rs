@@ -75,9 +75,12 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-/// Convenience macro for handling control flow in execution by returning early
-/// if it is some kind of early return or stripping off the control flow
-/// otherwise.
+pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, it's returned as a
+/// `Result::Ok`.
 macro_rules! control_continue {
     ($control_flow:expr) => {{
         let cf = $control_flow;
@@ -90,6 +93,23 @@ macro_rules! control_continue {
 }
 // Expose the macro to other modules.
 pub(crate) use control_continue;
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, [`EarlyReturn`] is
+/// used to return it as a `Result::Err`.
+macro_rules! early_return {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Err(EarlyReturn::from(cf));
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
@@ -140,6 +160,33 @@ impl KclValueControlFlow {
 
     pub(crate) fn into_value(self) -> KclValue {
         self.value
+    }
+}
+
+/// A [`KclValueControlFlow`] or an error that needs to be returned early. This
+/// is useful for when functions might encounter either control flow or errors
+/// that need to bubble up early, but these aren't the primary return values of
+/// the function. We can use `EarlyReturn` as the error type in a `Result`.
+///
+/// Normally, you don't construct this directly. Use the `early_return!` macro.
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone)]
+pub(crate) enum EarlyReturn {
+    /// A normal value with control flow.
+    Value(KclValueControlFlow),
+    /// An error that occurred during execution.
+    Error(KclError),
+}
+
+impl From<KclValueControlFlow> for EarlyReturn {
+    fn from(cf: KclValueControlFlow) -> Self {
+        EarlyReturn::Value(cf)
+    }
+}
+
+impl From<KclError> for EarlyReturn {
+    fn from(err: KclError) -> Self {
+        EarlyReturn::Error(err)
     }
 }
 
@@ -1400,9 +1447,12 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
-
-        if !self.is_mock() {
+        /// Write the memory of an execution to the cache for reuse in mock
+        /// execution.
+        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+            if ctx.is_mock() {
+                return;
+            }
             let mut stack = exec_state.stack().deep_clone();
             stack.restore_env(env_ref);
             let state = cache::SketchModeState {
@@ -1415,6 +1465,21 @@ impl ExecutorContext {
             };
             cache::write_old_memory(state).await;
         }
+
+        let env_ref = match result {
+            Ok(env_ref) => env_ref,
+            Err((err, env_ref)) => {
+                // Preserve memory on execution failures so follow-up mock
+                // execution can still reuse stable IDs before the error.
+                if let Some(env_ref) = env_ref {
+                    write_old_memory(self, exec_state, env_ref).await;
+                }
+                return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
+            }
+        };
+
+        write_old_memory(self, exec_state, env_ref).await;
+
         let session_data = self.engine.get_session_data().await;
 
         Ok((env_ref, session_data))

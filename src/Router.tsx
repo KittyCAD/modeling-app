@@ -27,7 +27,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
@@ -45,13 +45,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    settingsActor,
-    systemIOActor,
-  } = useSingletons()
+  const app = useApp()
+  const { engineCommandManager } = useSingletons()
   const networkStatus = useNetworkStatus(engineCommandManager)
   const router = useMemo(
     () =>
@@ -86,10 +81,7 @@ export const Router = () => {
             },
             {
               loader: fileLoader({
-                kclManager,
-                rustContext,
-                systemIOActor,
-                settingsActor,
+                app,
               }),
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
@@ -149,7 +141,7 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.HOME,
-              loader: homeLoader({ settingsActor }),
+              loader: homeLoader({ app }),
               children: [
                 {
                   index: true,
@@ -183,7 +175,7 @@ export const Router = () => {
           ],
         },
       ]),
-    [kclManager, rustContext, settingsActor, systemIOActor]
+    [app]
   )
 
   return (
@@ -194,9 +186,9 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { engineCommandManager, kclManager, rustContext, useToken } =
-    useSingletons()
-  const token = useToken()
+  const { auth } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const token = auth.useToken()
   const coreDumpManager = useMemo(
     () =>
       new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),

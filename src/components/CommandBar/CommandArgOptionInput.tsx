@@ -8,7 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -27,8 +27,8 @@ function CommandArgOptionInput({
   placeholder?: string
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
-  const { commandBarActor, useCommandBarState } = useSingletons()
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
   const resolvedOptions = useMemo(
     () =>
       typeof arg.options === 'function'
@@ -152,7 +152,7 @@ function CommandArgOptionInput({
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
-                commandBarActor.send({ type: 'Close' })
+                commands.send({ type: 'Close' })
               if (event.key === 'Backspace' && event.metaKey) {
                 stepBack()
               }

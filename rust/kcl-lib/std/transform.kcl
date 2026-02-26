@@ -98,6 +98,9 @@ export fn mirror2d(
 /// This is really useful for assembling parts together. You can create a part
 /// and then move it to the correct location.
 ///
+/// By default, this does a local translation, around the sketch/body's coordinate system.
+/// To translate around the global scene coordinate system, use `global = true`.
+///
 /// Translate is really useful for sketches if you want to move a sketch
 /// and then rotate it using the `rotate` function to create a loft.
 ///
@@ -281,6 +284,9 @@ export fn translate(
 /// and then rotate it to the correct orientation.
 ///
 /// For sketches, you can use this to rotate a sketch and then loft it with another sketch.
+///
+/// By default, this does a local rotation, around the sketch/body's center.
+/// To rotate around the global scene coordinates, use `global = true`.
 ///
 /// ### Using Roll, Pitch, and Yaw
 ///

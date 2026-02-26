@@ -1,4 +1,4 @@
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
@@ -20,8 +20,8 @@ import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 
 function ModelingArea() {
-  const { useToken } = useSingletons()
-  const authToken = useToken()
+  const { auth } = useApp()
+  const authToken = auth.useToken()
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
@@ -38,7 +38,9 @@ function ModelingArea() {
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultAreaLibrary = () => {
-  const { getLayout, getSettings, kclManager, setLayout } = useSingletons()
+  const { settings } = useApp()
+  const { getLayout, kclManager, setLayout } = useSingletons()
+  const getSettings = settings.get
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()

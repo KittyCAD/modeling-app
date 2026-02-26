@@ -55,8 +55,7 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
@@ -69,23 +68,16 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const {
-    authActor,
-    billingActor,
-    commandBarActor,
-    kclManager,
-    useSettings,
-    useToken,
-    systemIOActor,
-    settingsActor,
-  } = useSingletons()
+  const { auth, billing, commands, settings } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
+  const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const apiToken = useToken()
+  const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
-  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
@@ -98,29 +90,29 @@ const Home = () => {
         })
         .catch(reportRejection)
     }
-    billingActor.send({ type: BillingTransition.Update, apiToken })
+    billing.send({ type: BillingTransition.Update, apiToken })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const location = useLocation()
-  const settings = useSettings()
-  const onboardingStatus = settings.app.onboardingStatus.current
+  const settingsValues = settings.useSettings()
+  const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Create project',
           argDefaultValues: {
-            name: settings.projects.defaultProjectName.current,
+            name: settingsValues.projects.defaultProjectName.current,
           },
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -129,7 +121,7 @@ const Home = () => {
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -142,7 +134,7 @@ const Home = () => {
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -153,7 +145,7 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -169,14 +161,14 @@ const Home = () => {
     } else if (data.menuLabel === 'Edit.Change project directory') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
-      authActor.send({ type: 'Log out' })
+      auth.send({ type: 'Log out' })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
     ) {
-      commandBarActor.send({ type: 'Open' })
+      commands.send({ type: 'Open' })
     } else if (data.menuLabel === 'File.Preferences.Theme') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'settings',
@@ -184,7 +176,7 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Add file to project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           name: 'add-kcl-file-to-project',
@@ -229,7 +221,7 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settings}
+          settings={settingsValues}
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
@@ -279,7 +271,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'projects',
@@ -301,7 +293,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',

@@ -1,9 +1,7 @@
-import { useContext } from 'react'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
 /**
@@ -11,7 +9,8 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultActionLibrary = () => {
-  const { commandBarActor, kclManager, settingsActor } = useSingletons()
+  const { commands, settings } = useApp()
+  const { kclManager } = useSingletons()
 
   return Object.freeze({
     export: {
@@ -24,7 +23,7 @@ export const useDefaultActionLibrary = () => {
       },
       shortcut: 'Ctrl + Shift + E',
       execute: () =>
-        commandBarActor.send({
+        commands.send({
           type: 'Find and select command',
           data: { name: 'Export', groupId: 'modeling' },
         }),
@@ -35,18 +34,18 @@ export const useDefaultActionLibrary = () => {
       shortcut: 'Mod + Alt + L',
       execute: () =>
         sendAddFileToProjectCommandForCurrentProject(
-          settingsActor,
-          commandBarActor
+          settings.actor,
+          commands.actor
         ),
     },
     make: {
       useDisabled: () => {
-        const machineManager = useContext(MachineManagerContext)
+        const { machineManager } = useApp()
         return machineManager.noMachinesReason()
       },
       shortcut: 'Ctrl + Shift + M',
       execute: () =>
-        commandBarActor.send({
+        commands.send({
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         }),
