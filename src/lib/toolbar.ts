@@ -13,6 +13,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -145,6 +146,29 @@ export const useToolbarConfig = () => {
               },
             ],
           },
+          ...((IS_STAGING_OR_DEBUG
+            ? [
+                {
+                  id: 'sketch-new',
+                  onClick: ({ modelingSend }) => {
+                    modelingSend({
+                      type: 'Enter sketch',
+                      data: {
+                        forceNewSketch: true,
+                        forceNewSketchMode: true,
+                      },
+                    })
+                  },
+                  icon: 'sketch',
+                  iconColor: '#dc2626',
+                  status: 'experimental',
+                  title: 'Start Sketch',
+                  showTitle: false,
+                  description:
+                    'Start drawing a 2D sketch, using the new solver-based sketch mode',
+                },
+              ]
+            : []) as ToolbarItem[]),
           'break',
           {
             id: 'extrude',
