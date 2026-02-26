@@ -1,6 +1,6 @@
 import * as TWEEN from '@tweenjs/tween.js'
 import type { Intersection, Object3D } from 'three'
-import { Group } from 'three'
+import type { Group } from 'three'
 import {
   AmbientLight,
   Color,
