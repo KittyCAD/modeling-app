@@ -342,8 +342,10 @@ export function OpenedProject() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
           >
-            <CommandBarOpenButton />
-            <ShareButton />
+            <div className="contents max-sm:hidden">
+              <CommandBarOpenButton />
+              <ShareButton />
+            </div>
           </AppHeader>
         </div>
         <ModalContainer />
