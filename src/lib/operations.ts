@@ -1934,6 +1934,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Concentric Constraint',
     icon: 'concentric',
   },
+  diameter: {
+    label: 'Diameter Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
   distance: {
     label: 'Distance Constraint',
     icon: 'dimension', // TODO: see if we need a different icon here?
@@ -1965,6 +1969,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  radius: {
+    label: 'Radius Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
   },
   symmetric: {
     label: 'Symmetric Constraint',
