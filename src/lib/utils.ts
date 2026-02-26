@@ -738,6 +738,21 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 // This function should break intentionally if the URL is invalid. It means
 // we're definitely not expecting something, and don't want to silently fail.
-export const dataUrlToString = (dataUrl: string): string => {
-  return atob(dataUrl.split(',')[1])
+export const dataOrFileUrlToString = async (url: string): Promise<string> => {
+  // On desktop, it cannot resolve file://, so we need to simply read from fs.
+  // On web, these are data: urls. Simply decode.
+
+  // throw new Error(url)
+  if (url.startsWith('data:')) {
+    return atob(url.split(',')[1])
+  } else if (window.electron) {
+    // Needing to decode the URI bit my butt yo
+    return window.electron.readFile(decodeURI(url.split('file://')[1]), {
+      encoding: 'utf-8',
+    })
+  }
+
+  return Promise.reject(
+    new Error('Not a valid data: or file:// URL or electron not present')
+  )
 }

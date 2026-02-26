@@ -1,26 +1,33 @@
+import { dataOrFileUrlToString } from '@src/lib/utils'
+
 import fanHousingOriginal from '/kcl-samples/axial-fan/fan-housing.kcl?url&inline'
 import fanFan from '/kcl-samples/axial-fan/fan.kcl?url&inline'
 import fanAssembly from '/kcl-samples/axial-fan/main.kcl?url&inline'
 import fanMotor from '/kcl-samples/axial-fan/motor.kcl?url&inline'
 import fanParameters from '/kcl-samples/axial-fan/parameters.kcl?url&inline'
 import bracket from '/kcl-samples/bracket/main.kcl?url&inline'
-import { dataUrlToString } from '@src/lib/utils'
 
 export { bracket }
 export const fanParts = [
   {
     requestedFileName: 'main.kcl',
-    requestedCode: dataUrlToString(fanAssembly),
+    requestedCode: await dataOrFileUrlToString(fanAssembly),
   },
-  { requestedFileName: 'fan.kcl', requestedCode: dataUrlToString(fanFan) },
-  { requestedFileName: 'motor.kcl', requestedCode: dataUrlToString(fanMotor) },
+  {
+    requestedFileName: 'fan.kcl',
+    requestedCode: await dataOrFileUrlToString(fanFan),
+  },
+  {
+    requestedFileName: 'motor.kcl',
+    requestedCode: await dataOrFileUrlToString(fanMotor),
+  },
   {
     requestedFileName: 'parameters.kcl',
-    requestedCode: dataUrlToString(fanParameters),
+    requestedCode: await dataOrFileUrlToString(fanParameters),
   },
   {
     requestedFileName: 'fan-housing.kcl',
-    requestedCode: dataUrlToString(fanHousingOriginal),
+    requestedCode: await dataOrFileUrlToString(fanHousingOriginal),
   },
 ] as const
 

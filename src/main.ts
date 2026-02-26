@@ -352,6 +352,10 @@ app.resizeWindow = async (width: number, height: number) => {
 // @ts-ignore can't declaration merge with App
 app.testProperty = {}
 
+ipcMain.handle('renderer.console.log', (event, data) => {
+  console.log(data)
+})
+
 ipcMain.handle('app.testProperty', (event, propertyName) => {
   // @ts-ignore can't declaration merge with App
   return app.testProperty[propertyName]

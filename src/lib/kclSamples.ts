@@ -1,8 +1,8 @@
 import kclSamplesManifestDataUri from '/kcl-samples/manifest.json?url&inline'
-import { dataUrlToString } from '@src/lib/utils'
+import { dataOrFileUrlToString } from '@src/lib/utils'
 
 const kclSamplesManifest = JSON.parse(
-  dataUrlToString(kclSamplesManifestDataUri)
+  await dataOrFileUrlToString(kclSamplesManifestDataUri)
 )
 
 export const kclSamplesManifestWithNoMultipleFiles = kclSamplesManifest.filter(
