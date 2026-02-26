@@ -987,6 +987,9 @@ export class KclManager extends EventTarget {
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    if (!this.systemDeps.engineCommandManager.started) {
+      console.warn('`executeCode` called before engine connection started')
+    }
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -1167,6 +1170,9 @@ export class KclManager extends EventTarget {
     })
   }
   async executeCode(newCode = this.codeSignal.value): Promise<void> {
+    if (!this.systemDeps.engineCommandManager.started) {
+      console.warn('`executeCode` called before engine connection started')
+    }
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
     if (!ast) {
