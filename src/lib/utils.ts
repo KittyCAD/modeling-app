@@ -738,6 +738,9 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 // This function should break intentionally if the URL is invalid. It means
 // we're definitely not expecting something, and don't want to silently fail.
+// This exists because of the way we are improperly importing files from
+// the public/ directory. They should live under src/, but we have many other
+// repositories that rely on its current position. This avoids breaking anything.
 export const dataOrFileUrlToString = async (url: string): Promise<string> => {
   // On desktop, it cannot resolve file://, so we need to simply read from fs.
   // On web, these are data: urls. Simply decode.
@@ -745,11 +748,20 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
   // throw new Error(url)
   if (url.startsWith('data:')) {
     return atob(url.split(',')[1])
+    // The few places where fsZds does not make sense to use. We are interacting
+    // with the system at a level so low that it doesn't make sense to abstract this.
+    // It has to live basically at the same execution time as the module importing
+    // system.
   } else if (window.electron) {
     // Needing to decode the URI bit my butt yo
-    return window.electron.readFile(decodeURI(url.split('file://')[1]), {
-      encoding: 'utf-8',
-    })
+    // window.electron.resolve is also very important to deal with a weird
+    // C:\C:\ problem on windows.
+    return window.electron.readFile(
+      decodeURI(window.electron.path.resolve(url.split('file://')[1])),
+      {
+        encoding: 'utf-8',
+      }
+    )
   }
 
   return Promise.reject(
