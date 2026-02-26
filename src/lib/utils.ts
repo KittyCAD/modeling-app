@@ -754,10 +754,11 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
     // system.
   } else if (window.electron) {
     // Needing to decode the URI bit my butt yo
-    // window.electron.resolve is also very important to deal with a weird
-    // C:\C:\ problem on windows.
+    // Windows has C:\C:\ for some only god known reason.
     return window.electron.readFile(
-      window.electron.path.resolve(decodeURI(url.split('file:///')[1])),
+      window.electron.path.resolve(
+        decodeURI(url.split('file://')[1].replace('C:\\C:\\', 'C:\\'))
+      ),
       {
         encoding: 'utf-8',
       }
