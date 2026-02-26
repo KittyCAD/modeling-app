@@ -2124,8 +2124,36 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let l0_ast = self.point_id_to_ast_reference(l0_id, new_ast)?;
-        let l1_ast = self.point_id_to_ast_reference(l1_id, new_ast)?;
+        // Map the runtime objects back to variable names.
+        let line0_object = self.scene_graph.objects.get(l0_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line0_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line0_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line0_object:?}",),
+            });
+        };
+        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+
+        let line1_object = self.scene_graph.objects.get(l1_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line1_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line1_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line1_object:?}",),
+            });
+        };
+        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
 
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
