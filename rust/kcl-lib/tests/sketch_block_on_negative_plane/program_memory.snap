@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing sketch_block_modeling_command_is_error.kcl
+description: Variables in memory after executing sketch_block_on_negative_plane.kcl
 ---
 {
   "__sketch_1_on": {
@@ -16,7 +16,7 @@ description: Variables in memory after executing sketch_block_modeling_command_i
         "units": "mm"
       },
       "xAxis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0,
         "units": null

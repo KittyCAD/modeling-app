@@ -3,7 +3,6 @@ import type React from 'react'
 import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 import { useAppState } from '@src/AppState'
@@ -25,7 +24,6 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectAllInCurrentSketch } from '@src/lib/selections'
-import type { IndexLoaderData } from '@src/lib/types'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
@@ -37,6 +35,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -53,7 +52,8 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { machineManager, commands, settings } = useApp()
+  useSignals()
+  const { machineManager, commands, settings, project } = useApp()
   const {
     engineCommandManager,
     getLayout,
@@ -86,10 +86,11 @@ export const ModelingMachineProvider = ({
     },
   } = settingsValues
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const projects = useFolders()
-  const { project, file } = loaderData
-  const theProject = useRef<Project | undefined>(project)
+  const theProject = useRef<Project | undefined>(
+    project?.projectIORefSignal.value
+  )
+  const file = project?.executingFileEntry.value
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
@@ -107,7 +108,7 @@ export const ModelingMachineProvider = ({
     }
     theProject.current = foundYourProject
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, loaderData, file])
+  }, [projects, file])
 
   const streamRef = useRef<HTMLDivElement>(null)
 

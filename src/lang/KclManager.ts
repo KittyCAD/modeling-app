@@ -91,7 +91,7 @@ import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
-import { signal } from '@preact/signals-core'
+import { computed, type Signal, signal } from '@preact/signals-core'
 import {
   editorTheme,
   themeCompartment,
@@ -128,6 +128,9 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { App } from '@src/lib/app'
+import type { FileEntry, Project } from '@src/lib/project'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
@@ -172,6 +175,123 @@ declare global {
 // page.evaluate) So that's why this exists.
 window.EditorSelection = EditorSelection
 window.EditorView = EditorView
+
+/**
+ * A project contains 0 or more editors, one of which is the "executing" one
+ * that connects to the geometry engine.
+ */
+export class ZDSProject {
+  public projectIORefSignal: Signal<Project>
+  get path() {
+    return this.projectIORefSignal.value.path
+  }
+  get name() {
+    return this.projectIORefSignal.value.name
+  }
+  private app: App
+  /** Editors are referenced via Signal in case the file name itself is changed. */
+  public editors = new Map<Signal<string>, KclManager>()
+  #executingPath = signal<Signal<string> | null>(null)
+  public executingEditor = computed(() =>
+    this.#executingPath.value
+      ? this.editors.get(this.#executingPath.value)
+      : null
+  )
+  /** The currently-executing file's info as a FileEntry */
+  executingFileEntry = computed<FileEntry>(() => ({
+    name: getStringAfterLastSeparator(this.#executingPath.value?.value ?? ''),
+    path: this.#executingPath.value?.value ?? '',
+    children: [],
+  }))
+
+  constructor(projectRef: typeof this.projectIORefSignal, app: App) {
+    this.projectIORefSignal = projectRef
+    this.app = app
+  }
+
+  /** Open a project, with the option to open an initial editor too */
+  static open(
+    projectRef: Signal<Project>,
+    app: App,
+    initialOpenFilePath?: string,
+    // TODO: This shouldn't be necessary to pass in, once we make the app okay without a permanent KclManager.
+    initialOpenEditor?: KclManager
+  ) {
+    const newProject = new ZDSProject(projectRef, app)
+    if (initialOpenFilePath) {
+      newProject.openEditor(initialOpenFilePath, initialOpenEditor)
+      newProject.executingPath = initialOpenFilePath
+    }
+    return newProject
+  }
+
+  get executingPath() {
+    return this.#executingPath.value?.value ?? null
+  }
+  get executingPathSignal() {
+    return this.#executingPath
+  }
+  set executingPath(newPath: string | null) {
+    // TODO: Clear current executing editor's execution status
+
+    if (newPath === null) {
+      return
+    }
+    const foundPathSignal = this.findEditorPathSignal(newPath)
+    if (!foundPathSignal) {
+      return
+    }
+    const found = this.editors.get(foundPathSignal)
+    if (found) {
+      // TODO: Reconfigure the editor to be an executing one
+    }
+    this.#executingPath.value = foundPathSignal
+  }
+  findEditorPathSignal(path: string) {
+    return this.editors.keys().find((p) => p.value === path)
+  }
+
+  // Saving some keystrokes
+  private get = this.editors.get.bind(this.editors)
+  private set = this.editors.set.bind(this.editors)
+
+  // TODO: Remove providedEditor, replace with options about if the editor is the executing one
+  // once the app can handle not having a KclManager.
+  openEditor(path: string, providedEditor?: KclManager) {
+    const foundPathSignal = this.findEditorPathSignal(path)
+    const found = foundPathSignal ? this.get(foundPathSignal) : undefined
+    if (found) {
+      console.warn(`Attempted to overwrite editor with path "${path}"`)
+      return found
+    }
+
+    const newEditor =
+      providedEditor ??
+      new KclManager({
+        rustContext: this.app.singletons.rustContext,
+        engineCommandManager: this.app.singletons.engineCommandManager,
+        wasmInstancePromise: this.app.wasmPromise,
+        commandBar: this.app.commands.actor,
+        settings: this.app.settings.actor,
+      })
+
+    this.set(signal(path), newEditor)
+    return newEditor
+  }
+
+  closeEditor(path: string) {
+    const foundPathSignal = this.findEditorPathSignal(path)
+    if (!foundPathSignal) {
+      console.warn(`Attempted to close nonexistent editor with path "${path}"`)
+      return
+    }
+    this.editors.delete(foundPathSignal)
+  }
+
+  closeAllEditors() {
+    this.editors.clear()
+  }
+}
 
 const PERSIST_CODE_KEY = 'persistCode'
 
