@@ -1,4 +1,5 @@
 import type { ExecState } from '@src/lang/wasm'
+import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -151,6 +152,7 @@ export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
+  app: App
 }
 
 export type SystemIOContext = SystemIOInput & {

@@ -4,7 +4,7 @@ use crate::{
     Program,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecOutcome, ExecutorContext, KclValue,
+        ExecOutcome, ExecutorContext, KclValue, SKETCH_BLOCK_PARAM_ON,
         geometry::{Path, Sketch, SketchSurface},
     },
     frontend::{
@@ -250,7 +250,7 @@ fn build_sketch_block_ast(
     // Create the sketch block
     let sketch_block = ast::SketchBlock {
         arguments: vec![ast::LabeledArg {
-            label: Some(ast::Identifier::new("on")),
+            label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
             arg: plane_expr,
         }],
         body: ast::Node::no_src(block),

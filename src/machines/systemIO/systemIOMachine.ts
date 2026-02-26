@@ -1,3 +1,4 @@
+import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
@@ -565,6 +566,7 @@ export const systemIOMachine = setup({
           absolutePathToParentDirectory: string
           requestedProjectName?: string
           requestedFileNameWithExtension?: string
+          app: App
         }
       }) => {
         return {
@@ -586,6 +588,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           fileNameWithExtension: string
           absolutePathToParentDirectory: string
+          app: App
         }
       }) => {
         return {
@@ -1241,6 +1244,7 @@ export const systemIOMachine = setup({
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1267,6 +1271,7 @@ export const systemIOMachine = setup({
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1359,6 +1364,7 @@ export const systemIOMachine = setup({
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1412,6 +1418,7 @@ export const systemIOMachine = setup({
             requestedProjectName: event.data.requestedProjectName,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
+            app: context.app,
           }
         },
         onDone: {
