@@ -1,4 +1,5 @@
-const MOBILE_USER_AGENT_REGEX = /android|iphone|ipad|ipod|iemobile|blackberry|opera mini|mobile/i
+const MOBILE_USER_AGENT_REGEX =
+  /android|iphone|ipad|ipod|iemobile|blackberry|opera mini|mobile/i
 
 // Determine if the current runtime is a mobile browser (non-Electron).
 export function isMobile(): boolean {
