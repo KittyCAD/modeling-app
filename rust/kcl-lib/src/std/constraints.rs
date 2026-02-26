@@ -13,7 +13,7 @@ use crate::{
     execution::{
         AbstractSegment, ConstrainablePoint2d, ExecState, KclValue, SegmentRepr, SketchConstraint,
         SketchConstraintKind, SketchVarId, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
-        normalize_to_solver_unit,
+        normalize_to_solver_distance_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
@@ -1073,8 +1073,10 @@ fn coincident_constraints_fixed(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(kcl_ezpz::Constraint, kcl_ezpz::Constraint), KclError> {
-    let p1_x_number_value = normalize_to_solver_unit(p1_x, p1_x.into(), exec_state, "coincident constraint value")?;
-    let p1_y_number_value = normalize_to_solver_unit(p1_y, p1_y.into(), exec_state, "coincident constraint value")?;
+    let p1_x_number_value =
+        normalize_to_solver_distance_unit(p1_x, p1_x.into(), exec_state, "coincident constraint value")?;
+    let p1_y_number_value =
+        normalize_to_solver_distance_unit(p1_y, p1_y.into(), exec_state, "coincident constraint value")?;
     let Some(p1_x) = p1_x_number_value.as_ty_f64() else {
         let message = format!(
             "Expected number after coercion, but found {}",

@@ -18,7 +18,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, normalize_to_solver_unit,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        normalize_to_solver_distance_unit,
         types::{NumericType, adjust_length},
     },
     front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
@@ -1993,7 +1994,8 @@ impl SketchVar {
             ty: self.ty,
             meta: vec![source_range.into()],
         };
-        let normalized_value = normalize_to_solver_unit(&x_initial_value, source_range, exec_state, description)?;
+        let normalized_value =
+            normalize_to_solver_distance_unit(&x_initial_value, source_range, exec_state, description)?;
         normalized_value.as_ty_f64().ok_or_else(|| {
             let message = format!(
                 "Expected number after coercion, but found {}",

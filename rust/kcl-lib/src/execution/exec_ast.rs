@@ -22,7 +22,8 @@ use crate::{
         memory::{self, SKETCH_PREFIX},
         sketch_solve::{
             FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_angle_unit,
-            normalize_to_solver_unit, solver_numeric_type, substitute_sketch_var_in_segment, substitute_sketch_vars,
+            normalize_to_solver_distance_unit, solver_numeric_type, substitute_sketch_var_in_segment,
+            substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -1318,8 +1319,12 @@ impl Node<SketchBlock> {
                     ty: sketch_var.ty,
                     meta: sketch_var.meta.clone(),
                 };
-                let initial_guess_value =
-                    normalize_to_solver_unit(&number_value, v.into(), exec_state, "sketch variable initial value")?;
+                let initial_guess_value = normalize_to_solver_distance_unit(
+                    &number_value,
+                    v.into(),
+                    exec_state,
+                    "sketch variable initial value",
+                )?;
                 let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
                     n.n
                 } else {
@@ -2662,7 +2667,7 @@ impl Node<BinaryExpression> {
                 // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
-                    let number_value = normalize_to_solver_unit(
+                    let number_value = normalize_to_solver_distance_unit(
                         input_number,
                         input_number.into(),
                         exec_state,
@@ -2701,7 +2706,7 @@ impl Node<BinaryExpression> {
                         | SketchConstraintKind::Radius { .. }
                         | SketchConstraintKind::Diameter { .. }
                         | SketchConstraintKind::HorizontalDistance { .. }
-                        | SketchConstraintKind::VerticalDistance { .. } => normalize_to_solver_unit(
+                        | SketchConstraintKind::VerticalDistance { .. } => normalize_to_solver_distance_unit(
                             input_number,
                             input_number.into(),
                             exec_state,
