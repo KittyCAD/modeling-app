@@ -337,4 +337,42 @@ y = globalVarFnParam + globalAndLocalVar + globalVar + varUsedBeforeIsLocal
         );
         crate::execution::parse_execute(&applied).await.unwrap();
     }
+
+    /// A local that shadows a global and is initialized from the global (same name in its own
+    /// initializer, e.g. `x = x + 1`). The RHS refers to the global and should be renamed; the
+    /// local declaration and later uses should not.
+    #[tokio::test]
+    async fn z0001_local_in_own_initializer_refers_to_global() {
+        let kcl = r#"
+X_VAL = 1
+fn foo() {
+  X_VAL = X_VAL + 1
+  return X_VAL
+}
+yo = foo()
+"#;
+        let expected = r#"
+xVal = 1
+fn foo() {
+  X_VAL = xVal + 1
+  return X_VAL
+}
+yo = foo()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'X_VAL'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for X_VAL with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }
