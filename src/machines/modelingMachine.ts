@@ -47,7 +47,7 @@ import type {
 } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { MachineManager } from '@src/lib/MachineManager'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -198,6 +198,7 @@ import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
+import { toPlaneName } from '@src/lib/planes'
 
 export type ModelingMachineEvent =
   | {
@@ -1754,7 +1755,7 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      context.kclManager.engineCommandManager
+      context.kclManager.systemDeps.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 
@@ -3026,10 +3027,10 @@ export const modelingMachine = setup({
             // Determine the plane type from the result
             if (result.type === 'defaultPlane') {
               sketchArgs = {
-                on: result.plane,
+                on: { default: toPlaneName(result.plane) },
               }
             } else {
-              sketchArgs = { on: 'XY' }
+              sketchArgs = { on: { default: 'xy' } }
             }
 
             await rustContext.hackSetProgram(
@@ -4953,12 +4954,10 @@ export const modelingMachine = setup({
             "machineManager is null. It shouldn't be at this point. Aborting operation."
           )
           return new Error('Machine manager is not set')
-        } else {
-          input.machineManager.currentMachine = input.machine
         }
 
         // Update the rest of the UI that needs to know the current machine
-        input.machineManager.setCurrentMachine(input.machine)
+        input.machineManager.currentMachine = input.machine
 
         const format: OutputFormat3d = {
           type: 'stl',

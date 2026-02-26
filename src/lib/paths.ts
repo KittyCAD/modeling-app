@@ -1,9 +1,9 @@
 import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 
 import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
@@ -153,7 +153,7 @@ export function joinRouterPaths(...parts: string[]): string {
  * or \dog\cat on POSIX
  */
 export function joinOSPaths(...parts: string[]): string {
-  const sep = window.electron?.sep || '/'
+  const sep = fsZds.sep
   const regexSep = sep === '/' ? '/' : '\\'
   return (
     (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
@@ -175,8 +175,8 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * \dog\cat\house.kcl gives you house.kcl
  * Works on all OS!
  */
-export function getStringAfterLastSeparator(path: string): string {
-  return path.split(fsManager.path.sep).pop() || ''
+export function getStringAfterLastSeparator(targetPath: string): string {
+  return targetPath.split(window.electron ? fsZds.sep : '/').pop() || ''
 }
 
 /**
@@ -189,10 +189,10 @@ export function getStringAfterLastSeparator(path: string): string {
  *
  */
 export function getProjectDirectoryFromKCLFilePath(
-  path: string,
+  targetPath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const replacedPath = targetPath.replace(applicationProjectDirectory, '')
   const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
     return projectDirectory
@@ -228,28 +228,28 @@ export function parentPathRelativeToApplicationDirectory(
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
+ * WARNING (lee): THIS IS TRULY FOR ALL WEB USES, EVEN IN ELECTRON RENDERER!
+ * I got bit hard by this.
  */
-export function webSafePathSplit(path: string): string[] {
-  const webSafeSep = '/'
-  return path.split(webSafeSep)
+export function webSafePathSplit(targetPath: string): string[] {
+  // eslint-disable-next-line no-restricted-syntax
+  return targetPath.split('/')
 }
 
 export function webSafeJoin(paths: string[]): string {
-  const webSafeSep = '/'
-  return paths.join(webSafeSep)
+  // eslint-disable-next-line no-restricted-syntax
+  return paths.join('/')
 }
 
 /**
  * Splits any paths safely based on the runtime
  */
-export function desktopSafePathSplit(path: string): string[] {
-  return window.electron
-    ? path.split(window.electron.sep)
-    : webSafePathSplit(path)
+export function desktopSafePathSplit(targetPath: string): string[] {
+  return targetPath.split(fsZds.sep)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
+  return paths.join(fsZds.sep)
 }
 
 /**
@@ -310,7 +310,7 @@ export const isExtensionARelevantExtension = (
 export function getFilePathRelativeToProject(
   absoluteFilePath: string,
   projectName: string,
-  sep = window.electron?.sep
+  sep = fsZds.sep
 ) {
   // Gotcha: below we're gonna look for the index of the project name,
   // but what if the project name happens to be in the path earlier than the real one?
@@ -324,14 +324,11 @@ export function getFilePathRelativeToProject(
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }
 
-/** TODO: This is not used by the web yet. */
 async function getArchiveBasePath() {
-  return window.electron
-    ? desktopSafePathJoin([
-        await window.electron.getPathUserData(),
-        ARCHIVE_DIR,
-      ])
-    : webSafeJoin(['/', ARCHIVE_DIR])
+  return desktopSafePathJoin([
+    (await fsZds.getPath('userData')) ?? '/userData',
+    ARCHIVE_DIR,
+  ])
 }
 
 /** Convert any given path to an archived one.
@@ -346,7 +343,7 @@ export async function toArchivePath(absolutePath: string) {
     // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
     // Make that make sense, right? So our archive paths need to replace that character.
     const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
-    return window.electron.join(basePath, absolutePathWithSafeDriveName)
+    return fsZds.join(basePath, absolutePathWithSafeDriveName)
   }
 
   return webSafeJoin([basePath, absolutePath])
