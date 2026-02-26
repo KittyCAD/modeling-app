@@ -80,14 +80,15 @@ export function addShell({
   // 2. Prepare unlabeled and labeled arguments
   // Because of START and END untagged caps, we can't rely on last child here
   // Haven't found a case where it would be needed anyway
-  const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup
+    {
+      lastChildLookup: false,
+    }
   )
   if (err(result)) {
     return result
@@ -155,16 +156,15 @@ export function addDeleteFace({
     return new Error('Delete Face requires at least one face selection.')
   }
 
-  const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    ['sweep'],
     {
+      lastChildLookup: true,
+      artifactTypeFilter: ['sweep'],
       includePrimitiveFaceIndices: true,
     }
   )
@@ -253,15 +253,16 @@ export function addHole({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const result = buildSolidsAndFacesExprs(
     face,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(result)) {
     return result
@@ -1216,14 +1217,19 @@ export function buildSolidsAndFacesExprs(
   modifiedAst: Node<Program>,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
-  lastChildLookup = true,
-  artifactTypeFilter: Array<Artifact['type']> = ['sweep'],
   options: {
+    lastChildLookup?: boolean
+    artifactTypeFilter?: Array<Artifact['type']>
     includePrimitiveFaceIndices?: boolean
   } = {}
 ) {
+  const {
+    lastChildLookup = true,
+    artifactTypeFilter = ['sweep'],
+    includePrimitiveFaceIndices = false,
+  } = options
   const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph)
-  const primitiveFaceSelections = options.includePrimitiveFaceIndices
+  const primitiveFaceSelections = includePrimitiveFaceIndices
     ? getEnginePrimitiveFaceSelectionsFromSelection(faces)
     : []
   if (primitiveFaceSelections.length > 0) {
