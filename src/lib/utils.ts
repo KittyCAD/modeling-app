@@ -756,9 +756,9 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
     // Needing to decode the URI bit my butt yo
     // Windows has C:\C:\ for some only god known reason.
     return window.electron.readFile(
-      window.electron.path.resolve(
-        decodeURI(url.split('file://')[1].replace('C:\\C:\\', 'C:\\'))
-      ),
+      window.electron.path
+        .resolve(decodeURI(url.split('file://')[1]))
+        .replace('C:\\C:\\', 'C:\\'),
       {
         encoding: 'utf-8',
       }
