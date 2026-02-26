@@ -426,7 +426,48 @@ surface001 = deleteFace(extrude001, faces = END)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    // TODO: add case for deleting a face needing a primitive index
+    it('should add a deleteFace call on an inner shell face', async () => {
+      const shell = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        shell,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            entityId: 'anything',
+            parentEntityId: 'anything',
+            primitiveIndex: 6,
+            primitiveType: 'face',
+            type: 'enginePrimitive',
+          },
+        ],
+      }
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${shell}
+surface001 = deleteFace(shell001, faceIndices = [6])`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
 
     // TODO: maybe one hybrid?
   })
