@@ -1091,11 +1091,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   /**
-   * Helper function to check if a point segment (CSS2DObject) is within the selection box
-   * Returns the segment ID if it should be included, null otherwise
+   * Helper function to check if a point segment is within the selection box.
+   * Uses the point mesh/hit-area world position rather than the hidden CSS2D test handle.
+   * Returns the segment ID if it should be included, null otherwise.
    */
   function checkPointSegmentInBox(
-    css2dObject: CSS2DObject,
+    pointObject: Object3D,
     segmentId: number,
     objects: Array<any>,
     camera: any,
@@ -1115,21 +1116,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return null
       }
 
-      // Get the world position of the CSS2DObject
-      css2dObject.updateMatrixWorld()
+      // Get the world position of the point mesh (or hit area)
+      pointObject.updateMatrixWorld()
       const worldPos = new Vector3()
-      css2dObject.getWorldPosition(worldPos)
+      pointObject.getWorldPosition(worldPos)
 
       // Project to screen space
       const viewportSize = new Vector2(
         renderer.domElement.clientWidth,
         renderer.domElement.clientHeight
       )
-      const projected = worldPos.clone().project(camera)
-      const screenPos = new Vector2(
-        ((projected.x + 1) / 2) * viewportSize.x,
-        ((1 - projected.y) / 2) * viewportSize.y
-      )
+      const screenPos = project3DToScreen(worldPos, camera, viewportSize)
 
       // Check if the point is within the selection box
       if (
@@ -1237,14 +1234,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+      // Check if this group has a point segment mesh/hit area
+      const pointObject = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
+            c.userData?.type === POINT_SEGMENT_BODY)
       )
 
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
+      if (pointObject) {
         const pointId = checkPointSegmentInBox(
-          css2dObject,
+          pointObject,
           segmentId,
           objects,
           camera,
@@ -1401,14 +1401,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+      // Check if this group has a point segment mesh/hit area
+      const pointObject = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
+            c.userData?.type === POINT_SEGMENT_BODY)
       )
 
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
+      if (pointObject) {
         const pointId = checkPointSegmentInBox(
-          css2dObject,
+          pointObject,
           segmentId,
           objects,
           camera,
