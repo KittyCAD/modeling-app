@@ -8,6 +8,8 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   segmentUtilsMap,
+  POINT_SEGMENT_BODY,
+  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
@@ -649,7 +651,9 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
       if (
         child instanceof Mesh &&
         (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          child.userData?.type === ARC_SEGMENT_BODY) &&
+          child.userData?.type === ARC_SEGMENT_BODY ||
+          child.userData?.type === POINT_SEGMENT_BODY ||
+          child.userData?.type === POINT_SEGMENT_HIT_AREA) &&
         child.userData.isHovered === true
       ) {
         updateSegmentHover(child, false, selectedIds, draftEntityIds)

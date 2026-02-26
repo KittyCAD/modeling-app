@@ -12,6 +12,8 @@ import {
   SEGMENT_TYPE_POINT,
   SEGMENT_TYPE_ARC,
   ARC_SEGMENT_BODY,
+  POINT_SEGMENT_BODY,
+  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
@@ -372,12 +374,14 @@ export function createOnMouseEnterCallback({
       return
     }
 
-    // Only highlight segment meshes (lines or arcs), not points or other objects
+    // Highlight segment meshes (lines, arcs, points), not groups or other objects
     const mesh = selected
     if (
       mesh instanceof Mesh &&
       (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-        mesh.userData?.type === ARC_SEGMENT_BODY)
+        mesh.userData?.type === ARC_SEGMENT_BODY ||
+        mesh.userData?.type === POINT_SEGMENT_BODY ||
+        mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
     ) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
@@ -449,7 +453,9 @@ export function createOnMouseLeaveCallback({
       if (
         mesh instanceof Mesh &&
         (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          mesh.userData?.type === ARC_SEGMENT_BODY)
+          mesh.userData?.type === ARC_SEGMENT_BODY ||
+          mesh.userData?.type === POINT_SEGMENT_BODY ||
+          mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
       ) {
         const allSelectedIds = getSelectedIds()
         const draftEntityIds = getDraftEntityIds?.()

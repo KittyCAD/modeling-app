@@ -149,6 +149,7 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
+export const POINT_SEGMENT_HIT_AREA = 'POINT_SEGMENT_HIT_AREA'
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -301,7 +302,7 @@ class PointSegmentDOM implements SketchEntityUtils {
     }
     group.scale.set(scale, scale, scale)
     const handle = group.getObjectByName('handle')
-    if (handle && handle instanceof CSS2DObject) {
+    if (handle instanceof CSS2DObject) {
       handle.position.set(x.value / scale, y.value / scale, 0)
       const el = handle.element
       const freedom = args.freedom ?? group.userData.freedom ?? null
@@ -316,6 +317,7 @@ class PointSegmentDOM implements SketchEntityUtils {
 
 class PointSegment implements SketchEntityUtils {
   private readonly pointDom = new PointSegmentDOM()
+  // TODO don't dispose
   private readonly circleGeometry = new CircleGeometry(3, 12)
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Point') {
@@ -335,13 +337,32 @@ class PointSegment implements SketchEntityUtils {
         depthTest: false,
       })
     )
+    const pointHitArea = new Mesh(
+      this.circleGeometry,
+      new MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        side: DoubleSide,
+        depthTest: false,
+        depthWrite: false,
+      })
+    )
     pointBody.userData.type = POINT_SEGMENT_BODY
     pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
     pointBody.renderOrder = 10
     pointBody.layers.set(SKETCH_LAYER)
+    // Visual-only mesh: interaction is handled by POINT_SEGMENT_HIT_AREA.
+    pointBody.raycast = () => {}
+    pointHitArea.userData.type = POINT_SEGMENT_HIT_AREA
+    pointHitArea.userData.isHovered = false
+    pointHitArea.name = POINT_SEGMENT_HIT_AREA
+    pointHitArea.renderOrder = 9
+    pointHitArea.layers.set(SKETCH_LAYER)
+    pointHitArea.scale.setScalar(10 / 3)
 
     // Keep DOM handle first in children array so existing tests still work.
+    segmentGroup.add(pointHitArea)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
 
@@ -384,8 +405,14 @@ class PointSegment implements SketchEntityUtils {
       console.error('No point segment body found in group')
       return
     }
+    const pointHitArea = group.children.find(
+      (child) => child.userData?.type === POINT_SEGMENT_HIT_AREA
+    )
 
     pointBody.position.set(x.value / scale, y.value / scale, 0)
+    if (pointHitArea instanceof Mesh) {
+      pointHitArea.position.copy(pointBody.position)
+    }
 
     const isSelected = selectedIds.includes(id)
     const isHovered = pointBody.userData.isHovered === true
@@ -396,7 +423,7 @@ class PointSegment implements SketchEntityUtils {
     group.userData.isConstruction = isConstruction
     group.userData.type = SEGMENT_TYPE_POINT
 
-    this.updatePointColor(pointBody, {
+    this.updatePointColors(pointBody, {
       isSelected,
       isHovered,
       isDraft,
@@ -404,7 +431,7 @@ class PointSegment implements SketchEntityUtils {
     })
   }
 
-  private updatePointColor(
+  updatePointColors(
     mesh: Mesh,
     {
       isSelected,
@@ -417,7 +444,7 @@ class PointSegment implements SketchEntityUtils {
       isDraft: boolean
       freedom?: Freedom | null
     }
-  ) {
+  ): void {
     if (!(mesh.material instanceof MeshBasicMaterial)) {
       return
     }
@@ -1019,7 +1046,7 @@ function updateLineMaterial(
 }
 
 /**
- * Updates the hover state of a segment mesh (line or arc)
+ * Updates the hover state of a segment mesh (line, arc, or point)
  */
 export function updateSegmentHover(
   mesh: Mesh | null,
@@ -1053,7 +1080,20 @@ export function updateSegmentHover(
   const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
-  if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
+  if (mesh.userData.type === POINT_SEGMENT_HIT_AREA) {
+    const pointBody = group.children.find(
+      (child) => child.userData?.type === POINT_SEGMENT_BODY
+    )
+    if (pointBody instanceof Mesh) {
+      pointBody.userData.isHovered = isHovered
+      segmentUtilsMap.PointSegment.updatePointColors(pointBody, {
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom,
+      })
+    }
+  } else if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
     if (mesh instanceof Line2) {
       segmentUtilsMap.LineSegment.updateLineColors(
         mesh,
