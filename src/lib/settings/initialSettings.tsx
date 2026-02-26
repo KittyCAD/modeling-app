@@ -131,7 +131,7 @@ export class Setting<T = unknown> {
   }
 }
 
-const FEATURES_CACHE_TTL = 30 * 1_000
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
 type CachedFeaturesData = Extract<
   Awaited<ReturnType<typeof users.user_features_get>>,
@@ -171,13 +171,13 @@ function hideWithoutFeatureFlag(
 
       const now = Date.now()
       const cacheValid =
-        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL
+        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
 
       type FeaturesResult = CachedFeaturesData | Error
       let featuresData: FeaturesResult
 
-      if (cacheValid) {
-        featuresData = featuresCache!.data
+      if (cacheValid && featuresCache) {
+        featuresData = featuresCache.data
       } else if (featuresFetchPromise) {
         featuresData = await featuresFetchPromise
       } else {
