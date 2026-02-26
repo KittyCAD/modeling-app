@@ -441,12 +441,13 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const faces: Selections = {
         graphSelections: [],
         otherSelections: [
           {
-            entityId: 'anything',
-            parentEntityId: 'anything',
+            entityId: 'irrelevant-for-this-test',
+            parentEntityId: sweep?.id,
             primitiveIndex: 6,
             primitiveType: 'face',
             type: 'enginePrimitive',
@@ -465,7 +466,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-surface001 = deleteFace(shell001, faceIndices = [6])`)
+surface001 = deleteFace(extrude001, faces = faceId(extrude001, index = 6))`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
