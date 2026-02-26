@@ -2223,7 +2223,7 @@ dependencies = [
  "miette",
  "serde",
  "serde_json",
- "ts-rs 12.0.1",
+ "ts-rs",
 ]
 
 [[package]]
@@ -2347,7 +2347,7 @@ dependencies = [
  "tokio-tungstenite",
  "toml 1.0.1+spec-1.1.0",
  "tower-lsp",
- "ts-rs 12.0.1",
+ "ts-rs",
  "twenty-twenty",
  "tynm",
  "typed-path",
@@ -2477,9 +2477,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.169"
+version = "0.2.172"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ffae8ac1dd33572b647ca6469d3506ae666d95553e709e5c4d59c6688554162"
+checksum = "a9c7802c9b4443c3f1b312f710ff5a5e9fead914e21e48d917676b4d8060a31a"
 dependencies = [
  "anyhow",
  "bon",
@@ -2500,7 +2500,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_json",
- "ts-rs 11.1.0",
+ "ts-rs",
  "uuid",
 ]
 
@@ -5210,19 +5210,6 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "11.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4994acea2522cd2b3b85c1d9529a55991e3ad5e25cdcd3de9d505972c4379424"
-dependencies = [
- "chrono",
- "serde_json",
- "thiserror 2.0.18",
- "ts-rs-macros 11.1.0",
- "uuid",
-]
-
-[[package]]
-name = "ts-rs"
 version = "12.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "756050066659291d47a554a9f558125db17428b073c5ffce1daf5dcb0f7231d8"
@@ -5231,21 +5218,9 @@ dependencies = [
  "indexmap 2.13.0",
  "serde_json",
  "thiserror 2.0.18",
- "ts-rs-macros 12.0.1",
+ "ts-rs-macros",
  "url",
  "uuid",
-]
-
-[[package]]
-name = "ts-rs-macros"
-version = "11.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee6ff59666c9cbaec3533964505d39154dc4e0a56151fdea30a09ed0301f62e2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.115",
- "termcolor",
 ]
 
 [[package]]
