@@ -3,6 +3,7 @@ import { Mesh, Vector2, Vector3 } from 'three'
 import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type {
+  EnginePrimitiveSelection,
   SetSelections,
   MouseState,
   SegmentOverlayPayload,
@@ -15,6 +16,7 @@ import type {
   PlaneVisibilityMap,
   ModelingMachineContext,
   ModelingMachineInput,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 
@@ -176,7 +178,6 @@ import {
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
@@ -1581,30 +1582,37 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'enginePrimitiveSelection') {
-          const isSamePrimitiveSelection = (
+          const isEnginePrimitiveSelection = (
             selection: Selections['otherSelections'][number]
-          ) => {
-            return (
-              typeof selection === 'object' &&
-              'type' in selection &&
-              selection.type === 'enginePrimitive' &&
-              selection.entityId === setSelections.selection.entityId &&
-              selection.parentEntityId ===
-                setSelections.selection.parentEntityId &&
-              selection.primitiveIndex ===
-                setSelections.selection.primitiveIndex &&
-              selection.primitiveType === setSelections.selection.primitiveType
-            )
-          }
+          ): selection is EnginePrimitiveSelection =>
+            typeof selection === 'object' &&
+            'type' in selection &&
+            selection.type === 'enginePrimitive'
+
+          const isSamePrimitiveSelection = (
+            selection: EnginePrimitiveSelection
+          ) =>
+            selection.entityId === setSelections.selection.entityId &&
+            selection.parentEntityId ===
+              setSelections.selection.parentEntityId &&
+            selection.primitiveIndex ===
+              setSelections.selection.primitiveIndex &&
+            selection.primitiveType === setSelections.selection.primitiveType
 
           const shouldDeselect = selectionRanges.otherSelections.some(
-            isSamePrimitiveSelection
+            (selection) =>
+              isEnginePrimitiveSelection(selection) &&
+              isSamePrimitiveSelection(selection)
           )
 
           const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
-                  (selection) => !isSamePrimitiveSelection(selection)
+                  (selection) =>
+                    !(
+                      isEnginePrimitiveSelection(selection) &&
+                      isSamePrimitiveSelection(selection)
+                    )
                 )
               : [...selectionRanges.otherSelections, setSelections.selection]
             : [setSelections.selection]
