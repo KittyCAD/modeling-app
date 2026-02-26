@@ -70,16 +70,9 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, project } = useApp()
-  const {
-    systemIOActor,
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    useLayout,
-    setLayout,
-    getLayout,
-  } = useSingletons()
+  const { auth, billing, settings, layout, project } = useApp()
+  const { systemIOActor, engineCommandManager, sceneInfra, kclManager } =
+    useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -151,7 +144,6 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
-  const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -298,7 +290,9 @@ export function OpenedProject() {
 
   const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
     () =>
-      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+      getOpenPanes({ rootLayout: layout.signal.value }).includes(
+        DefaultLayoutPaneID.TTC
+      )
         ? [
             {
               id: 'zookeeper-credits',
@@ -306,7 +300,7 @@ export function OpenedProject() {
             },
           ]
         : [],
-    [layout]
+    [layout.signal.value]
   )
 
   const undoRedoButtons = useMemo(
@@ -349,9 +343,9 @@ export function OpenedProject() {
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
-            layout={layout || defaultLayout}
-            getLayout={getLayout}
-            setLayout={setLayout}
+            layout={layout.signal.value || defaultLayout}
+            getLayout={layout.get}
+            setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settingsValues.app.showDebugPanel.current}
