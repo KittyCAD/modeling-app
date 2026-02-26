@@ -12,7 +12,9 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { App } from '@src/lib/app'
 
+let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -30,6 +32,9 @@ beforeEach(async () => {
 
   const { instance, engineCommandManager, kclManager } =
     await buildTheWorldAndNoEngineConnection()
+  appInstanceInThisFile = App.fromProvided({
+    wasmPromise: Promise.resolve(instance),
+  })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   kclManagerInThisFile = kclManager
@@ -44,6 +49,7 @@ describe('systemIOMachine - XState', () => {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
             engineCommandManager: engineCommandManagerInThisFile,
+            app: appInstanceInThisFile,
           },
         }).start()
         const context = actor.getSnapshot().context
@@ -67,6 +73,7 @@ describe('systemIOMachine - XState', () => {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
             engineCommandManager: engineCommandManagerInThisFile,
+            app: appInstanceInThisFile,
           },
         }).start()
         const state = actor.getSnapshot().value
@@ -80,6 +87,7 @@ describe('systemIOMachine - XState', () => {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
             engineCommandManager: engineCommandManagerInThisFile,
+            app: appInstanceInThisFile,
           },
         }).start()
         actor.send({
@@ -103,11 +111,14 @@ describe('systemIOMachine - XState', () => {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
             engineCommandManager: engineCommandManagerInThisFile,
+            app: appInstanceInThisFile,
           },
         }).start()
         actor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
-          data: { requestedProjectDirectoryPath: kclSamplesPath },
+          data: {
+            requestedProjectDirectoryPath: kclSamplesPath,
+          },
         })
         let context = actor.getSnapshot().context
         expect(context.projectDirectoryPath).toBe(kclSamplesPath)
@@ -121,11 +132,14 @@ describe('systemIOMachine - XState', () => {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
             engineCommandManager: engineCommandManagerInThisFile,
+            app: appInstanceInThisFile,
           },
         }).start()
         actor.send({
           type: SystemIOMachineEvents.setDefaultProjectFolderName,
-          data: { requestedDefaultProjectFolderName: expected },
+          data: {
+            requestedDefaultProjectFolderName: expected,
+          },
         })
         let context = actor.getSnapshot().context
         expect(context.defaultProjectFolderName).toBe(expected)

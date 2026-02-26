@@ -1,5 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import type { ExecState } from '@src/lang/wasm'
+import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -156,6 +157,7 @@ export type SystemIOInput = {
   // TODO: Remove these once SystemIOWeb goes away with web FS support
   kclManager: KclManager
   engineCommandManager: ConnectionManager
+  app: App
 }
 
 export type SystemIOContext = SystemIOInput & {
