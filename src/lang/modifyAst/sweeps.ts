@@ -117,11 +117,11 @@ export function addExtrude({
 
       let entityId: string | undefined
       if (entityRef.type === 'solid2d') {
-        entityId = entityRef.solid2dId
+        entityId = entityRef.solid2d_id
       } else if (entityRef.type === 'face') {
-        entityId = entityRef.faceId
+        entityId = entityRef.face_id
       } else if (entityRef.type === 'plane') {
-        entityId = entityRef.planeId
+        entityId = entityRef.plane_id
       }
 
       if (!entityId) return null
@@ -594,11 +594,11 @@ export function addRevolve({
 
       let entityId: string | undefined
       if (entityRef.type === 'solid2d') {
-        entityId = entityRef.solid2dId
+        entityId = entityRef.solid2d_id
       } else if (entityRef.type === 'face') {
-        entityId = entityRef.faceId
+        entityId = entityRef.face_id
       } else if (entityRef.type === 'plane') {
-        entityId = entityRef.planeId
+        entityId = entityRef.plane_id
       }
 
       if (!entityId) return null
@@ -678,12 +678,12 @@ export function addRevolve({
     if (
       edge.graphSelectionsV2 &&
       edge.graphSelectionsV2.length > 0 &&
-      edge.graphSelectionsV2[0]?.entityRef?.type === 'solid2dEdge'
+      edge.graphSelectionsV2[0]?.entityRef?.type === 'solid2d_edge'
     ) {
       // Solid2dEdge: the edgeId IS the segment artifact ID directly!
       // When a segment becomes part of a solid2d, it becomes an edge, and the edgeId
       // is the same as the original segment's artifact ID.
-      const edgeId = edge.graphSelectionsV2[0].entityRef.edgeId
+      const edgeId = edge.graphSelectionsV2[0].entityRef.edge_id
 
       // Look up the segment artifact directly by edgeId
       const segmentArtifact = artifactGraph.get(edgeId)

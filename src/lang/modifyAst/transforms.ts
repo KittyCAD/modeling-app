@@ -38,13 +38,13 @@ function normalizeSelectionsForTransform(
       let entityId: string | undefined
       if (entityRef) {
         if (entityRef.type === 'solid3d') {
-          entityId = entityRef.solid3dId
+          entityId = entityRef.solid3d_id
         } else if (entityRef.type === 'solid2d') {
-          entityId = entityRef.solid2dId
+          entityId = entityRef.solid2d_id
         } else if (entityRef.type === 'face') {
-          entityId = entityRef.faceId
+          entityId = entityRef.face_id
         } else if (entityRef.type === 'plane') {
-          entityId = entityRef.planeId
+          entityId = entityRef.plane_id
         }
       }
 

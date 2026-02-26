@@ -30,19 +30,19 @@ export type NonCodeSelection = Axis | DefaultPlaneSelection
 export type EntityReference =
   | {
       type: 'plane'
-      planeId: string
+      plane_id: string
     }
   | {
       type: 'face'
-      faceId: string
+      face_id: string
     }
   | {
       type: 'solid2d'
-      solid2dId: string
+      solid2d_id: string
     }
   | {
       type: 'solid3d'
-      solid3dId: string
+      solid3d_id: string
     }
   | {
       type: 'edge'
@@ -51,8 +51,8 @@ export type EntityReference =
       index?: number
     }
   | {
-      type: 'solid2dEdge'
-      edgeId: string
+      type: 'solid2d_edge'
+      edge_id: string
     }
   | {
       type: 'vertex'

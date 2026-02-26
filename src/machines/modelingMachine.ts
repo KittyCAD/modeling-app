@@ -1503,22 +1503,22 @@ export const modelingMachine = setup({
                   case 'solid3d':
                     return (
                       existingRef.type === 'solid3d' &&
-                      existingRef.solid3dId === newEntityRef.solid3dId
+                      existingRef.solid3d_id === newEntityRef.solid3d_id
                     )
                   case 'solid2d':
                     return (
                       existingRef.type === 'solid2d' &&
-                      existingRef.solid2dId === newEntityRef.solid2dId
+                      existingRef.solid2d_id === newEntityRef.solid2d_id
                     )
                   case 'face':
                     return (
                       existingRef.type === 'face' &&
-                      existingRef.faceId === newEntityRef.faceId
+                      existingRef.face_id === newEntityRef.face_id
                     )
                   case 'plane':
                     return (
                       existingRef.type === 'plane' &&
-                      existingRef.planeId === newEntityRef.planeId
+                      existingRef.plane_id === newEntityRef.plane_id
                     )
                   case 'edge':
                     // For edges, compare faces, disambiguators, and index
@@ -1547,10 +1547,10 @@ export const modelingMachine = setup({
                       JSON.stringify((newEntityRef.disambiguators || []).sort())
                     const vIndexMatch = existingRef.index === newEntityRef.index
                     return vFacesMatch && vDisambiguatorsMatch && vIndexMatch
-                  case 'solid2dEdge':
+                  case 'solid2d_edge':
                     return (
-                      existingRef.type === 'solid2dEdge' &&
-                      existingRef.edgeId === newEntityRef.edgeId
+                      existingRef.type === 'solid2d_edge' &&
+                      existingRef.edge_id === newEntityRef.edge_id
                     )
                   default:
                     return false
@@ -1571,22 +1571,22 @@ export const modelingMachine = setup({
                     case 'solid3d':
                       return (
                         existingRef.type !== 'solid3d' ||
-                        existingRef.solid3dId !== newEntityRef.solid3dId
+                        existingRef.solid3d_id !== newEntityRef.solid3d_id
                       )
                     case 'solid2d':
                       return (
                         existingRef.type !== 'solid2d' ||
-                        existingRef.solid2dId !== newEntityRef.solid2dId
+                        existingRef.solid2d_id !== newEntityRef.solid2d_id
                       )
                     case 'face':
                       return (
                         existingRef.type !== 'face' ||
-                        existingRef.faceId !== newEntityRef.faceId
+                        existingRef.face_id !== newEntityRef.face_id
                       )
                     case 'plane':
                       return (
                         existingRef.type !== 'plane' ||
-                        existingRef.planeId !== newEntityRef.planeId
+                        existingRef.plane_id !== newEntityRef.plane_id
                       )
                     case 'edge':
                       if (existingRef.type !== 'edge') return true
@@ -1622,10 +1622,10 @@ export const modelingMachine = setup({
                         vDisambiguatorsMatch &&
                         vIndexMatch
                       )
-                    case 'solid2dEdge':
+                    case 'solid2d_edge':
                       return (
-                        existingRef.type !== 'solid2dEdge' ||
-                        existingRef.edgeId !== newEntityRef.edgeId
+                        existingRef.type !== 'solid2d_edge' ||
+                        existingRef.edge_id !== newEntityRef.edge_id
                       )
                     default:
                       return true

@@ -83,10 +83,10 @@ export function useEngineConnectionSubscriptions() {
           // Extract plane ID from EntityReference
           let planeId: string | undefined
           if (entityRef.type === 'plane') {
-            planeId = entityRef.planeId
+            planeId = entityRef.plane_id
           } else if (entityRef.type === 'face') {
             // Check if it's a default plane
-            const entityId = entityRef.faceId
+            const entityId = entityRef.face_id
             const foundDefaultPlane =
               entityId &&
               rustContext.defaultPlanes !== null &&
