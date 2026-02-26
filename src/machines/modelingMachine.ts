@@ -203,6 +203,7 @@ import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
+import { toPlaneName } from '@src/lib/planes'
 
 export type ModelingMachineEvent =
   | {
@@ -3071,10 +3072,10 @@ export const modelingMachine = setup({
             // Determine the plane type from the result
             if (result.type === 'defaultPlane') {
               sketchArgs = {
-                on: result.plane,
+                on: { default: toPlaneName(result.plane) },
               }
             } else {
-              sketchArgs = { on: 'XY' }
+              sketchArgs = { on: { default: 'xy' } }
             }
 
             await rustContext.hackSetProgram(

@@ -130,6 +130,8 @@ pub enum KclError {
     MaxCallStack { details: KclErrorDetails },
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
+    #[error("engine hangup: {details:?}")]
+    EngineHangup { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
     Internal { details: KclErrorDetails },
 }
@@ -361,6 +363,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -412,6 +415,7 @@ impl miette::Diagnostic for Report {
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -497,6 +501,10 @@ impl KclError {
         KclError::Engine { details }
     }
 
+    pub fn new_engine_hangup(details: KclErrorDetails) -> KclError {
+        KclError::EngineHangup { details }
+    }
+
     pub fn new_lexical(details: KclErrorDetails) -> KclError {
         KclError::Lexical { details }
     }
@@ -529,6 +537,7 @@ impl KclError {
             KclError::InvalidExpression { .. } => "invalid expression",
             KclError::MaxCallStack { .. } => "max call stack",
             KclError::Engine { .. } => "engine",
+            KclError::EngineHangup { .. } => "engine hangup",
             KclError::Internal { .. } => "internal",
         }
     }
@@ -548,6 +557,7 @@ impl KclError {
             KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
             KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
+            KclError::EngineHangup { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
     }
@@ -568,6 +578,7 @@ impl KclError {
             KclError::InvalidExpression { details: e } => &e.message,
             KclError::MaxCallStack { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
+            KclError::EngineHangup { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
     }
@@ -587,6 +598,7 @@ impl KclError {
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
     }
@@ -607,6 +619,7 @@ impl KclError {
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
                     .iter()
@@ -638,6 +651,7 @@ impl KclError {
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {
                     item.fn_name = last_fn_name;
