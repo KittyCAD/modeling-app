@@ -375,4 +375,86 @@ yo = foo()
         );
         crate::execution::parse_execute(&applied).await.unwrap();
     }
+
+    /// A tag in an expression (e.g. sketch line tag = $SEG_TAG) introduces a binding. When
+    /// renaming a global with the same name, the tag must not be renamed (it shadows in that scope).
+    #[tokio::test]
+    async fn z0001_tag_binding_not_renamed() {
+        let kcl = r#"
+SEG_TAG = 1
+fn foo() {
+  s = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 0], tag = $SEG_TAG)
+  return s
+}
+x = foo()
+"#;
+        let expected = r#"
+segTag = 1
+fn foo() {
+  s = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 0], tag = $SEG_TAG)
+  return s
+}
+x = foo()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'SEG_TAG'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for SEG_TAG with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// A named function expression (fn NESTED_FN() { ... }) introduces a binding. When renaming
+    /// a global with the same name, the inner function name must not be renamed.
+    #[tokio::test]
+    async fn z0001_named_function_expression_not_renamed() {
+        let kcl = r#"
+NESTED_FN = 0
+fn outer() {
+  g = fn NESTED_FN() {
+    return 1
+  }
+  return g()
+}
+y = outer()
+"#;
+        let expected = r#"
+nestedFn = 0
+fn outer() {
+  g = fn NESTED_FN() {
+    return 1
+  }
+  return g()
+}
+y = outer()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'NESTED_FN'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for NESTED_FN with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }

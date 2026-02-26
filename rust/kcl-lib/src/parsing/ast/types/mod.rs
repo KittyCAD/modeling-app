@@ -775,17 +775,34 @@ impl Program {
         }
     }
 
-    /// Like `rename_identifiers` but a local variable name is only excluded for body items that
-    /// appear *after* its declaration. So a use-before-declaration of the same name (referring to
-    /// an outer binding) gets renamed; uses after the local declaration do not.
+    /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
+    /// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
+    /// uses after the binding are not. We use `body_item_defined_names` so all bindings are
+    /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
+    /// names, etc.).
     fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
         for item in &mut self.body {
-            let refs: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-            item.rename_identifiers(old_name, new_name, &refs);
-            if let BodyItem::VariableDeclaration(vd) = item {
-                excluded_owned.push(vd.declaration.id.name.clone());
-            }
+            let names_in_this = body_item_defined_names(&*item);
+            let excluded_for_this: Vec<&str> = match item {
+                BodyItem::VariableDeclaration(_) => {
+                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                    let bindings_from_init = names_in_this.len().saturating_sub(1);
+                    for n in &names_in_this[..bindings_from_init] {
+                        v.push(n.as_str());
+                    }
+                    v
+                }
+                _ => {
+                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                    for n in &names_in_this {
+                        v.push(n.as_str());
+                    }
+                    v
+                }
+            };
+            item.rename_identifiers(old_name, new_name, &excluded_for_this);
+            excluded_owned.extend(names_in_this);
         }
     }
 
@@ -1035,6 +1052,141 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
+/// Collect all names that are defined (bound) by this body item, in order. Used so that
+/// order-aware rename excludes a name only for items after the one that binds it.
+fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
+    let mut out = Vec::new();
+    match item {
+        BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+        BodyItem::ExpressionStatement(expr_stmt) => {
+            collect_defined_names_expr(&expr_stmt.expression, &mut out);
+        }
+        BodyItem::VariableDeclaration(var_decl) => {
+            collect_defined_names_expr(&var_decl.declaration.init, &mut out);
+            out.push(var_decl.declaration.id.name.clone());
+        }
+        BodyItem::ReturnStatement(ret_stmt) => {
+            collect_defined_names_expr(&ret_stmt.argument, &mut out);
+        }
+    }
+    out
+}
+
+/// Collect all names defined (bound) in an expression: TagDeclarator, LabelledExpression label,
+/// optional FunctionExpression name, etc. Mirrors frontend modify::find_defined_names_expr.
+fn collect_defined_names_expr(expr: &Expr, out: &mut Vec<String>) {
+    match expr {
+        Expr::CallExpressionKw(call) => {
+            for (_, arg) in call.iter_arguments() {
+                collect_defined_names_expr(arg, out);
+            }
+        }
+        Expr::PipeExpression(pipe) => {
+            for e in &pipe.body {
+                collect_defined_names_expr(e, out);
+            }
+        }
+        Expr::LabelledExpression(labeled) => {
+            collect_defined_names_expr(&labeled.expr, out);
+            out.push(labeled.label.name.clone());
+        }
+        Expr::Literal(_) | Expr::Name(_) | Expr::PipeSubstitution(_) | Expr::SketchVar(_) | Expr::None(_) => {}
+        Expr::TagDeclarator(tag_decl) => {
+            out.push(tag_decl.name.clone());
+        }
+        Expr::BinaryExpression(bin_expr) => {
+            collect_defined_names_binary_part(&bin_expr.left, out);
+            collect_defined_names_binary_part(&bin_expr.right, out);
+        }
+        Expr::FunctionExpression(func) => {
+            if let Some(name) = &func.name {
+                out.push(name.name.clone());
+            }
+        }
+        Expr::ArrayExpression(array) => {
+            for element in &array.elements {
+                collect_defined_names_expr(element, out);
+            }
+        }
+        Expr::ArrayRangeExpression(range) => {
+            collect_defined_names_expr(&range.start_element, out);
+            collect_defined_names_expr(&range.end_element, out);
+        }
+        Expr::ObjectExpression(obj) => {
+            for property in &obj.properties {
+                collect_defined_names_expr(&property.value, out);
+            }
+        }
+        Expr::MemberExpression(member) => {
+            collect_defined_names_expr(&member.object, out);
+            collect_defined_names_expr(&member.property, out);
+        }
+        Expr::UnaryExpression(unary_expr) => {
+            collect_defined_names_binary_part(&unary_expr.argument, out);
+        }
+        Expr::IfExpression(if_expr) => {
+            collect_defined_names_expr(&if_expr.cond, out);
+            for else_if in &if_expr.else_ifs {
+                collect_defined_names_expr(&else_if.cond, out);
+            }
+        }
+        Expr::AscribedExpression(expr) => {
+            collect_defined_names_expr(&expr.expr, out);
+        }
+        Expr::SketchBlock(sketch_block) => {
+            for labeled_arg in &sketch_block.arguments {
+                collect_defined_names_expr(&labeled_arg.arg, out);
+            }
+        }
+    }
+}
+
+/// Collect all names defined in a BinaryPart. Mirrors frontend modify::find_defined_names_binary_part.
+fn collect_defined_names_binary_part(part: &BinaryPart, out: &mut Vec<String>) {
+    match part {
+        BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => {}
+        BinaryPart::BinaryExpression(binary_expr) => {
+            collect_defined_names_binary_part(&binary_expr.left, out);
+            collect_defined_names_binary_part(&binary_expr.right, out);
+        }
+        BinaryPart::CallExpressionKw(call) => {
+            for (_, arg) in call.iter_arguments() {
+                collect_defined_names_expr(arg, out);
+            }
+        }
+        BinaryPart::UnaryExpression(unary_expr) => {
+            collect_defined_names_binary_part(&unary_expr.argument, out);
+        }
+        BinaryPart::MemberExpression(member) => {
+            collect_defined_names_expr(&member.object, out);
+            collect_defined_names_expr(&member.property, out);
+        }
+        BinaryPart::ArrayExpression(array) => {
+            for element in &array.elements {
+                collect_defined_names_expr(element, out);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(range) => {
+            collect_defined_names_expr(&range.start_element, out);
+            collect_defined_names_expr(&range.end_element, out);
+        }
+        BinaryPart::ObjectExpression(obj) => {
+            for property in &obj.properties {
+                collect_defined_names_expr(&property.value, out);
+            }
+        }
+        BinaryPart::IfExpression(if_expr) => {
+            collect_defined_names_expr(&if_expr.cond, out);
+            for else_if in &if_expr.else_ifs {
+                collect_defined_names_expr(&else_if.cond, out);
+            }
+        }
+        BinaryPart::AscribedExpression(expr) => {
+            collect_defined_names_expr(&expr.expr, out);
+        }
+    }
+}
+
 /// An expression can be evaluated to yield a single KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -1206,7 +1358,11 @@ impl Expr {
                     identifier.rename(old_name, new_name);
                 }
             }
-            Expr::TagDeclarator(tag) => tag.rename(old_name, new_name),
+            Expr::TagDeclarator(tag) => {
+                if !excluded.contains(&tag.name.as_str()) {
+                    tag.rename(old_name, new_name);
+                }
+            }
             Expr::BinaryExpression(binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name, excluded);
             }
