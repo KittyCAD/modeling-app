@@ -1,115 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed sketch_block_on_plane_of.kcl
+description: Operations executed sketch_block_on_negative_plane.kcl
 ---
 {
-  "rust/kcl-lib/tests/sketch_block_on_plane_of/input.kcl": [
-    {
-      "type": "VariableDeclaration",
-      "name": "len",
-      "value": {
-        "type": "Number",
-        "value": 2.0,
-        "ty": {
-          "mm": null,
-          "type": "Known",
-          "type": "Length"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 2.0,
-            "ty": {
-              "mm": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 7
-          }
-        ]
-      },
-      "sourceRange": []
-    },
+  "rust/kcl-lib/tests/sketch_block_on_negative_plane/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "sketch2::horizontal",
@@ -124,13 +18,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -153,13 +44,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -182,13 +70,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -211,13 +96,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -248,13 +130,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -285,13 +164,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -322,13 +198,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -359,13 +232,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -396,13 +266,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -433,13 +300,10 @@ description: Operations executed sketch_block_on_plane_of.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
@@ -450,18 +314,15 @@ description: Operations executed sketch_block_on_plane_of.kcl
     },
     {
       "type": "SketchSolve",
-      "sketchId": 2,
+      "sketchId": 1,
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 0
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "SketchBlock"
