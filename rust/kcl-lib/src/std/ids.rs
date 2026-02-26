@@ -2,7 +2,9 @@
 
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kittycad_modeling_cmds::{
+    self as kcmc, ok_response::OkModelingCmdResponse, shared::Point3d, websocket::OkWebSocketResponseData,
+};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -12,7 +14,7 @@ use crate::{
         types::RuntimeType,
     },
     parsing::ast::types::TagDeclarator,
-    std::Args,
+    std::{Args, args::TyF64},
 };
 
 /// Translates face indices to face IDs.
@@ -105,9 +107,23 @@ async fn inner_face_id(
 /// Translates edge indices to edge IDs.
 pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
-    let edge_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
-
-    inner_edge_id(body, edge_index, exec_state, args).await
+    let edge_index: Option<u32> = args.get_kw_arg_opt("index", &RuntimeType::count(), exec_state)?;
+    let closest_to: Option<[TyF64; 3]> = args.get_kw_arg_opt("closestTo", &RuntimeType::point3d(), exec_state)?;
+    let closest_to = closest_to
+        .map(|point| [point[0].to_mm(), point[1].to_mm(), point[2].to_mm()])
+        .map(|[x, y, z]| Point3d { x, y, z });
+    match (edge_index, closest_to) {
+        (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Must use either `index` or `closestTo`"),
+            vec![args.source_range],
+        ))),
+        (None, Some(closest_to)) => inner_edge_id_by_point(closest_to, exec_state, args).await,
+        (Some(edge_index), None) => inner_edge_id(body, edge_index, exec_state, args).await,
+        (Some(_), Some(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Cannot use both `index` and `closestTo`"),
+            vec![args.source_range],
+        ))),
+    }
 }
 
 /// Translates edge indices to edge IDs.
@@ -141,6 +157,45 @@ async fn inner_edge_id(
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Engine returned invalid response, it should have returned Solid3dGetEdgeUuid but it returned {edge_uuid_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+        inner_resp.edge_id
+    };
+    Ok(KclValue::Uuid {
+        value: edge_id,
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
+}
+
+/// Finds ID of edge closest to this point.
+async fn inner_edge_id_by_point(
+    closest_point: Point3d<f64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
+    // Handle mock execution
+    let no_engine_commands = args.ctx.no_engine_commands().await;
+    let edge_id = if no_engine_commands {
+        exec_state.next_uuid()
+    } else {
+        let edge_uuid_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(mcmd::ClosestEdge::builder().closest_to(closest_point).build()),
+            )
+            .await?;
+
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::ClosestEdge(inner_resp),
+        } = edge_uuid_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned ClosestEdge but it returned {edge_uuid_response:?}"
                 ),
                 vec![args.source_range],
             )));
