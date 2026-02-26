@@ -2,6 +2,7 @@ import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import fsZds from '@src/lib/fs-zds'
 
 export function getAllSubDirectoriesAtProjectRoot(
   context: SystemIOContext,
@@ -10,7 +11,7 @@ export function getAllSubDirectoriesAtProjectRoot(
   const subDirectories: FileEntry[] = []
   const { folders } = context
 
-  const projectFolder = folders.find((folder) => {
+  const projectFolder = (folders ?? []).find((folder) => {
     return folder.name === projectFolderName
   })
 
@@ -42,10 +43,12 @@ export function listAllImportFilesWithinProject(
   }: { projectFolderName: string; importExtensions: string[] }
 ) {
   const relativeFilePaths = []
+
   // copy the folders
-  let projectFolder = context.folders.find((folder) => {
+  let projectFolder = (context.folders ?? []).find((folder) => {
     return folder.name === projectFolderName
   })
+
   const clonedProjectFolder = structuredClone(projectFolder)
   if (window.electron && clonedProjectFolder?.children) {
     const projectPath = clonedProjectFolder.path
@@ -61,10 +64,7 @@ export function listAllImportFilesWithinProject(
         continue
       }
 
-      const relativeFilePath = v.path.replace(
-        projectPath + window.electron.sep,
-        ''
-      )
+      const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
       const extension = getEXTNoPeriod(relativeFilePath)
       if (
         extension &&

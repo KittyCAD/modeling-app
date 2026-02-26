@@ -1,5 +1,5 @@
 import React, { use, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -10,9 +10,10 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
+import fsZds from '@src/lib/fs-zds'
+import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -25,7 +26,8 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth, commands, settings } = useApp()
+  useSignals()
+  const { auth, commands, settings, project } = useApp()
   const {
     engineCommandManager,
     kclManager,
@@ -39,9 +41,8 @@ export const ModelingPageProvider = ({
   const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
-  const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const { project, file } = projectData
-
+  const projectIORef = project?.projectIORefSignal
+  const file = project?.executingFileEntry.value
   const filePath = useAbsoluteFilePath()
 
   useEffect(() => {
@@ -149,10 +150,10 @@ export const ModelingPageProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (window.electron && project?.children && file?.path) {
-      const projectPath = project.path
+    if (window.electron && projectIORef?.value.children && file?.path) {
+      const projectPath = projectIORef.value.path
       const filePath = file.path
-      let children = project.children
+      let children = structuredClone(projectIORef.value.children)
       while (children.length > 0) {
         const v = children.pop()
         if (!v) {
@@ -164,22 +165,23 @@ export const ModelingPageProvider = ({
           continue
         }
 
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
+        const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            name: relativeFilePath.replaceAll(fsZds.sep, '/'),
+            value: relativeFilePath.replaceAll(fsZds.sep, '/'),
           })
         }
       }
     }
     return kclCommands({
       authToken: token ?? '',
-      projectData,
+      projectData: {
+        project: projectIORef?.value,
+        file,
+        code: project?.executingEditor.value?.state.doc.toString() ?? '',
+      },
       kclManager,
       settings: {
         defaultUnit:
@@ -187,7 +189,7 @@ export const ModelingPageProvider = ({
           DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
-      project,
+      project: projectIORef?.value,
       rustContext,
       systemIOActor,
       wasmInstance,

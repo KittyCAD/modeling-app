@@ -1,23 +1,19 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager } from '@src/lang/KclManager'
+import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
-
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type {
-  BaseUnit,
-  SaveSettingsPayload,
-} from '@src/lib/settings/settingsTypes'
-
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom, SnapshotFrom } from 'xstate'
+import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { assign, createActor, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
-import { createSettings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type SettingsType,
+} from '@src/lib/settings/initialSettings'
 import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
@@ -27,11 +23,15 @@ import {
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
+  type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
+import {
+  type CommandBarActorType,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -45,15 +45,19 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { signal } from '@preact/signals-core'
+import { type Signal, signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import type { Project } from '@src/lib/project'
+import type { User } from '@kittycad/lib/dist/types/src'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
+    app: App
     kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
@@ -62,9 +66,46 @@ declare global {
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
-export class App {
-  singletons: ReturnType<typeof this.buildSingletons>
+export type AppAuthSystem = {
+  actor: ActorRefFrom<typeof authMachine>
+  send: ActorRefFrom<typeof authMachine>['send']
+  useAuthState: () => SnapshotFrom<typeof authMachine>
+  useToken: () => string
+  useUser: () => User | undefined
+}
 
+export type AppCommandSystem = {
+  actor: CommandBarActorType
+  send: CommandBarActorType['send']
+  useState: () => SnapshotFrom<CommandBarActorType>
+}
+
+export type AppSettingsSystem = {
+  actor: SettingsActorType
+  send: SettingsActorType['send']
+  get: () => SettingsType
+  useSettings: () => SettingsType
+}
+
+export type AppBillingSystem = {
+  actor: ActorRefFrom<typeof billingMachine>
+  send: ActorRefFrom<typeof billingMachine>['send']
+  useContext: () => ContextFrom<typeof billingMachine>
+}
+
+/** All of the subsystems needed to run the ZDS app */
+export interface AppSubsystems {
+  wasmPromise: Promise<ModuleType>
+  auth: AppAuthSystem
+  machineManager: MachineManager
+  commands: AppCommandSystem
+  settings: AppSettingsSystem
+  billing: AppBillingSystem
+}
+
+export class App implements AppSubsystems {
+  project?: ZDSProject
+  singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
    * - settings parse/unparse
@@ -72,83 +113,167 @@ export class App {
    *
    * Access this through `kclManager.wasmInstance`, not directly.
    */
-  public wasmPromise = initialiseWasm()
-
-  /** Machines to send models to print or cut on the local network */
-  machineManager = window.electron
-    ? new MachineManager({
-        getMachineApiIp: window.electron.getMachineApiIp,
-        listMachines: window.electron.listMachines,
-      })
-    : new MachineManager() // Instantiate with no-op functions
-
-  private commandBarActor = createActor(commandBarMachine, {
-    input: {
-      commands: [],
-      wasmInstancePromise: this.wasmPromise,
-      machineManager: this.machineManager,
-    },
-  }).start()
-  /** The command system for the app */
-  public commands = {
-    actor: this.commandBarActor,
-    send: this.commandBarActor.send.bind(this),
-    useState: () => useSelector(this.commandBarActor, (state) => state),
-  }
-
-  private authActor = createActor(authMachine).start()
+  wasmPromise: Promise<ModuleType>
   /** Auth system. Use `send` method to act with auth. */
-  auth = {
-    actor: this.authActor,
-    send: (...args: Parameters<typeof this.authActor.send>) =>
-      this.authActor.send(...args),
-    useAuthState: () => useSelector(this.authActor, (state) => state),
-    useToken: () => useSelector(this.authActor, (state) => state.context.token),
-    useUser: () => useSelector(this.authActor, (state) => state.context.user),
-  }
-
-  private settingsActor = createActor(settingsMachine, {
-    input: {
-      ...createSettings(),
-      commandBarActor: this.commandBarActor,
-      wasmInstancePromise: this.wasmPromise,
-    },
-  }).start()
-  // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings = signal<SaveSettingsPayload>(
-    getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settingsActor.getSnapshot().context)
-    )
-  )
+  auth: AppAuthSystem
+  /** Machines to send models to print or cut on the local network */
+  machineManager: MachineManager
+  /** The command system for the app */
+  commands: AppCommandSystem
   /** The settings system for the application */
-  public settings = {
-    actor: this.settingsActor,
-    send: this.settingsActor.send.bind(this),
-    get: () =>
-      getOnlySettingsFromContext(this.settingsActor.getSnapshot().context),
-    useSettings: () =>
-      useSelector(this.settingsActor, (state) => {
-        // We have to peel everything that isn't settings off
-        return getOnlySettingsFromContext(state.context)
-      }),
-  }
+  settings: AppSettingsSystem
+  /** The billing system for the application */
+  billing: AppBillingSystem
 
-  private billingActor = createActor(billingMachine, {
-    input: {
-      ...BILLING_CONTEXT_DEFAULTS,
-      urlUserService: () => withAPIBaseURL(''),
-    },
-  }).start()
-  /** The billing system for the app, which today focuses on Zookeeper credits */
-  billing = {
-    actor: this.billingActor,
-    send: this.billingActor.send.bind(this),
-    useContext: () => useSelector(this.billingActor, ({ context }) => context),
-  }
+  // TODO: refactor this to not require keeping around the last settings to compare to
+  private lastSettings: Signal<SaveSettingsPayload>
 
-  constructor() {
+  constructor(subsystems: AppSubsystems) {
+    this.wasmPromise = subsystems.wasmPromise
+    this.auth = subsystems.auth
+    this.machineManager = subsystems.machineManager
+    this.billing = subsystems.billing
+    this.commands = subsystems.commands
+    this.settings = subsystems.settings
+
     this.singletons = this.buildSingletons()
-    this.settingsActor.subscribe(this.onSettingsUpdate)
+    this.lastSettings = signal<SaveSettingsPayload>(
+      getAllCurrentSettings(
+        getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
+      )
+    )
+    this.settings.actor.subscribe(this.onSettingsUpdate)
+  }
+
+  /**
+   * The default app subsystems during normal runtime.
+   * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
+   */
+  static getDefaultSystems(wasmPromise = initialiseWasm()) {
+    const authActor = createActor(authMachine).start()
+    const auth: AppAuthSystem = {
+      actor: authActor,
+      send: (...args: Parameters<typeof authActor.send>) =>
+        authActor.send(...args),
+      useAuthState: () => useSelector(authActor, (state) => state),
+      useToken: () => useSelector(authActor, (state) => state.context.token),
+      useUser: () => useSelector(authActor, (state) => state.context.user),
+    }
+
+    const machineManager = window.electron
+      ? new MachineManager({
+          getMachineApiIp: window.electron.getMachineApiIp,
+          listMachines: window.electron.listMachines,
+        })
+      : new MachineManager() // Instantiate with no-op functions
+
+    const commandBarActor = createActor(commandBarMachine, {
+      input: {
+        commands: [],
+        wasmInstancePromise: wasmPromise,
+        machineManager,
+      },
+    }).start()
+
+    const commands: AppCommandSystem = {
+      actor: commandBarActor,
+      send: commandBarActor.send.bind(this),
+      useState: () => useSelector(commandBarActor, (state) => state),
+    }
+
+    const settingsActor = createActor(settingsMachine, {
+      input: {
+        ...createSettings(),
+        commandBarActor: commandBarActor,
+        wasmInstancePromise: wasmPromise,
+      },
+    }).start()
+    const settings: AppSettingsSystem = {
+      actor: settingsActor,
+      send: settingsActor.send.bind(this),
+      get: () =>
+        getOnlySettingsFromContext(settingsActor.getSnapshot().context),
+      useSettings: () =>
+        useSelector(settingsActor, (state) => {
+          // We have to peel everything that isn't settings off
+          return getOnlySettingsFromContext(state.context)
+        }),
+    }
+
+    const billingActor = createActor(billingMachine, {
+      input: {
+        ...BILLING_CONTEXT_DEFAULTS,
+        urlUserService: () => withAPIBaseURL(''),
+      },
+    }).start()
+    const billing: AppBillingSystem = {
+      actor: billingActor,
+      send: billingActor.send.bind(this),
+      useContext: () => useSelector(billingActor, ({ context }) => context),
+    }
+
+    return {
+      wasmPromise,
+      auth,
+      machineManager,
+      commands,
+      settings,
+      billing,
+    }
+  }
+
+  /** Instantiate an App with all the default subsystems */
+  static fromDefaults(): App {
+    const defaults = App.getDefaultSystems()
+    return new App(defaults)
+  }
+
+  /**
+   * Instantiate an App with some non-default subsystems.
+   * Useful for testing, spying, or mocking subsystems (such as WASM in unit tests).
+   */
+  static fromProvided(
+    provided: Partial<ReturnType<typeof App.getDefaultSystems>>
+  ) {
+    const defaults = provided.wasmPromise
+      ? App.getDefaultSystems(provided.wasmPromise) // Allows us to instantiate without WASM!
+      : App.getDefaultSystems()
+    const combined = Object.assign(defaults, provided)
+    return new App(combined)
+  }
+
+  // TODO: Remove providedEditor once the app can handle not always having a KclManager
+  openProject(
+    projectIORef: Project,
+    initialOpenFile?: string,
+    providedEditor?: KclManager
+  ) {
+    const projectIORefSignal = signal(projectIORef)
+    this.project = ZDSProject.open(
+      projectIORefSignal,
+      this,
+      initialOpenFile,
+      providedEditor
+    )
+
+    this.project.executingPath
+
+    // TODO: Rework the systemIOActor to fit into the system better,
+    // so that the project doesn't need to subscribe to it.
+    this.singletons.systemIOActor.subscribe(({ context }) => {
+      const foundProject = context.folders.find(
+        (p) =>
+          p.name === projectIORefSignal.value.name &&
+          p.path === projectIORefSignal.value.path
+      )
+      if (foundProject && projectIORefSignal.value !== foundProject) {
+        projectIORefSignal.value = foundProject
+      }
+    })
+  }
+  closeProject() {
+    this.project?.closeAllEditors()
+    this.project = undefined
   }
 
   /**
@@ -162,42 +287,29 @@ export class App {
       // HACK: convert settings to not be an XState actor to prevent the need for
       // this dummy-with late binding of the real thing.
       // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
-      this.settingsActor
+      this.settings.actor
     )
 
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
-    const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
+    const kclManager = new KclManager({
       rustContext,
-      sceneInfra,
+      engineCommandManager,
+      settings: this.settings.actor,
+      wasmInstancePromise: this.wasmPromise,
+      commandBar: this.commands.actor,
     })
 
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
     engineCommandManager.kclManager = kclManager
-    engineCommandManager.sceneInfra = sceneInfra
+    engineCommandManager.sceneInfra = kclManager.sceneInfra
     engineCommandManager.rustContext = rustContext
-
-    kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
-      sceneInfra.baseUnit = unit
-    }
-
-    const sceneEntitiesManager = new SceneEntities(
-      engineCommandManager,
-      sceneInfra,
-      kclManager,
-      rustContext
-    )
-    /** 🚨 Circular dependency alert 🚨 */
-    kclManager.sceneEntitiesManager = sceneEntitiesManager
 
     if (typeof window !== 'undefined') {
       ;(window as any).engineCommandManager = engineCommandManager
       ;(window as any).kclManager = kclManager
-      ;(window as any).sceneInfra = sceneInfra
-      ;(window as any).sceneEntitiesManager = sceneEntitiesManager
       ;(window as any).rustContext = rustContext
       ;(window as any).engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
@@ -234,9 +346,9 @@ export class App {
       context: {
         kclManager: kclManager,
         engineCommandManager: engineCommandManager,
-        sceneInfra: sceneInfra,
-        sceneEntitiesManager: sceneEntitiesManager,
-        commandBarActor: this.commandBarActor,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        commandBarActor: this.commands.actor,
         layout: defaultLayout,
       },
       entry: [
@@ -244,6 +356,7 @@ export class App {
           systemId: SYSTEM_IO,
           input: {
             wasmInstancePromise: this.wasmPromise,
+            app: this,
           },
         }),
       ],
@@ -267,25 +380,18 @@ export class App {
       systemId: 'root',
     })
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    sceneInfra.camControls.getSettings = this.settings.get
-    sceneEntitiesManager.getSettings = this.settings.get
-
     const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
-    // TODO: proper dependency management
-    sceneEntitiesManager.commandBarActor = this.commandBarActor
-    this.commandBarActor.send({ type: 'Set kclManager', data: kclManager })
+    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands
-    this.commandBarActor.send({
+    this.commands.actor.send({
       type: 'Add commands',
       data: {
         commands: [
-          ...createAuthCommands({ authActor: this.authActor }),
+          ...createAuthCommands({ authActor: this.auth.actor }),
           ...createProjectCommands({ systemIOActor }),
         ],
       },
@@ -301,9 +407,9 @@ export class App {
     return {
       engineCommandManager,
       rustContext,
-      sceneInfra,
+      sceneInfra: kclManager.sceneInfra,
       kclManager,
-      sceneEntitiesManager,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       appActor,
       systemIOActor,
       getLayout,
@@ -316,7 +422,7 @@ export class App {
    * Until we update these dependents of the settings to take settings
    * as a dependency input, we must subscribe to updates from the outside.
    */
-  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settingsActor>) => {
+  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
     const { context } = snapshot
 
     // Update line wrapping
@@ -347,8 +453,10 @@ export class App {
     const newTheme = context.app.theme.current
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
-    this.singletons.sceneInfra.theme = opposingTheme
-    this.singletons.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.singletons.kclManager.sceneInfra.theme = opposingTheme
+    this.singletons.kclManager.sceneEntitiesManager.updateSegmentBaseColor(
+      opposingTheme
+    )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.engineCommandManager.connection) {
       this.singletons.engineCommandManager
@@ -382,15 +490,15 @@ export class App {
       console.error('Error executing AST after settings change', e)
     }
 
-    this.singletons.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
       context.app.allowOrbitInSketchMode.current
 
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
-      this.singletons.sceneInfra.camControls &&
+      this.singletons.kclManager.sceneInfra.camControls &&
       !this.singletons.kclManager.modelingState?.matches('Sketch')
     ) {
-      this.singletons.sceneInfra.camControls.engineCameraProjection =
+      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
     }
 

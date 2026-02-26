@@ -5,9 +5,17 @@ import {
   isRowFake,
   shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { FileEntry } from '@src/lib/project'
-import { expect, describe, it } from 'vitest'
+import { beforeAll, expect, describe, it } from 'vitest'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 describe('Explorer utils.ts', () => {
   describe('isRowFake', () => {
