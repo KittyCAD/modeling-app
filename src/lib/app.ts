@@ -5,7 +5,7 @@ import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup, spawnChild } from 'xstate'
+import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -13,13 +13,11 @@ import {
   createSettings,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
-import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
   type SettingsActorType,
@@ -35,7 +33,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { AppMachineEventType } from '@src/lib/types'
 import {
   defaultLayout,
   defaultLayoutConfig,
@@ -44,7 +41,7 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { type Signal, signal } from '@preact/signals-core'
+import { type Signal, signal, effect } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -93,6 +90,14 @@ export type AppBillingSystem = {
   useContext: () => ContextFrom<typeof billingMachine>
 }
 
+export type AppLayoutSystem = {
+  signal: Signal<Layout>
+  get: () => Layout
+  set: (l: Layout) => void
+  reset: () => void
+  saveEffectUnsubscribeFn: ReturnType<typeof effect>
+}
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -101,6 +106,7 @@ export interface AppSubsystems {
   commands: AppCommandSystem
   settings: AppSettingsSystem
   billing: AppBillingSystem
+  layout: AppLayoutSystem
 }
 
 export class App implements AppSubsystems {
@@ -124,6 +130,8 @@ export class App implements AppSubsystems {
   settings: AppSettingsSystem
   /** The billing system for the application */
   billing: AppBillingSystem
+  /** The layout system for the application */
+  layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: Signal<SaveSettingsPayload>
@@ -135,6 +143,7 @@ export class App implements AppSubsystems {
     this.billing = subsystems.billing
     this.commands = subsystems.commands
     this.settings = subsystems.settings
+    this.layout = subsystems.layout
 
     this.singletons = this.buildSingletons()
     this.lastSettings = signal<SaveSettingsPayload>(
@@ -212,6 +221,21 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
+    const layoutSignal = signal<Layout>(defaultLayout)
+    const layout: AppLayoutSystem = {
+      signal: layoutSignal,
+      get: () => layoutSignal.value,
+      set: (l: Layout) => {
+        layoutSignal.value = structuredClone(l)
+      },
+      reset: () => {
+        layoutSignal.value = structuredClone(defaultLayoutConfig)
+      },
+      saveEffectUnsubscribeFn: effect(() =>
+        saveLayout({ layout: layoutSignal.value })
+      ),
+    }
+
     return {
       wasmPromise,
       auth,
@@ -219,6 +243,7 @@ export class App implements AppSubsystems {
       commands,
       settings,
       billing,
+      layout,
     }
   }
 
@@ -311,56 +336,19 @@ export class App implements AppSubsystems {
           },
         })
     }
-    const { SYSTEM_IO } = ACTOR_IDS
-    const appMachineActors = {
-      [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-    } as const
 
-    const appMachine = setup({
-      types: {} as {
-        events: AppMachineEvent
-        context: AppMachineContext
-      },
-    }).createMachine({
-      id: 'modeling-app',
-      context: {
-        kclManager: kclManager,
-        engineCommandManager: kclManager.engineCommandManager,
-        sceneInfra: kclManager.sceneInfra,
-        sceneEntitiesManager: kclManager.sceneEntitiesManager,
-        commandBarActor: this.commands.actor,
-        layout: defaultLayout,
-      },
-      entry: [
-        spawnChild(appMachineActors[SYSTEM_IO], {
-          systemId: SYSTEM_IO,
-          input: {
-            wasmInstancePromise: this.wasmPromise,
-            app: this,
-          },
-        }),
-      ],
-      on: {
-        [AppMachineEventType.SetLayout]: {
-          actions: [
-            assign({ layout: ({ event }) => structuredClone(event.layout) }),
-            ({ event }) => saveLayout({ layout: event.layout }),
-          ],
+    const systemIOActor = createActor(
+      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+      {
+        input: {
+          wasmInstancePromise: this.wasmPromise,
+          kclManager,
+          engineCommandManager: kclManager.engineCommandManager,
+          app: this,
         },
-        [AppMachineEventType.ResetLayout]: {
-          actions: [
-            assign({ layout: structuredClone(defaultLayoutConfig) }),
-            ({ context }) => saveLayout({ layout: context.layout }),
-          ],
-        },
-      },
-    })
+      }
+    ).start()
 
-    const appActor = createActor(appMachine, {
-      systemId: 'root',
-    })
-
-    const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
@@ -377,24 +365,13 @@ export class App implements AppSubsystems {
       },
     })
 
-    const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
-      state.context.layout
-    const getLayout = () => appActor.getSnapshot().context.layout
-    const useLayout = () => useSelector(appActor, layoutSelector)
-    const setLayout = (layout: Layout) =>
-      appActor.send({ type: AppMachineEventType.SetLayout, layout })
-
     return {
       engineCommandManager: kclManager.engineCommandManager,
       rustContext: kclManager.rustContext,
       sceneInfra: kclManager.sceneInfra,
       kclManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      appActor,
       systemIOActor,
-      getLayout,
-      useLayout,
-      setLayout,
     }
   }
 
