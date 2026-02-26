@@ -150,6 +150,7 @@ export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 export const POINT_SEGMENT_HIT_AREA = 'POINT_SEGMENT_HIT_AREA'
+const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -219,6 +220,8 @@ export interface SketchEntityUtils {
 }
 
 class PointSegmentDOM implements SketchEntityUtils {
+  private static createdHandleCount = 0
+
   private createPointHtml(segmentId: number) {
     // Keep only the minimal DOM structure required by tests.
     // The element stays in the DOM for query-based tests but is hidden/inert in production.
@@ -259,20 +262,22 @@ class PointSegmentDOM implements SketchEntityUtils {
     }
     const segmentGroup = new Group()
 
-    // Create a 2D box using CSS2DObject
-    const { handleDiv } = this.createPointHtml(args.id)
-
-    const cssObject = new CSS2DObject(handleDiv)
-    // Set explicitly so the debug DOM marker stays centered on the point.
-    cssObject.center.set(0.5, 0.5)
-    cssObject.userData.type = 'handle'
-    cssObject.name = 'handle'
-
     segmentGroup.name = args.id.toString()
     segmentGroup.userData = {
       type: 'point',
     }
-    segmentGroup.add(cssObject)
+
+    if (PointSegmentDOM.createdHandleCount < MAX_POINT_SEGMENT_DOM_HANDLES) {
+      // Create a hidden CSS2D point handle for tests only (capped for performance).
+      const { handleDiv } = this.createPointHtml(args.id)
+      const cssObject = new CSS2DObject(handleDiv)
+      // Set explicitly so the debug DOM marker stays centered on the point.
+      cssObject.center.set(0.5, 0.5)
+      cssObject.userData.type = 'handle'
+      cssObject.name = 'handle'
+      segmentGroup.add(cssObject)
+      PointSegmentDOM.createdHandleCount += 1
+    }
 
     // Store freedom in userData for later access
     segmentGroup.userData.freedom = args.freedom ?? null
