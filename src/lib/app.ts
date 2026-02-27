@@ -11,6 +11,7 @@ import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsComman
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
+  createSettingsValuesSignal,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
@@ -78,6 +79,8 @@ export type AppCommandSystem = {
 
 export type AppSettingsSystem = {
   actor: SettingsActorType
+  settings: SettingsType
+  signal: ReturnType<typeof createSettingsValuesSignal>
   send: SettingsActorType['send']
   get: () => SettingsType
   useSettings: () => SettingsType
@@ -133,7 +136,7 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: Signal<SaveSettingsPayload>
+  private lastSettings: SettingsType
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -145,11 +148,6 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
 
     this.singletons = this.buildSingletons()
-    this.lastSettings = signal<SaveSettingsPayload>(
-      getAllCurrentSettings(
-        getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-      )
-    )
     this.settings.actor.subscribe(this.onSettingsUpdate)
   }
 
@@ -196,9 +194,12 @@ export class App implements AppSubsystems {
         wasmInstancePromise: wasmPromise,
       },
     }).start()
+    const obj = createSettings()
     const settings: AppSettingsSystem = {
       actor: settingsActor,
       send: settingsActor.send.bind(this),
+      settings: obj,
+      signal: createSettingsValuesSignal(obj),
       get: () =>
         getOnlySettingsFromContext(settingsActor.getSnapshot().context),
       useSettings: () =>
@@ -399,6 +400,9 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    if (!this.project) {
+      return // Everything in here only matters inside a project.
+    }
     const { context } = snapshot
 
     // Update line wrapping
@@ -409,7 +413,7 @@ export class App implements AppSubsystems {
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
-      newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
+      newHighlighting !== this.lastSettings.modeling.highlightEdges.current &&
       this.singletons.engineCommandManager.connection
     ) {
       this.singletons.engineCommandManager
@@ -442,17 +446,18 @@ export class App implements AppSubsystems {
 
     // Execute AST
     try {
-      const relevantSetting = (s: SaveSettingsPayload | undefined) => {
+      const relevantSetting = (s: SettingsType) => {
         const hasScaleGrid =
-          s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+          s.modeling.showScaleGrid.current !==
+          context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s?.modeling?.highlightEdges !==
+          s.modeling.highlightEdges.current !==
           context.modeling.highlightEdges.current
         return hasScaleGrid || hasHighlightEdges
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings.value
+        this.lastSettings
       )
 
       // Unit changes requires a re-exec of code
@@ -480,8 +485,6 @@ export class App implements AppSubsystems {
 
     // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
     // of the last settings to know if they've changed.
-    this.lastSettings.value = getAllCurrentSettings(
-      getOnlySettingsFromContext(context)
-    )
+    this.lastSettings = getOnlySettingsFromContext(context)
   }
 }
