@@ -5,19 +5,22 @@ all: check test-unit
 # INSTALL
 
 ifeq ($(OS),Windows_NT)
-export WINDOWS := true
-ifndef MSYSTEM
-export POWERSHELL := true
-endif
+  export WINDOWS := true
+  ifndef MSYSTEM
+    export POWERSHELL := true
+  endif
 endif
 
 ifdef WINDOWS
-PLATFORM := Windows
+  PLATFORM := Windows
 else
-PLATFORM := $(shell uname -s)
-ifeq ($(PLATFORM),Linux)
-export LINUX := true
-endif
+  PLATFORM := $(shell uname -s)
+  ifeq ($(PLATFORM),Linux)
+    export LINUX := true
+  endif
+  ifeq ($(PLATFORM),Darwin)
+    export MACOS := true
+  endif
 endif
 
 ifdef WINDOWS
@@ -117,7 +120,7 @@ E2E_GREP ?=
 E2E_WORKERS ?=
 E2E_FAILURES ?= 1
 
-ifdef LINUX
+ifdef MACOS
 E2E_MODE ?= changed
 else
 E2E_MODE ?= none
@@ -156,7 +159,7 @@ endif
 
 .PHONY: test-snapshots
 test-snapshots: install build ## Run the snapshot tests
-ifndef LINUX
+ifndef MACOS
 	@ echo "NOTE: Snapshots cannot be updated on $(PLATFORM)"
 endif
 ifdef E2E_GREP
