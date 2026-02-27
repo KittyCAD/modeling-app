@@ -59,11 +59,12 @@ pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
 pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
 pub(crate) const WARN_SOLVER: &str = "solver";
+pub(crate) const WARN_SHOULD_BE_PERCENTAGE: &str = "shouldBePercentage";
 pub(crate) const WARN_INVALID_MATH: &str = "invalidMath";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "notYetSupported";
-pub(super) const WARN_VALUES: [&str; 10] = [
+pub(super) const WARN_VALUES: [&str; 11] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -71,6 +72,7 @@ pub(super) const WARN_VALUES: [&str; 10] = [
     WARN_DEPRECATED,
     WARN_IGNORED_Z_AXIS,
     WARN_SOLVER,
+    WARN_SHOULD_BE_PERCENTAGE,
     WARN_INVALID_MATH,
     WARN_UNNECESSARY_CLOSE,
     WARN_NOT_YET_SUPPORTED,
