@@ -494,6 +494,7 @@ description: Artifact commands helical-gear.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }
