@@ -9,7 +9,7 @@ import {
   handleSelectionBatch,
 } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
