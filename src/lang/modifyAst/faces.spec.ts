@@ -1,5 +1,8 @@
 import { recast, type PlaneArtifact } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  NonCodeSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
@@ -426,7 +429,7 @@ surface001 = deleteFace(extrude001, faces = END)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a deleteFace call on an inner shell face', async () => {
+    it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
@@ -441,18 +444,18 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
+      const wall = getFacesFromBox(artifactGraph, 1).graphSelections[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      const innerFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 6,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
       const faces: Selections = {
-        graphSelections: [],
-        otherSelections: [
-          {
-            entityId: 'irrelevant-for-this-test',
-            parentEntityId: sweep?.id,
-            primitiveIndex: 6,
-            primitiveType: 'face',
-            type: 'enginePrimitive',
-          },
-        ],
+        graphSelections: [wall],
+        otherSelections: [innerFace],
       }
       const result = addDeleteFace({
         ast,
@@ -466,11 +469,15 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-surface001 = deleteFace(extrude001, faces = faceId(extrude001, index = 6))`)
+surface001 = deleteFace(
+  extrude001,
+  faces = [
+    rectangleSegmentA001,
+    faceId(extrude001, index = 6)
+  ],
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
-
-    // TODO: maybe one hybrid?
   })
 
   describe('Testing addHole', () => {
