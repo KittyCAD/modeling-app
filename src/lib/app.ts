@@ -2,7 +2,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
-import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
@@ -11,7 +10,6 @@ import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsComman
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
-  createSettingsValuesSignal,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
@@ -43,7 +41,6 @@ import {
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
-import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -79,8 +76,6 @@ export type AppCommandSystem = {
 
 export type AppSettingsSystem = {
   actor: SettingsActorType
-  settings: SettingsType
-  signal: ReturnType<typeof createSettingsValuesSignal>
   send: SettingsActorType['send']
   get: () => SettingsType
   useSettings: () => SettingsType
@@ -136,7 +131,7 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: SettingsType
+  private lastSettings = createSettings()
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -194,12 +189,9 @@ export class App implements AppSubsystems {
         wasmInstancePromise: wasmPromise,
       },
     }).start()
-    const obj = createSettings()
     const settings: AppSettingsSystem = {
       actor: settingsActor,
       send: settingsActor.send.bind(this),
-      settings: obj,
-      signal: createSettingsValuesSignal(obj),
       get: () =>
         getOnlySettingsFromContext(settingsActor.getSnapshot().context),
       useSettings: () =>
