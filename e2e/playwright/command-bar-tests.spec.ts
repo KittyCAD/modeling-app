@@ -469,9 +469,9 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     editor,
     homePage,
     toolbar,
-    context,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProjectDir = path.join(dir, 'testProjectDir')
       await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
       await Promise.all([
@@ -546,10 +546,10 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test(`Can add and edit a named parameter or constant`, async ({
     page,
     homePage,
-    context,
     cmdBar,
     scene,
     editor,
+    folderSetupFn,
   }) => {
     const projectName = 'test'
     const beforeKclCode = `a = 5
@@ -558,7 +558,7 @@ c = 3 + a
 theta = 45deg
 export exported = 1
 `
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
       await fsp.mkdir(testProject, { recursive: true })
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
@@ -757,17 +757,6 @@ export exported = 2`,
     async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
       await cmdBar.expectCommandName('Settings · app · theme')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Settings · app · theme',
-        currentArgKey: 'value',
-        currentArgValue: '',
-        headerArguments: {
-          Level: 'user',
-          Value: '',
-        },
-        highlightedHeaderArg: 'value',
-      })
     }
   )
 

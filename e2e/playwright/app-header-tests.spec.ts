@@ -45,12 +45,12 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
   test('Share button is disabled when imports are present', async ({
     page,
-    context,
     homePage,
     toolbar,
+    folderSetupFn,
   }) => {
     const projectName = 'share-disabled-for-imports'
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = join(dir, projectName)
       await fsp.mkdir(testDir, { recursive: true })
 
