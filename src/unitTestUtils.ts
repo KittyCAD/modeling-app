@@ -100,6 +100,7 @@ export async function buildTheWorldAndConnectToEngine() {
             console.log('unit test connected!')
           }
         },
+        rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
   })
