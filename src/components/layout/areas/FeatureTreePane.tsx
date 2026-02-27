@@ -58,6 +58,7 @@ import {
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { useSignals } from '@preact/signals-react/runtime'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<
@@ -105,28 +106,30 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 }
 
 export const FeatureTreePaneContents = memo(() => {
-  const { commands } = useApp()
+  useSignals()
+  const { layout, commands } = useApp()
   const {
     engineCommandManager,
-    getLayout,
     kclManager,
     rustContext,
     sceneEntitiesManager,
     sceneInfra,
-    setLayout,
   } = useSingletons()
   const {
     send: modelingSend,
     state: modelingState,
     actor: modelingActor,
   } = useModelingContext()
-  const systemDeps: SystemDeps = {
-    kclManager,
-    sceneInfra,
-    sceneEntitiesManager,
-    rustContext,
-    commandBarActor: commands.actor,
-  }
+  const systemDeps: SystemDeps = useMemo(
+    () => ({
+      kclManager,
+      sceneInfra,
+      sceneEntitiesManager,
+      rustContext,
+      commandBarActor: commands.actor,
+    }),
+    [kclManager, sceneEntitiesManager, sceneInfra, rustContext, commands.actor]
+  )
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
@@ -171,9 +174,9 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   function goToError() {
-    const l = getLayout()
+    const l = layout.signal.value
     if (!isCodePaneOpen(l)) {
-      openCodePane(l, setLayout)
+      openCodePane(l, layout.set)
     }
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
@@ -428,7 +431,8 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
 }: OperationProps) => {
-  const { getLayout, setLayout } = useSingletons()
+  useSignals()
+  const { layout } = useApp()
   const { kclManager, sceneInfra, commandBarActor } = systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
@@ -628,9 +632,9 @@ const OperationItem = ({
           if (item.type === 'GroupEnd') {
             return
           }
-          const l = getLayout()
+          const l = layout.signal.value
           if (!isCodePaneOpen(l)) {
-            openCodePane(l, setLayout)
+            openCodePane(l, layout.set)
           }
           selectOperation().catch(reportRejection)
         }}
@@ -652,9 +656,9 @@ const OperationItem = ({
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
-                const l = getLayout()
+                const l = layout.signal.value
                 if (!isCodePaneOpen(l)) {
-                  openCodePane(l, setLayout)
+                  openCodePane(l, layout.set)
                 }
                 selectOperation(functionRange).catch(reportRejection)
               }}
@@ -812,7 +816,7 @@ const OperationItem = ({
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [item]
+    [item, layout.signal.value]
   )
 
   const enabled = !sketchNoFace || isOffsetPlane(item)

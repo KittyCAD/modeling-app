@@ -25,30 +25,25 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/app'
+import type { App } from '@src/lib/app'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type RustContext from '@src/lib/rustContext'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export const fileLoader =
   ({
-    kclManager,
-    rustContext,
-    systemIOActor,
-    settingsActor,
+    app,
   }: {
-    kclManager: KclManager
-    rustContext: RustContext
-    systemIOActor: SystemIOActor
-    settingsActor: SettingsActorType
+    app: App
   }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
+    const {
+      settings: { actor: settingsActor },
+    } = app
+    const { kclManager, rustContext, systemIOActor } = app.singletons
     const { params } = routerData
 
     const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
@@ -165,6 +160,11 @@ export const fileLoader =
         : null
 
       const project = maybeProjectInfo ?? defaultProjectData
+      app.openProject(
+        project,
+        currentFilePath || PROJECT_ENTRYPOINT,
+        app.singletons.kclManager
+      )
       await rustContext.sendOpenProject(project, currentFilePath)
 
       // Fire off the event to load the project settings
@@ -226,6 +226,13 @@ export const fileLoader =
       project,
     })
 
+    // TODO: Remove this browser-only code path when we turn on WebFS
+    app.openProject(
+      project,
+      decodeURIComponent(BROWSER_PATH) || PROJECT_ENTRYPOINT,
+      app.singletons.kclManager
+    )
+
     return {
       code,
       project,
@@ -241,9 +248,9 @@ export const fileLoader =
 // and returns them to the Home route, along with any errors that occurred
 export const homeLoader =
   ({
-    settingsActor,
+    app,
   }: {
-    settingsActor: SettingsActorType
+    app: App
   }): LoaderFunction =>
   async ({ request }): Promise<HomeLoaderData | Response> => {
     const url = new URL(request.url)
@@ -252,7 +259,8 @@ export const homeLoader =
         PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
       )
     }
-    settingsActor.send({
+    app.closeProject()
+    app.settings.actor.send({
       type: 'clear.project',
     })
     return {}

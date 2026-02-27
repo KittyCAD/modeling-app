@@ -27,12 +27,11 @@ import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { AppMachineEventType, type AppMachineEvent } from '@src/lib/types'
-import type { Layout } from '@src/lib/layout'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { App } from '@src/lib/app'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -135,13 +134,11 @@ function onSubmitKCLSampleCreation({
 export function createApplicationCommands({
   systemIOActor,
   wasmInstance,
-  appActor,
-  setLayout,
+  layout,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   wasmInstance: ModuleType
-  appActor: { send: (event: AppMachineEvent) => void }
-  setLayout: (layout: Layout) => void
+  layout: App['layout']
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
@@ -543,9 +540,7 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'layout',
     groupId: 'application',
-    onSubmit: () => {
-      appActor.send({ type: AppMachineEventType.ResetLayout })
-    },
+    onSubmit: layout.reset,
   }
 
   const setLayoutCommand: Command = {
@@ -558,7 +553,7 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (isUserLoadableLayoutKey(data?.layoutId)) {
-        setLayout(userLoadableLayouts[data.layoutId])
+        layout.set(userLoadableLayouts[data.layoutId])
         // This command is silent, we don't toast success, because
         // it is often used in conjunction with other commands and actions
         // that occur on app load, and we don't want to spam the user.

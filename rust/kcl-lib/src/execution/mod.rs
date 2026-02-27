@@ -29,7 +29,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
@@ -75,9 +75,12 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-/// Convenience macro for handling control flow in execution by returning early
-/// if it is some kind of early return or stripping off the control flow
-/// otherwise.
+pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, it's returned as a
+/// `Result::Ok`.
 macro_rules! control_continue {
     ($control_flow:expr) => {{
         let cf = $control_flow;
@@ -90,6 +93,23 @@ macro_rules! control_continue {
 }
 // Expose the macro to other modules.
 pub(crate) use control_continue;
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, [`EarlyReturn`] is
+/// used to return it as a `Result::Err`.
+macro_rules! early_return {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Err(EarlyReturn::from(cf));
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
@@ -140,6 +160,33 @@ impl KclValueControlFlow {
 
     pub(crate) fn into_value(self) -> KclValue {
         self.value
+    }
+}
+
+/// A [`KclValueControlFlow`] or an error that needs to be returned early. This
+/// is useful for when functions might encounter either control flow or errors
+/// that need to bubble up early, but these aren't the primary return values of
+/// the function. We can use `EarlyReturn` as the error type in a `Result`.
+///
+/// Normally, you don't construct this directly. Use the `early_return!` macro.
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone)]
+pub(crate) enum EarlyReturn {
+    /// A normal value with control flow.
+    Value(KclValueControlFlow),
+    /// An error that occurred during execution.
+    Error(KclError),
+}
+
+impl From<KclValueControlFlow> for EarlyReturn {
+    fn from(cf: KclValueControlFlow) -> Self {
+        EarlyReturn::Value(cf)
+    }
+}
+
+impl From<KclError> for EarlyReturn {
+    fn from(err: KclError) -> Self {
+        EarlyReturn::Error(err)
     }
 }
 

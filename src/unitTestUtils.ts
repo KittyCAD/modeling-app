@@ -140,7 +140,7 @@ export async function buildTheWorldAndConnectToEngine() {
  * Loads the WASM wrapper module. Left sync
  * because some systems in our app await the Promise anyway.
  */
-async function loadWasm() {
+export async function loadWasm() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   return instancePromise
