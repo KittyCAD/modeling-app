@@ -329,7 +329,7 @@ export function getSweepFromSuspectedSweepSurface(
 }
 
 export function getCommonFacesForEdge(
-  artifact: SweepEdge | SegmentArtifact,
+  artifact: SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
   const faces = getArtifactsOfTypes(

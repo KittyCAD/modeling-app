@@ -33,7 +33,6 @@ import {
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
-  Artifact,
   ArtifactGraph,
   Expr,
   LabeledArg,

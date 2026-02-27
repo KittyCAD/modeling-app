@@ -1309,7 +1309,7 @@ extrude001 = extrude(profile001, length = 1)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(resolved!.artifact!.type).toEqual('path')
+    expect(resolved?.artifact?.type).toEqual('path')
   })
 
   it('should find the cap selection from simple extrude on face', async () => {
@@ -1341,7 +1341,7 @@ extrude002 = extrude(capEnd001, length = 5)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(resolved!.artifact!.type).toEqual('cap')
+    expect(resolved?.artifact?.type).toEqual('cap')
   })
 
   it('should find two profile selections from multi-profile revolve op', async () => {
@@ -1418,6 +1418,6 @@ appearance(extrude001, color = '#FF0000')`
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(resolved!.artifact!.type).toEqual('sweep')
+    expect(resolved?.artifact?.type).toEqual('sweep')
   })
 })

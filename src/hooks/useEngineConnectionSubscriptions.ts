@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
@@ -135,10 +134,13 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
+    context.store.useNewSketchMode,
     kclManager,
     send,
     engineCommandManager,
     rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
   ])
 
   useEffect(() => {

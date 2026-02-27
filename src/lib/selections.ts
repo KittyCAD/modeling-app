@@ -36,6 +36,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import { isArray } from '@src/lib/utils'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -121,10 +122,10 @@ export function normalizeEntityReference(
   }
 
   if (type === 'edge') {
-    const faces = Array.isArray(raw.faces)
+    const faces = isArray(raw.faces)
       ? raw.faces.filter((v): v is string => typeof v === 'string')
       : []
-    const disambiguators = Array.isArray(raw.disambiguators)
+    const disambiguators = isArray(raw.disambiguators)
       ? raw.disambiguators.filter((v): v is string => typeof v === 'string')
       : undefined
     const index = typeof raw.index === 'number' ? raw.index : undefined
@@ -132,10 +133,10 @@ export function normalizeEntityReference(
   }
 
   if (type === 'vertex') {
-    const faces = Array.isArray(raw.faces)
+    const faces = isArray(raw.faces)
       ? raw.faces.filter((v): v is string => typeof v === 'string')
       : []
-    const disambiguators = Array.isArray(raw.disambiguators)
+    const disambiguators = isArray(raw.disambiguators)
       ? raw.disambiguators.filter((v): v is string => typeof v === 'string')
       : undefined
     const index = typeof raw.index === 'number' ? raw.index : undefined
@@ -1646,7 +1647,7 @@ export function getCodeRefsFromEntityReference(
     // For Solid2D edges, the edge_id is the curve UUID
     // We need to find which segment this curve belongs to
     // Search through all paths with solid2dId to find the matching segment
-    for (const [pathId, pathArtifact] of artifactGraph.entries()) {
+    for (const [_pathId, pathArtifact] of artifactGraph.entries()) {
       if (pathArtifact.type === 'path' && pathArtifact.solid2dId) {
         // Check all segments in this path
         if (pathArtifact.segIds) {

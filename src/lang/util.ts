@@ -111,7 +111,7 @@ export function isCursorInSketchCommandRange(
               isArray(selRange) &&
               selRange.length >= 3 &&
               isArray(codeRefRange) &&
-              isOverlap(selRange as [number, number, number], codeRefRange)
+              isOverlap(selRange, codeRefRange)
             )
           }
         )
