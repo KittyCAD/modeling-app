@@ -198,7 +198,6 @@ export class ElectronZoo {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
         await oldContextAddInitScript.apply(this, [a, b])
-        await that.page.reload()
       }
 
       // Intentionally changing `this`, so no need to bind.
@@ -208,7 +207,6 @@ export class ElectronZoo {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
         await oldPageAddInitScript.apply(this, [a, b])
-        await that.page.reload()
       }
     }
 
@@ -255,11 +253,9 @@ export class ElectronZoo {
     await this.page.setBodyDimensions(this.viewPortSize)
 
     this.context.folderSetupFn = async function (fn) {
-      return fn(that.projectDirName)
-        .then(() => that.page.reload())
-        .then(() => ({
-          dir: that.projectDirName,
-        }))
+      return fn(that.projectDirName).then(() => ({
+        dir: that.projectDirName,
+      }))
     }
 
     if (!this.firstUrl) {
@@ -278,7 +274,6 @@ export class ElectronZoo {
     await this.page.goto(this.firstUrl)
 
     // Force a hard reload, destroying the stream and other state
-    await this.page.reload()
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
@@ -375,7 +370,6 @@ const fixturesForWeb = {
     page.addInitScript = async function (...args) {
       // @ts-expect-error
       await oldPageAddInitScript.apply(this, args)
-      await page.reload()
     }
 
     // Intentionally changing `this`, so no need to bind.
@@ -384,7 +378,6 @@ const fixturesForWeb = {
     context.addInitScript = async function (...args) {
       // @ts-expect-error
       await oldContextAddInitScript.apply(this, args)
-      await page.reload()
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)

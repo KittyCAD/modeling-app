@@ -399,6 +399,16 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    console.log(`calling onSettingsUpdate again...`, snapshot.value)
+    console.log(
+      `Do we have a connection yet?`,
+      this.singletons.engineCommandManager.started
+    )
+    console.log(`Do we have a "stale" execution`, {
+      isExecuting: this.singletons.kclManager.isExecuting,
+      eSignal: this.singletons.kclManager.isExecutingSignal.value,
+      stale: this.singletons.kclManager.executeIsStale,
+    })
     const { context } = snapshot
 
     // Update line wrapping
@@ -410,7 +420,7 @@ export class App implements AppSubsystems {
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
-      this.singletons.engineCommandManager.connection
+      this.singletons.engineCommandManager.started
     ) {
       this.singletons.engineCommandManager
         .setHighlightEdges(newHighlighting)
@@ -434,7 +444,7 @@ export class App implements AppSubsystems {
       opposingTheme
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.engineCommandManager.connection) {
+    if (this.singletons.engineCommandManager.started) {
       this.singletons.engineCommandManager
         .setTheme(newTheme)
         .catch(reportRejection)
@@ -458,7 +468,7 @@ export class App implements AppSubsystems {
       // Unit changes requires a re-exec of code
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.engineCommandManager.connection
+        this.singletons.engineCommandManager.started
       ) {
         this.singletons.kclManager.executeCode().catch(reportRejection)
       }
