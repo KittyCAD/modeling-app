@@ -36,6 +36,7 @@ impl<'a> WalkForNames<'a> {
         }
     }
 
+    #[must_use]
     fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
         match self {
             WalkForNames::All => WalkForNames::Selected(names.collect()),
