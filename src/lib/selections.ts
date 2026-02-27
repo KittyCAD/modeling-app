@@ -121,8 +121,7 @@ async function getPrimitiveSelectionForEntity(
     entityId,
     parentEntityId,
     primitiveIndex: entityGetPrimitiveIndex.primitive_index,
-    primitiveType:
-      entityGetPrimitiveIndex.entity_type === 'edge' ? 'edge' : 'face',
+    primitiveType: entityGetPrimitiveIndex.entity_type,
   }
 }
 

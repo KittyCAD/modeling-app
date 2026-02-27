@@ -1,3 +1,4 @@
+import type { EntityType } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
@@ -30,7 +31,7 @@ export type EnginePrimitiveSelection = {
   entityId: string
   parentEntityId?: string
   primitiveIndex: number
-  primitiveType: 'face' | 'edge'
+  primitiveType: EntityType
 }
 
 export type NonCodeSelection =
