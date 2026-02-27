@@ -17,10 +17,6 @@ export const useProjectsLoader = (deps?: [number]) => {
   const [projectsDir, setProjectsDir] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    // Useless on web, until we get fake filesystems over there.
-    if (!window.electron) return
-    const electron = window.electron
-
     if (deps && deps[0] === lastTs) return
 
     if (deps) {
@@ -30,15 +26,11 @@ export const useProjectsLoader = (deps?: [number]) => {
       const { configuration } = await loadAndValidateSettings(
         kclManager.wasmInstancePromise
       )
-      const _projectsDir = await ensureProjectDirectoryExists(
-        electron,
-        configuration
-      )
+      const _projectsDir = await ensureProjectDirectoryExists(configuration)
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {
         const _projectPaths = await listProjects(
-          electron,
           kclManager.wasmInstancePromise,
           configuration
         )

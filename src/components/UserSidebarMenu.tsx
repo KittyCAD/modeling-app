@@ -33,13 +33,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      if (window.electron) {
-        listAllEnvironmentsWithTokens(window.electron)
-          .then((environmentsWithTokens) => {
-            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-          })
-          .catch(reportRejection)
-      }
+      listAllEnvironmentsWithTokens()
+        .then((environmentsWithTokens) => {
+          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+        })
+        .catch(reportRejection)
     }
   }, [])
 
@@ -77,6 +75,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           ),
           'data-testid': 'user-settings',
           onClick: () => {
+            if (!filePath) {
+              console.warn('bug: filePath is undefined')
+              return
+            }
+
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_USER
               : PATHS.HOME + PATHS.SETTINGS_USER

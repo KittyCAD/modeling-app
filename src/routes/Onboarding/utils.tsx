@@ -77,6 +77,10 @@ export function useNextClick(newStatus: OnboardingStatus) {
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
+    if (!filePath) {
+      return new Error('bug: filePath is undefined')
+    }
+
     settings.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
@@ -103,6 +107,10 @@ export function useDismiss() {
       })
       waitFor(settings.actor, (state) => state.matches('idle'))
         .then(() => {
+          if (!filePath) {
+            return Promise.reject(new Error('bug: filePath is undefined'))
+          }
+
           void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
