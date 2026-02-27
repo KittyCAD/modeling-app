@@ -444,24 +444,13 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'delete-face',
-                onClick: () =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: { name: 'Delete Face', groupId: 'modeling' },
-                  }),
-                icon: 'deleteFace',
-                status: 'experimental',
+                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
+                onClick: () => {},
+                status: 'unavailable',
                 title: 'Delete Face',
                 description:
-                  'Delete a face from a body (a solid, or a polysurface).',
-                links: [
-                  {
-                    label: 'API docs',
-                    url: withSiteBaseURL(
-                      '/docs/kcl-std/functions/std-solid-deleteFace'
-                    ),
-                  },
-                ],
+                  'Deletes a face from a body, leaving an open surface.',
+                links: [],
               },
             ],
           },

@@ -47,10 +47,7 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
@@ -105,15 +102,23 @@ export function addExtrude({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
-  const res = getFacesExprsFromSelection(
-    modifiedAst,
-    sketches,
-    artifactGraph,
-    wasmInstance
+  const faceSelections = sketches.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
   )
-  if (err(res)) return res
-  modifiedAst = res.modifiedAst
-  vars.exprs.push(...res.exprs)
+  for (const faceSelection of faceSelections) {
+    const res = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(res)) {
+      return res
+    }
+    modifiedAst = res.modifiedAst
+    const expr = createLocalName(res.tags[0])
+    vars.exprs.push(expr)
+  }
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(

@@ -108,12 +108,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import {
-  addDeleteFace,
-  addOffsetPlane,
-  addShell,
-  addHole,
-} from '@src/lang/modifyAst/faces'
+import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -4323,46 +4318,6 @@ export const modelingMachine = setup({
         )
       }
     ),
-    deleteFaceAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Delete Face'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const astResult = addDeleteFace({
-          ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
-    ),
     holeAstMod: fromPromise(
       async ({
         input,
@@ -5501,10 +5456,6 @@ export const modelingMachine = setup({
 
         Hole: {
           target: 'Applying hole',
-        },
-
-        'Delete Face': {
-          target: 'Applying delete face',
         },
 
         Fillet: {
@@ -7355,26 +7306,6 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Shell') return undefined
-          return {
-            data: event.data,
-            kclManager: context.kclManager,
-            rustContext: context.rustContext,
-          }
-        },
-        onDone: ['idle'],
-        onError: {
-          target: 'idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    'Applying delete face': {
-      invoke: {
-        src: 'deleteFaceAstMod',
-        id: 'deleteFaceAstMod',
-        input: ({ event, context }) => {
-          if (event.type !== 'Delete Face') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
