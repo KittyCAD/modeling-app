@@ -2124,7 +2124,6 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        // Map the runtime objects back to variable names.
         let line0_object = self.scene_graph.objects.get(l0_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {l0_id:?}"),
         })?;

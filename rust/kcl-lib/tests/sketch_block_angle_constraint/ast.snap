@@ -959,30 +959,6 @@ description: Result of parsing sketch_block_angle_constraint.kcl
             "value": {
               "type": "newLine"
             }
-          },
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "assert(s.l1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001mm)",
-              "style": "line"
-            }
-          },
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "assert(s.l1.start.at[1], isEqualTo = 2mm, tolerance = 0.00000001mm)",
-              "style": "line"
-            }
           }
         ]
       },

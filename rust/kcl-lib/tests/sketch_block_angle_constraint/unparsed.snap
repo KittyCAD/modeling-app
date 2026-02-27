@@ -15,6 +15,3 @@ s = sketch(on = XY) {
 angle([ao, bo]) == 60deg
 angle([bo, co]) == 30deg
 }
-
-// assert(s.l1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001mm)
-// assert(s.l1.start.at[1], isEqualTo = 2mm, tolerance = 0.00000001mm)

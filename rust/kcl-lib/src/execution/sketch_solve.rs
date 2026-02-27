@@ -80,14 +80,11 @@ pub(crate) fn normalize_to_solver_angle_unit(
     exec_state: &mut ExecState,
     description: &str,
 ) -> Result<KclValue, KclError> {
-    let angle_ty = RuntimeType::Union(vec![
-        RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state))),
-        RuntimeType::angle(),
-    ]);
+    let angle_ty = RuntimeType::angle();
     value.coerce(&angle_ty, true, exec_state).map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "{} must be an angle coercible to the module angle unit {}, but found {}",
+                "{} must be coercible to an angle unit {}, but found {}",
                 description,
                 angle_ty.human_friendly_type(),
                 value.human_friendly_type(),
