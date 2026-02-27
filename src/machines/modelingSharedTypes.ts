@@ -183,7 +183,7 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useNewSketchMode?: Setting<boolean>
+  useSketchSolveMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 
@@ -239,7 +239,7 @@ export type ModelingMachineInternalContext = {
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
-  forceNewSketchMode?: boolean
+  forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext
