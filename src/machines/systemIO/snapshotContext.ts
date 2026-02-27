@@ -50,7 +50,7 @@ export function listAllImportFilesWithinProject(
   })
 
   const clonedProjectFolder = structuredClone(projectFolder)
-  if (window.electron && clonedProjectFolder?.children) {
+  if (clonedProjectFolder?.children) {
     const projectPath = clonedProjectFolder.path
     let children = clonedProjectFolder.children
     while (children.length > 0) {

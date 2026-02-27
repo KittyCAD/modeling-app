@@ -49,26 +49,19 @@ export function createThumbnailPNGOnDesktop({
 }: {
   projectDirectoryWithoutEndingSlash: string
 }) {
-  if (window.electron) {
-    const electron = window.electron
-    setTimeout(() => {
-      if (!projectDirectoryWithoutEndingSlash) {
-        return
-      }
-      const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
-      // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-      writeProjectThumbnailFile(
-        electron,
-        dataUrl,
-        projectDirectoryWithoutEndingSlash
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.error(
-            `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
-          )
-          console.error(e)
-        })
-    }, 500)
-  }
+  setTimeout(() => {
+    if (!projectDirectoryWithoutEndingSlash) {
+      return
+    }
+    const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+    writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+      .then(() => {})
+      .catch((e) => {
+        console.error(
+          `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
+        )
+        console.error(e)
+      })
+  }, 500)
 }
