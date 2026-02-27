@@ -183,10 +183,10 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 function makeSelections(
-  graphSelections: Selections['graphSelections']
+  graphSelectionsV2: Selections['graphSelectionsV2']
 ): Selections {
   return {
-    graphSelections: graphSelections,
+    graphSelectionsV2,
     otherSelections: [],
   }
 }
@@ -230,7 +230,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
     async function applyTransformation(
       inputCode: string,
-      selectionRanges: Selections['graphSelections']
+      selectionRanges: Selections['graphSelectionsV2']
     ) {
       const ast = assertParse(inputCode, instanceInThisFile)
       const execState = await enginelessExecutor(ast, rustContextInThisFile)
@@ -258,7 +258,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
     it(`Should reorder when user selects first-to-last`, async () => {
       const ast = assertParse(inputScript, instanceInThisFile)
-      const selectionRanges: Selections['graphSelections'] = [
+      const selectionRanges: Selections['graphSelectionsV2'] = [
         selectLine(inputScript, 3, ast),
         selectLine(inputScript, 4, ast),
       ]
@@ -269,7 +269,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
     it(`Should reorder when user selects last-to-first`, async () => {
       const ast = assertParse(inputScript, instanceInThisFile)
-      const selectionRanges: Selections['graphSelections'] = [
+      const selectionRanges: Selections['graphSelectionsV2'] = [
         selectLine(inputScript, 4, ast),
         selectLine(inputScript, 3, ast),
       ]
@@ -357,7 +357,7 @@ part001 = startSketchOn(XY)
   it('should transform the ast', async () => {
     const ast = assertParse(inputScript, instanceInThisFile)
 
-    const selectionRanges: Selections['graphSelections'] = inputScript
+    const selectionRanges: Selections['graphSelectionsV2'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
@@ -448,7 +448,7 @@ part001 = startSketchOn(XY)
 `
     const ast = assertParse(inputScript, instanceInThisFile)
 
-    const selectionRanges: Selections['graphSelections'] = inputScript
+    const selectionRanges: Selections['graphSelectionsV2'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
@@ -510,7 +510,7 @@ part001 = startSketchOn(XY)
 `
     const ast = assertParse(inputScript, instanceInThisFile)
 
-    const selectionRanges: Selections['graphSelections'] = inputScript
+    const selectionRanges: Selections['graphSelectionsV2'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
@@ -605,7 +605,7 @@ async function helperThing(
 ): Promise<string> {
   const ast = assertParse(inputScript, instanceInThisFile)
 
-  const selectionRanges: Selections['graphSelections'] = inputScript
+  const selectionRanges: Selections['graphSelectionsV2'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))

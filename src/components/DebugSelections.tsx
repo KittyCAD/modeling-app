@@ -99,7 +99,7 @@ async function selectCodeMirrorRange(range: SourceRange, deps: SingletonDeps) {
   if (!range) return
   await clearSceneSelection(deps)
   const selections: Selections = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
         // @ts-ignore This is a debugging tool, I do not have the pathToNode
         codeRef: {
@@ -121,9 +121,8 @@ function codeRangeToIds(
 
   const { kclManager, engineCommandManager, sceneEntitiesManager } = deps
   const selections = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
-        artifact: {},
         codeRef: {
           range: range,
         },
@@ -136,14 +135,14 @@ function codeRangeToIds(
   // actual code mirror instance
   const asIfItWasSelected = EditorSelection.create([
     EditorSelection.range(
-      selections.graphSelections[0].codeRef.range[0],
-      selections.graphSelections[0].codeRef.range[1]
+      selections.graphSelectionsV2[0].codeRef.range[0],
+      selections.graphSelectionsV2[0].codeRef.range[1]
     ),
   ])
   const eventInfo = processCodeMirrorRanges({
     codeMirrorRanges: asIfItWasSelected.ranges,
     selectionRanges: {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [],
     },
     isShiftDown: kclManager.isShiftDown,

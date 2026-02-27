@@ -1706,6 +1706,7 @@ description: Artifact commands hammer.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.27,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

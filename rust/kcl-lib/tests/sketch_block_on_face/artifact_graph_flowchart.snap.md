@@ -15,16 +15,16 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     8[Solid2d]
   end
-  subgraph path24 [Path]
-    24["Path<br>[305, 890, 0]<br>Consumed: false"]
+  subgraph path16 [Path]
+    16["Path<br>[305, 890, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    25["Segment<br>[305, 890, 0]"]
+    17["Segment<br>[305, 890, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    26["Segment<br>[305, 890, 0]"]
+    18["Segment<br>[305, 890, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    27["Segment<br>[305, 890, 0]"]
+    19["Segment<br>[305, 890, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    28["Segment<br>[305, 890, 0]"]
+    20["Segment<br>[305, 890, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   end
   1["Plane<br>[58, 75, 0]"]
@@ -43,35 +43,27 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   15["Cap End"]
     %% face_code_ref=Missing NodePath
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  29["SketchBlock<br>[305, 890, 0]"]
+  21["SketchBlock<br>[305, 890, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  30["SketchBlockConstraint Horizontal<br>[599, 616, 0]"]
+  22["SketchBlockConstraint Horizontal<br>[599, 616, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  31["SketchBlockConstraint Vertical<br>[619, 634, 0]"]
+  23["SketchBlockConstraint Vertical<br>[619, 634, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  32["SketchBlockConstraint Horizontal<br>[637, 654, 0]"]
+  24["SketchBlockConstraint Horizontal<br>[637, 654, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  33["SketchBlockConstraint Vertical<br>[657, 672, 0]"]
+  25["SketchBlockConstraint Vertical<br>[657, 672, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  34["SketchBlockConstraint Coincident<br>[675, 711, 0]"]
+  26["SketchBlockConstraint Coincident<br>[675, 711, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  35["SketchBlockConstraint Coincident<br>[714, 750, 0]"]
+  27["SketchBlockConstraint Coincident<br>[714, 750, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  36["SketchBlockConstraint Coincident<br>[753, 789, 0]"]
+  28["SketchBlockConstraint Coincident<br>[753, 789, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  37["SketchBlockConstraint Coincident<br>[792, 828, 0]"]
+  29["SketchBlockConstraint Coincident<br>[792, 828, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  38["SketchBlockConstraint LinesEqualLength<br>[831, 858, 0]"]
+  30["SketchBlockConstraint LinesEqualLength<br>[831, 858, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  39["SketchBlockConstraint LinesEqualLength<br>[861, 888, 0]"]
+  31["SketchBlockConstraint LinesEqualLength<br>[861, 888, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   2 --- 3
@@ -83,54 +75,22 @@ flowchart LR
   2 ---- 9
   3 --- 10
   3 x--> 14
-  3 --- 16
-  3 --- 17
   4 --- 11
   4 x--> 14
-  4 --- 18
-  4 --- 19
   5 --- 12
   5 x--> 14
-  5 --- 20
-  5 --- 21
   6 --- 13
   6 x--> 14
-  6 --- 22
-  6 --- 23
   9 --- 10
   9 --- 11
   9 --- 12
   9 --- 13
   9 --- 14
   9 --- 15
-  9 --- 16
-  9 --- 17
-  9 --- 18
-  9 --- 19
-  9 --- 20
-  9 --- 21
-  9 --- 22
-  9 --- 23
   10 --- 16
-  10 --- 17
-  23 <--x 10
-  10 --- 24
-  10 <--x 29
-  17 <--x 11
-  11 --- 18
-  11 --- 19
-  19 <--x 12
-  12 --- 20
-  12 --- 21
-  21 <--x 13
-  13 --- 22
-  13 --- 23
-  16 <--x 15
-  18 <--x 15
-  20 <--x 15
-  22 <--x 15
-  24 --- 25
-  24 --- 26
-  24 --- 27
-  24 --- 28
+  10 <--x 21
+  16 --- 17
+  16 --- 18
+  16 --- 19
+  16 --- 20
 ```

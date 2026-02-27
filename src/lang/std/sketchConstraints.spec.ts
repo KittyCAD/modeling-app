@@ -63,7 +63,7 @@ async function testingSwapSketchFnCall({
 
   const execState = await enginelessExecutor(ast, rustContextInThisFile)
   const selections = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
         codeRef: codeRefFromRange(range, ast),
       },

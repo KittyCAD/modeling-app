@@ -142,6 +142,9 @@ async fn inner_mirror_2d(
                                 )));
                             }
                         }
+                        // Currently, frontend doesn't know if mirror2d will close the sketch or not.
+                        // Track that information.
+                        sketch.is_closed = crate::execution::ProfileClosed::Maybe;
                         Ok(())
                     })?;
             } else {
@@ -150,6 +153,10 @@ async fn inner_mirror_2d(
                     vec![args.source_range],
                 )));
             };
+        }
+        // EdgeReference variant exists for revolve, but mirror2d doesn't support edgeRef
+        Axis2dOrEdgeReference::EdgeReference(_) => {
+            unreachable!("mirror2d does not support EdgeReference, only Axis or Edge")
         }
     }
 

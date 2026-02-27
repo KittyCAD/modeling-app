@@ -647,6 +647,7 @@ description: Artifact commands coilover-assembly.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 12.49,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -676,6 +677,7 @@ description: Artifact commands coilover-assembly.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2126,6 +2128,7 @@ description: Artifact commands coilover-assembly.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 12.49,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

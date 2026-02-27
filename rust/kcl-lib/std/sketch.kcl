@@ -957,8 +957,14 @@ export fn extrude(
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
   @sketches: [Sketch; 1+],
-  /// Axis of revolution.
-  axis: Axis2d | Edge,
+  /// Axis of revolution. Either `axis` or `edgeRef` must be provided, but not both.
+  axis?: Axis2d | Edge,
+  /// Edge reference using face ids (new API). Must be an object with:
+  /// - `faces`: [Face | Tag; 1+] - Array of faces (or tags referring to faces) that share the edge to use as the axis
+  /// - `disambiguators?`: [Face | Tag] - Optional array of faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index to select a specific edge when multiple edges share the same faces (0-based)
+  /// Either `axis` or `edgeRef` must be provided, but not both.
+  edgeRef?: any,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.

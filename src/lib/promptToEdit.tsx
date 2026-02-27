@@ -2,6 +2,7 @@ import type {
   SourceRange as ApiSourceRange,
   SourceRangePrompt,
 } from '@kittycad/lib'
+import { resolveSelectionV2 } from '@src/lang/queryAst'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import { parentPathRelativeToProject } from '@src/lib/paths'
@@ -103,13 +104,19 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
-    (selection) => {
-      const artifact = selection.artifact
-      const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
-      const file = kclFilesMap?.[execStateFileNamesIndex]
+  const ranges: SourceRangePrompt[] = selections.graphSelectionsV2.flatMap(
+    (selV2) => {
+      const selection = resolveSelectionV2(selV2, artifactGraph)
+      const artifact = selection?.artifact
+      const execStateFileNamesIndex = selV2?.codeRef?.range?.[2]
+      const file =
+        execStateFileNamesIndex != null
+          ? kclFilesMap?.[execStateFileNamesIndex]
+          : undefined
       const code = file?.fileContents || ''
       const filePath = file?.relPath || ''
+      const codeRef = selV2?.codeRef ?? selection?.codeRef
+      if (!codeRef?.range) return []
 
       // For artifact selections, add context
       const prompts: SourceRangePrompt[] = []
@@ -125,7 +132,7 @@ If you need to operate on this cap, for example for sketching on the face, you c
           })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
-          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          range: convertAppRangeToApiRange(codeRef.range, code),
           file: filePath,
         })
         let sweep = getArtifactOfTypes(
@@ -145,7 +152,7 @@ See later source ranges for more context.`,
           prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
 The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
-          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          range: convertAppRangeToApiRange(codeRef.range, code),
           file: filePath,
         })
         let sweep = getArtifactOfTypes(
@@ -172,7 +179,7 @@ and then use the function ${
               : 'getOppositeEdge'
           }
 See later source ranges for more context. about the sweep`,
-          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          range: convertAppRangeToApiRange(codeRef.range, code),
           file: filePath,
         })
         let sweep = getArtifactOfTypes(
@@ -191,7 +198,7 @@ See later source ranges for more context. about the sweep`,
         if (!artifact.surfaceId) {
           prompts.push({
             prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
-            range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            range: convertAppRangeToApiRange(codeRef.range, code),
             file: filePath,
           })
         } else {
@@ -200,7 +207,7 @@ See later source ranges for more context. about the sweep`,
 Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
 i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
-            range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            range: convertAppRangeToApiRange(codeRef.range, code),
             file: filePath,
           })
           let path = getArtifactOfTypes(
@@ -227,7 +234,7 @@ See later source ranges for more context. about the sweep`,
         // an example might be highlighting the variable name only in a variable declaration
         prompts.push({
           prompt: '',
-          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          range: convertAppRangeToApiRange(codeRef.range, code),
           file: filePath,
         })
       }

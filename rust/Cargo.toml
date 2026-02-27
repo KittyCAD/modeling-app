@@ -28,7 +28,9 @@ kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.172", features = [
+# From git branch ben/face_api for EdgeReference, RevolveAboutEdgeReference,
+# Solid3dCutEdgeReferences, EntityMakeHelixFromEdge::edge_reference (not in crates.io 0.2.169).
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/face_api", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -83,7 +85,3 @@ insta = { opt-level = 3 }
 [profile.test]
 debug = "line-tables-only"
 
-#Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
-# [patch.crates-io]
-# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
-# kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }

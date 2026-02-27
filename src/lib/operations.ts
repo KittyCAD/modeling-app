@@ -17,6 +17,7 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
@@ -303,7 +304,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       operation.labeledArgs.to
     )
     if ('error' in graphSelections) return { reason: graphSelections.error }
-    to = { graphSelections, otherSelections: [] }
+    to = {
+      graphSelectionsV2: graphSelections.map((s) =>
+        s.artifact
+          ? {
+              entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+              codeRef: s.codeRef,
+            }
+          : { codeRef: s.codeRef }
+      ),
+      otherSelections: [],
+    }
   }
 
   // symmetric argument from a string to boolean
@@ -587,15 +598,35 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the unlabeled and edge arguments to selections
+  // Phase 2: Support both tags (legacy) and edgeRefs (new API)
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
+  let selection: Selections | Error
+
+  // Try edgeRefs first (new API)
+  if (operation.labeledArgs?.edgeRefs) {
+    const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(
+      operation.labeledArgs.edgeRefs,
+      artifactGraph
+    )
+  } else if (operation.labeledArgs?.tags) {
+    // Fall back to tags (legacy API)
+    selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.labeledArgs.tags,
+      artifactGraph
+    )
+  } else {
+    return {
+      reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+    }
+  }
+
   if (err(selection)) return { reason: selection.message }
 
   // 2. Convert the radius argument from a string to a KCL expression
@@ -933,7 +964,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     }
 
     plane = {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
@@ -1052,9 +1083,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   const path = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
-        artifact: trajectoryArtifact,
+        entityRef: artifactToEntityRef(
+          trajectoryArtifact.type,
+          trajectoryArtifact.id
+        ),
         codeRef: trajectoryArtifact.codeRef,
       },
     ],
@@ -1669,7 +1703,17 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   const tolerance = await extractKclArgument(
     code,
@@ -1736,7 +1780,17 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(code, operation, 'name')

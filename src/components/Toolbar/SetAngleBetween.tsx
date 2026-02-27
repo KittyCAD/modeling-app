@@ -41,10 +41,10 @@ export function angleBetweenInfo({
       enabled: boolean
     }
   | Error {
-  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+  const _nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      codeRef.pathToNode,
+      codeRef?.pathToNode ?? [],
       wasmInstance
     )
     if (err(tmp)) return tmp
@@ -54,10 +54,10 @@ export function angleBetweenInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
+  const _varDecs = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      codeRef.pathToNode,
+      codeRef?.pathToNode ?? [],
       wasmInstance,
       'VariableDeclarator'
     )
@@ -82,7 +82,7 @@ export function angleBetweenInfo({
   const theTransforms = getTransformInfos(
     {
       ...selectionRanges,
-      graphSelections: selectionRanges.graphSelections.slice(1),
+      graphSelectionsV2: selectionRanges.graphSelectionsV2.slice(1),
     },
     kclManager.ast,
     'setAngleBetween',

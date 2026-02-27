@@ -129,10 +129,13 @@ import {
 } from '@src/lang/modifyAst/transforms'
 import {
   artifactIsPlaneWithPaths,
+  artifactToEntityRef,
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
+  resolveSelectionV2,
+  selectionV2Equals,
   traverse,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -446,12 +449,12 @@ export const modelingMachine = setup({
       return context.store.useNewSketchMode?.current === true
     },
     'Selection is sketchBlock': ({
-      context: { selectionRanges },
+      context: { selectionRanges, kclManager },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      return isSketchBlockSelected(selectionRanges)
+      return isSketchBlockSelected(selectionRanges, kclManager.artifactGraph)
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -459,20 +462,28 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      if (artifactIsPlaneWithPaths(selectionRanges)) {
+      if (artifactIsPlaneWithPaths(selectionRanges, kclManager.artifactGraph)) {
         return true
-      } else if (selectionRanges.graphSelections[0]?.artifact) {
-        // See if the selection is "close enough" to be coerced to the plane later
+      }
+      const firstResolved =
+        selectionRanges.graphSelectionsV2[0] != null
+          ? resolveSelectionV2(
+              selectionRanges.graphSelectionsV2[0],
+              kclManager.artifactGraph
+            )
+          : null
+      if (firstResolved?.artifact) {
         const maybePlane = getPlaneFromArtifact(
-          selectionRanges.graphSelections[0].artifact,
+          firstResolved.artifact,
           kclManager.artifactGraph
         )
         return !err(maybePlane)
       }
       if (
+        selectionRanges.graphSelectionsV2[0] != null &&
         isCursorInFunctionDefinition(
           kclManager.ast,
-          selectionRanges.graphSelections[0],
+          selectionRanges.graphSelectionsV2[0],
           wasmInstance
         )
       ) {
@@ -489,7 +500,7 @@ export const modelingMachine = setup({
       const isCommandBarClosed =
         context.commandBarActor.getSnapshot().matches('Closed') ?? true
       if (!isCommandBarClosed) return false
-      if (context.selectionRanges.graphSelections.length <= 0) return false
+      if (context.selectionRanges.graphSelectionsV2.length <= 0) return false
       return true
     },
     // TODO: figure out if we really need this one, was separate from 'no kcl errors'
@@ -669,9 +680,9 @@ export const modelingMachine = setup({
 
       const pathToNodes = event.data
         ? [event.data]
-        : selectionRanges.graphSelections.map(({ codeRef }) => {
-            return codeRef.pathToNode
-          })
+        : (selectionRanges.graphSelectionsV2
+            .map((s) => s.codeRef?.pathToNode)
+            .filter(Boolean) as PathToNode[])
       const info = removeConstrainingValuesInfo(
         pathToNodes,
         kclManager,
@@ -757,7 +768,10 @@ export const modelingMachine = setup({
         event.type === 'change tool' ? event.data.tool || 'none' : 'none',
     }),
     'reset selections': assign({
-      selectionRanges: { graphSelections: [], otherSelections: [] },
+      selectionRanges: {
+        otherSelections: [],
+        graphSelectionsV2: [],
+      },
     }),
     'enter sketching mode': assign({ currentMode: 'sketching' }),
     'enter modeling mode': assign({ currentMode: 'modeling' }),
@@ -1432,97 +1446,108 @@ export const modelingMachine = setup({
           null
         if (!setSelections) return {}
         let selections: Selections = {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && kclManager.isShiftDown) {
+          if (
+            !setSelections.selection &&
+            !setSelections.selectionV2 &&
+            kclManager.isShiftDown
+          ) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
             selections = {
-              graphSelections: selectionRanges.graphSelections,
+              graphSelectionsV2: selectionRanges.graphSelectionsV2 || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !kclManager.isShiftDown) {
+          } else if (
+            !setSelections.selection &&
+            !setSelections.selectionV2 &&
+            !kclManager.isShiftDown
+          ) {
             selections = {
-              graphSelections: [],
+              graphSelectionsV2: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !kclManager.isShiftDown) {
-            selections = {
-              graphSelections: [setSelections.selection],
-              otherSelections: [],
-            }
-          } else if (setSelections.selection && kclManager.isShiftDown) {
-            // selecting and deselecting multiple objects
-
-            /**
-             * There are two scenarios:
-             * 1. General case:
-             *    When selecting and deselecting edges,
-             *    faces or segment (during sketch edit)
-             *    we use its artifact ID to identify the selection
-             * 2. Initial sketch setup:
-             *    The artifact is not yet created
-             *    so we use the codeRef.range
-             */
-
-            let updatedSelections: typeof selectionRanges.graphSelections
-
-            // 1. General case: Artifact exists, use its ID
-            if (setSelections.selection.artifact?.id) {
-              // check if already selected
-              const alreadySelected = selectionRanges.graphSelections.some(
-                (selection) =>
-                  selection.artifact?.id ===
-                  setSelections.selection?.artifact?.id
-              )
-              if (alreadySelected && setSelections.selection?.artifact?.id) {
-                // remove it
-                updatedSelections = selectionRanges.graphSelections.filter(
-                  (selection) =>
-                    selection.artifact?.id !==
-                    setSelections.selection?.artifact?.id
-                )
-              } else {
-                // add it
-                updatedSelections = [
-                  ...selectionRanges.graphSelections,
-                  setSelections.selection,
-                ]
+          } else if (
+            (setSelections.selection || setSelections.selectionV2) &&
+            !kclManager.isShiftDown
+          ) {
+            if (setSelections.selectionV2) {
+              selections = {
+                graphSelectionsV2: [setSelections.selectionV2],
+                otherSelections: selectionRanges.otherSelections || [],
+              }
+            } else if (setSelections.selection) {
+              const sel = setSelections.selection
+              const v2 =
+                sel.artifact && sel.codeRef
+                  ? [
+                      {
+                        entityRef: artifactToEntityRef(
+                          sel.artifact.type,
+                          sel.artifact.id
+                        ),
+                        codeRef: sel.codeRef,
+                      },
+                    ]
+                  : sel.codeRef
+                    ? [{ codeRef: sel.codeRef }]
+                    : []
+              selections = {
+                graphSelectionsV2: v2,
+                otherSelections: [],
               }
             } else {
-              // 2. Initial sketch setup: Artifact not yet created – use codeRef.range
-              const selectionRange = JSON.stringify(
-                setSelections.selection?.codeRef?.range
-              )
-
-              // check if already selected
-              const alreadySelected = selectionRanges.graphSelections.some(
-                (selection) => {
-                  const existingRange = JSON.stringify(selection.codeRef?.range)
-                  return existingRange === selectionRange
-                }
-              )
-
-              if (alreadySelected && setSelections.selection?.codeRef?.range) {
-                // remove it
-                updatedSelections = selectionRanges.graphSelections.filter(
-                  (selection) =>
-                    JSON.stringify(selection.codeRef?.range) !== selectionRange
-                )
-              } else {
-                // add it
-                updatedSelections = [
-                  ...selectionRanges.graphSelections,
-                  setSelections.selection,
-                ]
-              }
+              selections = selectionRanges
             }
+          } else if (setSelections.selectionV2 && kclManager.isShiftDown) {
+            // Handle V2 selections with Shift key – compare V2 to V2 via selectionV2Equals
+            const newV2 = setSelections.selectionV2
+            const current = selectionRanges.graphSelectionsV2 || []
+            const alreadySelected = current.some((s) =>
+              selectionV2Equals(s, newV2)
+            )
+            const updatedSelectionsV2 = alreadySelected
+              ? current.filter((s) => !selectionV2Equals(s, newV2))
+              : [...current, newV2]
+            selections = {
+              graphSelectionsV2: updatedSelectionsV2,
+              otherSelections: selectionRanges.otherSelections,
+            }
+          } else if (setSelections.selection && kclManager.isShiftDown) {
+            // Legacy: event only sent V1. Convert to V2 for add, compare V2-to-V2 via selectionV2Equals.
+            const selToV2 = (
+              sel: NonNullable<typeof setSelections.selection>
+            ) =>
+              sel.artifact && sel.codeRef
+                ? {
+                    entityRef: artifactToEntityRef(
+                      sel.artifact.type,
+                      sel.artifact.id
+                    ),
+                    codeRef: sel.codeRef,
+                  }
+                : sel.codeRef
+                  ? { codeRef: sel.codeRef }
+                  : null
+
+            const newV2 =
+              setSelections.selectionV2 ?? selToV2(setSelections.selection)
+            const current = selectionRanges.graphSelectionsV2 || []
+            const alreadySelected =
+              newV2 != null && current.some((s) => selectionV2Equals(s, newV2))
+            const updatedSelectionsV2 =
+              alreadySelected && newV2
+                ? current.filter((s) => !selectionV2Equals(s, newV2))
+                : newV2
+                  ? [...current, newV2]
+                  : current
 
             selections = {
-              graphSelections: updatedSelections,
+              graphSelectionsV2: updatedSelectionsV2,
               otherSelections: selectionRanges.otherSelections,
             }
           }
@@ -1580,12 +1605,12 @@ export const modelingMachine = setup({
         ) {
           if (kclManager.isShiftDown) {
             selections = {
-              graphSelections: selectionRanges.graphSelections,
+              graphSelectionsV2: selectionRanges.graphSelectionsV2 || [],
               otherSelections: [setSelections.selection],
             }
           } else {
             selections = {
-              graphSelections: [],
+              graphSelectionsV2: [],
               otherSelections: [setSelections.selection],
             }
           }
@@ -3419,7 +3444,14 @@ export const modelingMachine = setup({
           sceneInfra: SceneInfra
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
-        const artifact = selectionRanges.graphSelections[0].artifact
+        const firstResolved = selectionRanges.graphSelectionsV2[0]
+          ? resolveSelectionV2(
+              selectionRanges.graphSelectionsV2[0],
+              kclManager.artifactGraph
+            )
+          : null
+        const artifact = firstResolved?.artifact
+        if (!artifact) return Promise.reject(new Error('No selection artifact'))
         const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
         if (err(plane)) return Promise.reject(plane)
         // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -4047,6 +4079,7 @@ export const modelingMachine = setup({
         const astResult = addSweep({
           ...input.data,
           ast,
+          artifactGraph: input.kclManager.artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -4125,6 +4158,7 @@ export const modelingMachine = setup({
         const { ast } = input.kclManager
         const astResult = addRevolve({
           ast,
+          artifactGraph: input.kclManager.artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
@@ -4414,13 +4448,19 @@ export const modelingMachine = setup({
         return new Promise((resolve, reject) => {
           if (!selectionRanges) {
             reject(new Error(deletionErrorMessage))
+            return
           }
-
-          const selection = selectionRanges.graphSelections[0]
-          if (!selectionRanges) {
+          const firstResolved = selectionRanges.graphSelectionsV2[0]
+            ? resolveSelectionV2(
+                selectionRanges.graphSelectionsV2[0],
+                systemDeps.kclManager.artifactGraph
+              )
+            : null
+          const selection = firstResolved
+          if (!selection) {
             reject(new Error(deletionErrorMessage))
+            return
           }
-
           deleteSelectionPromise({ selection, systemDeps })
             .then((result) => {
               if (err(result)) {
@@ -7345,7 +7385,10 @@ export const modelingMachine = setup({
           if (event.type !== 'Prompt-to-edit' || !event.data) {
             return {
               prompt: '',
-              selection: { graphSelections: [], otherSelections: [] },
+              selection: {
+                graphSelectionsV2: [],
+                otherSelections: [],
+              },
             }
           }
           return event.data
@@ -7767,8 +7810,13 @@ export const modelingMachine = setup({
         input: ({ event, context }) => {
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
-            const artifact =
-              context.selectionRanges.graphSelections[0]?.artifact
+            const firstResolved = context.selectionRanges.graphSelectionsV2[0]
+              ? resolveSelectionV2(
+                  context.selectionRanges.graphSelectionsV2[0],
+                  context.kclManager.artifactGraph
+                )
+              : null
+            const artifact = firstResolved?.artifact
             if (artifact?.type === 'sketchBlock' && artifact.id) {
               return {
                 artifactId: artifact.id,

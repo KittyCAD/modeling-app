@@ -53,58 +53,40 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   25["Cap End"]
     %% face_code_ref=Missing NodePath
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["Sweep Extrusion<br>[1921, 2039, 0]<br>Consumed: true"]
+  26["Sweep Extrusion<br>[1921, 2039, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  39[Wall]
+  27[Wall]
     %% face_code_ref=Missing NodePath
-  40["Cap Start"]
+  28["Cap Start"]
     %% face_code_ref=Missing NodePath
-  41["Cap End"]
+  29["Cap End"]
     %% face_code_ref=Missing NodePath
-  42["SweepEdge Opposite"]
-  43["SweepEdge Adjacent"]
-  44["EdgeCut Chamfer<br>[2134, 2406, 0]"]
+  30["EdgeCut Chamfer<br>[2134, 2406, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  45["EdgeCut Chamfer<br>[2134, 2406, 0]"]
+  31["EdgeCut Chamfer<br>[2134, 2406, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  46["Sweep Extrusion<br>[2500, 2542, 0]<br>Consumed: true"]
+  32["Sweep Extrusion<br>[2500, 2542, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  47[Wall]
+  33[Wall]
     %% face_code_ref=Missing NodePath
-  48["Cap Start"]
+  34["Cap Start"]
     %% face_code_ref=Missing NodePath
-  49["Cap End"]
+  35["Cap End"]
     %% face_code_ref=Missing NodePath
-  50["SweepEdge Opposite"]
-  51["SweepEdge Adjacent"]
-  52["CompositeSolid Intersect<br>[2935, 2980, 0]<br>Consumed: true"]
+  36["CompositeSolid Intersect<br>[2935, 2980, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  53["CompositeSolid Subtract<br>[3050, 3093, 0]<br>Consumed: false"]
+  37["CompositeSolid Subtract<br>[3050, 3093, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 5
   1 --- 14
   2 --- 3
   2 --- 4
-  2 ---- 38
-  2 --- 52
-  3 --- 39
-  3 x--> 40
-  3 --- 42
-  3 --- 43
-  3 --- 44
+  2 ---- 26
+  2 --- 36
+  3 --- 27
+  3 x--> 28
+  3 --- 30
   5 --- 6
   5 --- 7
   5 --- 8
@@ -114,39 +96,25 @@ flowchart LR
   5 --- 12
   5 --- 13
   5 ---- 17
-  5 --- 52
+  5 --- 36
   6 --- 18
   6 x--> 24
-  6 --- 26
-  6 --- 27
   7 --- 19
   7 x--> 24
-  7 --- 28
-  7 --- 29
   8 --- 20
   8 x--> 24
-  8 --- 30
-  8 --- 31
   9 --- 21
   9 x--> 24
-  9 --- 32
-  9 --- 33
   10 --- 22
   10 x--> 24
-  10 --- 34
-  10 --- 35
   11 --- 23
   11 x--> 24
-  11 --- 36
-  11 --- 37
   14 --- 15
   14 --- 16
-  14 ---- 46
-  14 --- 53
-  15 --- 47
-  15 x--> 48
-  15 --- 50
-  15 --- 51
+  14 ---- 32
+  14 --- 37
+  15 --- 33
+  15 x--> 34
   17 --- 18
   17 --- 19
   17 --- 20
@@ -155,58 +123,11 @@ flowchart LR
   17 --- 23
   17 --- 24
   17 --- 25
-  17 --- 26
-  17 --- 27
-  17 --- 28
-  17 --- 29
-  17 --- 30
-  17 --- 31
-  17 --- 32
-  17 --- 33
-  17 --- 34
-  17 --- 35
-  17 --- 36
-  17 --- 37
-  18 --- 26
-  18 --- 27
-  37 <--x 18
-  27 <--x 19
-  19 --- 28
-  19 --- 29
-  29 <--x 20
-  20 --- 30
-  20 --- 31
-  31 <--x 21
-  21 --- 32
-  21 --- 33
-  33 <--x 22
-  22 --- 34
-  22 --- 35
-  35 <--x 23
-  23 --- 36
-  23 --- 37
-  26 <--x 25
-  28 <--x 25
-  30 <--x 25
-  32 <--x 25
-  34 <--x 25
-  36 <--x 25
-  38 --- 39
-  38 --- 40
-  38 --- 41
-  38 --- 42
-  38 --- 43
-  39 --- 42
-  39 --- 43
-  42 <--x 41
-  42 <--x 45
-  46 --- 47
-  46 --- 48
-  46 --- 49
-  46 --- 50
-  46 --- 51
-  47 --- 50
-  47 --- 51
-  50 <--x 49
-  52 --- 53
+  26 --- 27
+  26 --- 28
+  26 --- 29
+  32 --- 33
+  32 --- 34
+  32 --- 35
+  36 --- 37
 ```

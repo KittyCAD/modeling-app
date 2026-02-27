@@ -9818,6 +9818,7 @@ description: Artifact commands walkie-talkie.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.27,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -11428,6 +11429,7 @@ description: Artifact commands walkie-talkie.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.27,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

@@ -110,7 +110,7 @@ function CommandBarSelectionInput({
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
       : selection || {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [],
         }
 
@@ -137,7 +137,7 @@ function CommandBarSelectionInput({
       const resolvedSelection: Selections | undefined = isArgRequired
         ? selection
         : selection || {
-            graphSelections: [],
+            graphSelectionsV2: [],
             otherSelections: [],
           }
 

@@ -267,6 +267,7 @@ description: Artifact commands holder-rod-angle.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.5,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -652,6 +653,7 @@ description: Artifact commands holder-rod-angle.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -681,6 +683,7 @@ description: Artifact commands holder-rod-angle.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -710,6 +713,7 @@ description: Artifact commands holder-rod-angle.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -739,6 +743,7 @@ description: Artifact commands holder-rod-angle.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

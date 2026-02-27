@@ -1458,6 +1458,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2288,6 +2289,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

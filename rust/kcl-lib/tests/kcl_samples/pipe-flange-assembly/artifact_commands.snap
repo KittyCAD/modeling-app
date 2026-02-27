@@ -2624,6 +2624,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.508,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

@@ -15,12 +15,12 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     8[Solid2d]
   end
-  subgraph path25 [Path]
-    25["Path<br>[401, 458, 0]<br>Consumed: true"]
+  subgraph path17 [Path]
+    17["Path<br>[401, 458, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    26["Segment<br>[401, 458, 0]"]
+    18["Segment<br>[401, 458, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    27[Solid2d]
+    19[Solid2d]
   end
   1["Plane<br>[47, 64, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -38,29 +38,19 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   15["Cap End"]
     %% face_code_ref=Missing NodePath
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["Plane<br>[348, 376, 0]"]
+  16["Plane<br>[348, 376, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  28["Sweep Extrusion<br>[476, 518, 0]<br>Consumed: true"]
+  20["Sweep Extrusion<br>[476, 518, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  29[Wall]
+  21[Wall]
     %% face_code_ref=Missing NodePath
-  30["Cap Start"]
+  22["Cap Start"]
     %% face_code_ref=Missing NodePath
-  31["Cap End"]
+  23["Cap End"]
     %% face_code_ref=Missing NodePath
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["CompositeSolid Subtract<br>[529, 572, 0]<br>Consumed: false"]
+  24["CompositeSolid Subtract<br>[529, 572, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["StartSketchOnPlane<br>[334, 377, 0]"]
+  25["StartSketchOnPlane<br>[334, 377, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -70,69 +60,30 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 9
-  2 --- 34
+  2 --- 24
   3 --- 10
   3 x--> 14
-  3 --- 16
-  3 --- 17
   4 --- 11
   4 x--> 14
-  4 --- 18
-  4 --- 19
   5 --- 12
   5 x--> 14
-  5 --- 20
-  5 --- 21
   6 --- 13
   6 x--> 14
-  6 --- 22
-  6 --- 23
   9 --- 10
   9 --- 11
   9 --- 12
   9 --- 13
   9 --- 14
   9 --- 15
-  9 --- 16
-  9 --- 17
-  9 --- 18
-  9 --- 19
-  9 --- 20
-  9 --- 21
-  9 --- 22
-  9 --- 23
-  10 --- 16
-  10 --- 17
-  23 <--x 10
-  17 <--x 11
-  11 --- 18
-  11 --- 19
-  19 <--x 12
-  12 --- 20
-  12 --- 21
-  21 <--x 13
-  13 --- 22
-  13 --- 23
-  16 <--x 15
-  18 <--x 15
-  20 <--x 15
-  22 <--x 15
-  24 --- 25
-  24 <--x 35
-  25 --- 26
-  25 --- 27
-  25 ---- 28
-  25 --- 34
-  26 --- 29
-  26 x--> 31
-  26 --- 32
-  26 --- 33
-  28 --- 29
-  28 --- 30
-  28 --- 31
-  28 --- 32
-  28 --- 33
-  29 --- 32
-  29 --- 33
-  32 <--x 30
+  16 --- 17
+  16 <--x 25
+  17 --- 18
+  17 --- 19
+  17 ---- 20
+  17 --- 24
+  18 --- 21
+  18 x--> 23
+  20 --- 21
+  20 --- 22
+  20 --- 23
 ```

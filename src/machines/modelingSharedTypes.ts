@@ -27,20 +27,60 @@ export type DefaultPlaneSelection = {
 
 export type NonCodeSelection = Axis | DefaultPlaneSelection
 
+export type EntityReference =
+  | {
+      type: 'plane'
+      plane_id: string
+    }
+  | {
+      type: 'face'
+      face_id: string
+    }
+  | {
+      type: 'solid2d'
+      solid2d_id: string
+    }
+  | {
+      type: 'solid3d'
+      solid3d_id: string
+    }
+  | {
+      type: 'edge'
+      faces: string[]
+      disambiguators?: string[]
+      index?: number
+    }
+  | {
+      type: 'solid2d_edge'
+      edge_id: string
+    }
+  | {
+      type: 'vertex'
+      faces: string[]
+      disambiguators?: string[]
+      index?: number
+    }
+
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
 }
 
+export interface SelectionV2 {
+  entityRef?: EntityReference
+  codeRef?: CodeRef
+}
+
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
-  graphSelections: Array<Selection>
+  graphSelectionsV2: Array<SelectionV2>
 }
 
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
       selection?: Selection
+      selectionV2?: SelectionV2 // Phase 2.1: parallel V2 selection for parallel validation
       scrollIntoView?: boolean
     }
   | {

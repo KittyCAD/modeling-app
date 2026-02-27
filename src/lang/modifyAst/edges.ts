@@ -6,6 +6,8 @@ import {
   createLocalName,
   createArrayExpression,
   createTagDeclarator,
+  createObjectExpression,
+  createLiteral,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -14,14 +16,17 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   getVariableExprsFromSelection,
+  resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
   Artifact,
   ArtifactGraph,
   CallExpressionKw,
+  CodeRef,
   Expr,
   ExpressionStatement,
   Name,
@@ -32,16 +37,501 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  Selections,
+  Selection,
+  SelectionV2,
+  EntityReference,
+} from '@src/machines/modelingSharedTypes'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getSweepArtifactFromSelection,
+  getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+/**
+ * Converts an edge selection to an EntityReference with face information.
+ * This is used for the new face-based edge selection API.
+ */
+function edgeSelectionToEntityReference(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): EntityReference | Error {
+  if (!selection.artifact) {
+    return new Error('Selection does not have an artifact')
+  }
+
+  const artifact = selection.artifact
+  if (artifact.type !== 'sweepEdge' && artifact.type !== 'segment') {
+    return new Error('Selection is not an edge')
+  }
+
+  // Get the faces that form this edge
+  const commonFaces = getCommonFacesForEdge(artifact, artifactGraph)
+  if (err(commonFaces)) {
+    return commonFaces
+  }
+
+  // Extract face IDs from face artifacts
+  const faceIds = commonFaces.map((face) => face.id)
+
+  if (faceIds.length === 0) {
+    return new Error('No faces found for edge')
+  }
+
+  return {
+    type: 'edge',
+    faces: faceIds,
+  }
+}
+
+/**
+ * Type alias for EdgeRef payload used in KCL edgeRefs array
+ */
+type FilletEdgeRefPayload = {
+  faces: string[]
+  disambiguators?: string[]
+  index?: number
+}
+
+/**
+ * Converts an EntityReference (edge type) to a KCL edgeRefs payload object.
+ * Only includes optional fields when they are actually present.
+ */
+export function entityReferenceToEdgeRefPayload(
+  entityRef: Extract<EntityReference, { type: 'edge' }>
+): FilletEdgeRefPayload {
+  const payload: FilletEdgeRefPayload = {
+    faces: entityRef.faces,
+  }
+
+  // Only include disambiguators if present and non-empty
+  if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
+    payload.disambiguators = entityRef.disambiguators
+  }
+
+  // Only include index if explicitly provided (0 is valid, undefined means no filter)
+  if (entityRef.index !== undefined) {
+    payload.index = entityRef.index
+  }
+
+  return payload
+}
+
+/**
+ * Creates KCL object expression for an edgeRef payload.
+ * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
+ * @param originalEdgeSelection - Optional original edge selection (segment/sweepEdge) for Solid2D edge handling
+ * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for V2-only selections)
+ */
+export function createEdgeRefObjectExpression(
+  payload: FilletEdgeRefPayload,
+  wasmInstance: ModuleType,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  originalEdgeSelection?: Selection,
+  fallbackCodeRef?: CodeRef
+): { expr: Expr; modifiedAst: Node<Program> } | Error {
+  // Resolve face UUIDs to tags
+  const faceTags: string[] = []
+  let currentAst = ast
+
+  for (const faceId of payload.faces) {
+    const faceArtifact = artifactGraph.get(faceId)
+    if (!faceArtifact) {
+      return new Error(
+        `Could not find artifact for face ${faceId} in edge reference`
+      )
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      return new Error(
+        `Could not find codeRefs for face ${faceId} in edge reference`
+      )
+    }
+
+    // Handle Solid2D case: for Solid2D profiles, the "face" is actually the Solid2D itself
+    // We need to tag the segment directly instead of trying to tag the face
+    if (faceArtifact.type === 'solid2d') {
+      // For Solid2D edges, we need to use the original edge selection or fallback codeRef to tag the segment
+      let segmentPathToNode: PathToNode | undefined
+
+      if (originalEdgeSelection?.artifact?.type === 'segment') {
+        // Use the segment artifact's codeRef
+        segmentPathToNode = originalEdgeSelection.artifact.codeRef.pathToNode
+      } else if (fallbackCodeRef?.pathToNode) {
+        // Fall back to the provided codeRef (from V2 selection)
+        segmentPathToNode = fallbackCodeRef.pathToNode
+      } else if (codeRefs[0]?.pathToNode) {
+        // Last resort: use the codeRef from the Solid2D (points to the profile, but we can try to find the segment)
+        // This is less ideal but might work if the segment is in the same path
+        segmentPathToNode = codeRefs[0].pathToNode
+      }
+
+      if (!segmentPathToNode || segmentPathToNode.length === 0) {
+        return new Error(
+          `Cannot create tag for Solid2D edge ${faceId}: could not find segment pathToNode. Original edge selection or codeRef is required.`
+        )
+      }
+
+      const tagResult = mutateAstWithTagForSketchSegment(
+        currentAst,
+        segmentPathToNode,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for Solid2D edge ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      faceTags.push(tagResult.tag)
+      currentAst = tagResult.modifiedAst
+    } else {
+      // Normal case: tag the face artifact
+      const tagResult = modifyAstWithTagsForSelection(
+        currentAst,
+        { artifact: faceArtifact, codeRef: codeRefs[0] },
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for face ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      faceTags.push(tagResult.tags[0])
+      currentAst = tagResult.modifiedAst
+    }
+  }
+
+  const disambiguatorTags: string[] = []
+  if (payload.disambiguators && payload.disambiguators.length > 0) {
+    for (const disambId of payload.disambiguators) {
+      const disambArtifact = artifactGraph.get(disambId)
+      if (!disambArtifact) {
+        continue
+      }
+
+      const codeRefs = getCodeRefsByArtifactId(disambId, artifactGraph)
+      if (!codeRefs || codeRefs.length === 0) {
+        continue
+      }
+
+      const tagResult = modifyAstWithTagsForSelection(
+        currentAst,
+        { artifact: disambArtifact, codeRef: codeRefs[0] },
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        continue
+      }
+
+      disambiguatorTags.push(tagResult.tags[0])
+      currentAst = tagResult.modifiedAst
+    }
+  }
+
+  const properties: { [key: string]: Expr } = {
+    faces: createArrayExpression(faceTags.map((tag) => createLocalName(tag))),
+  }
+
+  // Only add disambiguators if present
+  if (disambiguatorTags.length > 0) {
+    properties.disambiguators = createArrayExpression(
+      disambiguatorTags.map((tag) => createLocalName(tag))
+    )
+  }
+
+  // Only add index if explicitly provided
+  if (payload.index !== undefined) {
+    properties.index = createLiteral(payload.index, wasmInstance)
+  }
+
+  // Create object expression (KCL object literal)
+  return {
+    expr: createObjectExpression(properties),
+    modifiedAst: currentAst,
+  }
+}
+
+/**
+ * Groups edge selections by body and creates edgeRefs expressions.
+ * Uses graphSelectionsV2 if available, otherwise converts graphSelections to EntityReferences.
+ */
+function groupSelectionsByBodyAndCreateEdgeRefs(
+  selections: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
+):
+  | {
+      modifiedAst: Node<Program>
+      bodies: Map<
+        string,
+        {
+          solidsExpr: Expr | null
+          edgeRefsExpr: Expr
+          pathIfPipe?: PathToNode
+        }
+      >
+    }
+  | Error {
+  let modifiedAst = ast
+  const bodies = new Map<
+    string,
+    {
+      solidsExpr: Expr | null
+      edgeRefsExpr: Expr
+      pathIfPipe?: PathToNode
+    }
+  >()
+
+  const v2Selections = selections.graphSelectionsV2 || []
+  const hasV2Selections = v2Selections.length > 0
+
+  if (hasV2Selections) {
+    // V2-only path: Group V2 selections by body using face IDs
+    const bodyToV2Selections = new Map<string, typeof v2Selections>()
+
+    for (const v2Sel of v2Selections) {
+      if (!v2Sel.entityRef || v2Sel.entityRef.type !== 'edge') continue
+
+      // Find the sweep artifact from the first face
+      const firstFaceId = v2Sel.entityRef.faces[0]
+      if (!firstFaceId) continue
+
+      const faceArtifact = artifactGraph.get(firstFaceId)
+      if (
+        !faceArtifact ||
+        (faceArtifact.type !== 'wall' && faceArtifact.type !== 'cap')
+      ) {
+        continue
+      }
+
+      // Get the sweep artifact
+      const sweepArtifact = getSweepArtifactFromSelection(
+        {
+          artifact: faceArtifact,
+          codeRef: v2Sel.codeRef || faceArtifact.faceCodeRef,
+        },
+        artifactGraph
+      )
+      if (err(sweepArtifact)) {
+        continue
+      }
+
+      const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+      if (!bodyToV2Selections.has(bodyKey)) {
+        bodyToV2Selections.set(bodyKey, [])
+      }
+      bodyToV2Selections.get(bodyKey)!.push(v2Sel)
+    }
+
+    // Process each body
+    for (const [bodyKey, bodyV2Selections] of bodyToV2Selections.entries()) {
+      const bodyEdgeRefs: Expr[] = []
+
+      // Create edgeRefs from V2 selections
+      for (const v2Sel of bodyV2Selections) {
+        if (v2Sel.entityRef?.type === 'edge') {
+          const payload = entityReferenceToEdgeRefPayload(v2Sel.entityRef)
+          const result = createEdgeRefObjectExpression(
+            payload,
+            wasmInstance,
+            modifiedAst,
+            artifactGraph
+          )
+          if (err(result)) {
+            console.warn('Failed to create edgeRef expression:', result)
+            continue
+          }
+          bodyEdgeRefs.push(result.expr)
+          modifiedAst = result.modifiedAst
+        }
+      }
+
+      if (bodyEdgeRefs.length === 0) continue
+
+      // Get the sweep artifact for this body (use first selection's face)
+      const firstV2Sel = bodyV2Selections[0]
+      if (!firstV2Sel.entityRef || firstV2Sel.entityRef.type !== 'edge')
+        continue
+
+      const firstFaceId = firstV2Sel.entityRef.faces[0]
+      const faceArtifact = artifactGraph.get(firstFaceId)
+      if (
+        !faceArtifact ||
+        (faceArtifact.type !== 'wall' && faceArtifact.type !== 'cap')
+      )
+        continue
+
+      const sweepArtifact = getSweepArtifactFromSelection(
+        {
+          artifact: faceArtifact,
+          codeRef: firstV2Sel.codeRef || faceArtifact.faceCodeRef,
+        },
+        artifactGraph
+      )
+      if (err(sweepArtifact)) continue
+
+      // Build solids expression
+      const solids: Selections = {
+        graphSelectionsV2: [
+          {
+            entityRef: artifactToEntityRef('sweep', sweepArtifact.id),
+            codeRef: sweepArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+
+      const vars = getVariableExprsFromSelection(
+        solids,
+        modifiedAst,
+        wasmInstance,
+        nodeToEdit,
+        true,
+        artifactGraph
+      )
+      if (err(vars)) return vars
+
+      const solidsExpr = createVariableExpressionsArray(vars.exprs)
+      const edgeRefsExpr = createArrayExpression(bodyEdgeRefs)
+
+      bodies.set(bodyKey, {
+        solidsExpr,
+        edgeRefsExpr,
+        pathIfPipe: vars.pathIfPipe,
+      })
+    }
+  } else {
+    // V1 path or mixed: Group selections by body first (same logic as tags path)
+    const selectionsByBody = groupSelectionsByBody(selections, artifactGraph)
+    if (err(selectionsByBody)) return selectionsByBody
+
+    for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
+      // Get edgeRefs for edges in this body
+      // Prefer V2 selections if available, otherwise convert V1
+      const bodyEdgeRefs: Expr[] = []
+
+      // Check if we have V2 selections for this body
+      const v2ForBody = v2Selections.filter((sel) => {
+        if (!sel.entityRef || sel.entityRef.type !== 'edge') return false
+        return bodySelections.graphSelectionsV2.some(
+          (bs: SelectionV2) =>
+            bs.codeRef?.pathToNode === sel.codeRef?.pathToNode
+        )
+      })
+
+      if (v2ForBody.length > 0) {
+        // Use V2 selections directly
+        for (const v2Sel of v2ForBody) {
+          if (v2Sel.entityRef?.type === 'edge') {
+            const payload = entityReferenceToEdgeRefPayload(v2Sel.entityRef)
+            const result = createEdgeRefObjectExpression(
+              payload,
+              wasmInstance,
+              modifiedAst,
+              artifactGraph
+            )
+            if (err(result)) {
+              console.warn('Failed to create edgeRef expression:', result)
+              continue
+            }
+            bodyEdgeRefs.push(result.expr)
+            modifiedAst = result.modifiedAst
+          }
+        }
+      } else {
+        // Resolve V2 selections and convert to EntityReferences
+        for (const v2Sel of bodySelections.graphSelectionsV2) {
+          const selection = resolveSelectionV2(v2Sel, artifactGraph)
+          if (!selection) continue
+          const entityRef = edgeSelectionToEntityReference(
+            selection,
+            artifactGraph
+          )
+          if (err(entityRef) || entityRef.type !== 'edge') {
+            continue
+          }
+
+          const payload = entityReferenceToEdgeRefPayload(entityRef)
+          const result = createEdgeRefObjectExpression(
+            payload,
+            wasmInstance,
+            modifiedAst,
+            artifactGraph
+          )
+          if (err(result)) {
+            console.warn('Failed to create edgeRef expression:', result)
+            continue
+          }
+          bodyEdgeRefs.push(result.expr)
+          modifiedAst = result.modifiedAst
+        }
+      }
+
+      if (bodyEdgeRefs.length === 0) {
+        continue
+      }
+
+      // Build solids expression (same as in groupSelectionsByBodyAndAddTags)
+      const firstResolved = bodySelections.graphSelectionsV2[0]
+        ? resolveSelectionV2(bodySelections.graphSelectionsV2[0], artifactGraph)
+        : null
+      if (!firstResolved) continue
+      const sweep = getSweepArtifactFromSelection(firstResolved, artifactGraph)
+      if (err(sweep)) continue
+      const solids: Selections = {
+        graphSelectionsV2: [
+          {
+            entityRef: artifactToEntityRef('sweep', sweep.id),
+            codeRef: sweep.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+
+      const vars = getVariableExprsFromSelection(
+        solids,
+        modifiedAst,
+        wasmInstance,
+        nodeToEdit,
+        true,
+        artifactGraph
+      )
+      if (err(vars)) return vars
+
+      const solidsExpr = createVariableExpressionsArray(vars.exprs)
+      const edgeRefsExpr = createArrayExpression(bodyEdgeRefs)
+
+      bodies.set(bodyKey, {
+        solidsExpr,
+        edgeRefsExpr,
+        pathIfPipe: vars.pathIfPipe,
+      })
+    }
+  }
+
+  if (bodies.size === 0) {
+    return new Error('No edge selections found')
+  }
+
+  return { modifiedAst, bodies }
+}
 
 export function addFillet({
   ast,
@@ -65,50 +555,85 @@ export function addFillet({
       pathToNode: PathToNode[] // Array because multi-body selections create multiple fillet calls
     }
   | Error {
-  // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Prepare unlabeled and labeled arguments
-  // Group selections by body and add all tags first (before variable insertion)
-  // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
-  const bodyData = groupSelectionsByBodyAndAddTags(
+  const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
   )
-  if (err(bodyData)) return bodyData
-  modifiedAst = bodyData.modifiedAst
 
-  // Insert variables for labeled arguments if provided
+  let useEdgeRefs = false
+  let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
+
+  if (!err(edgeRefsBodyData)) {
+    useEdgeRefs = true
+    modifiedAst = edgeRefsBodyData.modifiedAst
+  } else {
+    bodyData = groupSelectionsByBodyAndAddTags(
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(bodyData)) return bodyData
+    modifiedAst = bodyData.modifiedAst
+  }
+
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
 
-  // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
-  for (const data of bodyData.bodies.values()) {
-    const tagArgs = tag
-      ? [createLabeledArg('tag', createTagDeclarator(tag))]
-      : []
-    const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('radius', valueOrVariable(radius)),
-      ...tagArgs,
-    ])
 
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call,
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: data.pathIfPipe,
-      variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
-      wasmInstance,
-    })
-    if (err(pathToNode)) return pathToNode
-    pathToNodes.push(pathToNode)
+  if (useEdgeRefs && !err(edgeRefsBodyData)) {
+    for (const data of edgeRefsBodyData.bodies.values()) {
+      const tagArgs = tag
+        ? [createLabeledArg('tag', createTagDeclarator(tag))]
+        : []
+      const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
+        createLabeledArg('edgeRefs', data.edgeRefsExpr),
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...tagArgs,
+      ])
+
+      const pathToNode = setCallInAst({
+        ast: modifiedAst,
+        call,
+        pathToEdit: mNodeToEdit,
+        pathIfNewPipe: data.pathIfPipe,
+        variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+        wasmInstance,
+      })
+      if (err(pathToNode)) return pathToNode
+      pathToNodes.push(pathToNode)
+    }
+  } else if (bodyData) {
+    for (const data of bodyData.bodies.values()) {
+      const tagArgs = tag
+        ? [createLabeledArg('tag', createTagDeclarator(tag))]
+        : []
+      const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...tagArgs,
+      ])
+
+      const pathToNode = setCallInAst({
+        ast: modifiedAst,
+        call,
+        pathToEdit: mNodeToEdit,
+        pathIfNewPipe: data.pathIfPipe,
+        variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+        wasmInstance,
+      })
+      if (err(pathToNode)) return pathToNode
+      pathToNodes.push(pathToNode)
+    }
   }
 
   return { modifiedAst, pathToNode: pathToNodes }
@@ -267,22 +792,19 @@ function groupSelectionsByBodyAndAddTags(
     }
 
     // Build solids expression
+    const firstResolved = bodySelections.graphSelectionsV2[0]
+      ? resolveSelectionV2(bodySelections.graphSelectionsV2[0], artifactGraph)
+      : null
+    if (!firstResolved) continue
+    const sweep = getSweepArtifactFromSelection(firstResolved, artifactGraph)
+    if (err(sweep)) continue
     const solids: Selections = {
-      graphSelections: [bodySelections.graphSelections[0]].flatMap((edge) => {
-        const sweep = getSweepArtifactFromSelection(edge, artifactGraph)
-        if (err(sweep)) {
-          console.error(
-            'Skipping sweep artifact in solids selection',
-            err(sweep)
-          )
-          return []
-        }
-
-        return {
-          type: 'default',
+      graphSelectionsV2: [
+        {
+          entityRef: artifactToEntityRef('sweep', sweep.id),
           codeRef: sweep.codeRef,
-        }
-      }),
+        },
+      ],
       otherSelections: [],
     }
 
@@ -325,27 +847,26 @@ function groupSelectionsByBody(
   selections: Selections,
   artifactGraph: ArtifactGraph
 ): Map<string, Selections> | Error {
-  const bodyToSelections = new Map<string, Selection[]>()
+  const bodyToV2Selections = new Map<string, SelectionV2[]>()
 
-  for (const selection of selections.graphSelections) {
-    const sweepArtifact = getSweepArtifactFromSelection(
-      selection,
-      artifactGraph
-    )
+  for (const v2Sel of selections.graphSelectionsV2) {
+    const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+    if (!resolved) continue
+    const sweepArtifact = getSweepArtifactFromSelection(resolved, artifactGraph)
     if (err(sweepArtifact)) return sweepArtifact
 
     const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
-    if (bodyToSelections.has(bodyKey)) {
-      bodyToSelections.get(bodyKey)?.push(selection)
+    if (bodyToV2Selections.has(bodyKey)) {
+      bodyToV2Selections.get(bodyKey)!.push(v2Sel)
     } else {
-      bodyToSelections.set(bodyKey, [selection])
+      bodyToV2Selections.set(bodyKey, [v2Sel])
     }
   }
 
   const result = new Map<string, Selections>()
-  for (const [bodyKey, selections] of bodyToSelections.entries()) {
+  for (const [bodyKey, v2Sels] of bodyToV2Selections.entries()) {
     result.set(bodyKey, {
-      graphSelections: selections,
+      graphSelectionsV2: v2Sels,
       otherSelections: [],
     })
   }
@@ -362,14 +883,17 @@ export function buildSolidsAndTagsExprs(
   solidsCount = 1
 ) {
   const solids: Selections = {
-    graphSelections: faces.graphSelections.flatMap((f) => {
-      if (!f.artifact) return []
-      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
+    graphSelectionsV2: faces.graphSelectionsV2.flatMap((f: SelectionV2) => {
+      const resolved = resolveSelectionV2(f, artifactGraph)
+      if (!resolved?.artifact) return []
+      const sweep = getSweepArtifactFromSelection(resolved, artifactGraph)
       if (err(sweep) || !sweep) return []
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
+      return [
+        {
+          entityRef: artifactToEntityRef('sweep', sweep.id),
+          codeRef: sweep.codeRef,
+        },
+      ]
     }),
     otherSelections: [],
   }
@@ -417,10 +941,12 @@ function getTagsExprsFromSelection(
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
-  for (const edge of edges.graphSelections) {
+  for (const v2Sel of edges.graphSelectionsV2) {
+    const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+    if (!resolved) continue
     const result = modifyAstWithTagsForSelection(
       modifiedAst,
-      edge,
+      resolved,
       artifactGraph,
       wasmInstance
     )
@@ -457,7 +983,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     tagValues.push(tagsArg.value)
   }
 
-  const graphSelections: Selection[] = []
+  const graphSelectionsV2: SelectionV2[] = []
   for (const v of tagValues) {
     if (!(v.type == 'Uuid' && v.value)) {
       console.warn('Face value is not a TagIdentifier', v)
@@ -479,13 +1005,34 @@ export function retrieveEdgeSelectionsFromOpArgs(
       continue
     }
 
-    graphSelections.push({
-      artifact,
+    graphSelectionsV2.push({
+      entityRef: artifactToEntityRef(artifact.type, artifact.id),
       codeRef: codeRefs[0],
     })
   }
 
-  return { graphSelections, otherSelections: [] }
+  return { graphSelectionsV2, otherSelections: [] }
+}
+
+/**
+ * Retrieves edge selections from edgeRefs argument (new API).
+ * Used for edit flows when reading existing fillet calls with edgeRefs.
+ *
+ * Phase 2: Basic implementation - full parsing of edgeRefs objects will be improved in later phases.
+ * For now, this returns an error to indicate that edgeRefs parsing is not yet fully implemented.
+ * The edit flow will fall back to manual editing in the code editor.
+ */
+export function retrieveEdgeSelectionsFromEdgeRefs(
+  edgeRefsArg: OpArg,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  // Phase 2: Basic implementation - return error for now
+  // Full parsing of edgeRefs object structure from OpKclValue will be implemented
+  // in a follow-up phase once we have better understanding of the OpKclValue structure
+  // for Object types with nested properties.
+  return new Error(
+    'Edit flow for fillet with edgeRefs is not yet fully implemented. Please edit in the code editor.'
+  )
 }
 
 // Delete Edge Treatment

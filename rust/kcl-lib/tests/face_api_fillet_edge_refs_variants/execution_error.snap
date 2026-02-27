@@ -1,0 +1,109 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing face_api_fillet_edge_refs_variants.kcl
+---
+KCL Engine error
+
+  × engine: unknown variant `solid3d_cut_edge_references`, expected one of
+  │ `engine_util_evaluate_path`, `start_path`, `move_path_pen`, `extend_path`,
+  │ `extrude`, `extrude_to_reference`, `twist_extrude`, `sweep`, `revolve`,
+  │ `solid3d_shell_face`, `solid3d_join`, `surface_blend`,
+  │ `solid3d_get_edge_uuid`, `solid3d_get_face_uuid`, `solid3d_get_body_type`,
+  │ `revolve_about_edge`, `loft`, `close_path`, `camera_drag_start`,
+  │ `camera_drag_move`, `camera_drag_end`, `default_camera_get_settings`,
+  │ `default_camera_get_view`, `default_camera_set_view`,
+  │ `default_camera_look_at`, `default_camera_perspective_settings`,
+  │ `default_camera_zoom`, `export2d`, `export3d`, `export`,
+  │ `entity_get_parent_id`, `entity_get_num_children`,
+  │ `entity_get_child_uuid`, `entity_get_index`, `entity_get_primitive_index`,
+  │ `entity_delete_children`, `entity_get_all_child_uuids`,
+  │ `entity_get_sketch_paths`, `entity_get_distance`, `entity_clone`,
+  │ `entity_linear_pattern_transform`, `entity_linear_pattern`,
+  │ `entity_circular_pattern`, `entity_make_helix`,
+  │ `entity_make_helix_from_params`, `entity_make_helix_from_edge`,
+  │ `entity_mirror`, `entity_mirror_across_edge`, `select_with_point`,
+  │ `select_add`, `select_remove`, `scene_clear_all`, `select_replace`,
+  │ `highlight_set_entity`, `highlight_set_entities`, `new_annotation`,
+  │ `update_annotation`, `edge_lines_visible`, `object_visible`,
+  │ `object_bring_to_front`, `object_set_material_params_pbr`,
+  │ `get_entity_type`, `solid3d_get_all_edge_faces`, `solid3d_flip`,
+  │ `solid3d_flip_face`, `solid2d_add_hole`, `solid3d_get_all_opposite_edges`,
+  │ `solid3d_get_opposite_edge`, `solid3d_get_next_adjacent_edge`,
+  │ `solid3d_get_prev_adjacent_edge`, `solid3d_get_common_edge`,
+  │ `solid3d_fillet_edge`, `solid3d_cut_edges`, `face_is_planar`,
+  │ `face_get_position`, `face_get_center`, `face_get_gradient`,
+  │ `send_object`, `entity_set_opacity`, `entity_fade`, `make_plane`,
+  │ `plane_set_color`, `set_tool`, `mouse_move`, `mouse_click`,
+  │ `sketch_mode_disable`, `get_sketch_mode_plane`, `curve_set_constraint`,
+  │ `enable_sketch_mode`, `enable_dry_run`, `disable_dry_run`,
+  │ `set_background_color`, `set_current_tool_properties`,
+  │ `set_default_system_properties`, `curve_get_type`,
+  │ `curve_get_control_points`, `project_entity_to_plane`,
+  │ `project_points_to_plane`, `take_snapshot`, `make_axes_gizmo`,
+  │ `path_get_info`, `path_get_curve_uuids_for_vertices`,
+  │ `path_get_curve_uuid`, `path_get_vertex_uuids`,
+  │ `path_get_sketch_target_uuid`, `handle_mouse_drag_start`,
+  │ `handle_mouse_drag_move`, `handle_mouse_drag_end`, `remove_scene_objects`,
+  │ `plane_intersect_and_project`, `curve_get_end_points`,
+  │ `reconfigure_stream`, `import_files`, `set_scene_units`, `mass`,
+  │ `density`, `volume`, `center_of_mass`, `surface_area`,
+  │ `default_camera_focus_on`, `set_selection_type`, `set_selection_filter`,
+  │ `scene_get_entity_ids`, `default_camera_set_orthographic`,
+  │ `default_camera_set_perspective`, `default_camera_center_to_selection`,
+  │ `default_camera_center_to_scene`, `zoom_to_fit`, `orient_to_face`,
+  │ `view_isometric`, `solid3d_get_extrusion_face_info`,
+  │ `solid3d_get_adjacency_info`, `select_clear`, `select_get`,
+  │ `get_num_objects`, `set_object_transform`, `boolean_union`,
+  │ `boolean_intersection`, `boolean_subtract`, `boolean_imprint`,
+  │ `make_offset_path`, `add_hole_from_offset`, `set_grid_reference_plane`,
+  │ `set_grid_scale`, `set_grid_auto_scale`,
+  │ `set_order_independent_transparency`, `create_region`,
+  │ `select_region_from_point`
+    ╭─[1:1]
+  1 │ ╭─▶ // Test all variants of the face API fillet edgeRefs functionality
+  2 │ │   // This creates a shape where an edge is split into two edges that share the same two faces,
+  3 │ │   // allowing us to test disambiguation and index selection.
+  4 │ │   
+  5 │ │   startX = 2
+  6 │ │   plane = startSketchOn(XY)
+  7 │ │   sk = startProfile(plane, at = [startX, 0])
+  8 │ │     |> line(end = [5, 6], tag = $yoyo)
+  9 │ │     |> line(end = [0, 6])
+ 10 │ │     |> line(endAbsolute = [startX, 0], tag = $hi)
+ 11 │ │     |> close()
+ 12 │ │   myExtrude = extrude(sk, length = 5, tagEnd = $endCap, tagStart = $startCap)
+ 13 │ │   yodawg = getCommonEdge(faces = [hi, yoyo])
+ 14 │ │   
+ 15 │ │   // Create a cut that splits the edge between hi and yoyo into two edges
+ 16 │ │   sketch001 = startSketchOn(YZ)
+ 17 │ │   profile001 = startProfile(sketch001, at = [-3.29, 4.75])
+ 18 │ │     |> line(end = [5.32, -2.31], tag = $myDisambigutator)
+ 19 │ │     |> line(end = [-5.52, -2.13], tag = $myDisambigutator2)
+ 20 │ │     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+ 21 │ │     |> close()
+ 22 │ │   extrude001 = extrude(profile001, length = 5)
+ 23 │ │   solid001 = subtract(myExtrude, tools = extrude001)
+ 24 │ │   
+ 25 │ │   // Test variant 1: fillet both edges (no index, no disambiguators)
+ 26 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo] }])
+ 27 │ │   
+ 28 │ │   // Test variant 2: fillet bottom edge using disambiguator (startCap)
+ 29 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [startCap] }])
+ 30 │ │   
+ 31 │ │   // Test variant 3: fillet top edge using disambiguator (endCap)
+ 32 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [endCap] }])
+ 33 │ │   
+ 34 │ │   // Test variant 4: fillet bottom edge using disambiguator (myDisambigutator2)
+ 35 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [myDisambigutator2] }])
+ 36 │ │   
+ 37 │ │   // Test variant 5: fillet top edge using disambiguator (myDisambigutator)
+ 38 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [myDisambigutator] }])
+ 39 │ │   
+ 40 │ │   // Test variant 6: fillet bottom edge using index 0
+ 41 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], index = 0 }])
+ 42 │ │   
+ 43 │ │   // Test variant 7: fillet top edge using index 1
+ 44 │ │   fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], index = 1 }])
+ 45 │ ├─▶ 
+    · ╰──── tests/face_api_fillet_edge_refs_variants/input.kcl
+    ╰────

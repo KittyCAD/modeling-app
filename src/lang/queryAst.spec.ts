@@ -11,6 +11,7 @@ import {
   createPipeSubstitution,
 } from '@src/lang/create'
 import {
+  artifactToEntityRef,
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
@@ -25,6 +26,7 @@ import {
   isNodeSafeToReplace,
   isOffsetPlane,
   retrieveSelectionsFromOpArg,
+  resolveSelectionV2,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -886,7 +888,7 @@ describe('Testing getSelectedPlaneId', () => {
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelections: [],
+      graphSelectionsV2: [],
     }
 
     const result = getSelectedPlaneId(selections)
@@ -894,32 +896,19 @@ describe('Testing getSelectedPlaneId', () => {
   })
 
   it('should return the id of the selected offset plane', () => {
+    const codeRef = {
+      range: [0, 10, 0] as [number, number, number],
+      pathToNode: [
+        ['body', ''],
+        [0, 'index'],
+      ] as PathToNode,
+    }
     const selections: Selections = {
       otherSelections: [],
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: {
-            type: 'plane' as const,
-            id: 'offset-plane-id',
-            pathIds: [],
-            codeRef: {
-              nodePath: {
-                steps: [],
-              },
-              range: [0, 10, 0] as [number, number, number],
-              pathToNode: [
-                ['body', ''],
-                [0, 'index'],
-              ] as PathToNode,
-            },
-          },
-          codeRef: {
-            range: [0, 10, 0] as [number, number, number],
-            pathToNode: [
-              ['body', ''],
-              [0, 'index'],
-            ] as PathToNode,
-          },
+          entityRef: { type: 'plane', plane_id: 'offset-plane-id' },
+          codeRef,
         },
       ],
     }
@@ -950,16 +939,10 @@ describe('Testing getSelectedPlaneId', () => {
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: mockPlaneArtifact,
-          codeRef: {
-            range: [0, 10, 0] as [number, number, number],
-            pathToNode: [
-              ['body', ''],
-              [0, 'index'],
-            ] as PathToNode,
-          },
+          entityRef: { type: 'plane', plane_id: mockPlaneArtifact.id },
+          codeRef: mockPlaneArtifact.codeRef,
         },
       ],
     }
@@ -971,21 +954,8 @@ describe('Testing getSelectedPlaneId', () => {
   it('should return null when no plane is selected', () => {
     const selections: Selections = {
       otherSelections: ['x-axis'],
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: {
-            type: 'startSketchOnFace' as const,
-            id: 'segment-id',
-            faceId: 'face-id',
-            codeRef: {
-              range: [0, 10, 0] as [number, number, number],
-              nodePath: { steps: [] },
-              pathToNode: [
-                ['body', ''],
-                [0, 'index'],
-              ] as PathToNode,
-            },
-          },
           codeRef: {
             range: [0, 10, 0] as [number, number, number],
             pathToNode: [
@@ -1004,7 +974,7 @@ describe('Testing getSelectedPlaneId', () => {
   it('should return null when selection is empty', () => {
     const selections: Selections = {
       otherSelections: [],
-      graphSelections: [],
+      graphSelectionsV2: [],
     }
 
     const result = getSelectedPlaneId(selections)
@@ -1034,7 +1004,7 @@ plane001 = offsetPlane(YZ, offset = 10)
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelections: [],
+      graphSelectionsV2: [],
     }
 
     const result = getSelectedPlaneAsNode(
@@ -1068,10 +1038,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1107,14 +1077,14 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         }, // duplicate selection
       ],
       otherSelections: [],
@@ -1142,10 +1112,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1187,12 +1157,10 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: artifacts.map((artifact) => {
-        return {
-          codeRef: artifact.codeRef,
-          artifact,
-        }
-      }),
+      graphSelectionsV2: artifacts.map((a) => ({
+        entityRef: artifactToEntityRef(a.type, a.id),
+        codeRef: a.codeRef,
+      })),
       otherSelections: [],
     }
     const vars = getVariableExprsFromSelection(
@@ -1233,12 +1201,10 @@ profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: artifacts.map((artifact) => {
-        return {
-          codeRef: artifact.codeRef,
-          artifact,
-        }
-      }),
+      graphSelectionsV2: artifacts.map((a) => ({
+        entityRef: artifactToEntityRef(a.type, a.id),
+        codeRef: a.codeRef,
+      })),
       otherSelections: [],
     }
     const vars = getVariableExprsFromSelection(
@@ -1284,10 +1250,10 @@ extrude001 = extrude(profile001, length = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1337,12 +1303,13 @@ extrude001 = extrude(profile001, length = 1)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelections).toHaveLength(1)
-    const selection = selections.graphSelections[0]
-    if (!selection.artifact) {
+    expect(selections.graphSelectionsV2).toHaveLength(1)
+    const selection = selections.graphSelectionsV2[0]
+    const resolved = resolveSelectionV2(selection, artifactGraph)
+    if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(selection.artifact.type).toEqual('path')
+    expect(resolved?.artifact?.type).toEqual('path')
   })
 
   it('should find the cap selection from simple extrude on face', async () => {
@@ -1368,12 +1335,13 @@ extrude002 = extrude(capEnd001, length = 5)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelections).toHaveLength(1)
-    const selection = selections.graphSelections[0]
-    if (!selection.artifact) {
+    expect(selections.graphSelectionsV2).toHaveLength(1)
+    const selection = selections.graphSelectionsV2[0]
+    const resolved = resolveSelectionV2(selection, artifactGraph)
+    if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(selection.artifact.type).toEqual('cap')
+    expect(resolved?.artifact?.type).toEqual('cap')
   })
 
   it('should find two profile selections from multi-profile revolve op', async () => {
@@ -1399,15 +1367,23 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelections).toHaveLength(2)
+    expect(selections.graphSelectionsV2).toHaveLength(2)
     if (
-      !selections.graphSelections[0].artifact ||
-      !selections.graphSelections[1].artifact
+      !resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+        ?.artifact ||
+      !resolveSelectionV2(selections.graphSelectionsV2[1], artifactGraph)
+        ?.artifact
     ) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(selections.graphSelections[0].artifact.type).toEqual('path')
-    expect(selections.graphSelections[1].artifact.type).toEqual('path')
+    expect(
+      resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+        ?.artifact?.type
+    ).toEqual('path')
+    expect(
+      resolveSelectionV2(selections.graphSelectionsV2[1], artifactGraph)
+        ?.artifact?.type
+    ).toEqual('path')
   })
 
   it('should find the solids selection from a variable-less transform call', async () => {
@@ -1436,11 +1412,12 @@ appearance(extrude001, color = '#FF0000')`
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelections).toHaveLength(1)
-    const selection = selections.graphSelections[0]
-    if (!selection.artifact) {
+    expect(selections.graphSelectionsV2).toHaveLength(1)
+    const selection = selections.graphSelectionsV2[0]
+    const resolved = resolveSelectionV2(selection, artifactGraph)
+    if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    expect(selection.artifact.type).toEqual('sweep')
+    expect(resolved?.artifact?.type).toEqual('sweep')
   })
 })

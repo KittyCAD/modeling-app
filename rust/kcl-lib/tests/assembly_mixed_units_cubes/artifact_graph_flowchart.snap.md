@@ -15,20 +15,20 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }]
     8[Solid2d]
   end
-  subgraph path25 [Path]
-    25["Path<br>[70, 100, 0]<br>Consumed: true"]
+  subgraph path17 [Path]
+    17["Path<br>[70, 100, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }]
-    26["Segment<br>[70, 100, 0]"]
+    18["Segment<br>[70, 100, 0]"]
       %% [ProgramBodyItem { index: 1 }]
-    27["Segment<br>[70, 100, 0]"]
+    19["Segment<br>[70, 100, 0]"]
       %% [ProgramBodyItem { index: 1 }]
-    28["Segment<br>[70, 100, 0]"]
+    20["Segment<br>[70, 100, 0]"]
       %% [ProgramBodyItem { index: 1 }]
-    29["Segment<br>[70, 100, 0]"]
+    21["Segment<br>[70, 100, 0]"]
       %% [ProgramBodyItem { index: 1 }]
-    30["Segment<br>[70, 100, 0]"]
+    22["Segment<br>[70, 100, 0]"]
       %% [ProgramBodyItem { index: 1 }]
-    31[Solid2d]
+    23[Solid2d]
   end
   1["Plane<br>[35, 69, 0]"]
     %% [ProgramBodyItem { index: 0 }]
@@ -46,38 +46,22 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   15["Cap End"]
     %% face_code_ref=Missing NodePath
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["Plane<br>[70, 100, 0]"]
+  16["Plane<br>[70, 100, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  32["Sweep Extrusion<br>[70, 100, 0]<br>Consumed: false"]
+  24["Sweep Extrusion<br>[70, 100, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }]
-  33[Wall]
+  25[Wall]
     %% face_code_ref=Missing NodePath
-  34[Wall]
+  26[Wall]
     %% face_code_ref=Missing NodePath
-  35[Wall]
+  27[Wall]
     %% face_code_ref=Missing NodePath
-  36[Wall]
+  28[Wall]
     %% face_code_ref=Missing NodePath
-  37["Cap Start"]
+  29["Cap Start"]
     %% face_code_ref=Missing NodePath
-  38["Cap End"]
+  30["Cap End"]
     %% face_code_ref=Missing NodePath
-  39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
-  41["SweepEdge Opposite"]
-  42["SweepEdge Adjacent"]
-  43["SweepEdge Opposite"]
-  44["SweepEdge Adjacent"]
-  45["SweepEdge Opposite"]
-  46["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -88,102 +72,38 @@ flowchart LR
   2 ---- 9
   3 --- 13
   3 x--> 14
-  3 --- 22
-  3 --- 23
   4 --- 12
   4 x--> 14
-  4 --- 20
-  4 --- 21
   5 --- 11
   5 x--> 14
-  5 --- 18
-  5 --- 19
   6 --- 10
   6 x--> 14
-  6 --- 16
-  6 --- 17
   9 --- 10
   9 --- 11
   9 --- 12
   9 --- 13
   9 --- 14
   9 --- 15
-  9 --- 16
-  9 --- 17
-  9 --- 18
-  9 --- 19
-  9 --- 20
-  9 --- 21
-  9 --- 22
-  9 --- 23
-  10 --- 16
-  10 --- 17
-  19 <--x 10
-  11 --- 18
-  11 --- 19
-  21 <--x 11
-  12 --- 20
-  12 --- 21
-  23 <--x 12
-  17 <--x 13
-  13 --- 22
-  13 --- 23
-  16 <--x 15
-  18 <--x 15
-  20 <--x 15
-  22 <--x 15
+  16 --- 17
+  17 --- 18
+  17 --- 19
+  17 --- 20
+  17 --- 21
+  17 --- 22
+  17 --- 23
+  17 ---- 24
+  18 --- 28
+  18 x--> 29
+  19 --- 27
+  19 x--> 29
+  20 --- 26
+  20 x--> 29
+  21 --- 25
+  21 x--> 29
   24 --- 25
-  25 --- 26
-  25 --- 27
-  25 --- 28
-  25 --- 29
-  25 --- 30
-  25 --- 31
-  25 ---- 32
-  26 --- 36
-  26 x--> 37
-  26 --- 45
-  26 --- 46
-  27 --- 35
-  27 x--> 37
-  27 --- 43
-  27 --- 44
-  28 --- 34
-  28 x--> 37
-  28 --- 41
-  28 --- 42
-  29 --- 33
-  29 x--> 37
-  29 --- 39
-  29 --- 40
-  32 --- 33
-  32 --- 34
-  32 --- 35
-  32 --- 36
-  32 --- 37
-  32 --- 38
-  32 --- 39
-  32 --- 40
-  32 --- 41
-  32 --- 42
-  32 --- 43
-  32 --- 44
-  32 --- 45
-  32 --- 46
-  33 --- 39
-  33 --- 40
-  42 <--x 33
-  34 --- 41
-  34 --- 42
-  44 <--x 34
-  35 --- 43
-  35 --- 44
-  46 <--x 35
-  40 <--x 36
-  36 --- 45
-  36 --- 46
-  39 <--x 38
-  41 <--x 38
-  43 <--x 38
-  45 <--x 38
+  24 --- 26
+  24 --- 27
+  24 --- 28
+  24 --- 29
+  24 --- 30
 ```

@@ -336,10 +336,30 @@ export class App implements AppSubsystems {
       ;(window as any).kclManager = kclManager
       ;(window as any).rustContext = rustContext
       ;(window as any).engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () =>
-        document.addEventListener('mousemove', (e) =>
-          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-        )
+      ;(window as any).enableMousePositionLogs = () => {
+        document.addEventListener('mousemove', (e) => {
+          // Find the stream element (same as convertPagePositionToStream uses)
+          const streamElement = document.querySelector(
+            '[data-testid="stream"]'
+          ) as HTMLElement
+          if (!streamElement) {
+            console.log(
+              `pixels: (${e.clientX}, ${e.clientY}) // stream element not found`
+            )
+            return
+          }
+
+          const streamRect = streamElement.getBoundingClientRect()
+
+          // Calculate ratio relative to stream bounding box (same as convertPagePositionToStream)
+          const ratioX = (e.clientX - streamRect.x) / streamRect.width
+          const ratioY = (e.clientY - streamRect.y) / streamRect.height
+
+          console.log(
+            `pixels: (${e.clientX}, ${e.clientY}) // ratio: (${ratioX.toFixed(3)}, ${ratioY.toFixed(3)})`
+          )
+        })
+      }
       ;(window as any).enableFillet = () => {
         ;(window as any)._enableFillet = true
       }

@@ -1,5 +1,7 @@
 //! Types for referencing an axis or edge.
 
+use kittycad_modeling_cmds::shared::EdgeReference as ModelingEdgeReference;
+
 use super::args::TyF64;
 use crate::{
     execution::{Plane, Sketch, Solid, TagIdentifier},
@@ -11,8 +13,10 @@ use crate::{
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
-    /// Tagged edge.
+    /// Tagged edge (simple: Uuid or Tag).
     Edge(EdgeReference),
+    /// Edge reference with faces, disambiguators, and index.
+    EdgeReference(ModelingEdgeReference),
 }
 
 /// A 3D axis or tagged edge.
@@ -21,8 +25,10 @@ pub enum Axis2dOrEdgeReference {
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
-    /// Tagged edge.
+    /// Tagged edge (simple: Uuid or Tag).
     Edge(EdgeReference),
+    /// Edge reference with faces, disambiguators, and index.
+    EdgeReference(ModelingEdgeReference),
 }
 
 /// A 2D axis or a raw point2d.

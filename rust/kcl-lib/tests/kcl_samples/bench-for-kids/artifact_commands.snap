@@ -389,6 +389,7 @@ description: Artifact commands bench-for-kids.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 43.2,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -750,6 +751,7 @@ description: Artifact commands bench-for-kids.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 38.88,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1038,6 +1040,7 @@ description: Artifact commands bench-for-kids.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 34.992000000000004,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

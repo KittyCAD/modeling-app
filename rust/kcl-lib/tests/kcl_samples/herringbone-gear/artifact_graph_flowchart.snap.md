@@ -62,21 +62,13 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   29["Cap End"]
     %% face_code_ref=Missing NodePath
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["StartSketchOnPlane<br>[1110, 1163, 0]"]
+  30["StartSketchOnPlane<br>[1110, 1163, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  39["StartSketchOnPlane<br>[1110, 1163, 0]"]
+  31["StartSketchOnPlane<br>[1110, 1163, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   1 --- 9
-  1 <--x 38
+  1 <--x 30
   2 --- 3
   2 --- 4
   2 --- 5
@@ -87,25 +79,17 @@ flowchart LR
   2 ---- 23
   3 --- 24
   3 x--> 28
-  3 --- 30
-  3 --- 31
   4 --- 25
   4 x--> 28
-  4 --- 32
-  4 --- 33
   5 --- 26
   5 x--> 28
-  5 --- 34
-  5 --- 35
   6 --- 27
   6 x--> 28
-  6 --- 36
-  6 --- 37
   9 --- 10
   9 --- 11
   12 --- 13
   12 --- 20
-  12 <--x 39
+  12 <--x 31
   13 --- 14
   13 --- 15
   13 --- 16
@@ -122,27 +106,4 @@ flowchart LR
   23 --- 27
   23 --- 28
   23 --- 29
-  23 --- 30
-  23 --- 31
-  23 --- 32
-  23 --- 33
-  23 --- 34
-  23 --- 35
-  23 --- 36
-  23 --- 37
-  24 --- 30
-  24 --- 31
-  33 <--x 24
-  25 --- 32
-  25 --- 33
-  35 <--x 25
-  26 --- 34
-  26 --- 35
-  37 <--x 26
-  27 --- 36
-  27 --- 37
-  30 <--x 29
-  32 <--x 29
-  34 <--x 29
-  36 <--x 29
 ```

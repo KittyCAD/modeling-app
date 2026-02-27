@@ -188,6 +188,7 @@ description: Artifact commands rotate_after_fillet.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.02,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -537,6 +538,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.02,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

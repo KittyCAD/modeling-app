@@ -393,6 +393,9 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    // TODO REMOVE BEFORE MERGE
+    // Hardcode engine pool to PR 4194 deployment while this app PR depends on that engine PR
+    additionalSettings += '&pool=pr-4194'
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -624,7 +627,8 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
     } else if (
-      cmd.type === 'highlight_set_entity' &&
+      (cmd.type === 'highlight_set_entity' ||
+        cmd.type === 'highlight_query_entity') &&
       this.connection.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
@@ -950,9 +954,6 @@ export class ConnectionManager extends EventTarget {
       height: 256,
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
-      },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
       },
     })
   }
@@ -1354,11 +1355,17 @@ export class ConnectionManager extends EventTarget {
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
+   * We do not await default_camera_set_perspective (engine often does not send a response, e.g. local e2e).
    */
   waitForAllCommands() {
-    return Promise.all(
-      Object.values(this.pendingCommands).map((a) => a.promise)
+    const pendingToAwait = Object.values(this.pendingCommands).filter(
+      (p) =>
+        !(
+          p.command?.type === 'modeling_cmd_req' &&
+          p.command?.cmd?.type === 'default_camera_set_perspective'
+        )
     )
+    return Promise.all(pendingToAwait.map(({ promise }) => promise))
   }
 
   /**

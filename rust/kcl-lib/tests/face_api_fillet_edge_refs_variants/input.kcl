@@ -1,0 +1,45 @@
+// Test all variants of the face API fillet edgeRefs functionality
+// This creates a shape where an edge is split into two edges that share the same two faces,
+// allowing us to test disambiguation and index selection.
+
+startX = 2
+plane = startSketchOn(XY)
+sk = startProfile(plane, at = [startX, 0])
+  |> line(end = [5, 6], tag = $yoyo)
+  |> line(end = [0, 6])
+  |> line(endAbsolute = [startX, 0], tag = $hi)
+  |> close()
+myExtrude = extrude(sk, length = 5, tagEnd = $endCap, tagStart = $startCap)
+yodawg = getCommonEdge(faces = [hi, yoyo])
+
+// Create a cut that splits the edge between hi and yoyo into two edges
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-3.29, 4.75])
+  |> line(end = [5.32, -2.31], tag = $myDisambigutator)
+  |> line(end = [-5.52, -2.13], tag = $myDisambigutator2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+// Test variant 1: fillet both edges (no index, no disambiguators)
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo] }])
+
+// Test variant 2: fillet bottom edge using disambiguator (startCap)
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [startCap] }])
+
+// Test variant 3: fillet top edge using disambiguator (endCap)
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [endCap] }])
+
+// Test variant 4: fillet bottom edge using disambiguator (myDisambigutator2)
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [myDisambigutator2] }])
+
+// Test variant 5: fillet top edge using disambiguator (myDisambigutator)
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [myDisambigutator] }])
+
+// Test variant 6: fillet bottom edge using index 0
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], index = 0 }])
+
+// Test variant 7: fillet top edge using index 1
+fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], index = 1 }])
+

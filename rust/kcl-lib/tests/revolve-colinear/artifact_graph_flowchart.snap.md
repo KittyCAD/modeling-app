@@ -23,8 +23,6 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   11[Wall]
     %% face_code_ref=Missing NodePath
-  12["SweepEdge Adjacent"]
-  13["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -34,19 +32,11 @@ flowchart LR
   2 ---- 8
   8 <--x 4
   4 --- 9
-  4 --- 12
   8 <--x 5
   5 --- 10
-  5 --- 13
   8 <--x 6
   6 --- 11
   8 --- 9
   8 --- 10
   8 --- 11
-  8 --- 12
-  8 --- 13
-  9 --- 12
-  12 <--x 10
-  10 --- 13
-  13 <--x 11
 ```
