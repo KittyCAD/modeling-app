@@ -1,5 +1,3 @@
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -77,10 +75,8 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
 
 export function generateModelingMachineDefaultContext(systemDeps: {
   kclManager: KclManager
-  sceneInfra: SceneInfra
   rustContext: RustContext
   wasmInstance: ModuleType
-  sceneEntitiesManager: SceneEntities
   engineCommandManager: ConnectionManager
   commandBarActor: CommandBarActorType
   machineManager: MachineManager

@@ -41,10 +41,7 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import type {
-  OnMoveCallbackArgs,
-  SceneInfra,
-} from '@src/clientSideScene/sceneInfra'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/lib/MachineManager'
@@ -735,7 +732,12 @@ export const modelingMachine = setup({
         toast.error(event.error.message)
       }
     },
-    toastErrorAndExitSketch: ({ event, context: { sceneEntitiesManager } }) => {
+    toastErrorAndExitSketch: ({
+      event,
+      context: {
+        kclManager: { sceneEntitiesManager },
+      },
+    }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
         toast.error(event.output.message)
@@ -808,15 +810,12 @@ export const modelingMachine = setup({
       }
     }),
     'set up draft line': assign(
-      ({
-        context: { sketchDetails, sceneEntitiesManager, kclManager },
-        event,
-      }) => {
+      ({ context: { sketchDetails, kclManager }, event }) => {
         if (!sketchDetails) return {}
         if (event.type !== 'Add start point') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        sceneEntitiesManager
+        kclManager.sceneEntitiesManager
           .setupDraftSegment(
             event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
             event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
@@ -842,15 +841,12 @@ export const modelingMachine = setup({
       }
     ),
     'set up draft arc': assign(
-      ({
-        context: { sketchDetails, sceneEntitiesManager, kclManager },
-        event,
-      }) => {
+      ({ context: { sketchDetails, kclManager }, event }) => {
         if (!sketchDetails) return {}
         if (event.type !== 'Continue existing profile') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        sceneEntitiesManager
+        kclManager.sceneEntitiesManager
           .setupDraftSegment(
             event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
             event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
@@ -878,8 +874,7 @@ export const modelingMachine = setup({
     'listen for rectangle origin': ({
       context: {
         sketchDetails,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -931,8 +926,7 @@ export const modelingMachine = setup({
     'listen for center rectangle origin': ({
       context: {
         sketchDetails,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -983,8 +977,7 @@ export const modelingMachine = setup({
     'listen for circle origin': ({
       context: {
         sketchDetails,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1036,8 +1029,7 @@ export const modelingMachine = setup({
     'listen for circle first point': ({
       context: {
         sketchDetails,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1089,8 +1081,7 @@ export const modelingMachine = setup({
     'listen for circle second point': ({
       context: {
         sketchDetails,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
       event,
@@ -1227,7 +1218,11 @@ export const modelingMachine = setup({
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
-      context: { sketchDetails, currentTool, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        currentTool,
+        kclManager: { sceneEntitiesManager, sceneInfra },
+      },
     }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
@@ -1241,13 +1236,11 @@ export const modelingMachine = setup({
           ),
       })
     },
-    'add axis n grid': ({
-      context: { sketchDetails, sceneEntitiesManager, kclManager },
-    }) => {
+    'add axis n grid': ({ context: { sketchDetails, kclManager } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
 
-      sceneEntitiesManager.createSketchAxis(
+      kclManager.sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
@@ -1261,33 +1254,28 @@ export const modelingMachine = setup({
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
       // (note the orbit controls are always active though)
-      context.sceneInfra.resetMouseListeners()
+      context.kclManager.sceneInfra.resetMouseListeners()
     },
     'clientToEngine cam sync direction': ({ context }) => {
-      context.sceneInfra.camControls.syncDirection = 'clientToEngine'
+      context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
       context.kclManager.setSelectionFilter(
         ['face', 'object'],
-        context.sceneEntitiesManager,
         context.wasmInstance
       )
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      context.kclManager.setSelectionFilterToDefault(
-        context.sceneEntitiesManager,
-        context.wasmInstance
-      )
+      context.kclManager.setSelectionFilterToDefault(context.wasmInstance)
     },
     'Delete segments': ({
       context: {
         sketchDetails,
         kclManager,
         rustContext,
-        sceneEntitiesManager,
-        sceneInfra,
+        kclManager: { sceneEntitiesManager, sceneInfra },
       },
       event,
     }) => {
@@ -1314,14 +1302,16 @@ export const modelingMachine = setup({
           console.warn('error', e)
         })
     },
-    'remove draft entities': ({ context: { sceneInfra } }) => {
-      const draftPoint = sceneInfra.scene.getObjectByName(DRAFT_POINT)
+    'remove draft entities': ({ context: { kclManager } }) => {
+      const draftPoint =
+        kclManager.sceneInfra.scene.getObjectByName(DRAFT_POINT)
       if (draftPoint) {
-        sceneInfra.scene.remove(draftPoint)
+        kclManager.sceneInfra.scene.remove(draftPoint)
       }
-      const draftLine = sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
+      const draftLine =
+        kclManager.sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
       if (draftLine) {
-        sceneInfra.scene.remove(draftLine)
+        kclManager.sceneInfra.scene.remove(draftLine)
       }
     },
     'add draft line': ({ event, context }) => {
@@ -1331,8 +1321,8 @@ export const modelingMachine = setup({
       )
         return
 
-      const sceneEntitiesManager = context.sceneEntitiesManager
-      const sceneInfra = context.sceneInfra
+      const sceneEntitiesManager = context.kclManager.sceneEntitiesManager
+      const sceneInfra = context.kclManager.sceneInfra
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1413,7 +1403,6 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           engineCommandManager,
-          sceneEntitiesManager,
           kclManager,
           wasmInstance,
         },
@@ -1535,7 +1524,7 @@ export const modelingMachine = setup({
               ast: kclManager.ast,
               systemDeps: {
                 engineCommandManager,
-                sceneEntitiesManager,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
                 wasmInstance,
               },
             })
@@ -1611,7 +1600,7 @@ export const modelingMachine = setup({
             ast: kclManager.ast,
             systemDeps: {
               engineCommandManager,
-              sceneEntitiesManager,
+              sceneEntitiesManager: kclManager.sceneEntitiesManager,
               wasmInstance,
             },
           })
@@ -1675,7 +1664,7 @@ export const modelingMachine = setup({
             mouseOnParent?.userData?.pathToNode
           )
           const timeoutId = setTimeout(() => {
-            context.sceneInfra.modelingSend({
+            context.kclManager.sceneInfra.modelingSend({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
@@ -1816,13 +1805,7 @@ export const modelingMachine = setup({
     sketchExit: fromPromise(
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
-        const {
-          store,
-          engineCommandManager,
-          sceneInfra,
-          kclManager,
-          sceneEntitiesManager,
-        } = context
+        const { store, engineCommandManager, kclManager } = context
 
         // When cancelling the sketch mode we should disable sketch mode within the engine.
         await engineCommandManager.sendSceneCommand({
@@ -1831,13 +1814,13 @@ export const modelingMachine = setup({
           cmd: { type: 'sketch_mode_disable' },
         })
 
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
+        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         if (store.cameraProjection?.current === 'perspective') {
-          await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
         }
 
-        sceneInfra.camControls.syncDirection = 'engineToClient'
+        kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
 
         // TODO: Re-evaluate if this pause/play logic is needed.
         // TODO: Do I need this video element?
@@ -1858,11 +1841,11 @@ export const modelingMachine = setup({
             })
           })
           .catch(reportRejection)
-        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-        sceneEntitiesManager.removeSketchGrid()
-        sceneInfra.camControls.syncDirection = 'engineToClient'
-        sceneEntitiesManager.resetOverlays()
-        sceneInfra.stop()
+        kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+        kclManager.sceneEntitiesManager.removeSketchGrid()
+        kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+        kclManager.sceneEntitiesManager.resetOverlays()
+        kclManager.sceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -1873,18 +1856,13 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           data,
-          sceneEntitiesManager,
           kclManager,
           wasmInstance,
         },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
-          | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'wasmInstance' | 'kclManager'
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
@@ -1896,17 +1874,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return
         const { pathToNodeMap } = constraint
         if (!sketchDetails) return
-        let updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          pathToNodeMap[0],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          constraint.modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        let updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToNodeMap[0],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            constraint.modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
@@ -1929,21 +1908,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVert(
@@ -1956,17 +1925,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchEntryNodePath,
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails.sketchEntryNodePath,
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -1987,21 +1957,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVert(
@@ -2014,17 +1974,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2045,21 +2006,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally-align': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
@@ -2071,17 +2022,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2103,21 +2055,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically-align': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
@@ -2129,17 +2071,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2161,21 +2104,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-x': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintAxisAlign({
@@ -2187,17 +2120,18 @@ export const modelingMachine = setup({
         if (err(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2219,21 +2153,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-y': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintAxisAlign({
@@ -2245,17 +2169,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2277,21 +2202,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-parallel': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualAngle({
@@ -2309,17 +2224,18 @@ export const modelingMachine = setup({
         const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          recastAst.program,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            recastAst.program,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2342,21 +2258,11 @@ export const modelingMachine = setup({
     ),
     'do-constrain-equal-length': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-          wasmInstance,
-        },
+        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
-          | 'wasmInstance'
+          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualLength({
@@ -2368,17 +2274,18 @@ export const modelingMachine = setup({
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchEntryNodePath || [],
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchEntryNodePath || [],
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
@@ -2402,19 +2309,11 @@ export const modelingMachine = setup({
     /* Below are actors which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -2442,17 +2341,18 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -2476,19 +2376,11 @@ export const modelingMachine = setup({
     ),
     'Get ABS X info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -2515,17 +2407,18 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           exprInsertIndex,
         })
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -2549,19 +2442,11 @@ export const modelingMachine = setup({
     ),
     'Get ABS Y info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -2588,17 +2473,18 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           exprInsertIndex,
         })
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -2622,19 +2508,11 @@ export const modelingMachine = setup({
     ),
     'Get angle info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -2675,17 +2553,18 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -2709,19 +2588,11 @@ export const modelingMachine = setup({
     ),
     'Get perpendicular distance info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'selectionRanges'
-          | 'sketchDetails'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -2748,17 +2619,18 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -2782,12 +2654,9 @@ export const modelingMachine = setup({
     ),
     'AST-undo-startSketchOn': fromPromise(
       async ({
-        input: { sketchDetails, kclManager, sceneInfra },
+        input: { sketchDetails, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'kclManager' | 'sceneInfra'
-        >
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'>
       }) => {
         if (!sketchDetails) return
         if (kclManager.ast.body.length) {
@@ -2826,7 +2695,7 @@ export const modelingMachine = setup({
             shouldAddToHistory: false,
           })
         }
-        sceneInfra.setCallbacks({
+        kclManager.sceneInfra.setCallbacks({
           onClick: () => {},
           onDrag: () => {},
         })
@@ -2841,18 +2710,11 @@ export const modelingMachine = setup({
           plane: ExtrudeFacePlane | DefaultPlane | OffsetPlane
           kclManager: KclManager
           engineCommandManager: ConnectionManager
-          sceneInfra: SceneInfra
           wasmInstance: ModuleType
         }
       }) => {
         if (!input) return null
-        const {
-          plane,
-          kclManager,
-          engineCommandManager,
-          sceneInfra,
-          wasmInstance,
-        } = input
+        const { plane, kclManager, engineCommandManager, wasmInstance } = input
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
           const originalCode = kclManager.code
           const sketched =
@@ -2891,7 +2753,7 @@ export const modelingMachine = setup({
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
           await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-          sceneInfra.camControls.syncDirection = 'clientToEngine'
+          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
             planeNodePath: pathToNewSketchNode,
@@ -2907,9 +2769,9 @@ export const modelingMachine = setup({
           await kclManager.wasmInstancePromise
         )
         await kclManager.updateAst(modifiedAst, false)
-        sceneInfra.camControls.enableRotate =
-          sceneInfra.camControls._setting_allowOrbitInSketchMode
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
+        kclManager.sceneInfra.camControls.enableRotate =
+          kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
@@ -2937,8 +2799,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              sceneInfra: SceneInfra
-              sceneEntitiesManager: SceneEntities
               wasmInstance: ModuleType
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
@@ -2958,24 +2818,16 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          sceneInfra,
-          sceneEntitiesManager,
           wasmInstance,
           defaultUnit,
           projectRef,
         } = input
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
-        const systemDeps = {
-          sceneInfra,
+        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+          sceneInfra: kclManager.sceneInfra,
           rustContext,
-          sceneEntitiesManager,
-        }
-
-        const defaultResult = getDefaultSketchPlaneData(
-          artifactOrPlaneId,
-          systemDeps
-        )
+        })
         if (!err(defaultResult) && defaultResult) {
           result = defaultResult
         }
@@ -2983,10 +2835,10 @@ export const modelingMachine = setup({
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
         if (!result) {
           const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-          const offsetResult = await getOffsetSketchPlaneData(
-            artifact,
-            systemDeps
-          )
+          const offsetResult = await getOffsetSketchPlaneData(artifact, {
+            sceneEntitiesManager: kclManager.sceneEntitiesManager,
+            sceneInfra: kclManager.sceneInfra,
+          })
           if (!err(offsetResult) && offsetResult) {
             result = offsetResult
           }
@@ -2997,7 +2849,12 @@ export const modelingMachine = setup({
             kclManager.artifactGraph,
             kclManager.astSignal.value,
             kclManager.execState,
-            { ...systemDeps, wasmInstance }
+            {
+              wasmInstance,
+              rustContext,
+              sceneInfra: kclManager.sceneInfra,
+              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+            }
           )
           if (sweepFaceSelected) {
             result = sweepFaceSelected
@@ -3012,7 +2869,7 @@ export const modelingMachine = setup({
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
+        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         // Call newSketch API
         let sketchId: number | undefined
@@ -3079,8 +2936,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              sceneInfra: SceneInfra
-              sceneEntitiesManager: SceneEntities
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
@@ -3100,16 +2955,14 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          sceneInfra,
-          sceneEntitiesManager,
           defaultUnit,
           projectRef,
         } = input
 
         const systemDeps = {
-          sceneInfra,
+          sceneInfra: kclManager.sceneInfra,
           rustContext,
-          sceneEntitiesManager,
+          sceneEntitiesManager: kclManager.sceneEntitiesManager,
         }
 
         // Get the sketchBlock artifact from the artifact graph
@@ -3145,7 +2998,7 @@ export const modelingMachine = setup({
             ? planeData.faceId
             : planeData.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
+        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         // Call editSketch API
         let editSketchSceneGraph: SceneGraphDelta | undefined
@@ -3192,19 +3045,11 @@ export const modelingMachine = setup({
     ),
     'Get horizontal info': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'sketchDetails'
-          | 'selectionRanges'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
         >
       }) => {
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3233,17 +3078,18 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -3267,20 +3113,11 @@ export const modelingMachine = setup({
     ),
     astConstrainLength: fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          sketchDetails,
-          lengthValue,
-          kclManager,
-          sceneEntitiesManager,
-        },
+        input: { selectionRanges, sketchDetails, lengthValue, kclManager },
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'sketchDetails'
-          | 'selectionRanges'
-          | 'kclManager'
-          | 'sceneEntitiesManager'
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
         > & {
           lengthValue?: KclCommandValue
         }
@@ -3311,17 +3148,18 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           exprInsertIndex,
         })
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          _modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -3345,19 +3183,11 @@ export const modelingMachine = setup({
     ),
     'setup-client-side-sketch-segments': fromPromise(
       async ({
-        input: {
-          sketchDetails,
-          selectionRanges,
-          sceneInfra,
-          sceneEntitiesManager,
-          kclManager,
-        },
+        input: { sketchDetails, selectionRanges, kclManager },
       }: {
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
-          sceneInfra: SceneInfra
-          sceneEntitiesManager: SceneEntities
           kclManager: KclManager
         }
       }) => {
@@ -3367,12 +3197,12 @@ export const modelingMachine = setup({
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
-          sceneInfra.resetMouseListeners()
-          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          kclManager.sceneInfra.resetMouseListeners()
+          kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           return
         }
-        sceneInfra.resetMouseListeners()
-        await sceneEntitiesManager.setupSketch({
+        kclManager.sceneInfra.resetMouseListeners()
+        await kclManager.sceneEntitiesManager.setupSketch({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
@@ -3381,9 +3211,9 @@ export const modelingMachine = setup({
           maybeModdedAst: kclManager.ast,
           selectionRanges,
         })
-        sceneInfra.resetMouseListeners()
+        kclManager.sceneInfra.resetMouseListeners()
 
-        sceneEntitiesManager.setupSketchIdleCallbacks({
+        kclManager.sceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
@@ -3403,20 +3233,12 @@ export const modelingMachine = setup({
     ),
     'animate-to-sketch': fromPromise(
       async ({
-        input: {
-          selectionRanges,
-          kclManager,
-          engineCommandManager,
-          sceneEntitiesManager,
-          sceneInfra,
-        },
+        input: { selectionRanges, kclManager, engineCommandManager },
       }: {
         input: {
           selectionRanges: Selections
           kclManager: KclManager
           engineCommandManager: ConnectionManager
-          sceneEntitiesManager: SceneEntities
-          sceneInfra: SceneInfra
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const artifact = selectionRanges.graphSelections[0].artifact
@@ -3497,9 +3319,10 @@ export const modelingMachine = setup({
           }
           return Promise.reject(new Error('No sketch'))
         }
-        const info = await sceneEntitiesManager.getSketchOrientationDetails(
-          sketch.value
-        )
+        const info =
+          await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
+            sketch.value
+          )
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
           info?.sketchDetails?.faceId || ''
@@ -3530,7 +3353,7 @@ export const modelingMachine = setup({
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
           origin: info.sketchDetails.origin.map(
-            (a) => a / sceneInfra.baseUnitMultiplier
+            (a) => a / kclManager.sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
@@ -3542,11 +3365,7 @@ export const modelingMachine = setup({
       }: {
         input: Pick<
           ModelingMachineContext,
-          | 'sketchDetails'
-          | 'selectionRanges'
-          | 'kclManager'
-          | 'wasmInstance'
-          | 'sceneEntitiesManager'
+          'sketchDetails' | 'selectionRanges' | 'kclManager' | 'wasmInstance'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -3653,7 +3472,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await input.sceneEntitiesManager.updateAstAndRejigSketch(
+          await input.kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3690,18 +3509,15 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-circle': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
-        const result = await sceneEntitiesManager.setupDraftCircle(
+        const result = await kclManager.sceneEntitiesManager.setupDraftCircle(
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           sketchDetails.zAxis,
@@ -3719,26 +3535,24 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-circle-three-point': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
-        const result = await sceneEntitiesManager.setupDraftCircleThreePoint(
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          data.p1,
-          data.p2
-        )
+        const result =
+          await kclManager.sceneEntitiesManager.setupDraftCircleThreePoint(
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            data.p1,
+            data.p2
+          )
         if (err(result)) return reject(result)
         await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
           shouldAddToHistory: false,
@@ -3749,25 +3563,23 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-rectangle': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
-        const result = await sceneEntitiesManager.setupDraftRectangle(
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          data
-        )
+        const result =
+          await kclManager.sceneEntitiesManager.setupDraftRectangle(
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            data
+          )
         if (err(result)) return reject(result)
         await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
           shouldAddToHistory: false,
@@ -3778,24 +3590,22 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-center-rectangle': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
-        const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          data
-        )
+        const result =
+          await kclManager.sceneEntitiesManager.setupDraftCenterRectangle(
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            data
+          )
         if (err(result)) return reject(result)
         await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
           shouldAddToHistory: false,
@@ -3806,17 +3616,14 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-arc': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
-        const result = await sceneEntitiesManager.setupDraftArc(
+        const result = await kclManager.sceneEntitiesManager.setupDraftArc(
           sketchDetails.sketchEntryNodePath,
           sketchDetails.sketchNodePaths,
           sketchDetails.zAxis,
@@ -3834,24 +3641,22 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-arc-three-point': fromPromise(
       async ({
-        input: { sketchDetails, data, sceneEntitiesManager, kclManager },
+        input: { sketchDetails, data, kclManager },
       }: {
-        input: Pick<
-          ModelingMachineContext,
-          'sketchDetails' | 'sceneEntitiesManager' | 'kclManager'
-        > & {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
-        const result = await sceneEntitiesManager.setupDraftArcThreePoint(
-          sketchDetails.sketchEntryNodePath,
-          sketchDetails.sketchNodePaths,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          data
-        )
+        const result =
+          await kclManager.sceneEntitiesManager.setupDraftArcThreePoint(
+            sketchDetails.sketchEntryNodePath,
+            sketchDetails.sketchNodePaths,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            data
+          )
         if (err(result)) return reject(result)
         await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
           shouldAddToHistory: false,
@@ -4407,7 +4212,6 @@ export const modelingMachine = setup({
           systemDeps: {
             kclManager: KclManager
             rustContext: RustContext
-            sceneEntitiesManager: SceneEntities
           }
         }
       }) => {
@@ -5352,7 +5156,7 @@ export const modelingMachine = setup({
             target: 'animating to existing sketch solve',
             actions: [
               ({ context }) => {
-                context.sceneInfra.animate()
+                context.kclManager.sceneInfra.animate()
               },
             ],
             guard: 'Selection is sketchBlock',
@@ -5361,7 +5165,7 @@ export const modelingMachine = setup({
             target: 'animating to existing sketch',
             actions: [
               ({ context }) => {
-                context.sceneInfra.animate()
+                context.kclManager.sceneInfra.animate()
               },
             ],
             guard: 'Selection is on face',
@@ -5370,7 +5174,7 @@ export const modelingMachine = setup({
             target: 'Sketch no face',
             actions: [
               ({ context }) => {
-                context.sceneInfra.animate()
+                context.kclManager.sceneInfra.animate()
               },
             ],
           },
@@ -5627,15 +5431,11 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                 }),
                 onDone: [
@@ -5671,17 +5471,11 @@ export const modelingMachine = setup({
             src: 'Get horizontal info',
             id: 'get-horizontal-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5696,17 +5490,11 @@ export const modelingMachine = setup({
             src: 'Get vertical info',
             id: 'get-vertical-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5721,17 +5509,11 @@ export const modelingMachine = setup({
             src: 'Get ABS X info',
             id: 'get-abs-x-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5746,17 +5528,11 @@ export const modelingMachine = setup({
             src: 'Get ABS Y info',
             id: 'get-abs-y-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5771,17 +5547,11 @@ export const modelingMachine = setup({
             src: 'Get angle info',
             id: 'get-angle-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5796,12 +5566,7 @@ export const modelingMachine = setup({
             src: 'astConstrainLength',
             id: 'AST-constrain-length',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
               event,
             }) => {
               const data =
@@ -5810,7 +5575,6 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 kclManager,
-                sceneEntitiesManager,
                 lengthValue: data?.length,
               }
             },
@@ -5827,17 +5591,11 @@ export const modelingMachine = setup({
             src: 'Get perpendicular distance info',
             id: 'get-perpendicular-distance-info',
             input: ({
-              context: {
-                selectionRanges,
-                sketchDetails,
-                kclManager,
-                sceneEntitiesManager,
-              },
+              context: { selectionRanges, sketchDetails, kclManager },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager,
-              sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5883,16 +5641,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -5960,16 +5714,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -5990,12 +5740,9 @@ export const modelingMachine = setup({
             {
               src: 'AST-undo-startSketchOn',
               id: 'AST-undo-startSketchOn',
-              input: ({
-                context: { sketchDetails, kclManager, sceneInfra },
-              }) => ({
+              input: ({ context: { sketchDetails, kclManager } }) => ({
                 sketchDetails,
                 kclManager,
-                sceneInfra,
               }),
 
               onDone: {
@@ -6043,16 +5790,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6068,21 +5811,16 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6131,16 +5869,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6156,21 +5890,16 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'Add center rectangle origin')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6222,7 +5951,6 @@ export const modelingMachine = setup({
                 sketchDetails,
                 wasmInstance,
                 kclManager,
-                sceneEntitiesManager: providedSceneEntitiesManager,
               },
               event,
             }) => {
@@ -6233,7 +5961,6 @@ export const modelingMachine = setup({
                 data: event.data,
                 wasmInstance,
                 kclManager,
-                sceneEntitiesManager: providedSceneEntitiesManager,
               }
             },
             onError: 'SketchIdle',
@@ -6252,7 +5979,6 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
                 kclManager: providedKclManager,
               },
@@ -6265,7 +5991,6 @@ export const modelingMachine = setup({
                   event.type === 'Constrain remove constraints'
                     ? event.data
                     : undefined,
-                sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
                 kclManager: providedKclManager,
               }
@@ -6286,14 +6011,12 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 kclManager: providedKclManager,
-                sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager: providedKclManager,
-              sceneEntitiesManager: providedSceneEntitiesManager,
               wasmInstance,
             }),
             onDone: {
@@ -6312,14 +6035,12 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 kclManager: providedKclManager,
-                sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
               kclManager: providedKclManager,
-              sceneEntitiesManager: providedSceneEntitiesManager,
               wasmInstance,
             }),
             onDone: {
@@ -6337,7 +6058,6 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -6355,7 +6075,6 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -6373,7 +6092,6 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -6391,7 +6109,6 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -6409,7 +6126,6 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -6428,7 +6144,6 @@ export const modelingMachine = setup({
               sketchDetails: context.sketchDetails,
               kclManager: context.kclManager,
               wasmInstance: context.wasmInstance,
-              sceneEntitiesManager: context.sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6519,16 +6234,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6544,21 +6255,16 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'Add circle origin')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6599,16 +6305,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6648,21 +6350,16 @@ export const modelingMachine = setup({
                   target: 'Awaiting third point',
                   actions: 'update sketchDetails',
                 },
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'Add second point')
                     return {
                       sketchDetails,
                       data: { p1: [0, 0], p2: [0, 0] },
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6687,16 +6384,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6742,21 +6435,16 @@ export const modelingMachine = setup({
                   target: 'Awaiting endAngle',
                   actions: 'update sketchDetails',
                 },
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6778,16 +6466,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6838,21 +6522,16 @@ export const modelingMachine = setup({
                   target: 'Awaiting third point',
                   actions: 'update sketchDetails',
                 },
-                input: ({
-                  context: { sketchDetails, sceneEntitiesManager, kclManager },
-                  event,
-                }) => {
+                input: ({ context: { sketchDetails, kclManager }, event }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      sceneEntitiesManager,
                       kclManager,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    sceneEntitiesManager,
                     kclManager,
                   }
                 },
@@ -6885,16 +6564,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6910,16 +6585,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra: providedSeneInfra,
-                    sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra: providedSeneInfra,
-                  sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
                   wasmInstance,
                 }),
@@ -6988,7 +6659,6 @@ export const modelingMachine = setup({
             plane: event.data,
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
-            sceneInfra: context.sceneInfra,
             wasmInstance: context.wasmInstance,
           }
         },
@@ -7011,8 +6681,6 @@ export const modelingMachine = setup({
           selectionRanges: context.selectionRanges,
           kclManager: context.kclManager,
           engineCommandManager: context.engineCommandManager,
-          sceneEntitiesManager: context.sceneEntitiesManager,
-          sceneInfra: context.sceneInfra,
         }),
 
         onDone: {
@@ -7042,8 +6710,6 @@ export const modelingMachine = setup({
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
               // Use context values if available, otherwise fall back to singletons
-              sceneInfra: context.sceneInfra,
-              sceneEntitiesManager: context.sceneEntitiesManager,
               rustContext: context.rustContext,
               kclManager: context.kclManager,
             }),
@@ -7367,7 +7033,6 @@ export const modelingMachine = setup({
             systemDeps: {
               kclManager: context.kclManager,
               rustContext: context.rustContext,
-              sceneEntitiesManager: context.sceneEntitiesManager,
             },
           }
         },
@@ -7751,8 +7416,6 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
-            sceneInfra: context.sceneInfra,
-            sceneEntitiesManager: context.sceneEntitiesManager,
             wasmInstance: context.wasmInstance,
             defaultUnit: context.store.defaultUnit,
             projectRef: context.projectRef,
@@ -7775,8 +7438,6 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
-                sceneInfra: context.sceneInfra,
-                sceneEntitiesManager: context.sceneEntitiesManager,
                 defaultUnit: context.store.defaultUnit,
                 projectRef: context.projectRef,
               }
@@ -7814,7 +7475,7 @@ export const modelingMachine = setup({
         'enable copilot',
         'enter modeling mode',
         ({ context }) => {
-          context.sceneInfra.stop()
+          context.kclManager.sceneInfra.stop()
         },
       ],
     },

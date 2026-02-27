@@ -29,8 +29,8 @@ function CommandBarSelectionInput({
   onSubmit: (data: unknown) => void
 }) {
   const { commands } = useApp()
-  const { engineCommandManager, kclManager, sceneEntitiesManager } =
-    useSingletons()
+  const { engineCommandManager, kclManager } = useSingletons()
+  const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
@@ -65,11 +65,7 @@ function CommandBarSelectionInput({
       toSync(() => {
         const promises = [
           new Promise(() =>
-            kclManager.setSelectionFilterToDefault(
-              sceneEntitiesManager,
-              wasmInstance,
-              selection
-            )
+            kclManager.setSelectionFilterToDefault(wasmInstance, selection)
           ),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
@@ -155,17 +151,8 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter &&
-      kclManager.setSelectionFilter(
-        arg.selectionFilter,
-        sceneEntitiesManager,
-        wasmInstance
-      )
-    return () =>
-      kclManager.setSelectionFilterToDefault(
-        sceneEntitiesManager,
-        wasmInstance,
-        selection
-      )
+      kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+    return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])
 

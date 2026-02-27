@@ -18,7 +18,7 @@ import { reportRejection } from '@src/lib/trap'
 
 type SingletonDeps = Pick<
   ReturnType<typeof useSingletons>,
-  'kclManager' | 'engineCommandManager' | 'sceneEntitiesManager'
+  'kclManager' | 'engineCommandManager'
 >
 
 async function clearSceneSelection(deps: SingletonDeps) {
@@ -119,7 +119,7 @@ function codeRangeToIds(
 ): string[] {
   if (!range) return []
 
-  const { kclManager, engineCommandManager, sceneEntitiesManager } = deps
+  const { kclManager, engineCommandManager } = deps
   const selections = {
     graphSelections: [
       {
@@ -152,7 +152,7 @@ function codeRangeToIds(
     artifactIndex: kclManager.artifactIndex,
     systemDeps: {
       engineCommandManager: engineCommandManager,
-      sceneEntitiesManager,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       wasmInstance: wasmInstance,
     },
   })
@@ -251,15 +251,13 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager, engineCommandManager, sceneEntitiesManager } =
-    useSingletons()
+  const { kclManager, engineCommandManager } = useSingletons()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
       kclManager,
       engineCommandManager,
-      sceneEntitiesManager,
     }),
-    [kclManager, engineCommandManager, sceneEntitiesManager]
+    [kclManager, engineCommandManager]
   )
   const [selectedId, _setSelectedId] = useState('')
   const [selectedRange, _setSelectedRange] = useState('')

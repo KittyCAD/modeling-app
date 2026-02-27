@@ -9,8 +9,6 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -204,8 +202,6 @@ export type MoveDesc = { line: number; snippet: string }
 export type ModelingMachineInput = {
   kclManager: KclManager
   engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
-  sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   machineManager: MachineManager
   wasmInstance: ModuleType
