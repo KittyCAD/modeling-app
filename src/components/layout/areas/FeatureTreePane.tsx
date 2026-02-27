@@ -912,7 +912,8 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       if (sketchNoFace) {
         void selectSketchPlane(
           planeId,
-          modelingState.context.store.useNewSketchMode?.current,
+          modelingState.context.store.useSketchSolveMode?.current ||
+            modelingState.context.forceSketchSolveMode,
           systemDeps
         )
       } else {
@@ -936,7 +937,11 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useNewSketchMode]
+    [
+      sketchNoFace,
+      modelingState.context.store.useSketchSolveMode,
+      modelingState.context.forceSketchSolveMode,
+    ]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -948,11 +953,17 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
 
       void selectSketchPlane(
         planeId,
-        modelingState.context.store.useNewSketchMode?.current,
+        modelingState.context.store.useSketchSolveMode?.current ||
+          modelingState.context.forceSketchSolveMode,
         systemDeps
       )
     },
-    [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
+    [
+      modelingState.context.store.useSketchSolveMode,
+      modelingState.context.forceSketchSolveMode,
+      sceneInfra,
+      systemDeps,
+    ]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
