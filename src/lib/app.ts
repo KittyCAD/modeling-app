@@ -4,7 +4,12 @@ import type RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
+import type {
+  ActorRefFrom,
+  ContextFrom,
+  SnapshotFrom,
+  Subscription,
+} from 'xstate'
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -134,7 +139,7 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: Signal<SaveSettingsPayload>
+  private lastSettings: SaveSettingsPayload
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -146,12 +151,9 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
 
     this.singletons = this.buildSingletons()
-    this.lastSettings = signal<SaveSettingsPayload>(
-      getAllCurrentSettings(
-        getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-      )
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-    this.settings.actor.subscribe(this.onSettingsUpdate)
   }
 
   /**
@@ -295,8 +297,14 @@ export class App implements AppSubsystems {
         projectIORefSignal.value = foundProject
       }
     })
+
+    this.unsubscribeFromSettings = this.settings.actor.subscribe(
+      this.onSettingsUpdate
+    )
   }
+  private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
+    this.unsubscribeFromSettings?.unsubscribe()
     this.project?.closeAllEditors()
     this.project = undefined
   }
@@ -380,6 +388,9 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    if (!this.project) {
+      return // Everything in here only matters inside a project.
+    }
     const { context } = snapshot
 
     // Update line wrapping
@@ -390,7 +401,7 @@ export class App implements AppSubsystems {
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
-      newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
+      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
       this.singletons.engineCommandManager.connection
     ) {
       this.singletons.engineCommandManager
@@ -423,17 +434,16 @@ export class App implements AppSubsystems {
 
     // Execute AST
     try {
-      const relevantSetting = (s: SaveSettingsPayload | undefined) => {
+      const relevantSetting = (s: SaveSettingsPayload) => {
         const hasScaleGrid =
-          s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s?.modeling?.highlightEdges !==
-          context.modeling.highlightEdges.current
+          s.modeling?.highlightEdges !== context.modeling.highlightEdges.current
         return hasScaleGrid || hasHighlightEdges
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings.value
+        this.lastSettings
       )
 
       // Unit changes requires a re-exec of code
@@ -461,7 +471,7 @@ export class App implements AppSubsystems {
 
     // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
     // of the last settings to know if they've changed.
-    this.lastSettings.value = getAllCurrentSettings(
+    this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(context)
     )
   }
