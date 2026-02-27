@@ -96,6 +96,7 @@ async fn inner_appearance(
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
     let mut solids = solids.clone();
+    let mut needs_oit = false;
 
     for solid_id in solids.ids(&args.ctx).await? {
         // Set the material properties.
@@ -125,20 +126,12 @@ async fn inner_appearance(
             }
         }
 
-        let (needs_oit, opacity_param) = if let Some(opacity) = opacity {
-            (true, opacity / 100.0)
+        let opacity_param = if let Some(opacity) = opacity {
+            needs_oit = true;
+            opacity / 100.0
         } else {
-            (false, 1.0)
+            1.0
         };
-        if needs_oit {
-            // TODO: Emit a warning annotation if SSAO is disabled.
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
-                )
-                .await?;
-        }
 
         let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32);
 
@@ -159,6 +152,15 @@ async fn inner_appearance(
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.
+    }
+    if needs_oit {
+        // TODO: Emit a warning annotation if SSAO is disabled.
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+            )
+            .await?;
     }
 
     Ok(solids)
