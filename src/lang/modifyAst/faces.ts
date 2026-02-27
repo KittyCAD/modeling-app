@@ -163,7 +163,7 @@ export function addDeleteFace({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['sweep'],
+      artifactTypeFilter: ['sweep', 'compositeSolid'],
       includePrimitiveFaceIndices: true,
     }
   )

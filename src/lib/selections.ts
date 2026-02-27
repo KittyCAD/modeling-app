@@ -1,6 +1,10 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import type {
+  EntityGetPrimitiveIndex,
+  OkModelingCmdResponse,
+  WebSocketRequest,
+} from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -75,44 +79,6 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-interface PlaceholderEntityGetPrimitiveIndex {
-  index?: number
-  primitive_index?: number
-  face_index?: number
-}
-
-type UnknownModelingResponse<T extends object, U extends string> = {
-  resp: {
-    data: {
-      modeling_response: {
-        type: U
-        data: T
-      }
-    }
-  }
-}
-
-const isUnknownModelingResponseTo = <T extends object, const U extends string>(
-  response: unknown,
-  typeIdent: U
-): response is UnknownModelingResponse<T, U> => {
-  return (
-    typeof response === 'object' &&
-    response !== null &&
-    'resp' in response &&
-    typeof response.resp === 'object' &&
-    response.resp !== null &&
-    'data' in response.resp &&
-    typeof response.resp.data === 'object' &&
-    response.resp.data !== null &&
-    'modeling_response' in response.resp.data &&
-    typeof response.resp.data.modeling_response === 'object' &&
-    response.resp.data.modeling_response !== null &&
-    'type' in response.resp.data.modeling_response &&
-    response.resp.data.modeling_response.type === typeIdent
-  )
-}
-
 async function getPrimitiveSelectionForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
@@ -121,31 +87,18 @@ async function getPrimitiveSelectionForEntity(
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
-      // @kittycad/lib does not yet expose this.
-      // @ts-expect-error
       type: 'entity_get_primitive_index',
       entity_id: entityId,
     },
   })
 
-  if (
-    !isUnknownModelingResponseTo<
-      PlaceholderEntityGetPrimitiveIndex,
-      'entity_get_primitive_index'
-    >(websocketResponse, 'entity_get_primitive_index')
-  )
-    return null
-  const entityGetPrimitiveIndex =
-    websocketResponse.resp.data.modeling_response.data
+  if (!isModelingResponse(websocketResponse)) return null
 
-  const rawIndex =
-    entityGetPrimitiveIndex.index ??
-    entityGetPrimitiveIndex.primitive_index ??
-    entityGetPrimitiveIndex.face_index
+  const primitiveIndexResponse = websocketResponse.resp.data.modeling_response
+  if (primitiveIndexResponse.type !== 'entity_get_primitive_index') return null
 
-  if (typeof rawIndex !== 'number') {
-    return null
-  }
+  const entityGetPrimitiveIndex: EntityGetPrimitiveIndex =
+    primitiveIndexResponse.data
 
   let parentEntityId: string | undefined
   const parentResponse = await engineCommandManager.sendSceneCommand({
@@ -156,15 +109,10 @@ async function getPrimitiveSelectionForEntity(
       entity_id: entityId,
     },
   })
-  if (parentResponse) {
-    if (
-      isUnknownModelingResponseTo<
-        { entity_id: string },
-        'entity_get_parent_id'
-      >(parentResponse, 'entity_get_parent_id')
-    ) {
-      const entityGetParentId = parentResponse.resp.data.modeling_response.data
-      parentEntityId = entityGetParentId.entity_id
+  if (isModelingResponse(parentResponse)) {
+    const parentIdResponse = parentResponse.resp.data.modeling_response
+    if (parentIdResponse.type === 'entity_get_parent_id') {
+      parentEntityId = parentIdResponse.data.entity_id
     }
   }
 
@@ -172,8 +120,9 @@ async function getPrimitiveSelectionForEntity(
     type: 'enginePrimitive',
     entityId,
     parentEntityId,
-    primitiveIndex: rawIndex,
-    primitiveType: 'face',
+    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
+    primitiveType:
+      entityGetPrimitiveIndex.entity_type === 'edge' ? 'edge' : 'face',
   }
 }
 
