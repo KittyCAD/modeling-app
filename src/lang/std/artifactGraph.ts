@@ -9,6 +9,7 @@ import type {
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
+import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
   Artifact,
@@ -28,7 +29,11 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  Selection,
+  Selections,
+  SelectionV2,
+} from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -758,21 +763,28 @@ export function coerceSelectionsToBody(
   selections: Selections,
   artifactGraph: ArtifactGraph
 ): Selections | Error {
-  const bodySelections: Selection[] = []
+  const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
+  const codeRefOnlyV2: Array<SelectionV2> = []
   const seenBodyIds = new Set<string>()
 
-  for (const selection of selections.graphSelections) {
+  for (const selV2 of selections.graphSelectionsV2) {
+    const selection = resolveSelectionV2(selV2, artifactGraph)
+    if (!selection) {
+      if (
+        selV2.codeRef &&
+        selV2.codeRef.range[1] - selV2.codeRef.range[0] !== 0
+      ) {
+        codeRefOnlyV2.push({ codeRef: selV2.codeRef })
+      }
+      continue
+    }
     if (!selection.artifact) {
-      // Handle selections without artifacts (e.g., imported modules)
-      // TODO: coerce to body when we have ranges for imports
-      // TODO: coerce edges and faces of imported bodies
       if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
-        bodySelections.push(selection)
+        codeRefOnlyV2.push({ codeRef: selection.codeRef })
       }
       continue
     }
 
-    // If it's already a body type, use it directly
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
@@ -786,22 +798,17 @@ export function coerceSelectionsToBody(
         })
       }
     } else {
-      // Get the parent body (sweep) from faces, edges, or edgeCuts
       const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
-
       if (err(maybeSweep)) {
         return new Error(
           `Unable to find parent body for selected artifact: ${selection.artifact.type}`
         )
       }
-
-      // Prefer the path over the sweep for the final selection
       const maybePath = getArtifactOfTypes(
         { key: maybeSweep.pathId, types: ['path'] },
         artifactGraph
       )
       if (!err(maybePath)) {
-        // Successfully got the path from the sweep
         if (!seenBodyIds.has(maybePath.id)) {
           seenBodyIds.add(maybePath.id)
           bodySelections.push({
@@ -810,7 +817,6 @@ export function coerceSelectionsToBody(
           })
         }
       } else {
-        // Couldn't get path, use the sweep itself
         const sweepWithType = getArtifactOfTypes(
           { key: maybeSweep.id, types: ['sweep'] },
           artifactGraph
@@ -826,8 +832,23 @@ export function coerceSelectionsToBody(
     }
   }
 
+  const graphSelectionsV2: SelectionV2[] = [
+    ...bodySelections
+      .map((s) => ({
+        entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+        codeRef: s.codeRef,
+      }))
+      .filter(
+        (
+          v2
+        ): v2 is typeof v2 & { entityRef: NonNullable<typeof v2.entityRef> } =>
+          v2.entityRef != null
+      ),
+    ...codeRefOnlyV2,
+  ]
+
   return {
-    graphSelections: bodySelections,
+    graphSelectionsV2,
     otherSelections: selections.otherSelections,
   }
 }

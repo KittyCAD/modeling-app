@@ -14,9 +14,12 @@ import {
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { valueOrVariable } from '@src/lang/queryAst'
+import {
+  resolveSelectionV2,
+  traverse,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
-import { traverse } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -71,10 +74,12 @@ export function addFlatnessGdt({
   // Clone the AST to avoid mutating the original
   let modifiedAst = structuredClone(ast)
 
-  // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
+  // Filter to only include face selections (resolve V2 to get artifact)
+  const faceSelections = faces.graphSelectionsV2
+    .map((selV2) => resolveSelectionV2(selV2, artifactGraph))
+    .filter(
+      (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)
+    )
 
   if (faceSelections.length === 0) {
     return new Error(
@@ -247,10 +252,12 @@ export function addDatumGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
+  // Filter to only include face selections (resolve V2 to get artifact)
+  const faceSelections = faces.graphSelectionsV2
+    .map((selV2) => resolveSelectionV2(selV2, artifactGraph))
+    .filter(
+      (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)
+    )
 
   // Validate datum name is a single character
   if (name.length !== 1) {

@@ -270,7 +270,6 @@ export class KclManager extends EventTarget {
   /** a representation of selections used by modelingMachine */
   private _selectionRanges: Selections = {
     otherSelections: [],
-    graphSelections: [],
     graphSelectionsV2: [],
   }
   undoDepth = signal(0)
@@ -1114,9 +1113,8 @@ export class KclManager extends EventTarget {
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        graphSelections: [],
-        otherSelections: [],
         graphSelectionsV2: [],
+        otherSelections: [],
       }
 
       for (const path of optionalParams.focusPath) {
@@ -1138,7 +1136,7 @@ export class KclManager extends EventTarget {
           }
 
         if (start && end) {
-          returnVal.graphSelections.push({
+          returnVal.graphSelectionsV2.push({
             codeRef: {
               range: topLevelRange(start, end),
               pathToNode: path,
@@ -1497,16 +1495,15 @@ export class KclManager extends EventTarget {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
-    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
-    const firstSelection = this._selectionRanges.graphSelections[0]
+    if (!this._editorView || !this._selectionRanges.graphSelectionsV2[0]) return
+    const firstSelection = this._selectionRanges.graphSelectionsV2[0]
+    const codeRef = firstSelection.codeRef
+    if (!codeRef?.range) return
     this._editorView.focus()
     this._editorView.dispatch({
       effects: [
         EditorView.scrollIntoView(
-          EditorSelection.range(
-            firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1]
-          ),
+          EditorSelection.range(codeRef.range[0], codeRef.range[1]),
           { y: 'center' }
         ),
       ],
@@ -1604,7 +1601,7 @@ export class KclManager extends EventTarget {
     return false
   }
   selectRange(selections: Selections) {
-    if (selections?.graphSelections?.length === 0) {
+    if (selections?.graphSelectionsV2?.length === 0) {
       return
     }
     if (!this._editorView) {
@@ -1622,24 +1619,31 @@ export class KclManager extends EventTarget {
   createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
     // Handle empty graphSelections array to avoid runtime errors
-    if (selections.graphSelections.length === 0) {
+    if (selections.graphSelectionsV2.length === 0) {
       const defaultCursor = EditorSelection.cursor(
         this._editorView?.state.doc.length || 0
       )
       return EditorSelection.create([defaultCursor], 0)
     }
-    for (const selection of selections.graphSelections) {
+    for (const selection of selections.graphSelectionsV2) {
+      const cr = selection.codeRef
+      if (!cr?.range) continue
       const safeEnd = Math.min(
-        selection.codeRef.range[1],
-        this._editorView?.state.doc.length || selection.codeRef.range[1]
+        cr.range[1],
+        this._editorView?.state.doc.length || cr.range[1]
       )
-      codeBasedSelections.push(
-        EditorSelection.range(selection.codeRef.range[0], safeEnd)
-      )
+      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
-    const end =
-      selections.graphSelections[selections.graphSelections.length - 1].codeRef
-        .range[1]
+    const lastSel =
+      selections.graphSelectionsV2[selections.graphSelectionsV2.length - 1]
+    const lastRange = lastSel?.codeRef?.range
+    if (!lastRange) {
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    const end = lastRange[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)

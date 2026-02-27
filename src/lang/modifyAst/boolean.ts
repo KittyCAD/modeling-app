@@ -10,66 +10,11 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { getVariableExprsFromSelection } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-
-// TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
-// and replace it with `graphSelectionsV2`, so normalising to `graphSelections` is going to mean more refactoring
-// later, but at least it's working and tsc will tell us most/all of the places that need to be updated.
-function normalizeSelectionsForBoolean(
-  selection: Selections,
-  artifactGraph: ArtifactGraph
-): Selections {
-  const normalizedV2GraphSelections = (selection.graphSelectionsV2 || [])
-    .map((v2Selection) => {
-      const entityRef = v2Selection.entityRef
-      let entityId: string | undefined
-      if (entityRef) {
-        if (entityRef.type === 'solid3d') {
-          entityId = entityRef.solid3d_id
-        } else if (entityRef.type === 'solid2d') {
-          entityId = entityRef.solid2d_id
-        } else if (entityRef.type === 'face') {
-          entityId = entityRef.face_id
-        } else if (entityRef.type === 'plane') {
-          entityId = entityRef.plane_id
-        }
-      }
-
-      const codeRef =
-        v2Selection.codeRef ||
-        (entityId
-          ? getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
-          : null)
-      if (!codeRef) return null
-
-      const artifact = entityId ? artifactGraph.get(entityId) : undefined
-      if (artifact) {
-        return { artifact, codeRef }
-      }
-      return { codeRef }
-    })
-    .filter(
-      (
-        graphSelection
-      ): graphSelection is {
-        codeRef: NonNullable<typeof graphSelection>['codeRef']
-      } => Boolean(graphSelection)
-    )
-
-  return {
-    graphSelections: [
-      ...selection.graphSelections,
-      ...normalizedV2GraphSelections,
-    ],
-    otherSelections: selection.otherSelections,
-    graphSelectionsV2: [],
-  }
-}
 
 export function addUnion({
   ast,
@@ -87,12 +32,11 @@ export function addUnion({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const normalizedSolids = normalizeSelectionsForBoolean(solids, artifactGraph)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedSolids,
+    solids,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -142,12 +86,11 @@ export function addIntersect({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const normalizedSolids = normalizeSelectionsForBoolean(solids, artifactGraph)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedSolids,
+    solids,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -199,13 +142,11 @@ export function addSubtract({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const normalizedSolids = normalizeSelectionsForBoolean(solids, artifactGraph)
-  const normalizedTools = normalizeSelectionsForBoolean(tools, artifactGraph)
 
   // 2. Prepare unlabeled and labeled arguments
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedSolids,
+    solids,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -218,7 +159,7 @@ export function addSubtract({
   }
 
   const toolVars = getVariableExprsFromSelection(
-    normalizedTools,
+    tools,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -285,15 +226,11 @@ export function addSplit({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const normalizedTargets = normalizeSelectionsForBoolean(
-    targets,
-    artifactGraph
-  )
 
   // 2. Prepare unlabeled and labeled arguments
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedTargets,
+    targets,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,

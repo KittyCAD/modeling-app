@@ -48,7 +48,7 @@ export function useViewControlMenuItems() {
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
-    return modelingState.context.selectionRanges.graphSelections.find(
+    return modelingState.context.selectionRanges.graphSelectionsV2.find(
       (selection) => {
         return (
           selection.codeRef?.range &&
@@ -57,7 +57,7 @@ export function useViewControlMenuItems() {
         )
       }
     )
-  }, [modelingState.context.selectionRanges.graphSelections])
+  }, [modelingState.context.selectionRanges.graphSelectionsV2])
 
   const menuItems = useMemo(
     () => [
@@ -113,10 +113,7 @@ export function useViewControlMenuItems() {
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: firstValidSelection.artifact,
-                  codeRef: firstValidSelection.codeRef,
-                },
+                selectionV2: firstValidSelection,
                 scrollIntoView: true,
               },
             })

@@ -24,10 +24,13 @@ export function angleLengthInfo({
       enabled: boolean
     }
   | Error {
-  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, wasmInstance, [
-      'CallExpressionKw',
-    ])
+  const nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef?.pathToNode ?? [],
+      wasmInstance,
+      ['CallExpressionKw']
+    )
   )
   const _err1 = nodes.find(err)
   if (_err1 instanceof Error) return _err1
@@ -47,7 +50,7 @@ export function angleLengthInfo({
     wasmInstance
   )
   const enabled =
-    selectionRanges.graphSelections.length <= 1 &&
+    selectionRanges.graphSelectionsV2.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }

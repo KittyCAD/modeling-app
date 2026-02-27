@@ -28,8 +28,8 @@ export function equalAngleInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodePathFromSourceRange(kclManager.ast, codeRef.range)
+  const paths = selectionRanges.graphSelectionsV2.map(({ codeRef }) =>
+    getNodePathFromSourceRange(kclManager.ast, codeRef?.range ?? [0, 0, 0])
   )
   const _nodes = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
@@ -68,7 +68,7 @@ export function equalAngleInfo({
   const transforms = getTransformInfos(
     {
       ...selectionRanges,
-      graphSelections: selectionRanges.graphSelections.slice(1),
+      graphSelectionsV2: selectionRanges.graphSelectionsV2.slice(1),
     },
     kclManager.ast,
     'equalAngle',

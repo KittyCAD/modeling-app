@@ -261,9 +261,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Manually duplicate one face in the selection
       const duplicatedSelection: Selections = {
-        graphSelections: [
-          ...walls.graphSelections,
-          walls.graphSelections[0], // Add first wall again
+        graphSelectionsV2: [
+          ...walls.graphSelectionsV2,
+          walls.graphSelectionsV2[0], // Add first wall again
         ],
         otherSelections: [],
       }
@@ -695,7 +695,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces: Selections = { graphSelections: [], otherSelections: [] }
+      const faces: Selections = { graphSelectionsV2: [], otherSelections: [] }
       const name = 'A'
       const result = addDatumGdt({
         ast,

@@ -33,8 +33,12 @@ export function setEqualLengthInfo({
       enabled: boolean
     }
   | Error {
-  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance)
+  const _nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(
+      ast,
+      codeRef?.pathToNode ?? [],
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -42,10 +46,10 @@ export function setEqualLengthInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
+  const _varDecs = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       ast,
-      codeRef.pathToNode,
+      codeRef?.pathToNode ?? [],
       wasmInstance,
       'VariableDeclarator'
     )
@@ -70,7 +74,7 @@ export function setEqualLengthInfo({
   const transforms = getTransformInfos(
     {
       ...selectionRanges,
-      graphSelections: selectionRanges.graphSelections.slice(1),
+      graphSelectionsV2: selectionRanges.graphSelectionsV2.slice(1),
     },
     ast,
     'equalLength',

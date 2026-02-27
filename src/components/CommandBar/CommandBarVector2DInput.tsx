@@ -153,9 +153,8 @@ function CommandBarVector2DInput({
   const xCalculation = useCalculateKclExpression({
     value: x,
     selectionRanges: {
-      graphSelections: [],
-      otherSelections: [],
       graphSelectionsV2: [],
+      otherSelections: [],
     },
     rustContext: rustContext,
     options: calculateKclExpressionOptions,
@@ -167,9 +166,8 @@ function CommandBarVector2DInput({
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: {
-      graphSelections: [],
-      otherSelections: [],
       graphSelectionsV2: [],
+      otherSelections: [],
     },
     rustContext: rustContext,
     options: calculateKclExpressionOptions,

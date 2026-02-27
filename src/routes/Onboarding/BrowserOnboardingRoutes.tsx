@@ -353,7 +353,7 @@ function PromptToEditPrompt() {
         name: 'Prompt-to-edit',
         argDefaultValues: {
           selection: {
-            graphSelections: [],
+            graphSelectionsV2: [],
             otherSelections: [],
           } satisfies Selections,
           prompt,

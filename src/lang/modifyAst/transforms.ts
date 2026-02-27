@@ -14,70 +14,15 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getVariableExprsFromSelection,
+  resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-
-// Normalize V2 selections (EntityReferences) to V1 selections for transform commands
-// TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
-// and replace it with `graphSelectionsV2`, so normalising to `graphSelections` is going to mean more refactoring
-// later, but at least it's working and tsc will tell us most/all of the places that need to be updated.
-function normalizeSelectionsForTransform(
-  selection: Selections,
-  artifactGraph: ArtifactGraph
-): Selections {
-  const normalizedV2GraphSelections = (selection.graphSelectionsV2 || [])
-    .map((v2Selection) => {
-      const entityRef = v2Selection.entityRef
-      let entityId: string | undefined
-      if (entityRef) {
-        if (entityRef.type === 'solid3d') {
-          entityId = entityRef.solid3d_id
-        } else if (entityRef.type === 'solid2d') {
-          entityId = entityRef.solid2d_id
-        } else if (entityRef.type === 'face') {
-          entityId = entityRef.face_id
-        } else if (entityRef.type === 'plane') {
-          entityId = entityRef.plane_id
-        }
-      }
-
-      const codeRef =
-        v2Selection.codeRef ||
-        (entityId
-          ? getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
-          : null)
-      if (!codeRef) return null
-
-      const artifact = entityId ? artifactGraph.get(entityId) : undefined
-      if (artifact) {
-        return { artifact, codeRef }
-      }
-      return { codeRef }
-    })
-    .filter(
-      (
-        graphSelection
-      ): graphSelection is {
-        codeRef: NonNullable<typeof graphSelection>['codeRef']
-      } => Boolean(graphSelection)
-    )
-
-  return {
-    graphSelections: [
-      ...selection.graphSelections,
-      ...normalizedV2GraphSelections,
-    ],
-    otherSelections: selection.otherSelections,
-    graphSelectionsV2: [],
-  }
-}
 
 export function addTranslate({
   ast,
@@ -104,17 +49,11 @@ export function addTranslate({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled and labeled arguments
+  // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -196,17 +135,11 @@ export function addRotate({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled and labeled arguments
+  // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -292,17 +225,11 @@ export function addScale({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled and labeled arguments
+  // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -385,17 +312,10 @@ export function addClone({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  // 2. Prepare unlabeled arguments
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -448,17 +368,11 @@ export function addAppearance({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled and labeled arguments
+  // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
@@ -527,18 +441,14 @@ export function addHide({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
 
-  // 2. Normalize V2 selections to V1 for getVariableExprsFromSelection
-  const normalizedObjects = normalizeSelectionsForTransform(
-    objects,
-    artifactGraph
-  )
-
-  // 3. Prepare unlabeled arguments
-  // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup =
-    normalizedObjects.graphSelections[0]?.artifact?.type !== 'helix'
+  // 2. Prepare unlabeled arguments
+  const firstResolved =
+    objects.graphSelectionsV2[0] != null
+      ? resolveSelectionV2(objects.graphSelectionsV2[0], artifactGraph)
+      : null
+  const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(
-    normalizedObjects,
+    objects,
     modifiedAst,
     wasmInstance,
     undefined,

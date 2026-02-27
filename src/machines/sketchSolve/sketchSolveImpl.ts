@@ -22,6 +22,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { resolveSelectionV2 } from '@src/lang/queryAst'
 
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -51,6 +52,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import type { ArtifactGraph } from '@src/lang/wasm'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -997,8 +999,14 @@ export async function deleteDraftEntitiesPromise({
   }
 }
 
-export function isSketchBlockSelected(selectionRanges: Selections): boolean {
-  const artifact = selectionRanges.graphSelections[0]?.artifact
+export function isSketchBlockSelected(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  const first = selectionRanges.graphSelectionsV2[0]
+  if (!first) return false
+  const resolved = resolveSelectionV2(first, artifactGraph)
+  const artifact = resolved?.artifact
   return (
     artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
   )

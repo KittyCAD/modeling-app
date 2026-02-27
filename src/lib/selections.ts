@@ -25,6 +25,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
 
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
@@ -38,16 +39,12 @@ import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
-  CodeRef,
   ExecState,
   Expr,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import type {
-  EntityReference,
-  SelectionV2,
-} from '@src/machines/modelingSharedTypes'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -72,7 +69,12 @@ import type {
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  Selection,
+  SelectionV2,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
@@ -455,39 +457,44 @@ export function handleSelectionBatch({
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  // Check if we have V2 selections (face-based EntityReference)
-  const hasV2Selections = selections.graphSelectionsV2.length > 0
   let engineEvents: WebSocketRequest[] = []
 
-  if (hasV2Selections) {
-    // Use V2 selections with select_entity endpoint
-    const entityReferences: EntityReference[] = selections.graphSelectionsV2
-      .map((v2Sel) => v2Sel.entityRef)
-      .filter((ref): ref is EntityReference => ref !== undefined)
+  const entityReferences: EntityReference[] = selections.graphSelectionsV2
+    .map((v2Sel) => v2Sel.entityRef)
+    .filter((ref): ref is EntityReference => ref !== undefined)
+
+  if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
   } else {
-    // Fall back to V1 selections with select_clear + select_add
-    selections.graphSelections.forEach(({ artifact }) => {
-      artifact?.id &&
-        selectionToEngine.push({
-          id: artifact?.id,
-          range:
-            getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
-            defaultSourceRange(),
-        })
-    })
+    for (const s of selections.graphSelectionsV2) {
+      const codeRef = s.codeRef
+      if (!codeRef) continue
+      const entityId =
+        s.entityRef && 'solid3d_id' in s.entityRef
+          ? s.entityRef.solid3d_id
+          : s.entityRef && 'solid2d_id' in s.entityRef
+            ? s.entityRef.solid2d_id
+            : s.entityRef && 'face_id' in s.entityRef
+              ? s.entityRef.face_id
+              : s.entityRef && 'plane_id' in s.entityRef
+                ? s.entityRef.plane_id
+                : undefined
+      if (entityId) {
+        const refRange = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
+          ?.range
+        if (refRange)
+          selectionToEngine.push({
+            id: entityId,
+            range: refRange || defaultSourceRange(),
+          })
+      }
+    }
     engineEvents = resetAndSetEngineEntitySelectionCmds(
       selectionToEngine,
       systemDeps
     )
   }
-  // Build codeMirror ranges from both V1 and V2 selections
-  selections.graphSelections.forEach(({ codeRef }) => {
-    if (codeRef.range?.[1]) {
-      const safeEnd = Math.min(codeRef.range[1], code.length)
-      ranges.push(EditorSelection.cursor(safeEnd))
-    }
-  })
+
   selections.graphSelectionsV2.forEach(({ codeRef }) => {
     if (codeRef?.range?.[1]) {
       const safeEnd = Math.min(codeRef.range[1], code.length)
@@ -495,8 +502,7 @@ export function handleSelectionBatch({
     }
   })
 
-  const totalSelections =
-    selections.graphSelections.length + selections.graphSelectionsV2.length
+  const totalSelections = selections.graphSelectionsV2.length
   if (ranges.length)
     return {
       engineEvents,
@@ -505,7 +511,7 @@ export function handleSelectionBatch({
         totalSelections > 0 ? totalSelections - 1 : 0
       ),
       updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
+        updateSceneObjectColors(selections.graphSelectionsV2, ast, systemDeps),
     }
 
   return {
@@ -515,7 +521,7 @@ export function handleSelectionBatch({
     ),
     engineEvents,
     updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
+      updateSceneObjectColors(selections.graphSelectionsV2, ast, systemDeps),
   }
 }
 
@@ -549,16 +555,16 @@ export function processCodeMirrorRanges({
   engineEvents: WebSocketRequest[]
 } {
   const isChange =
-    codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
+    codeMirrorRanges.length !== selectionRanges?.graphSelectionsV2?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
       return (
-        from !== selectionRanges.graphSelections[i]?.codeRef?.range[0] ||
-        to !== selectionRanges.graphSelections[i]?.codeRef?.range[1]
+        from !== selectionRanges.graphSelectionsV2[i]?.codeRef?.range[0] ||
+        to !== selectionRanges.graphSelectionsV2[i]?.codeRef?.range[1]
       )
     })
 
   if (!isChange) return null
-  const codeBasedSelections: Selections['graphSelections'] =
+  const codeBasedSelections: Array<{ codeRef: CodeRef; artifact?: Artifact }> =
     codeMirrorRanges.map(({ from, to }) => {
       const pathToNode = getNodePathFromSourceRange(
         ast,
@@ -576,10 +582,11 @@ export function processCodeMirrorRanges({
     artifactGraph,
     artifactIndex
   )
-  const selections: Selection[] = []
+  const graphSelectionsV2: SelectionV2[] = []
   for (const { id, range } of idBasedSelections) {
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    const codeRef = { range, pathToNode }
     if (!id) {
-      const pathToNode = getNodePathFromSourceRange(ast, range)
       const invalidPathToNode =
         pathToNode.length === 1 &&
         pathToNode[0][0] === 'body' &&
@@ -588,20 +595,19 @@ export function processCodeMirrorRanges({
         console.warn('Could not find valid pathToNode, found:', pathToNode)
         continue
       }
-      selections.push({
-        codeRef: {
-          range,
-          pathToNode,
-        },
-      })
+      graphSelectionsV2.push({ codeRef })
       continue
     }
     const artifact = artifactGraph.get(id)
     const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
-    if (artifact && codeRefs) {
-      selections.push({ artifact, codeRef: codeRefs[0] })
-    } else if (codeRefs) {
-      selections.push({ codeRef: codeRefs[0] })
+    const resolvedCodeRef = codeRefs?.[0] ?? codeRef
+    if (artifact) {
+      graphSelectionsV2.push({
+        entityRef: artifactToEntityRef(artifact.type, id),
+        codeRef: resolvedCodeRef,
+      })
+    } else {
+      graphSelectionsV2.push({ codeRef: resolvedCodeRef })
     }
   }
 
@@ -614,8 +620,7 @@ export function processCodeMirrorRanges({
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
           otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
-          graphSelections: selections,
-          graphSelectionsV2: [],
+          graphSelectionsV2,
         },
       },
     },
@@ -627,7 +632,7 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(
-  codeBasedSelections: Selection[],
+  codeBasedSelections: Array<{ codeRef?: { range?: SourceRange } }>,
   ast: Node<Program>,
   {
     sceneEntitiesManager,
@@ -650,9 +655,9 @@ function updateSceneObjectColors(
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(
-        selection?.codeRef?.range,
-        topLevelRange(node.start, node.end)
+      const range = selection?.codeRef?.range
+      return (
+        range != null && isOverlap(range, topLevelRange(node.start, node.end))
       )
     })
 
@@ -772,9 +777,7 @@ export function getSelectionCountByType(
   const selectionsByType: SelectionCountsByType = new Map()
   if (
     !selection ||
-    (!selection.graphSelections.length &&
-      !selection.otherSelections.length &&
-      !selection.graphSelectionsV2.length)
+    (!selection.graphSelectionsV2.length && !selection.otherSelections.length)
   )
     return 'none'
 
@@ -783,49 +786,19 @@ export function getSelectionCountByType(
     selectionsByType.set(type, count + 1)
   }
 
-  const hasV2Selections = selection.graphSelectionsV2.length > 0
-
-  if (!hasV2Selections) {
-    selection.otherSelections.forEach((selection) => {
-      if (typeof selection === 'string') {
-        incrementOrInitializeSelectionType('other')
-      } else if ('name' in selection) {
-        incrementOrInitializeSelectionType('plane')
-      }
-    })
-
-    selection.graphSelections.forEach((graphSelection) => {
-      if (!graphSelection.artifact) {
-        /**
-         * TODO: remove this heuristic-based selection type detection.
-         * Currently, if you've created a sketch and have not left sketch mode,
-         * the selection will be a segment selection with no artifact.
-         * This is because the mock execution does not update the artifact graph.
-         * Once we move the artifactGraph creation to WASM, we can remove this,
-         * as the artifactGraph will always be up-to-date.
-         */
-        if (isSingleCursorInPipe(selection, ast)) {
-          incrementOrInitializeSelectionType('segment')
-          return
-        } else {
-          console.warn(
-            'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
-            JSON.stringify(graphSelection)
-          )
-          incrementOrInitializeSelectionType('other')
-          return
-        }
-      }
-      incrementOrInitializeSelectionType(graphSelection.artifact.type)
-    })
-  }
+  selection.otherSelections.forEach((sel) => {
+    if (typeof sel === 'string') {
+      incrementOrInitializeSelectionType('other')
+    } else if ('name' in sel) {
+      incrementOrInitializeSelectionType('plane')
+    }
+  })
 
   selection.graphSelectionsV2.forEach((v2Selection) => {
     if (v2Selection.entityRef) {
       if (v2Selection.entityRef.type === 'edge') {
         incrementOrInitializeSelectionType('sweepEdge')
       } else if (v2Selection.entityRef.type === 'solid2d_edge') {
-        // Solid2D edges are segments in profiles - treat as segment for command bar
         incrementOrInitializeSelectionType('segment')
       } else if (v2Selection.entityRef.type === 'vertex') {
         incrementOrInitializeSelectionType('other')
@@ -836,11 +809,12 @@ export function getSelectionCountByType(
       } else if (v2Selection.entityRef.type === 'solid2d') {
         incrementOrInitializeSelectionType('solid2d')
       } else if (v2Selection.entityRef.type === 'solid3d') {
-        // Body picks from entity query are solid3d references.
-        // For command bar validation these behave like solid/sweep selections.
-        // Count as 'path' to match expected test output format
         incrementOrInitializeSelectionType('path')
       }
+    } else if (v2Selection.codeRef && isSingleCursorInPipe(selection, ast)) {
+      incrementOrInitializeSelectionType('segment')
+    } else {
+      incrementOrInitializeSelectionType('other')
     }
   })
 
@@ -1116,15 +1090,19 @@ export function updateSelections(
   if (err(ast)) return ast
 
   const newSelections = Object.entries(pathToNodeMap)
-    .map(([index, pathToNode]): Selection | undefined => {
-      const previousSelection =
-        prevSelectionRanges.graphSelections[Number(index)]
+    .map(([index, pathToNode]): SelectionV2 | undefined => {
+      const previousV2 = prevSelectionRanges.graphSelectionsV2[Number(index)]
+      const previousResolved =
+        previousV2 != null
+          ? resolveSelectionV2(previousV2, artifactGraph)
+          : null
       const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       let artifact: Artifact | null = null
+      let artifactId: string | undefined
       for (const [id, a] of artifactGraph) {
-        if (previousSelection?.artifact?.type === a.type) {
+        if (previousResolved?.artifact?.type === a.type) {
           const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
           if (!codeRefs) continue
           if (
@@ -1132,23 +1110,22 @@ export function updateSelections(
             JSON.stringify(pathToNode)
           ) {
             artifact = a
+            artifactId = id
             break
           }
         }
       }
-      if (!artifact) return undefined
-      return {
-        artifact: artifact,
-        codeRef: {
-          range: topLevelRange(node.start, node.end),
-          pathToNode: pathToNode,
-        },
+      if (!artifact || artifactId == null) return undefined
+      const codeRef = {
+        range: topLevelRange(node.start, node.end),
+        pathToNode: pathToNode,
       }
+      const entityRef = artifactToEntityRef(artifact.type, artifactId)
+      return { entityRef, codeRef }
     })
-    .filter((x?: Selection) => x !== undefined)
+    .filter((x?: SelectionV2) => x !== undefined)
 
-  // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
-  const pathToNodeBasedSelections: Selections['graphSelections'] = []
+  const pathToNodeBasedSelections: SelectionV2[] = []
   for (const pathToNode of Object.values(pathToNodeMap)) {
     const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
@@ -1161,12 +1138,11 @@ export function updateSelections(
   }
 
   return {
-    graphSelections:
+    graphSelectionsV2:
       newSelections.length >= pathToNodeBasedSelections.length
         ? newSelections
         : pathToNodeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
-    graphSelectionsV2: prevSelectionRanges.graphSelectionsV2 || [],
   }
 }
 
@@ -1559,30 +1535,27 @@ export function selectAllInCurrentSketch(
     sceneEntitiesManager: SceneEntities
   }
 ): Selections {
-  const graphSelections: Selection[] = []
+  const graphSelectionsV2: SelectionV2[] = []
 
   Object.keys(systemDeps.sceneEntitiesManager.activeSegments).forEach(
-    (pathToNode) => {
-      const artifact = artifactGraph
-        .values()
-        .find(
-          (g) =>
-            'codeRef' in g &&
-            JSON.stringify(g.codeRef.pathToNode) === pathToNode
-        )
-      if (artifact && ['path', 'segment'].includes(artifact.type)) {
-        const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-        if (codeRefs?.length) {
-          graphSelections.push({ artifact, codeRef: codeRefs[0] })
-        }
+    (pathToNodeStr) => {
+      for (const [artifactId, artifact] of artifactGraph) {
+        if (!['path', 'segment'].includes(artifact.type)) continue
+        const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+        if (!codeRefs?.length) continue
+        if (JSON.stringify(codeRefs[0].pathToNode) !== pathToNodeStr) continue
+        graphSelectionsV2.push({
+          entityRef: artifactToEntityRef(artifact.type, artifactId),
+          codeRef: codeRefs[0],
+        })
+        break
       }
     }
   )
 
   return {
-    graphSelections,
+    graphSelectionsV2,
     otherSelections: [],
-    graphSelectionsV2: [],
   }
 }
 

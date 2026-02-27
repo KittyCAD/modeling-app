@@ -15,10 +15,12 @@ export function AstExplorer() {
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
+  const selectionRange = context.selectionRanges.graphSelectionsV2?.[0]?.codeRef
+    ?.range ?? [0, 0, 0]
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
     kclManager.ast,
-    context.selectionRanges.graphSelections?.[0]?.codeRef?.range
+    selectionRange
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 

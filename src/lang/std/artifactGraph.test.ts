@@ -163,10 +163,11 @@ describe('coerceSelectionsToBody', () => {
     }
     artifactGraph.set('path-1', path)
 
+    // Path is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is (no artifact to resolve to body).
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: path,
           codeRef: { range: [0, 100, 0], pathToNode: [] },
         },
       ],
@@ -177,9 +178,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([0, 100, 0])
     }
   })
 
@@ -237,10 +237,11 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('segment-1', segment)
     artifactGraph.set('edge-cut-1', edgeCut)
 
+    // Edge-cut is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is.
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: edgeCut,
           codeRef: { range: [90, 95, 0], pathToNode: [] },
         },
       ],
@@ -251,9 +252,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([90, 95, 0])
     }
   })
 })

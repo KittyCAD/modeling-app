@@ -10,6 +10,7 @@ import {
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
@@ -56,8 +57,10 @@ import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type {
+  EntityReference,
   Selection,
   Selections,
+  SelectionV2,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -676,11 +679,19 @@ export function isLinesParallelAndConstrained(
   }
 }
 
-export function artifactIsPlaneWithPaths(selectionRanges: Selections) {
+export function artifactIsPlaneWithPaths(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+) {
+  if (selectionRanges.graphSelectionsV2.length === 0) return false
+  const first = selectionRanges.graphSelectionsV2[0]
+  const resolved = resolveSelectionV2(first, artifactGraph)
+  if (!resolved?.artifact) return false
+  const artifact = resolved.artifact
   return (
-    selectionRanges.graphSelections.length &&
-    selectionRanges.graphSelections[0].artifact?.type === 'plane' &&
-    selectionRanges.graphSelections[0].artifact.pathIds.length
+    artifact.type === 'plane' &&
+    'pathIds' in artifact &&
+    artifact.pathIds.length > 0
   )
 }
 
@@ -688,9 +699,11 @@ export function isSingleCursorInPipe(
   selectionRanges: Selections,
   ast: Program
 ) {
-  if (selectionRanges.graphSelections.length !== 1) return false
-  const selection = selectionRanges.graphSelections[0]
-  const pathToNode = getNodePathFromSourceRange(ast, selection?.codeRef?.range)
+  if (selectionRanges.graphSelectionsV2.length !== 1) return false
+  const selection = selectionRanges.graphSelectionsV2[0]
+  const codeRef = selection?.codeRef
+  const range = codeRef?.range ?? [0, 0, 0]
+  const pathToNode = getNodePathFromSourceRange(ast, range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
   if (!nodeTypes.includes('VariableDeclaration')) return false
@@ -940,7 +953,7 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
 
 export function isCursorInFunctionDefinition(
   ast: Node<Program>,
-  selectionRanges: Selection,
+  selectionRanges: SelectionV2,
   wasmInstance: ModuleType
 ): boolean {
   if (ast.body.length === 0) return false
@@ -1088,6 +1101,92 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
+/** Get artifact id from EntityReference for lookup in artifact graph */
+function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
+  switch (entityRef.type) {
+    case 'plane':
+      return entityRef.plane_id
+    case 'face':
+      return entityRef.face_id
+    case 'solid2d':
+      return entityRef.solid2d_id
+    case 'solid3d':
+      return entityRef.solid3d_id
+    case 'solid2d_edge':
+      return entityRef.edge_id
+    default:
+      return undefined
+  }
+}
+
+/** Compare two EntityReferences (e.g. for shift+multi-select). */
+function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
+  if (a.type !== b.type) return false
+  switch (a.type) {
+    case 'plane':
+      return b.type === 'plane' && a.plane_id === b.plane_id
+    case 'face':
+      return b.type === 'face' && a.face_id === b.face_id
+    case 'solid2d':
+      return b.type === 'solid2d' && a.solid2d_id === b.solid2d_id
+    case 'solid3d':
+      return b.type === 'solid3d' && a.solid3d_id === b.solid3d_id
+    case 'solid2d_edge':
+      return b.type === 'solid2d_edge' && a.edge_id === b.edge_id
+    case 'edge':
+      if (b.type !== 'edge') return false
+      return (
+        JSON.stringify([...(a.faces || [])].sort()) ===
+          JSON.stringify([...(b.faces || [])].sort()) &&
+        JSON.stringify([...(a.disambiguators || [])].sort()) ===
+          JSON.stringify([...(b.disambiguators || [])].sort()) &&
+        a.index === b.index
+      )
+    case 'vertex':
+      if (b.type !== 'vertex') return false
+      return (
+        JSON.stringify([...(a.faces || [])].sort()) ===
+          JSON.stringify([...(b.faces || [])].sort()) &&
+        JSON.stringify([...(a.disambiguators || [])].sort()) ===
+          JSON.stringify([...(b.disambiguators || [])].sort()) &&
+        a.index === b.index
+      )
+    default:
+      return false
+  }
+}
+
+/** Compare two SelectionV2s (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
+export function selectionV2Equals(a: SelectionV2, b: SelectionV2): boolean {
+  if (a.entityRef && b.entityRef)
+    return entityRefEquals(a.entityRef, b.entityRef)
+  const aRange = a.codeRef?.range
+  const bRange = b.codeRef?.range
+  if (aRange && bRange) return JSON.stringify(aRange) === JSON.stringify(bRange)
+  return false
+}
+
+/** Resolve SelectionV2 to codeRef and optional artifact for use in getVariableExprsFromSelection */
+export function resolveSelectionV2(
+  s: SelectionV2,
+  artifactGraph: ArtifactGraph | undefined
+): { codeRef: CodeRef; artifact?: Artifact } | null {
+  const codeRef =
+    s.codeRef ??
+    (s.entityRef && artifactGraph
+      ? getCodeRefsByArtifactId(
+          entityRefToArtifactId(s.entityRef) ?? '',
+          artifactGraph
+        )?.[0]
+      : undefined)
+  if (!codeRef) return null
+  const artifact =
+    s.entityRef && artifactGraph
+      ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+      : undefined
+  return { codeRef, artifact }
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
@@ -1103,7 +1202,11 @@ export function getVariableExprsFromSelection(
   let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
-  for (const s of selection.graphSelections) {
+  for (const s of selection.graphSelectionsV2) {
+    const resolved = resolveSelectionV2(s, artifactGraph)
+    if (!resolved) continue
+    const { codeRef, artifact } = resolved
+
     let variable:
       | {
           node: VariableDeclaration
@@ -1111,9 +1214,9 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (lastChildLookup && s.artifact && artifactGraph) {
+    if (lastChildLookup && artifact && artifactGraph) {
       const children = findAllChildrenAndOrderByPlaceInCode(
-        s.artifact,
+        artifact,
         artifactGraph
       )
       const lastChildVariable = getLastVariable(
@@ -1131,7 +1234,7 @@ export function getVariableExprsFromSelection(
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
-        s.codeRef.pathToNode,
+        codeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration'
       )
@@ -1180,7 +1283,7 @@ export function getVariableExprsFromSelection(
     // import case
     const importNodeAndAlias = findImportNodeAndAlias(
       ast,
-      s.codeRef.pathToNode,
+      codeRef.pathToNode,
       wasmInstance
     )
     if (importNodeAndAlias) {
@@ -1189,9 +1292,9 @@ export function getVariableExprsFromSelection(
     }
 
     // No variable case
-    if (s.codeRef.pathToNode.length > 0) {
+    if (codeRef.pathToNode.length > 0) {
       exprs.push(createPipeSubstitution())
-      pathIfPipe = s.codeRef.pathToNode
+      pathIfPipe = codeRef.pathToNode
       continue
     }
 
@@ -1203,6 +1306,21 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+/** Build EntityReference from artifact type and id when the type maps to an entity ref */
+export function artifactToEntityRef(
+  artifactType: Artifact['type'],
+  artifactId: string
+): EntityReference | undefined {
+  if (artifactType === 'plane') return { type: 'plane', plane_id: artifactId }
+  if (artifactType === 'solid2d')
+    return { type: 'solid2d', solid2d_id: artifactId }
+  if (artifactType === 'sweep' || artifactType === 'compositeSolid')
+    return { type: 'solid3d', solid3d_id: artifactId }
+  if (artifactType === 'segment')
+    return { type: 'solid2d_edge', edge_id: artifactId }
+  return undefined
 }
 
 // Go from the sketches argument in a KCL call declaration
@@ -1228,7 +1346,7 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  const graphSelections: Selection[] = []
+  const graphSelectionsV2: SelectionV2[] = []
   for (const artifactId of artifactIds) {
     const artifact = artifactGraph.get(artifactId)
     if (!artifact) {
@@ -1251,21 +1369,19 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    graphSelections.push({
-      artifact,
-      codeRef: codeRefs[0],
-    })
+    const codeRef = codeRefs[0]
+    const entityRef = artifactToEntityRef(artifact.type, artifactId)
+    graphSelectionsV2.push({ entityRef, codeRef })
   }
 
-  if (graphSelections.length === 0) {
+  if (graphSelectionsV2.length === 0) {
     return error
   }
 
   return {
-    graphSelections,
+    graphSelectionsV2,
     otherSelections: [],
-    graphSelectionsV2: [],
-  } as Selections
+  }
 }
 
 export function findOperationArtifact(
@@ -1331,12 +1447,11 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
     return defaultPlane.id
   }
 
-  const planeSelection = selectionRanges.graphSelections.find(
-    (selection) => selection.artifact?.type === 'plane'
+  const planeSelection = selectionRanges.graphSelectionsV2.find(
+    (s) => s.entityRef?.type === 'plane'
   )
-  if (planeSelection) {
-    // Found an offset plane in the selection
-    return planeSelection.artifact?.id || null
+  if (planeSelection?.entityRef?.type === 'plane') {
+    return planeSelection.entityRef.plane_id
   }
 
   return null
@@ -1353,17 +1468,16 @@ export function getSelectedSketchTarget(
     return defaultPlane.id
   }
 
-  // Try to find an offset plane or wall or cap or chamfer edgeCut
-  const planeSelection = selectionRanges.graphSelections.find((selection) => {
-    const artifactType = selection.artifact?.type || ''
-    return (
-      ['plane', 'wall', 'cap'].includes(artifactType) ||
-      (selection.artifact?.type === 'edgeCut' &&
-        selection.artifact?.subType === 'chamfer')
-    )
+  // Try to find an offset plane or face (wall/cap); entityRef has plane_id or face_id
+  const planeSelection = selectionRanges.graphSelectionsV2.find((s) => {
+    const t = s.entityRef?.type
+    return t === 'plane' || t === 'face'
   })
-  if (planeSelection) {
-    return planeSelection.artifact?.id || null
+  if (planeSelection?.entityRef) {
+    if (planeSelection.entityRef.type === 'plane')
+      return planeSelection.entityRef.plane_id
+    if (planeSelection.entityRef.type === 'face')
+      return planeSelection.entityRef.face_id
   }
 
   return null
@@ -1385,13 +1499,13 @@ export function getSelectedPlaneAsNode(
     return createLiteral(defaultPlane.name.toUpperCase(), wasmInstance)
   }
 
-  const offsetPlane = selection.graphSelections.find(
-    (sel) => sel.artifact?.type === 'plane'
+  const offsetPlane = selection.graphSelectionsV2.find(
+    (s) => s.entityRef?.type === 'plane'
   )
-  if (offsetPlane?.artifact?.type === 'plane') {
-    const artifactId = offsetPlane.artifact.id
+  if (offsetPlane?.entityRef?.type === 'plane') {
+    const planeId = offsetPlane.entityRef.plane_id
     const variableName = Object.entries(variables).find(([_, value]) => {
-      return value?.type === 'Plane' && value.value?.artifactId === artifactId
+      return value?.type === 'Plane' && value.value?.artifactId === planeId
     })
     const offsetPlaneName = variableName?.[0]
     return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined

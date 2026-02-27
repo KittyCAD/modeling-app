@@ -1,6 +1,7 @@
 import { assertParse, recast } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -208,9 +209,9 @@ helix001 = helix(
         (n) => n.type === 'segment'
       )
       const edge: Selections = {
-        graphSelections: [
+        graphSelectionsV2: [
           {
-            artifact: segment,
+            entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
           },
         ],
@@ -249,9 +250,9 @@ helix001 = helix(
         (n) => n.type === 'segment'
       )
       const edge: Selections = {
-        graphSelections: [
+        graphSelectionsV2: [
           {
-            artifact: segment,
+            entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
           },
         ],
@@ -311,9 +312,9 @@ helix001 = helix(
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
-        graphSelections: [
+        graphSelectionsV2: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],
@@ -347,9 +348,9 @@ helix001 = helix(
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
-        graphSelections: [
+        graphSelectionsV2: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],

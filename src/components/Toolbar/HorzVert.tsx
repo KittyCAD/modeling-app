@@ -24,8 +24,12 @@ export function horzVertInfo(
       enabled: boolean
     }
   | Error {
-  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance)
+  const _nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(
+      ast,
+      codeRef?.pathToNode ?? [],
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })

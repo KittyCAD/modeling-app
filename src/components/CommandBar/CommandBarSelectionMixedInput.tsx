@@ -54,7 +54,7 @@ export default function CommandBarSelectionMixedInput({
     // Signal that coercion phase is complete - allows second useEffect to set selection filter
     setHasCoercedSelections(true)
 
-    if (!selection || selection.graphSelections.length === 0) return
+    if (!selection || selection.graphSelectionsV2.length === 0) return
 
     // Check if this argument only accepts body types (path, sweep, compositeSolid)
     // These are the artifact types that represent 3D bodies/objects
@@ -92,9 +92,9 @@ export default function CommandBarSelectionMixedInput({
     // Don't do additional checks if this argument is not required
     if (!isArgRequired) return true
     if (!selection) return false
-    const isNonZeroRange = selection.graphSelections.some((sel) => {
-      const range = sel.codeRef.range
-      return range[1] - range[0] !== 0 // Non-zero range is always valid
+    const isNonZeroRange = selection.graphSelectionsV2.some((sel) => {
+      const range = sel.codeRef?.range
+      return range != null && range[1] - range[0] !== 0 // Non-zero range is always valid
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
@@ -178,7 +178,7 @@ export default function CommandBarSelectionMixedInput({
       const resolvedSelection: Selections | undefined = isArgRequired
         ? selection
         : selection || {
-            graphSelections: [],
+            graphSelectionsV2: [],
             otherSelections: [],
           }
 
@@ -212,7 +212,7 @@ export default function CommandBarSelectionMixedInput({
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
       : selection || {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [],
         }
 
@@ -233,7 +233,7 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (selection?.graphSelections.length ||
+        (selection?.graphSelectionsV2.length ||
           selection?.otherSelections.length ||
           selection?.graphSelectionsV2.length)
           ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +

@@ -17,6 +17,7 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
@@ -303,7 +304,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       operation.labeledArgs.to
     )
     if ('error' in graphSelections) return { reason: graphSelections.error }
-    to = { graphSelections, otherSelections: [], graphSelectionsV2: [] }
+    to = {
+      graphSelectionsV2: graphSelections.map((s) =>
+        s.artifact
+          ? {
+              entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+              codeRef: s.codeRef,
+            }
+          : { codeRef: s.codeRef }
+      ),
+      otherSelections: [],
+    }
   }
 
   // symmetric argument from a string to boolean
@@ -953,7 +964,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     }
 
     plane = {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
@@ -1072,9 +1083,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   const path = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
-        artifact: trajectoryArtifact,
+        entityRef: artifactToEntityRef(
+          trajectoryArtifact.type,
+          trajectoryArtifact.id
+        ),
         codeRef: trajectoryArtifact.codeRef,
       },
     ],
@@ -1689,7 +1703,17 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [], graphSelectionsV2: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   const tolerance = await extractKclArgument(
     code,
@@ -1756,7 +1780,17 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [], graphSelectionsV2: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(code, operation, 'name')

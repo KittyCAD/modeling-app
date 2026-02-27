@@ -26,6 +26,7 @@ import {
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import {
+  artifactToEntityRef,
   findUsesOfTagInPipe,
   getNodeFromPath,
   getVariableExprsFromSelection,
@@ -1151,10 +1152,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1197,10 +1198,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],

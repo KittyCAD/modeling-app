@@ -16,9 +16,11 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
+  artifactToEntityRef,
   getEdgeCutMeta,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
+  resolveSelectionV2,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -46,8 +48,8 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
-  Selection,
   Selections,
+  SelectionV2,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
 
@@ -634,12 +636,11 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
+  const hasFaceToOffset = plane.graphSelectionsV2.some((sel) => {
+    const resolved = resolveSelectionV2(sel, artifactGraph)
+    const t = resolved?.artifact?.type
+    return t === 'cap' || t === 'wall' || t === 'edgeCut'
+  })
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
@@ -700,12 +701,13 @@ function getFacesExprsFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ) {
-  return faces.graphSelections.flatMap((face) => {
-    if (!face.artifact) {
-      console.warn('No artifact found for face', face)
+  return faces.graphSelectionsV2.flatMap((v2Sel) => {
+    const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+    if (!resolved?.artifact) {
+      console.warn('No artifact found for face', v2Sel)
       return []
     }
-    const artifact = face.artifact
+    const artifact = resolved.artifact
     if (artifact.type === 'cap') {
       return createLiteral(artifact.subType, wasmInstance)
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
@@ -718,7 +720,7 @@ function getFacesExprsFromSelection(
           artifactGraph
         )
         if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-          console.warn('No segment found for face', face)
+          console.warn('No segment found for face', v2Sel)
           return []
         }
 
@@ -728,9 +730,17 @@ function getFacesExprsFromSelection(
         edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
       }
 
+      const codeRef =
+        targetArtifact && 'codeRef' in targetArtifact
+          ? targetArtifact.codeRef
+          : undefined
+      if (!codeRef) {
+        console.warn('No codeRef for target artifact')
+        return []
+      }
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
-        targetArtifact.codeRef.pathToNode,
+        codeRef.pathToNode,
         wasmInstance,
         edgeCutMeta
       )
@@ -744,7 +754,7 @@ function getFacesExprsFromSelection(
 
       return createLocalName(tagResult.tag)
     } else {
-      console.warn('Face was not a cap or wall or chamfer', face)
+      console.warn('Face was not a cap or wall or chamfer', v2Sel)
       return []
     }
   })
@@ -772,12 +782,21 @@ export function retrieveFaceSelectionsFromOpArgs(
   }
 
   // TODO: need to support multiple solids there
-  const sweepArtifact = solids.graphSelections[0]?.artifact
+  const firstResolved = solids.graphSelectionsV2[0]
+    ? resolveSelectionV2(solids.graphSelectionsV2[0], artifactGraph)
+    : null
+  const sweepArtifact = firstResolved?.artifact
   if (!sweepArtifact || sweepArtifact.type !== 'sweep') {
     return new Error('No sweep artifact found in solids selection')
   }
   const sweepId = sweepArtifact.id
-  const candidates: Map<string, Selection> = new Map()
+  const candidates = new Map<
+    string,
+    {
+      artifact: Artifact
+      codeRef: { pathToNode: PathToNode; range: [number, number, number] }
+    }
+  >()
   for (const artifact of artifactGraph.values()) {
     if (
       artifact.type === 'cap' &&
@@ -789,10 +808,7 @@ export function retrieveFaceSelectionsFromOpArgs(
         return codeRef
       }
 
-      candidates.set(artifact.subType, {
-        artifact,
-        codeRef,
-      })
+      candidates.set(artifact.subType, { artifact, codeRef })
     } else if (
       artifact.type === 'wall' &&
       artifact.sweepId === sweepId &&
@@ -807,26 +823,28 @@ export function retrieveFaceSelectionsFromOpArgs(
       }
 
       const { codeRef } = segArtifact
-      candidates.set(artifact.segId, {
-        artifact,
-        codeRef,
-      })
+      candidates.set(artifact.segId, { artifact, codeRef })
     }
   }
 
-  // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
   const faceValues: OpKclValue[] = []
   if (facesArg.value.type === 'Array') {
     faceValues.push(...facesArg.value.value)
   } else {
     faceValues.push(facesArg.value)
   }
-  const graphSelections: Selection[] = []
+  const graphSelectionsV2: SelectionV2[] = []
   for (const v of faceValues) {
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
       const result = candidates.get(v.value)
       if (result) {
-        graphSelections.push(result)
+        graphSelectionsV2.push({
+          entityRef: artifactToEntityRef(
+            result.artifact.type,
+            result.artifact.id
+          ),
+          codeRef: result.codeRef,
+        })
       } else {
         console.warn(
           'retrieveFaceSelectionsFromOpArgs result is missing and not a selection'
@@ -839,7 +857,13 @@ export function retrieveFaceSelectionsFromOpArgs(
     ) {
       const result = candidates.get(v.artifact_id)
       if (result) {
-        graphSelections.push(result)
+        graphSelectionsV2.push({
+          entityRef: artifactToEntityRef(
+            result.artifact.type,
+            result.artifact.id
+          ),
+          codeRef: result.codeRef,
+        })
       } else {
         console.warn(
           'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
@@ -851,7 +875,7 @@ export function retrieveFaceSelectionsFromOpArgs(
     }
   }
 
-  const faces = { graphSelections, otherSelections: [], graphSelectionsV2: [] }
+  const faces: Selections = { graphSelectionsV2, otherSelections: [] }
   return { solids, faces }
 }
 
@@ -878,9 +902,9 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
 
   if (planeArtifact.type === 'plane') {
     return {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: planeArtifact,
+          entityRef: artifactToEntityRef('plane', planeArtifact.id),
           codeRef: planeArtifact.codeRef,
         },
       ],
@@ -901,9 +925,9 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
 
     return {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: faceArtifact,
+          entityRef: artifactToEntityRef(faceArtifact.type, faceArtifact.id),
           codeRef,
         },
       ],
@@ -924,20 +948,22 @@ export function buildSolidsAndFacesExprs(
   artifactTypeFilter: Array<Artifact['type']> = ['sweep']
 ) {
   const solids: Selections = {
-    graphSelections: faces.graphSelections.flatMap((f) => {
-      if (!f.artifact) return []
+    graphSelectionsV2: faces.graphSelectionsV2.flatMap((f) => {
+      const resolved = resolveSelectionV2(f, artifactGraph)
+      if (!resolved?.artifact) return []
       const sweep = getSweepFromSuspectedSweepSurface(
-        f.artifact.id,
+        resolved.artifact.id,
         artifactGraph
       )
       if (err(sweep) || !sweep) return []
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
+      return [
+        {
+          entityRef: artifactToEntityRef('sweep', sweep.id),
+          codeRef: sweep.codeRef,
+        },
+      ]
     }),
     otherSelections: [],
-    graphSelectionsV2: [],
   }
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(

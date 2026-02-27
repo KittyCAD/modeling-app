@@ -1352,11 +1352,17 @@ export class ConnectionManager extends EventTarget {
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
+   * We do not await default_camera_set_perspective (engine often does not send a response, e.g. local e2e).
    */
   waitForAllCommands() {
-    return Promise.all(
-      Object.values(this.pendingCommands).map((a) => a.promise)
+    const pendingToAwait = Object.values(this.pendingCommands).filter(
+      (p) =>
+        !(
+          p.command?.type === 'modeling_cmd_req' &&
+          p.command?.cmd?.type === 'default_camera_set_perspective'
+        )
     )
+    return Promise.all(pendingToAwait.map(({ promise }) => promise))
   }
 
   /**

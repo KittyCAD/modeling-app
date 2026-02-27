@@ -73,7 +73,6 @@ export interface SelectionV2 {
 
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
-  graphSelections: Array<Selection>
   graphSelectionsV2: Array<SelectionV2>
 }
 
