@@ -334,10 +334,8 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: ['@macos', '@windows'] },
-      async ({ context, page, toolbar }) => {
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
-        )
+      async ({ page, toolbar, folderSetupFn }) => {
+        const { dir: projectDirName } = await folderSetupFn(async () => {})
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -373,6 +371,7 @@ test.describe(
         }
 
         await test.step('Check the body theme is first starting as we expect', async () => {
+          await changeShowDebugPanelFs(false)
           await expect(toolbar.debugPaneBtn).not.toBeAttached()
         })
 
@@ -386,8 +385,8 @@ test.describe(
     test(
       `Closing settings modal should go back to the original file being viewed`,
       { tag: ['@macos', '@windows'] },
-      async ({ context, page }, testInfo) => {
-        await context.folderSetupFn(async (dir) => {
+      async ({ page, folderSetupFn }, testInfo) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
@@ -738,7 +737,7 @@ test.describe(
     test(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, context, editor }) => {
+      async ({ page, homePage, editor, folderSetupFn }) => {
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -747,7 +746,7 @@ test.describe(
         const unitsChangeButton = (name: string) =>
           page.getByRole('button', { name, exact: true })
 
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(

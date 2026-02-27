@@ -356,7 +356,9 @@ async function waitForAuthAndLsp(page: Page) {
     timeout: 45_000,
   })
   await page.goto('/')
-  await waitForPageLoad(page)
+  // This used to wait for "Sketch Start" but is no longer relevant since
+  // the web app now starts on the projects view
+  // await waitForPageLoad(page)
   return waitForLspPromise
 }
 
@@ -543,8 +545,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
-          const text = await editor.textContent()
-          return toNormalizedCode(text ?? '')
+          try {
+            const text = await editor.textContent()
+            return toNormalizedCode(text ?? '')
+          } catch (e) {
+            console.log(e)
+            return ''
+          }
         })
         .toContain(toNormalizedCode(code))
     },
@@ -1046,6 +1053,8 @@ export async function createProject({
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
+    await closeOnboardingModalIfPresent(page)
+
     if (returnHome) {
       await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
       await page.getByTestId('app-logo').click()
@@ -1053,7 +1062,7 @@ export async function createProject({
   })
 }
 
-async function goToHomePageFromModeling(page: Page) {
+export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
@@ -1441,4 +1450,13 @@ export async function pinchFromCenter(
   }
 
   await locator.dispatchEvent('touchend')
+}
+
+export const closeOnboardingModalIfPresent = async (page: Page) => {
+  const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
+  await expect(page.getByTestId('stream')).toBeVisible({ timeout: 10_000 })
+  if (await onboardingNotRightNow.isVisible()) {
+    await onboardingNotRightNow.click()
+    await expect(onboardingNotRightNow).toBeHidden()
+  }
 }

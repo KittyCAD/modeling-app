@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
@@ -398,6 +399,8 @@ export class SceneFixture {
     }
   ) => {
     const u = await getUtils(this.page)
+
+    await closeOnboardingModalIfPresent(this.page)
 
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {
