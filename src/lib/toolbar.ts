@@ -153,7 +153,7 @@ export const useToolbarConfig = () => {
           ...((IS_STAGING_OR_DEBUG && !isPlaywright()
             ? [
                 {
-                  id: 'sketch-new',
+                  id: 'sketch-solve',
                   onClick: ({ modelingSend }) => {
                     modelingSend({
                       type: 'Enter sketch',
