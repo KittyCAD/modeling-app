@@ -12,7 +12,7 @@ use crate::{
     pretty::NumericSuffix,
 };
 
-#[cfg(test)]
+#[cfg(all(feature = "artifact-graph", test))]
 mod tests;
 
 // Epsilon constants for geometric calculations
@@ -1944,7 +1944,7 @@ where
 }
 
 /// Result of executing trim flow
-#[cfg(test)]
+#[cfg(all(feature = "artifact-graph", test))]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -1966,7 +1966,7 @@ pub struct TrimFlowResult {
 ///
 /// Note: This function is only available for non-WASM builds (tests) as it requires
 /// a real engine connection via `new_with_default_client`.
-#[cfg(all(not(target_arch = "wasm32"), test))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "artifact-graph", test))]
 pub(crate) async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
