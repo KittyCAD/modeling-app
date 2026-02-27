@@ -262,7 +262,6 @@ export function OpenedProject() {
     }
   }, [
     settingsValues.app.onboardingStatus.current,
-
     settingsValues.app.theme.current,
     href,
     navigate,

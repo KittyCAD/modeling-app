@@ -54,13 +54,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-      return
-    }
-
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
     const foundProject = projects.find((p) => {
       return p.name === project?.name
