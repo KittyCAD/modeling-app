@@ -601,6 +601,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -6227,6 +6228,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -7320,6 +7322,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

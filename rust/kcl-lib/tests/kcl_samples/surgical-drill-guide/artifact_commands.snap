@@ -635,6 +635,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -649,6 +650,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

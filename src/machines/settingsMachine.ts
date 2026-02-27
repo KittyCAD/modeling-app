@@ -1,7 +1,14 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom, AnyActorRef } from 'xstate'
-import { assign, fromCallback, fromPromise, sendTo, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  fromCallback,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
@@ -73,7 +80,7 @@ export const settingsMachine = setup({
             level: SettingsLevel
           }
         }
-      | { type: 'load.project'; project?: Project }
+      | { type: 'load.project'; project: Project }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
   },
@@ -115,14 +122,14 @@ export const settingsMachine = setup({
     loadProjectSettings: fromPromise<
       SettingsType,
       {
-        project?: Project
+        project: Project
         settings: SettingsType
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
         input.wasmInstancePromise,
-        input.project?.path
+        input.project.path
       )
       return settings
     }),
@@ -537,6 +544,7 @@ export const settingsMachine = setup({
       ],
       invoke: {
         src: 'loadProjectSettings',
+        id: 'loadProjectSettings',
         onDone: {
           target: 'idle',
           actions: [
@@ -551,9 +559,10 @@ export const settingsMachine = setup({
         },
         onError: 'idle',
         input: ({ event, context }) => {
+          assertEvent(event, 'load.project')
           return {
             settings: getOnlySettingsFromContext(context),
-            project: event.type === 'load.project' ? event.project : undefined,
+            project: event.project,
             wasmInstancePromise: context.wasmInstancePromise,
           }
         },
