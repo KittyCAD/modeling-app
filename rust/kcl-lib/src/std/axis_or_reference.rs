@@ -1,11 +1,12 @@
 //! Types for referencing an axis or edge.
 
+use kittycad_modeling_cmds::shared::EdgeReference as ModelingEdgeReference;
+
 use super::args::TyF64;
 use crate::{
     execution::{Plane, Sketch, Solid, TagIdentifier},
     std::{fillet::EdgeReference, sketch::FaceTag},
 };
-use kittycad_modeling_cmds::shared::EdgeReference as ModelingEdgeReference;
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]

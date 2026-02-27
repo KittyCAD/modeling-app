@@ -213,6 +213,7 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

@@ -194,7 +194,7 @@ async fn resolve_face_id(
                 Err(_) => {
                     // The tag doesn't refer to a face. It might refer to an edge.
                     // Provide a helpful error message.
-                    let engine_info = args.get_tag_engine_info(exec_state, tag)?;
+                    let _engine_info = args.get_tag_engine_info(exec_state, tag)?;
                     Err(KclError::new_type(KclErrorDetails {
                         message: format!(
                             "Tag `{}` does not refer to a face. For edgeRefs, the 'faces' array must contain tags that refer to faces, not edges. \
@@ -290,7 +290,7 @@ async fn inner_fillet_with_edge_refs(
         // Resolve faces to UUIDs
         let mut face_uuids = Vec::new();
         for face_value in faces_array {
-            face_uuids.push(resolve_face_id(&face_value, solid.id, exec_state, &args).await?);
+            face_uuids.push(resolve_face_id(face_value, solid.id, exec_state, &args).await?);
         }
 
         // Get disambiguators (optional)
@@ -307,7 +307,7 @@ async fn inner_fillet_with_edge_refs(
                 }
             };
             for disambiguator_value in disambiguators_array {
-                disambiguator_uuids.push(resolve_face_id(&disambiguator_value, solid.id, exec_state, &args).await?);
+                disambiguator_uuids.push(resolve_face_id(disambiguator_value, solid.id, exec_state, &args).await?);
             }
         }
 

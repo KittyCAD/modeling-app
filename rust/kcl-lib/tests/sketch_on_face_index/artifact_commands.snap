@@ -338,6 +338,7 @@ description: Artifact commands sketch_on_face_index.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.4,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

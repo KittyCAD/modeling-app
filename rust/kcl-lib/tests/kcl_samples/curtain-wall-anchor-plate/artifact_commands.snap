@@ -289,6 +289,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 8.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -318,6 +319,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 16.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -644,6 +646,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -658,6 +661,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1476,6 +1480,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

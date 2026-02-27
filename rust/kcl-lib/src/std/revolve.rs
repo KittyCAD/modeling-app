@@ -27,10 +27,10 @@ extern crate nalgebra_glm as glm;
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
-    
+
     // Check if edgeRef is provided (new API)
     let edge_ref: Option<KclValue> = args.get_kw_arg_opt("edgeRef", &RuntimeType::any(), exec_state)?;
-    
+
     // Check if axis is provided (old API)
     let axis_opt: Option<Axis2dOrEdgeReference> = args.get_kw_arg_opt(
         "axis",
@@ -40,7 +40,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ]),
         exec_state,
     )?;
-    
+
     let axis: Axis2dOrEdgeReference = if let Some(edge_ref_value) = edge_ref {
         // New API: parse edgeRef and convert to EdgeReference
         let edge_ref_obj = match edge_ref_value {
@@ -185,7 +185,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             backtrace: Default::default(),
         }));
     };
-    
+
     let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;

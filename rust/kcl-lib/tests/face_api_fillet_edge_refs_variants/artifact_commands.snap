@@ -405,6 +405,7 @@ description: Artifact commands face_api_fillet_edge_refs_variants.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

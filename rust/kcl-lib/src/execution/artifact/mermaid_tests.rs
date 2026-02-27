@@ -99,9 +99,7 @@ impl Artifact {
             }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
-            Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
-            Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
-            Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
+            Artifact::EdgeCut(a) => a.edge_ids.clone(),
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
         }
     }
@@ -144,7 +142,6 @@ impl Artifact {
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
                 }
-                ids.extend(&a.edge_ids);
                 if let Some(edge_cut_id) = a.edge_cut_id {
                     ids.push(edge_cut_id);
                 }
@@ -197,26 +194,14 @@ impl Artifact {
                 ids.extend(&a.path_ids);
                 ids
             }
-            Artifact::SweepEdge(a) => {
-                // Note: Don't include these since they're parents: seg_id,
-                // sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.common_surface_ids);
-                ids
-            }
             Artifact::EdgeCut(a) => {
-                // Note: Don't include these since they're parents:
-                // consumed_edge_id.
+                // Note: Don't include these since they're parents: edge_ids.
                 let mut ids = Vec::new();
                 ids.extend(&a.edge_ids);
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
                 }
                 ids
-            }
-            Artifact::EdgeCutEdge(a) => {
-                // Note: Don't include these since they're parents: edge_cut_id.
-                vec![a.surface_id]
             }
             Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
@@ -296,9 +281,7 @@ impl ArtifactGraph {
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
                 | Artifact::Cap(_)
-                | Artifact::SweepEdge(_)
                 | Artifact::EdgeCut(_)
-                | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_) => false,
             };
             if !grouped {
@@ -452,9 +435,6 @@ impl ArtifactGraph {
                 writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
                 node_path_display(output, prefix, Some("face_code_ref="), &cap.face_code_ref)?;
             }
-            Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
-            }
             Artifact::EdgeCut(edge_cut) => {
                 writeln!(
                     output,
@@ -463,9 +443,6 @@ impl ArtifactGraph {
                     code_ref_display(&edge_cut.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &edge_cut.code_ref)?;
-            }
-            Artifact::EdgeCutEdge(_edge_cut_edge) => {
-                writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
             }
             Artifact::Helix(helix) => {
                 writeln!(

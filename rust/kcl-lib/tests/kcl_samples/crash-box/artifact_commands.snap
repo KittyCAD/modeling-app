@@ -271,6 +271,7 @@ description: Artifact commands crash-box.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 60.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -537,6 +538,7 @@ description: Artifact commands crash-box.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 80.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -557,6 +559,7 @@ description: Artifact commands crash-box.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -838,6 +841,7 @@ description: Artifact commands crash-box.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

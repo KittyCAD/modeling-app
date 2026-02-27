@@ -2050,6 +2050,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 8.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -4110,6 +4111,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -4122,6 +4124,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -4134,6 +4137,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -4148,6 +4152,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

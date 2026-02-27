@@ -20,10 +20,10 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
-    
+
     // Check if edgeRef is provided (new API)
     let edge_ref: Option<KclValue> = args.get_kw_arg_opt("edgeRef", &RuntimeType::any(), exec_state)?;
-    
+
     // Check if axis is provided (old API)
     let axis_opt: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt(
         "axis",
@@ -33,7 +33,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    
+
     let axis: Option<Axis3dOrEdgeReference> = if let Some(edge_ref_value) = edge_ref {
         // New API: parse edgeRef and convert to EdgeReference
         let edge_ref_obj = match edge_ref_value {
@@ -166,14 +166,11 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         };
 
         Some(Axis3dOrEdgeReference::EdgeReference(edge_reference))
-    } else if let Some(axis_val) = axis_opt {
-        // Old API: use axis (tag or axis)
-        Some(axis_val)
     } else {
-        // Neither edgeRef nor axis provided - will be checked later
-        None
+        // Old API: axis (tag or axis), or neither edgeRef nor axis provided
+        axis_opt
     };
-    
+
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let cylinder = args.get_kw_arg_opt("cylinder", &RuntimeType::solid(), exec_state)?;
 

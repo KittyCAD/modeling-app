@@ -63,20 +63,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   31[Wall]
     %% face_code_ref=Missing NodePath
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Adjacent"]
-  38["SweepEdge Adjacent"]
-  39["SweepEdge Adjacent"]
-  40["SweepEdge Adjacent"]
-  41["SweepEdge Adjacent"]
-  42["SweepEdge Adjacent"]
-  43["SweepEdge Adjacent"]
-  44["SweepEdge Adjacent"]
-  45["Plane<br>[1268, 1286, 0]"]
+  32["Plane<br>[1268, 1286, 0]"]
     %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -97,43 +84,30 @@ flowchart LR
   2 ---- 18
   18 <--x 3
   3 --- 19
-  3 --- 32
   18 <--x 4
   4 --- 20
-  4 --- 33
   18 <--x 5
   5 --- 21
-  5 --- 34
   18 <--x 6
   6 --- 22
-  6 --- 35
   18 <--x 7
   7 --- 23
-  7 --- 36
   18 <--x 8
   8 --- 24
-  8 --- 37
   18 <--x 9
   9 --- 25
-  9 --- 38
   18 <--x 10
   10 --- 26
-  10 --- 39
   18 <--x 11
   11 --- 27
-  11 --- 40
   18 <--x 12
   12 --- 28
-  12 --- 41
   18 <--x 13
   13 --- 29
-  13 --- 42
   18 <--x 14
   14 --- 30
-  14 --- 43
   18 <--x 15
   15 --- 31
-  15 --- 44
   18 --- 19
   18 --- 20
   18 --- 21
@@ -147,43 +121,4 @@ flowchart LR
   18 --- 29
   18 --- 30
   18 --- 31
-  18 --- 32
-  18 --- 33
-  18 --- 34
-  18 --- 35
-  18 --- 36
-  18 --- 37
-  18 --- 38
-  18 --- 39
-  18 --- 40
-  18 --- 41
-  18 --- 42
-  18 --- 43
-  18 --- 44
-  19 --- 32
-  42 <--x 19
-  32 <--x 20
-  20 --- 33
-  33 <--x 21
-  21 --- 34
-  34 <--x 22
-  22 --- 35
-  35 <--x 23
-  23 --- 36
-  36 <--x 24
-  24 --- 37
-  37 <--x 25
-  25 --- 38
-  38 <--x 26
-  26 --- 39
-  39 <--x 27
-  27 --- 40
-  40 <--x 28
-  28 --- 41
-  41 <--x 29
-  29 --- 42
-  30 --- 43
-  44 <--x 30
-  43 <--x 31
-  31 --- 44
 ```

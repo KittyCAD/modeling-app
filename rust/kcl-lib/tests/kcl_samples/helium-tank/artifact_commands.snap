@@ -638,6 +638,7 @@ description: Artifact commands helium-tank.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -911,6 +912,7 @@ description: Artifact commands helium-tank.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1747,6 +1749,7 @@ description: Artifact commands helium-tank.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1985,6 +1988,7 @@ description: Artifact commands helium-tank.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1999,6 +2003,7 @@ description: Artifact commands helium-tank.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

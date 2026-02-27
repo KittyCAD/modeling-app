@@ -2801,6 +2801,7 @@ description: Artifact commands exhaust-manifold.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 38.099999999999994,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2841,6 +2842,7 @@ description: Artifact commands exhaust-manifold.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.35,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

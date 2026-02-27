@@ -1709,6 +1709,7 @@ description: Artifact commands contra-rotor.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 15.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2130,6 +2131,7 @@ description: Artifact commands contra-rotor.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2369,6 +2371,7 @@ description: Artifact commands contra-rotor.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -4090,6 +4093,7 @@ description: Artifact commands contra-rotor.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 15.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -4511,6 +4515,7 @@ description: Artifact commands contra-rotor.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -4750,6 +4755,7 @@ description: Artifact commands contra-rotor.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

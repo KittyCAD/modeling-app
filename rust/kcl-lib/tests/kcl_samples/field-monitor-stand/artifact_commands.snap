@@ -934,6 +934,7 @@ description: Artifact commands field-monitor-stand.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -998,6 +999,7 @@ description: Artifact commands field-monitor-stand.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

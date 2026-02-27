@@ -157,7 +157,6 @@ pub struct Segment {
     pub path_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
-    pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -334,33 +333,9 @@ pub enum CapSubType {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct SweepEdge {
-    pub id: ArtifactId,
-    pub sub_type: SweepEdgeSubType,
-    pub seg_id: ArtifactId,
-    pub cmd_id: uuid::Uuid,
-    // This is only used for sorting, not for the actual artifact.
-    #[serde(skip)]
-    pub index: usize,
-    pub sweep_id: ArtifactId,
-    pub common_surface_ids: Vec<ArtifactId>,
-}
-
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
-pub enum SweepEdgeSubType {
-    Opposite,
-    Adjacent,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
@@ -400,15 +375,6 @@ impl From<kcmc::shared::CutTypeV2> for EdgeCutSubType {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct EdgeCutEdge {
-    pub id: ArtifactId,
-    pub edge_cut_id: ArtifactId,
-    pub surface_id: ArtifactId,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct Helix {
     pub id: ArtifactId,
     /// The axis of the helix.  Currently this is always an edge ID, but we may
@@ -438,9 +404,7 @@ pub enum Artifact {
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
-    SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
-    EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
 }
 
@@ -460,9 +424,7 @@ impl Artifact {
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
-            Artifact::SweepEdge(a) => a.id,
             Artifact::EdgeCut(a) => a.id,
-            Artifact::EdgeCutEdge(a) => a.id,
             Artifact::Helix(a) => a.id,
         }
     }
@@ -484,9 +446,7 @@ impl Artifact {
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
             Artifact::Cap(_) => None,
-            Artifact::SweepEdge(_) => None,
             Artifact::EdgeCut(a) => Some(&a.code_ref),
-            Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
         }
     }
@@ -508,7 +468,7 @@ impl Artifact {
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
-            Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
+            Artifact::EdgeCut(_) | Artifact::Helix(_) => None,
         }
     }
 
@@ -529,9 +489,7 @@ impl Artifact {
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
             Artifact::Cap(a) => a.merge(new),
-            Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
-            Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(a) => a.merge(new),
         }
     }
@@ -586,7 +544,6 @@ impl Segment {
             return Some(new);
         };
         merge_opt_id(&mut self.surface_id, new.surface_id);
-        merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
         merge_ids(&mut self.common_surface_ids, new.common_surface_ids);
 
@@ -1109,7 +1066,6 @@ fn artifacts_to_update(
                 id,
                 path_id,
                 surface_id: None,
-                edge_ids: Vec::new(),
                 edge_cut_id: None,
                 code_ref,
                 common_surface_ids: Vec::new(),
@@ -1193,7 +1149,6 @@ fn artifacts_to_update(
                         id: edge_id,
                         path_id: path.id,
                         surface_id: None,
-                        edge_ids: Vec::new(),
                         edge_cut_id: None,
                         code_ref: code_ref.clone(),
                         common_surface_ids: Vec::new(),
@@ -1221,9 +1176,9 @@ fn artifacts_to_update(
                     kittycad_modeling_cmds::shared::ExtrudeMethod::Merge
                 }
                 // Revolve variants behave like New bodies in std layer
-                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) | ModelingCmd::RevolveAboutEdgeReference(_) => {
-                    kittycad_modeling_cmds::shared::ExtrudeMethod::New
-                }
+                ModelingCmd::Revolve(_)
+                | ModelingCmd::RevolveAboutEdge(_)
+                | ModelingCmd::RevolveAboutEdgeReference(_) => kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 _ => kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             };
             let sub_type = match cmd {
@@ -1492,7 +1447,7 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
-            for (index, edge) in info.edges.iter().enumerate() {
+            for edge in info.edges.iter() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
                 };
@@ -1500,21 +1455,12 @@ fn artifacts_to_update(
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
-                match artifact {
-                    Artifact::Segment(segment) => {
-                        let mut new_segment = segment.clone();
-                        new_segment.common_surface_ids =
-                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
-                        return_arr.push(Artifact::Segment(new_segment));
-                    }
-                    Artifact::SweepEdge(sweep_edge) => {
-                        let mut new_sweep_edge = sweep_edge.clone();
-                        new_sweep_edge.common_surface_ids =
-                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
-                        return_arr.push(Artifact::SweepEdge(new_sweep_edge));
-                    }
-                    _ => {}
-                };
+                if let Artifact::Segment(segment) = artifact {
+                    let mut new_segment = segment.clone();
+                    new_segment.common_surface_ids =
+                        original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                    return_arr.push(Artifact::Segment(new_segment));
+                }
 
                 let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
                     continue;
@@ -1533,18 +1479,6 @@ fn artifacts_to_update(
                 };
 
                 if let Some(opposite_info) = &edge.opposite_info {
-                    return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: opposite_info.edge_id.into(),
-                        sub_type: SweepEdgeSubType::Opposite,
-                        seg_id: edge_id,
-                        cmd_id: artifact_command.cmd_id,
-                        index,
-                        sweep_id: sweep.id,
-                        common_surface_ids: opposite_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
-                    }));
-                    let mut new_segment = segment.clone();
-                    new_segment.edge_ids = vec![opposite_info.edge_id.into()];
-                    return_arr.push(Artifact::Segment(new_segment));
                     let mut new_sweep = sweep.clone();
                     new_sweep.edge_ids = vec![opposite_info.edge_id.into()];
                     return_arr.push(Artifact::Sweep(new_sweep));
@@ -1553,18 +1487,6 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Wall(new_wall));
                 }
                 if let Some(adjacent_info) = &edge.adjacent_info {
-                    return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: adjacent_info.edge_id.into(),
-                        sub_type: SweepEdgeSubType::Adjacent,
-                        seg_id: edge_id,
-                        cmd_id: artifact_command.cmd_id,
-                        index,
-                        sweep_id: sweep.id,
-                        common_surface_ids: adjacent_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
-                    }));
-                    let mut new_segment = segment.clone();
-                    new_segment.edge_ids = vec![adjacent_info.edge_id.into()];
-                    return_arr.push(Artifact::Segment(new_segment));
                     let mut new_sweep = sweep.clone();
                     new_sweep.edge_ids = vec![adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Sweep(new_sweep));
@@ -1591,8 +1513,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: edge_id,
-                edge_ids: Vec::new(),
+                edge_ids: vec![edge_id],
                 surface_id: None,
                 code_ref,
             }));
@@ -1601,8 +1522,6 @@ fn artifacts_to_update(
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);
                 return_arr.push(Artifact::Segment(new_segment));
-            } else {
-                // TODO: Handle other types like SweepEdge.
             }
             return Ok(return_arr);
         }
@@ -1616,8 +1535,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: edge_id,
-                edge_ids: Vec::new(),
+                edge_ids: vec![edge_id],
                 surface_id: None,
                 code_ref,
             }));
@@ -1626,8 +1544,6 @@ fn artifacts_to_update(
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);
                 return_arr.push(Artifact::Segment(new_segment));
-            } else {
-                // TODO: Handle other types like SweepEdge.
             }
             return Ok(return_arr);
         }
@@ -1652,7 +1568,7 @@ fn artifacts_to_update(
             })];
             return Ok(return_arr);
         }
-        ModelingCmd::EntityMakeHelixFromEdge(helix) => {
+        ModelingCmd::EntityMakeHelixFromEdge(_helix) => {
             // When using EdgeReference, we can't extract a single edge UUID easily,
             // so we set axis_id to None. The edge_reference contains faces, disambiguators, and index.
             let return_arr = vec![Artifact::Helix(Helix {
