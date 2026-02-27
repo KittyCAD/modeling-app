@@ -54,7 +54,7 @@ function onSubmitKCLSampleCreation({
   const projectPathPart = pathParts[0]
   const files = kclSample.files
 
-  const filePromises = files.map((file: string) => {
+  const filePromises = files.map((file) => {
     const sampleCodeUrl =
       (isDesktop() ? '.' : '') +
       `/kcl-samples/${encodeURIComponent(
@@ -242,17 +242,12 @@ export function createApplicationCommands({
           const samples = isDesktop()
             ? everyKclSample
             : kclSamplesManifestWithNoMultipleFiles
-          return samples.map(
-            (sample: {
-              pathFromProjectDirectoryToFirstFile: string
-              title: string
-            }) => {
-              return {
-                value: sample.pathFromProjectDirectoryToFirstFile,
-                name: sample.title,
-              }
+          return samples.map((sample) => {
+            return {
+              value: sample.pathFromProjectDirectoryToFirstFile,
+              name: sample.title,
             }
-          )
+          })
         },
       },
       method: {
@@ -387,17 +382,12 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: everyKclSample.map(
-          (sample: {
-            pathFromProjectDirectoryToFirstFile: string
-            title: string
-          }) => {
-            return {
-              value: sample.pathFromProjectDirectoryToFirstFile,
-              name: sample.title,
-            }
+        options: everyKclSample.map((sample) => {
+          return {
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
           }
-        ),
+        }),
       },
     },
   }
