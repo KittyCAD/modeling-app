@@ -1281,7 +1281,7 @@ export fn subtract(
 ///        roughness = 50
 ///    )
 /// ```
-/// ```kcl,enable_oit
+/// ```kcl,no3d
 /// // This example shows the alpha (transparency and opacity) being changed.
 /// numSides = 8
 /// center = [0, 0]
