@@ -7,6 +7,7 @@ import {
   fromPromise,
 } from 'xstate'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -51,6 +52,64 @@ import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
+
+function calculateCurrentAngleBetweenLines(
+  line1: ApiObject,
+  line2: ApiObject,
+  objects: ApiObject[]
+): number | null {
+  if (
+    line1.kind.type !== 'Segment' ||
+    line1.kind.segment.type !== 'Line' ||
+    line2.kind.type !== 'Segment' ||
+    line2.kind.segment.type !== 'Line'
+  ) {
+    return null
+  }
+
+  const line1Start = objects[line1.kind.segment.start]
+  const line1End = objects[line1.kind.segment.end]
+  const line2Start = objects[line2.kind.segment.start]
+  const line2End = objects[line2.kind.segment.end]
+
+  if (
+    line1Start?.kind.type !== 'Segment' ||
+    line1Start.kind.segment.type !== 'Point' ||
+    line1End?.kind.type !== 'Segment' ||
+    line1End.kind.segment.type !== 'Point' ||
+    line2Start?.kind.type !== 'Segment' ||
+    line2Start.kind.segment.type !== 'Point' ||
+    line2End?.kind.type !== 'Segment' ||
+    line2End.kind.segment.type !== 'Point'
+  ) {
+    return null
+  }
+
+  const v1x =
+    line1End.kind.segment.position.x.value -
+    line1Start.kind.segment.position.x.value
+  const v1y =
+    line1End.kind.segment.position.y.value -
+    line1Start.kind.segment.position.y.value
+  const v2x =
+    line2End.kind.segment.position.x.value -
+    line2Start.kind.segment.position.x.value
+  const v2y =
+    line2End.kind.segment.position.y.value -
+    line2Start.kind.segment.position.y.value
+
+  const v1Length = Math.hypot(v1x, v1y)
+  const v2Length = Math.hypot(v2x, v2y)
+  if (v1Length === 0 || v2Length === 0) {
+    return null
+  }
+
+  const dot = (v1x * v2x + v1y * v2y) / (v1Length * v2Length)
+  const clampedDot = Math.max(-1, Math.min(1, dot))
+  const radians = Math.acos(clampedDot)
+  const degrees = (radians * 180) / Math.PI
+  return roundOff(degrees)
+}
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
@@ -314,20 +373,60 @@ export const sketchSolveMachine = setup({
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const segmentsToConstrain = context.selectedIds
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
         const currentSelections = segmentsToConstrain
-          .map(
-            (id) =>
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-          )
+          .map((id) => objects[id])
           .filter(Boolean)
         let distance = DEFAULT_DISTANCE_FALLBACK
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
         )
-        // Calculate distance between two points if both are point segments
+
         if (currentSelections.length === 2) {
           const first = currentSelections[0]
           const second = currentSelections[1]
+          if (
+            first?.kind.type === 'Segment' &&
+            first?.kind.segment.type === 'Line' &&
+            second?.kind.type === 'Segment' &&
+            second?.kind.segment.type === 'Line'
+          ) {
+            // Try to add an angle constraint between 2 lines.
+            const angle = calculateCurrentAngleBetweenLines(
+              first,
+              second,
+              objects
+            )
+            if (angle !== null) {
+              const result = await context.rustContext.addConstraint(
+                0,
+                context.sketchId,
+                {
+                  type: 'Angle',
+                  lines: segmentsToConstrain,
+                  angle: { value: angle, units: 'Deg' },
+                  source: {
+                    expr: `${angle}deg`,
+                    is_literal: true,
+                  },
+                },
+                await jsAppSettings(context.rustContext.settingsActor)
+              )
+              if (result) {
+                self.send({
+                  type: 'update sketch outcome',
+                  data: {
+                    sourceDelta: result.kclSource,
+                    sceneGraphDelta: result.sceneGraphDelta,
+                  },
+                })
+              }
+              return
+            }
+          }
+
+          // Calculate distance between two points if both are point segments
           if (
             first?.kind?.type === 'Segment' &&
             first?.kind.segment?.type === 'Point' &&
