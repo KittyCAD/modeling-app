@@ -30,7 +30,6 @@ function CommandBarSelectionInput({
 }) {
   const { commands } = useApp()
   const { engineCommandManager, kclManager } = useSingletons()
-  const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
