@@ -1,14 +1,15 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { expect, vi, describe, test } from 'vitest'
-import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('useOnPeerConnectionClose', () => {
   describe('on mounted', () => {
-    test('should not run any callbacks', () => {
+    test('should not run any callbacks', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnPeerConnectionClose({
           callback,
@@ -18,9 +19,10 @@ describe('useOnPeerConnectionClose', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
     })
-    test('should attach and remove event listeners', () => {
+    test('should attach and remove event listeners', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
@@ -33,9 +35,10 @@ describe('useOnPeerConnectionClose', () => {
       expect(spyAdd).toHaveBeenCalledTimes(4)
       expect(spyRemove).toHaveBeenCalledTimes(4)
     })
-    test('should attach and remove peerConnectionClosed', () => {
+    test('should attach and remove peerConnectionClosed', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
@@ -56,9 +59,10 @@ describe('useOnPeerConnectionClose', () => {
         expect.any(Function)
       )
     })
-    test('should attach and remove peerConnectionDisconnected', () => {
+    test('should attach and remove peerConnectionDisconnected', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
@@ -79,9 +83,10 @@ describe('useOnPeerConnectionClose', () => {
         expect.any(Function)
       )
     })
-    test('should attach and remove peerConnectionFailed', () => {
+    test('should attach and remove peerConnectionFailed', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
@@ -102,9 +107,10 @@ describe('useOnPeerConnectionClose', () => {
         expect.any(Function)
       )
     })
-    test('should attach and remove dataChannelClose', () => {
+    test('should attach and remove dataChannelClose', async () => {
       const callback = vi.fn(() => 1)
-      const engineCommandManager = new ConnectionManager()
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
@@ -126,9 +132,10 @@ describe('useOnPeerConnectionClose', () => {
       )
     })
     describe('should call callback on', () => {
-      test('dispatched peerConnectionClose', () => {
+      test('dispatched peerConnectionClose', async () => {
         const callback = vi.fn(() => 1)
-        const engineCommandManager = new ConnectionManager()
+        const { engineCommandManager } =
+          await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnPeerConnectionClose({
             callback,
@@ -141,9 +148,10 @@ describe('useOnPeerConnectionClose', () => {
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
       })
-      test('dispatched peerConnectionDisconnected', () => {
+      test('dispatched peerConnectionDisconnected', async () => {
         const callback = vi.fn(() => 1)
-        const engineCommandManager = new ConnectionManager()
+        const { engineCommandManager } =
+          await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnPeerConnectionClose({
             callback,
@@ -156,9 +164,10 @@ describe('useOnPeerConnectionClose', () => {
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
       })
-      test('dispatched peerConnectionFailed', () => {
+      test('dispatched peerConnectionFailed', async () => {
         const callback = vi.fn(() => 1)
-        const engineCommandManager = new ConnectionManager()
+        const { engineCommandManager } =
+          await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnPeerConnectionClose({
             callback,
@@ -171,9 +180,10 @@ describe('useOnPeerConnectionClose', () => {
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
       })
-      test('dispatched dataChannelClose', () => {
+      test('dispatched dataChannelClose', async () => {
         const callback = vi.fn(() => 1)
-        const engineCommandManager = new ConnectionManager()
+        const { engineCommandManager } =
+          await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnPeerConnectionClose({
             callback,

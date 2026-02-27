@@ -15,6 +15,9 @@ const typeSafeIpcRendererOn = (
   listener: (event: IpcRendererEvent, ...args: any[]) => void
 ) => ipcRenderer.on(channel, listener)
 
+const nodeConsoleLog = (data: any) =>
+  ipcRenderer.invoke('renderer.console.log', data)
+
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
@@ -348,4 +351,5 @@ contextBridge.exposeInMainWorld('electron', {
   disableMenu,
   menuOn,
   cp: fs.cp,
+  nodeConsoleLog,
 })

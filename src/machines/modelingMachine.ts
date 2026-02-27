@@ -1808,7 +1808,7 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      context.kclManager.systemDeps.engineCommandManager
+      context.kclManager.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 

@@ -18,7 +18,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, normalize_to_solver_unit,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        normalize_to_solver_distance_unit,
         types::{NumericType, adjust_length},
     },
     front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
@@ -1993,7 +1994,8 @@ impl SketchVar {
             ty: self.ty,
             meta: vec![source_range.into()],
         };
-        let normalized_value = normalize_to_solver_unit(&x_initial_value, source_range, exec_state, description)?;
+        let normalized_value =
+            normalize_to_solver_distance_unit(&x_initial_value, source_range, exec_state, description)?;
         normalized_value.as_ty_f64().ok_or_else(|| {
             let message = format!(
                 "Expected number after coercion, but found {}",
@@ -2029,6 +2031,14 @@ pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainablePoint2d {
     pub vars: crate::front::Point2d<SketchVarId>,
+    pub object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ConstrainableLine2d {
+    pub vars: [crate::front::Point2d<SketchVarId>; 2],
     pub object_id: ObjectId,
 }
 
@@ -2171,16 +2181,31 @@ pub struct SketchConstraint {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
-    Distance { points: [ConstrainablePoint2d; 2] },
-    Radius { points: [ConstrainablePoint2d; 2] },
-    Diameter { points: [ConstrainablePoint2d; 2] },
-    HorizontalDistance { points: [ConstrainablePoint2d; 2] },
-    VerticalDistance { points: [ConstrainablePoint2d; 2] },
+    Angle {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+    },
+    Distance {
+        points: [ConstrainablePoint2d; 2],
+    },
+    Radius {
+        points: [ConstrainablePoint2d; 2],
+    },
+    Diameter {
+        points: [ConstrainablePoint2d; 2],
+    },
+    HorizontalDistance {
+        points: [ConstrainablePoint2d; 2],
+    },
+    VerticalDistance {
+        points: [ConstrainablePoint2d; 2],
+    },
 }
 
 impl SketchConstraintKind {
     pub fn name(&self) -> &'static str {
         match self {
+            SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",

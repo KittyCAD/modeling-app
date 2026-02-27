@@ -6,13 +6,14 @@ use kcl_ezpz::{
         inputs::{DatumCircularArc, DatumLineSegment, DatumPoint},
     },
 };
+use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, ConstrainablePoint2d, ExecState, KclValue, SegmentRepr, SketchConstraint,
         SketchConstraintKind, SketchVarId, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
-        normalize_to_solver_unit,
+        normalize_to_solver_distance_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
@@ -1072,8 +1073,10 @@ fn coincident_constraints_fixed(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(kcl_ezpz::Constraint, kcl_ezpz::Constraint), KclError> {
-    let p1_x_number_value = normalize_to_solver_unit(p1_x, p1_x.into(), exec_state, "coincident constraint value")?;
-    let p1_y_number_value = normalize_to_solver_unit(p1_y, p1_y.into(), exec_state, "coincident constraint value")?;
+    let p1_x_number_value =
+        normalize_to_solver_distance_unit(p1_x, p1_x.into(), exec_state, "coincident constraint value")?;
+    let p1_y_number_value =
+        normalize_to_solver_distance_unit(p1_y, p1_y.into(), exec_state, "coincident constraint value")?;
     let Some(p1_x) = p1_x_number_value.as_ty_f64() else {
         let message = format!(
             "Expected number after coercion, but found {}",
@@ -1640,11 +1643,168 @@ impl LinesAtAngleKind {
     }
 }
 
+/// Convert between two different libraries with similar angle representations
+#[expect(unused)]
+fn into_kcmc_angle(angle: kcl_ezpz::datatypes::Angle) -> kcmc::shared::Angle {
+    kcmc::shared::Angle::from_degrees(angle.to_degrees())
+}
+
+/// Convert between two different libraries with similar angle representations
+#[expect(unused)]
+fn into_ezpz_angle(angle: kcmc::shared::Angle) -> kcl_ezpz::datatypes::Angle {
+    kcl_ezpz::datatypes::Angle::from_degrees(angle.to_degrees())
+}
+
 pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     lines_at_angle(LinesAtAngleKind::Parallel, exec_state, args).await
 }
+
 pub async fn perpendicular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     lines_at_angle(LinesAtAngleKind::Perpendicular, exec_state, args).await
+}
+
+pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "lines",
+        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "must have two input lines".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let KclValue::Segment { value: segment0 } = &line0 else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved0 } = &segment0.repr else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "line must be an unsolved Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line {
+        start: start0,
+        end: end0,
+        ..
+    } = &unsolved0.kind
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a line, no other type of Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line0_p0_x) = &start0[0] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's start x coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line0_p0_y) = &start0[1] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's start y coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line0_p1_x) = &end0[0] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's end x coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line0_p1_y) = &end0[1] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's end y coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let KclValue::Segment { value: segment1 } = &line1 else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved1 } = &segment1.repr else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "line must be an unsolved Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line {
+        start: start1,
+        end: end1,
+        ..
+    } = &unsolved1.kind
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a line, no other type of Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line1_p0_x) = &start1[0] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's start x coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line1_p0_y) = &start1[1] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's start y coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line1_p1_x) = &end1[0] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's end x coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedExpr::Unknown(line1_p1_y) = &end1[1] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's end y coordinate must be a var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+
+    // All coordinates are sketch vars. Proceed.
+    let sketch_constraint = SketchConstraint {
+        kind: SketchConstraintKind::Angle {
+            line0: crate::execution::ConstrainableLine2d {
+                object_id: unsolved0.object_id,
+                vars: [
+                    crate::front::Point2d {
+                        x: *line0_p0_x,
+                        y: *line0_p0_y,
+                    },
+                    crate::front::Point2d {
+                        x: *line0_p1_x,
+                        y: *line0_p1_y,
+                    },
+                ],
+            },
+            line1: crate::execution::ConstrainableLine2d {
+                object_id: unsolved1.object_id,
+                vars: [
+                    crate::front::Point2d {
+                        x: *line1_p0_x,
+                        y: *line1_p0_y,
+                    },
+                    crate::front::Point2d {
+                        x: *line1_p1_x,
+                        y: *line1_p1_y,
+                    },
+                ],
+            },
+        },
+        meta: vec![args.source_range.into()],
+    };
+    Ok(KclValue::SketchConstraint {
+        value: Box::new(sketch_constraint),
+    })
 }
 
 async fn lines_at_angle(

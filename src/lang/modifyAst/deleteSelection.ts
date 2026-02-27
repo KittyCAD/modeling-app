@@ -2,7 +2,6 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -25,7 +24,6 @@ export async function deleteSelectionPromise({
   systemDeps: {
     kclManager: KclManager
     rustContext: RustContext
-    sceneEntitiesManager: SceneEntities
   }
 }): Promise<Error | undefined> {
   const ast = systemDeps.kclManager.ast
@@ -85,8 +83,8 @@ export async function deleteSelectionPromise({
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
     await systemDeps.kclManager.wasmInstancePromise,
-    systemDeps.sceneEntitiesManager.getFaceDetails.bind(
-      systemDeps.sceneEntitiesManager
+    systemDeps.kclManager.sceneEntitiesManager.getFaceDetails.bind(
+      systemDeps.kclManager.sceneEntitiesManager
     )
   )
   if (err(modifiedAst)) {

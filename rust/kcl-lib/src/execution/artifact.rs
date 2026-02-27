@@ -247,6 +247,7 @@ pub struct SketchBlock {
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchBlockConstraintType {
+    Angle,
     Coincident,
     Distance,
     Diameter,
@@ -274,6 +275,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
             Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
             Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
+            Constraint::Angle(..) => SketchBlockConstraintType::Angle,
         }
     }
 }

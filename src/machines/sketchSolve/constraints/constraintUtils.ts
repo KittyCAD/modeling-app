@@ -1,0 +1,140 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { SnapshotFrom, StateFrom } from 'xstate'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import type { Sprite, SpriteMaterial, Texture } from 'three'
+import { Vector3 } from 'three'
+import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+
+export const CONSTRAINT_TYPE = 'CONSTRAINT'
+
+export function isPointSegment(
+  obj: ApiObject | undefined | null
+): obj is PointSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+}
+
+export type PointSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Point' } }
+}
+
+export function pointToVec3(obj: PointSegment) {
+  const position = obj.kind.segment.position
+  return new Vector3(position.x.value, position.y.value, 0)
+}
+
+type DistanceConstraintTypes =
+  | 'Distance'
+  | 'HorizontalDistance'
+  | 'VerticalDistance'
+
+export type ConstraintObject = ApiObject & {
+  kind: { type: 'Constraint' }
+}
+
+export function isConstraint(obj: ApiObject): obj is ConstraintObject {
+  return obj.kind.type === 'Constraint'
+}
+
+export type DistanceConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: DistanceConstraintTypes } }
+}
+
+export function isDistanceConstraint(
+  obj: ApiObject
+): obj is DistanceConstraint {
+  return (
+    obj.kind.type === 'Constraint' &&
+    (obj.kind.constraint.type === 'Distance' ||
+      obj.kind.constraint.type === 'HorizontalDistance' ||
+      obj.kind.constraint.type === 'VerticalDistance')
+  )
+}
+
+export type RadiusConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Radius' } }
+}
+
+export type DiameterConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Diameter' } }
+}
+
+export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
+}
+
+export function isDiameterConstraint(
+  obj: ApiObject
+): obj is DiameterConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
+}
+
+export function calculateDimensionLabelScreenPosition(
+  constraintId: number,
+  modelingState: StateFrom<typeof modelingMachine>,
+  sceneInfra: SceneInfra
+): [number, number] | undefined {
+  const constraintObject = getConstraintObject(constraintId, modelingState)
+  if (!constraintObject) {
+    console.warn(`Constraint object not found`)
+    return
+  }
+
+  const sketchSolveGroup = sceneInfra.scene.getObjectByName('sketchSolveGroup')
+  const constraintGroup = sketchSolveGroup?.getObjectByName(
+    constraintId.toString()
+  )
+  if (!constraintGroup) {
+    console.warn(`Constraint group ${constraintId} not found in scene`)
+    return
+  }
+  const label = constraintGroup.children.find(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+  ) as SpriteLabel | undefined
+  if (!label) {
+    console.warn(`Label not found in constraint group ${constraintId}`)
+    return
+  }
+
+  const worldPosition = new Vector3()
+  label.getWorldPosition(worldPosition)
+  const screenPosition = worldPosition
+    .clone()
+    .project(sceneInfra.camControls.camera)
+
+  const x =
+    (screenPosition.x * 0.5 + 0.5) * sceneInfra.renderer.domElement.clientWidth
+  const y =
+    (-screenPosition.y * 0.5 + 0.5) *
+    sceneInfra.renderer.domElement.clientHeight
+
+  return [x, y]
+}
+
+export function getConstraintObject(
+  constraintId: number,
+  modelingState: StateFrom<typeof modelingMachine>
+): ApiObject | undefined {
+  const snapshot = modelingState.children.sketchSolveMachine?.getSnapshot() as
+    | SnapshotFrom<typeof sketchSolveMachine>
+    | undefined
+  const objects =
+    snapshot?.context?.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ||
+    []
+
+  const constraintObject = objects[constraintId]
+  return constraintObject
+}
+
+export type SpriteLabel = Sprite & {
+  userData: {
+    type: typeof DISTANCE_CONSTRAINT_LABEL
+    dimensionLabel: string
+    constraintColor: number
+    showFnIcon: boolean
+  }
+  material: SpriteMaterial & {
+    map: Texture<HTMLCanvasElement>
+  }
+}
