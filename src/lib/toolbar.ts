@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -149,7 +150,7 @@ export const useToolbarConfig = () => {
           // This is temporary staging-only button to reduce friction on trying
           // out the new sketch mode. Once we reach basic engine parity, this
           // can be made the primary button in staging.
-          ...((IS_STAGING_OR_DEBUG
+          ...((IS_STAGING_OR_DEBUG && !isPlaywright()
             ? [
                 {
                   id: 'sketch-new',
