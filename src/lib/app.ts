@@ -2,6 +2,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
@@ -41,6 +42,7 @@ import {
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
+import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -131,7 +133,7 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings = createSettings()
+  private lastSettings: SaveSettingsPayload
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -143,6 +145,10 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
 
     this.singletons = this.buildSingletons()
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
+    )
+
     this.settings.actor.subscribe(this.onSettingsUpdate)
   }
 
@@ -405,7 +411,7 @@ export class App implements AppSubsystems {
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
-      newHighlighting !== this.lastSettings.modeling.highlightEdges.current &&
+      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
       this.singletons.engineCommandManager.connection
     ) {
       this.singletons.engineCommandManager
@@ -438,13 +444,11 @@ export class App implements AppSubsystems {
 
     // Execute AST
     try {
-      const relevantSetting = (s: SettingsType) => {
+      const relevantSetting = (s: SaveSettingsPayload) => {
         const hasScaleGrid =
-          s.modeling.showScaleGrid.current !==
-          context.modeling.showScaleGrid.current
+          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s.modeling.highlightEdges.current !==
-          context.modeling.highlightEdges.current
+          s.modeling?.highlightEdges !== context.modeling.highlightEdges.current
         return hasScaleGrid || hasHighlightEdges
       }
 
@@ -477,6 +481,8 @@ export class App implements AppSubsystems {
 
     // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
     // of the last settings to know if they've changed.
-    this.lastSettings = getOnlySettingsFromContext(context)
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(context)
+    )
   }
 }
