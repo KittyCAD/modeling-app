@@ -40,7 +40,7 @@ export function useAuthNavigation() {
       !location.pathname.includes(PATHS.SIGN_IN)
     ) {
       if (requestingImmediateSignInIfNecessary && !isDesktop()) {
-        window.location.href = generateSignInUrl()
+        //  window.location.href = generateSignInUrl()
         return
       }
 
@@ -51,7 +51,7 @@ export function useAuthNavigation() {
       !isDesktop() &&
       (!onMobile || hasAllowMobileParam)
     ) {
-      window.location.href = generateSignInUrl()
+      // window.location.href = generateSignInUrl()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])

@@ -1,37 +1,3 @@
-import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  moduleFsViaModuleImport,
-  moduleFsViaWindow,
-  StorageName,
-} from '@src/lib/fs-zds'
-
-// This was placed here since it's the highest async-awaited code block.
-// ONLY ATTACH WINDOW.FSZDS DURING TESTS! Do not use window.fsZds in app code.
-// This is purely for Playwright to use the fs abstraction through
-// page.evaluate.
-if (typeof window !== 'undefined' && isPlaywright()) {
-  void moduleFsViaWindow({
-    type: window.electron ? StorageName.ElectronFS : StorageName.OPFS,
-    options: {},
-  })
-}
-
-// Earliest as possible, configure the fs layer.
-// In the future we can have the user switch between them at run-time, but
-// for now, there is no intention.
-let fsModulePromise
-if (window.electron) {
-  fsModulePromise = moduleFsViaModuleImport({
-    type: StorageName.ElectronFS,
-    options: {},
-  })
-} else {
-  fsModulePromise = moduleFsViaModuleImport({
-    type: StorageName.OPFS,
-    options: {},
-  })
-}
-
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -51,7 +17,7 @@ import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTransla
 import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
-void fsModulePromise.then(() => launchApp(app))
+launchApp(app)
 
 /** The initialization sequence for this app */
 function launchApp(app: App) {

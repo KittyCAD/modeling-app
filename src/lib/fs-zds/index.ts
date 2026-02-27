@@ -55,6 +55,10 @@ export const moduleFsViaObject = async (
   return STORAGE_IMPL[backing.type]
 }
 
+export const moduleFsViaWindow = async (backing: StorageBacking) => {
+  window['fsZds'] = STORAGE_IMPL[backing.type]
+}
+
 export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
   if (isAnFsBacking(_impl)) {
     await _impl.detach()

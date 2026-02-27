@@ -32,7 +32,6 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import fsZds from '@src/lib/fs-zds'
 
 export function SystemIOMachineLogicListener() {
   const { auth, billing, settings } = useApp()
