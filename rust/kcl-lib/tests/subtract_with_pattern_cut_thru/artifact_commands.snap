@@ -541,6 +541,7 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
