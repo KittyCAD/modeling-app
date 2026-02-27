@@ -145,16 +145,8 @@ export function addDeleteFace({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const primitiveFaceSelections =
-    getEnginePrimitiveFaceSelectionsFromSelection(faces)
 
-  if (
-    faces.graphSelections.length === 0 &&
-    primitiveFaceSelections.length === 0
-  ) {
-    return new Error('Delete Face requires at least one face selection.')
-  }
-
+  // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
@@ -173,12 +165,6 @@ export function addDeleteFace({
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
   modifiedAst = result.modifiedAst
-  if (!solidsExpr) {
-    return new Error(
-      'Delete Face could not construct a solid expression from the selection.'
-    )
-  }
-
   const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
     createLabeledArg('faces', facesExpr),
   ])
@@ -1019,54 +1005,6 @@ export function getFacesExprsFromSelection(
     exprs.push(expr)
   }
   return { modifiedAst, exprs }
-  // return faces.graphSelections.flatMap((face) => {
-  //   if (!face.artifact) {
-  //     console.warn('No artifact found for face', face)
-  //     return []
-  //   }
-  //   const artifact = face.artifact
-  //   if (artifact.type === 'cap') {
-  //     return createLiteral(artifact.subType, wasmInstance)
-  //   } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
-  //     let targetArtifact: Artifact | undefined
-  //     let edgeCutMeta: EdgeCutInfo | null = null
-  //     if (artifact.type === 'wall') {
-  //       const key = artifact.segId
-  //       const segmentArtifact = getArtifactOfTypes(
-  //         { key, types: ['segment'] },
-  //         artifactGraph
-  //       )
-  //       if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-  //         console.warn('No segment found for face', face)
-  //         return []
-  //       }
-
-  //       targetArtifact = segmentArtifact
-  //     } else {
-  //       targetArtifact = artifact
-  //       edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
-  //     }
-
-  //     const res = modifyAstWithTagsForSelection(
-  //       ast,
-  //       targetArtifact.codeRef.pathToNode,
-  //       wasmInstance,
-  //       edgeCutMeta
-  //     )
-  //     if (err(tagResult)) {
-  //       console.warn(
-  //         'Failed to mutate ast with tag for sketch segment',
-  //         tagResult
-  //       )
-  //       return []
-  //     }
-
-  //     return createLocalName(tagResult.tag)
-  //   } else {
-  //     console.warn('Face was not a cap or wall or chamfer', face)
-  //     return []
-  //   }
-  // })
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)
@@ -1138,7 +1076,6 @@ export function retrieveFaceSelectionsFromOpArgs(
     }
   }
 
-  console.log('candidates', candidates)
   // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
   const faceValues: OpKclValue[] = []
   if (facesArg.value.type === 'Array') {
@@ -1148,7 +1085,6 @@ export function retrieveFaceSelectionsFromOpArgs(
   }
   const graphSelections: Selection[] = []
   for (const v of faceValues) {
-    console.log('v', v)
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
       const result = candidates.get(v.value)
       if (result) {
