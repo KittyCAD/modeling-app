@@ -136,7 +136,7 @@ export const useToolbarConfig = () => {
             },
             showTitle: true,
             hotkey: 'S',
-            description: 'Start drawing a 2D sketch',
+            description: 'Start drawing a 2D sketch.',
             links: [
               {
                 label: 'KCL docs',
@@ -146,6 +146,9 @@ export const useToolbarConfig = () => {
               },
             ],
           },
+          // This is temporary staging-only button to reduce friction on trying
+          // out the new sketch mode. Once we reach basic engine parity, this
+          // can be made the primary button in staging.
           ...((IS_STAGING_OR_DEBUG
             ? [
                 {
@@ -162,10 +165,13 @@ export const useToolbarConfig = () => {
                   icon: 'sketch',
                   iconColor: '#dc2626',
                   status: 'experimental',
-                  title: 'Start Sketch',
+                  title: 'Ѕtart Sketch', // Cyrillic 'S' prevents Playwright matching
                   showTitle: false,
                   description:
-                    'Start drawing a 2D sketch, using the new solver-based sketch mode',
+                    'Staging Only: Start drawing a 2D sketch, using the new solver-based sketch mode.',
+                  links: [
+                    // TODO: Add link once merged: https://github.com/KittyCAD/modeling-app/pull/10212
+                  ],
                 },
               ]
             : []) as ToolbarItem[]),
