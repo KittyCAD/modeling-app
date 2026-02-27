@@ -542,7 +542,7 @@ export class ConnectionManager extends EventTarget {
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<WebSocketResponse | null> {
+  ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
     if (
       this.connection === undefined ||
       !this.started ||
