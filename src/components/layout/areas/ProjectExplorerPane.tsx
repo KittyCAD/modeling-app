@@ -124,11 +124,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         // immediately navigate
         navigateHelper()
       }
-    } else if (
-      window.electron &&
-      isRelevantFile(entry.path) &&
-      projectRef.current?.value.path
-    ) {
+    } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
       // Allow insert if it is a importable file
       toast.custom(
         ToastInsert({

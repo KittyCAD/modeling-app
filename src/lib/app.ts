@@ -13,7 +13,6 @@ import type {
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
   type SettingsType,
@@ -28,8 +27,7 @@ import {
   type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type CommandBarActorType,
   commandBarMachine,
@@ -363,6 +361,10 @@ export class App implements AppSubsystems {
           },
         })
     }
+    const { SYSTEM_IO } = ACTOR_IDS
+    const appMachineActors = {
+      [SYSTEM_IO]: systemIOMachineImpl,
+    } as const
 
     const systemIOActor = createActor(
       isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,

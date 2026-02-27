@@ -4,7 +4,7 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import fsZds from '@src/lib/fs-zds'
 
 import electronfs from '@src/lib/fs-zds/electronfs'
-import noopfs from '@src/lib/fs-zds/noopfs'
+import opfs from '@src/lib/fs-zds/opfs'
 
 /// FileSystemManager is a class that provides a way to read files from the
 /// local file system. The module's singleton instance assumes that you are in a
@@ -114,7 +114,7 @@ export class FileSystemManager {
 const fsInstance =
   typeof window !== 'undefined' && window.electron !== undefined
     ? electronfs.impl
-    : noopfs.impl
+    : opfs.impl
 
 export const fsManager = new FileSystemManager(fsInstance)
 

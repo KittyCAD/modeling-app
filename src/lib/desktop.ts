@@ -58,7 +58,6 @@ const convertIStatToFileMetadata = (
 }
 
 export async function renameProjectDirectory(
-  electron: IElectronAPI,
   projectPath: string,
   newName: string
 ): Promise<string> {
@@ -96,7 +95,6 @@ export async function renameProjectDirectory(
 }
 
 export async function ensureProjectDirectoryExists(
-  electron: IElectronAPI,
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
   const projectDir = config.settings?.project?.directory
@@ -128,7 +126,6 @@ export async function mkdirOrNOOP(directoryPath: string) {
 }
 
 export async function createNewProjectDirectory(
-  electron: IElectronAPI,
   projectName: string,
   wasmInstance: ModuleType,
   initialCode?: string,
@@ -137,13 +134,13 @@ export async function createNewProjectDirectory(
   overrideApplicationProjectDirectory?: string
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(electron, wasmInstance)
+    configuration = await readAppSettingsFile(wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
   const mainDir =
     overrideApplicationProjectDirectory ||
-    (await ensureProjectDirectoryExists(electron, configuration))
+    (await ensureProjectDirectoryExists(configuration))
 
   if (!projectName) {
     return Promise.reject('Project name cannot be empty.')
@@ -208,7 +205,6 @@ export async function createNewProjectDirectory(
 }
 
 export async function listProjects(
-  electron: IElectronAPI,
   initPromise: Promise<ModuleType> | ModuleType,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
@@ -216,16 +212,14 @@ export async function listProjects(
   const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(electron, wasmInstance).catch(
-      (e) => {
-        console.error(e)
-        return e
-      }
-    )
+    configuration = await readAppSettingsFile(wasmInstance).catch((e) => {
+      console.error(e)
+      return e
+    })
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
-  const projectDir = await ensureProjectDirectoryExists(electron, configuration)
+  const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
@@ -250,7 +244,7 @@ export async function listProjects(
       continue
     }
 
-    const project = await getProjectInfo(electron, projectPath, wasmInstance)
+    const project = await getProjectInfo(projectPath, wasmInstance)
 
     if (
       project.kcl_file_count === 0 &&
@@ -268,7 +262,6 @@ export async function listProjects(
 }
 
 const collectAllFilesRecursiveFrom = async (
-  electron: IElectronAPI,
   targetPath: string,
   canReadWritePath: boolean,
   fileExtensionsForFilter: string[]
@@ -339,7 +332,6 @@ const collectAllFilesRecursiveFrom = async (
 
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
-        electron,
         ePath,
         canReadWritePath,
         fileExtensionsForFilter
@@ -366,7 +358,6 @@ const collectAllFilesRecursiveFrom = async (
 }
 
 export async function getDefaultKclFileForDir(
-  electron: IElectronAPI,
   projectDir: string,
   file: FileEntry
 ) {
@@ -388,7 +379,7 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(electron, entry.path, entry)
+            return getDefaultKclFileForDir(entry.path, entry)
           }
         }
         // If we didn't find a kcl file, create one.
@@ -437,7 +428,6 @@ const directoryCount = (file: FileEntry) => {
 }
 
 export async function getProjectInfo(
-  electron: IElectronAPI,
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<Project> {
@@ -469,7 +459,6 @@ export async function getProjectInfo(
   const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
-    electron,
     projectPath,
     canReadWriteProjectPath,
     fileExtensionsForFilter
@@ -479,7 +468,7 @@ export async function getProjectInfo(
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(electron, projectPath, walked)
+    default_file = await getDefaultKclFileForDir(projectPath, walked)
   }
 
   let project = {
@@ -502,14 +491,10 @@ export async function getProjectInfo(
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
-  electron: IElectronAPI,
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
-  const projectSettingsFilePath = await getProjectSettingsFilePath(
-    electron,
-    projectPath
-  )
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return fsZds.writeFile(
     projectSettingsFilePath,
@@ -517,32 +502,32 @@ export async function writeProjectSettingsFile(
   )
 }
 
-const getAppFolderName = (electron: IElectronAPI) => {
+const getAppFolderName = () => {
   const platform =
-    electron.platform ??
-    (electron.os.isLinux
+    window.electron?.platform ??
+    (window.electron?.os.isLinux
       ? 'linux'
-      : electron.os.isMac
+      : window.electron?.os.isMac
         ? 'darwin'
-        : electron.os.isWindows
+        : window.electron?.os.isWindows
           ? 'win32'
           : 'unknown')
   return getAppFolderNameFromMetadata({
-    packageName: electron.packageJson.name,
+    packageName: window.electron?.packageJson.name ?? 'zoo-modeling-app',
     platform,
     isStaging: IS_STAGING,
     isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })
 }
 
-export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
+export const getAppSettingsFilePath = async () => {
   const isTestEnv = env().NODE_ENV === 'test'
 
   const appConfig = await fsZds.getPath('appData')
-  let fullPath = fsZds.resolve(appConfig, getAppFolderName(electron))
+  let fullPath = fsZds.resolve(appConfig, getAppFolderName())
 
-  if (isTestEnv && electron) {
-    const testSettingsPath = await electron.getAppTestProperty(
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
       'TEST_SETTINGS_FILE_KEY'
     )
 
@@ -562,30 +547,30 @@ export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
   return fsZds.join(fullPath, SETTINGS_FILE_NAME)
 }
 
-export const getEnvironmentConfigurationFolderPath = async (
-  electron: IElectronAPI
-) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+export const getEnvironmentConfigurationFolderPath = async () => {
+  const isTestEnv = env().NODE_ENV === 'test'
+  const appConfig = await fsZds.getPath('appData')
 
-  const appConfig = await electron.getPath('appData')
-  const fullPath = isTestEnv
-    ? electron.path.resolve(testSettingsPath, '..')
-    : electron.path.join(
-        appConfig,
-        getAppFolderName(electron),
-        ENVIRONMENT_CONFIGURATION_FOLDER
-      )
-  return fullPath
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+    if (testSettingsPath) {
+      return fsZds.resolve(testSettingsPath, '..')
+    }
+  }
+
+  return fsZds.join(
+    appConfig,
+    getAppFolderName(),
+    ENVIRONMENT_CONFIGURATION_FOLDER
+  )
 }
 
 export const getEnvironmentConfigurationPath = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const fullPath = await getEnvironmentConfigurationFolderPath(electron)
+  const fullPath = await getEnvironmentConfigurationFolderPath()
   try {
     await fsZds.stat(fullPath)
   } catch (e) {
@@ -598,16 +583,21 @@ export const getEnvironmentConfigurationPath = async (
   return fsZds.join(fullPath, environmentName + '.json')
 }
 
-export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+export const getEnvironmentFilePath = async () => {
+  const isTestEnv = env().NODE_ENV === 'test'
+  const appConfig = await fsZds.getPath('appData')
 
-  const appConfig = await electron.getPath('appData')
-  const fullPath = isTestEnv
-    ? electron.path.resolve(testSettingsPath, '..')
-    : electron.path.join(appConfig, getAppFolderName(electron))
+  let fullPath = fsZds.join(appConfig, getAppFolderName())
+
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+    if (testSettingsPath) {
+      fullPath = fsZds.resolve(testSettingsPath, '..')
+    }
+  }
+
   try {
     await fsZds.stat(fullPath)
   } catch (e) {
@@ -619,16 +609,21 @@ export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
   return fsZds.join(fullPath, ENVIRONMENT_FILE_NAME)
 }
 
-const getTelemetryFilePath = async (electron: IElectronAPI) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+const getTelemetryFilePath = async () => {
+  const isTestEnv = env().NODE_ENV === 'test'
 
-  const appConfig = await electron.getPath('appData')
-  const fullPath = isTestEnv
-    ? electron.path.resolve(testSettingsPath, '..')
-    : electron.path.join(appConfig, getAppFolderName(electron))
+  const appConfig = await fsZds.getPath('appData')
+  let fullPath = fsZds.join(appConfig, getAppFolderName())
+
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+    if (testSettingsPath) {
+      fullPath = fsZds.resolve(testSettingsPath, '..')
+    }
+  }
+
   try {
     await fsZds.stat(fullPath)
   } catch (e) {
@@ -640,16 +635,21 @@ const getTelemetryFilePath = async (electron: IElectronAPI) => {
   return fsZds.join(fullPath, TELEMETRY_FILE_NAME)
 }
 
-const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+const getRawTelemetryFilePath = async () => {
+  const isTestEnv = env().NODE_ENV === 'test'
 
-  const appConfig = await electron.getPath('appData')
-  const fullPath = isTestEnv
-    ? electron.path.resolve(testSettingsPath, '..')
-    : electron.path.join(appConfig, getAppFolderName(electron))
+  const appConfig = await fsZds.getPath('appData')
+  let fullPath = fsZds.join(appConfig, getAppFolderName())
+
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+    if (testSettingsPath) {
+      fullPath = fsZds.resolve(testSettingsPath, '..')
+    }
+  }
+
   try {
     await fsZds.stat(fullPath)
   } catch (e) {
@@ -661,10 +661,7 @@ const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
   return fsZds.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
-const getProjectSettingsFilePath = async (
-  electron: IElectronAPI,
-  projectPath: string
-) => {
+const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
     await fsZds.stat(projectPath)
   } catch (e) {
@@ -675,25 +672,27 @@ const getProjectSettingsFilePath = async (
   return fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
 }
 
-export const getInitialDefaultDir = async (electron: IElectronAPI) => {
-  const isTestEnv = electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
+export const getInitialDefaultDir = async () => {
+  const isTestEnv = env().NODE_ENV === 'test'
 
-  if (isTestEnv) {
-    return testSettingsPath
+  if (isTestEnv && window.electron) {
+    const testSettingsPath = await window.electron.getAppTestProperty(
+      'TEST_SETTINGS_FILE_KEY'
+    )
+
+    if (testSettingsPath) {
+      return testSettingsPath
+    }
   }
   const dir = await fsZds.getPath('documents')
   return fsZds.join(dir, PROJECT_FOLDER)
 }
 
 export const readProjectSettingsFile = async (
-  electron: IElectronAPI,
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
-  let settingsPath = await getProjectSettingsFilePath(electron, projectPath)
+  let settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
   try {
@@ -718,13 +717,12 @@ export const readProjectSettingsFile = async (
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
 export const readAppSettingsFile = async (
-  electron: IElectronAPI,
   wasmInstance: ModuleType
-) => {
-  let settingsPath = await getAppSettingsFilePath(electron)
+): Promise<DeepPartial<Configuration>> => {
+  let settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
-  > = { directory: await getInitialDefaultDir(electron) }
+  > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.
   try {
@@ -760,43 +758,39 @@ export const readAppSettingsFile = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e: unknown) {
     console.log('creating default app settings')
-  }
 
-  // The file doesn't exist, create a new one.
-  const defaultAppConfig = defaultAppSettings(wasmInstance)
-  if (err(defaultAppConfig)) {
-    return Promise.reject(defaultAppConfig)
-  }
+    // The file doesn't exist, create a new one.
+    const defaultAppConfig = defaultAppSettings(wasmInstance)
+    if (err(defaultAppConfig)) {
+      return Promise.reject(defaultAppConfig)
+    }
 
-  // inject the default project directory setting
-  const mergedDefaultConfig: DeepPartial<Configuration> = {
-    ...defaultAppConfig,
-    settings: {
-      ...defaultAppConfig.settings,
-      project: Object.assign(
-        {},
-        defaultAppConfig.settings?.project,
-        initialProjectDirConfig
-      ),
-    },
+    // inject the default project directory setting
+    const mergedDefaultConfig: DeepPartial<Configuration> = {
+      ...defaultAppConfig,
+      settings: {
+        ...defaultAppConfig.settings,
+        project: Object.assign(
+          {},
+          defaultAppConfig.settings?.project,
+          initialProjectDirConfig
+        ),
+      },
+    }
+    return mergedDefaultConfig
   }
-  return mergedDefaultConfig
 }
 
-export const writeAppSettingsFile = async (
-  electron: IElectronAPI,
-  tomlStr: string
-) => {
-  const appSettingsFilePath = await getAppSettingsFilePath(electron)
+export const writeAppSettingsFile = async (tomlStr: string) => {
+  const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 
 export const readEnvironmentConfigurationFile = async (
-  electron: IElectronAPI,
   environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const path = await getEnvironmentConfigurationPath(environmentName)
   try {
     await fsZds.stat(path)
     const configurationJSON: string = await fsZds.readFile(path, {
@@ -808,20 +802,16 @@ export const readEnvironmentConfigurationFile = async (
   } catch (_e: unknown) {
     return null
   }
-  return null
 }
 
 export const writeEnvironmentConfigurationToken = async (
-  electron: IElectronAPI,
   environmentName: string,
   token: string
 ) => {
   environmentName = environmentName.trim()
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
-    environmentName
-  )
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await fsZds.writeFile(
@@ -833,16 +823,13 @@ export const writeEnvironmentConfigurationToken = async (
 }
 
 export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string,
   kittycadWebSocketUrl: string
 ) => {
   kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
-    environmentName
-  )
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await fsZds.writeFile(
@@ -854,13 +841,10 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
 }
 
 export const getEnvironmentConfigurationObject = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
-  let environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
+  let environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
@@ -872,40 +856,31 @@ export const getEnvironmentConfigurationObject = async (
 }
 
 export const readEnvironmentConfigurationToken = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.token) return ''
   return environmentConfiguration.token.trim()
 }
 
 export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
 export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string,
   mlephantWebSocketUrl: string
 ) => {
   mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
-    environmentName
-  )
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await fsZds.writeFile(
@@ -917,19 +892,17 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
 }
 
 export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
   return environmentConfiguration.mlephantWebSocketUrl.trim()
 }
 
-export const readEnvironmentFile = async (electron: IElectronAPI) => {
-  let environmentFilePath = await getEnvironmentFilePath(electron)
+export const readEnvironmentFile = async () => {
+  let environmentFilePath = await getEnvironmentFilePath()
+  console.log(readEnvironmentFile)
 
   try {
     await fsZds.stat(environmentFilePath)
@@ -948,13 +921,12 @@ export const readEnvironmentFile = async (electron: IElectronAPI) => {
  * Store the last selected environment on disk to allow us to sign back into the correct
  * environment when they refresh the application or update the application.
  */
-export const writeEnvironmentFile = async (
-  electron: IElectronAPI,
-  environment: string
-) => {
+export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
-  const environmentFilePath = await getEnvironmentFilePath(electron)
+  const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
+  console.log('writing env file path')
+  console.log(environmentFilePath)
   const result = await fsZds.writeFile(
     environmentFilePath,
     new TextEncoder().encode(environment)
@@ -963,9 +935,8 @@ export const writeEnvironmentFile = async (
   return result
 }
 
-export const listAllEnvironments = async (electron: IElectronAPI) => {
-  const environmentFolder =
-    await getEnvironmentConfigurationFolderPath(electron)
+export const listAllEnvironments = async () => {
+  const environmentFolder = await getEnvironmentConfigurationFolderPath()
   const files = await fsZds.readdir(environmentFolder)
   const suffix = '.json'
   return files
@@ -977,12 +948,12 @@ export const listAllEnvironments = async (electron: IElectronAPI) => {
     })
 }
 
-export const listAllEnvironmentsWithTokens = async (electron: IElectronAPI) => {
-  const environments = await listAllEnvironments(electron)
+export const listAllEnvironmentsWithTokens = async () => {
+  const environments = await listAllEnvironments()
   const environmentsWithTokens = []
   for (let i = 0; i < environments.length; i++) {
     const environment = environments[i]
-    const token = await readEnvironmentConfigurationToken(electron, environment)
+    const token = await readEnvironmentConfigurationToken(environment)
     if (token) {
       environmentsWithTokens.push(environment)
     }
@@ -990,20 +961,14 @@ export const listAllEnvironmentsWithTokens = async (electron: IElectronAPI) => {
   return environmentsWithTokens
 }
 
-export const writeTelemetryFile = async (
-  electron: IElectronAPI,
-  content: string
-) => {
-  const telemetryFilePath = await getTelemetryFilePath(electron)
+export const writeTelemetryFile = async (content: string) => {
+  const telemetryFilePath = await getTelemetryFilePath()
   if (err(content)) return Promise.reject(content)
   return fsZds.writeFile(telemetryFilePath, new TextEncoder().encode(content))
 }
 
-export const writeRawTelemetryFile = async (
-  electron: IElectronAPI,
-  content: string
-) => {
-  const rawTelemetryFilePath = await getRawTelemetryFilePath(electron)
+export const writeRawTelemetryFile = async (content: string) => {
+  const rawTelemetryFilePath = await getRawTelemetryFilePath()
   if (err(content)) return Promise.reject(content)
   return fsZds.writeFile(
     rawTelemetryFilePath,
@@ -1029,7 +994,6 @@ export const getUser = async (token: string): Promise<User> => {
 }
 
 export const writeProjectThumbnailFile = async (
-  electron: IElectronAPI,
   dataUrl: string,
   projectDirectoryPath: string
 ) => {

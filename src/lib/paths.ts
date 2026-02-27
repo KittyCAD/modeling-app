@@ -1,14 +1,9 @@
-import type { PlatformPath } from 'path'
+import fsZds from '@src/lib/fs-zds'
+
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 
-import type { IElectronAPI } from '@root/interface'
-import {
-  BROWSER_FILE_NAME,
-  BROWSER_PROJECT_NAME,
-  FILE_EXT,
-} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -34,16 +29,11 @@ export const PATHS = {
   ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
-export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
-    electron: IElectronAPI,
     wasmInstance: ModuleType
   ) => Promise<DeepPartial<Configuration>>,
-  readLocalStorageAppSettingsFile: (
-    wasmInstance: ModuleType
-  ) => DeepPartial<Configuration> | Error,
   wasmInstance: ModuleType,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
@@ -53,9 +43,7 @@ export async function getProjectMetaByRouteId(
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = window.electron
-      ? await readAppSettingsFile(window.electron, wasmInstance)
-      : readLocalStorageAppSettingsFile(wasmInstance)
+    configuration = await readAppSettingsFile(wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -65,7 +53,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id, window?.electron?.path)
+  const route = parseProjectRoute(configuration, id)
 
   if (err(route)) return Promise.reject(route)
 
@@ -74,51 +62,39 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string,
-  pathlib: PlatformPath | undefined
+  id: string
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
   if (
-    pathlib &&
     configuration.settings?.project?.directory &&
     id.startsWith(configuration.settings.project.directory)
   ) {
-    const relativeToRoot = pathlib.relative(
+    const relativeToRoot = fsZds.relative(
       configuration.settings.project.directory,
       id
     )
-    projectName = relativeToRoot.split(pathlib.sep)[0]
-    projectPath = pathlib.join(
+    projectName = relativeToRoot.split(fsZds.sep)[0]
+    projectPath = fsZds.join(
       configuration.settings.project.directory,
       projectName
     )
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
-    if (pathlib) {
-      if (pathlib.extname(id) === '.kcl') {
-        projectPath = pathlib.dirname(id)
-      }
-      projectName = pathlib.basename(projectPath)
-    } else {
-      if (id.endsWith('.kcl')) {
-        projectPath = '/browser'
-        projectName = 'browser'
-      }
+    if (fsZds.extname(id) === '.kcl') {
+      projectPath = fsZds.dirname(id)
     }
+    projectName = fsZds.basename(projectPath)
   }
-  if (pathlib) {
-    if (projectPath !== id) {
-      currentFileName = pathlib.basename(id)
-      currentFilePath = id
-    }
-  } else {
-    currentFileName = 'main.kcl'
+
+  if (projectPath !== id) {
+    currentFileName = fsZds.basename(id)
     currentFilePath = id
   }
+
   return {
     projectName: projectName,
     projectPath: projectPath,
@@ -176,7 +152,7 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(targetPath: string): string {
-  return targetPath.split(window.electron ? fsZds.sep : '/').pop() || ''
+  return targetPath.split(fsZds.sep).pop() || ''
 }
 
 /**
@@ -325,10 +301,7 @@ export function getFilePathRelativeToProject(
 }
 
 async function getArchiveBasePath() {
-  return desktopSafePathJoin([
-    (await fsZds.getPath('userData')) ?? '/userData',
-    ARCHIVE_DIR,
-  ])
+  return desktopSafePathJoin([await fsZds.getPath('userData'), ARCHIVE_DIR])
 }
 
 /** Convert any given path to an archived one.
@@ -339,12 +312,8 @@ async function getArchiveBasePath() {
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
 
-  if (window.electron) {
-    // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
-    // Make that make sense, right? So our archive paths need to replace that character.
-    const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
-    return fsZds.join(basePath, absolutePathWithSafeDriveName)
-  }
-
-  return webSafeJoin([basePath, absolutePath])
+  // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
+  // Make that make sense, right? So our archive paths need to replace that character.
+  const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
+  return fsZds.join(basePath, absolutePathWithSafeDriveName)
 }

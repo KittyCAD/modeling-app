@@ -132,6 +132,11 @@ export function HelpMenu() {
             <HelpMenuItem
               as="button"
               onClick={() => {
+                if (!filePath) {
+                  console.warn('bug: filePath is undefined')
+                  return
+                }
+
                 const targetPath = location.pathname.includes(PATHS.FILE)
                   ? filePath + PATHS.SETTINGS_KEYBINDINGS
                   : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
