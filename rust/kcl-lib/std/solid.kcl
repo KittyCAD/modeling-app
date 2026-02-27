@@ -771,8 +771,9 @@ export fn patternCircular3d(
   @(snippetArray = ["1", "0", "0"])
   axis: Axis3d | Point3d,
   /// The center about which to make the pattern. This is a 3D vector.
-  @(snippetArray = ["0", "0", "0"])
-  center: Point3d,
+  /// If not given, defaults to `[0, 0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0", "0"])
+  center?: Point3d,
   /// "The arc angle to place the repetitions. Must be greater than 0.
   arcDegrees?: number(deg) = 360deg,
   /// Whether or not to rotate the duplicates as they are copied.

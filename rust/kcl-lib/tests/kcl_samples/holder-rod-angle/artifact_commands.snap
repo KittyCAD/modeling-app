@@ -453,6 +453,7 @@ description: Artifact commands holder-rod-angle.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
