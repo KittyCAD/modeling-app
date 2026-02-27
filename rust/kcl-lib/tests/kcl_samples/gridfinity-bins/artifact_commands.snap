@@ -770,6 +770,7 @@ description: Artifact commands gridfinity-bins.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.8,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2973,6 +2974,7 @@ description: Artifact commands gridfinity-bins.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.75,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
