@@ -24,6 +24,16 @@ export function pointToVec3(obj: PointSegment) {
   return new Vector3(position.x.value, position.y.value, 0)
 }
 
+export function isLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+}
+
+export type LineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Line' } }
+}
+
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
@@ -60,6 +70,10 @@ export type DiameterConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Diameter' } }
 }
 
+export type AngleConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Angle' } }
+}
+
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
 }
@@ -68,6 +82,10 @@ export function isDiameterConstraint(
   obj: ApiObject
 ): obj is DiameterConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
+}
+
+export function isAngleConstraint(obj: ApiObject): obj is AngleConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Angle'
 }
 
 export function calculateDimensionLabelScreenPosition(
