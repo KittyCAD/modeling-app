@@ -393,6 +393,9 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    // TODO REMOVE BEFORE MERGE
+    // Hardcode engine pool to PR 4194 deployment while this app PR depends on that engine PR
+    additionalSettings += '&pool=pr-4194'
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
