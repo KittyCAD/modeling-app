@@ -745,9 +745,12 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
   // On desktop, it cannot resolve file://, so we need to simply read from fs.
   // On web, these are data: urls. Simply decode.
 
-  // throw new Error(url)
   if (url.startsWith('data:')) {
-    return atob(url.split(',')[1])
+    // Newly available, our types outdated. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
+    // @ts-expect-error
+    const bytes = Uint8Array.fromBase64(url.split(',')[1])
+    return new TextDecoder().decode(bytes)
+
     // The few places where fsZds does not make sense to use. We are interacting
     // with the system at a level so low that it doesn't make sense to abstract this.
     // It has to live basically at the same execution time as the module importing
@@ -755,14 +758,12 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
   } else if (window.electron) {
     // Needing to decode the URI bit my butt yo
     // Windows has C:\C:\ for some only god known reason.
-    return window.electron.readFile(
+    const bytes = await window.electron.readFile(
       window.electron.path
         .resolve(decodeURI(url.split('file://')[1]))
-        .replace('C:\\C:\\', 'C:\\'),
-      {
-        encoding: 'utf-8',
-      }
+        .replace('C:\\C:\\', 'C:\\')
     )
+    return new TextDecoder().decode(bytes)
   }
 
   return Promise.reject(
