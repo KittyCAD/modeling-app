@@ -51,6 +51,7 @@ import {
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
+  getLineEndpoints,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -62,23 +63,13 @@ function calculateCurrentAngleBetweenLines(
   line2: ApiObject,
   objects: ApiObject[]
 ): number | null {
-  if (!isLineSegment(line1) || !isLineSegment(line2)) {
+  const line1Endpoints = getLineEndpoints(line1, objects)
+  const line2Endpoints = getLineEndpoints(line2, objects)
+  if (!line1Endpoints || !line2Endpoints) {
     return null
   }
-
-  const line1Start = objects[line1.kind.segment.start]
-  const line1End = objects[line1.kind.segment.end]
-  const line2Start = objects[line2.kind.segment.start]
-  const line2End = objects[line2.kind.segment.end]
-
-  if (
-    !isPointSegment(line1Start) ||
-    !isPointSegment(line1End) ||
-    !isPointSegment(line2Start) ||
-    !isPointSegment(line2End)
-  ) {
-    return null
-  }
+  const [line1Start, line1End] = line1Endpoints
+  const [line2Start, line2End] = line2Endpoints
 
   const v1x =
     line1End.kind.segment.position.x.value -
