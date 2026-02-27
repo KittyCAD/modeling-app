@@ -1098,7 +1098,7 @@ pub async fn make_sketch_plane_from_orientation(
     };
 
     // Create the plane on the fly.
-    ensure_sketch_plane_in_engine(&mut plane, exec_state, args).await?;
+    ensure_sketch_plane_in_engine(&mut plane, exec_state, &args.ctx, args.source_range).await?;
 
     Ok(Box::new(plane))
 }
@@ -1107,7 +1107,8 @@ pub async fn make_sketch_plane_from_orientation(
 pub async fn ensure_sketch_plane_in_engine(
     plane: &mut Plane,
     exec_state: &mut ExecState,
-    args: &Args,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
 ) -> Result<(), KclError> {
     if plane.is_initialized() {
         return Ok(());
@@ -1143,7 +1144,7 @@ pub async fn ensure_sketch_plane_in_engine(
     };
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, plane.id),
+            ModelingCmdMeta::with_id(exec_state, ctx, source_range, plane.id),
             ModelingCmd::from(cmd),
         )
         .await?;
@@ -1156,9 +1157,9 @@ pub async fn ensure_sketch_plane_in_engine(
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::new(plane.id),
-            source: args.source_range.into(),
+            source: source_range.into(),
         };
-        exec_state.add_scene_object(plane_object, args.source_range);
+        exec_state.add_scene_object(plane_object, source_range);
     }
     plane.object_id = Some(plane_object_id);
 

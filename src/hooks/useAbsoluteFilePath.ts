@@ -1,12 +1,14 @@
-import { useRouteLoaderData } from 'react-router-dom'
-
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
-import { type IndexLoaderData } from '@src/lib/types'
+import { useApp } from '@src/lib/boot'
 
 export function useAbsoluteFilePath() {
-  const routeData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const app = useApp()
 
   return (
-    PATHS.FILE + '/' + encodeURIComponent(routeData?.file?.path || BROWSER_PATH)
+    PATHS.FILE +
+    '/' +
+    encodeURIComponent(
+      app.project?.executingPathSignal.value?.value ?? BROWSER_PATH
+    )
   )
 }
