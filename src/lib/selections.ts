@@ -126,6 +126,16 @@ async function getPrimitiveSelectionForEntity(
   }
 }
 
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
+}
+
 export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
   {
@@ -318,6 +328,13 @@ export function handleSelectionBatch({
         range:
           getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
           defaultSourceRange(),
+      })
+  })
+  selections.otherSelections.forEach((s) => {
+    isEnginePrimitiveSelection(s) &&
+      selectionToEngine.push({
+        id: s.entityId,
+        range: defaultSourceRange(),
       })
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(

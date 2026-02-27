@@ -3,7 +3,6 @@ import { Mesh, Vector2, Vector3 } from 'three'
 import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type {
-  EnginePrimitiveSelection,
   SetSelections,
   MouseState,
   SegmentOverlayPayload,
@@ -179,6 +178,7 @@ import {
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  isEnginePrimitiveSelection,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -1576,13 +1576,6 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'enginePrimitiveSelection') {
-          const isEnginePrimitiveSelection = (
-            selection: Selections['otherSelections'][number]
-          ): selection is EnginePrimitiveSelection =>
-            typeof selection === 'object' &&
-            'type' in selection &&
-            selection.type === 'enginePrimitive'
-
           const shouldDeselect = selectionRanges.otherSelections.some(
             (selection) =>
               isEnginePrimitiveSelection(selection) &&
@@ -1601,13 +1594,36 @@ export const modelingMachine = setup({
               : [...selectionRanges.otherSelections, setSelections.selection]
             : [setSelections.selection]
 
-          return {
-            selectionRanges: {
-              graphSelections: kclManager.isShiftDown
-                ? selectionRanges.graphSelections
-                : [],
-              otherSelections,
+          const selections: Selections = {
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
+            otherSelections,
+          }
+          const { engineEvents } = handleSelectionBatch({
+            selections,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager,
+              wasmInstance,
             },
+          })
+
+          // If there are engine commands that need sent off, send them
+          // TODO: This should be handled outside of an action as its own
+          // actor, so that the system state is more controlled.
+          engineEvents &&
+            engineEvents.forEach((event) => {
+              engineCommandManager
+                .sendSceneCommand(event)
+                .catch(reportRejection)
+            })
+
+          return {
+            selectionRanges: selections,
           }
         }
 
