@@ -599,6 +599,11 @@ export function getSelectionCountByType(
       selection.primitiveType === 'face'
     ) {
       incrementOrInitializeSelectionType('enginePrimitiveFace')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'edge'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveEdge')
     } else {
       incrementOrInitializeSelectionType('other')
     }
@@ -643,11 +648,9 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${
-          type === 'enginePrimitiveFace'
-            ? 'face'
-            : type.replace('wall', 'face').replace('solid2d', 'profile')
-        }${count > 1 ? 's' : ''}`
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
+          count > 1 ? 's' : ''
+        }`
     )
     .join(', ')
 }
