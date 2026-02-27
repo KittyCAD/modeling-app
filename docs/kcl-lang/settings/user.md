@@ -204,9 +204,9 @@ The number of snaps between minor grid lines. 1 means snapping to each minor gri
 
 **Default:** None
 
-##### use_new_sketch_mode
+##### use_sketch_solve_mode
 
-Toggle new sketch mode implementation
+Default to the experimental solver-based sketch mode for all new sketches.
 
 
 **Default:** None

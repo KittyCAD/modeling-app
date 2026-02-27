@@ -148,7 +148,7 @@ export const useToolbarConfig = () => {
             ],
           },
           // This is temporary staging-only button to reduce friction on trying
-          // out the new sketch mode. Once we reach basic engine parity, this
+          // out the sketch solve mode. Once we reach basic engine parity, this
           // can be made the primary button in staging.
           ...((IS_STAGING_OR_DEBUG && !isPlaywright()
             ? [
@@ -159,7 +159,7 @@ export const useToolbarConfig = () => {
                       type: 'Enter sketch',
                       data: {
                         forceNewSketch: true,
-                        forceNewSketchMode: true,
+                        forceSketchSolveMode: true,
                       },
                     })
                   },
