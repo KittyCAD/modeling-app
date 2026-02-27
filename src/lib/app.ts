@@ -4,7 +4,12 @@ import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
+import type {
+  ActorRefFrom,
+  ContextFrom,
+  SnapshotFrom,
+  Subscription,
+} from 'xstate'
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -148,8 +153,6 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-
-    this.settings.actor.subscribe(this.onSettingsUpdate)
   }
 
   /**
@@ -293,8 +296,14 @@ export class App implements AppSubsystems {
         projectIORefSignal.value = foundProject
       }
     })
+
+    this.unsubscribeFromSettings = this.settings.actor.subscribe(
+      this.onSettingsUpdate
+    )
   }
+  private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
+    this.unsubscribeFromSettings?.unsubscribe()
     this.project?.closeAllEditors()
     this.project = undefined
   }
