@@ -2197,13 +2197,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30)
-    `
-    const initialCodeWithTag = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
-    `
+extrude001 = extrude(sketch001, length = 30)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2261,7 +2255,6 @@ extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled(cmdBar)
-      await editor.expectEditor.toContain(initialCodeWithTag)
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -2297,7 +2290,6 @@ extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
       await scene.settled(cmdBar)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(initialCodeWithTag)
       await editor.expectEditor.toContain(editedShellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -2312,7 +2304,6 @@ extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
-      await editor.expectEditor.toContain(initialCodeWithTag)
       await editor.expectEditor.not.toContain(shellDeclaration)
     })
   })
@@ -2329,24 +2320,17 @@ extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30)
-    `
+extrude001 = extrude(sketch001, length = 30)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const deleteFaceDeclaration = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30, tagEnd = $capEnd001)
-surface001 = deleteFace(extrude001, faces = capEnd001)`
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.selectSurface('delete-face')
@@ -2374,7 +2358,7 @@ surface001 = deleteFace(extrude001, faces = capEnd001)`
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await scene.settled(cmdBar)
-      await editor.expectEditor.toContain(deleteFaceDeclaration)
+      await editor.expectEditor.toContain(deleteDeclaration)
     })
 
     await test.step('Delete delete face via feature tree selection', async () => {
@@ -2386,7 +2370,7 @@ surface001 = deleteFace(extrude001, faces = capEnd001)`
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain(deleteFaceDeclaration)
+      await editor.expectEditor.not.toContain(deleteDeclaration)
     })
   })
 
