@@ -58,6 +58,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
+  isArray,
   isNonNullable,
   isOverlap,
   uuidv4,
@@ -878,6 +879,9 @@ export async function sendSelectEventToEngine(
     return undefined
   }
 
+  if (isArray(res)) {
+    res = res[0]
+  }
   const singleRes = res
   if (isModelingResponse(singleRes)) {
     const mr = singleRes.resp.data.modeling_response
@@ -954,7 +958,7 @@ const semanticEntityNames: {
 } = {
   face: ['wall', 'cap', 'enginePrimitiveFace'],
   profile: ['solid2d'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }

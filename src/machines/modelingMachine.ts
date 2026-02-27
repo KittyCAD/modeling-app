@@ -1583,20 +1583,10 @@ export const modelingMachine = setup({
             'type' in selection &&
             selection.type === 'enginePrimitive'
 
-          const isSamePrimitiveSelection = (
-            selection: EnginePrimitiveSelection
-          ) =>
-            selection.entityId === setSelections.selection.entityId &&
-            selection.parentEntityId ===
-              setSelections.selection.parentEntityId &&
-            selection.primitiveIndex ===
-              setSelections.selection.primitiveIndex &&
-            selection.primitiveType === setSelections.selection.primitiveType
-
           const shouldDeselect = selectionRanges.otherSelections.some(
             (selection) =>
               isEnginePrimitiveSelection(selection) &&
-              isSamePrimitiveSelection(selection)
+              selection.entityId === setSelections.selection.entityId
           )
 
           const otherSelections = kclManager.isShiftDown
@@ -1605,7 +1595,7 @@ export const modelingMachine = setup({
                   (selection) =>
                     !(
                       isEnginePrimitiveSelection(selection) &&
-                      isSamePrimitiveSelection(selection)
+                      selection.entityId === setSelections.selection.entityId
                     )
                 )
               : [...selectionRanges.otherSelections, setSelections.selection]
