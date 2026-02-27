@@ -12,7 +12,7 @@ use uuid::Uuid;
 use crate::{
     KclError, ModuleId, NodePath, SourceRange,
     errors::KclErrorDetails,
-    execution::{ArtifactId, state::ModuleInfoMap},
+    execution::{ArtifactId, id_generator::EngineIdGenerator, state::ModuleInfoMap},
     front::{Constraint, ObjectId},
     modules::ModulePath,
     parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
@@ -787,6 +787,8 @@ pub(super) fn build_artifact_graph(
         fill_in_node_paths(exec_artifact, programs, item_count, &import_code_refs);
     }
 
+    let mut id_generator = EngineIdGenerator::new(Uuid::new_v4());
+
     for artifact_command in artifact_commands {
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
@@ -803,6 +805,9 @@ pub(super) fn build_artifact_graph(
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
         }
+        if let ModelingCmd::StartPath(_) = artifact_command.command {
+            id_generator = EngineIdGenerator::new(artifact_command.cmd_id);
+        }
 
         let flattened_responses = flatten_modeling_command_responses(responses);
         let artifact_updates = artifacts_to_update(
@@ -813,8 +818,14 @@ pub(super) fn build_artifact_graph(
             programs,
             item_count,
             exec_artifacts,
+            &id_generator,
             &import_code_refs,
         )?;
+
+        if let ModelingCmd::ExtendPath(_) = artifact_command.command {
+            id_generator.next_edge();
+        }
+
         for artifact in artifact_updates {
             // Merge with existing artifacts.
             merge_artifact_into_map(&mut map, artifact);
@@ -961,6 +972,7 @@ fn artifacts_to_update(
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    id_generator: &EngineIdGenerator,
     import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
@@ -1105,8 +1117,9 @@ fn artifacts_to_update(
                 ),
             });
             let mut return_arr = Vec::new();
+            let curve_id = id_generator.get_curve_id();
             return_arr.push(Artifact::Segment(Segment {
-                id,
+                id: curve_id,
                 path_id,
                 surface_id: None,
                 edge_ids: Vec::new(),
@@ -1117,7 +1130,7 @@ fn artifacts_to_update(
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
-                new_path.seg_ids = vec![id];
+                new_path.seg_ids = vec![curve_id];
                 return_arr.push(Artifact::Path(new_path));
             }
             if let Some(OkModelingCmdResponse::ClosePath(close_path)) = response {
@@ -1235,7 +1248,7 @@ fn artifacts_to_update(
             };
             let mut return_arr = Vec::new();
             let target = ArtifactId::from(target);
-            return_arr.push(Artifact::Sweep(Sweep {
+            let mut sweep = Sweep {
                 id,
                 sub_type,
                 path_id: target,
@@ -1245,7 +1258,7 @@ fn artifacts_to_update(
                 trajectory_id: None,
                 method,
                 consumed: false,
-            }));
+            };
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
@@ -1260,7 +1273,111 @@ fn artifacts_to_update(
                     inner_path_artifact.consumed = true;
                     return_arr.push(Artifact::Path(inner_path_artifact))
                 }
+
+                if let ModelingCmd::Extrude(kcmc::Extrude { .. }) = cmd {
+                    // Note: target.0 === path.id
+                    let mut id_generator = EngineIdGenerator::new(target.0);
+                    let sweep_id = id; // command id is the sweep id
+
+                    let start_cap_id = id_generator.get_start_cap_id();
+                    let end_cap_id = id_generator.get_end_cap_id();
+
+                    // Go through segments and add walls, opposite and adj edges
+                    for index in 0..path.seg_ids.len() - 1 {
+                        let face_id = id_generator.get_face_id();
+                        let next_face_id = id_generator.get_next_face_id(path.seg_ids.len() as u32);
+                        let curve_id = id_generator.get_curve_id();
+                        let opposite_edge_id = id_generator.get_opposite_edge_id();
+
+                        let adjacent_edge_id = id_generator.get_adjacent_edge_id();
+
+                        let wall_artifact = Artifact::Wall(Wall {
+                            id: face_id,
+                            seg_id: curve_id,
+                            edge_cut_edge_ids: vec![opposite_edge_id, adjacent_edge_id],
+                            sweep_id,
+                            path_ids: Vec::new(),
+                            face_code_ref: find_sketch_on_face_code_ref(exec_artifacts, face_id),
+                            cmd_id: artifact_command.cmd_id,
+                        });
+                        return_arr.push(wall_artifact);
+                        sweep.surface_ids.push(face_id);
+
+                        return_arr.push(Artifact::SweepEdge(SweepEdge {
+                            id: opposite_edge_id,
+                            sub_type: SweepEdgeSubType::Opposite,
+                            seg_id: curve_id,
+                            cmd_id: artifact_command.cmd_id,
+                            index,
+                            sweep_id,
+                            common_surface_ids: vec![face_id, end_cap_id],
+                        }));
+
+                        return_arr.push(Artifact::SweepEdge(SweepEdge {
+                            id: adjacent_edge_id,
+                            sub_type: SweepEdgeSubType::Adjacent,
+                            seg_id: curve_id,
+                            cmd_id: artifact_command.cmd_id,
+                            index,
+                            sweep_id,
+                            common_surface_ids: vec![face_id, next_face_id],
+                        }));
+
+                        // Add opposite and adjacent edges to segment, sweep and wall.
+                        if let Some(Artifact::Segment(segment)) = artifacts.get(&curve_id) {
+                            let mut new_segment = segment.clone();
+                            new_segment.edge_ids = vec![opposite_edge_id, adjacent_edge_id];
+                            new_segment.common_surface_ids = vec![face_id, end_cap_id];
+                            return_arr.push(Artifact::Segment(new_segment));
+                        }
+
+                        sweep.edge_ids.push(opposite_edge_id);
+                        sweep.edge_ids.push(adjacent_edge_id);
+
+                        // TODO is this ever used?
+                        // if let Some(artifact) = artifacts.get(&edge_id) {
+                        //     match artifact {
+                        //         Artifact::SweepEdge(_sweep_edge) => {
+
+                        //             // let mut new_sweep_edge = sweep_edge.clone();
+                        //             // new_sweep_edge.common_surface_ids =
+                        //             //     original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        //             // return_arr.push(Artifact::SweepEdge(new_sweep_edge));
+                        //         }
+                        //         _ => {}
+                        //     };
+                        // };
+
+                        id_generator.next_edge();
+                    }
+
+                    // Add end caps
+
+                    return_arr.push(Artifact::Cap(Cap {
+                        id: start_cap_id,
+                        sub_type: CapSubType::Start,
+                        edge_cut_edge_ids: Vec::new(),
+                        sweep_id,
+                        path_ids: Vec::new(),
+                        face_code_ref: find_sketch_on_face_code_ref(exec_artifacts, start_cap_id),
+                        cmd_id: artifact_command.cmd_id,
+                    }));
+                    sweep.surface_ids.push(start_cap_id);
+
+                    return_arr.push(Artifact::Cap(Cap {
+                        id: end_cap_id,
+                        sub_type: CapSubType::End,
+                        edge_cut_edge_ids: Vec::new(),
+                        sweep_id,
+                        path_ids: Vec::new(),
+                        face_code_ref: find_sketch_on_face_code_ref(exec_artifacts, end_cap_id),
+                        cmd_id: artifact_command.cmd_id,
+                    }));
+                    sweep.surface_ids.push(end_cap_id);
+                }
             }
+            return_arr.push(Artifact::Sweep(sweep));
+
             return Ok(return_arr);
         }
         ModelingCmd::Sweep(kcmc::Sweep { target, trajectory, .. }) => {
@@ -1833,4 +1950,26 @@ fn artifacts_to_update(
     }
 
     Ok(Vec::new())
+}
+
+// Find sketch_on_face_code_ref (code from Solid3dGetExtrusionFaceInfo handling)
+fn find_sketch_on_face_code_ref(exec_artifacts: &IndexMap<ArtifactId, Artifact>, face_id: ArtifactId) -> CodeRef {
+    let extra_artifact = exec_artifacts.values().find(|a| {
+        if let Artifact::StartSketchOnFace(s) = a {
+            s.face_id == face_id
+        } else if let Artifact::StartSketchOnPlane(s) = a {
+            s.plane_id == face_id
+        } else {
+            false
+        }
+    });
+    let sketch_on_face_code_ref = extra_artifact
+        .and_then(|a| match a {
+            Artifact::StartSketchOnFace(s) => Some(s.code_ref.clone()),
+            Artifact::StartSketchOnPlane(s) => Some(s.code_ref.clone()),
+            _ => None,
+        })
+        // TODO: If we didn't find it, it's probably a bug.
+        .unwrap_or_default();
+    sketch_on_face_code_ref
 }
