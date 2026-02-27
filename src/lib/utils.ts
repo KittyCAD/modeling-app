@@ -746,9 +746,9 @@ export const dataOrFileUrlToString = async (url: string): Promise<string> => {
   // On web, these are data: urls. Simply decode.
 
   if (url.startsWith('data:')) {
-    // Newly available, our types outdated. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
-    // @ts-expect-error
-    const bytes = Uint8Array.fromBase64(url.split(',')[1])
+    const base64 = url.split(',')[1]
+    const binString = atob(base64)
+    const bytes = Uint8Array.from(binString, (m) => m.codePointAt(0)!)
     return new TextDecoder().decode(bytes)
 
     // The few places where fsZds does not make sense to use. We are interacting
