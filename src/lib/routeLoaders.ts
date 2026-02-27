@@ -160,12 +160,6 @@ export const fileLoader =
         : null
 
       const project = maybeProjectInfo ?? defaultProjectData
-      app.openProject(
-        project,
-        currentFilePath || PROJECT_ENTRYPOINT,
-        app.singletons.kclManager
-      )
-      await rustContext.sendOpenProject(project, currentFilePath)
 
       // Fire off the event to load the project settings
       // once we know it's idle.
@@ -174,6 +168,16 @@ export const fileLoader =
         type: 'load.project',
         project,
       })
+      await waitFor(settingsActor, (state) => state.matches('idle'))
+
+      // This starts subscribing to settingsActor updates
+      // TODO: Make settings not an XState actor, this is too convoluted.
+      app.openProject(
+        project,
+        currentFilePath || PROJECT_ENTRYPOINT,
+        app.singletons.kclManager
+      )
+      await rustContext.sendOpenProject(project, currentFilePath)
 
       const appProjectDir = settings.settings.app.projectDirectory.current
       const requestedProjectDirectoryPath = project.path.includes(appProjectDir)

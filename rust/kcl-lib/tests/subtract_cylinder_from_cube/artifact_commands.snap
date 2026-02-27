@@ -393,6 +393,7 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }
