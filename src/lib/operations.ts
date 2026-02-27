@@ -1926,12 +1926,6 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
-  deleteFace: {
-    label: 'Delete Face',
-    icon: 'deleteFace',
-    supportsAppearance: true,
-    supportsTransform: true,
-  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
