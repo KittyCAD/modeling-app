@@ -254,7 +254,7 @@ function getTokenFromEnvOrCookie(): string {
 async function getTokenFromFile(): Promise<string> {
   const environmentName = env().VITE_ZOO_BASE_DOMAIN
   if (!window.electron || !environmentName) return ''
-  return readEnvironmentConfigurationToken(window.electron, environmentName)
+  return readEnvironmentConfigurationToken(environmentName)
 }
 
 /**

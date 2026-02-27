@@ -1,4 +1,3 @@
-import type { IElectronAPI } from '@root/interface'
 import type { User } from '@kittycad/lib'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'

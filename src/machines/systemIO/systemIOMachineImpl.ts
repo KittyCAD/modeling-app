@@ -1,13 +1,14 @@
+import type { IElectronAPI } from '@root/interface'
 import fsZds from '@src/lib/fs-zds'
 import {
-  statIsDirectory,
-  canReadWriteDirectory,
   createNewProjectDirectory,
   getAppSettingsFilePath,
   getProjectInfo,
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  canReadWriteDirectory,
+  statIsDirectory,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -22,7 +23,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import type { AppMachineContext } from '@src/lib/types'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -46,7 +47,6 @@ const sharedBulkCreateWorkflow = async ({
   input: {
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
     override?: boolean
   }
@@ -57,20 +57,20 @@ const sharedBulkCreateWorkflow = async ({
     const requestedProjectName = file.requestedProjectName
     const requestedFileName = file.requestedFileName
     const requestedCode = file.requestedCode
-    const folders = input.context.folders ?? []
+    const folders = input.context.folders
 
     let newProjectName = requestedProjectName
 
     if (!newProjectName) {
       newProjectName = getUniqueProjectName(
         input.context.defaultProjectFolderName,
-        folders
+        input.context.folders ?? []
       )
     }
 
     const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
     if (needsInterpolated) {
-      const nextIndex = getNextProjectIndex(newProjectName, folders)
+      const nextIndex = getNextProjectIndex(newProjectName, folders ?? [])
       newProjectName = interpolateProjectNameWithIndex(
         newProjectName,
         nextIndex
@@ -122,11 +122,15 @@ const sharedBulkDeleteWorkflow = async ({
     requestedProjectName: string
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
   }
 }) => {
-  const project = (input.context.folders ?? []).find(
+  if (!input.context.folders) {
+    console.warn('no folders')
+    return
+  }
+
+  const project = input.context.folders.find(
     (f) => f.name === input.requestedProjectName
   )
 
@@ -205,7 +209,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }) => {
         const folders = input.context.folders
         if (!folders) {
-          return Promise.reject(new Error('Projects not loaded yet'))
+          return Promise.reject(new Error('no folders'))
         }
 
         const requestedProjectName = input.requestedProjectName
@@ -233,7 +237,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }) => {
         const folders = input.context.folders
         if (!folders) {
-          return Promise.reject(new Error('Projects not loaded yet'))
+          return Promise.reject(new Error('no folders'))
         }
 
         const requestedProjectName = input.requestedProjectName
@@ -289,80 +293,66 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.createKCLFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileNameWithExtension: string
-          requestedCode: string
-          rootContext: AppMachineContext
-          requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
-        }
-      }) => {
-        const requestedProjectName = input.requestedProjectName
-        const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension
-        const requestedCode = input.requestedCode
-        const folders = input.context.folders
-        if (!folders) {
-          return Promise.reject(new Error('Projects not loaded yet'))
-        }
+    [SystemIOMachineActors.createKCLFile]: fromPromise(async ({ input }) => {
+      const requestedProjectName = input.requestedProjectName
+      const requestedFileNameWithExtension =
+        input.requestedFileNameWithExtension
+      const requestedCode = input.requestedCode
+      const folders = input.context.folders
 
-        let newProjectName = requestedProjectName
-
-        if (!newProjectName) {
-          newProjectName = getUniqueProjectName(
-            input.context.defaultProjectFolderName,
-            folders
-          )
-        }
-
-        const needsInterpolated =
-          doesProjectNameNeedInterpolated(newProjectName)
-        if (needsInterpolated) {
-          const nextIndex = getNextProjectIndex(newProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            newProjectName,
-            nextIndex
-          )
-        }
-
-        const wasmInstance = await input.wasmInstancePromise
-
-        const baseDir = fsZds.join(
-          input.context.projectDirectoryPath,
-          newProjectName
-        )
-        const { name: newFileName } = await getNextFileName({
-          entryName: requestedFileNameWithExtension,
-          baseDir,
-          wasmInstance,
-        })
-
-        const configuration = await readAppSettingsFile(wasmInstance)
-
-        // Create the project around the file if newProject
-        await createNewProjectDirectory(
-          newProjectName,
-          await input.wasmInstancePromise,
-          requestedCode,
-          configuration,
-          newFileName,
-          input.context.projectDirectoryPath
-        )
-
-        return {
-          message: 'Successfully created file.',
-          fileName: newFileName,
-          projectName: newProjectName,
-          subRoute: input.requestedSubRoute || '',
-        }
+      if (!folders) {
+        return Promise.reject(new Error('no folders'))
       }
-    ),
+
+      let newProjectName = requestedProjectName
+
+      if (!newProjectName) {
+        newProjectName = getUniqueProjectName(
+          input.context.defaultProjectFolderName,
+          folders
+        )
+      }
+
+      const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
+      if (needsInterpolated) {
+        const nextIndex = getNextProjectIndex(newProjectName, folders)
+        newProjectName = interpolateProjectNameWithIndex(
+          newProjectName,
+          nextIndex
+        )
+      }
+
+      const wasmInstance = await input.kclManager.wasmInstancePromise
+
+      const baseDir = fsZds.join(
+        input.context.projectDirectoryPath,
+        newProjectName
+      )
+      const { name: newFileName } = await getNextFileName({
+        entryName: requestedFileNameWithExtension,
+        baseDir,
+        wasmInstance,
+      })
+
+      const configuration = await readAppSettingsFile(wasmInstance)
+
+      // Create the project around the file if newProject
+      await createNewProjectDirectory(
+        newProjectName,
+        wasmInstance,
+        requestedCode,
+        configuration,
+        newFileName,
+        input.context.projectDirectoryPath
+      )
+
+      return {
+        message: 'Successfully created file.',
+        fileName: newFileName,
+        projectName: newProjectName,
+        subRoute: input.requestedSubRoute || '',
+      }
+    }),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
         input,
@@ -377,9 +367,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return { value: true, error: undefined }
         }
         const result = await canReadWriteDirectory(requestProjectDirectoryPath)
-        if (result instanceof Error) {
-          return { value: false, error: result }
-        }
         return result
       }
     ),
@@ -393,12 +380,12 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedFileName: string
         }
       }) => {
-        const pathToRemove = fsZds.join(
+        const path = fsZds.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
           input.requestedFileName
         )
-        await fsZds.rm(pathToRemove)
+        await fsZds.rm(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -413,7 +400,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
@@ -438,7 +424,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
@@ -469,7 +454,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
-            rootContext: AppMachineContext
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string
@@ -508,7 +492,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedFileNameWithExtension: string
@@ -531,135 +514,132 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.renameFolder]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          rootContext: AppMachineContext
-          requestedFolderName: string
-          folderName: string
-          absolutePathToParentDirectory: string
-          requestedProjectName?: string
-          requestedFileNameWithExtension?: string
-        }
-      }) => {
-        const {
-          folderName,
-          requestedFolderName,
-          absolutePathToParentDirectory,
-        } = input
-        const oldPath = fsZds.join(absolutePathToParentDirectory, folderName)
-        const newPath = fsZds.join(
-          absolutePathToParentDirectory,
-          requestedFolderName
-        )
+    [SystemIOMachineActors.renameFolder]: fromPromise(async ({ input }) => {
+      const { folderName, requestedFolderName, absolutePathToParentDirectory } =
+        input
+      const oldPath = fsZds.join(absolutePathToParentDirectory, folderName)
+      const newPath = fsZds.join(
+        absolutePathToParentDirectory,
+        requestedFolderName
+      )
 
-        const requestedProjectName = input.requestedProjectName || ''
-        const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension || ''
+      const requestedProjectName = input.requestedProjectName || ''
+      const requestedFileNameWithExtension =
+        input.requestedFileNameWithExtension || ''
 
-        // ignore the rename if the resulting paths are the same
-        if (oldPath === newPath) {
-          return {
-            message: `Old folder is the same as new.`,
-            folderName,
-            requestedFolderName,
-            requestedProjectName,
-            requestedFileNameWithExtension,
-          }
-        }
-
-        // if there are any siblings with the same name, report error.
-        const entries = await fsZds.readdir(fsZds.dirname(newPath))
-
-        for (let entry of entries) {
-          if (entry === requestedFolderName) {
-            return Promise.reject(new Error('Folder name already exists.'))
-          }
-        }
-
-        await fsZds.rename(oldPath, newPath)
-
+      // ignore the rename if the resulting paths are the same
+      if (oldPath === newPath) {
         return {
-          message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
+          message: `Old folder is the same as new.`,
           folderName,
           requestedFolderName,
           requestedProjectName,
           requestedFileNameWithExtension,
         }
       }
-    ),
-    [SystemIOMachineActors.renameFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          rootContext: AppMachineContext
-          requestedFileNameWithExtension: string
-          fileNameWithExtension: string
-          absolutePathToParentDirectory: string
+
+      // if there are any siblings with the same name, report error.
+      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+
+      for (let entry of entries) {
+        if (entry === requestedFolderName) {
+          return Promise.reject(new Error('Folder name already exists.'))
         }
-      }) => {
-        const {
-          fileNameWithExtension,
-          requestedFileNameWithExtension,
-          absolutePathToParentDirectory,
-        } = input
+      }
 
-        const oldPath = fsZds.join(
-          absolutePathToParentDirectory,
-          fileNameWithExtension
+      await fsZds.rename(oldPath, newPath)
+
+      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // migrate systemIOMachine into a system that operates on that.
+      //
+      // Replace the signal value for the currently-opened executing editor if its
+      // parent directory was renamed
+      if (
+        input.app.project?.executingPathSignal.value?.value.includes(oldPath)
+      ) {
+        const v = input.app.project.executingPathSignal.value.value
+        input.app.project.executingPathSignal.value.value = v.replace(
+          oldPath,
+          newPath
         )
-        const newPath = fsZds.join(
-          absolutePathToParentDirectory,
-          requestedFileNameWithExtension
-        )
+      }
 
-        const projectDirectoryPath = input.context.projectDirectoryPath
-        const projectName = getProjectDirectoryFromKCLFilePath(
-          newPath,
-          projectDirectoryPath
-        )
-        const filePathWithExtensionRelativeToProject =
-          parentPathRelativeToProject(newPath, projectDirectoryPath)
+      return {
+        message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
+        folderName,
+        requestedFolderName,
+        requestedProjectName,
+        requestedFileNameWithExtension,
+      }
+    }),
+    [SystemIOMachineActors.renameFile]: fromPromise(async ({ input }) => {
+      const {
+        fileNameWithExtension,
+        requestedFileNameWithExtension,
+        absolutePathToParentDirectory,
+      } = input
 
-        // no-op
-        if (oldPath === newPath) {
-          return {
-            message: `Old file is the same as new.`,
-            projectName: projectName,
-            filePathWithExtensionRelativeToProject,
-          }
-        }
+      const oldPath = fsZds.join(
+        absolutePathToParentDirectory,
+        fileNameWithExtension
+      )
+      const newPath = fsZds.join(
+        absolutePathToParentDirectory,
+        requestedFileNameWithExtension
+      )
 
-        // if there are any siblings with the same name, report error.
-        const entries = await fsZds.readdir(fsZds.dirname(newPath))
+      const projectDirectoryPath = input.context.projectDirectoryPath
+      const projectName = getProjectDirectoryFromKCLFilePath(
+        newPath,
+        projectDirectoryPath
+      )
+      const filePathWithExtensionRelativeToProject =
+        parentPathRelativeToProject(newPath, projectDirectoryPath)
 
-        for (let entry of entries) {
-          if (entry === requestedFileNameWithExtension) {
-            return Promise.reject(new Error('Filename already exists.'))
-          }
-        }
-
-        await fsZds.rename(oldPath, newPath)
-
+      // no-op
+      if (oldPath === newPath) {
         return {
-          message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+          message: `Old file is the same as new.`,
           projectName: projectName,
           filePathWithExtensionRelativeToProject,
         }
       }
-    ),
+
+      // if there are any siblings with the same name, report error.
+      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+
+      for (let entry of entries) {
+        if (entry === requestedFileNameWithExtension) {
+          return Promise.reject(new Error('Filename already exists.'))
+        }
+      }
+
+      await fsZds.rename(oldPath, newPath)
+
+      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // migrate systemIOMachine into a system that operates on that.
+      //
+      // Replace the signal value for the currently-opened executing editor if
+      // it was renamed.
+      if (
+        input.app.project?.executingPathSignal.value &&
+        input.app.project.executingPathSignal.value.value === oldPath
+      ) {
+        input.app.project.executingPathSignal.value.value = newPath
+      }
+
+      return {
+        message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+        projectName: projectName,
+        filePathWithExtensionRelativeToProject,
+      }
+    }),
     [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
       async ({
         input,
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedPath: string
           requestedProjectName?: string | undefined
         }
@@ -679,7 +659,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -709,7 +688,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -748,7 +726,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
         }
@@ -769,7 +746,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
           successMessage?: string

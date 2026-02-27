@@ -285,7 +285,7 @@ export class App implements AppSubsystems {
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
     this.singletons.systemIOActor.subscribe(({ context }) => {
-      const foundProject = context.folders.find(
+      const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
           p.path === projectIORefSignal.value.path
