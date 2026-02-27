@@ -1,34 +1,17 @@
-import { dataOrFileUrlToString } from '@src/lib/utils'
-
-import fanHousingOriginal from '/kcl-samples/axial-fan/fan-housing.kcl?url&inline'
-import fanFan from '/kcl-samples/axial-fan/fan.kcl?url&inline'
-import fanAssembly from '/kcl-samples/axial-fan/main.kcl?url&inline'
-import fanMotor from '/kcl-samples/axial-fan/motor.kcl?url&inline'
-import fanParameters from '/kcl-samples/axial-fan/parameters.kcl?url&inline'
-import bracket from '/kcl-samples/bracket/main.kcl?url&inline'
+import fanHousingOriginal from '@public/kcl-samples/axial-fan/fan-housing.kcl?raw'
+import fanFan from '@public/kcl-samples/axial-fan/fan.kcl?raw'
+import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
+import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
+import fanParameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
+import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
 
 export { bracket }
 export const fanParts = [
-  {
-    requestedFileName: 'main.kcl',
-    requestedCode: await dataOrFileUrlToString(fanAssembly),
-  },
-  {
-    requestedFileName: 'fan.kcl',
-    requestedCode: await dataOrFileUrlToString(fanFan),
-  },
-  {
-    requestedFileName: 'motor.kcl',
-    requestedCode: await dataOrFileUrlToString(fanMotor),
-  },
-  {
-    requestedFileName: 'parameters.kcl',
-    requestedCode: await dataOrFileUrlToString(fanParameters),
-  },
-  {
-    requestedFileName: 'fan-housing.kcl',
-    requestedCode: await dataOrFileUrlToString(fanHousingOriginal),
-  },
+  { requestedFileName: 'main.kcl', requestedCode: fanAssembly },
+  { requestedFileName: 'fan.kcl', requestedCode: fanFan },
+  { requestedFileName: 'motor.kcl', requestedCode: fanMotor },
+  { requestedFileName: 'parameters.kcl', requestedCode: fanParameters },
+  { requestedFileName: 'fan-housing.kcl', requestedCode: fanHousingOriginal },
 ] as const
 
 /** The desktop version of the tutorial example code uses imports */

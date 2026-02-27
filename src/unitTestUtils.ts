@@ -11,8 +11,6 @@ import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { ConnectionManager } from '@src/network/connectionManager'
-import RustContext from '@src/lib/rustContext'
 import { KclManager } from '@src/lang/KclManager'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
@@ -21,7 +19,6 @@ import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 
 /**
@@ -61,7 +58,6 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
 export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
-  const engineCommandManager = new ConnectionManager()
   const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
     input: {
@@ -77,30 +73,14 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
-  const rustContext = new RustContext(
-    engineCommandManager,
-    instancePromise,
-    settingsActor
-  )
   const kclManager = new KclManager({
-    engineCommandManager,
     wasmInstancePromise: instancePromise,
-    rustContext,
     settings: settingsActor,
     commandBar: commandBarActor,
   })
-  engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = kclManager.sceneInfra
-  engineCommandManager.rustContext = rustContext
-
-  kclManager.sceneEntitiesManager.commandBarActor = commandBarActor
-
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  kclManager.sceneInfra.camControls.getSettings = getSettings
-  kclManager.sceneEntitiesManager.getSettings = getSettings
 
   await new Promise((resolve, reject) => {
-    engineCommandManager
+    kclManager.engineCommandManager
       .start({
         token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
@@ -120,13 +100,14 @@ export async function buildTheWorldAndConnectToEngine() {
             console.log('unit test connected!')
           }
         },
+        rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
   })
   return {
     instance: await instancePromise,
-    engineCommandManager,
-    rustContext,
+    engineCommandManager: kclManager.engineCommandManager,
+    rustContext: kclManager.rustContext,
     sceneInfra: kclManager.sceneInfra,
     kclManager,
     sceneEntitiesManager: kclManager.sceneEntitiesManager,
@@ -163,7 +144,6 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const instancePromise = mockWasm
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
-  const engineCommandManager = new ConnectionManager()
   const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
     input: {
@@ -179,31 +159,18 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
-  const rustContext = new RustContext(
-    engineCommandManager,
-    instancePromise,
-    settingsActor
-  )
   const kclManager = new KclManager({
-    engineCommandManager,
     wasmInstancePromise: instancePromise,
-    rustContext,
     settings: settingsActor,
     commandBar: commandBarActor,
   })
-  engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = kclManager.sceneInfra
-  engineCommandManager.rustContext = rustContext
 
   settingsActor.start()
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  kclManager.sceneInfra.camControls.getSettings = getSettings
-  kclManager.sceneEntitiesManager.getSettings = getSettings
 
   return {
     instance: await instancePromise,
-    engineCommandManager,
-    rustContext,
+    engineCommandManager: kclManager.engineCommandManager,
+    rustContext: kclManager.rustContext,
     sceneInfra: kclManager.sceneInfra,
     kclManager,
     sceneEntitiesManager: kclManager.sceneEntitiesManager,
