@@ -43,7 +43,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!project || !file || !projects) {
       return
     }
 

@@ -59,6 +59,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
+import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -80,6 +81,13 @@ const Home = () => {
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
 
+  const projects = useFolders()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+  const sidebarButtonClasses =
+    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
   // Only create the native file menus on desktop
   useEffect(() => {
     if (window.electron) {
@@ -97,6 +105,28 @@ const Home = () => {
   const location = useLocation()
   const settingsValues = settings.useSettings()
   const onboardingStatus = settingsValues.app.onboardingStatus.current
+
+  useEffect(() => {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath:
+          settingsValues.app?.projectDirectory?.current,
+      },
+    })
+    void waitFor(systemIOActor, (state) =>
+      state.matches(SystemIOMachineStates.idle)
+    ).then(() => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath:
+            settingsValues.app?.projectDirectory?.current,
+        },
+      })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -205,13 +235,6 @@ const Home = () => {
       splitKey: '|',
     }
   )
-  const projects = useFolders()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
-  const sort = searchParams.get('sort_by') ?? 'modified:desc'
-  const sidebarButtonClasses =
-    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
@@ -364,7 +387,7 @@ const Home = () => {
           </ul>
         </aside>
         <ProjectGrid
-          searchResults={searchResults}
+          searchResults={searchResults ?? []}
           projects={projects}
           query={query}
           sort={sort}
@@ -487,7 +510,7 @@ function HomeHeader({
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   searchResults: Project[]
-  projects: Project[]
+  projects: Project[] | undefined
   query: string
   sort: string
   handleRenameProject: (
@@ -509,7 +532,8 @@ function ProjectGrid({
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ? (
+      {state.matches(SystemIOMachineStates.readingFolders) ||
+      projects === undefined ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
@@ -525,9 +549,12 @@ function ProjectGrid({
               ))}
             </ul>
           ) : (
-            <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
+            <p
+              data-testid="projects-none"
+              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+            >
               No projects found
-              {projects.length === 0
+              {projects !== undefined && projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
             </p>

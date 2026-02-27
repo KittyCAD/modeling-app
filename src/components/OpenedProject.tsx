@@ -1,3 +1,4 @@
+import type { Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -110,7 +111,7 @@ export function OpenedProject() {
     if (
       projects &&
       projects.length > 0 &&
-      projects.every((p) => p.name !== projectName) &&
+      projects.every((p: Project) => p.name !== projectName) &&
       [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.renamingProject,
