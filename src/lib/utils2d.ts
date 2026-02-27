@@ -52,6 +52,18 @@ export function distance2d(a: Coords2d, b: Coords2d): number {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
+export function lengthSq(a: Coords2d): number {
+  return a[0] * a[0] + a[1] * a[1]
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
+export function lerp(start: number, end: number, t: number): number {
+  return start + (end - start) * t
+}
+
 export function pointsAreEqual(
   a: Coords2d,
   b: Coords2d,

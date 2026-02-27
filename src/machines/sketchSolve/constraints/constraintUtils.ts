@@ -6,6 +6,7 @@ import type { Sprite, SpriteMaterial, Texture } from 'three'
 import { Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { Coords2d } from '@src/lang/util'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -172,4 +173,11 @@ export type SpriteLabel = Sprite & {
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
+}
+
+export function pointToCoords2d(point: PointSegment): Coords2d {
+  return [
+    point.kind.segment.position.x.value,
+    point.kind.segment.position.y.value,
+  ]
 }
