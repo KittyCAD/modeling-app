@@ -286,7 +286,6 @@ export type ModelingMachineEvent =
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
-  | { type: 'Delete Face'; data?: ModelingCommandSchema['Delete Face'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
