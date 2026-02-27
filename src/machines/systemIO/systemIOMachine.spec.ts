@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
+import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
@@ -44,7 +44,7 @@ describe('systemIOMachine - XState', () => {
   describe('desktop', () => {
     describe('when initialized', () => {
       it('should contain the default context values', () => {
-        const actor = createActor(systemIOMachineDesktop, {
+        const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
@@ -53,7 +53,7 @@ describe('systemIOMachine - XState', () => {
           },
         }).start()
         const context = actor.getSnapshot().context
-        expect(context.folders).toStrictEqual([])
+        expect(context.folders).toStrictEqual(undefined)
         expect(context.defaultProjectFolderName).toStrictEqual(
           DEFAULT_PROJECT_NAME
         )
@@ -68,7 +68,7 @@ describe('systemIOMachine - XState', () => {
         })
       })
       it('should be in idle state', () => {
-        const actor = createActor(systemIOMachineDesktop, {
+        const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
@@ -82,7 +82,7 @@ describe('systemIOMachine - XState', () => {
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {
-        const actor = createActor(systemIOMachineDesktop, {
+        const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
@@ -106,7 +106,7 @@ describe('systemIOMachine - XState', () => {
     describe('when setting project directory path', () => {
       it('should set new project directory path', async () => {
         const kclSamplesPath = path.join('public', 'kcl-samples')
-        const actor = createActor(systemIOMachineDesktop, {
+        const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
@@ -127,7 +127,7 @@ describe('systemIOMachine - XState', () => {
     describe('when setting default project folder name', () => {
       it('should set a new default project folder name', async () => {
         const expected = 'coolcoolcoolProjectName'
-        const actor = createActor(systemIOMachineDesktop, {
+        const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
             kclManager: kclManagerInThisFile,
