@@ -638,6 +638,7 @@ description: Artifact commands holes_cube.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -940,6 +941,7 @@ description: Artifact commands holes_cube.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1191,6 +1193,7 @@ description: Artifact commands holes_cube.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
