@@ -361,22 +361,15 @@ export class App implements AppSubsystems {
           },
         })
     }
-    const { SYSTEM_IO } = ACTOR_IDS
-    const appMachineActors = {
-      [SYSTEM_IO]: systemIOMachineImpl,
-    } as const
 
-    const systemIOActor = createActor(
-      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      {
-        input: {
-          wasmInstancePromise: this.wasmPromise,
-          kclManager,
-          engineCommandManager,
-          app: this,
-        },
-      }
-    ).start()
+    const systemIOActor = createActor(systemIOMachineImpl, {
+      input: {
+        wasmInstancePromise: this.wasmPromise,
+        kclManager,
+        engineCommandManager,
+        app: this,
+      },
+    }).start()
 
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)

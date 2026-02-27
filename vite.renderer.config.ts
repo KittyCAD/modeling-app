@@ -30,9 +30,6 @@ export default defineConfig((env) => {
     plugins: [
       nodePolyfills({
         include: ['path'],
-        globals: {
-          process: false,
-        },
       }),
       indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),

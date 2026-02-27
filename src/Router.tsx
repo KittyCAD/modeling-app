@@ -54,7 +54,7 @@ export const Router = () => {
             {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
-              loader: baseLoader({ kclManager, systemIOActor }),
+              loader: baseLoader({ app }),
             },
             {
               loader: fileLoader({
@@ -118,7 +118,7 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.HOME,
-              loader: homeLoader({ app, systemIOActor }),
+              loader: homeLoader({ app }),
               children: [
                 {
                   index: true,
