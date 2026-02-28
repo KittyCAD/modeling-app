@@ -269,7 +269,7 @@ impl Default for ModelingSettings {
             use_sketch_solve_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
-            backface_color: None,
+            backface_color: Default::default(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),

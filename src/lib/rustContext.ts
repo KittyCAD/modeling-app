@@ -221,7 +221,7 @@ export default class RustContext {
 
     try {
       const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(jsAppSettings(this._settingsActor)),
+        JSON.stringify(jsAppSettings(this.settingsActor)),
         path
       )
 

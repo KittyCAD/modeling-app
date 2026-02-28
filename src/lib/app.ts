@@ -440,8 +440,7 @@ export class App implements AppSubsystems {
         const hasScaleGrid =
           s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s.modeling.highlightEdges !==
-          context.modeling.highlightEdges.current
+          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
         const hasBackfaceColor =
           s.modeling.backfaceColor !== context.modeling.backfaceColor.current
         return hasScaleGrid || hasHighlightEdges || hasBackfaceColor

@@ -221,8 +221,6 @@ function hideWithoutFeatureFlag(
   }
 }
 
-const MS_IN_MINUTE = 60 * 1_000
-
 export function createSettings() {
   const settings = {
     // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
