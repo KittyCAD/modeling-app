@@ -123,8 +123,13 @@ async fn inner_appearance(
         }
     }
 
+    // OIT (order-independent transparency) is required to show transparency.
+    // But it degrades engine performance. So only enable it if necessary,
+    // i.e. if user has chosen to make something transparent.
     let mut needs_oit = false;
     let opacity_param = if let Some(opacity) = opacity {
+        // The engine errors out if you toggle OIT with SSAO off.
+        // So ignore OIT settings if SSAO is off.
         if opacity < 100.0 && args.ctx.settings.enable_ssao {
             needs_oit = true;
         }

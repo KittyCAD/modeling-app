@@ -234,12 +234,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
         .await?;
-        self.batch_modeling_cmd(
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
-        )
-        .await?;
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
