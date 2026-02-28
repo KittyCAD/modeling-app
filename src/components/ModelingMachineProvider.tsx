@@ -53,15 +53,13 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { machineManager, commands, settings, project } = useApp()
+  const { machineManager, commands, settings, layout, project } = useApp()
   const {
     engineCommandManager,
-    getLayout,
     kclManager,
     rustContext,
     sceneEntitiesManager,
     sceneInfra,
-    setLayout,
   } = useSingletons()
   const settingsActor = settings.actor
   const systemDeps = useMemo(
@@ -81,7 +79,7 @@ export const ModelingMachineProvider = ({
       defaultUnit,
       cameraProjection,
       cameraOrbit,
-      useNewSketchMode,
+      useSketchSolveMode,
       snapToGrid,
     },
   } = settingsValues
@@ -141,7 +139,7 @@ export const ModelingMachineProvider = ({
         // React Suspense will await this
         wasmInstance,
         store: {
-          useNewSketchMode,
+          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },
@@ -152,9 +150,9 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(getLayout())
+    const rootLayout = structuredClone(layout.signal.value)
     const toggle = (id: DefaultLayoutPaneID) =>
-      setLayout(
+      layout.set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: id,

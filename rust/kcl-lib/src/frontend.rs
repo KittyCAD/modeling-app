@@ -15,7 +15,7 @@ use crate::{
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
@@ -61,6 +61,7 @@ const ARC_CENTER_PARAM: &str = "center";
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -658,6 +659,7 @@ impl SketchApi for FrontendState {
             Constraint::Radius(radius) => self.add_radius(sketch, radius, &mut new_ast).await?,
             Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, &mut new_ast).await?,
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
+            Constraint::Angle(lines_at_angle) => self.add_angle(sketch, lines_at_angle, &mut new_ast).await?,
         };
 
         let result = self
@@ -891,6 +893,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Radius(radius) => {
                     self.add_radius(sketch, radius, &mut new_ast).await?;
+                }
+                Constraint::Angle(angle) => {
+                    self.add_angle(sketch, angle, &mut new_ast).await?;
                 }
             }
         }
@@ -2105,6 +2110,89 @@ impl FrontendState {
         Ok(sketch_block_range)
     }
 
+    async fn add_angle(
+        &mut self,
+        sketch: ObjectId,
+        angle: Angle,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[l0_id, l1_id] = angle.lines.as_slice() else {
+            return Err(Error {
+                msg: format!("Angle constraint must have exactly 2 lines, got {}", angle.lines.len()),
+            });
+        };
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let line0_object = self.scene_graph.objects.get(l0_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line0_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line0_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line0_object:?}",),
+            });
+        };
+        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+
+        let line1_object = self.scene_graph.objects.get(l1_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line1_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line1_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line1_object:?}",),
+            });
+        };
+        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+
+        // Create the angle() call.
+        let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![l0_ast, l1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: angle_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: angle.angle.value,
+                    suffix: angle.angle.units,
+                },
+                raw: format_number_literal(angle.angle.value, angle.angle.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", angle.angle.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_radius(
         &mut self,
         sketch: ObjectId,
@@ -2733,6 +2821,7 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
+                Constraint::Angle(angle) => angle.lines.iter().any(|line_id| segment_ids_set.contains(line_id)),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
@@ -3639,7 +3728,7 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
     })))
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
     use crate::{
@@ -5822,6 +5911,68 @@ sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   perpendicular([line1, line2])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            9,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_angle() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, line2_id],
+            angle: Number {
+                value: 30.0,
+                units: NumericSuffix::Deg,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+angle([line1, line2]) == 30deg
 }
 "
         );

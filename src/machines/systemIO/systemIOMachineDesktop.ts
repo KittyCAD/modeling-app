@@ -24,7 +24,6 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { isErr } from '@src/lib/trap'
-import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -50,7 +49,6 @@ const sharedBulkCreateWorkflow = async ({
   input: {
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
     override?: boolean
   }
@@ -130,7 +128,6 @@ const sharedBulkDeleteWorkflow = async ({
     requestedProjectName: string
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
   }
 }) => {
@@ -310,85 +307,70 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.createKCLFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileNameWithExtension: string
-          requestedCode: string
-          rootContext: AppMachineContext
-          requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
-        }
-      }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        const requestedProjectName = input.requestedProjectName
-        const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension
-        const requestedCode = input.requestedCode
-        const folders = input.context.folders
-
-        let newProjectName = requestedProjectName
-
-        if (!newProjectName) {
-          newProjectName = getUniqueProjectName(
-            input.context.defaultProjectFolderName,
-            input.context.folders
-          )
-        }
-
-        const needsInterpolated =
-          doesProjectNameNeedInterpolated(newProjectName)
-        if (needsInterpolated) {
-          const nextIndex = getNextProjectIndex(newProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            newProjectName,
-            nextIndex
-          )
-        }
-
-        const wasmInstance = await input.wasmInstancePromise
-
-        const baseDir = fsZds.join(
-          input.context.projectDirectoryPath,
-          newProjectName
-        )
-        const { name: newFileName } = await getNextFileName({
-          electron: window.electron,
-          entryName: requestedFileNameWithExtension,
-          baseDir,
-          wasmInstance,
-        })
-
-        const configuration = await readAppSettingsFile(
-          window.electron,
-          wasmInstance
-        )
-
-        // Create the project around the file if newProject
-        await createNewProjectDirectory(
-          window.electron,
-          newProjectName,
-          await input.wasmInstancePromise,
-          requestedCode,
-          configuration,
-          newFileName,
-          input.context.projectDirectoryPath
-        )
-
-        return {
-          message: 'Successfully created file.',
-          fileName: newFileName,
-          projectName: newProjectName,
-          subRoute: input.requestedSubRoute || '',
-        }
+    [SystemIOMachineActors.createKCLFile]: fromPromise(async ({ input }) => {
+      if (!window.electron) {
+        return Promise.reject(new Error('No file system present'))
       }
-    ),
+      const requestedProjectName = input.requestedProjectName
+      const requestedFileNameWithExtension =
+        input.requestedFileNameWithExtension
+      const requestedCode = input.requestedCode
+      const folders = input.context.folders
+
+      let newProjectName = requestedProjectName
+
+      if (!newProjectName) {
+        newProjectName = getUniqueProjectName(
+          input.context.defaultProjectFolderName,
+          input.context.folders
+        )
+      }
+
+      const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
+      if (needsInterpolated) {
+        const nextIndex = getNextProjectIndex(newProjectName, folders)
+        newProjectName = interpolateProjectNameWithIndex(
+          newProjectName,
+          nextIndex
+        )
+      }
+
+      const wasmInstance = await input.kclManager.wasmInstancePromise
+
+      const baseDir = fsZds.join(
+        input.context.projectDirectoryPath,
+        newProjectName
+      )
+      const { name: newFileName } = await getNextFileName({
+        electron: window.electron,
+        entryName: requestedFileNameWithExtension,
+        baseDir,
+        wasmInstance,
+      })
+
+      const configuration = await readAppSettingsFile(
+        window.electron,
+        wasmInstance
+      )
+
+      // Create the project around the file if newProject
+      await createNewProjectDirectory(
+        window.electron,
+        newProjectName,
+        wasmInstance,
+        requestedCode,
+        configuration,
+        newFileName,
+        input.context.projectDirectoryPath
+      )
+
+      return {
+        message: 'Successfully created file.',
+        fileName: newFileName,
+        projectName: newProjectName,
+        subRoute: input.requestedSubRoute || '',
+      }
+    }),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
         input,
@@ -442,7 +424,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
@@ -471,7 +452,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
@@ -506,7 +486,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
-            rootContext: AppMachineContext
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string
@@ -550,7 +529,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedFileNameWithExtension: string
@@ -716,7 +694,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedPath: string
           requestedProjectName?: string | undefined
         }
@@ -739,7 +716,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -772,7 +748,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -814,7 +789,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
         }
@@ -842,7 +816,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
           successMessage?: string

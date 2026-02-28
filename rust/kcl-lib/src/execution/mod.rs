@@ -29,7 +29,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};

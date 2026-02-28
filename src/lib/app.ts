@@ -1,12 +1,16 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup, spawnChild } from 'xstate'
-
+import type {
+  ActorRefFrom,
+  ContextFrom,
+  SnapshotFrom,
+  Subscription,
+} from 'xstate'
+import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -14,13 +18,11 @@ import {
   createSettings,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
-import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
   type SettingsActorType,
@@ -32,11 +34,10 @@ import {
   type CommandBarActorType,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { AppMachineEventType } from '@src/lib/types'
 import {
   defaultLayout,
   defaultLayoutConfig,
@@ -45,7 +46,7 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { type Signal, signal } from '@preact/signals-core'
+import { type Signal, signal, effect } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
@@ -60,6 +61,7 @@ declare global {
     app: App
     kclManager: KclManager
     engineCommandManager: ConnectionManager
+    rustContext: RustContext
     engineDebugger: Debugger
   }
 }
@@ -93,6 +95,14 @@ export type AppBillingSystem = {
   useContext: () => ContextFrom<typeof billingMachine>
 }
 
+export type AppLayoutSystem = {
+  signal: Signal<Layout>
+  get: () => Layout
+  set: (l: Layout) => void
+  reset: () => void
+  saveEffectUnsubscribeFn: ReturnType<typeof effect>
+}
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -101,6 +111,7 @@ export interface AppSubsystems {
   commands: AppCommandSystem
   settings: AppSettingsSystem
   billing: AppBillingSystem
+  layout: AppLayoutSystem
 }
 
 export class App implements AppSubsystems {
@@ -124,9 +135,11 @@ export class App implements AppSubsystems {
   settings: AppSettingsSystem
   /** The billing system for the application */
   billing: AppBillingSystem
+  /** The layout system for the application */
+  layout: AppLayoutSystem
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: Signal<SaveSettingsPayload>
+  private lastSettings: SaveSettingsPayload
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -135,14 +148,12 @@ export class App implements AppSubsystems {
     this.billing = subsystems.billing
     this.commands = subsystems.commands
     this.settings = subsystems.settings
+    this.layout = subsystems.layout
 
     this.singletons = this.buildSingletons()
-    this.lastSettings = signal<SaveSettingsPayload>(
-      getAllCurrentSettings(
-        getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-      )
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-    this.settings.actor.subscribe(this.onSettingsUpdate)
   }
 
   /**
@@ -212,6 +223,21 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
+    const layoutSignal = signal<Layout>(defaultLayout)
+    const layout: AppLayoutSystem = {
+      signal: layoutSignal,
+      get: () => layoutSignal.value,
+      set: (l: Layout) => {
+        layoutSignal.value = structuredClone(l)
+      },
+      reset: () => {
+        layoutSignal.value = structuredClone(defaultLayoutConfig)
+      },
+      saveEffectUnsubscribeFn: effect(() =>
+        saveLayout({ layout: layoutSignal.value })
+      ),
+    }
+
     return {
       wasmPromise,
       auth,
@@ -219,6 +245,7 @@ export class App implements AppSubsystems {
       commands,
       settings,
       billing,
+      layout,
     }
   }
 
@@ -270,8 +297,14 @@ export class App implements AppSubsystems {
         projectIORefSignal.value = foundProject
       }
     })
+
+    this.unsubscribeFromSettings = this.settings.actor.subscribe(
+      this.onSettingsUpdate
+    )
   }
+  private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
+    this.unsubscribeFromSettings?.unsubscribe()
     this.project?.closeAllEditors()
     this.project = undefined
   }
@@ -280,38 +313,18 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(
-      engineCommandManager,
-      this.wasmPromise,
-      // HACK: convert settings to not be an XState actor to prevent the need for
-      // this dummy-with late binding of the real thing.
-      // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
-      this.settings.actor
-    )
-
-    // Accessible for tests mostly
-    window.engineCommandManager = engineCommandManager
-
     const kclManager = new KclManager({
-      rustContext,
-      engineCommandManager,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
     })
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    engineCommandManager.kclManager = kclManager
-    engineCommandManager.sceneInfra = kclManager.sceneInfra
-    engineCommandManager.rustContext = rustContext
-
     if (typeof window !== 'undefined') {
-      ;(window as any).engineCommandManager = engineCommandManager
-      ;(window as any).kclManager = kclManager
-      ;(window as any).rustContext = rustContext
-      ;(window as any).engineDebugger = EngineDebugger
+      // Accessible for tests mostly
+      window.engineCommandManager = kclManager.engineCommandManager
+      window.kclManager = kclManager
+      window.rustContext = kclManager.rustContext
+      window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
         document.addEventListener('mousemove', (e) =>
           console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
@@ -320,7 +333,7 @@ export class App implements AppSubsystems {
         ;(window as any)._enableFillet = true
       }
       ;(window as any).zoomToFit = () =>
-        engineCommandManager.sendSceneCommand({
+        kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -331,56 +344,19 @@ export class App implements AppSubsystems {
           },
         })
     }
-    const { SYSTEM_IO } = ACTOR_IDS
-    const appMachineActors = {
-      [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-    } as const
 
-    const appMachine = setup({
-      types: {} as {
-        events: AppMachineEvent
-        context: AppMachineContext
-      },
-    }).createMachine({
-      id: 'modeling-app',
-      context: {
-        kclManager: kclManager,
-        engineCommandManager: engineCommandManager,
-        sceneInfra: kclManager.sceneInfra,
-        sceneEntitiesManager: kclManager.sceneEntitiesManager,
-        commandBarActor: this.commands.actor,
-        layout: defaultLayout,
-      },
-      entry: [
-        spawnChild(appMachineActors[SYSTEM_IO], {
-          systemId: SYSTEM_IO,
-          input: {
-            wasmInstancePromise: this.wasmPromise,
-            app: this,
-          },
-        }),
-      ],
-      on: {
-        [AppMachineEventType.SetLayout]: {
-          actions: [
-            assign({ layout: ({ event }) => structuredClone(event.layout) }),
-            ({ event }) => saveLayout({ layout: event.layout }),
-          ],
+    const systemIOActor = createActor(
+      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+      {
+        input: {
+          wasmInstancePromise: this.wasmPromise,
+          kclManager,
+          engineCommandManager: kclManager.engineCommandManager,
+          app: this,
         },
-        [AppMachineEventType.ResetLayout]: {
-          actions: [
-            assign({ layout: structuredClone(defaultLayoutConfig) }),
-            ({ context }) => saveLayout({ layout: context.layout }),
-          ],
-        },
-      },
-    })
+      }
+    ).start()
 
-    const appActor = createActor(appMachine, {
-      systemId: 'root',
-    })
-
-    const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
@@ -397,24 +373,13 @@ export class App implements AppSubsystems {
       },
     })
 
-    const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
-      state.context.layout
-    const getLayout = () => appActor.getSnapshot().context.layout
-    const useLayout = () => useSelector(appActor, layoutSelector)
-    const setLayout = (layout: Layout) =>
-      appActor.send({ type: AppMachineEventType.SetLayout, layout })
-
     return {
-      engineCommandManager,
-      rustContext,
+      engineCommandManager: kclManager.engineCommandManager,
+      rustContext: kclManager.rustContext,
       sceneInfra: kclManager.sceneInfra,
       kclManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      appActor,
       systemIOActor,
-      getLayout,
-      useLayout,
-      setLayout,
     }
   }
 
@@ -423,6 +388,9 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    if (!this.project) {
+      return // Everything in here only matters inside a project.
+    }
     const { context } = snapshot
 
     // Update line wrapping
@@ -433,7 +401,7 @@ export class App implements AppSubsystems {
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
-      newHighlighting !== this.lastSettings.value?.modeling.highlightEdges &&
+      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
       this.singletons.engineCommandManager.connection
     ) {
       this.singletons.engineCommandManager
@@ -466,17 +434,16 @@ export class App implements AppSubsystems {
 
     // Execute AST
     try {
-      const relevantSetting = (s: SaveSettingsPayload | undefined) => {
+      const relevantSetting = (s: SaveSettingsPayload) => {
         const hasScaleGrid =
-          s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s?.modeling?.highlightEdges !==
-          context.modeling.highlightEdges.current
+          s.modeling?.highlightEdges !== context.modeling.highlightEdges.current
         return hasScaleGrid || hasHighlightEdges
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings.value
+        this.lastSettings
       )
 
       // Unit changes requires a re-exec of code
@@ -504,7 +471,7 @@ export class App implements AppSubsystems {
 
     // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
     // of the last settings to know if they've changed.
-    this.lastSettings.value = getAllCurrentSettings(
+    this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(context)
     )
   }
