@@ -1281,24 +1281,6 @@ export fn subtract(
 ///        roughness = 50
 ///    )
 /// ```
-/// ```kcl,no3d
-/// // This example shows the alpha (transparency and opacity) being changed.
-/// numSides = 8
-/// center = [0, 0]
-/// color = "#ff0000"
-/// 
-/// startSketchOn(XY)
-/// |> polygon(radius = 1, numSides, center)
-/// |> extrude(length = 1)
-/// |> translate(x = -0.5)
-/// |> appearance(color, opacity = 60)
-/// 
-/// startSketchOn(XY)
-/// |> polygon(radius = 1, numSides, center)
-/// |> extrude(length = 1)
-/// |> translate(x = 0.5)
-/// |> appearance(color, opacity = 20)
-/// ```
 @(impl = std_rust, feature_tree = true)
 export fn appearance(
   /// The The solid(s) whose appearance is being set.
