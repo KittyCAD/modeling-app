@@ -1,10 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { expect, vi, describe, test } from 'vitest'
-import { ConnectionManager } from '@src/network/connectionManager'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { createSettings } from '@src/lib/settings/initialSettings'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 // Helper function to create callbacks used for spying
 const createCallback = () => {
@@ -13,14 +10,11 @@ const createCallback = () => {
 }
 
 describe('useOnPageExit', () => {
-  test('on hook unmounted with mocked global singletons', () => {
+  test('on hook unmounted with mocked global singletons', async () => {
     const callback = createCallback()
-    const initWasmMock = Promise.resolve({} as ModuleType)
-    const engineCommandManager = new ConnectionManager()
+    const { engineCommandManager, sceneInfra } =
+      await buildTheWorldAndNoEngineConnection(true)
     vi.spyOn(engineCommandManager, 'tearDown')
-    const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock, () =>
-      createSettings()
-    )
     sceneInfra.camControls.oldCameraState = {
       eye_offset: 1.0,
       fov_y: 1.0,

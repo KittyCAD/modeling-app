@@ -1,12 +1,11 @@
 import type { Command } from '@src/lib/commandTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
+import type { KclManager } from '@src/lang/KclManager'
 
-export function createStandardViewsCommands(
-  engineCommandManager: ConnectionManager
-) {
+export function createStandardViewsCommands(kclManager: KclManager) {
+  const { engineCommandManager, sceneInfra } = kclManager
   const topViewCommand: Command = {
     name: 'Top view',
     displayName: `Top view`,
@@ -15,7 +14,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
     },
@@ -28,7 +27,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
     },
@@ -41,7 +40,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
     },
@@ -55,7 +54,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
     },
@@ -69,7 +68,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     },
@@ -83,7 +82,7 @@ export function createStandardViewsCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      engineCommandManager.sceneInfra?.camControls
+      sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
     },

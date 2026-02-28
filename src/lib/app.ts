@@ -1,6 +1,6 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
@@ -34,7 +34,7 @@ import {
   type CommandBarActorType,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
@@ -61,6 +61,7 @@ declare global {
     app: App
     kclManager: KclManager
     engineCommandManager: ConnectionManager
+    rustContext: RustContext
     engineDebugger: Debugger
   }
 }
@@ -312,38 +313,18 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(
-      engineCommandManager,
-      this.wasmPromise,
-      // HACK: convert settings to not be an XState actor to prevent the need for
-      // this dummy-with late binding of the real thing.
-      // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
-      this.settings.actor
-    )
-
-    // Accessible for tests mostly
-    window.engineCommandManager = engineCommandManager
-
     const kclManager = new KclManager({
-      rustContext,
-      engineCommandManager,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
     })
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    engineCommandManager.kclManager = kclManager
-    engineCommandManager.sceneInfra = kclManager.sceneInfra
-    engineCommandManager.rustContext = rustContext
-
     if (typeof window !== 'undefined') {
-      ;(window as any).engineCommandManager = engineCommandManager
-      ;(window as any).kclManager = kclManager
-      ;(window as any).rustContext = rustContext
-      ;(window as any).engineDebugger = EngineDebugger
+      // Accessible for tests mostly
+      window.engineCommandManager = kclManager.engineCommandManager
+      window.kclManager = kclManager
+      window.rustContext = kclManager.rustContext
+      window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
         document.addEventListener('mousemove', (e) =>
           console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
@@ -352,7 +333,7 @@ export class App implements AppSubsystems {
         ;(window as any)._enableFillet = true
       }
       ;(window as any).zoomToFit = () =>
-        engineCommandManager.sendSceneCommand({
+        kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -370,7 +351,7 @@ export class App implements AppSubsystems {
         input: {
           wasmInstancePromise: this.wasmPromise,
           kclManager,
-          engineCommandManager,
+          engineCommandManager: kclManager.engineCommandManager,
           app: this,
         },
       }
@@ -393,8 +374,8 @@ export class App implements AppSubsystems {
     })
 
     return {
-      engineCommandManager,
-      rustContext,
+      engineCommandManager: kclManager.engineCommandManager,
+      rustContext: kclManager.rustContext,
       sceneInfra: kclManager.sceneInfra,
       kclManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
