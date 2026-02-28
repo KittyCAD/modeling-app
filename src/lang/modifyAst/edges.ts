@@ -158,7 +158,8 @@ export function addChamfer({
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit
+    mNodeToEdit,
+    { includePrimitiveEdgeIndices: true }
   )
   if (err(bodyData)) return bodyData
   modifiedAst = bodyData.modifiedAst
@@ -432,7 +433,7 @@ function groupSelectionsByBody(
       bodyToSelections.size === 0
     ) {
       return new Error(
-        'Fillet could not map selected primitive edges to editable solids in this file.'
+        'Could not map selected primitive edges to editable solids in this file.'
       )
     }
   }
@@ -530,7 +531,7 @@ function getEdgeIdExprsFromPrimitiveSelections(
   }
   if (!bodyExpr) {
     return new Error(
-      'Fillet could not resolve selected primitive edge bodies in code.'
+      'Could not resolve selected primitive edge bodies in code.'
     )
   }
 
