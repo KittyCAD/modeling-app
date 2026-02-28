@@ -698,7 +698,7 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
-    it('should add a call with metalness and roughness', async () => {
+    it('should add a call with metalness, roughness, and opacity', async () => {
       const {
         artifactGraph,
         ast,
@@ -723,6 +723,11 @@ extrude001 = extrude(profile001, length = 1)`
           instanceInThisFile,
           rustContextInThisFile
         ),
+        opacity: await getKclCommandValue(
+          '3',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -734,6 +739,7 @@ appearance(
   color = "#FF0000",
   metalness = 1,
   roughness = 2,
+  opacity = 3,
 )`)
     })
 
