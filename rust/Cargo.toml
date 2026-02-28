@@ -18,12 +18,12 @@ members = [
 ahash = "0.8.11"
 anyhow = { version = "1" }
 async-trait = "0.1.89"
-clap = { version = "4.5.58", features = ["derive"] }
+clap = { version = "4.5.60", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.13.0"
-kcl-ezpz = "0.2.16"
+kcl-ezpz = "0.2.17"
 kittycad = { version = "0.4.7", default-features = false, features = [
   "js",
   "requests",
