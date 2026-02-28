@@ -42,35 +42,17 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export default class RustContext {
-  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private engineCommandManager: ConnectionManager
   private projectId = 0
   public readonly planesCreated = new Signal()
 
-  private _settingsActor: SettingsActorType
-  get settingsActor() {
-    return this._settingsActor
-  }
-  set settingsActor(settingsActor: SettingsActorType) {
-    this._settingsActor = settingsActor
-  }
-
   constructor(
-    engineCommandManager: ConnectionManager,
-    wasmInstancePromise: Promise<ModuleType>,
-    /**
-     * TODO: move settings system upstream of KclManager so this hack isn't necessary.
-     * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
-     */
-    dummySettingsActor: SettingsActorType
+    public readonly wasmInstancePromise: Promise<ModuleType>,
+    private readonly engineCommandManager: ConnectionManager,
+    public readonly settingsActor: SettingsActorType
   ) {
-    this.engineCommandManager = engineCommandManager
-    this._wasmInstancePromise = wasmInstancePromise
-    this._settingsActor = dummySettingsActor
-
     wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
       .catch(reportRejection)
@@ -78,7 +60,7 @@ export default class RustContext {
 
   /** Create a new context instance */
   private async createContextFromWasm(): Promise<Context> {
-    this.rustInstance = await this._wasmInstancePromise
+    this.rustInstance = await this.wasmInstancePromise
 
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
@@ -91,12 +73,8 @@ export default class RustContext {
 
   /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
   async createNewContext(): Promise<Context> {
-    const instance = await this._wasmInstancePromise
+    const instance = await this.wasmInstancePromise
     return new instance.Context(this.engineCommandManager, projectFsManager)
-  }
-
-  get wasmInstancePromise() {
-    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {

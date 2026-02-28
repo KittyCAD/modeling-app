@@ -136,6 +136,19 @@ export class Setting<T = unknown> {
 
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
 
 /**
  * Helper function to fetch user features and determine if the corresponding setting should be visible
@@ -161,11 +174,30 @@ function hideWithoutFeatureFlag(
         return defaultHide
       }
 
-      // Use the KittyCAD library to fetch user features
-      const client = createKCClient(token)
-      const featuresData = await kcCall(() =>
-        users.user_features_get({ client })
-      )
+      const now = Date.now()
+      const cacheValid =
+        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+      type FeaturesResult = CachedFeaturesData | Error
+      let featuresData: FeaturesResult
+
+      if (cacheValid && featuresCache) {
+        featuresData = featuresCache.data
+      } else if (featuresFetchPromise) {
+        featuresData = await featuresFetchPromise
+      } else {
+        const client = createKCClient(token)
+        featuresFetchPromise = kcCall(() =>
+          users.user_features_get({ client })
+        ).then((result) => {
+          featuresFetchPromise = null
+          if (isCachedFeaturesData(result)) {
+            featuresCache = { data: result, fetchedAt: Date.now() }
+          }
+          return result
+        })
+        featuresData = await featuresFetchPromise
+      }
 
       if (featuresData instanceof Error) {
         console.error('Error fetching user features:', featuresData.message)
@@ -188,6 +220,8 @@ function hideWithoutFeatureFlag(
     }
   }
 }
+
+const MS_IN_MINUTE = 60 * 1_000
 
 export function createSettings() {
   const settings = {
@@ -494,16 +528,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Use the new sketch mode implementation - solver (Dev only)
        * Visibility is controlled by the 'new_sketch_mode' feature flag.
        * If the feature flag exists, the setting will be visible.
        * Otherwise, it will be hidden.
        */
-      useNewSketchMode: new Setting<boolean>({
+      useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
         hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
         defaultValue: false,
-        description: 'Use the new sketch mode implementation',
+        description:
+          'Default to the experimental solver-based sketch mode for all new sketches.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

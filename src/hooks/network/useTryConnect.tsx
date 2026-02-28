@@ -30,6 +30,7 @@ const attemptToConnectToEngine = async ({
   settingsEngine,
   timeToConnect,
   engineCommandManager,
+  rustContext,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -39,6 +40,7 @@ const attemptToConnectToEngine = async ({
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  rustContext: RustContext
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
@@ -75,6 +77,7 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           settings: settingsEngine,
+          rustContext,
         })
 
         if (!videoRef.current) {
@@ -188,6 +191,7 @@ async function tryConnecting({
   setIsSceneReady,
   timeToConnect,
   settings,
+  settingsActor,
   setShowManualConnect,
   sceneInfra,
   engineCommandManager,
@@ -203,6 +207,7 @@ async function tryConnecting({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
+  settingsActor: SettingsActorType
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
   engineCommandManager: ConnectionManager
@@ -234,12 +239,13 @@ async function tryConnecting({
             settingsEngine: settings,
             timeToConnect,
             engineCommandManager,
+            rustContext,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
-            settingsActor: rustContext.settingsActor,
+            settingsActor,
             engineCommandManager,
             kclManager,
             rustContext,

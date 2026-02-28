@@ -1,6 +1,6 @@
 [package]
 name = "kcl-python-bindings"
-version = "0.3.129"
+version = "0.3.130"
 edition = "2021"
 repository = "https://github.com/kittycad/modeling-app"
 exclude = ["tests/*", "files/*", "venv/*"]

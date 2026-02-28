@@ -73,7 +73,8 @@ export function configurationToSettingsPayload(
       gizmoType: configuration?.settings?.modeling?.gizmo_type,
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
-      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
+      useSketchSolveMode:
+        configuration?.settings?.modeling?.use_sketch_solve_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       backfaceColor: toUndefinedIfNull(
@@ -124,7 +125,7 @@ export function settingsPayloadToConfiguration(
           : undefined,
         gizmo_type: configuration?.modeling?.gizmoType,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
+        use_sketch_solve_mode: configuration?.modeling?.useSketchSolveMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         backface_color: configuration?.modeling?.backfaceColor,

@@ -17,6 +17,7 @@ import {
   calculateArcSwapState,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -353,7 +354,7 @@ export function sendResultToParent({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 
@@ -478,7 +479,7 @@ export function storeCreatedArcResult({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 

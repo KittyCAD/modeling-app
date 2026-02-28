@@ -16,6 +16,7 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -278,7 +279,7 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     output.sceneGraphDelta?.new_objects.filter((objId) => {
       const obj = output.sceneGraphDelta!.new_graph.objects[objId]
       if (!obj) return false
-      return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+      return isPointSegment(obj)
     }) || []
 
   // The last point ID is the end point of the newly created line

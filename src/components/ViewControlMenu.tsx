@@ -21,12 +21,13 @@ import {
   getOpenPanes,
   setOpenPanes,
 } from '@src/lib/layout'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export function useViewControlMenuItems() {
-  const { settings } = useApp()
+  useSignals()
+  const { settings, layout } = useApp()
   const {
     engineCommandManager,
-    getLayout,
     kclManager,
     rustContext,
     sceneEntitiesManager,
@@ -102,7 +103,7 @@ export function useViewControlMenuItems() {
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            const rootLayout = getLayout()
+            const rootLayout = layout.signal.value
             setOpenPanes(rootLayout, [
               ...getOpenPanes({ rootLayout }),
               DefaultLayoutPaneID.Code,
@@ -155,7 +156,7 @@ export function useViewControlMenuItems() {
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current,
+              modelingState.context.store.useSketchSolveMode?.current,
               {
                 kclManager,
                 rustContext,
@@ -195,12 +196,12 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useNewSketchMode,
+      modelingState.context.store.useSketchSolveMode,
       sketching,
       snapToGrid,
       gizmoType,
       engineCommandManager,
-      getLayout,
+      layout.signal.value,
       kclManager,
       rustContext,
       sceneEntitiesManager,

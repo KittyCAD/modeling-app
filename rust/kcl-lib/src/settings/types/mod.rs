@@ -219,9 +219,9 @@ pub struct ModelingSettings {
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_touch_controls: DefaultTrue,
-    /// Toggle new sketch mode implementation
+    /// Default to the experimental solver-based sketch mode for all new sketches.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub use_new_sketch_mode: bool,
+    pub use_sketch_solve_mode: bool,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
@@ -266,7 +266,7 @@ impl Default for ModelingSettings {
             mouse_controls: Default::default(),
             gizmo_type: Default::default(),
             enable_touch_controls: Default::default(),
-            use_new_sketch_mode: Default::default(),
+            use_sketch_solve_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
             backface_color: None,

@@ -19,11 +19,12 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { FileEntry, Project } from '@src/lib/project'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
 }
 
 const ProjectSidebarMenu = ({
