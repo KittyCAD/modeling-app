@@ -125,7 +125,7 @@ async fn inner_appearance(
 
     let mut needs_oit = false;
     let opacity_param = if let Some(opacity) = opacity {
-        if opacity < 100.0 {
+        if opacity < 100.0 && args.ctx.settings.enable_ssao {
             needs_oit = true;
         }
         opacity / 100.0
