@@ -38,6 +38,8 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
+// Additional attempts after the initial execution when the engine hangs up.
+const EXECUTE_ENGINE_HANGUP_RETRIES: usize = 2;
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
@@ -260,7 +262,27 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
+    let mut retries_remaining = EXECUTE_ENGINE_HANGUP_RETRIES;
+    let exec_res = loop {
+        let exec_res =
+            crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+                .await;
+        let should_retry = retries_remaining > 0
+            && exec_res.as_ref().err().is_some_and(|error| {
+                matches!(
+                    &error.error,
+                    crate::errors::ExecError::Kcl(kcl_error)
+                        if matches!(&kcl_error.error, crate::errors::KclError::EngineHangup { .. })
+                )
+            });
+
+        if should_retry {
+            retries_remaining -= 1;
+            continue;
+        }
+
+        break exec_res;
+    };
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
