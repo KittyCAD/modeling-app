@@ -152,7 +152,7 @@ export class Connection extends EventTarget {
 
   connectUnitTesting(callback: (message: string) => void) {
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
