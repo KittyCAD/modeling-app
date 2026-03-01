@@ -125,7 +125,9 @@ export async function getCalculatedKclExpressionValue(
     ? resultValueWithUnits
     : typeof resultRawValue === 'number'
       ? String(resultRawValue)
-      : 'NAN'
+      : typeof resultRawValue === 'boolean'
+        ? String(resultRawValue)
+        : 'NAN'
 
   return {
     astNode: variableDeclaratorAstNode,
