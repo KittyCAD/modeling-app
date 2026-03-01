@@ -39,8 +39,9 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-// Additional attempts after the initial execution when the engine hangs up.
-const EXECUTE_ENGINE_HANGUP_RETRIES: usize = 2;
+/// Additional attempts after the initial execution when the engine yields a
+/// transient error.
+const EXECUTE_RETRIES_FROM_ENGINE_ERROR: usize = 2;
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
@@ -259,7 +260,7 @@ where
     F: FnMut() -> Fut,
     Fut: Future<Output = Result<T, ExecErrorWithState>>,
 {
-    let mut retries_remaining = EXECUTE_ENGINE_HANGUP_RETRIES;
+    let mut retries_remaining = EXECUTE_RETRIES_FROM_ENGINE_ERROR;
     loop {
         let exec_res = execute().await;
 
