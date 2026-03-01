@@ -253,7 +253,8 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-async fn execute_with_engine_hangup_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
+/// If execution results in `EngineHangup`, retry.
+async fn execute_with_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
 where
     F: FnMut() -> Fut,
     Fut: Future<Output = Result<T, crate::errors::ExecErrorWithState>>,
@@ -290,7 +291,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = execute_with_engine_hangup_retries(|| {
+    let exec_res = execute_with_retries(|| {
         crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
     })
     .await;
