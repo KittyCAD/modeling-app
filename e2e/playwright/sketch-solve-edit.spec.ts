@@ -51,6 +51,24 @@ async function getMidpointBetweenSegments(
   }
 }
 
+/**
+ * Click a segment by using its DOM element's position
+ * The CSS2DObjects have been made invisible but they are kept for these tests.
+ * Clicking on the DOM element directly was flaky.
+ */
+async function clickSegmentById(
+  page: Page,
+  scene: SceneFixture,
+  segmentId: string
+) {
+  const box = await scene.getBoundingBoxOrThrow(
+    `[data-segment_id="${segmentId}"]`
+  )
+  const centerX = box.x + box.width / 2
+  const centerY = box.y + box.height / 2
+  await page.mouse.click(centerX, centerY)
+}
+
 const TEST_CODE = `@settings(experimentalFeatures = allow)
 
 mySketch = startSketchOn(XZ)
@@ -303,9 +321,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
-      await page.locator('[data-segment_id="2"]').click()
+      await clickSegmentById(page, scene, '2')
       // await page.waitForTimeout(100)
-      await page.locator('[data-segment_id="9"]').click()
+      await clickSegmentById(page, scene, '9')
       // await page.waitForTimeout(100)
 
       // Click the coincident tool

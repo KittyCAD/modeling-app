@@ -19,6 +19,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 function createTestMouseEvent(): MouseEvent {
   return new MouseEvent('click', {
@@ -241,7 +242,7 @@ describe('createOnDragStartCallback', () => {
     // Find the actual DOM element created by the point segment
     const handleElement =
       pointGroup.children[0]?.userData?.type === 'handle'
-        ? (pointGroup.children[0] as any).element
+        ? (pointGroup.children[0] as CSS2DObject).element
         : null
     if (handleElement instanceof HTMLElement === false) {
       throw new Error('Failed to get handle element from point segment group')
