@@ -272,6 +272,7 @@ where
 
         if should_retry {
             retries_remaining -= 1;
+            eprintln!("Execute got EngineHangup; retrying...");
             continue;
         }
 
