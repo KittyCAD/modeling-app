@@ -1,4 +1,5 @@
 use std::{
+    future::Future,
     panic::{AssertUnwindSafe, catch_unwind},
     path::{Path, PathBuf},
 };
@@ -256,17 +257,14 @@ async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
-async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
-    let input = test.read();
-    let ast = crate::Program::parse_no_errs(&input).unwrap();
-    let program_to_lint = ast.clone();
-
-    // Run the program.
+async fn execute_with_engine_hangup_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
+where
+    F: FnMut() -> Fut,
+    Fut: Future<Output = Result<T, crate::errors::ExecErrorWithState>>,
+{
     let mut retries_remaining = EXECUTE_ENGINE_HANGUP_RETRIES;
-    let exec_res = loop {
-        let exec_res =
-            crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
-                .await;
+    loop {
+        let exec_res = execute().await;
         let should_retry = retries_remaining > 0
             && exec_res.as_ref().err().is_some_and(|error| {
                 matches!(
@@ -281,8 +279,20 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             continue;
         }
 
-        break exec_res;
-    };
+        return exec_res;
+    }
+}
+
+async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+    let input = test.read();
+    let ast = crate::Program::parse_no_errs(&input).unwrap();
+    let program_to_lint = ast.clone();
+
+    // Run the program.
+    let exec_res = execute_with_engine_hangup_retries(|| {
+        crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+    })
+    .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
