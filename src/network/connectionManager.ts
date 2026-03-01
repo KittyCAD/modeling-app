@@ -51,7 +51,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
-  DEFAULT_BACKFACE_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -112,8 +111,7 @@ export class ConnectionManager extends EventTarget {
       showScaleGrid: s.modeling.showScaleGrid.current,
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
-      // TODO: get this from a setting
-      backfaceColor: DEFAULT_BACKFACE_COLOR,
+      backfaceColor: s.modeling.backfaceColor.current,
     }
   }
 

@@ -348,12 +348,6 @@ export const settingsMachine = setup({
     setEngineHighlightEdges: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setEngineBackfaceColor: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setEngineBackfaceColorAndRebuildScene: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -477,11 +471,7 @@ export const settingsMachine = setup({
         'set.modeling.backfaceColor': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setEngineBackfaceColorAndRebuildScene',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'Reset settings': {
