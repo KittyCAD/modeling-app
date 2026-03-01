@@ -21,6 +21,8 @@ export import * from "std::math"
 export import * from "std::sketch"
 @(experimental = true)
 export import "std::sketch2"
+@(experimental = true)
+export import region from "std::sketch2"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
