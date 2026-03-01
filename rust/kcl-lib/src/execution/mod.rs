@@ -791,7 +791,19 @@ impl ExecutorContext {
 
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
-            .await
+            .await?;
+        // The engine errors out if you toggle OIT with SSAO off.
+        // So ignore OIT settings if SSAO is off.
+        if self.settings.enable_ssao {
+            let cmd_id = exec_state.next_uuid();
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::with_id(exec_state, &self, source_range, cmd_id),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
+                )
+                .await?;
+        }
+        Ok(())
     }
 
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
