@@ -8,7 +8,7 @@ use indexmap::IndexMap;
 
 use crate::{
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
-    errors::KclError,
+    errors::{ExecErrorWithState, KclError},
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
     walk::{Node, walk},
@@ -254,10 +254,10 @@ async fn unparse_test(test: &Test) {
 }
 
 /// If execution results in `EngineHangup` or `EngineInternal`, retry.
-async fn execute_with_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
+async fn execute_with_retries<F, Fut, T>(mut execute: F) -> Result<T, ExecErrorWithState>
 where
     F: FnMut() -> Fut,
-    Fut: Future<Output = Result<T, crate::errors::ExecErrorWithState>>,
+    Fut: Future<Output = Result<T, ExecErrorWithState>>,
 {
     let mut retries_remaining = EXECUTE_ENGINE_HANGUP_RETRIES;
     loop {
