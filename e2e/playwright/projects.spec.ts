@@ -659,7 +659,7 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     const commandOption = page.getByRole('option', {
       name: 'delete project',
     })
-    const projectNameOption = page.getByRole('option', { name: projectName })
+    const projectNameOption = page.getByRole('option2', { name: projectName })
     const commandWarning = page.getByText('Are you sure you want to delete?')
     const toastMessage = page.getByText(`Successfully deleted`)
     const noProjectsMessage = page.getByText('No projects found')
@@ -709,7 +709,7 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     const projectHomeLink = page.getByTestId('project-link')
     const commandButton = page.getByRole('button', { name: 'Commands' })
     const commandOption = page.getByRole('option', {
-      name: 'rename project',
+      name: 'rename project2',
     })
     const projectNameOption = page.getByRole('option', { name: projectName })
     const projectRenamedName = `my_project_after_rename_from_home`

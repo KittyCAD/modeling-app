@@ -40,7 +40,7 @@ describe('test closestPointOnRay', () => {
 
     const result = closestPointOnRay(rayOrigin, rayDirection, pointToCheck)
     expect(result.closestPoint).toEqual([7, 0])
-    expect(result.t).toBe(6)
+    expect(result.t).toBe(7)
   })
 
   test('point lies behind ray origin and allowNegative=false', () => {
@@ -50,7 +50,7 @@ describe('test closestPointOnRay', () => {
 
     const result = closestPointOnRay(rayOrigin, rayDirection, pointToCheck)
     expect(result.closestPoint).toEqual([0, 0])
-    expect(result.t).toBe(0)
+    expect(result.t).toBe(1)
   })
 
   test('point lies behind ray origin and allowNegative=true', () => {
