@@ -262,23 +262,24 @@ where
 {
     let mut retries_remaining = EXECUTE_RETRIES_FROM_ENGINE_ERROR;
     loop {
-        let exec_res = execute().await;
+        // Run the closure to execute.
+        let exec_result = execute().await;
 
         if retries_remaining > 0
-            && let Err(error) = &exec_res
+            && let Err(error) = &exec_result
             && let crate::errors::ExecError::Kcl(kcl_error) = &error.error
             && matches!(
                 &kcl_error.error,
                 KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
             )
         {
-            retries_remaining -= 1;
             let error_type = kcl_error.error.error_type();
             eprintln!("Execute got {error_type}; retrying...");
+            retries_remaining -= 1;
             continue;
         }
 
-        return exec_res;
+        return exec_result;
     }
 }
 
