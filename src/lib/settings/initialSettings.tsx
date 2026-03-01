@@ -31,7 +31,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
-import { hexToRgb } from '@src/lib/utils'
+import { hexToRgba } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -412,7 +412,7 @@ export function createSettings() {
         defaultValue: DEFAULT_BACKFACE_COLOR,
         description: 'Default backface color for surfaces',
         hideOnLevel: 'project',
-        validate: (v) => typeof v === 'string' && hexToRgb(v) !== null,
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
         commandConfig: {
           inputType: 'color',
           defaultValueFromContext: (context) =>

@@ -737,24 +737,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   )
 }
 
-function clampUnitValue(value: number) {
-  if (!Number.isFinite(value)) return 0
-  return Math.min(1, Math.max(0, value))
-}
-
-function channelToHex(value: number) {
-  return Math.round(clampUnitValue(value) * 255)
-    .toString(16)
-    .padStart(2, '0')
-}
-
-export function rgbaToHex(color: RgbaColor) {
-  return `#${channelToHex(color.r)}${channelToHex(color.g)}${channelToHex(
-    color.b
-  )}`
-}
-
-export function hexToRgb(hex: string) {
+export function hexToRgba(hex: string): RgbaColor | null {
   const normalized = hex.replace('#', '').trim()
   const expanded =
     normalized.length === 3
@@ -777,5 +760,6 @@ export function hexToRgb(hex: string) {
     r: r / 255,
     g: g / 255,
     b: b / 255,
+    a: 1,
   }
 }

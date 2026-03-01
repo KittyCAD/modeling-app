@@ -1,7 +1,4 @@
-import type {
-  RgbaColor,
-  SettingsViaQueryString,
-} from '@src/lib/settings/settingsTypes'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { Connection } from '@src/network/connection'
 import {
   darkModeMatcher,
@@ -37,7 +34,7 @@ import {
 import type RustContext from '@src/lib/rustContext'
 import {
   binaryToUuid,
-  hexToRgb,
+  hexToRgba,
   isArray,
   promiseFactory,
   uuidv4,
@@ -475,19 +472,14 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the default backface color in the engine, with debug logging */
   async setBackfaceColor(color: string) {
-    const rgb = hexToRgb(color)
-    if (!rgb) {
+    const rgbaColor = hexToRgba(color)
+    if (!rgbaColor) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setBackfaceColor, invalid hex color',
         metadata: { color },
       })
       return
-    }
-
-    const rgbaColor: RgbaColor = {
-      ...rgb,
-      a: 1,
     }
 
     const cmd = {
