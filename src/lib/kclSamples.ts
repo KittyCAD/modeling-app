@@ -1,20 +1,13 @@
-import kclSamplesManifestDataUri from '/kcl-samples/manifest.json?url&inline'
-import { dataOrFileUrlToString } from '@src/lib/utils'
-
-const kclSamplesManifest = JSON.parse(
-  await dataOrFileUrlToString(kclSamplesManifestDataUri)
-)
+import kclSamplesManifest from '@public/kcl-samples/manifest.json'
 
 export const kclSamplesManifestWithNoMultipleFiles = kclSamplesManifest.filter(
-  (file: { multipleFiles?: any[] }) => !file.multipleFiles
+  (file) => !file.multipleFiles
 )
 export const everyKclSample = kclSamplesManifest
 
 export const findKclSample = (pathFromProjectDirectoryToFirstFile: string) => {
   return everyKclSample.find(
-    (sample: {
-      pathFromProjectDirectoryToFirstFile: string
-    }) =>
+    (sample) =>
       sample.pathFromProjectDirectoryToFirstFile ===
       pathFromProjectDirectoryToFirstFile
   )

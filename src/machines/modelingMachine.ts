@@ -212,6 +212,7 @@ export type ModelingMachineEvent =
       data?: {
         forceNewSketch?: boolean
         keepDefaultPlaneVisibility?: boolean
+        forceSketchSolveMode?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -449,8 +450,8 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineInput,
   },
   guards: {
-    'should use new sketch mode': ({ context }) => {
-      return context.store.useNewSketchMode?.current === true
+    'should use sketch solve mode': ({ context }) => {
+      return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
       context: { selectionRanges },
@@ -1232,6 +1233,14 @@ export const modelingMachine = setup({
       }
       void context.kclManager.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
+    }),
+    'force sketch solve mode': assign(({ event }) => {
+      if (event.type !== 'Enter sketch' || !event.data?.forceSketchSolveMode)
+        return {}
+      return { forceSketchSolveMode: true }
+    }),
+    'reset default sketch mode': assign({
+      forceSketchSolveMode: undefined,
     }),
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool, sceneEntitiesManager, sceneInfra },
@@ -5471,6 +5480,7 @@ export const modelingMachine = setup({
               ({ context }) => {
                 context.sceneInfra.animate()
               },
+              'force sketch solve mode',
             ],
           },
         ],
@@ -7068,7 +7078,11 @@ export const modelingMachine = setup({
         'enter sketching mode',
       ],
 
-      exit: ['hide default planes', 'set selection filter to defaults'],
+      exit: [
+        'hide default planes',
+        'set selection filter to defaults',
+        'reset default sketch mode',
+      ],
       on: {
         'Select sketch plane': {
           target: 'animating to plane',
