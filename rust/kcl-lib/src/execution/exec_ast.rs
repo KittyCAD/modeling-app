@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcl_ezpz::{Constraint, NonLinearSystemError};
+use kittycad_modeling_cmds as kcmc;
 
 #[cfg(feature = "artifact-graph")]
 use crate::front::{Object, ObjectKind};
@@ -10,23 +11,24 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
-        SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr,
-        UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        AbstractSegment, BodyType, ControlFlowKind, EarlyReturn, EnvironmentRef, ExecState, ExecutorContext, KclValue,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem,
+        SKETCH_BLOCK_PARAM_ON, Segment, SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind,
+        TagIdentifier, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
-        control_continue,
+        control_continue, early_return,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
-        memory,
+        memory::{self, SKETCH_PREFIX},
         sketch_solve::{
-            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
-            substitute_sketch_var_in_segment, substitute_sketch_vars,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_angle_unit,
+            normalize_to_solver_distance_unit, solver_numeric_type, substitute_sketch_var_in_segment,
+            substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
-    front::PointCtor,
+    front::{ObjectId, PointCtor},
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -35,12 +37,79 @@ use crate::{
         Type, UnaryExpression, UnaryOperator,
     },
     std::{
-        args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine, sketch2::create_segments_in_engine,
+        args::{FromKclValue, TyF64},
+        shapes::SketchOrSurface,
+        sketch::ensure_sketch_plane_in_engine,
+        sketch2::create_segments_in_engine,
     },
 };
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
+}
+
+fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
+    format!("{SKETCH_PREFIX}{}_on", sketch_id.0)
+}
+
+#[cfg(feature = "artifact-graph")]
+fn default_plane_name_from_expr(expr: &Expr) -> Option<crate::engine::PlaneName> {
+    fn parse_name(name: &str, negative: bool) -> Option<crate::engine::PlaneName> {
+        use crate::engine::PlaneName;
+
+        match (name, negative) {
+            ("XY", false) => Some(PlaneName::Xy),
+            ("XY", true) => Some(PlaneName::NegXy),
+            ("XZ", false) => Some(PlaneName::Xz),
+            ("XZ", true) => Some(PlaneName::NegXz),
+            ("YZ", false) => Some(PlaneName::Yz),
+            ("YZ", true) => Some(PlaneName::NegYz),
+            _ => None,
+        }
+    }
+
+    match expr {
+        Expr::Name(name) => {
+            if !name.path.is_empty() {
+                return None;
+            }
+            parse_name(&name.name.name, false)
+        }
+        Expr::UnaryExpression(unary) => {
+            if unary.operator != UnaryOperator::Neg {
+                return None;
+            }
+            let crate::parsing::ast::types::BinaryPart::Name(name) = &unary.argument else {
+                return None;
+            };
+            if !name.path.is_empty() {
+                return None;
+            }
+            parse_name(&name.name.name, true)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn sketch_on_frontend_plane(
+    arguments: &[crate::parsing::ast::types::LabeledArg],
+    on_object_id: crate::front::ObjectId,
+) -> crate::front::Plane {
+    for arg in arguments {
+        let Some(label) = &arg.label else {
+            continue;
+        };
+        if label.name != SKETCH_BLOCK_PARAM_ON {
+            continue;
+        }
+        if let Some(name) = default_plane_name_from_expr(&arg.arg) {
+            return crate::front::Plane::Default(name);
+        }
+        break;
+    }
+
+    crate::front::Plane::Object(on_object_id)
 }
 
 impl<'a> StatementKind<'a> {
@@ -1102,75 +1171,14 @@ impl Node<SketchBlock> {
         let range = SourceRange::from(self);
 
         // Evaluate arguments.
-        let mut labeled = IndexMap::new();
-        for labeled_arg in &self.arguments {
-            let source_range = SourceRange::from(labeled_arg.arg.clone());
-            let metadata = Metadata { source_range };
-            let value_cf = ctx
-                .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let value = control_continue!(value_cf);
-            let arg = Arg::new(value, source_range);
-            match &labeled_arg.label {
-                Some(label) => {
-                    labeled.insert(label.name.clone(), arg);
-                }
-                None => {
-                    let name = labeled_arg.arg.ident_name();
-                    if let Some(name) = name {
-                        labeled.insert(name.to_owned(), arg);
-                    } else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                            vec![SourceRange::from(&labeled_arg.arg)],
-                        )));
-                    }
-                }
-            }
-        }
-        let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
-        args.labeled = labeled;
-
-        // Create the sketch block scene object. This needs to happen before
-        // scene objects created inside the sketch block so that its ID is
-        // stable across sketch block edits. In order to create the sketch block
-        // scene object, we need to make sure the plane scene object is created.
-        let arg_on: SketchOrSurface = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
-        let mut sketch_surface = arg_on.into_sketch_surface();
-        // Ensure that the plane has an ObjectId. Always create an Object so
-        // that we're consistent with IDs.
-        if exec_state.sketch_mode() {
-            if sketch_surface.object_id().is_none() {
-                #[cfg(not(feature = "artifact-graph"))]
-                {
-                    // Without artifact graph, we just create a new object ID.
-                    // It will never be used for anything meaningful.
-                    sketch_surface.set_object_id(exec_state.next_object_id());
-                }
-                #[cfg(feature = "artifact-graph")]
-                {
-                    // Look up the last object. Since this is where we would have
-                    // created it in real execution, it will be the last object.
-                    let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
-                        return Err(internal_err(
-                            "In sketch mode, the `on` plane argument must refer to an existing plane object.",
-                            range,
-                        ));
-                    };
-                    sketch_surface.set_object_id(last_object.id);
-                }
-            }
-        } else {
-            match &mut sketch_surface {
-                SketchSurface::Plane(plane) => {
-                    // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, &args).await?;
-                }
-                SketchSurface::Face(_) => {
-                    // All faces should already be created in the engine.
-                }
-            }
-        }
+        let (sketch_id, sketch_surface) = match self.exec_arguments(exec_state, ctx).await {
+            Ok(x) => x,
+            Err(cf_error) => match cf_error {
+                // Control flow needs to return early.
+                EarlyReturn::Value(cf_value) => return Ok(cf_value),
+                EarlyReturn::Error(err) => return Err(err),
+            },
+        };
         let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
             object_id
         } else {
@@ -1178,41 +1186,14 @@ impl Node<SketchBlock> {
             debug_assert!(false, "{message}");
             return Err(internal_err(message, range));
         };
-        let arg_on_expr_name = self
-            .arguments
-            .iter()
-            .find_map(|labeled_arg| {
-                if let Some(label) = &labeled_arg.label
-                    && label.name == "on"
-                {
-                    // Being a simple identifier only is required by the parser.
-                    if let Some(name) = labeled_arg.arg.ident_name() {
-                        Some(Ok(name))
-                    } else {
-                        let message = "A sketch block's `on` parameter must be a variable or identifier, not an arbitrary expression. The parser should have enforced this."
-                                .to_owned();
-                        debug_assert!(false, "{message}");
-                        Some(Err(internal_err(message, &labeled_arg.arg)))
-                    }
-                } else {
-                    None
-                }
-            })
-            .unwrap_or_else(|| {
-                Err(KclError::new_invalid_expression(KclErrorDetails::new(
-                    "sketch block requires an `on` parameter".to_owned(),
-                    vec![SourceRange::from(self)],
-                )))
-            })?
-            // Convert to owned so that we can do an exclusive borrow later.
-            .to_owned();
         #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = on_object_id;
-            drop(arg_on_expr_name);
-        }
+        let _ = on_object_id;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
-        let sketch_id = {
+        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
+        #[cfg(feature = "artifact-graph")]
+        {
             use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
@@ -1220,13 +1201,12 @@ impl Node<SketchBlock> {
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
 
-            let sketch_id = exec_state.next_object_id();
-
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            // Create the sketch scene object and replace its placeholder.
             let sketch_scene_object = Object {
                 id: sketch_id,
                 kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: arg_on_expr_name },
+                    args: crate::front::SketchCtor { on: sketch_ctor_on },
                     plane: on_object_id,
                     segments: Default::default(),
                     constraints: Default::default(),
@@ -1236,7 +1216,7 @@ impl Node<SketchBlock> {
                 artifact_id,
                 source: range.into(),
             };
-            exec_state.add_scene_object(sketch_scene_object, range);
+            exec_state.set_scene_object(sketch_scene_object);
 
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
@@ -1245,9 +1225,7 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
-
-            sketch_id
-        };
+        }
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
@@ -1341,8 +1319,12 @@ impl Node<SketchBlock> {
                     ty: sketch_var.ty,
                     meta: sketch_var.meta.clone(),
                 };
-                let initial_guess_value =
-                    normalize_to_solver_unit(&number_value, v.into(), exec_state, "sketch variable initial value")?;
+                let initial_guess_value = normalize_to_solver_distance_unit(
+                    &number_value,
+                    v.into(),
+                    exec_state,
+                    "sketch variable initial value",
+                )?;
                 let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
                     n.n
                 } else {
@@ -1553,6 +1535,143 @@ impl Node<SketchBlock> {
         } else {
             return_value.continue_()
         })
+    }
+
+    /// Executes the arguments of the sketch block and returns the sketch ID and
+    /// surface. The surface is the `on` argument, which is basically a Plane or
+    /// Face.
+    ///
+    /// In sketch mode, the execution cache is used to look up the sketch
+    /// surface.
+    ///
+    /// The sketch ID is generated in either case so that it's stable. But only
+    /// a placeholder scene object is created for it.
+    async fn exec_arguments(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+
+        if !exec_state.sketch_mode() {
+            // Evaluate arguments.
+            //
+            // Sketch mode only executes the sketch block body. Arguments must
+            // be evaluated in engine execution so that things like Planes and
+            // Faces can be created in the engine.
+            let mut labeled = IndexMap::new();
+            for labeled_arg in &self.arguments {
+                let source_range = SourceRange::from(labeled_arg.arg.clone());
+                let metadata = Metadata { source_range };
+                let value_cf = ctx
+                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                    .await?;
+                let value = early_return!(value_cf);
+                let arg = Arg::new(value, source_range);
+                match &labeled_arg.label {
+                    Some(label) => {
+                        labeled.insert(label.name.clone(), arg);
+                    }
+                    None => {
+                        let name = labeled_arg.arg.ident_name();
+                        if let Some(name) = name {
+                            labeled.insert(name.to_owned(), arg);
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                                vec![SourceRange::from(&labeled_arg.arg)],
+                            ))
+                            .into());
+                        }
+                    }
+                }
+            }
+            let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+            args.labeled = labeled;
+
+            let arg_on_value: KclValue =
+                args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
+
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            match &mut sketch_surface {
+                SketchSurface::Plane(plane) => {
+                    // Ensure that it's been created in the engine.
+                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range).await?;
+                }
+                SketchSurface::Face(_) => {
+                    // All faces should already be created in the engine.
+                }
+            }
+
+            // Generate an ID for the sketch block. This must be done after
+            // arguments so that we get the same result when the arguments are
+            // cached. This must be done before the sketch block body so that no
+            // matter how many IDs are generated due to objects in the body, the
+            // sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            #[cfg(feature = "artifact-graph")]
+            exec_state.add_placeholder_scene_object(sketch_id, range);
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            // Store in memory so that it's cached.
+            exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
+
+            Ok((sketch_id, sketch_surface))
+        } else {
+            // In sketch mode, we can't re-evaluate arguments. Instead, look
+            // them up from cache.
+
+            // Generate an ID for the sketch block. This must be done before the
+            // sketch block body so that no matter how many IDs are generated
+            // due to objects in the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            #[cfg(feature = "artifact-graph")]
+            exec_state.add_placeholder_scene_object(sketch_id, range);
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
+
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            if sketch_surface.object_id().is_none() {
+                #[cfg(not(feature = "artifact-graph"))]
+                {
+                    // Without artifact graph, we just create a new object ID.
+                    // It will never be used for anything meaningful.
+                    sketch_surface.set_object_id(exec_state.next_object_id());
+                }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Look up the last object. Since this is where we would have
+                    // created it in real execution, it will be the last object.
+                    let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                        return Err(internal_err(
+                            "In sketch mode, the `on` plane argument must refer to an existing plane object.",
+                            range,
+                        )
+                        .into());
+                    };
+                    sketch_surface.set_object_id(last_object.id);
+                }
+            }
+
+            Ok((sketch_id, sketch_surface))
+        }
     }
 
     async fn load_sketch2_into_current_scope(
@@ -2548,7 +2667,7 @@ impl Node<BinaryExpression> {
                 // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
-                    let number_value = normalize_to_solver_unit(
+                    let number_value = normalize_to_solver_distance_unit(
                         input_number,
                         input_number.into(),
                         exec_state,
@@ -2574,12 +2693,26 @@ impl Node<BinaryExpression> {
                 // One sketch constraint, one number.
                 (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
-                    let number_value = normalize_to_solver_unit(
-                        input_number,
-                        input_number.into(),
-                        exec_state,
-                        "fixed constraint value",
-                    )?;
+                    let number_value = match constraint.kind {
+                        // These constraint kinds expect the RHS to be an angle.
+                        SketchConstraintKind::Angle { .. } => normalize_to_solver_angle_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                        // These constraint kinds expect the RHS to be a distance.
+                        SketchConstraintKind::Distance { .. }
+                        | SketchConstraintKind::Radius { .. }
+                        | SketchConstraintKind::Diameter { .. }
+                        | SketchConstraintKind::HorizontalDistance { .. }
+                        | SketchConstraintKind::VerticalDistance { .. } => normalize_to_solver_distance_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                    };
                     let Some(n) = number_value.as_ty_f64() else {
                         let message = format!(
                             "Expected number after coercion, but found {}",
@@ -2607,6 +2740,105 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
+                        SketchConstraintKind::Angle { line0, line1 } => {
+                            let range = self.as_source_range();
+                            // Line 0 is points A and B.
+                            // Line 1 is points C and D.
+                            let ax = line0.vars[0].x.to_constraint_id(range)?;
+                            let ay = line0.vars[0].y.to_constraint_id(range)?;
+                            let bx = line0.vars[1].x.to_constraint_id(range)?;
+                            let by = line0.vars[1].y.to_constraint_id(range)?;
+                            let cx = line1.vars[0].x.to_constraint_id(range)?;
+                            let cy = line1.vars[0].y.to_constraint_id(range)?;
+                            let dx = line1.vars[1].x.to_constraint_id(range)?;
+                            let dy = line1.vars[1].y.to_constraint_id(range)?;
+                            let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
+                            );
+                            let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
+                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
+                            );
+                            let desired_angle = match n.ty {
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Degrees,
+                                } => kcl_ezpz::datatypes::Angle::from_degrees(n.n),
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Radians,
+                                } => kcl_ezpz::datatypes::Angle::from_radians(n.n),
+                                NumericType::Known(crate::exec::UnitType::Count)
+                                | NumericType::Known(crate::exec::UnitType::GenericLength)
+                                | NumericType::Known(crate::exec::UnitType::GenericAngle)
+                                | NumericType::Known(crate::exec::UnitType::Length(_))
+                                | NumericType::Unknown
+                                | NumericType::Any => {
+                                    let message = format!("Expected angle but found {:?}", n);
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(internal_err(message, self));
+                                }
+                            };
+                            let solver_constraint = Constraint::LinesAtAngle(
+                                solver_line0,
+                                solver_line1,
+                                kcl_ezpz::datatypes::AngleKind::Other(desired_angle),
+                            );
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Angle,
+                                };
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Angle(Angle {
+                                    lines: vec![line0.object_id, line1.object_id],
+                                    angle: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert angle units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
                         SketchConstraintKind::Distance { points } => {
                             let range = self.as_source_range();
                             let p0 = &points[0];
@@ -2782,6 +3014,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        source,
                                     })
                                 } else {
                                     use crate::frontend::sketch::Radius;
@@ -2790,6 +3023,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        source,
                                     })
                                 };
                                 sketch_block_state.sketch_constraints.push(constraint_id);

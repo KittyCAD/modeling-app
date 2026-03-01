@@ -34,7 +34,7 @@ import {
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
-import { ConstraintUtils } from '@src/machines/sketchSolve/constraints'
+import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.
@@ -1138,7 +1138,7 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
-  DimensionConstraint: new ConstraintUtils(),
+  Constraint: new ConstraintBuilder(),
 }
 
 /**

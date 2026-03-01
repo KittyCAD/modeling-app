@@ -163,7 +163,7 @@ pub mod front {
             Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
         },
         sketch::{
-            Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
+            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
             PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
         },

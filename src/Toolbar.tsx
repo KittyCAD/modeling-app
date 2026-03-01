@@ -461,8 +461,8 @@ const Toolbar_ = memo(
           {props.state.matches('sketchSolveMode') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Sketch mode revamp, expect bugs, disable again in settings if
-                you want normal sketch mode
+                Sketch solve mode is experimental. Disable in settings if you
+                want classic sketch mode.
               </p>
             </div>
           )}

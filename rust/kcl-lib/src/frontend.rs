@@ -10,16 +10,16 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
-    ExecOutcome, ExecutorContext, KclErrorWithOutputs, Program,
+    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
-    execution::MockConfig,
+    execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
-            Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
-            SourceRef, Version,
+            Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
+            SourceDelta, SourceRef, Version,
         },
         modify::{find_defined_names, next_free_name},
         sketch::{
@@ -61,6 +61,7 @@ const ARC_CENTER_PARAM: &str = "center";
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -207,11 +208,12 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // TODO: Check version.
 
+        let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let plane_ast = ast_name_expr(args.on);
+        let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new("on")),
+                label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
                 arg: plane_ast,
             }],
             body: Default::default(),
@@ -219,7 +221,6 @@ impl SketchApi for FrontendState {
             non_code_meta: Default::default(),
             digest: None,
         };
-        let mut new_ast = self.program.ast.clone();
         // Ensure that we allow experimental features since the sketch block
         // won't work without it.
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
@@ -658,6 +659,7 @@ impl SketchApi for FrontendState {
             Constraint::Radius(radius) => self.add_radius(sketch, radius, &mut new_ast).await?,
             Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, &mut new_ast).await?,
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
+            Constraint::Angle(lines_at_angle) => self.add_angle(sketch, lines_at_angle, &mut new_ast).await?,
         };
 
         let result = self
@@ -892,6 +894,9 @@ impl SketchApi for FrontendState {
                 Constraint::Radius(radius) => {
                     self.add_radius(sketch, radius, &mut new_ast).await?;
                 }
+                Constraint::Angle(angle) => {
+                    self.add_angle(sketch, angle, &mut new_ast).await?;
+                }
             }
         }
 
@@ -1025,7 +1030,7 @@ impl FrontendState {
     }
 
     fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> api::Result<ExecOutcome> {
-        if err.error.message().contains("websocket closed early") {
+        if matches!(err.error, KclError::EngineHangup { .. }) {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
             // errors that have nothing to do with the actual problem.
@@ -2105,6 +2110,89 @@ impl FrontendState {
         Ok(sketch_block_range)
     }
 
+    async fn add_angle(
+        &mut self,
+        sketch: ObjectId,
+        angle: Angle,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[l0_id, l1_id] = angle.lines.as_slice() else {
+            return Err(Error {
+                msg: format!("Angle constraint must have exactly 2 lines, got {}", angle.lines.len()),
+            });
+        };
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let line0_object = self.scene_graph.objects.get(l0_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line0_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line0_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line0_object:?}",),
+            });
+        };
+        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+
+        let line1_object = self.scene_graph.objects.get(l1_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {l1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line1_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line1_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be constrained to meet at an angle: {line1_object:?}",),
+            });
+        };
+        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+
+        // Create the angle() call.
+        let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![l0_ast, l1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: angle_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: angle.angle.value,
+                    suffix: angle.angle.units,
+                },
+                raw: format_number_literal(angle.angle.value, angle.angle.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", angle.angle.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_radius(
         &mut self,
         sketch: ObjectId,
@@ -2733,6 +2821,7 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
+                Constraint::Angle(angle) => angle.lines.iter().any(|line_id| segment_ids_set.contains(line_id)),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
@@ -2942,6 +3031,42 @@ fn only_sketch_block(
     }
 
     Ok(())
+}
+
+fn sketch_on_ast_expr(
+    ast: &mut ast::Node<ast::Program>,
+    scene_graph: &SceneGraph,
+    on: &Plane,
+) -> api::Result<ast::Expr> {
+    match on {
+        Plane::Default(name) => Ok(default_plane_ast_expr(*name)),
+        Plane::Object(object_id) => {
+            let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
+                msg: format!("Sketch plane object not found: {object_id:?}"),
+            })?;
+            get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+        }
+    }
+}
+
+fn default_plane_ast_expr(name: crate::engine::PlaneName) -> ast::Expr {
+    use crate::engine::PlaneName;
+
+    match name {
+        PlaneName::Xy => ast_name_expr("XY".to_owned()),
+        PlaneName::Xz => ast_name_expr("XZ".to_owned()),
+        PlaneName::Yz => ast_name_expr("YZ".to_owned()),
+        PlaneName::NegXy => negated_plane_ast_expr("XY"),
+        PlaneName::NegXz => negated_plane_ast_expr("XZ"),
+        PlaneName::NegYz => negated_plane_ast_expr("YZ"),
+    }
+}
+
+fn negated_plane_ast_expr(name: &str) -> ast::Expr {
+    ast::Expr::UnaryExpression(Box::new(ast::UnaryExpression::new(
+        ast::UnaryOperator::Neg,
+        ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
+    )))
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -3603,7 +3728,7 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
     })))
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
     use crate::{
@@ -3693,7 +3818,7 @@ bad = missing_name
         let version = Version(0);
 
         let sketch_args = SketchCtor {
-            on: PlaneName::Xy.to_string(),
+            on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -3707,7 +3832,7 @@ bad = missing_name
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchCtor {
-                    on: PlaneName::Xy.to_string()
+                    on: Plane::Default(PlaneName::Xy)
                 },
                 plane: ObjectId(0),
                 segments: vec![],
@@ -3798,7 +3923,7 @@ sketch(on = XY) {
         let version = Version(0);
 
         let sketch_args = SketchCtor {
-            on: PlaneName::Xy.to_string(),
+            on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -3812,7 +3937,7 @@ sketch(on = XY) {
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchCtor {
-                    on: PlaneName::Xy.to_string()
+                    on: Plane::Default(PlaneName::Xy)
                 },
                 plane: ObjectId(0),
                 segments: vec![],
@@ -3926,7 +4051,7 @@ sketch(on = XY) {
         let version = Version(0);
 
         let sketch_args = SketchCtor {
-            on: PlaneName::Xy.to_string(),
+            on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -3940,7 +4065,7 @@ sketch(on = XY) {
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchCtor {
-                    on: PlaneName::Xy.to_string(),
+                    on: Plane::Default(PlaneName::Xy),
                 },
                 plane: ObjectId(0),
                 segments: vec![],
@@ -4140,7 +4265,7 @@ s = sketch(on = XY) {
         let version = Version(0);
 
         let sketch_args = SketchCtor {
-            on: PlaneName::Xy.to_string(),
+            on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -4154,7 +4279,7 @@ s = sketch(on = XY) {
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchCtor {
-                    on: PlaneName::Xy.to_string()
+                    on: Plane::Default(PlaneName::Xy)
                 },
                 plane: ObjectId(0),
                 segments: vec![],
@@ -4928,7 +5053,7 @@ sketch(on = XY) {
         let version = Version(0);
 
         let sketch_args = SketchCtor {
-            on: PlaneName::Xy.to_string(),
+            on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, _scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -5231,6 +5356,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -5349,6 +5475,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_point = frontend_point
             .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
@@ -5377,6 +5504,7 @@ sketch(on = XY) {
                 value: 5.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_line = frontend_line
             .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
@@ -5430,6 +5558,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -5486,6 +5615,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_point = frontend_point
             .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
@@ -5514,6 +5644,7 @@ sketch(on = XY) {
                 value: 10.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let result_line = frontend_line
             .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
@@ -5795,6 +5926,68 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_angle() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, line2_id],
+            angle: Number {
+                value: 30.0,
+                units: NumericSuffix::Deg,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+angle([line1, line2]) == 30deg
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            9,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_face_simple() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
@@ -5824,7 +6017,9 @@ face = faceOf(cube, face = side)
         let face_object = find_first_face_object(&frontend.scene_graph).unwrap();
         let face_id = face_object.id;
 
-        let sketch_args = SketchCtor { on: "face".to_owned() };
+        let sketch_args = SketchCtor {
+            on: Plane::Object(face_id),
+        };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
@@ -5836,7 +6031,9 @@ face = faceOf(cube, face = side)
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchCtor { on: "face".to_owned() },
+                args: SketchCtor {
+                    on: Plane::Object(face_id),
+                },
                 plane: face_id,
                 segments: vec![],
                 constraints: vec![],
@@ -5885,7 +6082,9 @@ plane = planeOf(cube, face = side)
             .unwrap();
         let plane_id = plane_object.id;
 
-        let sketch_args = SketchCtor { on: "plane".to_owned() };
+        let sketch_args = SketchCtor {
+            on: Plane::Object(plane_id),
+        };
         let (src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
@@ -5917,7 +6116,9 @@ sketch(on = plane) {
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchCtor { on: "plane".to_owned() },
+                args: SketchCtor {
+                    on: Plane::Object(plane_id),
+                },
                 plane: plane_id,
                 segments: vec![],
                 constraints: vec![],
@@ -5928,6 +6129,49 @@ sketch(on = plane) {
         let plane_object = scene_delta.new_graph.objects.get(plane_id.0).unwrap();
         assert_eq!(plane_object.id, plane_id);
         assert_eq!(plane_object.kind, ObjectKind::Plane(Plane::Object(plane_id)));
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_mode_reuses_cached_on_expression() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+width = 2mm
+sketch(on = offsetPlane(XY, offset = width)) {
+  line1 = sketch2::line(start = [var 0, var 0], end = [var 1mm, var 0])
+  sketch2::distance([line1.start, line1.end]) == width
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let initial_object_count = frontend.scene_graph.objects.len();
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected sketch object to exist")
+            .id;
+
+        // Entering sketch mode should reuse cached `on` expression state
+        // (offsetPlane result), not fail or create extra on-surface objects.
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
+
+        // A follow-up sketch-mode execution should keep the same stable object
+        // graph shape as well.
+        let (_src_delta, scene_delta) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
 
         ctx.close().await;
         mock_ctx.close().await;

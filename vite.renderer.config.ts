@@ -4,6 +4,7 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 import { indexHtmlCsp, pluginExposeRenderer } from './vite.base.config'
 
@@ -23,6 +24,12 @@ export default defineConfig((env) => {
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
+      nodePolyfills({
+        include: ['path'],
+        globals: {
+          process: false,
+        },
+      }),
       indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
