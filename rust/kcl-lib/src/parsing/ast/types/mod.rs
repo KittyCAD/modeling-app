@@ -729,7 +729,7 @@ impl Program {
 
         if let Some(old_name) = old_name {
             // Now rename all the identifiers in the rest of the program.
-            self.rename_identifiers(&old_name, new_name);
+            self.rename_identifiers(&old_name, new_name, &[]);
         } else {
             // Okay so this was not a top level variable declaration.
             // But it might be a variable declaration inside a function or function params.
@@ -759,7 +759,7 @@ impl Program {
                         // Rename the param.
                         param.identifier.rename(&old_name, new_name);
                         // Now rename all the identifiers in the rest of the program.
-                        function_expression.body.rename_identifiers(&old_name, new_name);
+                        function_expression.body.rename_identifiers(&old_name, new_name, &[]);
                         return;
                     }
                 }
@@ -768,9 +768,41 @@ impl Program {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    /// `excluded` lists names that must not be renamed (e.g. function params that shadow outer bindings).
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for item in &mut self.body {
-            item.rename_identifiers(old_name, new_name);
+            item.rename_identifiers(old_name, new_name, excluded);
+        }
+    }
+
+    /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
+    /// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
+    /// uses after the binding are not. We use `body_item_defined_names` so all bindings are
+    /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
+    /// names, etc.).
+    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+        for item in &mut self.body {
+            let names_in_this = body_item_defined_names(&*item);
+            let excluded_for_this: Vec<&str> = match item {
+                BodyItem::VariableDeclaration(_) => {
+                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                    let bindings_from_init = names_in_this.len().saturating_sub(1);
+                    for n in &names_in_this[..bindings_from_init] {
+                        v.push(n.as_str());
+                    }
+                    v
+                }
+                _ => {
+                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                    for n in &names_in_this {
+                        v.push(n.as_str());
+                    }
+                    v
+                }
+            };
+            item.rename_identifiers(old_name, new_name, &excluded_for_this);
+            excluded_owned.extend(names_in_this);
         }
     }
 
@@ -960,20 +992,24 @@ impl BodyItem {
         }
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         match self {
             BodyItem::ImportStatement(stmt) => {
-                stmt.rename_identifiers(old_name, new_name);
+                stmt.rename_identifiers(old_name, new_name, excluded);
             }
             BodyItem::ExpressionStatement(expression_statement) => {
-                expression_statement.expression.rename_identifiers(old_name, new_name);
+                expression_statement
+                    .expression
+                    .rename_identifiers(old_name, new_name, excluded);
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
-                variable_declaration.rename_identifiers(old_name, new_name);
+                variable_declaration.rename_identifiers(old_name, new_name, excluded);
             }
             BodyItem::TypeDeclaration(_) => {}
             BodyItem::ReturnStatement(return_statement) => {
-                return_statement.argument.rename_identifiers(old_name, new_name);
+                return_statement
+                    .argument
+                    .rename_identifiers(old_name, new_name, excluded);
             }
         }
     }
@@ -1013,6 +1049,141 @@ impl From<BodyItem> for SourceRange {
 impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
         Self::new(item.start(), item.end(), item.module_id())
+    }
+}
+
+/// Collect all names that are defined (bound) by this body item, in order. Used so that
+/// order-aware rename excludes a name only for items after the one that binds it.
+fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
+    let mut out = Vec::new();
+    match item {
+        BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+        BodyItem::ExpressionStatement(expr_stmt) => {
+            collect_defined_names_expr(&expr_stmt.expression, &mut out);
+        }
+        BodyItem::VariableDeclaration(var_decl) => {
+            collect_defined_names_expr(&var_decl.declaration.init, &mut out);
+            out.push(var_decl.declaration.id.name.clone());
+        }
+        BodyItem::ReturnStatement(ret_stmt) => {
+            collect_defined_names_expr(&ret_stmt.argument, &mut out);
+        }
+    }
+    out
+}
+
+/// Collect all names defined (bound) in an expression: TagDeclarator, LabelledExpression label,
+/// optional FunctionExpression name, etc. Mirrors frontend modify::find_defined_names_expr.
+fn collect_defined_names_expr(expr: &Expr, out: &mut Vec<String>) {
+    match expr {
+        Expr::CallExpressionKw(call) => {
+            for (_, arg) in call.iter_arguments() {
+                collect_defined_names_expr(arg, out);
+            }
+        }
+        Expr::PipeExpression(pipe) => {
+            for e in &pipe.body {
+                collect_defined_names_expr(e, out);
+            }
+        }
+        Expr::LabelledExpression(labeled) => {
+            collect_defined_names_expr(&labeled.expr, out);
+            out.push(labeled.label.name.clone());
+        }
+        Expr::Literal(_) | Expr::Name(_) | Expr::PipeSubstitution(_) | Expr::SketchVar(_) | Expr::None(_) => {}
+        Expr::TagDeclarator(tag_decl) => {
+            out.push(tag_decl.name.clone());
+        }
+        Expr::BinaryExpression(bin_expr) => {
+            collect_defined_names_binary_part(&bin_expr.left, out);
+            collect_defined_names_binary_part(&bin_expr.right, out);
+        }
+        Expr::FunctionExpression(func) => {
+            if let Some(name) = &func.name {
+                out.push(name.name.clone());
+            }
+        }
+        Expr::ArrayExpression(array) => {
+            for element in &array.elements {
+                collect_defined_names_expr(element, out);
+            }
+        }
+        Expr::ArrayRangeExpression(range) => {
+            collect_defined_names_expr(&range.start_element, out);
+            collect_defined_names_expr(&range.end_element, out);
+        }
+        Expr::ObjectExpression(obj) => {
+            for property in &obj.properties {
+                collect_defined_names_expr(&property.value, out);
+            }
+        }
+        Expr::MemberExpression(member) => {
+            collect_defined_names_expr(&member.object, out);
+            collect_defined_names_expr(&member.property, out);
+        }
+        Expr::UnaryExpression(unary_expr) => {
+            collect_defined_names_binary_part(&unary_expr.argument, out);
+        }
+        Expr::IfExpression(if_expr) => {
+            collect_defined_names_expr(&if_expr.cond, out);
+            for else_if in &if_expr.else_ifs {
+                collect_defined_names_expr(&else_if.cond, out);
+            }
+        }
+        Expr::AscribedExpression(expr) => {
+            collect_defined_names_expr(&expr.expr, out);
+        }
+        Expr::SketchBlock(sketch_block) => {
+            for labeled_arg in &sketch_block.arguments {
+                collect_defined_names_expr(&labeled_arg.arg, out);
+            }
+        }
+    }
+}
+
+/// Collect all names defined in a BinaryPart. Mirrors frontend modify::find_defined_names_binary_part.
+fn collect_defined_names_binary_part(part: &BinaryPart, out: &mut Vec<String>) {
+    match part {
+        BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => {}
+        BinaryPart::BinaryExpression(binary_expr) => {
+            collect_defined_names_binary_part(&binary_expr.left, out);
+            collect_defined_names_binary_part(&binary_expr.right, out);
+        }
+        BinaryPart::CallExpressionKw(call) => {
+            for (_, arg) in call.iter_arguments() {
+                collect_defined_names_expr(arg, out);
+            }
+        }
+        BinaryPart::UnaryExpression(unary_expr) => {
+            collect_defined_names_binary_part(&unary_expr.argument, out);
+        }
+        BinaryPart::MemberExpression(member) => {
+            collect_defined_names_expr(&member.object, out);
+            collect_defined_names_expr(&member.property, out);
+        }
+        BinaryPart::ArrayExpression(array) => {
+            for element in &array.elements {
+                collect_defined_names_expr(element, out);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(range) => {
+            collect_defined_names_expr(&range.start_element, out);
+            collect_defined_names_expr(&range.end_element, out);
+        }
+        BinaryPart::ObjectExpression(obj) => {
+            for property in &obj.properties {
+                collect_defined_names_expr(&property.value, out);
+            }
+        }
+        BinaryPart::IfExpression(if_expr) => {
+            collect_defined_names_expr(&if_expr.cond, out);
+            for else_if in &if_expr.else_ifs {
+                collect_defined_names_expr(&else_if.cond, out);
+            }
+        }
+        BinaryPart::AscribedExpression(expr) => {
+            collect_defined_names_expr(&expr.expr, out);
+        }
     }
 }
 
@@ -1179,25 +1350,57 @@ impl Expr {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         match self {
             Expr::Literal(_literal) => {}
-            Expr::Name(identifier) => identifier.rename(old_name, new_name),
-            Expr::TagDeclarator(tag) => tag.rename(old_name, new_name),
-            Expr::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
-            Expr::FunctionExpression(_function_identifier) => {}
-            Expr::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
-            Expr::PipeExpression(pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Expr::Name(identifier) => {
+                if !excluded.contains(&identifier.name.name.as_str()) {
+                    identifier.rename(old_name, new_name);
+                }
+            }
+            Expr::TagDeclarator(tag) => {
+                if !excluded.contains(&tag.name.as_str()) {
+                    tag.rename(old_name, new_name);
+                }
+            }
+            Expr::BinaryExpression(binary_expression) => {
+                binary_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::FunctionExpression(function_expression) => {
+                function_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::CallExpressionKw(call_expression) => {
+                call_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::PipeExpression(pipe_expression) => {
+                pipe_expression.rename_identifiers(old_name, new_name, excluded);
+            }
             Expr::PipeSubstitution(_) => {}
-            Expr::ArrayExpression(array_expression) => array_expression.rename_identifiers(old_name, new_name),
-            Expr::ArrayRangeExpression(array_range) => array_range.rename_identifiers(old_name, new_name),
-            Expr::ObjectExpression(object_expression) => object_expression.rename_identifiers(old_name, new_name),
-            Expr::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
-            Expr::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
-            Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
-            Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
-            Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
-            Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::ArrayExpression(array_expression) => {
+                array_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::ArrayRangeExpression(array_range) => {
+                array_range.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::ObjectExpression(object_expression) => {
+                object_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::MemberExpression(member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::UnaryExpression(unary_expression) => {
+                unary_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name, excluded),
+            Expr::LabelledExpression(expr) => {
+                expr.expr.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::AscribedExpression(expr) => {
+                expr.expr.rename_identifiers(old_name, new_name, excluded);
+            }
+            Expr::SketchBlock(expr) => {
+                expr.rename_identifiers(old_name, new_name, excluded);
+            }
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
@@ -1442,12 +1645,12 @@ impl SketchBlock {
         self.body.replace_value(source_range, new_value);
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for arg in &mut self.arguments {
-            arg.arg.rename_identifiers(old_name, new_name);
+            arg.arg.rename_identifiers(old_name, new_name, excluded);
         }
 
-        self.body.rename_identifiers(old_name, new_name);
+        self.body.rename_identifiers(old_name, new_name, excluded);
     }
 }
 
@@ -1494,9 +1697,9 @@ impl Block {
         }
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for item in &mut self.items {
-            item.rename_identifiers(old_name, new_name);
+            item.rename_identifiers(old_name, new_name, excluded);
         }
     }
 
@@ -1642,19 +1845,41 @@ impl BinaryPart {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         match self {
             BinaryPart::Literal(_literal) => {}
-            BinaryPart::Name(identifier) => identifier.rename(old_name, new_name),
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::ArrayExpression(e) => e.rename_identifiers(old_name, new_name),
-            BinaryPart::ArrayRangeExpression(e) => e.rename_identifiers(old_name, new_name),
-            BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
-            BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
+            BinaryPart::Name(identifier) => {
+                if !excluded.contains(&identifier.name.name.as_str()) {
+                    identifier.rename(old_name, new_name);
+                }
+            }
+            BinaryPart::BinaryExpression(binary_expression) => {
+                binary_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::CallExpressionKw(call_expression) => {
+                call_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::MemberExpression(member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::ArrayExpression(e) => {
+                e.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::ArrayRangeExpression(e) => {
+                e.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::ObjectExpression(e) => {
+                e.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::IfExpression(if_expression) => {
+                if_expression.rename_identifiers(old_name, new_name, excluded);
+            }
+            BinaryPart::AscribedExpression(e) => {
+                e.expr.rename_identifiers(old_name, new_name, excluded);
+            }
             BinaryPart::SketchVar(_) => {}
         }
     }
@@ -1963,7 +2188,7 @@ impl ImportItem {
         }
     }
 
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, _excluded: &[&str]) {
         if let Some(alias) = &mut self.alias {
             alias.rename(old_name, new_name);
         }
@@ -2014,11 +2239,11 @@ impl ImportSelector {
         }
     }
 
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         match self {
             ImportSelector::List { items } => {
                 for item in items {
-                    item.rename_identifiers(old_name, new_name);
+                    item.rename_identifiers(old_name, new_name, excluded);
                 }
             }
             ImportSelector::Glob(_) => {}
@@ -2096,8 +2321,8 @@ impl Node<ImportStatement> {
 }
 
 impl ImportStatement {
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.selector.rename_identifiers(old_name, new_name);
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.selector.rename_identifiers(old_name, new_name, excluded);
     }
 
     /// Get the name of the module object for this import.
@@ -2273,15 +2498,15 @@ impl CallExpressionKw {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         self.callee.rename(old_name, new_name);
 
         if let Some(unlabeled) = &mut self.unlabeled {
-            unlabeled.rename_identifiers(old_name, new_name);
+            unlabeled.rename_identifiers(old_name, new_name, excluded);
         }
 
         for arg in &mut self.arguments {
-            arg.arg.rename_identifiers(old_name, new_name);
+            arg.arg.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }
@@ -2431,10 +2656,10 @@ impl VariableDeclaration {
         None
     }
 
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         // Skip the init for the variable with the new name since it is the one we are renaming.
         if self.declaration.id.name != new_name {
-            self.declaration.init.rename_identifiers(old_name, new_name);
+            self.declaration.init.rename_identifiers(old_name, new_name, excluded);
         }
     }
 
@@ -2966,9 +3191,9 @@ impl ArrayExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for element in &mut self.elements {
-            element.rename_identifiers(old_name, new_name);
+            element.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }
@@ -3019,9 +3244,9 @@ impl ArrayRangeExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.start_element.rename_identifiers(old_name, new_name);
-        self.end_element.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.start_element.rename_identifiers(old_name, new_name, excluded);
+        self.end_element.rename_identifiers(old_name, new_name, excluded);
     }
 }
 
@@ -3071,9 +3296,9 @@ impl ObjectExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for property in &mut self.properties {
-            property.value.rename_identifiers(old_name, new_name);
+            property.value.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }
@@ -3146,9 +3371,9 @@ impl Node<MemberExpression> {
 
 impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.object.rename_identifiers(old_name, new_name);
-        self.property.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.object.rename_identifiers(old_name, new_name, excluded);
+        self.property.rename_identifiers(old_name, new_name, excluded);
     }
 }
 
@@ -3197,9 +3422,9 @@ impl BinaryExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.left.rename_identifiers(old_name, new_name);
-        self.right.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.left.rename_identifiers(old_name, new_name, excluded);
+        self.right.rename_identifiers(old_name, new_name, excluded);
     }
 }
 
@@ -3366,8 +3591,8 @@ impl UnaryExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.argument.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.argument.rename_identifiers(old_name, new_name, excluded);
     }
 }
 
@@ -3455,9 +3680,9 @@ impl PipeExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for statement in &mut self.body {
-            statement.rename_identifiers(old_name, new_name);
+            statement.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }
@@ -3863,6 +4088,16 @@ impl FunctionExpression {
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.body.replace_value(source_range, new_value);
+    }
+
+    /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
+    /// Parameter names are excluded for the whole body; local variable names are excluded only for
+    /// references that appear after their declaration (so use-before-local-declaration is still renamed).
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
+        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        self.body
+            .rename_identifiers_order_aware(old_name, new_name, &excluded_for_body);
     }
 
     pub fn signature(&self) -> String {
