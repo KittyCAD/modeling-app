@@ -1,6 +1,10 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import type {
+  EntityGetPrimitiveIndex,
+  OkModelingCmdResponse,
+  WebSocketRequest,
+} from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -14,7 +18,6 @@ import {
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
@@ -43,7 +46,10 @@ import type {
   SourceRange,
 } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandSelectionType,
+} from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -60,6 +66,7 @@ import {
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  EnginePrimitiveSelection,
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
@@ -73,13 +80,71 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+async function getPrimitiveSelectionForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<EnginePrimitiveSelection | null> {
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_primitive_index',
+      entity_id: entityId,
+    },
+  })
+
+  if (!isModelingResponse(websocketResponse)) return null
+
+  const primitiveIndexResponse = websocketResponse.resp.data.modeling_response
+  if (primitiveIndexResponse.type !== 'entity_get_primitive_index') return null
+
+  const entityGetPrimitiveIndex: EntityGetPrimitiveIndex =
+    primitiveIndexResponse.data
+
+  let parentEntityId: string | undefined
+  const parentResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_parent_id',
+      entity_id: entityId,
+    },
+  })
+  if (isModelingResponse(parentResponse)) {
+    const parentIdResponse = parentResponse.resp.data.modeling_response
+    if (parentIdResponse.type === 'entity_get_parent_id') {
+      parentEntityId = parentIdResponse.data.entity_id
+    }
+  }
+
+  return {
+    type: 'enginePrimitive',
+    entityId,
+    parentEntityId,
+    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
+    primitiveType: entityGetPrimitiveIndex.entity_type,
+  }
+}
+
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
+}
+
 export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
   {
     artifactGraph,
+    engineCommandManager,
     rustContext,
   }: {
     artifactGraph: ArtifactGraph
+    engineCommandManager: ConnectionManager
     rustContext: RustContext
   }
 ): Promise<ModelingMachineEvent | null> {
@@ -120,12 +185,22 @@ export async function getEventForSelectWithPoint(
 
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
+    const primitiveSelection = await getPrimitiveSelectionForEntity(
+      data.entity_id,
+      engineCommandManager
+    )
+    if (primitiveSelection !== null) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'enginePrimitiveSelection',
+          selection: primitiveSelection,
+        },
+      }
+    }
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
     // we should still return an empty singleCodeCursor to plug into the selection logic
     // (i.e. if the user is holding shift they can keep selecting)
-    // but we should also put up a toast
-    // toast.error('some edges or faces are not currently selectable')
-    showUnsupportedSelectionToast()
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
@@ -253,6 +328,13 @@ export function handleSelectionBatch({
         range:
           getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
           defaultSourceRange(),
+      })
+  })
+  selections.otherSelections.forEach((s) => {
+    isEnginePrimitiveSelection(s) &&
+      selectionToEngine.push({
+        id: s.entityId,
+        range: defaultSourceRange(),
       })
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
@@ -499,7 +581,7 @@ export function isSketchPipe(
 }
 
 // This accounts for non-geometry selections under "other"
-export type ResolvedSelectionType = Artifact['type'] | 'other'
+export type ResolvedSelectionType = CommandSelectionType | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 
 /**
@@ -530,6 +612,18 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'face'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveFace')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'edge'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveEdge')
+    } else {
+      incrementOrInitializeSelectionType('other')
     }
   })
 
@@ -877,17 +971,19 @@ export function updateSelections(
 }
 
 const semanticEntityNames: {
-  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+  [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap'],
+  face: ['wall', 'cap', 'enginePrimitiveFace'],
   profile: ['solid2d'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }
 
 /** Convert selections to a human-readable format */
-export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
+export function getSemanticSelectionType(
+  selectionType: CommandSelectionType[]
+) {
   const semanticSelectionType = new Set()
   for (const type of selectionType) {
     for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {

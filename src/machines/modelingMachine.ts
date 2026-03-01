@@ -15,6 +15,7 @@ import type {
   PlaneVisibilityMap,
   ModelingMachineContext,
   ModelingMachineInput,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 
@@ -171,13 +172,13 @@ import {
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  isEnginePrimitiveSelection,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -1580,6 +1581,58 @@ export const modelingMachine = setup({
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
           return {
             selectionRanges: setSelections.selection,
+          }
+        }
+
+        if (setSelections.selectionType === 'enginePrimitiveSelection') {
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            (selection) =>
+              isEnginePrimitiveSelection(selection) &&
+              selection.entityId === setSelections.selection.entityId
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) =>
+                    !(
+                      isEnginePrimitiveSelection(selection) &&
+                      selection.entityId === setSelections.selection.entityId
+                    )
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          const selections: Selections = {
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
+            otherSelections,
+          }
+          const { engineEvents } = handleSelectionBatch({
+            selections,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager,
+              wasmInstance,
+            },
+          })
+
+          // If there are engine commands that need sent off, send them
+          // TODO: This should be handled outside of an action as its own
+          // actor, so that the system state is more controlled.
+          engineEvents &&
+            engineEvents.forEach((event) => {
+              engineCommandManager
+                .sendSceneCommand(event)
+                .catch(reportRejection)
+            })
+
+          return {
+            selectionRanges: selections,
           }
         }
 

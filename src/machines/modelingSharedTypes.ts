@@ -1,3 +1,4 @@
+import type { EntityType } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
@@ -25,7 +26,18 @@ export type DefaultPlaneSelection = {
   id: string
 }
 
-export type NonCodeSelection = Axis | DefaultPlaneSelection
+export type EnginePrimitiveSelection = {
+  type: 'enginePrimitive'
+  entityId: string
+  parentEntityId?: string
+  primitiveIndex: number
+  primitiveType: EntityType
+}
+
+export type NonCodeSelection =
+  | Axis
+  | DefaultPlaneSelection
+  | EnginePrimitiveSelection
 
 export interface Selection {
   artifact?: Artifact
@@ -50,6 +62,10 @@ export type SetSelections =
   | {
       selectionType: 'defaultPlaneSelection'
       selection: DefaultPlaneSelection
+    }
+  | {
+      selectionType: 'enginePrimitiveSelection'
+      selection: EnginePrimitiveSelection
     }
   | {
       selectionType: 'completeSelection'
