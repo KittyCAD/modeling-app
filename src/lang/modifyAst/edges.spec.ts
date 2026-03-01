@@ -6,7 +6,11 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  NonCodeSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import {
   addChamfer,
@@ -128,6 +132,50 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithFillet)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a fillet call using engine primitive edge indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${extrudedTriangle}
+fillet001 = fillet(extrude001, tags = edgeId(extrude001, index = 2), radius = 1)`
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -437,6 +485,50 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithChamfer)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call using engine primitive edge indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${extrudedTriangle}
+chamfer001 = chamfer(extrude001, tags = edgeId(extrude001, index = 2), length = 1)`
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
