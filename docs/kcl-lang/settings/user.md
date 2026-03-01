@@ -112,7 +112,6 @@ The default color to use for surface backfaces.
 
 **Default:** None
 
-This setting has further nested options. See the schema for full details.
 ##### base_unit
 
 The default unit to use in modeling dimensions.

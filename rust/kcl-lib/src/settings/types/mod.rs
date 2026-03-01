@@ -567,9 +567,9 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{
-        default_backface_color, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings,
-        Configuration, ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings,
-        Settings, TextEditorSettings, UnitLength,
+        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
+        TextEditorSettings, UnitLength, default_backface_color,
     };
 
     #[test]
