@@ -17,7 +17,10 @@ import { useCallback, useEffect, useState } from 'react'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const EditingConstraintInput = () => {
-  const { sceneInfra, rustContext } = useSingletons()
+  const {
+    kclManager: { sceneInfra },
+    rustContext,
+  } = useSingletons()
   const { state } = useModelingContext()
   const editingConstraintId = useSelector(
     state.children.sketchSolveMachine,

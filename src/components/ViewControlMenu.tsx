@@ -26,13 +26,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = useSingletons()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -66,7 +60,7 @@ export function useViewControlMenuItems() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            sceneInfra.camControls
+            kclManager.sceneInfra.camControls
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
@@ -79,7 +73,7 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           resetCameraPosition({
-            sceneInfra,
+            sceneInfra: kclManager.sceneInfra,
             engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
@@ -149,7 +143,7 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           if (planeOrFaceId) {
-            sceneInfra.modelingSend({
+            kclManager.sceneInfra.modelingSend({
               type: 'Enter sketch',
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
@@ -160,8 +154,6 @@ export function useViewControlMenuItems() {
               {
                 kclManager,
                 rustContext,
-                sceneEntitiesManager,
-                sceneInfra,
               }
             )
           }
@@ -204,8 +196,6 @@ export function useViewControlMenuItems() {
       layout.signal.value,
       kclManager,
       rustContext,
-      sceneEntitiesManager,
-      sceneInfra,
       settings,
     ]
   )

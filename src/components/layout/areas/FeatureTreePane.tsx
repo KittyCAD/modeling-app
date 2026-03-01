@@ -59,12 +59,15 @@ import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { useSignals } from '@preact/signals-react/runtime'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 type Singletons = ReturnType<typeof useSingletons>
-type SystemDeps = Pick<
-  Singletons,
-  'kclManager' | 'sceneInfra' | 'sceneEntitiesManager' | 'rustContext'
-> & { commandBarActor: CommandBarActorType }
+type SystemDeps = Pick<Singletons, 'kclManager' | 'rustContext'> & {
+  commandBarActor: CommandBarActorType
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -108,13 +111,7 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const { layout, commands } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = useSingletons()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const {
     send: modelingSend,
     state: modelingState,
@@ -123,12 +120,12 @@ export const FeatureTreePaneContents = memo(() => {
   const systemDeps: SystemDeps = useMemo(
     () => ({
       kclManager,
-      sceneInfra,
-      sceneEntitiesManager,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       rustContext,
       commandBarActor: commands.actor,
     }),
-    [kclManager, sceneEntitiesManager, sceneInfra, rustContext, commands.actor]
+    [kclManager, rustContext, commands.actor]
   )
 
   const selectOperation = useCallback(
@@ -433,7 +430,7 @@ const OperationItem = ({
 }: OperationProps) => {
   useSignals()
   const { layout } = useApp()
-  const { kclManager, sceneInfra, commandBarActor } = systemDeps
+  const { kclManager, commandBarActor } = systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -615,7 +612,7 @@ const OperationItem = ({
         kclManager.artifactGraph
       )
       if (artifact?.id) {
-        sceneInfra.modelingSend({
+        kclManager.sceneInfra.modelingSend({
           type: 'Enter sketch',
           data: { forceNewSketch: true },
         })

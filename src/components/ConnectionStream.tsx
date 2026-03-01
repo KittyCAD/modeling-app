@@ -34,7 +34,8 @@ export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
   const { settings, project } = useApp()
-  const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
+  const { engineCommandManager, kclManager } = useSingletons()
+  const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)

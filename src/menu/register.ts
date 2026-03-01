@@ -1,7 +1,6 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
@@ -18,7 +17,6 @@ export function modelingMenuCallbackMostActions({
   navigate,
   filePath,
   engineCommandManager,
-  sceneInfra,
   authActor,
   commandBarActor,
   kclManager,
@@ -28,7 +26,6 @@ export function modelingMenuCallbackMostActions({
   navigate: NavigateFunction
   filePath: string
   engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
@@ -169,31 +166,33 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'View.Standard views.Right view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Back view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Top view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Left view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Front view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-      sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      kclManager.sceneInfra.camControls
+        .resetCameraPosition()
+        .catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {

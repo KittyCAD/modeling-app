@@ -72,8 +72,7 @@ if (window.electron) {
 export function OpenedProject() {
   useSignals()
   const { auth, billing, settings, layout, project } = useApp()
-  const { systemIOActor, engineCommandManager, sceneInfra, kclManager } =
-    useSingletons()
+  const { systemIOActor, engineCommandManager, kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -110,20 +109,14 @@ export function OpenedProject() {
       .executeCode()
       .then(async () => {
         await resetCameraPosition({
-          sceneInfra,
+          sceneInfra: kclManager.sceneInfra,
           engineCommandManager,
           settingsActor,
         })
       })
       .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [
-    systemIOState,
-    kclManager,
-    sceneInfra,
-    engineCommandManager,
-    settingsActor,
-  ])
+  }, [systemIOState, kclManager, engineCommandManager, settingsActor])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {

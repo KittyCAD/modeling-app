@@ -28,13 +28,8 @@ export const ModelingPageProvider = ({
 }) => {
   useSignals()
   const { auth, commands, settings, project } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneInfra,
-    systemIOActor,
-  } = useSingletons()
+  const { engineCommandManager, kclManager, rustContext, systemIOActor } =
+    useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
@@ -142,7 +137,6 @@ export const ModelingPageProvider = ({
     filePath,
     kclManager,
     navigate,
-    sceneInfra,
     settings: settingsValues,
     settingsActor,
   })

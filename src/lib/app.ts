@@ -376,9 +376,7 @@ export class App implements AppSubsystems {
     return {
       engineCommandManager: kclManager.engineCommandManager,
       rustContext: kclManager.rustContext,
-      sceneInfra: kclManager.sceneInfra,
       kclManager,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       systemIOActor,
     }
   }
