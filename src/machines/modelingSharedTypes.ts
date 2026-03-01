@@ -60,6 +60,11 @@ export type EntityReference =
       disambiguators?: string[]
       index?: number
     }
+  | {
+      type: 'segment'
+      path_id: string
+      segment_id: string
+    }
 
 export interface Selection {
   artifact?: Artifact

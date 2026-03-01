@@ -182,6 +182,7 @@ import {
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
   selectionBodyFace,
+  tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
@@ -1277,6 +1278,23 @@ export const modelingMachine = setup({
       // (note the orbit controls are always active though)
       context.sceneInfra.resetMouseListeners()
     },
+    'set modeling idle double-click callback': ({ context }) => {
+      context.sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (args?.mouseEvent?.detail === 2) {
+            void tryEnterSketchOnDoubleClickFromScene(
+              args,
+              context.sceneInfra.renderer.domElement,
+              {
+                engineCommandManager: context.engineCommandManager,
+                kclManager: context.kclManager,
+                sceneInfra: context.sceneInfra,
+              }
+            )
+          }
+        },
+      })
+    },
     'clientToEngine cam sync direction': ({ context }) => {
       context.sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
@@ -1488,7 +1506,10 @@ export const modelingMachine = setup({
                       {
                         entityRef: artifactToEntityRef(
                           sel.artifact.type,
-                          sel.artifact.id
+                          sel.artifact.id,
+                          sel.artifact.type === 'segment'
+                            ? (sel.artifact as { pathId: string }).pathId
+                            : undefined
                         ),
                         codeRef: sel.codeRef,
                       },
@@ -1526,7 +1547,10 @@ export const modelingMachine = setup({
                 ? {
                     entityRef: artifactToEntityRef(
                       sel.artifact.type,
-                      sel.artifact.id
+                      sel.artifact.id,
+                      sel.artifact.type === 'segment'
+                        ? (sel.artifact as { pathId: string }).pathId
+                        : undefined
                     ),
                     codeRef: sel.codeRef,
                   }
@@ -5539,7 +5563,10 @@ export const modelingMachine = setup({
         'Prompt-to-edit': 'Applying Prompt-to-edit',
       },
 
-      entry: 'reset client scene mouse handlers',
+      entry: [
+        'reset client scene mouse handlers',
+        'set modeling idle double-click callback',
+      ],
 
       states: {
         hidePlanes: {

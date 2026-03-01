@@ -36,7 +36,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
-import { isArray } from '@src/lib/utils'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -51,6 +50,7 @@ import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
@@ -88,8 +88,9 @@ export function normalizeEntityReference(
   if (!reference || typeof reference !== 'object') return null
 
   const raw = reference as Record<string, unknown>
-  const type = raw.type
-  if (typeof type !== 'string') return null
+  const typeRaw = raw.type
+  if (typeof typeRaw !== 'string') return null
+  const type = typeRaw.toLowerCase()
 
   if (type === 'plane') {
     const plane_id = raw.plane_id ?? raw.planeId
@@ -143,6 +144,14 @@ export function normalizeEntityReference(
     return { type: 'vertex', faces, disambiguators, index }
   }
 
+  if (type === 'segment') {
+    const path_id = raw.path_id ?? raw.pathId
+    const segment_id = raw.segment_id ?? raw.segmentId
+    if (typeof path_id !== 'string' || typeof segment_id !== 'string')
+      return null
+    return { type: 'segment', path_id, segment_id }
+  }
+
   return null
 }
 
@@ -184,71 +193,14 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // Check if a face EntityReference should be converted to solid2d
-  // This happens when clicking on a solid2d profile that hasn't been extruded yet
+  // Only convert face to solid2d when face_id directly references a solid2d (un-extruded profile).
+  // Do not convert wall/cap (extruded) faces to solid2d so the engine can highlight the face and we send face_id to select_entity.
   if (entityRef.type === 'face' && entityRef.face_id) {
-    // First, check if the face_id itself is a solid2d ID
     const directSolid2d = artifactGraph.get(entityRef.face_id)
     if (directSolid2d && directSolid2d.type === 'solid2d') {
       entityRef = {
         type: 'solid2d',
         solid2d_id: entityRef.face_id,
-      }
-    } else {
-      // Try to find solid2d through wall/cap -> segment/sweep -> path
-      const faceArtifact = artifactGraph.get(entityRef.face_id)
-      if (faceArtifact) {
-        let pathId: string | undefined
-
-        // For walls: face -> segment -> path
-        if (faceArtifact.type === 'wall') {
-          const segment = artifactGraph.get(faceArtifact.segId)
-          if (segment && segment.type === 'segment') {
-            pathId = segment.pathId
-          }
-        }
-        // For caps: face -> sweep -> path
-        else if (faceArtifact.type === 'cap') {
-          const sweep = artifactGraph.get(faceArtifact.sweepId)
-          if (sweep && sweep.type === 'sweep') {
-            pathId = sweep.pathId
-          }
-        }
-
-        // Check if the path has a solid2d_id
-        if (pathId) {
-          const path = artifactGraph.get(pathId)
-          if (path && path.type === 'path' && path.solid2dId) {
-            // Convert face EntityReference to solid2d EntityReference
-            entityRef = {
-              type: 'solid2d',
-              solid2d_id: path.solid2dId,
-            }
-          }
-        } else {
-          // If we can't find a path through wall/cap, search all paths for a matching solid2d
-          // This handles the case where the solid2d hasn't been extruded yet
-          for (const [pathId, pathArtifact] of artifactGraph.entries()) {
-            if (pathArtifact.type === 'path' && pathArtifact.solid2dId) {
-              // Check if this solid2d's path matches the face somehow
-              // For now, we'll check if any segment in this path could be related
-              const solid2d = artifactGraph.get(pathArtifact.solid2dId)
-              if (solid2d && solid2d.type === 'solid2d') {
-                // If the face_id matches the solid2d ID or path ID, convert it
-                if (
-                  entityRef.face_id === pathArtifact.solid2dId ||
-                  entityRef.face_id === pathId
-                ) {
-                  entityRef = {
-                    type: 'solid2d',
-                    solid2d_id: pathArtifact.solid2dId,
-                  }
-                  break
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -267,6 +219,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     // For Solid2D edges, the edge_id is the curve UUID
     // We'll use it to find the segment later in getCodeRefsFromEntityReference
     entityId = entityRef.edge_id
+  } else if (entityRef.type === 'segment') {
+    entityId = entityRef.segment_id
   } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
     // Try to find an edge artifact that connects these faces
@@ -323,12 +277,13 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // For edges, vertices, and solid2d_edge, use getCodeRefsFromEntityReference to handle references
+  // For edges, vertices, solid2d_edge, and segment, use getCodeRefsFromEntityReference to handle references
   let codeRefs: any[] | undefined
   if (
     entityRef.type === 'edge' ||
     entityRef.type === 'vertex' ||
-    entityRef.type === 'solid2d_edge'
+    entityRef.type === 'solid2d_edge' ||
+    entityRef.type === 'segment'
   ) {
     const refs = getCodeRefsFromEntityReference(entityRef, artifactGraph)
     if (refs && refs.length > 0) {
@@ -604,7 +559,13 @@ export function processCodeMirrorRanges({
     const resolvedCodeRef = codeRefs?.[0] ?? codeRef
     if (artifact) {
       graphSelectionsV2.push({
-        entityRef: artifactToEntityRef(artifact.type, id),
+        entityRef: artifactToEntityRef(
+          artifact.type,
+          id,
+          artifact.type === 'segment'
+            ? (artifact as { pathId: string }).pathId
+            : undefined
+        ),
         codeRef: resolvedCodeRef,
       })
     } else {
@@ -797,14 +758,17 @@ export function getSelectionCountByType(
 
   selection.graphSelectionsV2.forEach((v2Selection) => {
     if (v2Selection.entityRef) {
-      if (v2Selection.entityRef.type === 'edge') {
-        incrementOrInitializeSelectionType('sweepEdge')
-      } else if (v2Selection.entityRef.type === 'solid2d_edge') {
+      if (
+        v2Selection.entityRef.type === 'edge' ||
+        v2Selection.entityRef.type === 'solid2d_edge' ||
+        v2Selection.entityRef.type === 'segment'
+      ) {
+        // All edge-like refs from query_entity_type_with_point: show as "edges" (no segment/sweepEdge leak)
         incrementOrInitializeSelectionType('segment')
       } else if (v2Selection.entityRef.type === 'vertex') {
         incrementOrInitializeSelectionType('other')
       } else if (v2Selection.entityRef.type === 'face') {
-        incrementOrInitializeSelectionType('other')
+        incrementOrInitializeSelectionType('wall')
       } else if (v2Selection.entityRef.type === 'plane') {
         incrementOrInitializeSelectionType('plane')
       } else if (v2Selection.entityRef.type === 'solid2d') {
@@ -829,9 +793,17 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(ast, selection)
   if (selectionsByType === 'none') return null
 
-  return [...selectionsByType.entries()]
+  // Display segment count as "edge(s)" (no leaky segment/sweepEdge artifact types)
+  const edgeCount = selectionsByType.get('segment') ?? 0
+  const entries: [string, number][] = [...selectionsByType.entries()]
+    .filter(([type]) => type !== 'segment')
+    .map(([type, count]) => [type, count] as [string, number])
+  if (edgeCount > 0) {
+    entries.push(['edge', edgeCount])
+  }
+
+  return entries
     .map(
-      // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
         `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
           count > 1 ? 's' : ''
@@ -1081,6 +1053,113 @@ export async function sendQueryEntityTypeWithPoint(
   return undefined
 }
 
+/** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */
+export async function sendQueryEntityTypeWithPointFromSceneClick(
+  mouseEvent: MouseEvent,
+  elementForRect: { getBoundingClientRect(): DOMRect },
+  engineCommandManager: ConnectionManager
+) {
+  const { x, y } = getNormalisedCoordinates(
+    mouseEvent as PointerEvent,
+    elementForRect as HTMLVideoElement,
+    engineCommandManager.streamDimensions
+  )
+  let res = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'query_entity_type_with_point' as any,
+      selected_at_window: { x, y },
+      selection_type: 'add',
+    },
+    cmd_id: uuidv4(),
+  })
+  if (!res) return undefined
+  if (isArray(res)) res = res[0]
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response as any
+    if (mr.type === 'query_entity_type_with_point') return mr.data
+  }
+  return undefined
+}
+
+/** Handle double-click in scene (onClick path): query entity, set selection, send Enter sketch. Call when args.mouseEvent.detail === 2 in idle. */
+export async function tryEnterSketchOnDoubleClickFromScene(
+  args: OnClickCallbackArgs,
+  elementForRect: { getBoundingClientRect(): DOMRect },
+  deps: {
+    engineCommandManager: ConnectionManager
+    kclManager: { artifactGraph: ArtifactGraph }
+    sceneInfra: SceneInfra
+  }
+): Promise<void> {
+  if (args?.mouseEvent?.detail !== 2 || args.mouseEvent.which !== 1) return
+  if (deps.sceneInfra.camControls.wasDragging === true) return
+
+  const result = await sendQueryEntityTypeWithPointFromSceneClick(
+    args.mouseEvent,
+    elementForRect,
+    deps.engineCommandManager
+  )
+  if (!result) return
+
+  let entityId: string | undefined = (result as { entity_id?: string })
+    .entity_id
+  if (!entityId && (result as { reference?: unknown }).reference) {
+    const entityRef = normalizeEntityReference(
+      (result as { reference: unknown }).reference
+    )
+    if (entityRef) {
+      if (entityRef.type === 'plane') entityId = entityRef.plane_id
+      else if (entityRef.type === 'face') entityId = entityRef.face_id
+      else if (entityRef.type === 'solid2d') entityId = entityRef.solid2d_id
+      else if (entityRef.type === 'solid3d') entityId = entityRef.solid3d_id
+      else if (entityRef.type === 'solid2d_edge') entityId = entityRef.edge_id
+      else if (entityRef.type === 'segment') entityId = entityRef.segment_id
+      else if (entityRef.type === 'edge' && entityRef.faces.length > 0)
+        entityId = entityRef.faces[0]
+      else if (entityRef.type === 'vertex' && entityRef.faces.length > 0)
+        entityId = entityRef.faces[0]
+    }
+  }
+  if (!entityId) return
+
+  const artifactResult = getArtifactOfTypes(
+    { key: entityId, types: ['path', 'solid2d', 'segment', 'helix'] },
+    deps.kclManager.artifactGraph
+  )
+  if (err(artifactResult)) return
+
+  const artifact = artifactResult
+  let entityRef: EntityReference | undefined = artifactToEntityRef(
+    artifact.type,
+    entityId,
+    artifact.type === 'segment'
+      ? (artifact as { pathId: string }).pathId
+      : undefined
+  )
+  if (!entityRef) {
+    if (artifact.type === 'path')
+      entityRef = { type: 'solid2d', solid2d_id: artifact.id }
+    else if (artifact.type === 'helix')
+      entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
+  }
+  if (!entityRef) return
+
+  const codeRef = getCodeRefsByArtifactId(
+    entityId,
+    deps.kclManager.artifactGraph
+  )?.[0]
+  deps.sceneInfra.modelingSend({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selectionV2: { entityRef, codeRef },
+    },
+  })
+  deps.sceneInfra.modelingSend({ type: 'Enter sketch' })
+}
+
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
@@ -1121,7 +1200,11 @@ export function updateSelections(
         range: topLevelRange(node.start, node.end),
         pathToNode: pathToNode,
       }
-      const entityRef = artifactToEntityRef(artifact.type, artifactId)
+      const pathId =
+        artifact.type === 'segment'
+          ? (artifact as { pathId: string }).pathId
+          : undefined
+      const entityRef = artifactToEntityRef(artifact.type, artifactId, pathId)
       return { entityRef, codeRef }
     })
     .filter((x?: SelectionV2) => x !== undefined)
@@ -1546,7 +1629,13 @@ export function selectAllInCurrentSketch(
         if (!codeRefs?.length) continue
         if (JSON.stringify(codeRefs[0].pathToNode) !== pathToNodeStr) continue
         graphSelectionsV2.push({
-          entityRef: artifactToEntityRef(artifact.type, artifactId),
+          entityRef: artifactToEntityRef(
+            artifact.type,
+            artifactId,
+            artifact.type === 'segment'
+              ? (artifact as { pathId: string }).pathId
+              : undefined
+          ),
           codeRef: codeRefs[0],
         })
         break
@@ -1573,7 +1662,15 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'solid2d' && entityRef.solid2d_id) {
+  if (entityRef.type === 'segment' && entityRef.segment_id) {
+    const segmentRefs = getCodeRefsByArtifactId(
+      entityRef.segment_id,
+      artifactGraph
+    )
+    if (segmentRefs && segmentRefs.length > 0) {
+      codeRefs.push({ range: segmentRefs[0].range })
+    }
+  } else if (entityRef.type === 'solid2d' && entityRef.solid2d_id) {
     // For solid2d, get the codeRef directly from the artifact
     const solid2dArtifact = artifactGraph.get(entityRef.solid2d_id)
     if (!solid2dArtifact || solid2dArtifact.type !== 'solid2d') {

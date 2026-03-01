@@ -1114,6 +1114,8 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
       return entityRef.solid3d_id
     case 'solid2d_edge':
       return entityRef.edge_id
+    case 'segment':
+      return entityRef.segment_id
     default:
       return undefined
   }
@@ -1150,6 +1152,12 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
         JSON.stringify([...(a.disambiguators || [])].sort()) ===
           JSON.stringify([...(b.disambiguators || [])].sort()) &&
         a.index === b.index
+      )
+    case 'segment':
+      return (
+        b.type === 'segment' &&
+        a.path_id === b.path_id &&
+        a.segment_id === b.segment_id
       )
     default:
       return false
@@ -1308,10 +1316,12 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-/** Build EntityReference from artifact type and id when the type maps to an entity ref */
+/** Build EntityReference from artifact type and id when the type maps to an entity ref.
+ * For segment, pass pathId as third argument so the ref includes path_id and segment_id. */
 export function artifactToEntityRef(
   artifactType: Artifact['type'],
-  artifactId: string
+  artifactId: string,
+  pathId?: string
 ): EntityReference | undefined {
   if (artifactType === 'plane') return { type: 'plane', plane_id: artifactId }
   if (artifactType === 'solid2d')
@@ -1319,7 +1329,9 @@ export function artifactToEntityRef(
   if (artifactType === 'sweep' || artifactType === 'compositeSolid')
     return { type: 'solid3d', solid3d_id: artifactId }
   if (artifactType === 'segment')
-    return { type: 'solid2d_edge', edge_id: artifactId }
+    return pathId != null
+      ? { type: 'segment', path_id: pathId, segment_id: artifactId }
+      : undefined
   return undefined
 }
 
@@ -1370,7 +1382,11 @@ export function retrieveSelectionsFromOpArg(
     }
 
     const codeRef = codeRefs[0]
-    const entityRef = artifactToEntityRef(artifact.type, artifactId)
+    const pathId =
+      artifact.type === 'segment'
+        ? (artifact as SegmentArtifact).pathId
+        : undefined
+    const entityRef = artifactToEntityRef(artifact.type, artifactId, pathId)
     graphSelectionsV2.push({ entityRef, codeRef })
   }
 
