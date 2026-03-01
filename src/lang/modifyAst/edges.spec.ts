@@ -13,6 +13,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import {
+  addBlend,
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
@@ -103,6 +104,17 @@ profile001 = startProfile(sketch001, at = [-2, 1])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 revolve001 = revolve(profile001, angle = 270deg, axis = X)`
+  const twoSurfacesForBlend = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> angledLine(angle = 0deg, length = 4)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> angledLine(angle = 0deg, length = 2)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -810,6 +822,122 @@ chamfer001 = chamfer(
       expect(newCode).toContain('length = 0.5')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addBlend', () => {
+    it('should add a blend call from exactly two segments', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
+      )
+      expect(segments.length).toBe(2)
+      const edges = createSelectionFromArtifacts(segments, artifactGraph)
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call from exactly two primitive edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBeGreaterThanOrEqual(2)
+
+      const primitiveEdgeSelections: NonCodeSelection[] = [
+        {
+          entityId: 'blend-primitive-edge-1',
+          parentEntityId: sweeps[0].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+        {
+          entityId: 'blend-primitive-edge-2',
+          parentEntityId: sweeps[1].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+      ]
+
+      const edges: Selections = {
+        graphSelections: [],
+        otherSelections: primitiveEdgeSelections,
+      }
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      console.log('newCode', newCode)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should fail when fewer than two edges are selected', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const singleEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+      const edges = createSelectionFromArtifacts([singleEdge], artifactGraph)
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (!err(result)) {
+        throw new Error('Expected addBlend to fail for a single selected edge')
+      }
+
+      expect(result.message).toBe('Blend requires exactly two selected edges.')
     })
   })
 
