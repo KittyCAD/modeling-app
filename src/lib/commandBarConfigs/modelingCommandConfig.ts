@@ -52,7 +52,12 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addHole,
+  addOffsetPlane,
+  addShell,
+} from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSplit,
@@ -376,6 +381,9 @@ export type ModelingCommandSchema = {
   }
   'Flip Surface': {
     surface: Selections
+  }
+  'Delete Face': {
+    faces: Selections
   }
   'Boolean Split': {
     targets: Selections
@@ -2238,6 +2246,43 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       surface: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+    },
+  },
+  'Delete Face': {
+    description: 'Delete a face from a body, leaving an open surface.',
+    icon: 'deleteFace',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDeleteFace({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete Face']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
       },
