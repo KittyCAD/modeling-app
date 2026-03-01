@@ -23,7 +23,7 @@ typed-path = "0.12.3"
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
 data-encoding = "2.10.0"
-futures = "0.3.31"
+futures = "0.3.32"
 # Enable the feature in a transitive dependency.
 getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
 # Enable wasm_js feature for all transitive dependencies using getrandom 0.3
@@ -36,7 +36,7 @@ kittycad-modeling-cmds = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync", "rt"] }
-toml = "1.0.1"
+toml = "1.0.3"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.99"
