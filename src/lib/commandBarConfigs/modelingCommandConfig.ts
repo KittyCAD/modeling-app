@@ -2276,7 +2276,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       edges: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
       },

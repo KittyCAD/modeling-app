@@ -446,7 +446,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'blend-surface',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Blend', groupId: 'modeling' },
                   }),

@@ -859,6 +859,62 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a blend call from exactly two primitive edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBeGreaterThanOrEqual(2)
+
+      const primitiveEdgeSelections: NonCodeSelection[] = [
+        {
+          entityId: 'blend-primitive-edge-1',
+          parentEntityId: sweeps[0].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+        {
+          entityId: 'blend-primitive-edge-2',
+          parentEntityId: sweeps[1].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+      ]
+
+      const edges: Selections = {
+        graphSelections: [],
+        otherSelections: primitiveEdgeSelections,
+      }
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      console.log('newCode', newCode)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should fail when fewer than two edges are selected', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
