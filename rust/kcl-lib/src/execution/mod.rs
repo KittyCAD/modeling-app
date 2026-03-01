@@ -795,11 +795,11 @@ impl ExecutorContext {
         // The engine errors out if you toggle OIT with SSAO off.
         // So ignore OIT settings if SSAO is off.
         if self.settings.enable_ssao {
-            self.engine
+            let cmd_id = exec_state.next_uuid();
+            exec_state
                 .batch_modeling_cmd(
-                    exec_state.mod_local.id_generator.next_uuid(),
-                    source_range,
-                    &ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
+                    ModelingCmdMeta::with_id(exec_state, &self, source_range, cmd_id),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
                 )
                 .await?;
         }
