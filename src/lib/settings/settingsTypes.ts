@@ -23,7 +23,7 @@ export interface SettingsViaQueryString {
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
-  backfaceColor: RgbaColor
+  backfaceColor: string
 }
 
 export const baseUnits = {

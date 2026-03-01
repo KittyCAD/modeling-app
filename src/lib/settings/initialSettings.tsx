@@ -21,7 +21,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type {
   BaseUnit,
   HideOnPlatformValue,
-  RgbaColor,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -32,7 +31,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
-import { hexToRgb, isValidRgbaColor, rgbaToHex } from '@src/lib/utils'
+import { hexToRgb } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -409,21 +408,17 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
-      backfaceColor: new Setting<RgbaColor>({
+      backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
         description: 'Default backface color for surfaces',
         hideOnLevel: 'project',
-        validate: (v) => isValidRgbaColor(v),
+        validate: (v) => typeof v === 'string' && hexToRgb(v) !== null,
         commandConfig: {
           inputType: 'color',
-          // Command bar color input expects a hex string.
           defaultValueFromContext: (context) =>
-            rgbaToHex(
-              context.modeling.backfaceColor.current
-            ) as unknown as RgbaColor,
+            context.modeling.backfaceColor.current,
         },
         Component: ({ value, updateValue }) => {
-          const hexValue = rgbaToHex(value)
           const colorInputDebounceRef = useRef<
             ReturnType<typeof setTimeout> | undefined
           >(undefined)
@@ -432,21 +427,19 @@ export function createSettings() {
             <div className="flex items-center gap-3">
               <input
                 type="color"
-                value={hexValue}
+                value={value.toLowerCase()}
                 onChange={(event) => {
-                  const rgb = hexToRgb(event.target.value)
-                  if (!rgb) return
-                  const alpha = Number.isFinite(value.a) ? value.a : 1
+                  const nextValue = event.target.value.toUpperCase()
                   clearTimeout(colorInputDebounceRef.current)
                   colorInputDebounceRef.current = setTimeout(
-                    () => updateValue({ ...rgb, a: alpha }),
+                    () => updateValue(nextValue),
                     COLOR_INPUT_DEBOUNCE_MS
                   )
                 }}
                 className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
               />
               <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
-                {hexValue.toUpperCase()}
+                {value.toUpperCase()}
               </span>
             </div>
           )

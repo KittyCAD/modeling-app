@@ -35,7 +35,13 @@ import {
   createOnEngineOffline,
 } from '@src/network/connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
-import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
+import {
+  binaryToUuid,
+  hexToRgb,
+  isArray,
+  promiseFactory,
+  uuidv4,
+} from '@src/lib/utils'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   decode as msgpackDecode,
@@ -327,6 +333,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       settings: this.settings,
       sendSceneCommand: this.sendSceneCommand.bind(this),
+      setBackfaceColor: this.setBackfaceColor.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
@@ -467,12 +474,25 @@ export class ConnectionManager extends EventTarget {
   }
 
   /** Set the default backface color in the engine, with debug logging */
-  async setBackfaceColor(color: RgbaColor) {
-    this.settings.backfaceColor = color
+  async setBackfaceColor(color: string) {
+    const rgb = hexToRgb(color)
+    if (!rgb) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setBackfaceColor, invalid hex color',
+        metadata: { color },
+      })
+      return
+    }
+
+    const rgbaColor: RgbaColor = {
+      ...rgb,
+      a: 1,
+    }
 
     const cmd = {
       type: 'set_default_system_properties',
-      backface_color: color,
+      backface_color: rgbaColor,
     } as const
     const debugLog = (event: string) =>
       EngineDebugger.addLog({

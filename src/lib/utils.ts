@@ -779,17 +779,3 @@ export function hexToRgb(hex: string) {
     b: b / 255,
   }
 }
-
-export function isValidRgbaColor(value: RgbaColor) {
-  if (!value || typeof value !== 'object') return false
-  const rgbaChannels = ['r', 'g', 'b', 'a'] as const
-  return rgbaChannels.every((channel) => {
-    const channelValue = value[channel]
-    return (
-      typeof channelValue === 'number' &&
-      Number.isFinite(channelValue) &&
-      channelValue >= 0 &&
-      channelValue <= 1
-    )
-  })
-}

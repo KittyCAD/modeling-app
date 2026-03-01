@@ -6,7 +6,6 @@ import type {
   CommandArgument,
   CommandArgumentConfig,
 } from '@src/lib/commandTypes'
-import { coerceSettingsCommandSubmitData } from '@src/lib/commandBarConfigs/settingsCommandUtils'
 import { buildCommandArgument } from '@src/lib/createMachineCommand'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
@@ -128,21 +127,8 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
         'value' in data &&
         'level' in data
       ) {
-        const currentSetting = getPropertyByPath(
-          actor.getSnapshot().context,
-          type
-        ) as Setting<S['default']>
-        const coercedData = coerceSettingsCommandSubmitData({
-          data: data as unknown as SetEventTypes['data'],
-          valueInputType: valueArgConfig.inputType,
-          getCurrentValueForLevel: (level) =>
-            currentSetting[level] ?? currentSetting.getFallback(level),
-        })
-        if (coercedData instanceof Error) {
-          console.error(coercedData.message, data)
-          return coercedData
-        }
-
+        // TS would not let me get this to type properly
+        const coercedData = data as unknown as SetEventTypes['data']
         actor.send({ type: `set.${type}`, data: coercedData })
       } else {
         console.error('Invalid data submitted to settings command', data)

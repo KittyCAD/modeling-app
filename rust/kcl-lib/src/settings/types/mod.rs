@@ -3,7 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::{shared::Color, units::UnitLength};
+use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -233,7 +233,7 @@ pub struct ModelingSettings {
         default = "default_backface_color",
         skip_serializing_if = "is_default_backface_color"
     )]
-    pub backface_color: Color,
+    pub backface_color: String,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -260,12 +260,12 @@ fn default_length_unit_millimeters() -> UnitLength {
     UnitLength::Millimeters
 }
 
-// Also defined at src/lib/constants.ts#L334-L339 
-fn default_backface_color() -> Color {
-    Color::from_rgba(0.95, 0.05, 0.05, 1.0)
+// Also defined at src/lib/constants.ts#L333-L335
+fn default_backface_color() -> String {
+    "#F20D0D".to_string()
 }
 
-fn is_default_backface_color(color: &Color) -> bool {
+fn is_default_backface_color(color: &String) -> bool {
     *color == default_backface_color()
 }
 
@@ -567,9 +567,9 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{
-        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
-        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
-        TextEditorSettings, UnitLength, default_backface_color,
+        default_backface_color, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings,
+        Configuration, ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings,
+        Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
@@ -666,22 +666,16 @@ enable_ssao = false
 
     #[test]
     fn test_settings_backface_color_roundtrip() {
-        let settings_file = r#"[settings.modeling.backface_color]
-r = 0.2
-g = 0.3
-b = 0.4
-a = 0.5
-"#;
+        let settings_file = r##"[settings.modeling]
+backface_color = "#112233"
+"##;
 
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
-        assert_eq!(
-            parsed.settings.modeling.backface_color,
-            kittycad_modeling_cmds::shared::Color::from_rgba(0.2, 0.3, 0.4, 0.5)
-        );
+        assert_eq!(parsed.settings.modeling.backface_color, "#112233");
 
         let serialized = toml::to_string(&parsed).unwrap();
         let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
         assert_eq!(reparsed, parsed);
-        assert!(serialized.contains("[settings.modeling.backface_color]"));
+        assert!(serialized.contains("backface_color = \"#112233\""));
     }
 }
