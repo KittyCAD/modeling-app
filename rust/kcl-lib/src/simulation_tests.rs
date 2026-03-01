@@ -253,10 +253,6 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png, false).await
-}
-
 async fn execute_with_engine_hangup_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
 where
     F: FnMut() -> Fut,
@@ -281,6 +277,10 @@ where
 
         return exec_res;
     }
+}
+
+async fn execute(test_name: &str, render_to_png: bool) {
+    execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
