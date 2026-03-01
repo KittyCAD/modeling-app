@@ -77,9 +77,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.modeling?.use_sketch_solve_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      backfaceColor: toUndefinedIfNull(
-        configuration?.settings?.modeling?.backface_color
-      ),
+      backfaceColor: configuration?.settings?.modeling?.backface_color,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
       fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,

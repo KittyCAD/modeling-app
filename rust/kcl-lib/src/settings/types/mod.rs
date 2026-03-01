@@ -229,8 +229,11 @@ pub struct ModelingSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// The default color to use for surface backfaces.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub backface_color: Option<Color>,
+    #[serde(
+        default = "default_backface_color",
+        skip_serializing_if = "is_default_backface_color"
+    )]
+    pub backface_color: Color,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -257,6 +260,15 @@ fn default_length_unit_millimeters() -> UnitLength {
     UnitLength::Millimeters
 }
 
+// Also defined at src/lib/constants.ts#L334-L339 
+fn default_backface_color() -> Color {
+    Color::from_rgba(0.95, 0.05, 0.05, 1.0)
+}
+
+fn is_default_backface_color(color: &Color) -> bool {
+    *color == default_backface_color()
+}
+
 impl Default for ModelingSettings {
     fn default() -> Self {
         Self {
@@ -269,7 +281,7 @@ impl Default for ModelingSettings {
             use_sketch_solve_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
-            backface_color: Default::default(),
+            backface_color: default_backface_color(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),
@@ -557,7 +569,7 @@ mod tests {
     use super::{
         AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
         ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
-        TextEditorSettings, UnitLength,
+        TextEditorSettings, UnitLength, default_backface_color,
     };
 
     #[test]
@@ -566,6 +578,7 @@ mod tests {
 
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -573,6 +586,7 @@ mod tests {
 
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
     }
 
     #[test]
@@ -648,5 +662,26 @@ enable_ssao = false
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    fn test_settings_backface_color_roundtrip() {
+        let settings_file = r#"[settings.modeling.backface_color]
+r = 0.2
+g = 0.3
+b = 0.4
+a = 0.5
+"#;
+
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(
+            parsed.settings.modeling.backface_color,
+            kittycad_modeling_cmds::shared::Color::from_rgba(0.2, 0.3, 0.4, 0.5)
+        );
+
+        let serialized = toml::to_string(&parsed).unwrap();
+        let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
+        assert_eq!(reparsed, parsed);
+        assert!(serialized.contains("[settings.modeling.backface_color]"));
     }
 }
