@@ -253,7 +253,7 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-/// If execution results in `EngineHangup`, retry.
+/// If execution results in `EngineHangup` or `EngineInternal`, retry.
 async fn execute_with_retries<F, Fut, T>(mut execute: F) -> Result<T, crate::errors::ExecErrorWithState>
 where
     F: FnMut() -> Fut,
@@ -262,18 +262,18 @@ where
     let mut retries_remaining = EXECUTE_ENGINE_HANGUP_RETRIES;
     loop {
         let exec_res = execute().await;
-        let should_retry = retries_remaining > 0
-            && exec_res.as_ref().err().is_some_and(|error| {
-                matches!(
-                    &error.error,
-                    crate::errors::ExecError::Kcl(kcl_error)
-                        if matches!(&kcl_error.error, crate::errors::KclError::EngineHangup { .. })
-                )
-            });
 
-        if should_retry {
+        if retries_remaining > 0
+            && let Err(error) = &exec_res
+            && let crate::errors::ExecError::Kcl(kcl_error) = &error.error
+            && matches!(
+                &kcl_error.error,
+                KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+            )
+        {
             retries_remaining -= 1;
-            eprintln!("Execute got EngineHangup; retrying...");
+            let error_type = kcl_error.error.error_type();
+            eprintln!("Execute got {error_type}; retrying...");
             continue;
         }
 
