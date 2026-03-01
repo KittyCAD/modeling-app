@@ -2,6 +2,7 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { topLevelRange } from '@src/lang/util'
 import {
   getInVariableCase,
+  hexToRgba,
   hasDigitsLeftOfDecimal,
   hasLeadingZero,
   isClockwise,
@@ -1413,5 +1414,43 @@ describe('testing stripQuotes', () => {
   it('handles multiple quotes at ends', () => {
     expect(stripQuotes('""hello""')).toEqual('"hello"')
     expect(stripQuotes("''hello''")).toEqual("'hello'")
+  })
+})
+
+describe('testing hexToRgba', () => {
+  it('parses 6-digit hex with leading #', () => {
+    expect(hexToRgba('#112233')).toEqual({
+      r: 17 / 255,
+      g: 34 / 255,
+      b: 51 / 255,
+      a: 1,
+    })
+  })
+
+  it('parses 3-digit shorthand hex', () => {
+    expect(hexToRgba('#abc')).toEqual({
+      r: 170 / 255,
+      g: 187 / 255,
+      b: 204 / 255,
+      a: 1,
+    })
+  })
+
+  it('parses hex without # and trims whitespace', () => {
+    expect(hexToRgba('  Ff00aA  ')).toEqual({
+      r: 1,
+      g: 0,
+      b: 170 / 255,
+      a: 1,
+    })
+  })
+
+  it('returns null for invalid hex strings', () => {
+    expect(hexToRgba('')).toBeNull()
+    expect(hexToRgba('#12')).toBeNull()
+    expect(hexToRgba('#12345')).toBeNull()
+    expect(hexToRgba('#gggggg')).toBeNull()
+    expect(hexToRgba('not-a-color')).toBeNull()
+    expect(hexToRgba('##fff')).toBeNull()
   })
 })
