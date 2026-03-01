@@ -78,7 +78,8 @@ export function useEngineConnectionSubscriptions() {
         ? ({ data }) => {
             void selectSketchPlane(
               data.entity_id,
-              context.store.useNewSketchMode?.current,
+              context.store.useSketchSolveMode?.current ||
+                context.forceSketchSolveMode,
               {
                 kclManager,
                 rustContext,
@@ -89,7 +90,8 @@ export function useEngineConnectionSubscriptions() {
     })
     return unSub
   }, [
-    context.store.useNewSketchMode,
+    context.store.useSketchSolveMode,
+    context.forceSketchSolveMode,
     state,
     kclManager,
     rustContext,
@@ -110,7 +112,7 @@ export function useEngineConnectionSubscriptions() {
 
 export async function selectSketchPlane(
   planeOrFaceId: string | undefined,
-  useNewSketchMode: boolean | undefined,
+  useSketchSolveMode: boolean | undefined,
   systemDeps?: {
     kclManager: KclManager
     rustContext: RustContext
@@ -120,7 +122,7 @@ export async function selectSketchPlane(
     if (!systemDeps) return
     if (!planeOrFaceId) return
 
-    if (useNewSketchMode) {
+    if (useSketchSolveMode) {
       systemDeps.kclManager.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,

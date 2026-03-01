@@ -64,7 +64,7 @@ export const ModelingMachineProvider = ({
       defaultUnit,
       cameraProjection,
       cameraOrbit,
-      useNewSketchMode,
+      useSketchSolveMode,
       snapToGrid,
     },
   } = settingsValues
@@ -122,7 +122,7 @@ export const ModelingMachineProvider = ({
         // React Suspense will await this
         wasmInstance,
         store: {
-          useNewSketchMode,
+          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },

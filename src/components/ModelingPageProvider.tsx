@@ -55,7 +55,7 @@ export const ModelingPageProvider = ({
       bottomViewCommand,
       leftViewCommand,
       zoomToFitCommand,
-    } = createStandardViewsCommands(engineCommandManager)
+    } = createStandardViewsCommands(kclManager)
 
     const namedViewCommands = [
       createNamedViewCommand,
@@ -84,7 +84,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [commands, engineCommandManager, settingsActor])
+  }, [commands, engineCommandManager, settingsActor, kclManager])
 
   useEffect(() => {
     markOnce('code/didLoadFile')

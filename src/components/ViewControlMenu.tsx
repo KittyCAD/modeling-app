@@ -150,7 +150,7 @@ export function useViewControlMenuItems() {
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current,
+              modelingState.context.store.useSketchSolveMode?.current,
               {
                 kclManager,
                 rustContext,
@@ -188,7 +188,7 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useNewSketchMode,
+      modelingState.context.store.useSketchSolveMode,
       sketching,
       snapToGrid,
       gizmoType,

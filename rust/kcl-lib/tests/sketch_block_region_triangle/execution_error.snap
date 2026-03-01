@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_region_triangle.kcl
+---
+KCL Engine error
+
+  × engine: No such region exists at that intersection index
+    ╭─[14:5]
+ 13 │ 
+ 14 │ r = sketch2::region(segments = [s.line1, s.line2])
+    ·     ───────────────────────┬──────────────────────
+    ·                            ╰── tests/sketch_block_region_triangle/input.kcl
+    ╰────
