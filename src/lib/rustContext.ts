@@ -39,6 +39,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -215,15 +216,12 @@ export default class RustContext {
    * AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
    * re-execute.
    */
-  async clearSceneAndBustCache(
-    settings: DeepPartial<Configuration>,
-    path?: string
-  ): Promise<ExecState> {
+  async clearSceneAndBustCache(path?: string): Promise<ExecState> {
     const instance = await this._checkContextInstance()
 
     try {
       const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
+        JSON.stringify(jsAppSettings(this.settingsActor)),
         path
       )
 
