@@ -46,14 +46,15 @@ test.beforeEach(async ({ page, fs, folderSetupFn }) => {
   })
 
   await folderSetupFn(async (dir: string) => {
-    const projectDir = await fs.join(dir, 'demo-project')
-    await fs.mkdir(projectDir, { recursive: true })
-    const tempSettingsFilePath = await fs.resolve(
-      projectDir,
-      '..',
-      SETTINGS_FILE_NAME
+    // TODO: We have no way to obtain the app's user directory. For some
+    // reason getEnvironmentFolderName returns only 'zoo-modeling-app'
+    const userDir = await fs.join(
+      await fs.getPath('appData'),
+      'dev.zoo.modeling-app-local'
     )
-    await fs.writeFile(tempSettingsFilePath, new TextEncoder().encode(tomlStr))
+    await fs.mkdir(userDir, { recursive: true })
+    const userSettingsPath = await fs.resolve(userDir, SETTINGS_FILE_NAME)
+    await fs.writeFile(userSettingsPath, new TextEncoder().encode(tomlStr))
   })
 })
 
