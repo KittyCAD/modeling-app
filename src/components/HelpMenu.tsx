@@ -133,9 +133,10 @@ export function HelpMenu() {
             <HelpMenuItem
               as="button"
               onClick={() => {
-                const targetPath = filePath !== undefined
-                  ? filePath + PATHS.SETTINGS_KEYBINDINGS
-                  : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+                const targetPath =
+                  filePath !== undefined
+                    ? filePath + PATHS.SETTINGS_KEYBINDINGS
+                    : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
                 void navigate(targetPath)
               }}
               data-testid="keybindings-button"

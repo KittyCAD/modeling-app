@@ -75,9 +75,10 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           ),
           'data-testid': 'user-settings',
           onClick: () => {
-            const targetPath = filePath !== undefined
-              ? filePath + PATHS.SETTINGS_USER
-              : PATHS.HOME + PATHS.SETTINGS_USER
+            const targetPath =
+              filePath !== undefined
+                ? filePath + PATHS.SETTINGS_USER
+                : PATHS.HOME + PATHS.SETTINGS_USER
             void navigate(targetPath)
           },
         },

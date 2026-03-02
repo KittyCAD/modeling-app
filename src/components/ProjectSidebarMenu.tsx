@@ -145,9 +145,10 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
-            const targetPath = filePath !== undefined
-              ? filePath + PATHS.SETTINGS_PROJECT
-              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            const targetPath =
+              filePath !== undefined
+                ? filePath + PATHS.SETTINGS_PROJECT
+                : PATHS.HOME + PATHS.SETTINGS_PROJECT
             void navigate(targetPath)
           },
         },
