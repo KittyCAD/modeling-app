@@ -1630,12 +1630,9 @@ export const modelingMachine = setup({
           // If there are engine commands that need sent off, send them
           // TODO: This should be handled outside of an action as its own
           // actor, so that the system state is more controlled.
-          engineEvents &&
-            engineEvents.forEach((event) => {
-              engineCommandManager
-                .sendSceneCommand(event)
-                .catch(reportRejection)
-            })
+          engineEvents?.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
+          })
 
           return {
             selectionRanges: selections,

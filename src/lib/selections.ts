@@ -76,6 +76,7 @@ import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -185,6 +186,8 @@ export async function getEventForSelectWithPoint(
 
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // but we can still build a primitive selection to be used as fallback for downstream operations
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       data.entity_id,
       engineCommandManager
@@ -198,9 +201,10 @@ export async function getEventForSelectWithPoint(
         },
       }
     }
-    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
-    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // if no entity_id, we should still return an empty singleCodeCursor to plug into the selection logic
     // (i.e. if the user is holding shift they can keep selecting)
+    // TODO: understand if there are any cases left that can hit this.
+    showUnsupportedSelectionToast()
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },

@@ -1940,6 +1940,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Concentric Constraint',
     icon: 'concentric',
   },
+  diameter: {
+    label: 'Diameter Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
   distance: {
     label: 'Distance Constraint',
     icon: 'dimension', // TODO: see if we need a different icon here?
@@ -1971,6 +1975,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  radius: {
+    label: 'Radius Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
   },
   symmetric: {
     label: 'Symmetric Constraint',
@@ -2836,6 +2844,20 @@ async function prepareToEditAppearance({
     roughness = result
   }
 
+  let opacity: KclCommandValue | undefined
+  if (operation.labeledArgs.opacity) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.opacity.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve opacity argument" }
+    }
+    opacity = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2844,6 +2866,7 @@ async function prepareToEditAppearance({
     color,
     metalness,
     roughness,
+    opacity,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

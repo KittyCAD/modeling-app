@@ -920,18 +920,26 @@ impl ExecutorContext {
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
         result.map_err(|(err, _, _)| {
-            if let KclError::ImportCycle { .. } = err {
-                // It was an import cycle.  Keep the original message.
-                err.override_source_ranges(vec![source_range])
-            } else {
-                // TODO would be great to have line/column for the underlying error here
-                KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Error loading imported file ({path}). Open it to view more details.\n  {}",
-                        err.message()
-                    ),
-                    vec![source_range],
-                ))
+            match err {
+                KclError::ImportCycle { .. } => {
+                    // It was an import cycle.  Keep the original message.
+                    err.override_source_ranges(vec![source_range])
+                }
+                KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
+                    // Propagate this type of error. It's likely a transient
+                    // error that just needs to be retried.
+                    err.override_source_ranges(vec![source_range])
+                }
+                _ => {
+                    // TODO would be great to have line/column for the underlying error here
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Error loading imported file ({path}). Open it to view more details.\n  {}",
+                            err.message()
+                        ),
+                        vec![source_range],
+                    ))
+                }
             }
         })
     }
