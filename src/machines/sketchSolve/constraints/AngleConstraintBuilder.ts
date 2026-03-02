@@ -20,9 +20,8 @@ import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/
 import { createDimensionLine } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import {
   type AngleConstraint,
-  getLineEndpoints,
+  getLinePoints,
   isAngleConstraint,
-  pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { Group } from 'three'
 
@@ -91,20 +90,11 @@ function calculateAngleConstraintData(
   }
 
   const [lineId1, lineId2] = obj.kind.constraint.lines
-  const line1Endpoints = getLineEndpoints(objects[lineId1], objects)
-  const line2Endpoints = getLineEndpoints(objects[lineId2], objects)
-  if (!line1Endpoints || !line2Endpoints) {
+  const line1 = getLinePoints(objects[lineId1], objects)
+  const line2 = getLinePoints(objects[lineId2], objects)
+  if (!line1 || !line2) {
     return null
   }
-
-  const line1 = [
-    pointToCoords2d(line1Endpoints[0]),
-    pointToCoords2d(line1Endpoints[1]),
-  ] as const
-  const line2 = [
-    pointToCoords2d(line2Endpoints[0]),
-    pointToCoords2d(line2Endpoints[1]),
-  ] as const
 
   const center = getLineIntersection(line1, line2)
   if (!center) {

@@ -51,10 +51,11 @@ import {
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
-  getLineEndpoints,
+  getLinePoints,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { dot2d, lengthVec, subVec } from '@src/lib/utils2d'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -63,34 +64,21 @@ function calculateCurrentAngleBetweenLines(
   line2: ApiObject,
   objects: ApiObject[]
 ): number | null {
-  const line1Endpoints = getLineEndpoints(line1, objects)
-  const line2Endpoints = getLineEndpoints(line2, objects)
-  if (!line1Endpoints || !line2Endpoints) {
+  const line1Points = getLinePoints(line1, objects)
+  const line2Points = getLinePoints(line2, objects)
+  if (!line1Points || !line2Points) {
     return null
   }
-  const [line1Start, line1End] = line1Endpoints
-  const [line2Start, line2End] = line2Endpoints
 
-  const v1x =
-    line1End.kind.segment.position.x.value -
-    line1Start.kind.segment.position.x.value
-  const v1y =
-    line1End.kind.segment.position.y.value -
-    line1Start.kind.segment.position.y.value
-  const v2x =
-    line2End.kind.segment.position.x.value -
-    line2Start.kind.segment.position.x.value
-  const v2y =
-    line2End.kind.segment.position.y.value -
-    line2Start.kind.segment.position.y.value
-
-  const v1Length = Math.hypot(v1x, v1y)
-  const v2Length = Math.hypot(v2x, v2y)
+  const v1 = subVec(line1Points[1], line1Points[0])
+  const v2 = subVec(line2Points[1], line2Points[0])
+  const v1Length = lengthVec(v1)
+  const v2Length = lengthVec(v2)
   if (v1Length === 0 || v2Length === 0) {
     return null
   }
 
-  const dot = (v1x * v2x + v1y * v2y) / (v1Length * v2Length)
+  const dot = dot2d(v1, v2) / (v1Length * v2Length)
   const clampedDot = Math.max(-1, Math.min(1, dot))
   const radians = Math.acos(clampedDot)
   const degrees = (radians * 180) / Math.PI

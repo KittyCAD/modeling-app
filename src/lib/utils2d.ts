@@ -56,6 +56,10 @@ export function lengthSq(a: Coords2d): number {
   return a[0] * a[0] + a[1] * a[1]
 }
 
+export function lengthVec(a: Coords2d): number {
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1])
+}
+
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }

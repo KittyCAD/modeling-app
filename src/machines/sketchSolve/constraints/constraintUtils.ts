@@ -35,7 +35,7 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
-export function getLineEndpoints(
+export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
 ): [PointSegment, PointSegment] | null {
@@ -52,6 +52,19 @@ export function getLineEndpoints(
   return [startObj, endObj]
 }
 
+export function getLinePoints(
+  lineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+) {
+  const pointSegments = getLinePointSegments(lineObj, objects)
+  if (!pointSegments) {
+    return null
+  }
+  return [
+    pointToCoords2d(pointSegments[0]),
+    pointToCoords2d(pointSegments[1]),
+  ] as const
+}
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
