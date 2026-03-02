@@ -717,7 +717,7 @@ export class KclManager extends EventTarget {
             this.sendModelingEvent({
               type: 'update sketch outcome',
               data: {
-                kclSource,
+                sourceDelta: kclSource,
                 sceneGraphDelta,
               },
             })

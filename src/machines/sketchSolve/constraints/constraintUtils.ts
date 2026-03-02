@@ -6,7 +6,7 @@ import type { Sprite, SpriteMaterial, Texture } from 'three'
 import { Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { Coords2d } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
