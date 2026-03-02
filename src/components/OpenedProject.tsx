@@ -74,9 +74,8 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project } = useApp()
-  const { systemIOActor, engineCommandManager, sceneInfra, kclManager } =
-    useSingletons()
+  const { auth, billing, settings, layout, project, systemIOActor } = useApp()
+  const { engineCommandManager, sceneInfra, kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()

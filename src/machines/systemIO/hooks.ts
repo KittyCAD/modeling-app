@@ -1,7 +1,7 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type SystemIOActor,
@@ -18,50 +18,50 @@ import {
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.requestedProjectName
   )
 }
 export const useRequestedFileName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.requestedFileName)
 }
 export const useProjectDirectoryPath = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.projectDirectoryPath
   )
 }
 export const useFolders = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.folders)
 }
 export const useState = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state)
 }
 export const useCanReadWriteProjectDirectory = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
 }
 export const useHasListedProjects = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
 }
 
 export const useLastOperation = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.lastOperation)
 }
 
 export const useClearURLParams = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.clearURLParams)
 }
 

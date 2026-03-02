@@ -382,7 +382,6 @@ export class App implements AppSubsystems {
       sceneInfra: kclManager.sceneInfra,
       kclManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      systemIOActor: this.systemIOActor,
     }
   }
 
