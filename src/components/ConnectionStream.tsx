@@ -20,7 +20,6 @@ import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -54,27 +53,6 @@ export const ConnectionStream = (props: {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
-  const settingsEngine: SettingsViaQueryString = useMemo(
-    () => ({
-      theme: settingsValues.app.theme.current,
-      enableSSAO: settingsValues.modeling.enableSSAO.current,
-      highlightEdges: settingsValues.modeling.highlightEdges.current,
-      showScaleGrid: settingsValues.modeling.showScaleGrid.current,
-      cameraProjection: settingsValues.modeling.cameraProjection.current,
-      cameraOrbit: settingsValues.modeling.cameraOrbit.current,
-      backfaceColor: settingsValues.modeling.backfaceColor.current,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      settingsValues.app.theme.current,
-      settingsValues.modeling.enableSSAO.current,
-      settingsValues.modeling.highlightEdges.current,
-      settingsValues.modeling.showScaleGrid.current,
-      settingsValues.modeling.cameraProjection.current,
-      settingsValues.modeling.cameraOrbit.current,
-      settingsValues.modeling.backfaceColor.current,
-    ]
-  )
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -172,7 +150,6 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
@@ -248,7 +225,6 @@ export const ConnectionStream = (props: {
       isConnecting,
       numberOfConnectionAttempts,
       timeToConnect: TIME_TO_CONNECT,
-      settings: settingsEngine,
       setShowManualConnect,
       sceneInfra,
       settingsActor: settings.actor,
@@ -283,7 +259,6 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
@@ -316,7 +291,6 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
@@ -344,7 +318,6 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
@@ -381,7 +354,6 @@ export const ConnectionStream = (props: {
           isConnecting,
           numberOfConnectionAttempts,
           timeToConnect: TIME_TO_CONNECT,
-          settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
@@ -485,7 +457,6 @@ export const ConnectionStream = (props: {
               isConnecting,
               numberOfConnectionAttempts,
               timeToConnect: TIME_TO_CONNECT,
-              settings: settingsEngine,
               setShowManualConnect,
               sceneInfra,
               settingsActor: settings.actor,
