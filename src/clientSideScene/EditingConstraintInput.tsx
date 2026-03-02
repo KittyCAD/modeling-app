@@ -7,6 +7,7 @@ import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
+  isAngleConstraint,
   isDiameterConstraint,
   isDistanceConstraint,
   isRadiusConstraint,
@@ -136,7 +137,8 @@ function getInitialDimension(
     constraintObject &&
     (isDistanceConstraint(constraintObject) ||
       isRadiusConstraint(constraintObject) ||
-      isDiameterConstraint(constraintObject))
+      isDiameterConstraint(constraintObject) ||
+      isAngleConstraint(constraintObject))
   ) {
     initialDimension = constraintObject.kind.constraint.source.expr ?? ''
   }
