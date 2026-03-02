@@ -426,12 +426,6 @@ export const settingsMachine = setup({
           ],
         },
 
-        'set.modeling.backfaceColor': {
-          target: 'persisting settings',
-
-          actions: ['setSettingAtLevel', 'toastSuccess'],
-        },
-
         'Reset settings': {
           target: 'persisting settings',
 
