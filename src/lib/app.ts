@@ -54,6 +54,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import type { User } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -135,6 +136,11 @@ export class App implements AppSubsystems {
   billing: AppBillingSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
+  /**
+   * The interface to reading/writing to IO.
+   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
+   */
+  systemIOActor: SystemIOActor
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
@@ -147,6 +153,23 @@ export class App implements AppSubsystems {
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
+    this.systemIOActor = createActor(systemIOMachineImpl, {
+      input: {
+        wasmInstancePromise: this.wasmPromise,
+        app: this,
+      },
+    }).start()
+
+    // Initialize global commands
+    this.commands.actor.send({
+      type: 'Add commands',
+      data: {
+        commands: [
+          ...createAuthCommands({ authActor: this.auth.actor }),
+          ...createProjectCommands({ systemIOActor: this.systemIOActor }),
+        ],
+      },
+    })
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -281,11 +304,19 @@ export class App implements AppSubsystems {
       providedEditor
     )
 
-    this.project.executingPath
+    // This extension makes it possible to mark FS operations as un/redoable
+    effect(() => {
+      if (!!this.project?.executingEditor.value) {
+        buildFSHistoryExtension(
+          this.systemIOActor,
+          this.project.executingEditor.value
+        )
+      }
+    })
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.singletons.systemIOActor.subscribe(({ context }) => {
+    this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -343,28 +374,7 @@ export class App implements AppSubsystems {
         })
     }
 
-    const systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
-
-    // This extension makes it possible to mark FS operations as un/redoable
-    buildFSHistoryExtension(systemIOActor, kclManager)
-
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
-
-    // Initialize global commands
-    this.commands.actor.send({
-      type: 'Add commands',
-      data: {
-        commands: [
-          ...createAuthCommands({ authActor: this.auth.actor }),
-          ...createProjectCommands({ systemIOActor }),
-        ],
-      },
-    })
 
     return {
       engineCommandManager: kclManager.engineCommandManager,
@@ -372,7 +382,7 @@ export class App implements AppSubsystems {
       sceneInfra: kclManager.sceneInfra,
       kclManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      systemIOActor,
+      systemIOActor: this.systemIOActor,
     }
   }
 
