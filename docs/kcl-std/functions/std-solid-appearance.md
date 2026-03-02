@@ -13,6 +13,7 @@ appearance(
   color: string,
   metalness?: number(_),
   roughness?: number(_),
+  opacity?: number(_),
 ): [Solid; 1+] | ImportedGeometry
 ```
 
@@ -26,6 +27,7 @@ This will work on any solid, including extruded solids, revolved solids, and she
 | `color` | [`string`](/docs/kcl-std/types/std-types-string) | Color of the new material, a hex string like '#ff0000'. | Yes |
 | `metalness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Roughness of the new material, a percentage like 95.7. | No |
+| `opacity` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent. | No |
 
 ### Returns
 

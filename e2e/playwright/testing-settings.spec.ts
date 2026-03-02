@@ -2,6 +2,7 @@ import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 import path from 'path'
 
@@ -22,7 +23,6 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
-import { uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -734,6 +734,89 @@ test.describe(
         })
       }
     )
+
+    test('Changing backface color setting sends updated backface command to engine', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      type BackfaceColor = { r: number; g: number; b: number; a: number }
+      const expectedBackfaceColor: BackfaceColor = {
+        r: 0,
+        g: 0,
+        b: 1,
+        a: 1,
+      }
+
+      const clearEngineCommandLogs = async () => {
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+      }
+
+      const getLastSentBackfaceColor =
+        async (): Promise<BackfaceColor | null> =>
+          page.evaluate(() => {
+            type CommandLogLike = {
+              type: string
+              data?: {
+                type?: string
+                cmd?: {
+                  type?: string
+                  backface_color?: BackfaceColor
+                }
+              }
+            }
+            // @ts-expect-error engineCommandManager is attached to window at runtime.
+            const logs: CommandLogLike[] =
+              window.engineCommandManager?.commandLogs ?? []
+
+            const matchingLog = [...logs]
+              .reverse()
+              .find(
+                (log) =>
+                  (log.type === 'send-scene' || log.type === 'send-modeling') &&
+                  log.data?.type === 'modeling_cmd_req' &&
+                  log.data?.cmd?.type === 'set_default_system_properties' &&
+                  Boolean(log.data.cmd.backface_color)
+              )
+
+            return matchingLog?.data?.cmd?.backface_color ?? null
+          })
+
+      const setBackfaceColor = async (hex: string) => {
+        const hexUppercase = hex.toUpperCase()
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · backface color')
+        await cmdBar.currentArgumentInput.fill(hex)
+        await cmdBar.progressCmdBar()
+
+        const toastMessage = page.getByText(
+          `Set backface color to "${hexUppercase}" as a user default`
+        )
+        await expect(toastMessage).toBeVisible()
+        await expect(toastMessage).not.toBeVisible()
+        await scene.settled(cmdBar)
+      }
+
+      await test.step('Load modeling view', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Set backface color to blue', async () => {
+        await clearEngineCommandLogs()
+        await setBackfaceColor('#0000ff')
+      })
+
+      await test.step('Verify set_default_system_properties includes backface_color', async () => {
+        await expect
+          .poll(() => getLastSentBackfaceColor(), { timeout: 15_000 })
+          .toEqual(expectedBackfaceColor)
+      })
+    })
 
     test(
       `Change inline units setting`,

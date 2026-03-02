@@ -1,6 +1,7 @@
 //! Standard library appearance.
 
 use anyhow::Result;
+use kcl_error::CompilationError;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
@@ -10,7 +11,7 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry, annotations,
         types::{ArrayLen, RuntimeType},
     },
     std::Args,
@@ -62,6 +63,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
     let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
     let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
+    let opacity: Option<TyF64> = args.get_kw_arg_opt("opacity", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
@@ -76,6 +78,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         color,
         metalness.map(|t| t.n),
         roughness.map(|t| t.n),
+        opacity.map(|t| t.n),
         exec_state,
         args,
     )
@@ -88,22 +91,65 @@ async fn inner_appearance(
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
+    opacity: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
     let mut solids = solids.clone();
 
+    // Set the material properties.
+    let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Invalid hex color (`{color}`): {err}"),
+            vec![args.source_range],
+        ))
+    })?;
+    let percent_range = (0.0)..=100.0;
+    let zero_one_range = (0.0)..=1.0;
+    for (prop, val) in [("Metalness", metalness), ("Roughness", roughness), ("Opacity", opacity)] {
+        if let Some(x) = val {
+            if !(percent_range.contains(&x)) {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("{prop} must be between 0 and 100, but it was {x}"),
+                    vec![args.source_range],
+                )));
+            }
+            if zero_one_range.contains(&x) && x != 0.0 {
+                exec_state.warn(
+                        CompilationError::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
+                        annotations::WARN_SHOULD_BE_PERCENTAGE,
+                    );
+            }
+        }
+    }
+
+    // OIT (order-independent transparency) is required to show transparency.
+    // But it degrades engine performance. So only enable it if necessary,
+    // i.e. if user has chosen to make something transparent.
+    let mut needs_oit = false;
+    let opacity_param = if let Some(opacity) = opacity {
+        // The engine errors out if you toggle OIT with SSAO off.
+        // So ignore OIT settings if SSAO is off.
+        if opacity < 100.0 && args.ctx.settings.enable_ssao {
+            needs_oit = true;
+        }
+        opacity / 100.0
+    } else {
+        1.0
+    };
+    let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32);
+
+    if needs_oit {
+        // TODO: Emit a warning annotation if SSAO is disabled.
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+            )
+            .await?;
+    }
+
     for solid_id in solids.ids(&args.ctx).await? {
-        // Set the material properties.
-        let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!("Invalid hex color (`{color}`): {err}"),
-                vec![args.source_range],
-            ))
-        })?;
-
-        let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, 1.0);
-
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),

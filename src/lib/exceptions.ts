@@ -1,6 +1,4 @@
 import toast from 'react-hot-toast'
-
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
@@ -47,10 +45,7 @@ export const initializeWindowExceptionHandler = (
              * }
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
-            await rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(rustContext.settingsActor),
-              undefined
-            )
+            await rustContext?.clearSceneAndBustCache(undefined)
           } catch (e) {
             console.error('Failed to initialize wasm_lib')
             console.error(e)
