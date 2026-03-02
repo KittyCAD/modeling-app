@@ -145,11 +145,11 @@ export const createOnWebSocketMessage = ({
       }
 
       const firstError = message.errors[0]
-      if (firstError?.error_code === 'auth_token_invalid') {
+      if (firstError.error_code === 'auth_token_invalid') {
         disconnectAll()
       }
 
-      if (firstError?.error_code === 'internal_api') {
+      if (firstError.error_code === 'internal_api') {
         console.warn(
           'internal_api from server consider calling the request again'
         )

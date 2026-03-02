@@ -455,12 +455,8 @@ export class App implements AppSubsystems {
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
-        this.singletons.rustContext
-          .clearSceneAndBustCache(
-            this.singletons.kclManager.currentFilePath || undefined
-          )
-          .then(() => this.singletons.kclManager.executeCode())
-          .catch(reportRejection)
+        // TODO: might need to also clear scene for backfaceColor here
+        this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
