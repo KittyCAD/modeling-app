@@ -380,4 +380,89 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
       await expect(line).toBeVisible()
     })
   })
+
+  const innerShellCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [-5, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $endCap001)
+sketch002 = startSketchOn(extrude001, face = endCap001)
+shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
+
+  test(`Engine primitive selection works on shell inner face`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, innerShellCode)
+
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Two dumb hardcoded screen ratio values
+    const [clickOnFace] = scene.makeMouseHelpers(0.6, 0.6, { format: 'ratio' })
+    const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
+      format: 'ratio',
+    })
+
+    await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
+      await clickOnFace()
+      await expect(toolbar.selectionStatus).toContainText(
+        '1 enginePrimitiveFace'
+      )
+    })
+
+    await test.step(`Clicking in the corner resets the selection`, async () => {
+      await clearSelection()
+      await expect(toolbar.selectionStatus).not.toContainText(
+        '1 enginePrimitiveFace'
+      )
+    })
+  })
+
+  test(`Engine primitive selection works on shell inner edge`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, innerShellCode)
+
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Two dumb hardcoded screen ratio values
+    const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })
+    const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
+      format: 'ratio',
+    })
+
+    await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
+      await clickOnEdge()
+      await expect(toolbar.selectionStatus).toContainText(
+        '1 enginePrimitiveEdge'
+      )
+    })
+
+    await test.step(`Clicking in the corner resets the selection`, async () => {
+      await clearSelection()
+      await expect(toolbar.selectionStatus).not.toContainText(
+        '1 enginePrimitiveEdge'
+      )
+    })
+  })
 })
