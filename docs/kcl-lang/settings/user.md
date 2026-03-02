@@ -105,6 +105,13 @@ Settings that affect the behavior while modeling.
 
 This setting has the following nested options:
 
+##### backface_color
+
+The default color to use for surface backfaces.
+
+
+**Default:** None
+
 ##### base_unit
 
 The default unit to use in modeling dimensions.

@@ -32,7 +32,13 @@ import {
   createOnEngineOffline,
 } from '@src/network/connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
-import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
+import {
+  binaryToUuid,
+  hexToRgba,
+  isArray,
+  promiseFactory,
+  uuidv4,
+} from '@src/lib/utils'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   decode as msgpackDecode,
@@ -48,7 +54,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
-  DEFAULT_BACKFACE_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -109,8 +114,7 @@ export class ConnectionManager extends EventTarget {
       showScaleGrid: s.modeling.showScaleGrid.current,
       cameraProjection: s.modeling.cameraProjection.current,
       cameraOrbit: s.modeling.cameraOrbit.current,
-      // TODO: get this from a setting
-      backfaceColor: DEFAULT_BACKFACE_COLOR,
+      backfaceColor: s.modeling.backfaceColor.current,
     }
   }
 
@@ -326,6 +330,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       settings: this.settings,
       sendSceneCommand: this.sendSceneCommand.bind(this),
+      setBackfaceColor: this.setBackfaceColor.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
@@ -463,6 +468,53 @@ export class ConnectionManager extends EventTarget {
       type: 'darkModeMatcher',
     })
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  /** Set the default backface color in the engine, with debug logging */
+  async setBackfaceColor(color: string) {
+    const rgbaColor = hexToRgba(color)
+    if (!rgbaColor) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setBackfaceColor, invalid hex color',
+        metadata: { color },
+      })
+      return
+    }
+
+    const cmd = {
+      type: 'set_default_system_properties',
+      backface_color: rgbaColor,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setBackfaceColor - set_default_system_properties - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setBackfaceColor, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
   }
 
   /** Set the edge highlighting setting in the engine, with debug logging */
