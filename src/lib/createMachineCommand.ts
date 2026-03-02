@@ -236,25 +236,15 @@ export function buildCommandArgument<
       validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'vector2d' }
-  } else if (
-    arg.inputType === 'string' ||
-    arg.inputType === 'color' ||
-    arg.inputType === 'tagDeclarator'
-  ) {
-    const defaultValueFromContext =
-      'defaultValueFromContext' in arg ? arg.defaultValueFromContext : undefined
-
+  } else if (arg.inputType === 'string') {
     return {
       inputType: arg.inputType,
-      defaultValue: defaultValueFromContext
-        ? (_cmdContext, machineContext) =>
-            defaultValueFromContext(machineContext ?? context)
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
         : arg.defaultValue,
       validation: arg.validation,
       ...baseCommandArgument,
-    } satisfies CommandArgument<O, T> & {
-      inputType: 'string' | 'color' | 'tagDeclarator'
-    }
+    } satisfies CommandArgument<O, T> & { inputType: 'string' }
   } else {
     return {
       inputType: arg.inputType,
