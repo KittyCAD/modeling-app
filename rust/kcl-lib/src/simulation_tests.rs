@@ -1,4 +1,5 @@
 use std::{
+    future::Future,
     panic::{AssertUnwindSafe, catch_unwind},
     path::{Path, PathBuf},
 };
@@ -7,7 +8,7 @@ use indexmap::IndexMap;
 
 use crate::{
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
-    errors::KclError,
+    errors::{ExecErrorWithState, KclError},
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
     walk::{Node, walk},
@@ -38,6 +39,9 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
+/// Additional attempts after the initial execution when the engine yields a
+/// transient error.
+const EXECUTE_RETRIES_FROM_ENGINE_ERROR: usize = 2;
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
@@ -250,6 +254,35 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
+/// If execution results in `EngineHangup` or `EngineInternal`, retry.
+async fn execute_with_retries<F, Fut, T>(mut execute: F) -> Result<T, ExecErrorWithState>
+where
+    F: FnMut() -> Fut,
+    Fut: Future<Output = Result<T, ExecErrorWithState>>,
+{
+    let mut retries_remaining = EXECUTE_RETRIES_FROM_ENGINE_ERROR;
+    loop {
+        // Run the closure to execute.
+        let exec_result = execute().await;
+
+        if retries_remaining > 0
+            && let Err(error) = &exec_result
+            && let crate::errors::ExecError::Kcl(kcl_error) = &error.error
+            && matches!(
+                &kcl_error.error,
+                KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+            )
+        {
+            let error_type = kcl_error.error.error_type();
+            eprintln!("Execute got {error_type}; retrying...");
+            retries_remaining -= 1;
+            continue;
+        }
+
+        return exec_result;
+    }
+}
+
 async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png, false).await
 }
@@ -260,7 +293,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
+    let exec_res = execute_with_retries(|| {
+        crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+    })
+    .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");

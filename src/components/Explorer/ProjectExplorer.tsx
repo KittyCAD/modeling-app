@@ -19,7 +19,7 @@ import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
-import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
@@ -325,6 +325,7 @@ export const ProjectExplorer = ({
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
       if (readOnly || !window.electron) return
+      const electron = window.electron
 
       const supportedFiles: { file: File; relativePath: string }[] = []
       const unsupportedFiles: string[] = []
@@ -401,20 +402,25 @@ export const ProjectExplorer = ({
 
         for (const { file, relativePath } of supportedFiles) {
           try {
+            const destinationDirPath = relativePath
+              ? joinOSPaths(targetPath, relativePath)
+              : targetPath
+
             // Create parent directories if needed
-            if (relativePath) {
-              const fullDirPath = joinOSPaths(targetPath, relativePath)
-              if (!createdDirs.has(fullDirPath)) {
-                await window.electron.mkdir(fullDirPath, { recursive: true })
-                createdDirs.add(fullDirPath)
-              }
+            if (relativePath && !createdDirs.has(destinationDirPath)) {
+              await electron.mkdir(destinationDirPath, { recursive: true })
+              createdDirs.add(destinationDirPath)
             }
 
+            const { path: destinationPath } = await getNextFileName({
+              electron,
+              entryName: file.name,
+              baseDir: destinationDirPath,
+              wasmInstance,
+            })
+
             const arrayBuffer = await file.arrayBuffer()
-            const destinationPath = relativePath
-              ? joinOSPaths(targetPath, relativePath, file.name)
-              : joinOSPaths(targetPath, file.name)
-            await window.electron.writeFile(
+            await electron.writeFile(
               destinationPath,
               new Uint8Array(arrayBuffer)
             )
