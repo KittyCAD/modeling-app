@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import { Fragment, useMemo } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -111,7 +111,6 @@ function ProjectMenuPopover({
   const { machineManager, commands, settings } = useApp()
   const { engineCommandManager, kclManager } = useSingletons()
   const platform = usePlatform()
-  const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>

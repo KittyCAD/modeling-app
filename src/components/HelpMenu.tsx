@@ -15,7 +15,7 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 const HelpMenuDivider = () => (
@@ -26,7 +26,6 @@ export function HelpMenu() {
   const { settings } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const navigate = useNavigate()
-  const location = useLocation()
   const filePath = useAbsoluteFilePath()
 
   const resetOnboardingWorkflow = () => {
