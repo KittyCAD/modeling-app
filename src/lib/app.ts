@@ -43,7 +43,6 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
@@ -66,8 +65,6 @@ declare global {
     engineDebugger: Debugger
   }
 }
-
-export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export type AppAuthSystem = {
   actor: ActorRefFrom<typeof authMachine>

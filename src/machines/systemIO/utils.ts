@@ -15,6 +15,8 @@ import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 import fsZds from '@src/lib/fs-zds'
 
+export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
+
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
@@ -204,7 +206,7 @@ export type RequestedKCLFile = {
 export const waitForIdleState = async ({
   systemIOActor,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: SystemIOActor
 }) => {
   // Check if already idle before setting up subscription
   if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {

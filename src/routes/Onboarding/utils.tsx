@@ -28,7 +28,10 @@ import {
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { err, reportRejection } from '@src/lib/trap'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import {
   defaultLayout,
@@ -37,7 +40,6 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type { SystemIOActor } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'

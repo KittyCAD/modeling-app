@@ -1,10 +1,10 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/app'
 import { useSingletons } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
+  type SystemIOActor,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
