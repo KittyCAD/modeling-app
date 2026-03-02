@@ -3,5 +3,13 @@ import { useApp } from '@src/lib/boot'
 
 export function useAbsoluteFilePath() {
   const app = useApp()
-  return app.project?.executingPathSignal.value?.value
+
+  const executingPath = app.project?.executingPathSignal.value?.value
+
+  if (!executingPath) {
+    console.warn('bug: executingPath undefined, not navigating')
+    return
+  }
+
+  return PATHS.FILE + '/' + encodeURIComponent(executingPath)
 }

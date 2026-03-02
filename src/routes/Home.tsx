@@ -60,6 +60,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -71,6 +72,7 @@ type ReadWriteProjectState = {
 const Home = () => {
   const { auth, billing, commands, settings } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
+  const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
@@ -264,6 +266,7 @@ const Home = () => {
                       kclManager,
                       systemIOActor,
                       settingsActor,
+                      executingPath,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}

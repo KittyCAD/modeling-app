@@ -278,6 +278,7 @@ export interface OnboardingUtilDeps {
   systemIOActor: SystemIOActor
   settingsActor: SettingsActorType
   navigate: NavigateFunction
+  executingPath?: string
 }
 
 export const ERROR_MUST_WARN = 'Must warn user before overwrite'
@@ -332,15 +333,24 @@ export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
   kclManager,
   navigate,
+  executingPath,
 }: OnboardingUtilDeps) {
   // Non-path statuses should be coerced to the start path
   const resolvedOnboardingStatus = !isOnboardingPath(onboardingStatus)
     ? onboardingStartPath
     : onboardingStatus
   kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
+
+  if (!executingPath) {
+    console.warn('bug: executingPath undefined, not navigating')
+    return
+  }
+
   void navigate(
-    makeUrlPathRelative(
-      joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
+    joinRouterPaths(
+      executingPath,
+      String(PATHS.ONBOARDING),
+      resolvedOnboardingStatus
     )
   )
 }

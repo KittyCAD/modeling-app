@@ -1,3 +1,4 @@
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import type { LoaderFunction } from 'react-router-dom'
 import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
@@ -21,7 +22,6 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type RustContext from '@src/lib/rustContext'
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -111,8 +111,11 @@ export const fileLoader =
     )
     let code = ''
 
-    if (!projectPathData)
-      return Promise.reject(new Error('projectPathData falsey'))
+    if (!projectPathData) {
+      return Promise.reject(
+        new Error('bug: projectPathData undefined, early return')
+      )
+    }
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -120,6 +123,8 @@ export const fileLoader =
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
+      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
+        .default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
@@ -130,17 +135,6 @@ export const fileLoader =
           }
         }
       }
-
-      try {
-        await fsZds.stat(projectPath)
-      } catch (e) {
-        if (e === 'ENOENT') {
-          return redirect(PATHS.HOME)
-        }
-      }
-
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
 
       // If we are navigating to the project and want to navigate to its
       // default file, redirect to it keeping everything else in the URL the same.
@@ -166,7 +160,6 @@ export const fileLoader =
 
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      // This should end up being dead-code eventually...
       if (window.electron?.process.env.NODE_ENV === 'test') {
         code = kclManager.localStoragePersistCode() || code
       }
@@ -202,7 +195,6 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
 
     const project = maybeProjectInfo ?? defaultProjectData
-    await rustContext.sendOpenProject(project, currentFilePath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -211,6 +203,16 @@ export const fileLoader =
       type: 'load.project',
       project,
     })
+    await waitFor(settingsActor, (state) => state.matches('idle'))
+
+    // This starts subscribing to settingsActor updates
+    // TODO: Make settings not an XState actor, this is too convoluted.
+    app.openProject(
+      project,
+      currentFilePath || PROJECT_ENTRYPOINT,
+      app.singletons.kclManager
+    )
+    await rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)

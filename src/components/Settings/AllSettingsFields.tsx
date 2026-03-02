@@ -29,6 +29,7 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -45,6 +46,7 @@ export const AllSettingsFields = forwardRef(
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
+    const executingPath = useAbsoluteFilePath()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -70,6 +72,7 @@ export const AllSettingsFields = forwardRef(
         kclManager,
         systemIOActor,
         settingsActor: settings.actor,
+        executingPath,
       }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)

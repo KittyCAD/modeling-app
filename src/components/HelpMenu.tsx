@@ -36,6 +36,7 @@ export function HelpMenu() {
       kclManager,
       systemIOActor,
       settingsActor: settings.actor,
+      executingPath: filePath,
     }
     acceptOnboarding(props).catch((reason) =>
       catchOnboardingWarnError(reason, props)
