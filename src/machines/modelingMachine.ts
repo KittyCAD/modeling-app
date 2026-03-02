@@ -1468,11 +1468,10 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (
-            !setSelections.selection &&
-            !setSelections.selectionV2 &&
-            kclManager.isShiftDown
-          ) {
+          const sel = setSelections.selection
+          const isEmpty =
+            !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
+          if (isEmpty && kclManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1480,53 +1479,19 @@ export const modelingMachine = setup({
               graphSelectionsV2: selectionRanges.graphSelectionsV2 || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (
-            !setSelections.selection &&
-            !setSelections.selectionV2 &&
-            !kclManager.isShiftDown
-          ) {
+          } else if (isEmpty && !kclManager.isShiftDown) {
             selections = {
               graphSelectionsV2: [],
               otherSelections: [],
             }
-          } else if (
-            (setSelections.selection || setSelections.selectionV2) &&
-            !kclManager.isShiftDown
-          ) {
-            if (setSelections.selectionV2) {
-              selections = {
-                graphSelectionsV2: [setSelections.selectionV2],
-                otherSelections: selectionRanges.otherSelections || [],
-              }
-            } else if (setSelections.selection) {
-              const sel = setSelections.selection
-              const v2 =
-                sel.artifact && sel.codeRef
-                  ? [
-                      {
-                        entityRef: artifactToEntityRef(
-                          sel.artifact.type,
-                          sel.artifact.id,
-                          sel.artifact.type === 'segment'
-                            ? (sel.artifact as { pathId: string }).pathId
-                            : undefined
-                        ),
-                        codeRef: sel.codeRef,
-                      },
-                    ]
-                  : sel.codeRef
-                    ? [{ codeRef: sel.codeRef }]
-                    : []
-              selections = {
-                graphSelectionsV2: v2,
-                otherSelections: [],
-              }
-            } else {
-              selections = selectionRanges
+          } else if (!isEmpty && !kclManager.isShiftDown) {
+            selections = {
+              graphSelectionsV2: [sel],
+              otherSelections: selectionRanges.otherSelections || [],
             }
-          } else if (setSelections.selectionV2 && kclManager.isShiftDown) {
-            // Handle V2 selections with Shift key – compare V2 to V2 via selectionV2Equals
-            const newV2 = setSelections.selectionV2
+          } else if (!isEmpty && kclManager.isShiftDown) {
+            // Handle Shift key – compare V2 to V2 via selectionV2Equals
+            const newV2 = sel
             const current = selectionRanges.graphSelectionsV2 || []
             const alreadySelected = current.some((s) =>
               selectionV2Equals(s, newV2)
@@ -1534,42 +1499,6 @@ export const modelingMachine = setup({
             const updatedSelectionsV2 = alreadySelected
               ? current.filter((s) => !selectionV2Equals(s, newV2))
               : [...current, newV2]
-            selections = {
-              graphSelectionsV2: updatedSelectionsV2,
-              otherSelections: selectionRanges.otherSelections,
-            }
-          } else if (setSelections.selection && kclManager.isShiftDown) {
-            // Legacy: event only sent V1. Convert to V2 for add, compare V2-to-V2 via selectionV2Equals.
-            const selToV2 = (
-              sel: NonNullable<typeof setSelections.selection>
-            ) =>
-              sel.artifact && sel.codeRef
-                ? {
-                    entityRef: artifactToEntityRef(
-                      sel.artifact.type,
-                      sel.artifact.id,
-                      sel.artifact.type === 'segment'
-                        ? (sel.artifact as { pathId: string }).pathId
-                        : undefined
-                    ),
-                    codeRef: sel.codeRef,
-                  }
-                : sel.codeRef
-                  ? { codeRef: sel.codeRef }
-                  : null
-
-            const newV2 =
-              setSelections.selectionV2 ?? selToV2(setSelections.selection)
-            const current = selectionRanges.graphSelectionsV2 || []
-            const alreadySelected =
-              newV2 != null && current.some((s) => selectionV2Equals(s, newV2))
-            const updatedSelectionsV2 =
-              alreadySelected && newV2
-                ? current.filter((s) => !selectionV2Equals(s, newV2))
-                : newV2
-                  ? [...current, newV2]
-                  : current
-
             selections = {
               graphSelectionsV2: updatedSelectionsV2,
               otherSelections: selectionRanges.otherSelections,

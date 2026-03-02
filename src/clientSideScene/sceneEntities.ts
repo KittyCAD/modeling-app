@@ -2949,6 +2949,7 @@ export class SceneEntities {
             type: 'Set selection',
             data: {
               selectionType: 'singleCodeCursor',
+              selection: {},
             },
           })
           return

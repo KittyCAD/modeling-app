@@ -1,7 +1,7 @@
 import { use, useEffect, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
@@ -144,14 +144,19 @@ function DisplayObj({
         )[0]
         const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
         if (!artifact) return
+        const codeRef = codeRefFromRange(range, kclManager.ast)
+        const entityRef = artifactToEntityRef(
+          artifact.type,
+          artifact.id,
+          artifact.type === 'segment'
+            ? (artifact as { pathId: string }).pathId
+            : undefined
+        )
         send({
           type: 'Set selection',
           data: {
             selectionType: 'singleCodeCursor',
-            selection: {
-              artifact: artifact,
-              codeRef: codeRefFromRange(range, kclManager.ast),
-            },
+            selection: { entityRef, codeRef },
           },
         })
         e.stopPropagation()

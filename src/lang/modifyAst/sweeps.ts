@@ -28,8 +28,10 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  getArtifactFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getFaceCodeRef,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
@@ -684,59 +686,82 @@ export function addRevolve({
       modifiedAst = edgeRefResult.modifiedAst
     }
   } else if (edge) {
-    // Use tag-based approach (legacy) - for Solid2dEdge or V1 selections
-    // For Solid2dEdge, we need to normalize to V1 format (segment artifact)
-    let normalizedEdge = edge
-    if (
-      edge.graphSelectionsV2 &&
-      edge.graphSelectionsV2.length > 0 &&
-      edge.graphSelectionsV2[0]?.entityRef?.type === 'solid2d_edge'
-    ) {
-      // Solid2dEdge: the edgeId IS the segment artifact ID directly!
-      // When a segment becomes part of a solid2d, it becomes an edge, and the edgeId
-      // is the same as the original segment's artifact ID.
-      const edgeId = edge.graphSelectionsV2[0].entityRef.edge_id
-
-      // Look up the segment artifact directly by edgeId
-      const segmentArtifact = artifactGraph.get(edgeId)
-
-      // Verify it's a segment and has a codeRef
-      if (
-        segmentArtifact &&
-        segmentArtifact.type === 'segment' &&
-        segmentArtifact.codeRef
-      ) {
-        normalizedEdge = {
-          ...edge,
-          graphSelectionsV2: [
-            {
-              entityRef: artifactToEntityRef(segmentArtifact.type, edgeId),
-              codeRef: segmentArtifact.codeRef,
-            },
-          ],
-        }
-      } else {
-        // If we can't find the segment, return an error with debug info
-        return new Error(
-          `Could not find segment artifact for Solid2D edge with ID ${edgeId}. ` +
-            `Found artifact type: ${segmentArtifact?.type || 'undefined'}. ` +
-            `Please select the edge again.`
-        )
+    // Re-check for BRep edge (entityRef.type === 'edge') in case useEdgeRefs was false due to structure
+    const firstEdgeSel = edge.graphSelectionsV2?.[0]
+    if (firstEdgeSel?.entityRef?.type === 'edge') {
+      const entityRef = firstEdgeSel.entityRef
+      const payload = entityReferenceToEdgeRefPayload(entityRef)
+      const originalEdgeSelection = resolveSelectionV2(
+        firstEdgeSel,
+        artifactGraph
+      )
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
       }
-    }
+      edgeRefExpr = edgeRefResult.expr
+      modifiedAst = edgeRefResult.modifiedAst
+    } else {
+      // Use tag-based approach (legacy) - for Solid2dEdge or V1 selections
+      // For Solid2dEdge, we need to normalize to V1 format (segment artifact)
+      let normalizedEdge = edge
+      if (
+        edge.graphSelectionsV2 &&
+        edge.graphSelectionsV2.length > 0 &&
+        edge.graphSelectionsV2[0]?.entityRef?.type === 'solid2d_edge'
+      ) {
+        // Solid2dEdge: the edgeId IS the segment artifact ID directly!
+        // When a segment becomes part of a solid2d, it becomes an edge, and the edgeId
+        // is the same as the original segment's artifact ID.
+        const edgeId = edge.graphSelectionsV2[0].entityRef.edge_id
 
-    const getAxisResult = getAxisExpressionAndIndex(
-      axis,
-      normalizedEdge,
-      modifiedAst,
-      wasmInstance,
-      artifactGraph
-    )
-    if (err(getAxisResult) || !getAxisResult.generatedAxis) {
-      return new Error('Generated axis selection is missing.')
+        // Look up the segment artifact directly by edgeId
+        const segmentArtifact = artifactGraph.get(edgeId)
+
+        // Verify it's a segment and has a codeRef
+        if (
+          segmentArtifact &&
+          segmentArtifact.type === 'segment' &&
+          segmentArtifact.codeRef
+        ) {
+          normalizedEdge = {
+            ...edge,
+            graphSelectionsV2: [
+              {
+                entityRef: artifactToEntityRef(segmentArtifact.type, edgeId),
+                codeRef: segmentArtifact.codeRef,
+              },
+            ],
+          }
+        } else {
+          // If we can't find the segment, return an error with debug info
+          return new Error(
+            `Could not find segment artifact for Solid2D edge with ID ${edgeId}. ` +
+              `Found artifact type: ${segmentArtifact?.type || 'undefined'}. ` +
+              `Please select the edge again.`
+          )
+        }
+      }
+
+      const getAxisResult = getAxisExpressionAndIndex(
+        axis,
+        normalizedEdge,
+        modifiedAst,
+        wasmInstance,
+        artifactGraph
+      )
+      if (err(getAxisResult) || !getAxisResult.generatedAxis) {
+        return new Error('Generated axis selection is missing.')
+      }
+      axisExpr = getAxisResult.generatedAxis
+      modifiedAst = modifiedAst // getAxisResult might modify AST, but getAxisExpressionAndIndex doesn't return it
     }
-    axisExpr = getAxisResult.generatedAxis
-    modifiedAst = modifiedAst // getAxisResult might modify AST, but getAxisExpressionAndIndex doesn't return it
   } else if (axis) {
     // Use axis string
     axisExpr = createLocalName(axis)
@@ -849,10 +874,53 @@ export function getAxisExpressionAndIndex(
     }
 
     const { tag } = tagResult
-    const axisSelection =
+    let axisSelection =
       edge?.graphSelectionsV2[0] != null
         ? resolveSelectionV2(edge.graphSelectionsV2[0], artifactGraph)?.artifact
         : undefined
+    // Fallback: resolveSelectionV2 returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
+    // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
+    if (!axisSelection && edge?.graphSelectionsV2[0] != null && artifactGraph) {
+      const resolved = resolveSelectionV2(
+        edge.graphSelectionsV2[0],
+        artifactGraph
+      )
+      if (resolved?.codeRef) {
+        const byRange = getArtifactFromRange(
+          resolved.codeRef.range,
+          artifactGraph
+        )
+        if (
+          byRange &&
+          (byRange.type === 'segment' ||
+            byRange.type === 'path' ||
+            byRange.type === 'edgeCut')
+        ) {
+          axisSelection = byRange
+        }
+        // If range didn't find one, try matching by pathToNode (e.g. segment on solid2d from engine)
+        if (
+          !axisSelection &&
+          resolved.codeRef.pathToNode &&
+          resolved.codeRef.pathToNode.length > 0
+        ) {
+          const pathStr = JSON.stringify(resolved.codeRef.pathToNode)
+          for (const artifact of artifactGraph.values()) {
+            const cr = getFaceCodeRef(artifact)
+            if (
+              cr &&
+              (artifact.type === 'segment' ||
+                artifact.type === 'path' ||
+                artifact.type === 'edgeCut') &&
+              JSON.stringify(cr.pathToNode) === pathStr
+            ) {
+              axisSelection = artifact
+              break
+            }
+          }
+        }
+      }
+    }
     if (!axisSelection) {
       return new Error('Generated axis selection is missing.')
     }

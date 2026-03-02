@@ -1519,7 +1519,7 @@ export class KclManager extends EventTarget {
     this._isShiftDown = isShiftDown
   }
   private selectionsWithSafeEnds(
-    selection: Array<Selection['codeRef']['range']>
+    selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
       return selection.filter(isTopLevelModule).map((s): [number, number] => {
@@ -1557,7 +1557,9 @@ export class KclManager extends EventTarget {
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
-  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+  setHighlightRange(
+    range: Array<NonNullable<Selection['codeRef']>['range']>
+  ): void {
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
       (selection) => {
         // Only keep valid selections.

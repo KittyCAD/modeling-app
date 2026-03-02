@@ -6,6 +6,7 @@ import {
   deletionErrorMessage,
   deleteSelectionPromise,
 } from '@src/lang/modifyAst/deleteSelection'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { err } from '@src/lib/trap'
 import { type CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -89,15 +90,23 @@ export function sendSelectionEvent(
     getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
     undefined
 
-  const selection = {
-    codeRef: codeRefFromRange(
-      convertRangeToUtf16
-        ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
-        : input.sourceRange,
-      input.kclManager.ast
-    ),
-    artifact,
-  }
+  const codeRef = codeRefFromRange(
+    convertRangeToUtf16
+      ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
+      : input.sourceRange,
+    input.kclManager.ast
+  )
+  const entityRef = artifact
+    ? artifactToEntityRef(
+        artifact.type,
+        artifact.id,
+        artifact.type === 'segment'
+          ? (artifact as { pathId: string }).pathId
+          : undefined
+      )
+    : undefined
+
+  const selection = { entityRef, codeRef }
 
   input.modelingSend({
     type: 'Set selection',

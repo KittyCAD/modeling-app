@@ -165,20 +165,22 @@ export async function getEventForQueryEntityTypeWithPoint(
     rustContext: RustContext
   }
 ): Promise<ModelingMachineEvent | null> {
+  // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
   const data = engineEvent?.data as { reference?: any } | undefined
-  if (!data?.reference) {
+  const reference = data?.reference ?? engineEvent?.reference
+  if (!reference) {
     // No reference - clear selection (clicked in empty space)
     return {
       type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
+      data: { selectionType: 'singleCodeCursor', selection: {} },
     }
   }
 
-  let entityRef = normalizeEntityReference(data.reference)
+  let entityRef = normalizeEntityReference(reference)
   if (!entityRef) {
     return {
       type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
+      data: { selectionType: 'singleCodeCursor', selection: {} },
     }
   }
 
@@ -189,7 +191,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   ) {
     return {
       type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
+      data: { selectionType: 'singleCodeCursor', selection: {} },
     }
   }
 
@@ -297,19 +299,16 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // Create V2 selection only - don't create V1 selection
-  const selectionV2: SelectionV2 = {
+  const selection: SelectionV2 = {
     entityRef,
     codeRef: codeRefs?.[0],
   }
 
-  // Return V2 selection only - don't include V1 selection
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
-      selectionV2,
-      // Explicitly don't set 'selection' to avoid creating V1 selection
+      selection,
     },
   }
 }
@@ -374,12 +373,19 @@ export function getEventForSegmentSelection(
     wasmInstance
   )
   if (err(node)) return null
+  const entityRef = artifactToEntityRef(
+    artifact.type,
+    artifact.id,
+    artifact.type === 'segment'
+      ? (artifact as { pathId: string }).pathId
+      : undefined
+  )
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
       selection: {
-        artifact,
+        entityRef,
         codeRef: {
           pathToNode: group?.userData?.pathToNode,
           range: [node.node.start, node.node.end, 0],
@@ -1154,7 +1160,7 @@ export async function tryEnterSketchOnDoubleClickFromScene(
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
-      selectionV2: { entityRef, codeRef },
+      selection: { entityRef, codeRef },
     },
   })
   deps.sceneInfra.modelingSend({ type: 'Enter sketch' })

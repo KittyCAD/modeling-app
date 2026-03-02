@@ -118,7 +118,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Update state after edge selection
       state.currentArgKey = 'angle'
       state.currentArgValue = '360deg'
-      state.headerArguments.Edge = '1 sweepEdge'
+      state.headerArguments.Edge = '1 edge'
       state.highlightedHeaderArg = 'angle'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state as CmdBarSerialised)
@@ -197,7 +197,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Update state after edge selection
       state.currentArgKey = 'angle'
       state.currentArgValue = '360deg'
-      state.headerArguments.Edge = '1 segment'
+      state.headerArguments.Edge = '1 edge'
       state.highlightedHeaderArg = 'angle'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state as CmdBarSerialised)
@@ -275,7 +275,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     // Edge should already be selected, progress to radius
     state.currentArgKey = 'radius'
     state.currentArgValue = '5' // Default radius
-    state.headerArguments.Selection = '1 sweepEdge' // Or whatever the selection shows
+    state.headerArguments.Selection = '1 edge'
     state.highlightedHeaderArg = 'radius'
     await cmdBar.progressCmdBar()
     await cmdBar.expectState(state)

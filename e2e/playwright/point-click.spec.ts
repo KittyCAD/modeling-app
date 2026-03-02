@@ -472,7 +472,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
@@ -565,7 +565,7 @@ openSketch = startSketchOn(XY)
       await expect(toolbar.selectionStatus).toContainText('No selection')
       await test.step('Click the edge', async () => {
         await clickOnUpperEdge()
-        await expect(toolbar.selectionStatus).toContainText('1 segment')
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Shift-click the same edge to deselect', async () => {
         await page.keyboard.down('Shift')
@@ -580,25 +580,22 @@ openSketch = startSketchOn(XY)
       await test.step('Select both edges and the face', async () => {
         await test.step('Select the upper edge', async () => {
           await clickOnUpperEdge()
-          await expect(toolbar.selectionStatus).toContainText('1 segment')
+          await expect(toolbar.selectionStatus).toContainText('1 edge')
         })
         await test.step('Select the lower edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges')
         })
         await test.step('Select the face (Shift-click)', async () => {
           await page.keyboard.down('Shift')
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge, 1 face'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges')
+          await expect(toolbar.selectionStatus).toContainText('1 face')
         })
       })
       await test.step('Deselect them one by one', async () => {
@@ -607,16 +604,14 @@ openSketch = startSketchOn(XY)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges')
         })
         await test.step('Deselect the lower edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('1 segment')
+          await expect(toolbar.selectionStatus).toContainText('1 edge')
         })
         await test.step('Deselect the upper edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')

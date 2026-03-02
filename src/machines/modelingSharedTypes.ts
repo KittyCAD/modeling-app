@@ -1,6 +1,6 @@
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -66,15 +66,13 @@ export type EntityReference =
       segment_id: string
     }
 
-export interface Selection {
-  artifact?: Artifact
-  codeRef: CodeRef
-}
-
 export interface SelectionV2 {
   entityRef?: EntityReference
   codeRef?: CodeRef
 }
+
+/** Alias for SelectionV2 (legacy name used in lang/lib). */
+export type Selection = SelectionV2
 
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
@@ -84,8 +82,7 @@ export type Selections = {
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
-      selectionV2?: SelectionV2 // Phase 2.1: parallel V2 selection for parallel validation
+      selection: SelectionV2
       scrollIntoView?: boolean
     }
   | {

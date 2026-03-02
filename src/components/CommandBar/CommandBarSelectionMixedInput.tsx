@@ -111,6 +111,7 @@ export default function CommandBarSelectionMixedInput({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
+          selection: {},
         },
       })
       setHasClearedSelection(true)
@@ -236,10 +237,8 @@ export default function CommandBarSelectionMixedInput({
         (selection?.graphSelectionsV2.length ||
           selection?.otherSelections.length ||
           selection?.graphSelectionsV2.length)
-          ? getSelectionTypeDisplayText(
-              kclManager.astSignal.value,
-              selection
-            ) + ' selected'
+          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
+            ' selected'
           : 'Select code/objects, or skip'}
 
         {showSceneSelection && (

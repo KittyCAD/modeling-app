@@ -151,7 +151,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // Clear selections since new model
       engineCommandManager.modelingSend({
         type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+        data: { selectionType: 'singleCodeCursor', selection: {} },
       })
     })
 

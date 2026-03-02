@@ -123,7 +123,10 @@ export const ConnectionStream = (props: {
         const log = (msg: string, data?: object) => {
           const line = data ? `${msg} ${JSON.stringify(data)}` : msg
           console.warn(`[double-click-edit] ${line}`)
-          if (typeof window !== 'undefined' && (window as any).__doubleClickEditLog) {
+          if (
+            typeof window !== 'undefined' &&
+            (window as any).__doubleClickEditLog
+          ) {
             ;(window as any).__doubleClickEditLog.push(line)
           }
         }
@@ -155,16 +158,16 @@ export const ConnectionStream = (props: {
               return
             }
             // Support both legacy entity_id and Face API reference response
-            let entityId: string | undefined =
-              (result as { entity_id?: string }).entity_id
+            let entityId: string | undefined = (
+              result as { entity_id?: string }
+            ).entity_id
             if (!entityId && (result as { reference?: unknown }).reference) {
               const entityRef = normalizeEntityReference(
                 (result as { reference: unknown }).reference
               )
               if (entityRef) {
                 if (entityRef.type === 'plane') entityId = entityRef.plane_id
-                else if (entityRef.type === 'face')
-                  entityId = entityRef.face_id
+                else if (entityRef.type === 'face') entityId = entityRef.face_id
                 else if (entityRef.type === 'solid2d')
                   entityId = entityRef.solid2d_id
                 else if (entityRef.type === 'solid3d')
@@ -186,10 +189,7 @@ export const ConnectionStream = (props: {
                 }
               }
               // Fallback: engine may return path or segment with different shape; use raw ref for artifact lookup
-              if (
-                !entityId &&
-                (result as { reference?: unknown }).reference
-              ) {
+              if (!entityId && (result as { reference?: unknown }).reference) {
                 const ref = (result as { reference: unknown })
                   .reference as Record<string, unknown>
                 const refType = String(ref?.type).toLowerCase()
@@ -251,7 +251,7 @@ export const ConnectionStream = (props: {
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
-                selectionV2: { entityRef, codeRef },
+                selection: { entityRef, codeRef },
               },
             })
             sceneInfra.modelingSend({ type: 'Enter sketch' })

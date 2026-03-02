@@ -114,7 +114,7 @@ export function useViewControlMenuItems() {
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
-                selectionV2: firstValidSelection,
+                selection: firstValidSelection,
                 scrollIntoView: true,
               },
             })
