@@ -114,12 +114,12 @@ export function getLength(a: [number, number], b: [number, number]): number {
 }
 
 /**
- * Calculates the angle in degrees between two points in a 2D space.
+ * Calculates the angle in degrees between two vectors in 2D.
  * The angle is normalized to the range [-180, 180].
  *
- * @param a The first point as a tuple [x, y].
- * @param b The second point as a tuple [x, y].
- * @returns The normalized angle in degrees between point a and point b.
+ * @param a The first vector as a tuple [x, y].
+ * @param b The second vector as a tuple [x, y].
+ * @returns The normalized angle in degrees between vectors a and b.
  */
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]

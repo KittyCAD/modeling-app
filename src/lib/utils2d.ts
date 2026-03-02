@@ -18,6 +18,21 @@ export function getTangentPointFromPreviousArc(
   ]
 }
 
+// Returns the signed angle between 2 2D vectors in radians.
+// The order of parameter matters:
+// getSignedAngleBetweenVec(a, b) = 2 * PI - getSignedAngleBetweenVec(b, a).
+// The returned value is in the range [-PI, PI].
+//
+// Note: utils/getAngle return the unsigned angle.
+export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
+  // cross = |a||b| sin(theta)
+  // dot = |a||b| cos(theta)
+  // atan2(|a||b| sin(theta), |a||b| cos(theta))
+  // -> atan2(sin(theta), cos(theta))
+  // -> theta
+  return Math.atan2(cross2d(a, b), dot2d(a, b))
+}
+
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {
   return [a[0] + b[0], a[1] + b[1]]
 }

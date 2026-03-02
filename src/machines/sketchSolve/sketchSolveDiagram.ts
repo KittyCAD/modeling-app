@@ -55,10 +55,11 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { dot2d, lengthVec, subVec } from '@src/lib/utils2d'
+import { getSignedAngleBetweenVec, lengthVec, subVec } from '@src/lib/utils2d'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
+// Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
 function calculateCurrentAngleBetweenLines(
   line1: ApiObject,
   line2: ApiObject,
@@ -78,11 +79,10 @@ function calculateCurrentAngleBetweenLines(
     return null
   }
 
-  const dot = dot2d(v1, v2) / (v1Length * v2Length)
-  const clampedDot = Math.max(-1, Math.min(1, dot))
-  const radians = Math.acos(clampedDot)
-  const degrees = (radians * 180) / Math.PI
-  return roundOff(degrees)
+  const angleRad = getSignedAngleBetweenVec(v1, v2)
+  const angleDeg = (angleRad * 180) / Math.PI // [-PI, PI] -> [-180, 180]
+  const normalizedDegrees = ((angleDeg % 360) + 360) % 360 // [-180, 180] -> [0, 360]
+  return roundOff(normalizedDegrees)
 }
 
 async function addAxisDistanceConstraint(
