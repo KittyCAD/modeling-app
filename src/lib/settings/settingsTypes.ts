@@ -9,13 +9,6 @@ import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 
-export type RgbaColor = {
-  r: number
-  g: number
-  b: number
-  a: number
-}
-
 export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
@@ -23,7 +16,12 @@ export interface SettingsViaQueryString {
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
-  backfaceColor: string
+  backfaceColor: {
+    a: number
+    b: number
+    g: number
+    r: number
+  }
 }
 
 export const baseUnits = {
