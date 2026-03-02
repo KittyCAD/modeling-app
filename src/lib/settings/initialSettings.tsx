@@ -480,16 +480,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Use the new sketch mode implementation - solver (Dev only)
        * Visibility is controlled by the 'new_sketch_mode' feature flag.
        * If the feature flag exists, the setting will be visible.
        * Otherwise, it will be hidden.
        */
-      useNewSketchMode: new Setting<boolean>({
+      useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
         hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
         defaultValue: false,
-        description: 'Use the new sketch mode implementation',
+        description:
+          'Default to the experimental solver-based sketch mode for all new sketches.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

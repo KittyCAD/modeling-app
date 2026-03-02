@@ -1,8 +1,11 @@
 import { isDesktop } from '@src/lib/isDesktop'
+import { isMobile } from '@src/lib/isMobile'
 import {
   ActionType,
   AreaType,
   LayoutType,
+  type Action,
+  type PaneChild,
   type Layout,
   type PaneLayout,
 } from '@src/lib/layout/types'
@@ -38,6 +41,131 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   areaType: AreaType.Debug,
 }
 
+const primaryPane: Layout = {
+  id: DefaultLayoutToolbarID.Left,
+  label: 'left-toolbar',
+  type: LayoutType.Panes,
+  side: isMobile() ? 'block-end' : 'inline-start',
+  activeIndices: isDesktop() ? [0, 2] : [0],
+  sizes: isDesktop() ? [50, 50] : [100],
+  splitOrientation: 'block',
+  children: [
+    ...(isMobile()
+      ? [
+          {
+            id: DefaultLayoutPaneID.TTC,
+            label: 'Zookeeper',
+            type: LayoutType.Simple,
+            areaType: AreaType.TTC,
+            icon: 'sparkles',
+          } satisfies PaneChild,
+        ]
+      : []),
+    {
+      id: DefaultLayoutPaneID.FeatureTree,
+      label: 'Feature Tree',
+      type: LayoutType.Simple,
+      icon: 'model',
+      areaType: AreaType.FeatureTree,
+    },
+    {
+      id: DefaultLayoutPaneID.Code,
+      label: 'Code Editor',
+      type: LayoutType.Simple,
+      areaType: AreaType.Code,
+      icon: 'code',
+    },
+    {
+      id: DefaultLayoutPaneID.Files,
+      label: 'Project Files',
+      type: LayoutType.Simple,
+      areaType: AreaType.Files,
+      icon: 'folder',
+    },
+    {
+      id: DefaultLayoutPaneID.Variables,
+      label: 'Variables',
+      type: LayoutType.Simple,
+      areaType: AreaType.Variables,
+      icon: 'make-variable',
+    },
+    {
+      id: DefaultLayoutPaneID.Logs,
+      label: 'Logs',
+      type: LayoutType.Simple,
+      areaType: AreaType.Logs,
+      icon: 'logs',
+    },
+    {
+      id: DefaultLayoutPaneID.Debug,
+      label: 'Debug',
+      icon: 'bug',
+      type: LayoutType.Simple,
+      areaType: AreaType.Debug,
+    },
+  ],
+  actions: [
+    ...(isMobile()
+      ? ([
+          {
+            id: 'open-cmd',
+            label: 'Open command bar',
+            icon: 'command',
+            actionType: ActionType.CommandBar,
+          },
+          {
+            id: 'share',
+            label: 'Create share link',
+            icon: 'link',
+            actionType: ActionType.Share,
+          },
+        ] satisfies Action[])
+      : []),
+    {
+      id: 'add-file-to-project',
+      label: 'Add file to project',
+      icon: 'importFile',
+      actionType: ActionType.AddFile,
+    },
+    {
+      id: 'export',
+      label: 'Export part',
+      icon: 'floppyDiskArrow',
+      actionType: ActionType.Export,
+    },
+    {
+      id: 'make',
+      label: 'Make part',
+      icon: 'printer3d',
+      actionType: ActionType.Make,
+    },
+  ],
+}
+const modelingPane: Layout = {
+  id: 'modeling-scene',
+  label: 'Modeling scene',
+  type: LayoutType.Simple,
+  areaType: AreaType.ModelingScene,
+}
+const secondaryPane: Layout = {
+  id: DefaultLayoutToolbarID.Right,
+  label: DefaultLayoutToolbarID.Right,
+  type: LayoutType.Panes,
+  side: 'inline-end',
+  activeIndices: [0],
+  sizes: [100],
+  splitOrientation: 'block',
+  children: [
+    {
+      id: DefaultLayoutPaneID.TTC,
+      label: 'Zookeeper',
+      type: LayoutType.Simple,
+      areaType: AreaType.TTC,
+      icon: 'sparkles',
+    },
+  ],
+}
+
 /**
  * The default layout has:
  * - a left (in LTR languages) sidebar with:
@@ -52,105 +180,9 @@ export const defaultLayoutConfig: Layout = {
   id: 'default',
   label: 'root',
   type: LayoutType.Splits,
-  orientation: 'inline',
-  sizes: [20, 50, 30],
-  children: [
-    {
-      id: DefaultLayoutToolbarID.Left,
-      label: 'left-toolbar',
-      type: LayoutType.Panes,
-      side: 'inline-start',
-      activeIndices: isDesktop() ? [0, 2] : [0],
-      sizes: isDesktop() ? [50, 50] : [100],
-      splitOrientation: 'block',
-      children: [
-        {
-          id: DefaultLayoutPaneID.FeatureTree,
-          label: 'Feature Tree',
-          type: LayoutType.Simple,
-          icon: 'model',
-          areaType: AreaType.FeatureTree,
-        },
-        {
-          id: DefaultLayoutPaneID.Code,
-          label: 'Code Editor',
-          type: LayoutType.Simple,
-          areaType: AreaType.Code,
-          icon: 'code',
-        },
-        {
-          id: DefaultLayoutPaneID.Files,
-          label: 'Project Files',
-          type: LayoutType.Simple,
-          areaType: AreaType.Files,
-          icon: 'folder',
-        },
-        {
-          id: DefaultLayoutPaneID.Variables,
-          label: 'Variables',
-          type: LayoutType.Simple,
-          areaType: AreaType.Variables,
-          icon: 'make-variable',
-        },
-        {
-          id: DefaultLayoutPaneID.Logs,
-          label: 'Logs',
-          type: LayoutType.Simple,
-          areaType: AreaType.Logs,
-          icon: 'logs',
-        },
-        {
-          id: DefaultLayoutPaneID.Debug,
-          label: 'Debug',
-          icon: 'bug',
-          type: LayoutType.Simple,
-          areaType: AreaType.Debug,
-        },
-      ],
-      actions: [
-        {
-          id: 'add-file-to-project',
-          label: 'Add file to project',
-          icon: 'importFile',
-          actionType: ActionType.AddFile,
-        },
-        {
-          id: 'export',
-          label: 'Export part',
-          icon: 'floppyDiskArrow',
-          actionType: ActionType.Export,
-        },
-        {
-          id: 'make',
-          label: 'Make part',
-          icon: 'printer3d',
-          actionType: ActionType.Make,
-        },
-      ],
-    },
-    {
-      id: 'modeling-scene',
-      label: 'Modeling scene',
-      type: LayoutType.Simple,
-      areaType: AreaType.ModelingScene,
-    },
-    {
-      id: DefaultLayoutToolbarID.Right,
-      label: DefaultLayoutToolbarID.Right,
-      type: LayoutType.Panes,
-      side: 'inline-end',
-      activeIndices: [0],
-      sizes: [100],
-      splitOrientation: 'block',
-      children: [
-        {
-          id: DefaultLayoutPaneID.TTC,
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-          areaType: AreaType.TTC,
-          icon: 'sparkles',
-        },
-      ],
-    },
-  ],
+  orientation: isMobile() ? 'block' : 'inline',
+  sizes: isMobile() ? [50, 50] : [20, 50, 30],
+  children: isMobile()
+    ? [modelingPane, primaryPane]
+    : [primaryPane, modelingPane, secondaryPane],
 }

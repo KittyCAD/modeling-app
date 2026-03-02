@@ -9,15 +9,11 @@ import {
   EngineConnectionEvents,
   isHighlightSetEntity_type,
 } from '@src/network/utils'
-import type RustContext from '@src/lib/rustContext'
-import type { DeepPartial } from '@src/lib/types'
-import type { Configuration } from '@src/lang/wasm'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { uuidv4 } from '@src/lib/utils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Connection } from '@src/network/connection'
 import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
 
@@ -44,22 +40,15 @@ export const createOnEngineOffline = ({
 }
 
 export const createOnEngineConnectionOpened = ({
-  rustContext,
   settings,
-  jsAppSettings,
-  path,
   sendSceneCommand,
   setTheme,
   listenToDarkModeMatcher,
   camControlsCameraChange,
-  sceneInfra,
   connection,
   setStreamIsReady,
 }: {
-  rustContext: RustContext
   settings: SettingsViaQueryString
-  jsAppSettings: DeepPartial<Configuration>
-  path: string
   sendSceneCommand: (
     command: EngineCommand,
     forceWebsocket?: boolean
@@ -67,7 +56,6 @@ export const createOnEngineConnectionOpened = ({
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void
-  sceneInfra: SceneInfra
   connection: Connection
   setStreamIsReady: (isStreamReady: boolean) => void
 }) => {

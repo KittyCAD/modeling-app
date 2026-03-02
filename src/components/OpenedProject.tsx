@@ -61,6 +61,7 @@ import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMe
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useSignals } from '@preact/signals-react/runtime'
+import { isMobile } from '@src/lib/isMobile'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -336,8 +337,12 @@ export function OpenedProject() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
           >
-            <CommandBarOpenButton />
-            <ShareButton />
+            {!isMobile() && (
+              <>
+                <CommandBarOpenButton />
+                <ShareButton />
+              </>
+            )}
           </AppHeader>
         </div>
         <ModalContainer />

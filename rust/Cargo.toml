@@ -24,7 +24,7 @@ dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.13.0"
 kcl-ezpz = "0.2.16"
-kittycad = { version = "0.4.2", default-features = false, features = [
+kittycad = { version = "0.4.7", default-features = false, features = [
   "js",
   "requests",
 ] }
@@ -57,7 +57,7 @@ tracing-subscriber = { version = "0.3.22", features = [
   "json",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "7.1.0", default-features = false }
+zip = { version = "8.1.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"

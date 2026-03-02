@@ -78,7 +78,7 @@
     "web-vitals": "^3.5.2",
     "why-is-node-running": "^3.2.2",
     "xstate": "^5.19.2",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "scripts": {
     "prepare": "husky",

@@ -3728,7 +3728,7 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
     })))
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
     use crate::{
