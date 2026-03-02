@@ -75,12 +75,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           ),
           'data-testid': 'user-settings',
           onClick: () => {
-            if (!filePath) {
-              console.warn('bug: filePath is undefined')
-              return
-            }
-
-            const targetPath = location.pathname.includes(PATHS.FILE)
+            const targetPath = filePath !== undefined
               ? filePath + PATHS.SETTINGS_USER
               : PATHS.HOME + PATHS.SETTINGS_USER
             void navigate(targetPath)

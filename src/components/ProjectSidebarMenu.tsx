@@ -145,12 +145,7 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
-            if (!filePath) {
-              console.warn('bug: filePath is undefined')
-              return
-            }
-
-            const targetPath = location.pathname.includes(PATHS.FILE)
+            const targetPath = filePath !== undefined
               ? filePath + PATHS.SETTINGS_PROJECT
               : PATHS.HOME + PATHS.SETTINGS_PROJECT
             void navigate(targetPath)

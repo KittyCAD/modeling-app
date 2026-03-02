@@ -133,12 +133,7 @@ export function HelpMenu() {
             <HelpMenuItem
               as="button"
               onClick={() => {
-                if (!filePath) {
-                  console.warn('bug: filePath is undefined')
-                  return
-                }
-
-                const targetPath = location.pathname.includes(PATHS.FILE)
+                const targetPath = filePath !== undefined
                   ? filePath + PATHS.SETTINGS_KEYBINDINGS
                   : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
                 void navigate(targetPath)
