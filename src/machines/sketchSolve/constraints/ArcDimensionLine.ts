@@ -26,6 +26,8 @@ import type { Line2 } from 'three/examples/jsm/lines/Line2'
 import type { AngleConstraintData } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
 import type { Coords2d } from '@src/lang/util'
 
+const TWO_PI = Math.PI * 2
+
 export function updateArcDimensionLine(
   angleConstraintData: AngleConstraintData,
   group: Group,
@@ -46,7 +48,19 @@ export function updateArcDimensionLine(
   }
 
   const dot = clamp(dot2d(startDirection, endDirection), -1, 1)
-  const sweep = Math.acos(dot)
+  const minorSweep = Math.acos(dot)
+  const cross = cross2d(startDirection, endDirection)
+  const shortDirectionSign = cross >= 0 ? 1 : -1
+  const constraintSweep = normalizeAngleRadians360(angleToRadians(angleValue))
+  const shouldDrawMajorArc = constraintSweep > Math.PI + 1e-6
+
+  let sweep = minorSweep
+  let directionSign = shortDirectionSign
+  if (shouldDrawMajorArc && minorSweep > 1e-6) {
+    sweep = TWO_PI - minorSweep
+    directionSign = -shortDirectionSign
+  }
+
   if (sweep < 1e-4) {
     group.visible = false
     return
@@ -62,8 +76,6 @@ export function updateArcDimensionLine(
   const showLabel = arcLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
 
   const startAngle = Math.atan2(startDirection[1], startDirection[0])
-  const cross = cross2d(startDirection, endDirection)
-  const directionSign = cross >= 0 ? 1 : -1
 
   const getPointAtOffset = (offset: number) => {
     const angle = startAngle + directionSign * offset
@@ -255,4 +267,12 @@ function tangentForArc(angle: number, directionSign: number) {
 
 function directionToArrowRotation(direction: Vector3) {
   return Math.atan2(direction.y, direction.x) - Math.PI / 2
+}
+
+function angleToRadians(angle: ApiNumber) {
+  return angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
+}
+
+function normalizeAngleRadians360(angle: number) {
+  return ((angle % TWO_PI) + TWO_PI) % TWO_PI
 }
