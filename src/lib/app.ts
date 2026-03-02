@@ -346,8 +346,6 @@ export class App implements AppSubsystems {
     const systemIOActor = createActor(systemIOMachineImpl, {
       input: {
         wasmInstancePromise: this.wasmPromise,
-        kclManager,
-        engineCommandManager: kclManager.engineCommandManager,
         app: this,
       },
     }).start()
