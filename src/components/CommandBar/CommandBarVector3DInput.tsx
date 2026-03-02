@@ -84,8 +84,9 @@ function CommandBarVector3DInput({
   onSubmit: (data: KclCommandValue) => void
 }) {
   const { commands } = useApp()
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const rustContext = kclManager.rustContext
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)

@@ -71,7 +71,8 @@ function CommandBarKclInput({
   onSubmit: (event: unknown) => void
 }) {
   const { commands, settings } = useApp()
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
+  const rustContext = kclManager.rustContext
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[

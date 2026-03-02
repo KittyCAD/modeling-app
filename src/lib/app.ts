@@ -372,8 +372,6 @@ export class App implements AppSubsystems {
     })
 
     return {
-      engineCommandManager: kclManager.engineCommandManager,
-      rustContext: kclManager.rustContext,
       kclManager,
       systemIOActor,
     }
@@ -398,9 +396,9 @@ export class App implements AppSubsystems {
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.engineCommandManager.connection
+      this.singletons.kclManager.engineCommandManager.connection
     ) {
-      this.singletons.engineCommandManager
+      this.singletons.kclManager.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -423,11 +421,10 @@ export class App implements AppSubsystems {
       opposingTheme
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.engineCommandManager.connection) {
-      Promise.all([
-        this.singletons.engineCommandManager.setTheme(newTheme),
-        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
-      ]).catch(reportRejection)
+    if (this.singletons.kclManager.engineCommandManager.connection) {
+      this.singletons.kclManager.engineCommandManager
+        .setTheme(newTheme)
+        .catch(reportRejection)
     }
 
     // Execute AST
@@ -449,7 +446,7 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.engineCommandManager.connection
+        this.singletons.kclManager.engineCommandManager.connection
       ) {
         this.singletons.rustContext
           .clearSceneAndBustCache(

@@ -54,9 +54,9 @@ describe('CommandBarSelectionMixedInput', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+        await boot.app.singletons.kclManager.rustContext.wasmInstancePromise
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        boot.app.singletons.kclManager.engineCommandManager,
         'modelingSend'
       )
       const arg = createArg(true)
@@ -81,9 +81,9 @@ describe('CommandBarSelectionMixedInput', () => {
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+        await boot.app.singletons.kclManager.rustContext.wasmInstancePromise
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        boot.app.singletons.kclManager.engineCommandManager,
         'modelingSend'
       )
 
@@ -105,9 +105,9 @@ describe('CommandBarSelectionMixedInput', () => {
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+        await boot.app.singletons.kclManager.rustContext.wasmInstancePromise
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        boot.app.singletons.kclManager.engineCommandManager,
         'modelingSend'
       )
 
@@ -129,9 +129,9 @@ describe('CommandBarSelectionMixedInput', () => {
     it('should send clear selection command only once on mount', async () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+        await boot.app.singletons.kclManager.rustContext.wasmInstancePromise
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        boot.app.singletons.kclManager.engineCommandManager,
         'modelingSend'
       )
 
@@ -168,9 +168,9 @@ describe('CommandBarSelectionMixedInput', () => {
     it('should set hasClearedSelection state after clearing', async () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+        await boot.app.singletons.kclManager.rustContext.wasmInstancePromise
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        boot.app.singletons.kclManager.engineCommandManager,
         'modelingSend'
       )
 

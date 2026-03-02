@@ -109,7 +109,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const platform = usePlatform()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -242,7 +242,7 @@ function ProjectMenuPopover({
       findCommand,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      engineCommandManager,
+      kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]

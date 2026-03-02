@@ -92,7 +92,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager, rustContext, systemIOActor } = app.singletons
+    const { kclManager, systemIOActor } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person

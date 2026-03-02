@@ -32,7 +32,8 @@ export default function CommandBarSelectionMixedInput({
   wasmInstance: ModuleType
 }) {
   const { commands } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
+  const engineCommandManager = kclManager.engineCommandManager
   const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
