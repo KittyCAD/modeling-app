@@ -123,7 +123,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues: Record<string, UnitLength> = {
         default: 'mm',
@@ -142,7 +142,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([
@@ -208,7 +208,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues = {
         default: 'mm',
@@ -227,7 +227,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([

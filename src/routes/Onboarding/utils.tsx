@@ -20,7 +20,6 @@ import {
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   type OnboardingPath,
   isOnboardingPath,

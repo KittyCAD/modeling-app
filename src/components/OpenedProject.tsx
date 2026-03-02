@@ -261,6 +261,7 @@ export function OpenedProject() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     settingsValues.app.onboardingStatus.current,
     settingsValues.app.theme.current,

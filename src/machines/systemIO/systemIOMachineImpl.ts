@@ -1,4 +1,3 @@
-import type { IElectronAPI } from '@root/interface'
 import fsZds from '@src/lib/fs-zds'
 import {
   createNewProjectDirectory,
@@ -23,7 +22,6 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {

@@ -9,7 +9,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import { PATHS } from '@src/lib/paths'
 import { useApp } from '@src/lib/boot'
-import { generateSignInUrl } from '@src/routes/utils'
 
 /**
  * A simple hook that listens to the auth state of the app and navigates
