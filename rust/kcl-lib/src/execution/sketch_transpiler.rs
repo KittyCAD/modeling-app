@@ -23,6 +23,9 @@ use crate::{
 
 mod intermediate_var;
 mod region;
+mod static_analysis;
+
+pub use static_analysis::transpile as static_transpile;
 
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]

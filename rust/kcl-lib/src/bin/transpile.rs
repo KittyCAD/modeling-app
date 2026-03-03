@@ -6,11 +6,11 @@ use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
 use kcl_lib::{
     ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
     exec::{RetryConfig, execute_with_retries},
-    pre_execute_transpile, transpile_all_old_sketches_to_new,
+    pre_execute_transpile, static_transpile, transpile_all_old_sketches_to_new,
 };
 
 fn print_usage() {
-    eprintln!("Usage: transpile [--no-fail-fast] <filename.kcl>");
+    eprintln!("Usage: transpile [--no-fail-fast] [--static] <filename.kcl>");
 }
 
 #[tokio::main]
@@ -21,6 +21,7 @@ async fn main() -> Result<ExitCode, std::io::Error> {
 
     // Parse arguments.
     let mut fail_fast = true;
+    let mut static_only = false;
     let mut filename = None;
     for arg in args {
         match arg.as_ref() {
@@ -30,6 +31,9 @@ async fn main() -> Result<ExitCode, std::io::Error> {
             }
             "--no-fail-fast" => {
                 fail_fast = false;
+            }
+            "--static" => {
+                static_only = true;
             }
             _ => {
                 if filename.is_some() {
@@ -80,27 +84,35 @@ async fn main() -> Result<ExitCode, std::io::Error> {
         ..Default::default()
     };
 
-    let result = async {
-        pre_execute_transpile(&mut program)?;
-        // Execute.
-        let exec_outcome = execute_with_retries(&RetryConfig::default(), || execute(program.clone(), settings.clone()))
-            .await
-            .map_err(|e| e.error)?;
-        // Transpile.
-        transpile_all_old_sketches_to_new(&exec_outcome, &mut program, fail_fast)
-    }
-    .await;
+    if !static_only {
+        // Transpile dynamically, using execution.
+        let result = async {
+            pre_execute_transpile(&mut program)?;
+            // Execute.
+            let exec_outcome =
+                execute_with_retries(&RetryConfig::default(), || execute(program.clone(), settings.clone()))
+                    .await
+                    .map_err(|e| e.error)?;
+            // Transpile.
+            transpile_all_old_sketches_to_new(&exec_outcome, &mut program, fail_fast)
+        }
+        .await;
 
-    match result {
-        Ok(_) => {}
-        Err(err) => {
+        if let Err(err) = result {
             eprintln!("Execution error: {err:#?}");
+            return Ok(ExitCode::FAILURE);
+        }
+    } else {
+        // Transpile statically, without executing.
+        if let Err(err) = static_transpile(&mut program.ast) {
+            eprintln!("Transpilation error: {err:#?}");
             return Ok(ExitCode::FAILURE);
         }
     }
 
     // Format the new source.
     let new_source = program.recast();
+
     // Output it. In the future, we should support imported files and write them
     // all to an output directory.
     println!("{}", new_source);
