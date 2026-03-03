@@ -19,6 +19,7 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { toUtf16 } from '@src/lang/errors'
 import type {
   Artifact,
   ArtifactGraph,
@@ -646,11 +647,11 @@ function getTagsExprsFromSelection(
 
 // Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
 export function retrieveEdgeSelectionsFromOpArgs(
+  solidArg: OpArg,
   tagsArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code: string
 ) {
-  // TODO: check if we should look up the solid here as well, like in retrieveFaceSelectionsFromOpArgs
-
   const tagValues: OpKclValue[] = []
   if (tagsArg.value.type === 'Array') {
     tagValues.push(...tagsArg.value.value)
@@ -659,6 +660,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
   }
 
   const graphSelections: Selection[] = []
+  const unmatchedEdgeEntityIds: string[] = []
   for (const v of tagValues) {
     if (!(v.type == 'Uuid' && v.value)) {
       console.warn('Face value is not a TagIdentifier', v)
@@ -670,7 +672,11 @@ export function retrieveEdgeSelectionsFromOpArgs(
       artifactGraph
     )
     if (err(artifact)) {
-      console.warn('No artifact found for face tag', v.value)
+      console.warn(
+        'No artifact found for face tag, will try primitive fallback',
+        v.value
+      )
+      unmatchedEdgeEntityIds.push(v.value)
       continue
     }
 
@@ -686,7 +692,56 @@ export function retrieveEdgeSelectionsFromOpArgs(
     })
   }
 
-  return { graphSelections, otherSelections: [] }
+  const primitiveIndices = getPrimitiveEdgeIndicesFromTagsArg(tagsArg, code)
+  // Assumption: solidArg and edgeId's solidArg are the same
+  const parentEntityId =
+    solidArg?.value.type === 'Solid'
+      ? solidArg.value.value.artifactId
+      : undefined
+  const otherSelections: EnginePrimitiveSelection[] = []
+  if (
+    primitiveIndices.length > 0 &&
+    parentEntityId &&
+    unmatchedEdgeEntityIds.length > 0
+  ) {
+    primitiveIndices.forEach((primitiveIndex, i) => {
+      otherSelections.push({
+        type: 'enginePrimitive',
+        entityId: unmatchedEdgeEntityIds[i],
+        parentEntityId,
+        primitiveIndex,
+        primitiveType: 'edge',
+      })
+    })
+  }
+
+  return { graphSelections, otherSelections }
+}
+
+function getPrimitiveEdgeIndicesFromTagsArg(
+  tagsArg: OpArg,
+  code: string
+): number[] {
+  if (tagsArg.sourceRange.length < 2) {
+    return []
+  }
+
+  const start = toUtf16(tagsArg.sourceRange[0], code)
+  const end = toUtf16(tagsArg.sourceRange[1], code)
+  if (start < 0 || end <= start || end > code.length) {
+    return []
+  }
+
+  const tagsSource = code.slice(start, end)
+  const edgeIdPattern = /edgeId\s*\(\s*[\s\S]*?,\s*index\s*=\s*(-?\d+)\s*\)/g
+  const indices: number[] = []
+  for (const match of tagsSource.matchAll(edgeIdPattern)) {
+    const index = Number.parseInt(match[1], 10)
+    if (!Number.isNaN(index)) {
+      indices.push(index)
+    }
+  }
+  return indices
 }
 
 // Delete Edge Treatment
