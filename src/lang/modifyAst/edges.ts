@@ -579,8 +579,8 @@ export function retrieveEdgeSelectionsFromOpArgs(
   const otherSelections: EnginePrimitiveSelection[] = []
   if (
     primitiveIndices.length > 0 &&
-    parentEntityId &&
-    unmatchedEdgeEntityIds.length > 0
+    unmatchedEdgeEntityIds.length === primitiveIndices.length &&
+    parentEntityId
   ) {
     primitiveIndices.forEach((primitiveIndex, i) => {
       otherSelections.push({
