@@ -188,7 +188,6 @@ fn kcl_samples_inputs() -> Vec<Test> {
             // Skip output directories.
             continue;
         }
-        eprintln!("Found KCL sample: {:?}", dir_name.to_string_lossy());
         // Look for the entry point inside the directory.
         let sub_dir = INPUTS_DIR.join(dir_name);
         let main_kcl_path = sub_dir.join("main.kcl");
@@ -222,7 +221,6 @@ fn kcl_samples_outputs() -> Vec<String> {
             continue;
         }
 
-        eprintln!("Found expected KCL sample: {:?}", &dir_name_str);
         outputs.push(dir_name_str.into_owned());
     }
 
@@ -248,11 +246,9 @@ struct KclMetadata {
 // Function to read and parse .kcl files
 fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata> {
     // Find primary kcl file (main.kcl or first sorted file)
-    let primary_kcl_file = files
-        .iter()
-        .find(|file| file.contains("main.kcl"))
-        .unwrap_or_else(|| files.iter().min().unwrap())
-        .clone();
+    let Some(primary_kcl_file) = files.iter().find(|file| file.contains("main.kcl")) else {
+        return None;
+    };
 
     let full_path_to_primary_kcl = project_path.join(&primary_kcl_file);
 
@@ -270,6 +266,10 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 
     // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
+    let log = title == "ISO-10303-21;";
+    if log {
+        eprintln!("Found the case, {:?}", primary_kcl_file);
+    }
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let categories = if let Some(third_line) = lines.get(2)
         && let Some(categories_line) = third_line
@@ -293,7 +293,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     files.sort();
 
     Some(KclMetadata {
-        file: primary_kcl_file,
+        file: primary_kcl_file.to_owned(),
         path_from_project_directory_to_first_file: path_from_project_dir,
         multiple_files: files.len() > 1,
         title,
