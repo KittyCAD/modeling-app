@@ -1,14 +1,14 @@
 ---
 title: "blend"
 subtitle: "Function in std::solid"
-excerpt: "Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface."
+excerpt: "Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to blend full-edge spans."
 layout: manual
 ---
 
-Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
+Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to blend full-edge spans.
 
 ```kcl
-blend(@edges: [BoundedEdge; 2]): Solid
+blend(@edges: [BoundedEdge | Edge; 2]): Solid
 ```
 
 
@@ -17,7 +17,7 @@ blend(@edges: [BoundedEdge; 2]): Solid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge); 2] | The two edges that will be blended. | Yes |
+| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) \| [`Edge`](/docs/kcl-std/types/std-types-Edge); 2] | The two edges that will be blended. Plain `Edge` values blend the full edge length. | Yes |
 
 ### Returns
 
@@ -64,5 +64,4 @@ blend([edge001, edge002])
   touch-action="pan-y"
 >
 </model-viewer>
-
 

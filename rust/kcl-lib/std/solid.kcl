@@ -1556,7 +1556,8 @@ export fn deleteFace(
   faceIndices?: [number(Count); 1+],
 ): Solid {}
 
-/// Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
+/// Blend two surfaces together.
+/// Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to use the full edge span.
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 /// profile001 = startProfile(sketch001, at = [-2, 0])
@@ -1578,5 +1579,6 @@ export fn deleteFace(
 @(impl = std_rust, feature_tree = true)
 export fn blend(
    /// The two edges that will be blended.
-   @edges: [BoundedEdge; 2],
+   /// Plain `Edge` values blend the full edge length.
+   @edges: [BoundedEdge | Edge; 2],
 ): Solid {}
