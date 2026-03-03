@@ -18,6 +18,7 @@ import {
   addFillet,
   deleteEdgeTreatment,
   EdgeTreatmentType,
+  retrieveEdgeSelectionsFromOpArgs,
 } from '@src/lang/modifyAst/edges'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -938,6 +939,84 @@ chamfer001 = chamfer(
       }
 
       expect(result.message).toBe('Blend requires exactly two selected edges.')
+    })
+  })
+
+  describe('Testing retrieveEdgeSelectionsFromOpArgs', () => {
+    it('should retrieve graph and primitive edge selections from mixed tags', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30, tag = $seg02)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(
+  sketch001,
+  length = 30,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+shell001 = shell(extrude001, faces = capEnd001, thickness = 1)
+chamfer001 = chamfer(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [rectangleSegmentA001, capStart001]),
+    getCommonEdge(faces = [seg02, capStart001]),
+    edgeId(extrude001, index = 20),
+    edgeId(extrude001, index = 12)
+  ],
+  length = 1,
+)`
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'chamfer'
+      )
+      if (
+        !op ||
+        op.type !== 'StdLibCall' ||
+        !op.unlabeledArg ||
+        !op.labeledArgs?.tags
+      ) {
+        throw new Error('Chamfer operation not found')
+      }
+
+      const selections = retrieveEdgeSelectionsFromOpArgs(
+        op.unlabeledArg,
+        op.labeledArgs.tags,
+        artifactGraph,
+        code
+      )
+
+      expect(selections.graphSelections).toHaveLength(2)
+      expect(selections.otherSelections).toHaveLength(2)
+
+      for (const graphSelection of selections.graphSelections) {
+        if (!graphSelection.artifact) {
+          throw new Error('Artifact not found in graph selection')
+        }
+        expect(['segment', 'sweepEdge']).toContain(graphSelection.artifact.type)
+      }
+
+      for (const primitiveSelection of selections.otherSelections) {
+        expect(primitiveSelection.type).toEqual('enginePrimitive')
+        expect(primitiveSelection.primitiveType).toEqual('edge')
+        expect(primitiveSelection.entityId).toBeTruthy()
+      }
+      expect(selections.otherSelections.map((s) => s.primitiveIndex)).toEqual([
+        20, 12,
+      ])
+
+      if (op.unlabeledArg.value.type !== 'Solid') {
+        throw new Error('Chamfer unlabeledArg should be a Solid')
+      }
+      for (const s of selections.otherSelections) {
+        expect(s.parentEntityId).toEqual(op.unlabeledArg.value.value.artifactId)
+      }
     })
   })
 
