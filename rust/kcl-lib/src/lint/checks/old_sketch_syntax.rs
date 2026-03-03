@@ -16,7 +16,7 @@ The old sketch syntax using startProfile in a pipe expression can be converted t
 The new syntax is more explicit and easier to understand. For example:
 
 Old: profile001 = startProfile(sketch001, at = [0, 0]) |> line(end = [10, 0]) |> line(end = [10, 10])
-New: profile001 = sketch(on = XY) { line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm]) ... }
+New: profile001 = sketch(on = XY) { line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm]) ... }
 
 Use the transpile function to convert this to the new format.
 ",

@@ -6,7 +6,7 @@ description: Operations executed sketch_block_lines_coincident_collinear.kcl
   "rust/kcl-lib/tests/sketch_block_lines_coincident_collinear/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
