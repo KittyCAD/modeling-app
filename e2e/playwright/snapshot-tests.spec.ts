@@ -26,27 +26,7 @@ test.beforeEach(async ({ page, fs, folderSetupFn }) => {
     })
   })
   const tomlStr = settingsToToml({
-    settings: {
-      modeling: {
-        base_unit: 'in',
-        mouse_controls: 'zoo',
-        camera_projection: 'perspective',
-        gizmo_type: 'axis',
-      },
-      app: {
-        onboarding_status: 'dismissed',
-        show_debug_panel: true,
-        appearance: {
-          theme: 'dark',
-        },
-      },
-      project: {
-        default_project_name: 'untitled',
-      },
-      text_editor: {
-        text_wrapping: true,
-      },
-    },
+    settings: TEST_SETTINGS,
   })
 
   await folderSetupFn(async (dir: string) => {
