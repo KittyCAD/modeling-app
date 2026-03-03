@@ -13,6 +13,8 @@ import { KCL_DEFAULT_LENGTH, SETTINGS_FILE_NAME } from '@src/lib/constants'
 
 const TEST_OVERLAY_TIMEOUT_MS = 1_500 // slightly longer than OVERLAY_TIMEOUT_MS in @src/components/ModelingMachineProvider
 
+let userSettingsPathInThisFile = ''
+
 test.beforeEach(async ({ page, fs, folderSetupFn }) => {
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
@@ -28,6 +30,8 @@ test.beforeEach(async ({ page, fs, folderSetupFn }) => {
       modeling: {
         base_unit: 'in',
         mouse_controls: 'zoo',
+        camera_projection: 'perspective',
+        gizmo_type: 'axis',
       },
       app: {
         onboarding_status: 'dismissed',
@@ -53,8 +57,11 @@ test.beforeEach(async ({ page, fs, folderSetupFn }) => {
       'dev.zoo.modeling-app-local'
     )
     await fs.mkdir(userDir, { recursive: true })
-    const userSettingsPath = await fs.resolve(userDir, SETTINGS_FILE_NAME)
-    await fs.writeFile(userSettingsPath, new TextEncoder().encode(tomlStr))
+    userSettingsPathInThisFile = await fs.resolve(userDir, SETTINGS_FILE_NAME)
+    await fs.writeFile(
+      userSettingsPathInThisFile,
+      new TextEncoder().encode(tomlStr)
+    )
   })
 })
 
@@ -256,13 +263,8 @@ profile001 = startProfile(sketch001, at = [-5, -5])
           await fs.join(projectDir, 'main.kcl'),
           new TextEncoder().encode(code)
         )
-        const tempSettingsFilePath = await fs.resolve(
-          projectDir,
-          '..',
-          SETTINGS_FILE_NAME
-        )
         await fs.writeFile(
-          tempSettingsFilePath,
+          userSettingsPathInThisFile,
           new TextEncoder().encode(tomlStr)
         )
       })
@@ -327,17 +329,18 @@ part002 = startSketchOn(part001, face = seg01)
 
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    await toolbar.startSketchBtn.click()
+    await toolbar.startSketchPlaneSelection()
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
-    // click at 641, 135
-    await page.mouse.click(641, 135)
+    const [clickFace] = scene.makeMouseHelpers(0.4, 0.5, { format: 'ratio' })
+    await clickFace()
     await expect(page.locator('.cm-content')).not.toHaveText(
       previousCodeContent
     )
     previousCodeContent = await page.locator('.cm-content').innerText()
 
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(800)
+    await toolbar.waitUntilSketchingReady()
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
@@ -517,13 +520,8 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
         await fs.join(projectDir, 'main.kcl'),
         new TextEncoder().encode('')
       )
-      const tempSettingsFilePath = await fs.resolve(
-        projectDir,
-        '..',
-        SETTINGS_FILE_NAME
-      )
       await fs.writeFile(
-        tempSettingsFilePath,
+        userSettingsPathInThisFile,
         new TextEncoder().encode(tomlStr)
       )
     })
