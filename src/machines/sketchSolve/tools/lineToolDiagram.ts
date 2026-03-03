@@ -87,7 +87,7 @@ export const machine = setup({
             sketchId, // sketchId from context
             segmentCtor,
             'line-segment', // label
-            await jsAppSettings(rustContext.settingsActor)
+            jsAppSettings(rustContext.settingsActor)
           )
 
           return result
@@ -160,7 +160,7 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            await jsAppSettings(rustContext.settingsActor)
+            jsAppSettings(rustContext.settingsActor)
           )
 
           // After updating the point, create a new line segment chained from it (unless double-click)
@@ -195,7 +195,7 @@ export const machine = setup({
               previousEndPointId, // previous line's end point ID
               newLineCtor,
               'line-segment',
-              await jsAppSettings(rustContext.settingsActor)
+              jsAppSettings(rustContext.settingsActor)
             )
 
             // Extract the new line segment from the chained result
