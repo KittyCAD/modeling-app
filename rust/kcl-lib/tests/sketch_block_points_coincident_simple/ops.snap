@@ -6,7 +6,7 @@ description: Operations executed sketch_block_points_coincident_simple.kcl
   "rust/kcl-lib/tests/sketch_block_points_coincident_simple/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -43,7 +43,7 @@ description: Operations executed sketch_block_points_coincident_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",

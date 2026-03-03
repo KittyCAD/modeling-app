@@ -46,7 +46,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -72,7 +72,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -98,7 +98,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -124,7 +124,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -150,7 +150,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -184,7 +184,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -218,7 +218,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -252,7 +252,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -286,7 +286,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -320,7 +320,7 @@ description: Operations executed sketch_block_on_offset_plane.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
