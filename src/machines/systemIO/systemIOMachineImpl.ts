@@ -765,7 +765,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           } else {
             const targetWithoutBasename = await fsZds.dirname(input.target)
             await fsZds.mkdir(targetWithoutBasename, { recursive: true })
-            await fsZds.cp(input.src, targetWithoutBasename, {
+            await fsZds.cp(input.src, input.target, {
               recursive: true,
             })
           }
