@@ -6,7 +6,7 @@ description: Operations executed sketch_block_coincident_constraint.kcl
   "rust/kcl-lib/tests/sketch_block_coincident_constraint/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
