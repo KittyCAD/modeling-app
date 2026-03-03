@@ -68,7 +68,6 @@ redundant_clone = "warn"
 result_large_err = "allow"
 
 [profile.release]
-panic = "abort"
 debug = true
 
 [profile.bench]
