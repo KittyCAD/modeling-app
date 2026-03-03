@@ -455,7 +455,6 @@ export class App implements AppSubsystems {
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
-        // TODO: might need to also clear scene for backfaceColor here
         this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {
