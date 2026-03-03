@@ -246,11 +246,9 @@ struct KclMetadata {
 // Function to read and parse .kcl files
 fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata> {
     // Find primary kcl file (main.kcl or first sorted file)
-    let Some(primary_kcl_file) = files.iter().find(|file| file.contains("main.kcl")) else {
-        return None;
-    };
+    let primary_kcl_file = files.iter().find(|file| file.contains("main.kcl"))?;
 
-    let full_path_to_primary_kcl = project_path.join(&primary_kcl_file);
+    let full_path_to_primary_kcl = project_path.join(primary_kcl_file);
 
     // Read the file content
     let content = match fs::read_to_string(&full_path_to_primary_kcl) {
@@ -319,7 +317,7 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
 
         if path.is_dir() {
             // Get all .kcl files in the directory
-            let files: Vec<String> = walkdir::WalkDir::new(path)
+            let files: Vec<String> = WalkDir::new(path)
                 .into_iter()
                 .filter_map(Result::ok)
                 .filter(|e| {
