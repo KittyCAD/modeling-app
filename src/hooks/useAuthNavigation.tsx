@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { generateSignInUrl } from '@src/routes/utils'
 import {
   ALLOW_MOBILE_QUERY_PARAM,
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
@@ -39,7 +40,7 @@ export function useAuthNavigation() {
       !location.pathname.includes(PATHS.SIGN_IN)
     ) {
       if (requestingImmediateSignInIfNecessary && !isDesktop()) {
-        //  window.location.href = generateSignInUrl()
+        window.location.href = generateSignInUrl()
         return
       }
 
@@ -50,7 +51,7 @@ export function useAuthNavigation() {
       !isDesktop() &&
       (!onMobile || hasAllowMobileParam)
     ) {
-      // window.location.href = generateSignInUrl()
+      window.location.href = generateSignInUrl()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])

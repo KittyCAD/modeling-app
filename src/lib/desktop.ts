@@ -924,8 +924,6 @@ export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
-  console.log('writing env file path')
-  console.log(environmentFilePath)
   const result = await fsZds.writeFile(
     environmentFilePath,
     new TextEncoder().encode(environment)

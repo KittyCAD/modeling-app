@@ -356,9 +356,8 @@ async function waitForAuthAndLsp(page: Page) {
     timeout: 45_000,
   })
   await page.goto('/')
-  // This used to wait for "Sketch Start" but is no longer relevant since
-  // the web app now starts on the projects view
-  // await waitForPageLoad(page)
+
+  await waitForPageLoad(page)
   return waitForLspPromise
 }
 

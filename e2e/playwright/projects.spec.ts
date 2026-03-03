@@ -48,6 +48,13 @@ test(
 
     externalCreatedProjectName += '1'
     await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fs.rm(path.join(targetDir, externalCreatedProjectName), {
+      recursive: true,
+      force: true,
+    })
+
+    await expect(projectLinks).toHaveCount(0)
   }
 )
 
