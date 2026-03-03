@@ -1,4 +1,5 @@
 import { Dialog } from '@headlessui/react'
+import { useEffect } from 'react'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { platform } from '@src/lib/utils'
@@ -15,6 +16,22 @@ export function DeleteConfirmationDialog({
   onDismiss,
   children,
 }: DeleteConfirmationDialogProps) {
+
+  useEffect(() => {
+    const onWindowKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        onDismiss()
+      }
+    }
+
+    window.addEventListener('keydown', onWindowKeyDown)
+    return () => {
+      window.removeEventListener('keydown', onWindowKeyDown)
+    }
+  }, [onDismiss])
+
   const cancelButton = (
     <ActionButton key="cancel" Element="button" onClick={onDismiss}>
       Cancel
