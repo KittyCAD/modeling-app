@@ -376,10 +376,22 @@ const cp = async (
 
   if (handleSource instanceof FileSystemFileHandle) {
     const data = await readFile(sourcePath)
+
+    const statRes = await stat(targetPath)
+    const isTargetPathEndWithDirectory = Boolean(
+      statRes.mode & fsZdsConstants.S_IFDIR
+    )
+
+    // If we're trying to move a file to a directory with the same name, the
+    // target will be missing its name. ex: mv ok/path/yes.kcl other/place/
+    const finalPath = isTargetPathEndWithDirectory
+      ? path.resolve(targetPath, path.basename(sourcePath))
+      : targetPath
+
     if (typeof data === 'string') {
-      await writeFile(targetPath, new TextEncoder().encode(data))
+      await writeFile(finalPath, new TextEncoder().encode(data))
     } else {
-      await writeFile(targetPath, Uint8Array.from(data))
+      await writeFile(finalPath, Uint8Array.from(data))
     }
   } else {
     await scan(sourcePath, async (cwd, handle) => {

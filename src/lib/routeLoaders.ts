@@ -44,6 +44,11 @@ export const baseLoader =
       return redirect(PATHS.HOME + (url.search || ''))
     }
 
+    // Let another part of the system handle the "open with web/desktop"...
+    if (url.searchParams.has('ask-open-desktop')) {
+      return
+    }
+
     // Web, make a default project and redirect to it.
     const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
     const defaultProjectName = 'demo-project'

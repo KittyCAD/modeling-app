@@ -1,4 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   createNewProjectDirectory,
   getAppSettingsFilePath,
@@ -755,8 +756,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           // really used in our archive/restore workflow. We should make
           // dedicated archive/restore code paths for that if we need cases
           // where we want to check with the user before going through with forcing.
-          await fsZds.mkdir(fsZds.dirname(input.target), { recursive: true })
-          await fsZds.cp(input.src, input.target, { recursive: true })
+          const statRes = await fsZds.stat(input.src)
+          const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
+
+          if (isDirectory) {
+            await fsZds.mkdir(input.target, { recursive: true })
+            await fsZds.cp(input.src, input.target, { recursive: true })
+          } else {
+            const targetWithoutBasename = await fsZds.dirname(input.target)
+            await fsZds.mkdir(targetWithoutBasename, { recursive: true })
+            await fsZds.cp(input.src, targetWithoutBasename, {
+              recursive: true,
+            })
+          }
           await fsZds.rm(input.src, { recursive: true })
         } catch (e: unknown) {
           console.log(e)

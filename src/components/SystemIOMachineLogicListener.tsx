@@ -104,7 +104,10 @@ export function SystemIOMachineLogicListener() {
     }
 
     kclManager.isExecuting = false
-    void navigate(requestedPath)
+
+    const url = new URL(location.href)
+    url.searchParams.delete('ask-open-desktop')
+    void navigate(requestedPath + '?' + url.searchParams.toString())
   }
 
   /**
