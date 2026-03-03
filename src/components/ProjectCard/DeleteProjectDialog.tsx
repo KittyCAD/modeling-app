@@ -16,7 +16,6 @@ export function DeleteConfirmationDialog({
   onDismiss,
   children,
 }: DeleteConfirmationDialogProps) {
-
   useEffect(() => {
     const onWindowKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
