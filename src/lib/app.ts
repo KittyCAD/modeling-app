@@ -414,6 +414,7 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const newBackfaceColor = context.modeling.backfaceColor.current
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.singletons.kclManager.sceneInfra.theme = opposingTheme
@@ -422,9 +423,10 @@ export class App implements AppSubsystems {
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.engineCommandManager.connection) {
-      this.singletons.engineCommandManager
-        .setTheme(newTheme)
-        .catch(reportRejection)
+      Promise.all([
+        this.singletons.engineCommandManager.setTheme(newTheme),
+        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
+      ]).catch(reportRejection)
     }
 
     // Execute AST
@@ -433,8 +435,10 @@ export class App implements AppSubsystems {
         const hasScaleGrid =
           s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s.modeling?.highlightEdges !== context.modeling.highlightEdges.current
-        return hasScaleGrid || hasHighlightEdges
+          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
+        const hasBackfaceColor =
+          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
+        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
@@ -446,6 +450,7 @@ export class App implements AppSubsystems {
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
+        // TODO: might need to also clear scene for backfaceColor here
         this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {

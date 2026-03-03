@@ -283,7 +283,7 @@ fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -
     (rounded, units).into()
 }
 
-/// Create an AST node for a line call (sketch2::line)
+/// Create an AST node for a line call
 /// Uses shared helper from frontend.rs
 fn create_line_ast_from_coords(
     start_x: f64,
@@ -325,7 +325,7 @@ fn create_line_ast_from_coords(
 // Helper functions below use shared AST creation functions from frontend.rs
 // to ensure consistency between transpiler and frontend code generation.
 
-/// Create an AST node for sketch2::coincident([line1.end, line2.start])
+/// Create an AST node for coincident([line1.end, line2.start])
 fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
@@ -334,19 +334,19 @@ fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::
     create_coincident_ast(line1_end, line2_start)
 }
 
-/// Create an AST node for sketch2::horizontal(line)
+/// Create an AST node for horizontal(line)
 fn create_horizontal_ast_from_name(line_name: &str) -> ast::Expr {
     let line_expr = ast_name_expr(line_name.to_string());
     create_horizontal_ast(line_expr)
 }
 
-/// Create an AST node for sketch2::vertical(line)
+/// Create an AST node for vertical(line)
 fn create_vertical_ast_from_name(line_name: &str) -> ast::Expr {
     let line_expr = ast_name_expr(line_name.to_string());
     create_vertical_ast(line_expr)
 }
 
-/// Create an AST node for sketch2::equalLength([line1, line2])
+/// Create an AST node for equalLength([line1, line2])
 fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
