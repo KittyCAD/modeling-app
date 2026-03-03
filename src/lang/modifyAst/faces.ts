@@ -822,25 +822,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     }
   }
 
-  if (parentArtifact.type === 'solid2d') {
-    const path = getArtifactOfTypes(
-      { key: parentArtifact.pathId, types: ['path'] },
-      artifactGraph
-    )
-    if (!err(path) && path.sweepId) {
-      const parentSweep = getArtifactOfTypes(
-        { key: path.sweepId, types: ['sweep'] },
-        artifactGraph
-      )
-      if (!err(parentSweep)) {
-        return {
-          artifact: parentSweep as Artifact,
-          codeRef: parentSweep.codeRef,
-        }
-      }
-    }
-  }
-
   if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
     const parentSweep = getArtifactOfTypes(
       { key: parentArtifact.sweepId, types: ['sweep'] },
