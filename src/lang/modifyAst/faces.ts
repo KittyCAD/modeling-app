@@ -154,7 +154,8 @@ export function addDeleteFace({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup: true,
+      // Just like shell we need to keep this to false at least for now
+      lastChildLookup: false,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
       includePrimitiveFaceIndices: true,
     }

@@ -8,7 +8,7 @@ import {
   enginelessExecutor,
   getAstAndArtifactGraph,
   getCapFromCylinder,
-  getFacesFromBox,
+  getWalls,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -34,6 +34,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
+import { bracket } from '@src/lib/exampleKcl'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -298,7 +299,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getFacesFromBox(artifactGraph, 2)
+      const faces = getWalls(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '1',
         rustContextInThisFile
@@ -327,7 +328,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getFacesFromBox(artifactGraph, 2)
+      const faces = getWalls(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '2',
         rustContextInThisFile
@@ -470,6 +471,30 @@ surface001 = deleteFace(extrude001, faces = capEnd001)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call on the bracket without resolving to holes', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        bracket,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getWalls(artifactGraph, 1, 2)
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${bracket}surface001 = deleteFace(bracketBody, faces = seg03)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -485,7 +510,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const wall = getFacesFromBox(artifactGraph, 1).graphSelections[0]
+      const wall = getWalls(artifactGraph, 1).graphSelections[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const innerFace: NonCodeSelection = {
         entityId: 'irrelevant-for-this-test',
@@ -1277,7 +1302,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 3)`)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const plane = getFacesFromBox(artifactGraph, 1)
+      const plane = getWalls(artifactGraph, 1)
       const offset = (await stringToKclExpression(
         '10',
         rustContextInThisFile
