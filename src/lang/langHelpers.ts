@@ -75,7 +75,7 @@ export async function executeAst({
   path?: string
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings(rustContext.settingsActor)
+    const settings = jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.execute(ast, settings, path)
     await rustContext.waitForAllEngineCommands()
     return {
@@ -101,7 +101,7 @@ export async function executeAstMock({
   usePrevMemory?: boolean
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings(rustContext.settingsActor)
+    const settings = jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.executeMock(
       ast,
       settings,
@@ -191,7 +191,7 @@ export async function lintAst({
     let shouldShowZ0005 = false
     if (rustContext) {
       try {
-        const settings = await jsAppSettings(rustContext.settingsActor)
+        const settings = jsAppSettings(rustContext.settingsActor)
         shouldShowZ0005 =
           settings?.settings?.modeling?.use_sketch_solve_mode === true
       } catch {
@@ -267,7 +267,7 @@ export async function lintAst({
               ReturnType<typeof rustContext.createNewContext>
             > | null = null
             try {
-              const settings = await jsAppSettings(rustContext.settingsActor)
+              const settings = jsAppSettings(rustContext.settingsActor)
 
               ctx = await rustContext.createNewContext()
 
