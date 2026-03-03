@@ -29,6 +29,7 @@ import {
 } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -874,19 +875,24 @@ chamfer001 = chamfer(
         expect(['segment', 'sweepEdge']).toContain(graphSelection.artifact.type)
       }
 
-      for (const primitiveSelection of selections.otherSelections) {
-        expect(primitiveSelection.type).toEqual('enginePrimitive')
-        expect(primitiveSelection.primitiveType).toEqual('edge')
-        expect(primitiveSelection.entityId).toBeTruthy()
+      const expectedIds = [20, 12]
+      for (const [index, s] of selections.otherSelections.entries()) {
+        if (!isEnginePrimitiveSelection(s)) {
+          throw new Error('Selection not primitive engine')
+        }
+        expect(s.type).toEqual('enginePrimitive')
+        expect(s.primitiveType).toEqual('edge')
+        expect(s.entityId).toBeTruthy()
+        expect(s.primitiveIndex).toEqual(expectedIds[index])
       }
-      expect(selections.otherSelections.map((s) => s.primitiveIndex)).toEqual([
-        20, 12,
-      ])
 
       if (op.unlabeledArg.value.type !== 'Solid') {
         throw new Error('Chamfer unlabeledArg should be a Solid')
       }
       for (const s of selections.otherSelections) {
+        if (!isEnginePrimitiveSelection(s)) {
+          throw new Error('Selection not primitive engine')
+        }
         expect(s.parentEntityId).toEqual(op.unlabeledArg.value.value.artifactId)
       }
     })

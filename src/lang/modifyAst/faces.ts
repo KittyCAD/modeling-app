@@ -803,7 +803,7 @@ function getSolidSelectionsFromFaceSelections(
   }
 }
 
-function getBodySelectionFromPrimitiveParentEntityId(
+export function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph
 ): Selection | null {
@@ -819,6 +819,25 @@ function getBodySelectionFromPrimitiveParentEntityId(
     return {
       artifact: parentArtifact,
       codeRef: parentArtifact.codeRef,
+    }
+  }
+
+  if (parentArtifact.type === 'solid2d') {
+    const path = getArtifactOfTypes(
+      { key: parentArtifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (!err(path) && path.sweepId) {
+      const parentSweep = getArtifactOfTypes(
+        { key: path.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+      if (!err(parentSweep)) {
+        return {
+          artifact: parentSweep as Artifact,
+          codeRef: parentSweep.codeRef,
+        }
+      }
     }
   }
 
