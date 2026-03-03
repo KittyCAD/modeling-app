@@ -7,7 +7,7 @@ KCL Engine error
   × engine: No such region exists at that intersection index
     ╭─[14:5]
  13 │ 
- 14 │ r = sketch2::region(segments = [s.line1, s.line2])
-    ·     ───────────────────────┬──────────────────────
-    ·                            ╰── tests/sketch_block_region_triangle/input.kcl
+ 14 │ r = region(segments = [s.line1, s.line2])
+    ·     ──────────────────┬──────────────────
+    ·                       ╰── tests/sketch_block_region_triangle/input.kcl
     ╰────

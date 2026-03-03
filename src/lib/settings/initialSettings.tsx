@@ -12,6 +12,7 @@ import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
@@ -30,6 +31,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
+import { hexToRgba } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -131,6 +133,8 @@ export class Setting<T = unknown> {
   }
 }
 
+const MS_IN_MINUTE = 1000 * 60
+const COLOR_INPUT_DEBOUNCE_MS = 500
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
 type CachedFeaturesData = Extract<
@@ -215,8 +219,6 @@ function hideWithoutFeatureFlag(
     }
   }
 }
-
-const MS_IN_MINUTE = 60 * 1_000
 
 export function createSettings() {
   const settings = {
@@ -405,6 +407,43 @@ export function createSettings() {
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
+      }),
+      backfaceColor: new Setting<string>({
+        defaultValue: DEFAULT_BACKFACE_COLOR,
+        description: 'Default backface color for surfaces',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.backfaceColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
       }),
       /**
        * The controls for how to navigate the 3D view
