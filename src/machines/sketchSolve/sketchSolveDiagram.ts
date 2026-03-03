@@ -147,7 +147,7 @@ async function addAxisDistanceConstraint(
         is_literal: true,
       },
     },
-    await jsAppSettings(context.kclManager.systemDeps.settings)
+    jsAppSettings(context.kclManager.systemDeps.settings)
   )
   if (result) {
     self.send({
@@ -322,7 +322,7 @@ export const sketchSolveMachine = setup({
             type: 'Coincident',
             segments: context.selectedIds,
           },
-          await jsAppSettings(context.kclManager.systemDeps.settings)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -454,7 +454,7 @@ export const sketchSolveMachine = setup({
                   is_literal: true,
                 },
               },
-              await jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings)
             )
             if (result) {
               self.send({
@@ -516,7 +516,7 @@ export const sketchSolveMachine = setup({
               is_literal: true,
             },
           },
-          await jsAppSettings(context.kclManager.systemDeps.settings)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -559,7 +559,7 @@ export const sketchSolveMachine = setup({
             type: 'Parallel',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.kclManager.systemDeps.settings)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -582,7 +582,7 @@ export const sketchSolveMachine = setup({
             type: 'Perpendicular',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.kclManager.systemDeps.settings)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -605,7 +605,7 @@ export const sketchSolveMachine = setup({
             type: 'LinesEqualLength',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.kclManager.systemDeps.settings)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -630,7 +630,7 @@ export const sketchSolveMachine = setup({
               type: 'Vertical',
               line: id,
             },
-            await jsAppSettings(context.kclManager.systemDeps.settings)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
         if (result) {
@@ -656,7 +656,7 @@ export const sketchSolveMachine = setup({
               type: 'Horizontal',
               line: id,
             },
-            await jsAppSettings(context.kclManager.systemDeps.settings)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
         if (result) {
@@ -746,7 +746,7 @@ export const sketchSolveMachine = setup({
             0,
             context.sketchId,
             segmentsToEdit,
-            await jsAppSettings(context.kclManager.systemDeps.settings)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
           .catch((err) => {
             console.error('failed to toggle construction geometry', err)
@@ -799,7 +799,7 @@ export const sketchSolveMachine = setup({
             context.sketchId,
             constraintIds,
             segmentIds,
-            await jsAppSettings(context.kclManager.systemDeps.settings)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
           .catch((err) => {
             console.error('failed to delete objects', err)

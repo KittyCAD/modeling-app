@@ -3630,7 +3630,7 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
 
 // Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
 
-/// Create an AST node for sketch2::coincident([expr1, expr2])
+/// Create an AST node for coincident([expr1, expr2])
 pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::Expr {
     // Create array [expr1, expr2]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -3639,7 +3639,7 @@ pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::
         non_code_meta: Default::default(),
     })));
 
-    // Create sketch2::coincident([...])
+    // Create coincident([...])
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
@@ -3649,7 +3649,7 @@ pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::
     })))
 }
 
-/// Create an AST node for sketch2::line(start = [...], end = [...])
+/// Create an AST node for line(start = [...], end = [...])
 pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
@@ -3669,7 +3669,7 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
     })))
 }
 
-/// Create an AST node for sketch2::horizontal(line)
+/// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
@@ -3680,7 +3680,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     })))
 }
 
-/// Create an AST node for sketch2::vertical(line)
+/// Create an AST node for vertical(line)
 pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
@@ -3709,7 +3709,7 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create an AST node for sketch2::equalLength([line1, line2])
+/// Create an AST node for equalLength([line1, line2])
 pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Expr) -> ast::Expr {
     // Create array [line1, line2]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -3718,7 +3718,7 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
         non_code_meta: Default::default(),
     })));
 
-    // Create sketch2::equalLength([...])
+    // Create equalLength([...])
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
         unlabeled: Some(array_expr),
@@ -6141,8 +6141,8 @@ sketch(on = plane) {
 
 width = 2mm
 sketch(on = offsetPlane(XY, offset = width)) {
-  line1 = sketch2::line(start = [var 0, var 0], end = [var 1mm, var 0])
-  sketch2::distance([line1.start, line1.end]) == width
+  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])
+  distance([line1.start, line1.end]) == width
 }
 ";
         let program = Program::parse(initial_source).unwrap().0.unwrap();

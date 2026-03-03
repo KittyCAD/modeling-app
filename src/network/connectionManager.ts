@@ -155,8 +155,6 @@ export class ConnectionManager extends EventTarget {
     this._camControlsCameraChange = cb
   }
 
-  // I guess this in the entry point
-  // Don't initialize a different set of default settings, what is the point!
   async start({
     width,
     height,
@@ -165,7 +163,6 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection,
     rustContext,
   }: {
-    settings?: SettingsViaQueryString
     width: number
     height: number
     token: string

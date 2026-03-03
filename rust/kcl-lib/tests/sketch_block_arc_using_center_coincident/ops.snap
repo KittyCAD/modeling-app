@@ -6,7 +6,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
   "rust/kcl-lib/tests/sketch_block_arc_using_center_coincident/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -43,7 +43,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -72,7 +72,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -101,7 +101,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -138,7 +138,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -175,7 +175,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -212,7 +212,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -249,7 +249,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -286,7 +286,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
