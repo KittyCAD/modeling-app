@@ -42,7 +42,7 @@ export function createOnAreaSelectEndCallback({
       }
 
       // Use Rust WASM execute_trim which runs the full loop internally
-      const settings = await jsAppSettings(rustContext.settingsActor)
+      const settings = jsAppSettings(rustContext.settingsActor)
       // console.log(JSON.stringify(points))
 
       const result = await rustContext.executeTrim(

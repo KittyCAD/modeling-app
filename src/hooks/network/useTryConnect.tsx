@@ -127,7 +127,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   rustContext: RustContext
 }) => {
   const providedSettings = getSettingsFromActorContext(settingsActor)
-  const settings = await jsAppSettings(providedSettings)
+  const settings = jsAppSettings(providedSettings)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'rustContext.clearSceneAndBustCache()',

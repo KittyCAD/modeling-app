@@ -695,7 +695,7 @@ export class KclManager extends EventTarget {
           await this.executeCode(newCode)
           const setProgramOutcome = await this.rustContext.hackSetProgram(
             this.ast,
-            await jsAppSettings(this.systemDeps.settings)
+            jsAppSettings(this.systemDeps.settings)
           )
 
           if (setProgramOutcome.type === 'Success') {
@@ -847,7 +847,7 @@ export class KclManager extends EventTarget {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(this.systemDeps.settings),
+        jsAppSettings(this.systemDeps.settings),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {

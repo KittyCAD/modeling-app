@@ -660,7 +660,7 @@ export function getSettingsFromActorContext(
   return settings
 }
 
-export async function jsAppSettings(s: SettingsType | SettingsActorType) {
+export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
   return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }
