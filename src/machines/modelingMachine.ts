@@ -15,6 +15,7 @@ import type {
   PlaneVisibilityMap,
   ModelingMachineContext,
   ModelingMachineInput,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 
@@ -106,7 +107,12 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addOffsetPlane,
+  addShell,
+  addHole,
+} from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -171,13 +177,13 @@ import {
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  isEnginePrimitiveSelection,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -198,6 +204,7 @@ import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
+import { toPlaneName } from '@src/lib/planes'
 
 export type ModelingMachineEvent =
   | {
@@ -205,6 +212,7 @@ export type ModelingMachineEvent =
       data?: {
         forceNewSketch?: boolean
         keepDefaultPlaneVisibility?: boolean
+        forceSketchSolveMode?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -284,6 +292,7 @@ export type ModelingMachineEvent =
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
+  | { type: 'Delete Face'; data?: ModelingCommandSchema['Delete Face'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
@@ -441,8 +450,8 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineInput,
   },
   guards: {
-    'should use new sketch mode': ({ context }) => {
-      return context.store.useNewSketchMode?.current === true
+    'should use sketch solve mode': ({ context }) => {
+      return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
       context: { selectionRanges },
@@ -1225,6 +1234,14 @@ export const modelingMachine = setup({
       void context.kclManager.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
+    'force sketch solve mode': assign(({ event }) => {
+      if (event.type !== 'Enter sketch' || !event.data?.forceSketchSolveMode)
+        return {}
+      return { forceSketchSolveMode: true }
+    }),
+    'reset default sketch mode': assign({
+      forceSketchSolveMode: undefined,
+    }),
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool, sceneEntitiesManager, sceneInfra },
     }) => {
@@ -1573,6 +1590,55 @@ export const modelingMachine = setup({
           }
         }
 
+        if (setSelections.selectionType === 'enginePrimitiveSelection') {
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            (selection) =>
+              isEnginePrimitiveSelection(selection) &&
+              selection.entityId === setSelections.selection.entityId
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) =>
+                    !(
+                      isEnginePrimitiveSelection(selection) &&
+                      selection.entityId === setSelections.selection.entityId
+                    )
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          const selections: Selections = {
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
+            otherSelections,
+          }
+          const { engineEvents } = handleSelectionBatch({
+            selections,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager,
+              wasmInstance,
+            },
+          })
+
+          // If there are engine commands that need sent off, send them
+          // TODO: This should be handled outside of an action as its own
+          // actor, so that the system state is more controlled.
+          engineEvents?.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
+          })
+
+          return {
+            selectionRanges: selections,
+          }
+        }
+
         if (
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
@@ -1754,7 +1820,7 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      context.kclManager.systemDeps.engineCommandManager
+      context.kclManager.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 
@@ -3026,15 +3092,15 @@ export const modelingMachine = setup({
             // Determine the plane type from the result
             if (result.type === 'defaultPlane') {
               sketchArgs = {
-                on: result.plane,
+                on: { default: toPlaneName(result.plane) },
               }
             } else {
-              sketchArgs = { on: 'XY' }
+              sketchArgs = { on: { default: 'xy' } }
             }
 
             await rustContext.hackSetProgram(
               kclManager.ast,
-              await jsAppSettings(rustContext.settingsActor)
+              jsAppSettings(rustContext.settingsActor)
             )
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
@@ -3155,7 +3221,7 @@ export const modelingMachine = setup({
           } else {
             await rustContext.hackSetProgram(
               kclManager.ast,
-              await jsAppSettings(rustContext.settingsActor)
+              jsAppSettings(rustContext.settingsActor)
             )
             editSketchSceneGraph = await rustContext.editSketch(
               0, // projectId
@@ -4249,6 +4315,46 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    deleteFaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Delete Face'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const astResult = addDeleteFace({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -5371,6 +5477,7 @@ export const modelingMachine = setup({
               ({ context }) => {
                 context.sceneInfra.animate()
               },
+              'force sketch solve mode',
             ],
           },
         ],
@@ -5407,6 +5514,10 @@ export const modelingMachine = setup({
 
         Hole: {
           target: 'Applying hole',
+        },
+
+        'Delete Face': {
+          target: 'Applying delete face',
         },
 
         Fillet: {
@@ -6964,7 +7075,11 @@ export const modelingMachine = setup({
         'enter sketching mode',
       ],
 
-      exit: ['hide default planes', 'set selection filter to defaults'],
+      exit: [
+        'hide default planes',
+        'set selection filter to defaults',
+        'reset default sketch mode',
+      ],
       on: {
         'Select sketch plane': {
           target: 'animating to plane',
@@ -7257,6 +7372,26 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Shell') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying delete face': {
+      invoke: {
+        src: 'deleteFaceAstMod',
+        id: 'deleteFaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Delete Face') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

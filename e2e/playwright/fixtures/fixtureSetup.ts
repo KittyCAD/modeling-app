@@ -428,12 +428,6 @@ const fixturesBasedOnProcessEnvPlatform = {
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
       await use() // <-- runs the actual test
 
-      // <-- this runs *after every test* in the entire suite
-      if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
-        // NO OP
-        return
-      }
-
       const engineLogs: ILog[] = await page.evaluate(
         () => window.engineDebugger.logs || []
       )

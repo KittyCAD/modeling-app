@@ -3,6 +3,7 @@ import type { AsyncFn } from '@src/lib/types'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { RgbaColor } from '@src/lib/settings/settingsTypes'
 
 export const uuidv4 = v4
 
@@ -734,4 +735,31 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
     !isArray(value) &&
     Object.getPrototypeOf(value) === Object.prototype
   )
+}
+
+export function hexToRgba(hex: string): RgbaColor | null {
+  const normalized = hex.replace('#', '').trim()
+  const expanded =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((char) => char + char)
+          .join('')
+      : normalized
+
+  if (!/^[0-9a-fA-F]{6}$/.test(expanded)) {
+    return null
+  }
+
+  const raw = parseInt(expanded, 16)
+  const r = (raw >> 16) & 0xff
+  const g = (raw >> 8) & 0xff
+  const b = raw & 0xff
+
+  return {
+    r: r / 255,
+    g: g / 255,
+    b: b / 255,
+    a: 1,
+  }
 }

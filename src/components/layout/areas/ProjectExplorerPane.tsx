@@ -1,7 +1,6 @@
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import type { IndexLoaderData } from '@src/lib/types'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
@@ -9,7 +8,6 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import {
-  PATHS,
   getEXTNoPeriod,
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
@@ -20,24 +18,22 @@ import {
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useRef, useState, useEffect, use } from 'react'
+import { useState, use, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-import { useRouteLoaderData } from 'react-router-dom'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands } = useApp()
+  const { commands, project } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const projectRef = useRef(loaderData.project)
+  const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
-  const { project, file } = loaderData
+  const file = project?.executingFileEntry.value
   const {
     state: modelingMachineState,
     send: modelingSend,
@@ -45,8 +41,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   } = useModelingContext()
 
   useEffect(() => {
-    projectRef.current = loaderData?.project
-
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
     if (!project || !file) {
@@ -61,20 +55,19 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     }
 
     // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const theProject = projects.find((p: Project) => {
-      return p.name === project.name
+    const foundProject = projects.find((p) => {
+      return p.name === project?.name
     })
 
-    if (!theProject) {
+    if (!foundProject) {
       return
     }
 
     // Duplicate the state to not edit the raw data
-    const duplicated = JSON.parse(JSON.stringify(theProject))
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
+    const duplicated = structuredClone(foundProject)
+    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, loaderData])
+  }, [file, projects, project, systemIOActor])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -98,11 +91,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
     // Only open the file if it is a kcl file.
     if (
-      projectRef.current?.name &&
+      projectRef.current?.value.name &&
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
-      const name = projectRef.current.name.slice()
+      const name = projectRef.current.value.name.slice()
 
       const navigateHelper = () => {
         systemIOActor.send({
@@ -134,14 +127,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     } else if (
       window.electron &&
       isRelevantFile(entry.path) &&
-      projectRef.current?.path
+      projectRef.current?.value.path
     ) {
       // Allow insert if it is a importable file
       toast.custom(
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + fsZds.sep,
+              projectRef.current?.value.path + fsZds.sep,
               ''
             )
             commands.send({

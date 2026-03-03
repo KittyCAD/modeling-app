@@ -73,9 +73,11 @@ export function configurationToSettingsPayload(
       gizmoType: configuration?.settings?.modeling?.gizmo_type,
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
-      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
+      useSketchSolveMode:
+        configuration?.settings?.modeling?.use_sketch_solve_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      backfaceColor: configuration?.settings?.modeling?.backface_color,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
       fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
@@ -121,9 +123,10 @@ export function settingsPayloadToConfiguration(
           : undefined,
         gizmo_type: configuration?.modeling?.gizmoType,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
+        use_sketch_solve_mode: configuration?.modeling?.useSketchSolveMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
+        backface_color: configuration?.modeling?.backfaceColor,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
         fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,
@@ -772,7 +775,7 @@ export function getSettingsFromActorContext(
   return settings
 }
 
-export async function jsAppSettings(s: SettingsType | SettingsActorType) {
+export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
   return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }

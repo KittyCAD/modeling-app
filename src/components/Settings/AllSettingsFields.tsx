@@ -29,7 +29,6 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import { AppMachineEventType } from '@src/lib/types'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -41,8 +40,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings } = useApp()
-    const { appActor, kclManager, systemIOActor } = useSingletons()
+    const { settings, layout } = useApp()
+    const { kclManager, systemIOActor } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
@@ -231,9 +230,7 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
-              onClick={() => {
-                appActor.send({ type: AppMachineEventType.ResetLayout })
-              }}
+              onClick={layout.reset}
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',

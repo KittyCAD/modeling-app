@@ -52,7 +52,7 @@ pub(super) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
 
 /// When giving input to the solver, all numbers must be given in the same
 /// units.
-pub(crate) fn normalize_to_solver_unit(
+pub(crate) fn normalize_to_solver_distance_unit(
     value: &KclValue,
     source_range: SourceRange,
     exec_state: &mut ExecState,
@@ -65,6 +65,28 @@ pub(crate) fn normalize_to_solver_unit(
                 "{} must be a length coercible to the module length unit {}, but found {}",
                 description,
                 length_ty.human_friendly_type(),
+                value.human_friendly_type(),
+            ),
+            vec![source_range],
+        ))
+    })
+}
+
+/// When giving input to the solver, all numbers must be given in the same
+/// units.
+pub(crate) fn normalize_to_solver_angle_unit(
+    value: &KclValue,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+    description: &str,
+) -> Result<KclValue, KclError> {
+    let angle_ty = RuntimeType::angle();
+    value.coerce(&angle_ty, true, exec_state).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{} must be coercible to an angle unit {}, but found {}",
+                description,
+                angle_ty.human_friendly_type(),
                 value.human_friendly_type(),
             ),
             vec![source_range],

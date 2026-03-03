@@ -228,6 +228,7 @@ pub(crate) const RETURN_NAME: &str = "__return";
 /// Low-budget namespacing for types and modules.
 pub(crate) const TYPE_PREFIX: &str = "__ty_";
 pub(crate) const MODULE_PREFIX: &str = "__mod_";
+pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.

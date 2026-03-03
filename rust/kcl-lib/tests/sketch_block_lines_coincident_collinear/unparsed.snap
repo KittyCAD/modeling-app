@@ -8,20 +8,20 @@ description: Result of unparsing sketch_block_lines_coincident_collinear.kcl
 // This tests making two line segments collinear using coincident([line1, line2])
 s = sketch(on = XY) {
   // Create first line segment
-  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   // Constrain line1 endpoints
 line1.start.at[0] == 0
 line1.start.at[1] == 0
 line1.end.at[0] == 10
 line1.end.at[1] == 0
   // Create second line segment that should become collinear with line1
-  line2 = sketch2::line(start = [var, var], end = [var, var])
+  line2 = line(start = [var, var], end = [var, var])
   // Constrain line2's end point to a known position
 line2.end.at[0] == 20
 line2.end.at[1] == 0
   // Make the two lines collinear using coincident constraint
   // This should create both a parallel constraint and a perpendicular distance of zero
-  sketch2::coincident([line1, line2])
+  coincident([line1, line2])
   // Constrain line2's start point x-coordinate to verify collinearity
   // Since they're collinear and line1 is horizontal, line2.start.y should be 0
 line2.start.at[0] == 10

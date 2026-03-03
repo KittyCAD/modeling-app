@@ -14,7 +14,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -27,11 +26,7 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import {
-  type RouteObject,
-  useRouteLoaderData,
-  useSearchParams,
-} from 'react-router-dom'
+import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { useApp, useSingletons } from '@src/lib/boot'
 
@@ -64,9 +59,9 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function Welcome() {
+  const app = useApp()
   const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -77,8 +72,7 @@ function Welcome() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -86,7 +80,7 @@ function Welcome() {
         ),
       },
     })
-  }, [loaderData?.project?.name, systemIOActor])
+  }, [systemIOActor, app.project?.name])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">

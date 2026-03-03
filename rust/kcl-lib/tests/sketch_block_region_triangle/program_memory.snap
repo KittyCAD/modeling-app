@@ -3,6 +3,38 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_region_triangle.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "line1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
@@ -75,10 +107,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             0.32339081423467236
           ],
           "tag": {
-            "commentStart": 157,
-            "end": 162,
+            "commentStart": 148,
+            "end": 153,
             "moduleId": 0,
-            "start": 157,
+            "start": 148,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -116,10 +148,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             4.8082184890674515
           ],
           "tag": {
-            "commentStart": 295,
-            "end": 300,
+            "commentStart": 268,
+            "end": 273,
             "moduleId": 0,
-            "start": 295,
+            "start": 268,
             "type": "TagDeclarator",
             "value": "line3"
           },

@@ -17,6 +17,7 @@ import {
   calculateArcSwapState,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -181,9 +182,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           isEditInProgress = true
           // Cache settings to avoid fetching on every mouse move
           if (!cachedSettings) {
-            cachedSettings = await jsAppSettings(
-              context.rustContext.settingsActor
-            )
+            cachedSettings = jsAppSettings(context.rustContext.settingsActor)
           }
           const settings = cachedSettings
 
@@ -353,7 +352,7 @@ export function sendResultToParent({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 
@@ -478,7 +477,7 @@ export function storeCreatedArcResult({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 
@@ -564,7 +563,7 @@ export async function createArcActor({
       sketchId,
       segmentCtor,
       'arc-segment',
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result
@@ -744,7 +743,7 @@ export async function finalizeArcActor({
           ctor: segmentCtor,
         },
       ],
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result

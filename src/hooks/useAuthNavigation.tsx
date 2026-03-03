@@ -1,8 +1,12 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
+import {
+  ALLOW_MOBILE_QUERY_PARAM,
+  IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { isMobile } from '@src/lib/isMobile'
 import { PATHS } from '@src/lib/paths'
 import { useApp } from '@src/lib/boot'
 import { generateSignInUrl } from '@src/routes/utils'
@@ -20,9 +24,12 @@ export function useAuthNavigation() {
   const requestingImmediateSignInIfNecessary = searchParams.has(
     IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM
   )
+  const hasAllowMobileParam = searchParams.has(ALLOW_MOBILE_QUERY_PARAM)
 
   // Subscribe to the auth state of the app and navigate accordingly.
   useEffect(() => {
+    const onMobile = isMobile()
+
     if (
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
@@ -41,7 +48,8 @@ export function useAuthNavigation() {
     } else if (
       authState.matches('loggedOut') &&
       location.pathname.includes(PATHS.SIGN_IN) &&
-      !isDesktop()
+      !isDesktop() &&
+      (!onMobile || hasAllowMobileParam)
     ) {
       window.location.href = generateSignInUrl()
     }

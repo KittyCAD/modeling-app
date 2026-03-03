@@ -45,10 +45,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
-  const { settings } = useApp()
-  const { engineCommandManager, kclManager, rustContext, systemIOActor } =
-    useSingletons()
-  const settingsActor = settings.actor
+  const app = useApp()
+  const { engineCommandManager } = useSingletons()
   const networkStatus = useNetworkStatus(engineCommandManager)
   const router = useMemo(
     () =>
@@ -83,10 +81,7 @@ export const Router = () => {
             },
             {
               loader: fileLoader({
-                kclManager,
-                rustContext,
-                systemIOActor,
-                settingsActor,
+                app,
               }),
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
@@ -146,7 +141,7 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.HOME,
-              loader: homeLoader({ settingsActor }),
+              loader: homeLoader({ app }),
               children: [
                 {
                   index: true,
@@ -180,7 +175,7 @@ export const Router = () => {
           ],
         },
       ]),
-    [kclManager, rustContext, settingsActor, systemIOActor]
+    [app]
   )
 
   return (
