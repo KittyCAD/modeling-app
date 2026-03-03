@@ -49,6 +49,7 @@ import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 export function addFillet({
   ast,
@@ -264,13 +265,7 @@ function groupSelectionsByBodyAndAddTags(
   >()
   if (includePrimitiveEdgeIndices) {
     for (const selection of selections.otherSelections) {
-      if (
-        typeof selection !== 'object' ||
-        !('type' in selection) ||
-        selection.type !== 'enginePrimitive' ||
-        selection.primitiveType !== 'edge' ||
-        !selection.parentEntityId
-      ) {
+      if (!isEnginePrimitiveSelection(selection) || !selection.parentEntityId) {
         continue
       }
 
