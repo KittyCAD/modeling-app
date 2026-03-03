@@ -111,11 +111,15 @@ export function getCapFromCylinder(artifactGraph: ArtifactGraph) {
   return createSelectionFromArtifacts([endFace!], artifactGraph)
 }
 
-export function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-  const twoWalls = [...artifactGraph.values()]
+export function getWalls(
+  artifactGraph: ArtifactGraph,
+  count: number,
+  index = 0
+) {
+  const walls = [...artifactGraph.values()]
     .filter((a) => a.type === 'wall')
-    .slice(0, count)
-  return createSelectionFromArtifacts(twoWalls, artifactGraph)
+    .slice(index, index + count)
+  return createSelectionFromArtifacts(walls, artifactGraph)
 }
 
 export async function getKclCommandValue(
