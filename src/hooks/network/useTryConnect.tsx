@@ -1,7 +1,6 @@
 import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   getSettingsFromActorContext,
   jsAppSettings,
@@ -27,7 +26,6 @@ const attemptToConnectToEngine = async ({
   setAppState,
   videoRef,
   setIsSceneReady,
-  settingsEngine,
   timeToConnect,
   engineCommandManager,
   rustContext,
@@ -37,7 +35,6 @@ const attemptToConnectToEngine = async ({
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
-  settingsEngine: SettingsViaQueryString
   timeToConnect: number
   engineCommandManager: ConnectionManager
   rustContext: RustContext
@@ -76,7 +73,6 @@ const attemptToConnectToEngine = async ({
           setStreamIsReady: () => {
             setAppState({ isStreamReady: true })
           },
-          settings: settingsEngine,
           rustContext,
         })
 
@@ -191,7 +187,6 @@ async function tryConnecting({
   videoRef,
   setIsSceneReady,
   timeToConnect,
-  settings,
   settingsActor,
   setShowManualConnect,
   sceneInfra,
@@ -207,7 +202,6 @@ async function tryConnecting({
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
-  settings: SettingsViaQueryString
   settingsActor: SettingsActorType
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
@@ -237,7 +231,6 @@ async function tryConnecting({
             setAppState,
             videoRef,
             setIsSceneReady,
-            settingsEngine: settings,
             timeToConnect,
             engineCommandManager,
             rustContext,
