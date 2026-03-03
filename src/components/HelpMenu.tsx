@@ -11,10 +11,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
+import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { useNavigate } from 'react-router-dom'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
@@ -37,9 +34,7 @@ export function HelpMenu() {
       settingsActor: settings.actor,
       executingPath: filePath,
     }
-    acceptOnboarding(props).catch((reason) =>
-      catchOnboardingWarnError(reason, props)
-    )
+    acceptOnboarding(props)
   }
 
   const cb = (data: WebContentSendPayload) => {

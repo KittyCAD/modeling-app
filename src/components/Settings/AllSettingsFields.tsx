@@ -24,10 +24,7 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
+import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
@@ -74,9 +71,7 @@ export const AllSettingsFields = forwardRef(
         settingsActor: settings.actor,
         executingPath,
       }
-      acceptOnboarding(props).catch((reason) =>
-        catchOnboardingWarnError(reason, props)
-      )
+      acceptOnboarding(props)
     }
 
     return (

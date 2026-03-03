@@ -267,7 +267,7 @@ const Home = () => {
                       systemIOActor,
                       settingsActor,
                       executingPath,
-                    }).catch(reportRejection)
+                    })
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
                   iconStart={{

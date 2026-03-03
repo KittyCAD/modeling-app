@@ -13,13 +13,12 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
-import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
+import { fanParts } from '@src/lib/exampleKcl'
 import {
   type OnboardingPath,
   isOnboardingPath,
@@ -38,7 +37,6 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -284,81 +282,29 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
 
 /**
  * Accept to begin the onboarding tutorial,
- * depending on the platform and the state of the user's code.
  */
-export async function acceptOnboarding(deps: OnboardingUtilDeps) {
+export function acceptOnboarding(deps: OnboardingUtilDeps) {
   // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
     : deps.onboardingStatus
 
-  if (window.electron) {
-    /**
-     * Bulk create the assembly and navigate to the project
-     */
-    deps.systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-      data: {
-        files: fanParts.map((part) => ({
-          requestedProjectName: ONBOARDING_PROJECT_NAME,
-          ...part,
-        })),
-        // Make a unique tutorial project each time
-        override: true,
+  /**
+   * Bulk create the assembly and navigate to the project
+   */
+  deps.systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: fanParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
-      },
-    })
-
-    return Promise.resolve()
-  }
-
-  const isCodeResettable = hasResetReadyCode(
-    deps.kclManager,
-    await deps.kclManager.wasmInstancePromise
-  )
-  if (isCodeResettable) {
-    return resetCodeAndAdvanceOnboarding(deps)
-  }
-
-  return Promise.reject(new Error(ERROR_MUST_WARN))
-}
-
-/**
- * Given that the user has accepted overwriting their web editor,
- * advance to the next step and clear their editor.
- */
-export async function resetCodeAndAdvanceOnboarding({
-  onboardingStatus,
-  kclManager,
-  navigate,
-  executingPath,
-}: OnboardingUtilDeps) {
-  // Non-path statuses should be coerced to the start path
-  const resolvedOnboardingStatus = !isOnboardingPath(onboardingStatus)
-    ? onboardingStartPath
-    : onboardingStatus
-  kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
-
-  if (!executingPath) {
-    console.warn('bug: executingPath undefined, not navigating')
-    return
-  }
-
-  void navigate(
-    joinRouterPaths(
-      executingPath,
-      String(PATHS.ONBOARDING),
-      resolvedOnboardingStatus
-    )
-  )
-}
-
-function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
-  return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
-    kclManager.codeSignal.value === browserAxialFan
-  )
+        ...part,
+      })),
+      // Make a unique tutorial project each time
+      override: true,
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
+    },
+  })
 }
 
 export function needsToOnboard(
@@ -410,10 +356,7 @@ export function TutorialRequestToast(
   const { settings } = useApp()
   function onAccept() {
     acceptOnboarding(props)
-      .then(() => {
-        toast.dismiss(ONBOARDING_TOAST_ID)
-      })
-      .catch((reason) => catchOnboardingWarnError(reason, props))
+    toast.dismiss(ONBOARDING_TOAST_ID)
   }
 
   const quickTipSrc = (index: number) =>
@@ -530,7 +473,7 @@ export async function catchOnboardingWarnError(
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
-    resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
+    acceptOnboarding(props)
   }
 
   return (
