@@ -133,7 +133,7 @@ async function executeTrimFlow({
   const ast = assertParse(kclCode, instanceInThisFile)
   const setProgramOutcome = await rustContextInThisFile.hackSetProgram(
     ast,
-    await jsAppSettings(rustContextInThisFile.settingsActor)
+    jsAppSettings(rustContextInThisFile.settingsActor)
   )
   if (setProgramOutcome.type !== 'Success') {
     return new Error(setProgramOutcome.error.error.details.msg)
