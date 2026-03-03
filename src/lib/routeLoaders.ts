@@ -6,7 +6,7 @@ import { waitFor } from 'xstate'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { normalizeLineEndings } from '@src/lib/codeEditor'
-import { getProjectInfo } from '@src/lib/desktop'
+import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
 import {
   PATHS,
@@ -22,6 +22,7 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSkeletonCreate } from '@src/lang/project'
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -62,20 +63,17 @@ export const baseLoader =
         data: { requestedProjectName },
       })
     } catch {
-      app.singletons.systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-        data: {
-          requestedProjectName,
-          files: [
-            {
-              requestedFileName: 'main.kcl',
-              requestedProjectName: defaultProjectName,
-              requestedCode:
-                '// This is the code editor. Code will appear here as you sketch!',
-            },
-          ],
-        },
-      })
+      await projectSkeletonCreate(
+        await fsZds.resolve(
+          await getInitialDefaultDir(),
+          defaultProjectName,
+          'main.kcl'
+        )
+      )
+
+      const fileURLPath =
+        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      return redirect(fileURLPath)
     }
   }
 
@@ -91,6 +89,14 @@ export const fileLoader =
     } = app
     const { kclManager, rustContext, systemIOActor } = app.singletons
     const { params } = routerData
+
+    // Must basically remain for all eternity, until the last person
+    // who's ever used ZDS on web before this point has died.
+    if (params.id?.startsWith('/browser')) {
+      // Pop us back home, which will cause a default project to be
+      // created.
+      return redirect(PATHS.HOME)
+    }
 
     const heuristicProjectFilePath = params.id
       ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
