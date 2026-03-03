@@ -64,7 +64,7 @@ export function DeleteConfirmationDialog({
           <Dialog.Title as="h2" className="mb-4 text-2xl font-bold">
             {title}
           </Dialog.Title>
-          <Dialog.Description>{children}</Dialog.Description>
+          <Dialog.Description as="div">{children}</Dialog.Description>
 
           <div className="flex justify-end gap-2">{orderedButtons}</div>
         </Dialog.Panel>
