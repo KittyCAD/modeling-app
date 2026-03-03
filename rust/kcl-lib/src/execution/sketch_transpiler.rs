@@ -19,6 +19,10 @@ use crate::{
     parsing::ast::types as ast,
 };
 
+mod static_analysis;
+
+pub use static_analysis::transpile as static_transpile;
+
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
 enum SegmentConstraint {
