@@ -266,10 +266,6 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 
     // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
-    let log = title == "ISO-10303-21;";
-    if log {
-        eprintln!("Found the case, {:?}", primary_kcl_file);
-    }
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let categories = if let Some(third_line) = lines.get(2)
         && let Some(categories_line) = third_line
@@ -323,7 +319,8 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
 
         if path.is_dir() {
             // Get all .kcl files in the directory
-            let files: Vec<String> = fs::read_dir(path)?
+            let files: Vec<String> = walkdir::WalkDir::new(path)
+                .into_iter()
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
