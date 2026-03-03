@@ -220,7 +220,8 @@ pub type NodeRefMut<'a, T> = &'a mut Node<T>;
 
 /// A way to abstract over blocks of code.
 pub trait CodeBlock {
-    fn body(&self) -> &[BodyItem];
+    fn body(&self) -> &Vec<BodyItem>;
+    fn body_mut(&mut self) -> &mut Vec<BodyItem>;
     fn to_source_range(&self) -> SourceRange;
 }
 
@@ -260,8 +261,12 @@ impl From<Node<Block>> for Node<Program> {
 }
 
 impl CodeBlock for Node<Program> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.body
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.body
     }
 
     fn to_source_range(&self) -> SourceRange {
@@ -1478,8 +1483,12 @@ impl From<Program> for Block {
 }
 
 impl CodeBlock for Node<Block> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.items
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.items
     }
 
     fn to_source_range(&self) -> SourceRange {
