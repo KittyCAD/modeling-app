@@ -30,7 +30,10 @@ pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
-pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
+pub use sketch_transpiler::{
+    transpile_all_old_sketches_to_new, transpile_old_sketch_to_new, transpile_old_sketch_to_new_ast,
+    transpile_old_sketch_to_new_with_execution,
+};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
