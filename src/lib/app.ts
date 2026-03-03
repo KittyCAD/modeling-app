@@ -47,7 +47,10 @@ import {
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
-import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import {
+  getAllCurrentSettings,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -450,13 +453,18 @@ export class App implements AppSubsystems {
         this.lastSettings
       )
 
-      // Unit changes requires a re-exec of code
+      // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
-        // TODO: might need to also clear scene for backfaceColor here
-        this.singletons.kclManager.executeCode().catch(reportRejection)
+        this.singletons.rustContext
+          .clearSceneAndBustCache(
+            jsAppSettings(this.settings.actor),
+            this.singletons.kclManager.currentFilePath || undefined
+          )
+          .then(() => this.singletons.kclManager.executeCode())
+          .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
