@@ -84,8 +84,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             encoding: 'utf-8',
           })
 
-          const lastWrittenCode = kclManager.lastWrite?.code
-          if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
+          if (!kclManager.writingPromise.value) {
             const isInSketchMode =
               kclManager.modelingState?.matches('Sketch') ||
               kclManager.modelingState?.matches('sketchSolveMode')

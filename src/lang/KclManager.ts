@@ -439,11 +439,11 @@ export class KclManager extends EventTarget {
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
-  // The last code written by the app, used to compare against external changes to the current file
-  public lastWrite: {
-    code: string // last code written by ZDS
-    time: number // Unix epoch time in milliseconds
-  } | null = null
+  /**
+    Indicator Promise that is pending while a live write is happening.
+    If this value isn't `null`, don't watch for file system writes it was probably us!
+   */
+  public writingPromise = signal<Promise<unknown> | null>(null)
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -740,7 +740,7 @@ export class KclManager extends EventTarget {
         console.error('Error when updating Rust state after user edit:', error)
       }
     },
-    300
+    50
   )
 
   private createEditorExtensions() {
@@ -1845,7 +1845,6 @@ export class KclManager extends EventTarget {
   updateCurrentFilePath(path: string) {
     if (this._currentFilePath !== path) {
       this._currentFilePath = path
-      this.lastWrite = null
     }
   }
   get currentFileName() {
@@ -1945,10 +1944,6 @@ export class KclManager extends EventTarget {
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
-        this.lastWrite = {
-          code: newCode ?? '',
-          time: Date.now(),
-        }
         this.timeoutWriter = setTimeout(() => {
           if (!path) {
             return reject(new Error('currentFilePath not set'))
@@ -1956,9 +1951,16 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          fsZds
+          this.writingPromise.value = fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
+            .then(() => {
+              // After a cooldown, allow anyone watching the writingPromise to know
+              // if its safe to watch the file to do what they need to.
+              setTimeout(() => {
+                this.writingPromise.value = null
+              }, 30)
+            })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)
