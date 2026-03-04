@@ -18,6 +18,7 @@ import {
   getSignedAngleBetweenVec,
   lengthSq,
   length2d,
+  normalizeVec,
   subVec,
 } from '@src/lib/utils2d'
 import {
@@ -248,74 +249,150 @@ function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
     return null
   }
 
-  const signedAngle = getSignedAngleBetweenVec(line1Direction, line2Direction)
-  const minorSweep = Math.abs(signedAngle)
-  if (minorSweep < 1e-4) {
-    return null
-  }
+  const line1Unit = normalizeVec(line1Direction)
+  const line2Unit = normalizeVec(line2Direction)
+  const line1Candidates: Coords2d[] = [
+    line1Unit,
+    [-line1Unit[0], -line1Unit[1]],
+  ]
+  const line2Candidates: Coords2d[] = [
+    line2Unit,
+    [-line2Unit[0], -line2Unit[1]],
+  ]
 
-  const minorDirectionSign = signedAngle >= 0 ? 1 : -1
-  const sweep = renderInput.isMajorAngle ? TWO_PI - minorSweep : minorSweep
-  const directionSign = renderInput.isMajorAngle
-    ? -minorDirectionSign
-    : minorDirectionSign
-  if (sweep < 1e-4) {
-    return null
-  }
-
-  const baseStartAngle = Math.atan2(line1Direction[1], line1Direction[0])
   const labelAngle = Math.atan2(
     renderInput.labelPosition[1] - center[1],
     renderInput.labelPosition[0] - center[0]
   )
 
-  const startAngle = chooseArcStartAngle(
-    baseStartAngle,
+  const best = chooseArcCandidate({
+    line1: renderInput.line1,
+    line2: renderInput.line2,
+    center,
+    line1Candidates,
+    line2Candidates,
     labelAngle,
-    directionSign,
-    sweep
-  )
-  const rawLabelOffset = getOffsetAlongArc(
-    startAngle,
-    labelAngle,
-    directionSign
-  )
-  const labelOffset = clamp(rawLabelOffset, 0, sweep)
+    isMajorAngle: renderInput.isMajorAngle,
+  })
+  if (!best) {
+    return null
+  }
 
   return {
     center,
     radius,
-    startAngle,
-    directionSign,
-    sweep,
-    labelOffset,
+    startAngle: best.startAngle,
+    directionSign: best.directionSign,
+    sweep: best.sweep,
+    labelOffset: clamp(best.labelOffset, 0, best.sweep),
   }
 }
 
-function chooseArcStartAngle(
-  baseStartAngle: number,
-  labelAngle: number,
-  directionSign: number,
+type ArcCandidate = {
+  startAngle: number
+  directionSign: number
   sweep: number
-) {
-  const candidates = [0, Math.PI].map((branchOffset) => {
-    const startAngle = normaliseAngleRadians(baseStartAngle + branchOffset)
-    const labelOffset = getOffsetAlongArc(startAngle, labelAngle, directionSign)
-    const overflow = Math.max(0, labelOffset - sweep)
-    return { startAngle, labelOffset, overflow }
-  })
+  labelOffset: number
+  overflow: number
+  onArc: boolean
+  reachCount: number
+  overlapLength: number
+}
 
-  candidates.sort((a, b) => {
-    if (a.overflow !== b.overflow) {
-      return a.overflow - b.overflow
+function chooseArcCandidate(args: {
+  line1: LineSegment
+  line2: LineSegment
+  center: Coords2d
+  line1Candidates: Coords2d[]
+  line2Candidates: Coords2d[]
+  labelAngle: number
+  isMajorAngle: boolean
+}) {
+  const candidates: ArcCandidate[] = []
+
+  for (const startDirection of args.line1Candidates) {
+    for (const endDirection of args.line2Candidates) {
+      const signed = getSignedAngleBetweenVec(startDirection, endDirection)
+      const minorSweep = Math.abs(signed)
+      if (minorSweep < 1e-4) {
+        continue
+      }
+
+      const minorDirectionSign = signed >= 0 ? 1 : -1
+      const sweep = args.isMajorAngle ? TWO_PI - minorSweep : minorSweep
+      const directionSign = args.isMajorAngle
+        ? -minorDirectionSign
+        : minorDirectionSign
+      if (sweep < 1e-4) {
+        continue
+      }
+
+      const startAngle = Math.atan2(startDirection[1], startDirection[0])
+      const labelOffset = getOffsetAlongArc(
+        startAngle,
+        args.labelAngle,
+        directionSign
+      )
+      const overflow = Math.max(0, labelOffset - sweep)
+      const onArc = labelOffset <= sweep + 1e-6
+
+      const interval1 = rayIntervalWithinSegment(
+        args.line1,
+        args.center,
+        startDirection
+      )
+      const interval2 = rayIntervalWithinSegment(
+        args.line2,
+        args.center,
+        endDirection
+      )
+      const reachCount = Number(Boolean(interval1)) + Number(Boolean(interval2))
+      const overlapLength =
+        interval1 && interval2
+          ? Math.max(
+              0,
+              Math.min(interval1.end, interval2.end) -
+                Math.max(interval1.start, interval2.start)
+            )
+          : -1
+
+      candidates.push({
+        startAngle,
+        directionSign,
+        sweep,
+        labelOffset,
+        overflow,
+        onArc,
+        reachCount,
+        overlapLength,
+      })
     }
-    return (
-      Math.abs(a.labelOffset - sweep * 0.5) -
-      Math.abs(b.labelOffset - sweep * 0.5)
-    )
+  }
+
+  if (candidates.length === 0) {
+    return null
+  }
+
+  const rankedCandidates = candidates.some((candidate) => candidate.onArc)
+    ? candidates.filter((candidate) => candidate.onArc)
+    : candidates
+
+  rankedCandidates.sort((a, b) => {
+    const centerBiasA = Math.abs(a.labelOffset - a.sweep * 0.5)
+    const centerBiasB = Math.abs(b.labelOffset - b.sweep * 0.5)
+    if (centerBiasA !== centerBiasB) {
+      return centerBiasA - centerBiasB
+    }
+    if (a.reachCount !== b.reachCount) {
+      return b.reachCount - a.reachCount
+    }
+    if (a.overlapLength !== b.overlapLength) {
+      return b.overlapLength - a.overlapLength
+    }
+    return a.overflow - b.overflow
   })
 
-  return candidates[0].startAngle
+  return rankedCandidates[0]
 }
 
 function getOffsetAlongArc(
@@ -325,6 +402,34 @@ function getOffsetAlongArc(
 ) {
   const ccw = directionSign >= 0
   return getAngleDiff(startAngle, targetAngle, ccw)
+}
+
+type DistanceRange = {
+  start: number
+  end: number
+}
+
+function rayIntervalWithinSegment(
+  line: LineSegment,
+  center: Coords2d,
+  rayDirection: Coords2d
+): DistanceRange | null {
+  const p1 =
+    (line[0][0] - center[0]) * rayDirection[0] +
+    (line[0][1] - center[1]) * rayDirection[1]
+  const p2 =
+    (line[1][0] - center[0]) * rayDirection[0] +
+    (line[1][1] - center[1]) * rayDirection[1]
+  const low = Math.min(p1, p2)
+  const high = Math.max(p1, p2)
+  if (high < EPSILON) {
+    return null
+  }
+
+  return {
+    start: Math.max(0, low),
+    end: Math.max(0, high),
+  }
 }
 
 function getArcBodyLines(group: Group): Line2[] {
