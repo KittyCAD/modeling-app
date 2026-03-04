@@ -2653,7 +2653,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> ${secondSurfaceEdge}
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclarationStart = `blend001 = blend([`
+    const blendDeclaration = `blend001 = blend([seg01, seg02])`
 
     async function selectEdgesFromBothSurfaces() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
@@ -2703,10 +2703,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
     })
 
     await test.step('Check blend code was added', async () => {
-      await editor.expectEditor.toContain(blendDeclarationStart)
-      const code = await editor.getCurrentCode()
-      const boundedEdgeCount = code.match(/getBoundedEdge\(/g)?.length ?? 0
-      expect(boundedEdgeCount).toBe(2)
+      await editor.expectEditor.toContain(blendDeclaration)
     })
 
     await test.step('Delete blend via feature tree selection', async () => {
@@ -2719,7 +2716,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
       await operationButton.click()
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain(blendDeclarationStart)
+      await editor.expectEditor.not.toContain(blendDeclaration)
     })
   })
 
