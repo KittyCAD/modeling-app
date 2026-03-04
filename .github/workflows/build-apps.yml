@@ -326,16 +326,10 @@ jobs:
               "pub_date": $pub_date,
               "notes": $notes,
               "platforms": {
-                "dmg-arm64": {
+                "dmg-universal": {
                   "url": $mac_universal_url
                 },
-                "dmg-x64": {
-                  "url": $mac_universal_url
-                },
-                "exe-arm64": {
-                  "url": $windows_universal_url
-                },
-                "exe-x64": {
+                "exe-universal": {
                   "url": $windows_universal_url
                 },
                 "appimage-arm64": {
