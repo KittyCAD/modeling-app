@@ -1611,7 +1611,7 @@ export const modelingMachine = setup({
             ast: kclManager.ast,
             systemDeps: {
               engineCommandManager,
-              sceneEntitiesManager,
+              sceneEntitiesManager: kclManager.sceneEntitiesManager,
               wasmInstance,
             },
           })
