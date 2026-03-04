@@ -4142,10 +4142,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -6745,8 +6742,6 @@ export const modelingMachine = setup({
               initialSketchSolvePlane: context.sketchSolveInit,
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
-              // Use context values if available, otherwise fall back to singletons
-              rustContext: context.rustContext,
               kclManager: context.kclManager,
             }),
             onDone: {

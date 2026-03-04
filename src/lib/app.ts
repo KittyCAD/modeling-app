@@ -422,9 +422,12 @@ export class App implements AppSubsystems {
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.kclManager.engineCommandManager.connection) {
-      this.singletons.kclManager.engineCommandManager
-        .setTheme(newTheme)
-        .catch(reportRejection)
+      Promise.all([
+        this.singletons.kclManager.engineCommandManager.setTheme(newTheme),
+        this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+          newBackfaceColor
+        ),
+      ]).catch(reportRejection)
     }
 
     // Execute AST
@@ -448,7 +451,7 @@ export class App implements AppSubsystems {
         settingsIncludeNewRelevantValues &&
         this.singletons.kclManager.engineCommandManager.connection
       ) {
-        this.singletons.rustContext
+        this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
             this.singletons.kclManager.currentFilePath || undefined

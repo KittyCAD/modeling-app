@@ -223,7 +223,7 @@ export const fileLoader =
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
     )
-    await rustContext.sendOpenProject(project, currentFilePath)
+    await kclManager.rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
