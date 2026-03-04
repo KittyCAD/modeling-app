@@ -704,19 +704,30 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
+  const includePrimitiveFaceIndices = true
+  const hasPrimitiveFaceToOffset =
+    getEnginePrimitiveFaceSelectionsFromSelection(plane).length > 0
+  const hasFaceToOffset =
+    hasPrimitiveFaceToOffset ||
+    plane.graphSelections.some(
+      (sel) =>
+        sel.artifact?.type === 'cap' ||
+        sel.artifact?.type === 'wall' ||
+        sel.artifact?.type === 'edgeCut'
+    )
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      {
+        // Keeping lookup aligned with deleteFace so we map selected parent solids directly.
+        lastChildLookup: false,
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+        includePrimitiveFaceIndices,
+      }
     )
     if (err(result)) {
       return result
@@ -1120,7 +1131,9 @@ export function retrieveFaceSelectionsFromOpArgs(
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  planeArgSource?: string,
+  variables?: VariableMap
 ): Selections | Error {
   if (planeArg.value.type !== 'Plane') {
     return new Error(
@@ -1150,31 +1163,77 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
-    const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
-      artifactGraph
+    const faceArtifact = artifactGraph.get(planeArtifact.faceId)
+    if (
+      faceArtifact &&
+      (faceArtifact.type === 'cap' ||
+        faceArtifact.type === 'wall' ||
+        faceArtifact.type === 'edgeCut')
+    ) {
+      const codeRef = getFaceCodeRef(faceArtifact)
+      if (!codeRef) {
+        return new Error("Couldn't retrieve code reference for face artifact")
+      }
+
+      return {
+        graphSelections: [
+          {
+            artifact: faceArtifact,
+            codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    }
+
+    const primitiveFaceSelection = getPrimitiveFaceSelectionFromFaceIdSource(
+      planeArtifact.faceId,
+      planeArgSource,
+      variables
     )
-    if (err(faceArtifact)) {
-      return new Error("Couldn't retrieve face artifact for planeOfFace")
+    if (primitiveFaceSelection) {
+      return {
+        graphSelections: [],
+        otherSelections: [primitiveFaceSelection],
+      }
     }
 
-    const codeRef = getFaceCodeRef(faceArtifact)
-    if (!codeRef) {
-      return new Error("Couldn't retrieve code reference for face artifact")
-    }
-
-    return {
-      graphSelections: [
-        {
-          artifact: faceArtifact,
-          codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
+    return new Error("Couldn't retrieve primitive face selection from faceId")
   }
 
   return new Error('Unsupported plane artifact type')
+}
+
+function getPrimitiveFaceSelectionFromFaceIdSource(
+  faceId: string,
+  planeArgSource?: string,
+  variables?: VariableMap
+): EnginePrimitiveSelection | undefined {
+  if (!planeArgSource || !variables) {
+    return undefined
+  }
+
+  const match = planeArgSource.match(
+    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[^)]*?\bindex\s*=\s*(\d+)\b/s
+  )
+  if (!match) {
+    return undefined
+  }
+
+  const bodyVariableName = match[1]
+  const primitiveIndex = Number(match[2])
+  const bodyVariable = variables[bodyVariableName]
+  if (bodyVariable?.type !== 'Solid') {
+    return undefined
+  }
+
+  return {
+    type: 'enginePrimitive',
+    entityId: faceId,
+    parentEntityId: bodyVariable.value.artifactId,
+    primitiveIndex,
+    primitiveType: 'face',
+  }
 }
 
 export function buildSolidsAndFacesExprs(

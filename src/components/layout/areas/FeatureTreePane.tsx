@@ -505,6 +505,7 @@ const OperationItem = ({
         ) ?? undefined
       prepareEditCommand({
         artifactGraph: systemDeps.kclManager.artifactGraph,
+        variables: systemDeps.kclManager.variables,
         code: systemDeps.kclManager.code,
         commandBarActor,
         operation: item,
@@ -516,6 +517,7 @@ const OperationItem = ({
     item,
     commandBarActor,
     systemDeps.kclManager.artifactGraph,
+    systemDeps.kclManager.variables,
     systemDeps.kclManager.code,
     systemDeps.rustContext,
   ])
