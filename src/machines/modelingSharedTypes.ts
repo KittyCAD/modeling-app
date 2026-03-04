@@ -1,7 +1,7 @@
 import type { EntityType } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -42,6 +42,15 @@ export type NonCodeSelection =
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
+  sketchRegion?: SketchRegionSelection
+}
+
+export interface SketchRegionSelection {
+  point: Coords2d
+  segmentId: ArtifactId
+  intersectionSegmentId: ArtifactId
+  intersectionIndex?: number
+  curveClockwise?: boolean
 }
 
 export type Selections = {

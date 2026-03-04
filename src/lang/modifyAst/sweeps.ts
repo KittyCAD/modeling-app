@@ -2,11 +2,12 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
-  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createName,
   createTagDeclarator,
 } from '@src/lang/create'
 import {
@@ -27,6 +28,7 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
+  getCodeRefsByArtifactId,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
@@ -46,7 +48,7 @@ import {
   KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   getFacesExprsFromSelection,
   isFaceArtifact,
@@ -54,6 +56,155 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+
+function createMemberExpression(object: Expr, property: Expr): Expr {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    object,
+    property,
+    computed: false,
+  }
+}
+
+function getSketchVarNameFromSegmentCodeRef(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+): string | Error {
+  const bodyIndex = Number(pathToNode[1]?.[0])
+  if (!Number.isInteger(bodyIndex)) {
+    return new Error('Invalid sketch region segment path')
+  }
+
+  const bodyNode = ast.body[bodyIndex]
+  if (
+    bodyNode?.type !== 'VariableDeclaration' ||
+    bodyNode.declaration.init.type !== 'SketchBlock'
+  ) {
+    return new Error(
+      'Sketch region selections currently require a sketch block selection.'
+    )
+  }
+
+  return bodyNode.declaration.id.name
+}
+
+function getSketchSegmentMemberExpression(
+  segmentId: string,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): { expr: Expr; sketchVarName: string } | Error {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segment)) {
+    return segment
+  }
+
+  const segmentCodeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
+  if (!segmentCodeRef) {
+    return new Error(`Could not find code reference for segment ${segment.id}`)
+  }
+
+  const segmentDecl = getNodeFromPath<VariableDeclaration>(
+    ast,
+    segmentCodeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (err(segmentDecl) || segmentDecl.node.type !== 'VariableDeclaration') {
+    return new Error(`Could not resolve segment declaration for ${segment.id}`)
+  }
+  const segmentVarName = segmentDecl.node.declaration.id.name
+
+  const sketchVarName = getSketchVarNameFromSegmentCodeRef(
+    ast,
+    segmentCodeRef.pathToNode
+  )
+  if (err(sketchVarName)) {
+    return sketchVarName
+  }
+
+  return {
+    expr: createMemberExpression(
+      createLocalName(sketchVarName),
+      createLocalName(segmentVarName)
+    ),
+    sketchVarName,
+  }
+}
+
+function getRegionExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | Error {
+  if (!selection.sketchRegion) {
+    return new Error('Missing sketch region metadata for selection')
+  }
+
+  const {
+    segmentId,
+    intersectionSegmentId,
+    intersectionIndex,
+    curveClockwise,
+  } = selection.sketchRegion
+  const segmentExpr = getSketchSegmentMemberExpression(
+    segmentId,
+    ast,
+    artifactGraph,
+    wasmInstance
+  )
+  if (err(segmentExpr)) {
+    return segmentExpr
+  }
+  const intersectionExpr = getSketchSegmentMemberExpression(
+    intersectionSegmentId,
+    ast,
+    artifactGraph,
+    wasmInstance
+  )
+  if (err(intersectionExpr)) {
+    return intersectionExpr
+  }
+  if (segmentExpr.sketchVarName !== intersectionExpr.sketchVarName) {
+    return new Error('Region selection segments must belong to the same sketch')
+  }
+
+  const regionArgs: LabeledArg[] = [
+    createLabeledArg(
+      'segments',
+      createArrayExpression([segmentExpr.expr, intersectionExpr.expr])
+    ),
+  ]
+
+  if (intersectionIndex !== undefined) {
+    regionArgs.push(
+      createLabeledArg(
+        'intersectionIndex',
+        createLiteral(intersectionIndex, wasmInstance)
+      )
+    )
+  }
+  if (curveClockwise !== undefined) {
+    regionArgs.push(
+      createLabeledArg(
+        'direction',
+        createLiteral(curveClockwise ? 'cw' : 'ccw', wasmInstance)
+      )
+    )
+  }
+
+  return createCallExpressionStdLibKw('region', null, regionArgs)
+}
 
 export function addExtrude({
   ast,
@@ -95,6 +246,7 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
+  console.log('selections', sketches)
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
@@ -117,7 +269,8 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
-      (selection) => !isFaceArtifact(selection.artifact)
+      (selection) =>
+        !selection.sketchRegion && !isFaceArtifact(selection.artifact)
     ),
     otherSelections: sketches.otherSelections,
   }
@@ -133,6 +286,22 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+
+  const sketchRegionSelections = sketches.graphSelections.filter(
+    (selection) => selection.sketchRegion
+  )
+  for (const selection of sketchRegionSelections) {
+    const expr = getRegionExprFromSelection(
+      selection,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(expr)) {
+      return expr
+    }
+    vars.exprs.push(expr)
   }
 
   // Extra labeled args expressions

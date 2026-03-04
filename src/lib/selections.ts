@@ -35,7 +35,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/util'
+import type { Coords2d, PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -224,6 +224,71 @@ export async function getEventForSelectWithPoint(
     }
   }
   return null
+}
+
+export function getEventForSelectRegionFromPoint(
+  data: Extract<
+    OkModelingCmdResponse,
+    { type: 'select_region_from_point' }
+  >['data'],
+  {
+    artifactGraph,
+    point,
+  }: {
+    artifactGraph: ArtifactGraph
+    point: Coords2d
+  }
+): ModelingMachineEvent {
+  if (!data.region) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
+
+  const segmentArtifact = artifactGraph.get(data.region.segment)
+  if (!segmentArtifact || segmentArtifact.type !== 'segment') {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
+
+  const segmentCodeRef = getCodeRefsByArtifactId(
+    data.region.segment,
+    artifactGraph
+  )?.[0]
+  const intersectionSegment = artifactGraph.get(
+    data.region.intersection_segment
+  )
+  if (
+    !segmentCodeRef ||
+    !intersectionSegment ||
+    intersectionSegment.type !== 'segment'
+  ) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
+
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: segmentArtifact,
+        codeRef: segmentCodeRef,
+        sketchRegion: {
+          point,
+          segmentId: data.region.segment,
+          intersectionSegmentId: data.region.intersection_segment,
+          intersectionIndex: data.region.intersection_index,
+          curveClockwise: data.region.curve_clockwise,
+        },
+      },
+    },
+  }
 }
 
 export function getEventForSegmentSelection(
@@ -632,6 +697,10 @@ export function getSelectionCountByType(
   })
 
   selection.graphSelections.forEach((graphSelection) => {
+    if (graphSelection.sketchRegion) {
+      incrementOrInitializeSelectionType('sketchRegion')
+      return
+    }
     if (!graphSelection.artifact) {
       /**
        * TODO: remove this heuristic-based selection type detection.
@@ -670,9 +739,10 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
-        }`
+        `${count} ${type
+          .replace('wall', 'face')
+          .replace('solid2d', 'profile')
+          .replace('sketchRegion', 'region')}${count > 1 ? 's' : ''}`
     )
     .join(', ')
 }
@@ -911,6 +981,42 @@ export async function sendSelectEventToEngine(
   return { entity_id: '' }
 }
 
+export async function sendSelectRegionEventToEngine(
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  videoRef: HTMLVideoElement,
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
+) {
+  const { x, y } = getNormalisedCoordinates(
+    e,
+    videoRef,
+    systemDeps.engineCommandManager.streamDimensions
+  )
+  let res = await systemDeps.engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_region_from_point',
+      selected_at_window: { x, y },
+    },
+    cmd_id: uuidv4(),
+  })
+  if (!res) {
+    console.warn('No response')
+    return undefined
+  }
+
+  if (isArray(res)) {
+    res = res[0]
+  }
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response
+    if (mr.type === 'select_region_from_point') return mr.data
+  }
+  return { region: undefined }
+}
+
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
@@ -948,13 +1054,15 @@ export function updateSelections(
           range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
+        sketchRegion: previousSelection?.sketchRegion,
       }
     })
     .filter((x?: Selection) => x !== undefined)
 
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
-  for (const pathToNode of Object.values(pathToNodeMap)) {
+  for (const [index, pathToNode] of Object.entries(pathToNodeMap)) {
+    const previousSelection = prevSelectionRanges.graphSelections[Number(index)]
     const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
@@ -962,6 +1070,7 @@ export function updateSelections(
         range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
+      sketchRegion: previousSelection?.sketchRegion,
     })
   }
 
@@ -978,7 +1087,7 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'enginePrimitiveFace'],
-  profile: ['solid2d'],
+  profile: ['solid2d', 'sketchRegion'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],

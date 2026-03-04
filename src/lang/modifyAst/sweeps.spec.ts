@@ -13,6 +13,8 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   buildTheWorldAndConnectToEngine,
@@ -235,6 +237,91 @@ extrude002 = extrude(seg01, length = 3)`)
         `extrude001 = extrude([profile001, profile002], length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call from a sketch region selection', async () => {
+      const sketchBlockCode = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [-0.03, -0.04])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        sketchBlockCode,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const segments = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'segment'
+      )
+      const line1 = segments.find((segment) => {
+        const codeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
+        if (!codeRef) return false
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 'line1'
+      })
+      const line2 = segments.find((segment) => {
+        const codeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
+        if (!codeRef) return false
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 'line2'
+      })
+      if (!line1 || !line2) {
+        throw new Error('Could not find line1/line2 segment artifacts')
+      }
+
+      const line1CodeRef = getCodeRefsByArtifactId(line1.id, artifactGraph)?.[0]
+      if (!line1CodeRef) {
+        throw new Error('Could not find line1 code reference')
+      }
+      const sketches: Selections = {
+        graphSelections: [
+          {
+            artifact: line1,
+            codeRef: line1CodeRef,
+            sketchRegion: {
+              point: [1, 1],
+              segmentId: line1.id,
+              intersectionSegmentId: line2.id,
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(segments = [s.line1, s.line2]), length = 1)`
+      )
     })
 
     it('should add a multi-profile extrude call on a profile and a cap', async () => {
