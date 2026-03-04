@@ -133,6 +133,10 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
 fn test_after_engine_generate_manifest() {
     // Generate the manifest.json
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
+
+    let manifest_path = INPUTS_DIR.join(MANIFEST_FILE);
+    // Check that the JSON written was valid.
+    let _manifest: Vec<KclMetadata> = serde_json::from_str(&fs::read_to_string(&manifest_path).unwrap()).unwrap();
 }
 
 fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
@@ -245,7 +249,7 @@ struct KclMetadata {
 
 // Function to read and parse .kcl files
 fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata> {
-    // Find primary kcl file (main.kcl or first sorted file)
+    // Prefer the sample's root main.kcl
     let primary_kcl_file = files.iter().find(|file| file.contains("main.kcl"))?;
 
     let full_path_to_primary_kcl = project_path.join(primary_kcl_file);
@@ -298,51 +302,53 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 }
 
 // Function to scan the directory and generate the manifest.json
-fn generate_kcl_manifest(dir: &Path) -> Result<()> {
+fn generate_kcl_manifest(kcl_samples_root_dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
 
     // Collect all directory entries first
-    let mut entries: Vec<_> = WalkDir::new(dir)
-        .follow_links(true)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .collect();
+    let mut entries: Vec<_> = kcl_samples_root_dir.read_dir()?.filter_map(|e| e.ok()).collect();
 
     // Sort directories by name for consistent ordering
     entries.sort_by_key(|a| a.file_name().to_string_lossy().to_string());
 
-    // Loop through all directories and add to manifest if KCL sample
+    // Loop through top-level sample directories and add to manifest if KCL sample
     for entry in entries {
         let path = entry.path();
 
         if path.is_dir() {
-            // Get all .kcl files in the directory
-            let files: Vec<String> = WalkDir::new(path)
+            // Collect allowed files, preserving nested paths relative to sample dir.
+            let files: Vec<String> = WalkDir::new(&path)
                 .into_iter()
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
-                        let ext = ext.to_str().unwrap().to_lowercase();
+                        let ext = ext.to_string_lossy().to_lowercase();
                         ALLOWED_FILETYPES.contains(&ext.as_str())
                     } else {
                         false
                     }
                 })
-                .map(|e| e.file_name().to_string_lossy().to_string())
+                .map(|e| {
+                    e.path()
+                        .strip_prefix(&path)
+                        .unwrap_or(e.path())
+                        .to_string_lossy()
+                        .replace('\\', "/")
+                })
                 .collect();
 
             if files.is_empty() {
                 continue;
             }
 
-            if let Some(metadata) = get_kcl_metadata(path, &files) {
+            if let Some(metadata) = get_kcl_metadata(&path, &files) {
                 manifest.push(metadata);
             }
         }
     }
 
     // Write the manifest.json
-    let output_path = dir.join(MANIFEST_FILE);
+    let output_path = kcl_samples_root_dir.join(MANIFEST_FILE);
     expectorate::assert_contents(&output_path, &serde_json::to_string_pretty(&manifest).unwrap());
 
     println!(
