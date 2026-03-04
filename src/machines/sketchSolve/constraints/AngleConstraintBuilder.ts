@@ -173,20 +173,19 @@ function getDefaultAngleLabelPosition(
     // The distances of the line segment end points from the intersection center
     const line1Distances = [
       distance2d(center, line1[0]),
-      distance2d(center, line1[1])
+      distance2d(center, line1[1]),
     ] as Coords2d
     const line2Distances = [
       distance2d(center, line2[0]),
-      distance2d(center, line2[1])
+      distance2d(center, line2[1]),
     ] as Coords2d
 
     const commonLineRange = intersectRanges(line1Distances, line2Distances)
-    const radius = commonLineRange ? 
-    lerp(commonLineRange[0], commonLineRange[1], 0.5)
-    :
-    // No intersection, take the second smallest distance,
-    // we could take the third, or the mid point between them..
-    [...line1Distances, ...line2Distances].sort((a, b) => a - b)[1]
+    const radius = commonLineRange
+      ? lerp(commonLineRange[0], commonLineRange[1], 0.5)
+      : // No intersection, take the second smallest distance,
+        // we could take the third, or the mid point between them..
+        [...line1Distances, ...line2Distances].sort((a, b) => a - b)[1]
 
     const line1Dir = subVec(line1[1], line1[0])
     const line2Dir = subVec(line2[1], line2[0])
@@ -194,7 +193,7 @@ function getDefaultAngleLabelPosition(
 
     let result = scaleVec(normalizeVec(line1Dir), radius)
     result = rotateVec2d(result, signedAngle / 2)
-    
+
     return result
   }
 
@@ -263,7 +262,11 @@ function getMajorLabelRadius(
   const interval2 = majorRay2
     ? rayIntervalWithinSegment(line2, center, majorRay2)
     : null
-  const radius = radiusFromIntervals(interval1, interval2, MAJOR_LABEL_MAX_DISTANCE)
+  const radius = radiusFromIntervals(
+    interval1,
+    interval2,
+    MAJOR_LABEL_MAX_DISTANCE
+  )
   return Math.min(radius, MAJOR_LABEL_MAX_DISTANCE)
 }
 
@@ -281,7 +284,7 @@ function chooseLineRayTowardAngle(
   const oppositeAngle = Math.atan2(oppositeDirection[1], oppositeDirection[0])
 
   return absoluteAngleDifference(baseAngle, targetAngle) <=
-      absoluteAngleDifference(oppositeAngle, targetAngle)
+    absoluteAngleDifference(oppositeAngle, targetAngle)
     ? baseDirection
     : oppositeDirection
 }
@@ -316,7 +319,11 @@ function getBisectorAngle(direction1: Coords2d, direction2: Coords2d) {
   return startAngle + signed * 0.5
 }
 
-function pointOnCircle(center: Coords2d, radius: number, angle: number): Coords2d {
+function pointOnCircle(
+  center: Coords2d,
+  radius: number,
+  angle: number
+): Coords2d {
   return [
     center[0] + Math.cos(angle) * radius,
     center[1] + Math.sin(angle) * radius,

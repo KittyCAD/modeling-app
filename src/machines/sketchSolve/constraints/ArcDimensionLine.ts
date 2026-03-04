@@ -136,7 +136,10 @@ export function updateArcDimensionLine(
   const startPoint = pointOnArc(center, radius, startAngle, directionSign, 0)
   const endPoint = pointOnArc(center, radius, startAngle, directionSign, sweep)
   const startTangent = tangentForArc(startAngle, directionSign)
-  const endTangent = tangentForArc(startAngle + directionSign * sweep, directionSign)
+  const endTangent = tangentForArc(
+    startAngle + directionSign * sweep,
+    directionSign
+  )
 
   const arrows = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
@@ -145,7 +148,9 @@ export function updateArcDimensionLine(
   const arrow2 = arrows[1]
   if (arrow1) {
     arrow1.position.copy(startPoint)
-    arrow1.rotation.z = directionToArrowRotation(startTangent.multiplyScalar(-1))
+    arrow1.rotation.z = directionToArrowRotation(
+      startTangent.multiplyScalar(-1)
+    )
     arrow1.scale.setScalar(scale)
   }
   if (arrow2) {
@@ -195,13 +200,16 @@ export function updateArcDimensionLine(
   }
 
   const guideLines = getGuideBodyLines(group)
-  updateGuideLine(guideLines[0], renderInput.line1, [startPoint.x, startPoint.y])
+  updateGuideLine(guideLines[0], renderInput.line1, [
+    startPoint.x,
+    startPoint.y,
+  ])
   updateGuideLine(guideLines[1], renderInput.line2, [endPoint.x, endPoint.y])
 }
 
 // Returns the intersection of 2 infinite lines that lie on the given line segments.
 // Returns a valid point even if the line segments themselves don't intersect.
-// Returns null if the lines are parallel, 
+// Returns null if the lines are parallel,
 export function getLineIntersection(
   line1: LineSegment,
   line2: LineSegment
@@ -220,9 +228,7 @@ export function getLineIntersection(
   return [p[0] + r[0] * t, p[1] + r[1] * t]
 }
 
-function buildArcGeometry(
-  renderInput: ArcDimensionLineRenderInput
-) {
+function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
   const center = getLineIntersection(renderInput.line1, renderInput.line2)
   if (!center) {
     return null
@@ -235,7 +241,10 @@ function buildArcGeometry(
 
   const line1Direction = subVec(renderInput.line1[1], renderInput.line1[0])
   const line2Direction = subVec(renderInput.line2[1], renderInput.line2[0])
-  if (lengthSq(line1Direction) < EPSILON || lengthSq(line2Direction) < EPSILON) {
+  if (
+    lengthSq(line1Direction) < EPSILON ||
+    lengthSq(line2Direction) < EPSILON
+  ) {
     return null
   }
 
@@ -266,7 +275,11 @@ function buildArcGeometry(
     directionSign,
     sweep
   )
-  const rawLabelOffset = getOffsetAlongArc(startAngle, labelAngle, directionSign)
+  const rawLabelOffset = getOffsetAlongArc(
+    startAngle,
+    labelAngle,
+    directionSign
+  )
   const labelOffset = clamp(rawLabelOffset, 0, sweep)
 
   return {

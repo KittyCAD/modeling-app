@@ -48,10 +48,7 @@ export function scaleVec(a: Coords2d, scale: number): Coords2d {
 export function rotateVec2d(v: Coords2d, angleRadians: number): Coords2d {
   const cosAngle = Math.cos(angleRadians)
   const sinAngle = Math.sin(angleRadians)
-  return [
-    v[0] * cosAngle - v[1] * sinAngle,
-    v[0] * sinAngle + v[1] * cosAngle,
-  ]
+  return [v[0] * cosAngle - v[1] * sinAngle, v[0] * sinAngle + v[1] * cosAngle]
 }
 
 export function subVec(a: Coords2d, b: Coords2d): Coords2d {
