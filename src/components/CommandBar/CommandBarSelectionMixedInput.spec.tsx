@@ -7,6 +7,27 @@ import { App } from '@src/lib/app'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { KclManager } from '@src/lang/KclManager'
 
+vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
+vi.mock('@src/lang/wasmUtils', async () => {
+  const realImport = await import('@src/lang/wasmUtils')
+  // We have to mock this because it fetches by default
+  const mockInitialiseWasm = () => import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
+  return {
+    ...realImport,
+    initialiseWasm: mockInitialiseWasm,
+  } satisfies typeof realImport
+})
+
+vi.mock('@xstate/react', () => ({
+  useSelector: () => ({ graphSelections: [], otherSelections: [] }),
+}))
+
+vi.mock('@src/lib/selections', () => ({
+  canSubmitSelectionArg: () => true,
+  getSelectionCountByType: () => ({}),
+  getSelectionTypeDisplayText: () => 'Test selection',
+}))
+
 describe('CommandBarSelectionMixedInput', () => {
   const mockProps = {
     stepBack: vi.fn(),
@@ -34,7 +55,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const app = App.getDefaultSystems(Promise.resolve({} as ModuleType))
+      const app = App.getDefaultSystems()
       const executingEditor = new KclManager({
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -64,7 +85,7 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
-      const app = App.getDefaultSystems(Promise.resolve({} as ModuleType))
+      const app = App.getDefaultSystems()
       const executingEditor = new KclManager({
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -91,7 +112,7 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
-      const app = App.getDefaultSystems(Promise.resolve({} as ModuleType))
+      const app = App.getDefaultSystems()
       const executingEditor = new KclManager({
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -118,7 +139,7 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should send clear selection command only once on mount', async () => {
-      const app = App.getDefaultSystems(Promise.resolve({} as ModuleType))
+      const app = App.getDefaultSystems()
       const executingEditor = new KclManager({
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -160,7 +181,7 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should set hasClearedSelection state after clearing', async () => {
-      const app = App.getDefaultSystems(Promise.resolve({} as ModuleType))
+      const app = App.getDefaultSystems()
       const executingEditor = new KclManager({
         commandBar: app.commands.actor,
         settings: app.settings.actor,
