@@ -73,6 +73,11 @@ class APIReporter implements Reporter {
       logsAsString = stringContent
     }
 
+    // Only attach logs for passing tests when running TAB locally
+    if (result.status === 'passed' && process.env.TAB_API_KEY !== 'localhost') {
+      logsAsString = ''
+    }
+
     const payload = {
       // Required information
       project: `${process.env.GITHUB_SERVER_URL}/KittyCAD/modeling-app`,
