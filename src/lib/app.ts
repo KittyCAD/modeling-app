@@ -13,7 +13,6 @@ import type {
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
   type SettingsType,
@@ -28,8 +27,7 @@ import {
   type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type CommandBarActorType,
   commandBarMachine,
@@ -291,7 +289,7 @@ export class App implements AppSubsystems {
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
     this.singletons.systemIOActor.subscribe(({ context }) => {
-      const foundProject = context.folders.find(
+      const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
           p.path === projectIORefSignal.value.path
@@ -348,17 +346,14 @@ export class App implements AppSubsystems {
         })
     }
 
-    const systemIOActor = createActor(
-      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      {
-        input: {
-          wasmInstancePromise: this.wasmPromise,
-          kclManager,
-          engineCommandManager: kclManager.engineCommandManager,
-          app: this,
-        },
-      }
-    ).start()
+    const systemIOActor = createActor(systemIOMachineImpl, {
+      input: {
+        wasmInstancePromise: this.wasmPromise,
+        kclManager,
+        engineCommandManager: kclManager.engineCommandManager,
+        app: this,
+      },
+    }).start()
 
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)

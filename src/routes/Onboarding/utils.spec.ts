@@ -33,33 +33,6 @@ describe('Onboarding utility functions', () => {
       const expected: OnboardingStatus[] = ['/desktop/exports', 'completed']
       expect(stepResults).toEqual(expected)
     })
-    it('Browser beginning', () => {
-      const stepResults = useAdjacentOnboardingSteps('/browser', 'browser')
-      const expected: OnboardingStatus[] = ['dismissed', '/browser/scene']
-      expect(stepResults).toEqual(expected)
-    })
-    it('Browser middle', () => {
-      const stepResults = useAdjacentOnboardingSteps(
-        '/browser/text-to-cad-prompt',
-        'browser'
-      )
-      const expected: OnboardingStatus[] = [
-        '/browser/text-to-cad',
-        '/browser/feature-tree-pane',
-      ]
-      expect(stepResults).toEqual(expected)
-    })
-    it('Browser end', () => {
-      const stepResults = useAdjacentOnboardingSteps(
-        '/browser/conclusion',
-        'browser'
-      )
-      const expected: OnboardingStatus[] = [
-        '/browser/prompt-to-edit-result',
-        'completed',
-      ]
-      expect(stepResults).toEqual(expected)
-    })
     it('Errors gracefully', () => {
       const stepResults = useAdjacentOnboardingSteps(
         '/bad-path' as unknown as OnboardingPath,

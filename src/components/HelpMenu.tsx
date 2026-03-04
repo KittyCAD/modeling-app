@@ -11,11 +11,8 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { acceptOnboarding } from '@src/routes/Onboarding/utils'
+import { useNavigate } from 'react-router-dom'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 const HelpMenuDivider = () => (
@@ -26,7 +23,6 @@ export function HelpMenu() {
   const { settings } = useApp()
   const { kclManager, systemIOActor } = useSingletons()
   const navigate = useNavigate()
-  const location = useLocation()
   const filePath = useAbsoluteFilePath()
 
   const resetOnboardingWorkflow = () => {
@@ -36,10 +32,9 @@ export function HelpMenu() {
       kclManager,
       systemIOActor,
       settingsActor: settings.actor,
+      executingPath: filePath,
     }
-    acceptOnboarding(props).catch((reason) =>
-      catchOnboardingWarnError(reason, props)
-    )
+    acceptOnboarding(props)
   }
 
   const cb = (data: WebContentSendPayload) => {
@@ -132,9 +127,10 @@ export function HelpMenu() {
             <HelpMenuItem
               as="button"
               onClick={() => {
-                const targetPath = location.pathname.includes(PATHS.FILE)
-                  ? filePath + PATHS.SETTINGS_KEYBINDINGS
-                  : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+                const targetPath =
+                  filePath !== undefined
+                    ? filePath + PATHS.SETTINGS_KEYBINDINGS
+                    : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
                 void navigate(targetPath)
               }}
               data-testid="keybindings-button"

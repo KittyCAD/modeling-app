@@ -24,11 +24,9 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
+import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -45,6 +43,7 @@ export const AllSettingsFields = forwardRef(
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
+    const executingPath = useAbsoluteFilePath()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -70,15 +69,9 @@ export const AllSettingsFields = forwardRef(
         kclManager,
         systemIOActor,
         settingsActor: settings.actor,
+        executingPath,
       }
-      // We need to navigate out of settings before accepting onboarding
-      // in the web
-      if (!isDesktop()) {
-        void navigate('..')
-      }
-      acceptOnboarding(props).catch((reason) =>
-        catchOnboardingWarnError(reason, props)
-      )
+      acceptOnboarding(props)
     }
 
     return (

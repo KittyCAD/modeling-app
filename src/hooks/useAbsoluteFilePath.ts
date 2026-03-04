@@ -1,14 +1,15 @@
-import { BROWSER_PATH, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { useApp } from '@src/lib/boot'
 
 export function useAbsoluteFilePath() {
   const app = useApp()
 
-  return (
-    PATHS.FILE +
-    '/' +
-    encodeURIComponent(
-      app.project?.executingPathSignal.value?.value ?? BROWSER_PATH
-    )
-  )
+  const executingPath = app.project?.executingPathSignal.value?.value
+
+  if (!executingPath) {
+    console.warn('bug: executingPath undefined, not navigating')
+    return
+  }
+
+  return PATHS.FILE + '/' + encodeURIComponent(executingPath)
 }
