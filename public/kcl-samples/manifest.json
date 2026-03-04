@@ -1046,21 +1046,6 @@
     ]
   },
   {
-    "file": "1120t74-pipe.step",
-    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/mcmaster-parts/1120t74-pipe.step",
-    "multipleFiles": true,
-    "title": "ISO-10303-21;",
-    "description": "HEADER;",
-    "files": [
-      "1120t74-pipe.step",
-      "68095k348-flange.step",
-      "91251a404-bolt.step",
-      "9472k188-gasket.step",
-      "95479a127-hex-nut.step",
-      "98017a257-washer.step"
-    ]
-  },
-  {
     "file": "main.kcl",
     "categories": [
       "Maker"
@@ -1215,11 +1200,17 @@
     "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
     "files": [
       "1120t74-pipe.kcl",
+      "1120t74-pipe.step",
       "68095k348-flange.kcl",
+      "68095k348-flange.step",
       "91251a404-bolt.kcl",
+      "91251a404-bolt.step",
       "9472k188-gasket.kcl",
+      "9472k188-gasket.step",
       "95479a127-hex-nut.kcl",
+      "95479a127-hex-nut.step",
       "98017a257-washer.kcl",
+      "98017a257-washer.step",
       "main.kcl",
       "parameters.kcl"
     ]
