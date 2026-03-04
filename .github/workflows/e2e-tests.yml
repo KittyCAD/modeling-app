@@ -65,8 +65,8 @@ jobs:
 
   snapshots:
     needs: [build-wasm]
+    runs-on: namespace-profile-macos-8-cores
     name: e2e:snapshots
-    runs-on: namespace-profile-ubuntu-8-cores
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
