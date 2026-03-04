@@ -740,7 +740,7 @@ export class KclManager extends EventTarget {
         console.error('Error when updating Rust state after user edit:', error)
       }
     },
-    50
+    1000
   )
 
   private createEditorExtensions() {
