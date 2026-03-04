@@ -1,4 +1,9 @@
-import type { EntityType, OutputFormat3d } from '@kittycad/lib'
+import type {
+  AxisDirectionPair,
+  EntityType,
+  OutputFormat3d,
+  UnitLength,
+} from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -14,6 +19,7 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_DEFAULT_TRANSFORM,
   KCL_DEFAULT_ORIGIN,
   KCL_DEFAULT_ORIGIN_2D,
@@ -37,6 +43,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
   ModelingMachineContext,
@@ -141,6 +148,8 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+    up?: AxisDirectionPair['axis']
+    scale?: UnitLength
   }
   Make: {
     machine: components['schemas']['MachineInfoResponse']
@@ -515,6 +524,60 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             default:
               return []
           }
+        },
+      },
+      up: {
+        inputType: 'options',
+        displayName: 'Up',
+        required: false,
+        prepopulate: true,
+        defaultValue: 'z',
+        options: (commandContext) => {
+          const currentUp =
+            (commandContext.argumentsToSubmit.up as
+              | AxisDirectionPair['axis']
+              | undefined) ?? 'z'
+          return [
+            { name: 'Z+', isCurrent: currentUp === 'z', value: 'z' },
+            { name: 'Y+', isCurrent: currentUp === 'y', value: 'y' },
+          ]
+        },
+        valueSummary: (value) =>
+          value === undefined ? 'Z+' : `${value.toUpperCase()}+`,
+      },
+      scale: {
+        inputType: 'options',
+        displayName: 'Scale',
+        required: false,
+        prepopulate: true,
+        defaultValue: (commandContext) => {
+          const machineContext =
+            commandContext.selectedCommand?.machineActor?.getSnapshot()
+              .context as ModelingMachineContext | undefined
+          return (
+            machineContext?.store.defaultUnit?.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT
+          )
+        },
+        options: (commandContext, machineContext) => {
+          const submittedScale = commandContext.argumentsToSubmit.scale
+          const resolvedSubmittedScale =
+            typeof submittedScale === 'function'
+              ? (submittedScale as (context: typeof commandContext) => UnitLength)(
+                  commandContext
+                )
+              : (submittedScale as UnitLength | undefined)
+
+          const currentScale =
+            resolvedSubmittedScale ??
+            machineContext?.store.defaultUnit?.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT
+
+          return baseUnitsUnion.map((unit) => ({
+            name: baseUnitLabels[unit],
+            value: unit,
+            isCurrent: unit === currentScale,
+          }))
         },
       },
     },

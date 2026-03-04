@@ -169,6 +169,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
@@ -4969,9 +4970,15 @@ export const modelingMachine = setup({
           fileName += `.${data.type}`
         }
 
+        const { up, scale, ...formatData } = data
         const format = {
-          ...data,
+          ...formatData,
         } as Partial<OutputFormat3d>
+        const exportScale =
+          scale ??
+          defaultUnit?.current ??
+          // Fall back to app default units if the project setting is absent.
+          DEFAULT_DEFAULT_LENGTH_UNIT
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
@@ -4984,31 +4991,38 @@ export const modelingMachine = setup({
           format.type === 'step' ||
           format.type === 'stl'
         ) {
-          // Set the default coords.
-          // In the future we can make this configurable.
-          // But for now, its probably best to keep it consistent with the
-          // UI.
-          format.coords = {
-            forward: {
-              axis: 'y',
-              direction: 'negative',
-            },
-            up: {
-              axis: 'z',
-              direction: 'positive',
-            },
-          }
+          // Configure output orientation from export options.
+          format.coords =
+            up === 'y'
+              ? {
+                  forward: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                  up: {
+                    axis: 'y',
+                    direction: 'positive',
+                  },
+                }
+              : {
+                  forward: {
+                    axis: 'y',
+                    direction: 'negative',
+                  },
+                  up: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                }
         }
 
         if (
           format.type === 'obj' ||
           format.type === 'stl' ||
-          format.type === 'ply'
+          format.type === 'ply' ||
+          format.type === 'step'
         ) {
-          if (!defaultUnit?.current) {
-            return new Error('No default unit provided')
-          }
-          format.units = defaultUnit.current
+          format.units = exportScale
         }
 
         if (format.type === 'ply' || format.type === 'stl') {
