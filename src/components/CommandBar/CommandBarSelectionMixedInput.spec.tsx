@@ -4,7 +4,6 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { App } from '@src/lib/app'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { KclManager } from '@src/lang/KclManager'
 
 vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
