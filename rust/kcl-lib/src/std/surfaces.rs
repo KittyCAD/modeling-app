@@ -332,9 +332,7 @@ async fn resolve_object_id_for_edge(
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
-        format!(
-            "Could not resolve the body for edge `{edge_id}`. Use a tagged edge or pass `getBoundedEdge(...)`."
-        ),
+        format!("Could not resolve the body for edge `{edge_id}`. Use a tagged edge or pass `getBoundedEdge(...)`."),
         vec![args.source_range],
     )))
 }
