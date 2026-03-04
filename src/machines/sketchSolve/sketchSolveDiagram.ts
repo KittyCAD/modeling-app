@@ -55,7 +55,7 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { getSignedAngleBetweenVec, lengthVec, subVec } from '@src/lib/utils2d'
+import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -73,8 +73,8 @@ function calculateCurrentAngleBetweenLines(
 
   const v1 = subVec(line1Points[1], line1Points[0])
   const v2 = subVec(line2Points[1], line2Points[0])
-  const v1Length = lengthVec(v1)
-  const v2Length = lengthVec(v2)
+  const v1Length = length2d(v1)
+  const v2Length = length2d(v2)
   if (v1Length === 0 || v2Length === 0) {
     return null
   }

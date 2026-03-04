@@ -2,20 +2,30 @@ import type {
   Number as ApiNumber,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
-  addVec,
   clamp,
-  cross2d,
-  dot2d,
-  lengthSq,
+  intersectRanges,
+  getSignedAngleBetweenVec,
+  length2d,
   lerp,
   normalizeVec,
-  scaleVec,
+  lengthSq,
   subVec,
+  distance2d,
+  scaleVec,
+  rotateVec2d,
 } from '@src/lib/utils2d'
-import { updateArcDimensionLine } from '@src/machines/sketchSolve/constraints/ArcDimensionLine'
+import {
+  ANGLE_CONSTRAINT_ARC_BODY_ROLE,
+  ANGLE_CONSTRAINT_GUIDE_BODY_ROLE,
+  type ArcDimensionLineRenderInput,
+  getLineIntersection,
+  type LineSegment,
+  updateArcDimensionLine,
+} from '@src/machines/sketchSolve/constraints/ArcDimensionLine'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { createDimensionLine } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import {
@@ -24,9 +34,13 @@ import {
   isAngleConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { Group } from 'three'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
 
-const ANGLE_RADIUS_SAMPLE = 0.2
+const TWO_PI = Math.PI * 2
 const EPSILON = 1e-8
+const RADIUS_SAMPLE = 0.2
+const MAJOR_LABEL_MAX_DISTANCE = 40
 
 export class AngleConstraintBuilder {
   private readonly resources: ConstraintResources
@@ -36,7 +50,9 @@ export class AngleConstraintBuilder {
   }
 
   public init(obj: AngleConstraint) {
-    return createDimensionLine(obj, this.resources)
+    const group = createDimensionLine(obj, this.resources)
+    initializeAngleConstraintLines(group, this.resources)
+    return group
   }
 
   public update(
@@ -48,15 +64,15 @@ export class AngleConstraintBuilder {
     selectedIds: number[],
     hoveredId: number | null
   ) {
-    const angleConstraintData = calculateAngleConstraintData(obj, objects)
-    if (!angleConstraintData) {
+    const renderInput = calculateArcRenderInput(obj, objects)
+    if (!renderInput) {
       group.visible = false
       return
     }
 
     this.resources.updateConstraintGroup(group, obj.id, selectedIds, hoveredId)
     updateArcDimensionLine(
-      angleConstraintData,
+      renderInput,
       group,
       obj,
       scale,
@@ -66,25 +82,34 @@ export class AngleConstraintBuilder {
   }
 }
 
-type RayInterval = {
-  start: number
-  end: number
+function initializeAngleConstraintLines(
+  group: Group,
+  resources: ConstraintResources
+) {
+  const bodyLines = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
+  ) as Line2[]
+
+  for (const line of bodyLines) {
+    line.userData.role = ANGLE_CONSTRAINT_ARC_BODY_ROLE
+  }
+
+  for (let index = 0; index < 2; index++) {
+    const guideGeometry = new LineGeometry()
+    guideGeometry.setPositions([0, 0, 0, 0, 0, 0])
+
+    const guideLine = new Line2(guideGeometry, resources.materials.default.line)
+    guideLine.userData.type = DISTANCE_CONSTRAINT_BODY
+    guideLine.userData.role = ANGLE_CONSTRAINT_GUIDE_BODY_ROLE
+    guideLine.visible = false
+    group.add(guideLine)
+  }
 }
 
-type LineSegment = readonly [Coords2d, Coords2d]
-
-export type AngleConstraintData = {
-  center: Coords2d
-  startDirection: Coords2d
-  endDirection: Coords2d
-  radius: number
-}
-
-// Computes the data needed to draw an angle constraint arc between two lines.
-function calculateAngleConstraintData(
+function calculateArcRenderInput(
   obj: ApiObject,
   objects: ApiObject[]
-): AngleConstraintData | null {
+): ArcDimensionLineRenderInput | null {
   if (!isAngleConstraint(obj)) {
     return null
   }
@@ -96,174 +121,274 @@ function calculateAngleConstraintData(
     return null
   }
 
+  const isMajorAngle = isMajorConstraintAngle(obj.kind.constraint.angle)
+  const labelPosition = getDefaultAngleLabelPosition(line1, line2, isMajorAngle)
+  if (!labelPosition) {
+    return null
+  }
+
+  return {
+    line1,
+    line2,
+    labelPosition,
+    isMajorAngle,
+  }
+}
+
+function isMajorConstraintAngle(angle: ApiNumber) {
+  const angleRadians =
+    angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
+  const normalized = ((angleRadians % TWO_PI) + TWO_PI) % TWO_PI
+  return normalized > Math.PI + EPSILON
+}
+
+function getDefaultAngleLabelPosition(
+  line1: LineSegment,
+  line2: LineSegment,
+  isMajorAngle: boolean
+): Coords2d | null {
   const center = getLineIntersection(line1, line2)
   if (!center) {
     return null
   }
 
-  const targetAngle = normaliseConstraintAngleRadians(
-    angleNumberToRadians(obj.kind.constraint.angle)
-  )
-
-  const directionPair = pickDirectionPair(center, line1, line2, targetAngle)
-  if (!directionPair) {
+  const minorBisectorAngle = getMinorBisectorAngle(line1, line2, center)
+  if (minorBisectorAngle === null) {
     return null
   }
 
-  const startDirection = directionPair.direction1
-  const endDirection = directionPair.direction2
+  if (isMajorAngle) {
+    const majorBisectorAngle = minorBisectorAngle + Math.PI
+    const majorRadius = getMajorLabelRadius(
+      line1,
+      line2,
+      center,
+      majorBisectorAngle
+    )
+    if (majorRadius < EPSILON) {
+      return null
+    }
+    return pointOnCircle(center, majorRadius, majorBisectorAngle)
+  } else {
+    // The distances of the line segment end points from the intersection center
+    const line1Distances = [
+      distance2d(center, line1[0]),
+      distance2d(center, line1[1])
+    ] as Coords2d
+    const line2Distances = [
+      distance2d(center, line2[0]),
+      distance2d(center, line2[1])
+    ] as Coords2d
 
-  const interval1 = getRayInterval(line1, center, startDirection)
-  const interval2 = getRayInterval(line2, center, endDirection)
-  const overlap = intersectIntervals(interval1, interval2)
+    const commonLineRange = intersectRanges(line1Distances, line2Distances)
+    const radius = commonLineRange ? 
+    lerp(commonLineRange[0], commonLineRange[1], 0.5)
+    :
+    // No intersection, take the second smallest distance,
+    // we could take the third, or the mid point between them..
+    [...line1Distances, ...line2Distances].sort((a, b) => a - b)[1]
 
-  let radius = lerp(overlap.start, overlap.end, ANGLE_RADIUS_SAMPLE)
-  if (radius < EPSILON) {
-    radius = fallbackRadius(interval1, interval2)
-  }
-  if (radius < EPSILON) {
-    return null
+    const line1Dir = subVec(line1[1], line1[0])
+    const line2Dir = subVec(line2[1], line2[0])
+    const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
+
+    let result = scaleVec(normalizeVec(line1Dir), radius)
+    result = rotateVec2d(result, signedAngle / 2)
+    
+    return result
   }
 
-  return {
-    center,
-    startDirection,
-    endDirection,
-    radius,
-  }
+  // const minorRadius = getMinorRadiusFromEndpointDistanceRanges(line1, line2, center)
+  // if (minorRadius < EPSILON) {
+  //   return null
+  // }
+
+  // return pointOnCircle(center, minorRadius, minorBisectorAngle)
 }
 
-function getLineIntersection(
-  line1: LineSegment,
-  line2: LineSegment
-): Coords2d | null {
-  const p = line1[0]
-  const q = line2[0]
-  const r = subVec(line1[1], line1[0])
-  const s = subVec(line2[1], line2[0])
-
-  const denominator = cross2d(r, s)
-  if (Math.abs(denominator) < EPSILON) {
-    return null
-  }
-
-  const qp = subVec(q, p)
-  const t = cross2d(qp, s) / denominator
-  return addVec(p, scaleVec(r, t))
-}
-
-function pickDirectionPair(
-  center: Coords2d,
+function getMinorBisectorAngle(
   line1: LineSegment,
   line2: LineSegment,
-  targetAngle: number
+  center: Coords2d
 ) {
-  const baseDirection1 = normalizeVec(subVec(line1[1], line1[0]))
-  const baseDirection2 = normalizeVec(subVec(line2[1], line2[0]))
-  if (
-    lengthSq(baseDirection1) < EPSILON ||
-    lengthSq(baseDirection2) < EPSILON
-  ) {
+  const direction1 = getDirectionTowardSegment(line1, center)
+  const direction2 = getDirectionTowardSegment(line2, center)
+  if (!direction1 || !direction2) {
+    return null
+  }
+  return getBisectorAngle(direction1, direction2)
+}
+
+function getDirectionTowardSegment(
+  line: LineSegment,
+  center: Coords2d
+): Coords2d | null {
+  const midpoint: Coords2d = [
+    (line[0][0] + line[1][0]) * 0.5,
+    (line[0][1] + line[1][1]) * 0.5,
+  ]
+  const towardMid = normalizeVec(subVec(midpoint, center))
+  if (lengthSq(towardMid) >= EPSILON) {
+    return towardMid
+  }
+
+  const towardStart = normalizeVec(subVec(line[0], center))
+  if (lengthSq(towardStart) >= EPSILON) {
+    return towardStart
+  }
+
+  const towardEnd = normalizeVec(subVec(line[1], center))
+  if (lengthSq(towardEnd) >= EPSILON) {
+    return towardEnd
+  }
+
+  return null
+}
+
+function getMajorLabelRadius(
+  line1: LineSegment,
+  line2: LineSegment,
+  center: Coords2d,
+  majorBisectorAngle: number
+) {
+  const majorRay1 = chooseLineRayTowardAngle(line1, majorBisectorAngle)
+  const majorRay2 = chooseLineRayTowardAngle(line2, majorBisectorAngle)
+  if (!majorRay1 && !majorRay2) {
+    return MAJOR_LABEL_MAX_DISTANCE
+  }
+
+  const interval1 = majorRay1
+    ? rayIntervalWithinSegment(line1, center, majorRay1)
+    : null
+  const interval2 = majorRay2
+    ? rayIntervalWithinSegment(line2, center, majorRay2)
+    : null
+  const radius = radiusFromIntervals(interval1, interval2, MAJOR_LABEL_MAX_DISTANCE)
+  return Math.min(radius, MAJOR_LABEL_MAX_DISTANCE)
+}
+
+function chooseLineRayTowardAngle(
+  line: LineSegment,
+  targetAngle: number
+): Coords2d | null {
+  const baseDirection = normalizeVec(subVec(line[1], line[0]))
+  if (lengthSq(baseDirection) < EPSILON) {
     return null
   }
 
-  const candidateDirections1 = [baseDirection1, scaleVec(baseDirection1, -1)]
-  const candidateDirections2 = [baseDirection2, scaleVec(baseDirection2, -1)]
+  const oppositeDirection: Coords2d = [-baseDirection[0], -baseDirection[1]]
+  const baseAngle = Math.atan2(baseDirection[1], baseDirection[0])
+  const oppositeAngle = Math.atan2(oppositeDirection[1], oppositeDirection[0])
 
-  let best: {
-    direction1: Coords2d
-    direction2: Coords2d
-    angleScore: number
-    overlapLength: number
-    overlapEnd: number
-  } | null = null
+  return absoluteAngleDifference(baseAngle, targetAngle) <=
+      absoluteAngleDifference(oppositeAngle, targetAngle)
+    ? baseDirection
+    : oppositeDirection
+}
 
-  for (const direction1 of candidateDirections1) {
-    for (const direction2 of candidateDirections2) {
-      const dot = clamp(dot2d(direction1, direction2), -1, 1)
-      const angle = Math.acos(dot)
-      const angleScore = Math.abs(angle - targetAngle)
-      const interval1 = getRayInterval(line1, center, direction1)
-      const interval2 = getRayInterval(line2, center, direction2)
-      const overlap = intersectIntervals(interval1, interval2)
-      const overlapLength = Math.max(0, overlap.end - overlap.start)
-      const overlapEnd = overlap.end
+function absoluteAngleDifference(a: number, b: number) {
+  return Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)))
+}
 
-      if (
-        !best ||
-        angleScore < best.angleScore - EPSILON ||
-        (Math.abs(angleScore - best.angleScore) <= EPSILON &&
-          (overlapLength > best.overlapLength + EPSILON ||
-            (Math.abs(overlapLength - best.overlapLength) <= EPSILON &&
-              overlapEnd > best.overlapEnd + EPSILON)))
-      ) {
-        best = {
-          direction1: [...direction1],
-          direction2: [...direction2],
-          angleScore,
-          overlapLength,
-          overlapEnd,
-        }
-      }
-    }
+function getMinorRadiusFromEndpointDistanceRanges(
+  line1: LineSegment,
+  line2: LineSegment,
+  center: Coords2d
+) {
+  const range1 = getEndpointDistanceRange(line1, center)
+  const range2 = getEndpointDistanceRange(line2, center)
+  const overlapStart = Math.max(range1.start, range2.start)
+  const overlapEnd = Math.min(range1.end, range2.end)
+  if (overlapEnd >= overlapStart) {
+    return lerp(overlapStart, overlapEnd, RADIUS_SAMPLE)
   }
 
-  if (!best) {
-    return null
+  if (range1.end < range2.start) {
+    return (range1.end + range2.start) * 0.5
   }
 
+  return (range2.end + range1.start) * 0.5
+}
+
+function getBisectorAngle(direction1: Coords2d, direction2: Coords2d) {
+  const signed = getSignedAngleBetweenVec(direction1, direction2)
+  const startAngle = Math.atan2(direction1[1], direction1[0])
+  return startAngle + signed * 0.5
+}
+
+function pointOnCircle(center: Coords2d, radius: number, angle: number): Coords2d {
+  return [
+    center[0] + Math.cos(angle) * radius,
+    center[1] + Math.sin(angle) * radius,
+  ]
+}
+
+type DistanceRange = {
+  start: number
+  end: number
+}
+
+function getEndpointDistanceRange(line: LineSegment, center: Coords2d) {
+  const d1 = length2d(subVec(line[0], center))
+  const d2 = length2d(subVec(line[1], center))
   return {
-    direction1: best.direction1,
-    direction2: best.direction2,
+    start: Math.min(d1, d2),
+    end: Math.max(d1, d2),
   }
 }
 
-function getRayInterval(
+function rayIntervalWithinSegment(
   line: LineSegment,
   center: Coords2d,
-  direction: Coords2d
-): RayInterval {
-  const p1 = dot2d(subVec(line[0], center), direction)
-  const p2 = dot2d(subVec(line[1], center), direction)
-  const minProjection = Math.min(p1, p2)
-  const maxProjection = Math.max(p1, p2)
+  rayDirection: Coords2d
+) {
+  const p1 =
+    (line[0][0] - center[0]) * rayDirection[0] +
+    (line[0][1] - center[1]) * rayDirection[1]
+  const p2 =
+    (line[1][0] - center[0]) * rayDirection[0] +
+    (line[1][1] - center[1]) * rayDirection[1]
+  const low = Math.min(p1, p2)
+  const high = Math.max(p1, p2)
+  if (high < EPSILON) {
+    return null
+  }
   return {
-    start: Math.max(0, minProjection),
-    end: Math.max(0, maxProjection),
+    start: Math.max(0, low),
+    end: Math.max(0, high),
   }
 }
 
-function intersectIntervals(
-  interval1: RayInterval,
-  interval2: RayInterval
-): RayInterval {
-  const start = Math.max(interval1.start, interval2.start)
-  const end = Math.min(interval1.end, interval2.end)
-  if (end < start) {
-    return { start, end: start }
+function radiusFromIntervals(
+  interval1: DistanceRange | null,
+  interval2: DistanceRange | null,
+  fallbackValue: number
+) {
+  if (!interval1 && !interval2) {
+    return fallbackValue
   }
-  return { start, end }
-}
-
-function fallbackRadius(interval1: RayInterval, interval2: RayInterval) {
-  const availableEnds = [interval1.end, interval2.end].filter(
-    (value) => value > EPSILON
-  )
-  if (availableEnds.length === 0) {
-    return 0
+  if (interval1 && !interval2) {
+    return lerp(interval1.start, interval1.end, RADIUS_SAMPLE)
   }
-  return Math.min(...availableEnds) * ANGLE_RADIUS_SAMPLE
-}
-
-function angleNumberToRadians(angle: ApiNumber) {
-  return angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
-}
-
-function normaliseConstraintAngleRadians(angleRadians: number) {
-  const fullTurn = Math.PI * 2
-  let normalized = Math.abs(angleRadians) % fullTurn
-  if (normalized > Math.PI) {
-    normalized = fullTurn - normalized
+  if (!interval1 && interval2) {
+    return lerp(interval2.start, interval2.end, RADIUS_SAMPLE)
   }
-  return normalized
+
+  const one = interval1 as DistanceRange
+  const two = interval2 as DistanceRange
+  const overlapStart = Math.max(one.start, two.start)
+  const overlapEnd = Math.min(one.end, two.end)
+  if (overlapEnd >= overlapStart) {
+    return lerp(overlapStart, overlapEnd, RADIUS_SAMPLE)
+  }
+
+  const target =
+    one.end < two.start
+      ? (one.end + two.start) * 0.5
+      : (two.end + one.start) * 0.5
+  const candidate1 = clamp(target, one.start, one.end)
+  const candidate2 = clamp(target, two.start, two.end)
+  return Math.abs(candidate1 - target) <= Math.abs(candidate2 - target)
+    ? candidate1
+    : candidate2
 }
