@@ -309,17 +309,16 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     for (const v2Sel of v2Selections) {
       if (!v2Sel.entityRef || v2Sel.entityRef.type !== 'edge') continue
 
-      // Find the sweep artifact from the first face
-      const firstFaceId = v2Sel.entityRef.faces[0]
-      if (!firstFaceId) continue
-
-      const faceArtifact = artifactGraph.get(firstFaceId)
-      if (
-        !faceArtifact ||
-        (faceArtifact.type !== 'wall' && faceArtifact.type !== 'cap')
-      ) {
-        continue
+      // Find a wall or cap face to get the body (edge refs can list segment first)
+      let faceArtifact: Artifact | undefined
+      for (const faceId of v2Sel.entityRef.faces) {
+        const a = artifactGraph.get(faceId)
+        if (a && (a.type === 'wall' || a.type === 'cap')) {
+          faceArtifact = a
+          break
+        }
       }
+      if (!faceArtifact) continue
 
       // Get the sweep artifact
       const sweepArtifact = getSweepArtifactFromSelection(
@@ -985,17 +984,24 @@ export function retrieveEdgeSelectionsFromOpArgs(
 
   const graphSelectionsV2: SelectionV2[] = []
   for (const v of tagValues) {
-    if (!(v.type == 'Uuid' && v.value)) {
-      console.warn('Face value is not a TagIdentifier', v)
+    const key =
+      v.type === 'Uuid' && v.value
+        ? v.value
+        : v.type === 'TagIdentifier' &&
+            (v as { artifact_id?: string }).artifact_id
+          ? (v as { artifact_id: string }).artifact_id
+          : null
+    if (!key) {
+      console.warn('Tag value is not Uuid or TagIdentifier with artifact_id', v)
       continue
     }
 
     const artifact = getArtifactOfTypes(
-      { key: v.value, types: ['segment', 'sweepEdge'] },
+      { key, types: ['segment', 'sweepEdge', 'edgeCut'] },
       artifactGraph
     )
     if (err(artifact)) {
-      console.warn('No artifact found for face tag', v.value)
+      console.warn('No artifact found for tag', key)
       continue
     }
 
@@ -1005,34 +1011,110 @@ export function retrieveEdgeSelectionsFromOpArgs(
       continue
     }
 
-    graphSelectionsV2.push({
-      entityRef: artifactToEntityRef(artifact.type, artifact.id),
-      codeRef: codeRefs[0],
-    })
+    const pathId =
+      artifact.type === 'segment'
+        ? (artifact as { pathId?: string }).pathId
+        : undefined
+    const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
+    if (!entityRef) continue
+    graphSelectionsV2.push({ entityRef, codeRef: codeRefs[0] })
   }
 
   return { graphSelectionsV2, otherSelections: [] }
 }
 
 /**
+ * Resolves a face reference from OpKclValue to an artifact ID (UUID string).
+ */
+function faceRefToArtifactId(v: OpKclValue): string | null {
+  if (v.type === 'Uuid' && v.value) return v.value
+  if (
+    v.type === 'TagIdentifier' &&
+    (v as { artifact_id?: string }).artifact_id
+  ) {
+    return (v as { artifact_id: string }).artifact_id
+  }
+  return null
+}
+
+/**
+ * Finds an edge artifact (segment, edgeCut, or sweepEdge) given the set of face
+ * artifact IDs from an edgeRef. For getCommonEdge(faces=[seg01, capStart001]),
+ * one "face" may be the segment (the edge) and one the cap; or both may be
+ * wall/cap and we find the segment whose commonSurfaceIds match.
+ */
+function findEdgeArtifactFromFaceIds(
+  faceIds: string[],
+  artifactGraph: ArtifactGraph
+): Artifact | null {
+  if (faceIds.length === 0) return null
+  const faceArtifacts: Artifact[] = []
+  for (const id of faceIds) {
+    const a = artifactGraph.get(id)
+    if (a) faceArtifacts.push(a)
+  }
+  if (faceArtifacts.length === 0) return null
+  const edgeType = (
+    a: Artifact
+  ): a is Artifact & { type: 'segment' | 'edgeCut' } =>
+    a.type === 'segment' || a.type === 'edgeCut'
+  const asEdge = faceArtifacts.find(edgeType)
+  if (asEdge) return asEdge
+  const faceIdSet = new Set(faceIds)
+  for (const [, artifact] of artifactGraph) {
+    if (artifact.type !== 'segment') continue
+    const commonIds = (artifact as { commonSurfaceIds?: string[] })
+      .commonSurfaceIds
+    if (!commonIds?.length) continue
+    const commonSet = new Set(commonIds)
+    if (
+      faceIdSet.size === commonSet.size &&
+      [...faceIdSet].every((id) => commonSet.has(id))
+    ) {
+      return artifact
+    }
+  }
+  return null
+}
+
+/**
  * Retrieves edge selections from edgeRefs argument (new API).
  * Used for edit flows when reading existing fillet calls with edgeRefs.
- *
- * Phase 2: Basic implementation - full parsing of edgeRefs objects will be improved in later phases.
- * For now, this returns an error to indicate that edgeRefs parsing is not yet fully implemented.
- * The edit flow will fall back to manual editing in the code editor.
+ * Parses edgeRefs array of objects with "faces" array (UUID or TagIdentifier refs)
+ * and resolves each to graphSelectionsV2 for the command bar edit flow.
  */
 export function retrieveEdgeSelectionsFromEdgeRefs(
   edgeRefsArg: OpArg,
   artifactGraph: ArtifactGraph
 ): Selections | Error {
-  // Phase 2: Basic implementation - return error for now
-  // Full parsing of edgeRefs object structure from OpKclValue will be implemented
-  // in a follow-up phase once we have better understanding of the OpKclValue structure
-  // for Object types with nested properties.
-  return new Error(
-    'Edit flow for fillet with edgeRefs is not yet fully implemented. Please edit in the code editor.'
-  )
+  if (edgeRefsArg.value.type !== 'Array') {
+    return new Error('edgeRefs argument is not an array')
+  }
+  const edgeRefItems = edgeRefsArg.value.value
+  const graphSelectionsV2: SelectionV2[] = []
+
+  for (const item of edgeRefItems) {
+    if (item.type !== 'Object' || !item.value) continue
+    const value = item.value as Record<string, OpKclValue>
+    const facesProp = value['faces']
+    if (!facesProp || facesProp.type !== 'Array') continue
+    const faceValues = facesProp.value ?? []
+    const faceIds: string[] = []
+    for (const v of faceValues) {
+      const id = faceRefToArtifactId(v)
+      if (id) faceIds.push(id)
+    }
+    if (faceIds.length < 2) continue
+    const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
+    if (!edgeArtifact) continue
+    const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
+    if (!codeRefs?.length) continue
+    // Use type 'edge' with faces so addFillet emits edgeRefs (not tags)
+    const entityRef: EntityReference = { type: 'edge', faces: faceIds }
+    graphSelectionsV2.push({ entityRef, codeRef: codeRefs[0] })
+  }
+
+  return { graphSelectionsV2, otherSelections: [] }
 }
 
 // Delete Edge Treatment

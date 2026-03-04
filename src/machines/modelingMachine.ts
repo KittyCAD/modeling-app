@@ -129,7 +129,6 @@ import {
 } from '@src/lang/modifyAst/transforms'
 import {
   artifactIsPlaneWithPaths,
-  artifactToEntityRef,
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,

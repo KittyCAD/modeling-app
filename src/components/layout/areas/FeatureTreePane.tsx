@@ -8,12 +8,16 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
+  artifactToEntityRef,
   findOperationArtifact,
   findOperationPlaneArtifact,
   isOffsetPlane,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
   getHideOpByArtifactId,
@@ -502,19 +506,53 @@ const OperationItem = ({
         getArtifactFromRange(
           item.sourceRange,
           systemDeps.kclManager.artifactGraph
-        ) ?? undefined
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
-        operation: item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+        ) ??
+        (item.type === 'StdLibCall'
+          ? (findOperationArtifact(item, systemDeps.kclManager.artifactGraph) ??
+            undefined)
+          : undefined)
+      if (
+        item.type === 'StdLibCall' &&
+        item.name === 'startSketchOn' &&
+        artifact
+      ) {
+        const codeRef = getFaceCodeRef(artifact)
+        if (codeRef) {
+          const entityRef = artifactToEntityRef(artifact.type, artifact.id)
+          sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+              selection: {
+                ...(entityRef && { entityRef }),
+                codeRef,
+              },
+            },
+          })
+        }
+      }
+
+      void selectOperation()
+        .then(() =>
+          prepareEditCommand({
+            artifactGraph: systemDeps.kclManager.artifactGraph,
+            code: systemDeps.kclManager.code,
+            commandBarActor,
+            operation: item,
+            rustContext: systemDeps.rustContext,
+            artifact: artifact ?? undefined,
+          })
+        )
+        .catch((e) => {
+          const message = err(e) ? e.message : JSON.stringify(e)
+          toast.error(message)
+        })
     }
   }, [
     item,
     commandBarActor,
+    sceneInfra,
+    selectOperation,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
     systemDeps.rustContext,

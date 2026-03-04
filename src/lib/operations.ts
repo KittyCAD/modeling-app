@@ -18,6 +18,7 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   artifactToEntityRef,
+  findOperationArtifact,
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
@@ -26,6 +27,8 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
+  getEdgeCutConsumedCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
   type CallExpressionKw,
@@ -589,6 +592,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
+  artifact,
 }) => {
   const baseCommand = {
     name: 'Fillet',
@@ -606,6 +610,28 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
 
   let selection: Selections | Error
 
+  const buildSelectionFromArtifact = (): Selections | null => {
+    if (
+      !artifact ||
+      (artifact.type !== 'edgeCut' &&
+        artifact.type !== 'segment' &&
+        artifact.type !== 'sweepEdge')
+    )
+      return null
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs?.length) return null
+    const pathId =
+      artifact.type === 'segment'
+        ? (artifact as { pathId?: string }).pathId
+        : undefined
+    const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
+    if (!entityRef) return null
+    return {
+      graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
+      otherSelections: [],
+    }
+  }
+
   // Try edgeRefs first (new API)
   if (operation.labeledArgs?.edgeRefs) {
     const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
@@ -622,12 +648,72 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
       artifactGraph
     )
   } else {
-    return {
-      reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+    const fromArtifact = buildSelectionFromArtifact()
+    if (fromArtifact) selection = fromArtifact
+    else {
+      return {
+        reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+      }
     }
   }
 
-  if (err(selection)) return { reason: selection.message }
+  if (err(selection)) {
+    return { reason: selection.message }
+  }
+
+  // Fallback: when op has edgeRefs but tag names didn't resolve (no artifact_id), build edge
+  // selection from edgeCut so addFillet keeps edgeRefs and correct faces (e.g. seg01, capStart001)
+  if (
+    selection.graphSelectionsV2.length === 0 &&
+    operation.labeledArgs?.edgeRefs &&
+    artifact?.type === 'edgeCut'
+  ) {
+    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
+    const segId = edgeIds?.length
+      ? edgeIds[0]
+      : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    if (segId) {
+      const segResult = getArtifactOfTypes(
+        { key: segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (!err(segResult)) {
+        const commonFaces = getCommonFacesForEdge(segResult, artifactGraph)
+        const codeRefResult = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
+        if (
+          !err(commonFaces) &&
+          commonFaces.length > 0 &&
+          !err(codeRefResult)
+        ) {
+          const startCap = commonFaces.find(
+            (f) =>
+              f.type === 'cap' &&
+              (f as { subType?: string }).subType?.toLowerCase() === 'start'
+          )
+          const faceIds = startCap
+            ? [segResult.id, startCap.id]
+            : segResult.commonSurfaceIds.slice(0, 2)
+          if (faceIds.length >= 2) {
+            selection = {
+              graphSelectionsV2: [
+                {
+                  entityRef: { type: 'edge', faces: faceIds },
+                  codeRef: codeRefResult,
+                },
+              ],
+              otherSelections: [],
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback: if tags/edgeRefs gave no selection but we have the fillet's edge artifact, use it
+  if (selection.graphSelectionsV2.length === 0) {
+    const fromArtifact = buildSelectionFromArtifact()
+    if (fromArtifact) selection = fromArtifact
+  }
 
   // 2. Convert the radius argument from a string to a KCL expression
   const radius = await extractKclArgument(
@@ -636,7 +722,9 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     'radius',
     rustContext
   )
-  if ('error' in radius) return { reason: radius.error }
+  if ('error' in radius) {
+    return { reason: radius.error }
+  }
 
   const tag = extractStringArgument(code, operation, 'tag')
 
@@ -2058,19 +2146,21 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
-    // TODO: fix matching sketches-on-faces and offset planes back to their
-    // original plane artifacts in order to edit them.
-    async prepareToEdit({ artifact }) {
-      if (artifact) {
+    async prepareToEdit({ operation, artifact, artifactGraph }) {
+      const resolvedArtifact =
+        artifact ??
+        (operation.type === 'StdLibCall'
+          ? (findOperationArtifact(operation, artifactGraph) ?? undefined)
+          : undefined)
+      if (resolvedArtifact) {
         return {
           name: 'Enter sketch',
           groupId: 'modeling',
         }
-      } else {
-        return {
-          reason:
-            'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
-        }
+      }
+      return {
+        reason:
+          'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
       }
     },
   },

@@ -306,12 +306,9 @@ export const commandBarMachine = setup({
       ('nodeToEdit' in context.argumentsToSubmit &&
         context.argumentsToSubmit.nodeToEdit !== undefined) ||
       false,
-    'Command has no arguments': ({ context }) => {
-      return (
-        !context.selectedCommand?.args ||
-        Object.keys(context.selectedCommand?.args).length === 0
-      )
-    },
+    'Command has no arguments': ({ context }) =>
+      !context.selectedCommand?.args ||
+      Object.keys(context.selectedCommand?.args).length === 0,
     'All arguments are skippable': ({ context }) => {
       return Object.values(context.selectedCommand!.args!).every(
         (argConfig) =>

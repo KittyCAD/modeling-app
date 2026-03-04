@@ -13,8 +13,10 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   codeRefFromRange,
+  getArtifactFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
@@ -1116,6 +1118,8 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
       return entityRef.edge_id
     case 'segment':
       return entityRef.segment_id
+    case 'edge':
+      return entityRef.faces?.[0]
     default:
       return undefined
   }
@@ -1191,7 +1195,9 @@ export function resolveSelectionV2(
   const artifact =
     s.entityRef && artifactGraph
       ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
-      : undefined
+      : codeRef.range && artifactGraph
+        ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
+        : undefined
   return { codeRef, artifact }
 }
 
@@ -1332,6 +1338,10 @@ export function artifactToEntityRef(
     return pathId != null
       ? { type: 'segment', path_id: pathId, segment_id: artifactId }
       : undefined
+  if (artifactType === 'startSketchOnFace')
+    return { type: 'face', face_id: artifactId }
+  if (artifactType === 'edgeCut')
+    return { type: 'solid2d_edge', edge_id: artifactId }
   return undefined
 }
 
@@ -1405,16 +1415,116 @@ export function findOperationArtifact(
   artifactGraph: ArtifactGraph
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
-  const artifact = artifactGraph
+  const opRange = operation.sourceRange
+  const byNodePathAndRange = artifactGraph
     .values()
     .toArray()
-    .find(
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      return (
+        cr != null &&
+        JSON.stringify(cr.nodePath) === nodePath &&
+        cr.range?.every((v, i) => v === opRange[i])
+      )
+    })
+  if (byNodePathAndRange) return byNodePathAndRange
+  if (operation.name === 'fillet' || operation.name === 'chamfer') {
+    const matchingEdgeCuts = artifactGraph
+      .values()
+      .toArray()
+      .filter((a): a is Artifact & { type: 'edgeCut' } => {
+        if (a.type !== 'edgeCut') return false
+        const cr = getFaceCodeRef(a)
+        return (
+          cr != null &&
+          cr.range != null &&
+          opRange != null &&
+          cr.range.length >= 2 &&
+          opRange.length >= 2 &&
+          cr.range[0] === opRange[0] &&
+          cr.range[1] === opRange[1]
+        )
+      })
+    if (matchingEdgeCuts.length === 0) {
+      // no change from before
+    } else {
+      // When multiple edgeCuts match (e.g. two fillets with same codeRef range), prefer the one
+      // whose segment touches the start cap so editing the second fillet (start-cap edge) gets the right artifact.
+      const withStartCap = matchingEdgeCuts.find((edgeCut) => {
+        const edgeIds = (edgeCut as { edge_ids?: string[] }).edge_ids
+        const segId = edgeIds?.length
+          ? edgeIds[0]
+          : (edgeCut as { consumedEdgeId?: string }).consumedEdgeId
+        if (!segId) return false
+        const seg = getArtifactOfTypes(
+          { key: segId, types: ['segment'] },
+          artifactGraph
+        )
+        if (err(seg)) return false
+        const segWithFaces = seg as { commonSurfaceIds?: string[] }
+        if (!segWithFaces.commonSurfaceIds?.length) return false
+        const commonFaces = getCommonFacesForEdge(seg, artifactGraph)
+        if (err(commonFaces)) return false
+        return commonFaces.some(
+          (f) =>
+            f.type === 'cap' &&
+            (f as { subType?: string }).subType?.toLowerCase() === 'start'
+        )
+      })
+      if (withStartCap) return withStartCap
+      return matchingEdgeCuts[0]
+    }
+  }
+  if (operation.name !== 'startSketchOn') return undefined
+  const byRangeExact = artifactGraph
+    .values()
+    .toArray()
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      return (
+        cr != null &&
+        cr.range != null &&
+        opRange != null &&
+        cr.range.length >= 2 &&
+        opRange.length >= 2 &&
+        cr.range[0] === opRange[0] &&
+        cr.range[1] === opRange[1]
+      )
+    })
+  if (byRangeExact) return byRangeExact
+  const opStart = opRange?.[0] ?? -1
+  const opEnd = opRange?.[1] ?? -1
+  const byRangeContainment = artifactGraph
+    .values()
+    .toArray()
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      if (!cr?.range || cr.range.length < 2 || opStart < 0 || opEnd < 0)
+        return false
+      const [r0, r1] = cr.range
+      return (r0 >= opStart && r1 <= opEnd) || (opStart >= r0 && opEnd <= r1)
+    })
+  if (byRangeContainment) return byRangeContainment
+  const candidates = artifactGraph
+    .values()
+    .toArray()
+    .filter(
       (a) =>
-        'codeRef' in a &&
-        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
-        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+        (a.type === 'startSketchOnFace' || a.type === 'sketchBlock') &&
+        getFaceCodeRef(a)?.range != null &&
+        getFaceCodeRef(a)!.range.length >= 2
     )
-  return artifact
+    .map((a) => ({ artifact: a, cr: getFaceCodeRef(a)! }))
+    .filter(({ cr }) => cr.range[0] >= 0)
+  if (candidates.length === 0) return undefined
+  const nearest = candidates.reduce((best, cur) => {
+    const curStart = cur.cr.range[0]
+    const bestStart = best.cr.range[0]
+    const curDist = Math.abs(curStart - opStart)
+    const bestDist = Math.abs(bestStart - opStart)
+    return curDist < bestDist ? cur : best
+  })
+  return nearest.artifact
 }
 
 export function findOperationPlaneArtifact(
@@ -1832,14 +1942,18 @@ export function getEdgeCutMeta(
     artifact?.type === 'edgeCut' &&
     (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
   ) {
+    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
+    const consumedEdgeId = edgeIds?.length
+      ? edgeIds[0]
+      : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    if (consumedEdgeId == null || consumedEdgeId === '') return null
     const consumedArtifact = getArtifactOfTypes(
       {
-        key: artifact.consumedEdgeId,
+        key: consumedEdgeId,
         types: ['segment', 'sweepEdge'],
       },
       artifactGraph
     )
-    console.log('consumedArtifact', consumedArtifact)
     if (err(consumedArtifact)) return null
     if (consumedArtifact.type === 'segment') {
       edgeCutInfo = {

@@ -1291,7 +1291,7 @@ profile001 = ${circleCode}`
 extrude001 = extrude(sketch001, length = -12)
 `
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edgeRefs=[{faces=[seg01,capStart001]}], radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1339,7 +1339,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'radius',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Radius: '',
         },
         stage: 'arguments',
@@ -1348,7 +1348,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Fillet',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Radius: '5',
         },
         stage: 'review',
@@ -1416,6 +1416,11 @@ extrude001 = extrude(sketch001, length = -12)
     // Test 2: Command bar flow without preselected edges
     await test.step(`Open fillet UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
+      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clearSelection()
+      await page.waitForTimeout(100)
       await toolbar.filletButton.click()
       await expect
         .poll(() => page.getByText('Please select one').count())
@@ -1456,7 +1461,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'radius',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Radius: '',
         },
         stage: 'arguments',
@@ -1465,7 +1470,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Fillet',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Radius: '5',
         },
         stage: 'review',
