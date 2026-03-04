@@ -67,7 +67,7 @@ export const defaultGlobalStatusBarItems = ({
     element: 'link',
     icon: 'settings',
     href: location.pathname.includes(PATHS.FILE)
-      ? filePath + PATHS.SETTINGS + '?tab=project'
+      ? location.pathname + PATHS.SETTINGS + '?tab=project'
       : PATHS.HOME + PATHS.SETTINGS,
     'data-testid': 'settings-link',
     label: 'Settings',

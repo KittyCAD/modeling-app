@@ -1,3 +1,4 @@
+import type { Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -42,6 +43,7 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   defaultLayout,
   DefaultLayoutPaneID,
@@ -62,6 +64,7 @@ import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useSignals } from '@preact/signals-react/runtime'
 import { isMobile } from '@src/lib/isMobile'
+import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -85,6 +88,8 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const lastOperation = useLastOperation()
+  const projects = useFolders()
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -98,9 +103,31 @@ export function OpenedProject() {
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+
+  // Handle our project folder disappearing (Go back to Projects listing)
+  useEffect(() => {
+    if (
+      projects &&
+      projects.length > 0 &&
+      projects.every((p: Project) => p.name !== projectName) &&
+      [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.renamingProject,
+        SystemIOMachineStates.importFileFromURL,
+      ].includes(lastOperation) === false
+    ) {
+      void navigate(PATHS.HOME)
+    }
+
+    if (projects && projects.length === 0) {
+      void navigate(PATHS.HOME)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, lastOperation])
+
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
   useEffect(() => {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
@@ -155,6 +182,11 @@ export function OpenedProject() {
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => {
+      if (!filePath) {
+        console.warn('bug: filePath is undefined')
+        return
+      }
+
       void navigate(filePath + PATHS.SETTINGS)
     },
     kclManager,
@@ -188,6 +220,8 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  const href = 'href' in location ? location.href : ''
+
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
@@ -195,7 +229,7 @@ export function OpenedProject() {
       settingsValues.app.onboardingStatus.current ||
       settingsValues.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() && // Only show if we're in the browser,
+      !window.electron &&
       authToken && // we're logged in,
       searchParams.size === 0 && // we haven't come via a website "try in browser" link,
       needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
@@ -220,10 +254,11 @@ export function OpenedProject() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    settingsValues.app.onboardingStatus,
-    settingsValues.app.theme,
-    location,
+    settingsValues.app.onboardingStatus.current,
+    settingsValues.app.theme.current,
+    href,
     navigate,
     searchParams.size,
     authToken,

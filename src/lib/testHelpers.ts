@@ -24,7 +24,7 @@ export async function enginelessExecutor(
   usePrevMemory?: boolean,
   path?: string
 ): Promise<ExecState> {
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
   return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
@@ -111,11 +111,15 @@ export function getCapFromCylinder(artifactGraph: ArtifactGraph) {
   return createSelectionFromArtifacts([endFace!], artifactGraph)
 }
 
-export function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-  const twoWalls = [...artifactGraph.values()]
+export function getWalls(
+  artifactGraph: ArtifactGraph,
+  count: number,
+  index = 0
+) {
+  const walls = [...artifactGraph.values()]
     .filter((a) => a.type === 'wall')
-    .slice(0, count)
-  return createSelectionFromArtifacts(twoWalls, artifactGraph)
+    .slice(index, index + count)
+  return createSelectionFromArtifacts(walls, artifactGraph)
 }
 
 export async function getKclCommandValue(

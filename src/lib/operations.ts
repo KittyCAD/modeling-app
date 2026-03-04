@@ -1926,6 +1926,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  deleteFace: {
+    label: 'Delete Face',
+    icon: 'deleteFace',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
@@ -2838,6 +2844,20 @@ async function prepareToEditAppearance({
     roughness = result
   }
 
+  let opacity: KclCommandValue | undefined
+  if (operation.labeledArgs.opacity) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.opacity.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve opacity argument" }
+    }
+    opacity = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2846,6 +2866,7 @@ async function prepareToEditAppearance({
     color,
     metalness,
     roughness,
+    opacity,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

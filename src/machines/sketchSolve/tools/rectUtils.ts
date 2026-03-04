@@ -89,7 +89,7 @@ export async function createDraftRectangle({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   const line1 = await makeDraftLine({
     units,
@@ -276,7 +276,7 @@ export async function updateDraftRectangleAligned({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   return updateDraftRectangleFromCorners({
     rustContext,
@@ -328,7 +328,7 @@ export async function updateDraftRectangleAngled({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   return updateDraftRectangleFromCorners({
     rustContext,

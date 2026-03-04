@@ -13,7 +13,6 @@ import type {
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
   type SettingsType,
@@ -28,8 +27,7 @@ import {
   type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type CommandBarActorType,
   commandBarMachine,
@@ -47,7 +45,10 @@ import {
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
-import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import {
+  getAllCurrentSettings,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -288,7 +289,7 @@ export class App implements AppSubsystems {
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
     this.singletons.systemIOActor.subscribe(({ context }) => {
-      const foundProject = context.folders.find(
+      const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
           p.path === projectIORefSignal.value.path
@@ -345,17 +346,14 @@ export class App implements AppSubsystems {
         })
     }
 
-    const systemIOActor = createActor(
-      isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      {
-        input: {
-          wasmInstancePromise: this.wasmPromise,
-          kclManager,
-          engineCommandManager: kclManager.engineCommandManager,
-          app: this,
-        },
-      }
-    ).start()
+    const systemIOActor = createActor(systemIOMachineImpl, {
+      input: {
+        wasmInstancePromise: this.wasmPromise,
+        kclManager,
+        engineCommandManager: kclManager.engineCommandManager,
+        app: this,
+      },
+    }).start()
 
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
@@ -417,6 +415,7 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const newBackfaceColor = context.modeling.backfaceColor.current
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.singletons.kclManager.sceneInfra.theme = opposingTheme
@@ -425,9 +424,10 @@ export class App implements AppSubsystems {
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
     if (this.singletons.engineCommandManager.connection) {
-      this.singletons.engineCommandManager
-        .setTheme(newTheme)
-        .catch(reportRejection)
+      Promise.all([
+        this.singletons.engineCommandManager.setTheme(newTheme),
+        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
+      ]).catch(reportRejection)
     }
 
     // Execute AST
@@ -436,20 +436,28 @@ export class App implements AppSubsystems {
         const hasScaleGrid =
           s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
         const hasHighlightEdges =
-          s.modeling?.highlightEdges !== context.modeling.highlightEdges.current
-        return hasScaleGrid || hasHighlightEdges
+          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
+        const hasBackfaceColor =
+          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
+        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
       }
 
       const settingsIncludeNewRelevantValues = relevantSetting(
         this.lastSettings
       )
 
-      // Unit changes requires a re-exec of code
+      // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
         this.singletons.engineCommandManager.connection
       ) {
-        this.singletons.kclManager.executeCode().catch(reportRejection)
+        this.singletons.rustContext
+          .clearSceneAndBustCache(
+            jsAppSettings(this.settings.actor),
+            this.singletons.kclManager.currentFilePath || undefined
+          )
+          .then(() => this.singletons.kclManager.executeCode())
+          .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)

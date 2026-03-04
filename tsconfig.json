@@ -29,7 +29,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "commonjs",
+    "module": "es2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "composite": false,

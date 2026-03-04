@@ -81,7 +81,7 @@ export const EditingConstraintInput = () => {
           sketchId,
           editingConstraintId!,
           value,
-          await jsAppSettings(rustContext.settingsActor)
+          jsAppSettings(rustContext.settingsActor)
         )
         if (result) {
           sketchSolveActor?.send({
