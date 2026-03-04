@@ -14,8 +14,8 @@ rearWall = 0.9
 frontCutOvertravel = 0.2
 
 // Inner cavity dimensions derived from shell parameters
-innerWidth = shellWidth - shellWall * 2
-innerHeight = shellHeight - shellWall * 2
+innerWidth = shellWidth - (shellWall * 2)
+innerHeight = shellHeight - (shellWall * 2)
 innerCornerRadius = 0.55
 cavityLength = shellLength - rearWall + frontCutOvertravel
 
