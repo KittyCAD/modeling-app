@@ -1722,9 +1722,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 5)
 `
-    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
-    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
+    // Tags are assigned in profile order: first segment seg01, second seg02
+    const taggedSegment1 = `yLine(length = -1, tag = $seg01)`
+    const taggedSegment2 = `xLine(length = -10, tag = $seg02)`
+    const filletExpression = `fillet001 = fillet(extrude001, edgeRefs = [{ faces = [seg01, seg02] }], radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1772,7 +1773,7 @@ extrude001 = extrude(profile001, length = 5)
           currentArgKey: 'radius',
           currentArgValue: '5',
           headerArguments: {
-            Selection: '1 sweepEdge',
+            Selection: '1 edge',
             Radius: '',
           },
           stage: 'arguments',
@@ -1783,7 +1784,7 @@ extrude001 = extrude(profile001, length = 5)
         await cmdBar.expectState({
           commandName: 'Fillet',
           headerArguments: {
-            Selection: '1 sweepEdge',
+            Selection: '1 edge',
             Radius: '1000',
           },
           stage: 'review',
@@ -1875,7 +1876,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Length: '',
         },
         stage: 'arguments',
@@ -1887,7 +1888,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Length: '5',
         },
         stage: 'review',
