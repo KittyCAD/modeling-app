@@ -1,23 +1,23 @@
 ---
 title: "blend"
 subtitle: "Function in std::solid"
-excerpt: "Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to blend full-edge spans."
+excerpt: "Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to use the full edge span."
 layout: manual
 ---
 
-Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to blend full-edge spans.
+Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to use the full edge span.
 
 ```kcl
 blend(@edges: [BoundedEdge | Edge; 2]): Solid
 ```
 
-
+Or blend the full edges directly (no `getBoundedEdge`):
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) \| [`Edge`](/docs/kcl-std/types/std-types-Edge); 2] | The two edges that will be blended. Plain `Edge` values blend the full edge length. | Yes |
+| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`Edge`](/docs/kcl-std/types/std-types-Edge); 2] | The two edges that will be blended. Plain [`Edge`](/docs/kcl-std/types/std-types-Edge) values blend the full edge length. | Yes |
 
 ### Returns
 
@@ -64,4 +64,39 @@ blend([edge001, edge002])
   touch-action="pan-y"
 >
 </model-viewer>
+
+```kcl
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> angledLine(angle = 0deg, length = 4, tag = $rectangleSegmentA001)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> angledLine(angle = 0deg, length = 2, tag = $rectangleSegmentA002)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()
+
+blend([
+  rectangleSegmentA001,
+  rectangleSegmentA002
+])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the blend function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
