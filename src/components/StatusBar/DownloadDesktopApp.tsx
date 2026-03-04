@@ -1,35 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
+import Tooltip from '@src/components/Tooltip'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 
+const TOOLTIP_READ_DURATION_MS = 8_000
+
 export function DownloadDesktopApp() {
-  const [showWarning, setShowWarning] = useState(true)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!showWarning) return
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowWarning(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showWarning])
-
-  useEffect(() => {
-    if (!showWarning) return
-    const timeout = setTimeout(() => setShowWarning(false), 8_000)
-    return () => clearTimeout(timeout)
-  }, [showWarning])
-
   const href = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-  const warningContent = (
+  const tooltipContent = (
     <span className="flex items-center gap-2">
       ⚠ This demo project is only stored in your browser. Our desktop app will
       allow you to work on multiple projects.
@@ -37,11 +16,7 @@ export function DownloadDesktopApp() {
   )
 
   return (
-    <div
-      ref={wrapperRef}
-      className="relative flex items-stretch"
-      onMouseEnter={() => setShowWarning(true)}
-    >
+    <div className="relative flex items-stretch">
       <a
         href={href}
         className={`${defaultStatusBarItemClassNames} flex items-center gap-2`}
@@ -53,14 +28,14 @@ export function DownloadDesktopApp() {
         />
         <span>Install desktop app</span>
       </a>
-      {showWarning && (
-        <div
-          role="tooltip"
-          className="absolute left-0 bottom-full mb-1 z-50 w-72 rounded-lg border border-chalkboard-20 dark:border-chalkboard-90 bg-chalkboard-10 dark:bg-chalkboard-90 p-3 text-sm text-chalkboard-110 dark:text-chalkboard-20 shadow-lg"
-        >
-          {warningContent}
-        </div>
-      )}
+      <Tooltip
+        position="top-left"
+        initialOpen
+        initialOpenDuration={TOOLTIP_READ_DURATION_MS}
+        contentClassName="max-w-80"
+      >
+        {tooltipContent}
+      </Tooltip>
     </div>
   )
 }
