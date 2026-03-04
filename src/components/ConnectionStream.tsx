@@ -86,13 +86,14 @@ export const ConnectionStream = (props: {
 
         if (shouldSelectSketchRegion) {
           const intersectPoint = sceneInfra.getPlaneIntersectPoint()
-          console.log('intersectionPoint', intersectPoint)
           const twoDPoint = intersectPoint?.twoD
           const point: [number, number] = twoDPoint
             ? [twoDPoint.x, twoDPoint.y]
             : [0, 0]
           sendSelectRegionEventToEngine(e, videoRef.current, {
             engineCommandManager,
+            artifactGraph: kclManager.artifactGraph,
+            ast: kclManager.ast,
           })
             .then((result) => {
               if (!result?.region) {

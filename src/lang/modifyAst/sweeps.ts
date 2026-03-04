@@ -113,23 +113,47 @@ function getSketchSegmentMemberExpression(
     return new Error(`Could not find code reference for segment ${segment.id}`)
   }
 
-  const segmentDecl = getNodeFromPath<VariableDeclaration>(
-    ast,
+  const candidatePaths: PathToNode[] = [
     segmentCodeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
-  )
-  if (err(segmentDecl) || segmentDecl.node.type !== 'VariableDeclaration') {
+    getNodePathFromSourceRange(ast, segmentCodeRef.range),
+  ].filter((path) => path.length > 0)
+
+  let segmentDecl:
+    | {
+        node: VariableDeclaration
+        shallowPath: PathToNode
+        deepPath: PathToNode
+      }
+    | undefined
+  for (const path of candidatePaths) {
+    const maybeSegmentDecl = getNodeFromPath<VariableDeclaration>(
+      ast,
+      path,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (
+      !err(maybeSegmentDecl) &&
+      maybeSegmentDecl.node.type === 'VariableDeclaration'
+    ) {
+      segmentDecl = maybeSegmentDecl
+      break
+    }
+  }
+
+  if (!segmentDecl) {
     return new Error(`Could not resolve segment declaration for ${segment.id}`)
   }
   const segmentVarName = segmentDecl.node.declaration.id.name
 
   const sketchVarName = getSketchVarNameFromSegmentCodeRef(
     ast,
-    segmentCodeRef.pathToNode
+    segmentDecl.deepPath
   )
   if (err(sketchVarName)) {
-    return sketchVarName
+    return new Error(
+      `Segment ${segment.id} is not from a sketch block region-capable sketch`
+    )
   }
 
   return {

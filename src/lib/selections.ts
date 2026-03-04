@@ -986,24 +986,127 @@ export async function sendSelectRegionEventToEngine(
   videoRef: HTMLVideoElement,
   systemDeps: {
     engineCommandManager: ConnectionManager
+    artifactGraph: ArtifactGraph
+    ast: Node<Program>
   }
 ) {
+  const mockStorageKey = 'mockSelectRegionFromPoint'
+  const isMockEnabled =
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem(mockStorageKey) === '1'
+
+  async function createMockRegionResponse() {
+    function isSketchBlockSegment(segmentId: string): boolean {
+      const segment = systemDeps.artifactGraph.get(segmentId)
+      if (!segment || segment.type !== 'segment') return false
+      const codeRef = getCodeRefsByArtifactId(
+        segmentId,
+        systemDeps.artifactGraph
+      )?.[0]
+      if (!codeRef) return false
+
+      const candidatePaths = [
+        codeRef.pathToNode,
+        getNodePathFromSourceRange(systemDeps.ast, codeRef.range),
+      ].filter((path) => path.length > 0)
+
+      for (const path of candidatePaths) {
+        const bodyIndex = Number(path[1]?.[0])
+        if (!Number.isInteger(bodyIndex)) continue
+        const bodyNode = systemDeps.ast.body[bodyIndex]
+        if (
+          bodyNode?.type === 'VariableDeclaration' &&
+          bodyNode.declaration.init.type === 'SketchBlock'
+        ) {
+          return true
+        }
+      }
+
+      return false
+    }
+
+    const selectResult = await sendSelectEventToEngine(e, videoRef, {
+      engineCommandManager: systemDeps.engineCommandManager,
+    })
+    const entityId = selectResult?.entity_id
+    if (!entityId) {
+      return { region: undefined }
+    }
+
+    const artifact = systemDeps.artifactGraph.get(entityId)
+    if (!artifact) {
+      return { region: undefined }
+    }
+
+    let segmentIds: string[] = []
+    if (artifact.type === 'segment') {
+      const path = systemDeps.artifactGraph.get(artifact.pathId)
+      if (path?.type === 'path') {
+        segmentIds = path.segIds
+      } else {
+        segmentIds = [artifact.id]
+      }
+    } else if (artifact.type === 'path') {
+      segmentIds = artifact.segIds
+    } else if (artifact.type === 'solid2d') {
+      const path = systemDeps.artifactGraph.get(artifact.pathId)
+      if (path?.type === 'path') {
+        segmentIds = path.segIds
+      }
+    }
+
+    if (segmentIds.length === 0) {
+      return { region: undefined }
+    }
+
+    const firstSegmentId =
+      artifact.type === 'segment' ? artifact.id : segmentIds[0]
+    const secondSegmentId =
+      segmentIds.find((segmentId) => segmentId !== firstSegmentId) ||
+      firstSegmentId
+    if (
+      !isSketchBlockSegment(firstSegmentId) ||
+      !isSketchBlockSegment(secondSegmentId)
+    ) {
+      return { region: undefined }
+    }
+
+    return {
+      region: {
+        segment: firstSegmentId,
+        intersection_segment: secondSegmentId,
+        intersection_index: -1,
+        curve_clockwise: false,
+      },
+    }
+  }
+
   const { x, y } = getNormalisedCoordinates(
     e,
     videoRef,
     systemDeps.engineCommandManager.streamDimensions
   )
-  let res = await systemDeps.engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'select_region_from_point',
-      selected_at_window: { x, y },
-    },
-    cmd_id: uuidv4(),
-  })
+  let res
+  try {
+    res = await systemDeps.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_region_from_point',
+        selected_at_window: { x, y },
+      },
+      cmd_id: uuidv4(),
+    })
+  } catch (error) {
+    if (!isMockEnabled) return Promise.reject(error)
+    console.warn(
+      'Using mock select_region_from_point response. Disable with localStorage.removeItem("mockSelectRegionFromPoint").',
+      error
+    )
+    return createMockRegionResponse()
+  }
   if (!res) {
     console.warn('No response')
-    return undefined
+    return isMockEnabled ? createMockRegionResponse() : undefined
   }
 
   if (isArray(res)) {
@@ -1013,6 +1116,9 @@ export async function sendSelectRegionEventToEngine(
   if (isModelingResponse(singleRes)) {
     const mr = singleRes.resp.data.modeling_response
     if (mr.type === 'select_region_from_point') return mr.data
+  }
+  if (isMockEnabled) {
+    return createMockRegionResponse()
   }
   return { region: undefined }
 }
