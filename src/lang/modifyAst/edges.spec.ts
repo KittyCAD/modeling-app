@@ -856,7 +856,7 @@ chamfer001 = chamfer(
         throw newCode
       }
       expect(newCode).toContain('blend001 = blend([')
-      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode).not.toContain('getBoundedEdge(')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -911,7 +911,7 @@ chamfer001 = chamfer(
         throw newCode
       }
       expect(newCode).toContain('blend001 = blend([')
-      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode).not.toContain('getBoundedEdge(')
       expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

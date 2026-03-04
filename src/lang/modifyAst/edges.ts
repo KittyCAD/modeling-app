@@ -238,23 +238,23 @@ export function addBlend({
     return new Error('Blend requires exactly two selected edges.')
   }
 
-  // 3. Build two bounded edges and use them in blend([edge1, edge2])
-  const boundedEdgeExprs: Expr[] = []
+  // 3. Build two edges and use them in blend([edge1, edge2])
+  const edgeExprs: Expr[] = []
   for (const edgeSelection of selectedEdges) {
-    const boundedEdge = buildBlendBoundedEdgeExpr(
+    const edge = buildBlendEdgeExpr(
       edgeSelection,
       modifiedAst,
       artifactGraph,
       wasmInstance
     )
-    if (err(boundedEdge)) return boundedEdge
-    modifiedAst = boundedEdge.modifiedAst
-    boundedEdgeExprs.push(boundedEdge.boundedEdgeExpr)
+    if (err(edge)) return edge
+    modifiedAst = edge.modifiedAst
+    edgeExprs.push(edge.edgeExpr)
   }
 
   const call = createCallExpressionStdLibKw(
     'blend',
-    createArrayExpression(boundedEdgeExprs),
+    createArrayExpression(edgeExprs),
     []
   )
 
@@ -283,6 +283,18 @@ function getBlendEdgeSelections(edges: Selections): BlendSelection[] {
   ]
 }
 
+function getEnginePrimitiveEdgeSelectionsFromSelection(
+  faces: Selections
+): EnginePrimitiveSelection[] {
+  return faces.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      typeof selection === 'object' &&
+      'type' in selection &&
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'edge'
+  )
+}
+
 function isBlendPrimitiveSelection(
   selection: BlendSelection
 ): selection is EnginePrimitiveSelection {
@@ -293,14 +305,14 @@ function isBlendPrimitiveSelection(
   )
 }
 
-function buildBlendBoundedEdgeExpr(
+function buildBlendEdgeExpr(
   edgeSelection: BlendSelection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): Error | { modifiedAst: Node<Program>; boundedEdgeExpr: Expr } {
+): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
   if (isBlendPrimitiveSelection(edgeSelection)) {
-    return buildBlendBoundedEdgeExprFromPrimitiveSelection(
+    return buildBlendEdgeExprFromPrimitiveSelection(
       edgeSelection,
       ast,
       artifactGraph,
@@ -308,7 +320,7 @@ function buildBlendBoundedEdgeExpr(
     )
   }
 
-  return buildBlendBoundedEdgeExprFromGraphSelection(
+  return buildBlendEdgeExprFromGraphSelection(
     edgeSelection,
     ast,
     artifactGraph,
@@ -316,12 +328,12 @@ function buildBlendBoundedEdgeExpr(
   )
 }
 
-function buildBlendBoundedEdgeExprFromGraphSelection(
+function buildBlendEdgeExprFromGraphSelection(
   edgeSelection: Selection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): Error | { modifiedAst: Node<Program>; boundedEdgeExpr: Expr } {
+): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
   const edgeArtifact = edgeSelection.artifact
   if (
     !edgeArtifact ||
@@ -331,22 +343,6 @@ function buildBlendBoundedEdgeExprFromGraphSelection(
       'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
     )
   }
-
-  const sweepArtifact = getSweepArtifactFromSelection(
-    edgeSelection,
-    artifactGraph
-  )
-  if (err(sweepArtifact)) return sweepArtifact
-
-  const sourceSurfaceExpr = getSingleBlendSourceSurfaceExpr(
-    {
-      graphSelections: [{ codeRef: sweepArtifact.codeRef }],
-      otherSelections: [],
-    },
-    ast,
-    wasmInstance
-  )
-  if (err(sourceSurfaceExpr)) return sourceSurfaceExpr
 
   const tagResult = modifyAstWithTagsForSelection(
     ast,
@@ -361,20 +357,15 @@ function buildBlendBoundedEdgeExprFromGraphSelection(
   }
 
   const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
-  const boundedEdgeExpr = createCallExpressionStdLibKw(
-    'getBoundedEdge',
-    sourceSurfaceExpr,
-    [createLabeledArg('edge', edgeExpr)]
-  )
-  return { modifiedAst: tagResult.modifiedAst, boundedEdgeExpr }
+  return { modifiedAst: tagResult.modifiedAst, edgeExpr }
 }
 
-function buildBlendBoundedEdgeExprFromPrimitiveSelection(
+function buildBlendEdgeExprFromPrimitiveSelection(
   edgeSelection: EnginePrimitiveSelection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): Error | { modifiedAst: Node<Program>; boundedEdgeExpr: Expr } {
+): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
   if (!edgeSelection.parentEntityId) {
     return new Error(
       'Blend primitive edge selections must include a parent entity.'
@@ -409,12 +400,7 @@ function buildBlendBoundedEdgeExprFromPrimitiveSelection(
       ),
     ]
   )
-  const boundedEdgeExpr = createCallExpressionStdLibKw(
-    'getBoundedEdge',
-    sourceSurfaceExpr,
-    [createLabeledArg('edge', edgeExpr)]
-  )
-  return { modifiedAst: ast, boundedEdgeExpr }
+  return { modifiedAst: ast, edgeExpr }
 }
 
 function getSingleBlendSourceSurfaceExpr(
