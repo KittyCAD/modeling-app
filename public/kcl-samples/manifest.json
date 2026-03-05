@@ -1935,6 +1935,21 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Electronics",
+      "Connector",
+      "Consumer Hardware"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "usb-c/main.kcl",
+    "multipleFiles": false,
+    "title": "USB-C Connector Assembly",
+    "description": "Parametric model of a USB-C style connector shell, rear housing, and swept cable.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
