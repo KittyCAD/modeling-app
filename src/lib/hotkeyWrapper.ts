@@ -15,7 +15,7 @@ import type { KclManager } from '@src/lang/KclManager'
 export default function useHotkeyWrapper(
   hotkey: string[],
   callback: () => void,
-  kclManager: KclManager,
+  kclManager?: KclManager,
   additionalOptions?: Options
 ) {
   const defaultOptions = { preventDefault: true }
@@ -24,7 +24,7 @@ export default function useHotkeyWrapper(
   useEffect(() => {
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)
-      kclManager.registerHotkey(keybinding, callback)
+      kclManager?.registerHotkey(keybinding, callback)
     }
   })
 }

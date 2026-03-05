@@ -413,7 +413,6 @@ export const ProjectExplorer = ({
             }
 
             const { path: destinationPath } = await getNextFileName({
-              electron,
               entryName: file.name,
               baseDir: destinationDirPath,
               wasmInstance,
