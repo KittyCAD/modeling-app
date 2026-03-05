@@ -15,11 +15,11 @@ import { getAngleDiff } from '@src/lib/utils'
 import {
   clamp,
   dot2d,
-  getSignedAngleBetweenVec,
   lengthSq,
   length2d,
   normalizeVec,
   subVec,
+  TWO_PI,
 } from '@src/lib/utils2d'
 import {
   CONSTRAINT_COLOR,
@@ -35,10 +35,10 @@ import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   getLineIntersection,
-  isMajorConstraintAngle,
+  normalizeAngleRad,
 } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 
-const TWO_PI = Math.PI * 2
 const EPSILON = 1e-8
 const GUIDE_EPSILON = 1e-6
 
@@ -68,8 +68,7 @@ export function updateArcDimensionLine(
     return
   }
 
-  const { center, radius, startAngle, directionSign, sweep, labelOffset } =
-    geometry
+  const { center, radius, startAngle, ccw, sweep, labelOffset } = geometry
   const arcLengthPx = (radius * sweep) / scale
   if (arcLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
     group.visible = false
@@ -113,38 +112,39 @@ export function updateArcDimensionLine(
   const section1EndOffset = Math.max(0, labelOffset - halfGapAngle)
   const section2StartOffset = Math.min(sweep, labelOffset + halfGapAngle)
   const section2EndOffset = sweep
+  const section1 = getArcSection(
+    center,
+    radius,
+    startAngle,
+    ccw,
+    section1StartOffset,
+    section1EndOffset
+  )
+  const section2 = getArcSection(
+    center,
+    radius,
+    startAngle,
+    ccw,
+    section2StartOffset,
+    section2EndOffset
+  )
+  if (!section1 || !section2) {
+    group.visible = false
+    return
+  }
 
   const arcLines = getArcBodyLines(group)
   if (arcLines[0]) {
-    setArcLinePositions(
-      arcLines[0],
-      center,
-      radius,
-      startAngle,
-      directionSign,
-      section1StartOffset,
-      section1EndOffset
-    )
+    arcLines[0].geometry.setPositions(section1.positions)
   }
   if (arcLines[1]) {
-    setArcLinePositions(
-      arcLines[1],
-      center,
-      radius,
-      startAngle,
-      directionSign,
-      section2StartOffset,
-      section2EndOffset
-    )
+    arcLines[1].geometry.setPositions(section2.positions)
   }
 
-  const startPoint = pointOnArc(center, radius, startAngle, directionSign, 0)
-  const endPoint = pointOnArc(center, radius, startAngle, directionSign, sweep)
-  const startTangent = tangentForArc(startAngle, directionSign)
-  const endTangent = tangentForArc(
-    startAngle + directionSign * sweep,
-    directionSign
-  )
+  const startPoint = section1.startPoint
+  const endPoint = section2.endPoint
+  const startTangent = section1.startTangent
+  const endTangent = section2.endTangent
 
   const arrows = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
@@ -153,9 +153,7 @@ export function updateArcDimensionLine(
   const arrow2 = arrows[1]
   if (arrow1) {
     arrow1.position.copy(startPoint)
-    arrow1.rotation.z = directionToArrowRotation(
-      startTangent.multiplyScalar(-1)
-    )
+    arrow1.rotation.z = directionToArrowRotation(startTangent.clone().negate())
     arrow1.scale.setScalar(scale)
   }
   if (arrow2) {
@@ -178,28 +176,16 @@ export function updateArcDimensionLine(
   if (bodyHitAreas[0]) {
     updateLineHitArea(
       bodyHitAreas[0],
-      pointOnArc(
-        center,
-        radius,
-        startAngle,
-        directionSign,
-        section1StartOffset
-      ),
-      pointOnArc(center, radius, startAngle, directionSign, section1EndOffset),
+      section1.startPoint,
+      section1.endPoint,
       HIT_AREA_WIDTH_PX * scale
     )
   }
   if (bodyHitAreas[1]) {
     updateLineHitArea(
       bodyHitAreas[1],
-      pointOnArc(
-        center,
-        radius,
-        startAngle,
-        directionSign,
-        section2StartOffset
-      ),
-      pointOnArc(center, radius, startAngle, directionSign, section2EndOffset),
+      section2.startPoint,
+      section2.endPoint,
       HIT_AREA_WIDTH_PX * scale
     )
   }
@@ -212,7 +198,29 @@ export function updateArcDimensionLine(
   updateGuideLine(guideLines[1], renderInput.line2, [endPoint.x, endPoint.y])
 }
 
-function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
+type ArcGeometry = {
+  center: Coords2d
+  radius: number
+  startAngle: number
+  ccw: boolean
+  sweep: number
+  labelOffset: number
+}
+
+type ArcCandidate = {
+  startAngle: number
+  ccw: boolean
+  sweep: number
+  labelOffset: number
+  onArc: boolean
+  centerBias: number
+  sweepDelta: number
+  overflow: number
+}
+
+function buildArcGeometry(
+  renderInput: ArcDimensionLineRenderInput
+): ArcGeometry | null {
   const center = getLineIntersection(renderInput.line1, renderInput.line2)
   if (!center) {
     return null
@@ -247,15 +255,16 @@ function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
     renderInput.labelPosition[1] - center[1],
     renderInput.labelPosition[0] - center[0]
   )
+  const targetSweep = normalizeAngleRad(renderInput.angle)
+  if (targetSweep < EPSILON || targetSweep > TWO_PI - EPSILON) {
+    return null
+  }
 
   const best = chooseArcCandidate({
-    line1: renderInput.line1,
-    line2: renderInput.line2,
-    center,
     line1Candidates,
     line2Candidates,
     labelAngle,
-    isMajorAngle: isMajorConstraintAngle(renderInput.angle),
+    targetSweep,
   })
   if (!best) {
     return null
@@ -265,154 +274,82 @@ function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
     center,
     radius,
     startAngle: best.startAngle,
-    directionSign: best.directionSign,
+    ccw: best.ccw,
     sweep: best.sweep,
     labelOffset: clamp(best.labelOffset, 0, best.sweep),
   }
 }
 
-type ArcCandidate = {
-  startAngle: number
-  directionSign: number
-  sweep: number
-  labelOffset: number
-  overflow: number
-  onArc: boolean
-  reachCount: number
-  overlapLength: number
-}
-
 function chooseArcCandidate(args: {
-  line1: LineSegment
-  line2: LineSegment
-  center: Coords2d
   line1Candidates: Coords2d[]
   line2Candidates: Coords2d[]
   labelAngle: number
-  isMajorAngle: boolean
-}) {
-  const candidates: ArcCandidate[] = []
+  targetSweep: number
+}): ArcCandidate | null {
+  let best: ArcCandidate | null = null
 
   for (const startDirection of args.line1Candidates) {
     for (const endDirection of args.line2Candidates) {
-      const signed = getSignedAngleBetweenVec(startDirection, endDirection)
-      const minorSweep = Math.abs(signed)
-      if (minorSweep < 1e-4) {
-        continue
-      }
-
-      const minorDirectionSign = signed >= 0 ? 1 : -1
-      const sweep = args.isMajorAngle ? TWO_PI - minorSweep : minorSweep
-      const directionSign = args.isMajorAngle
-        ? -minorDirectionSign
-        : minorDirectionSign
-      if (sweep < 1e-4) {
-        continue
-      }
-
       const startAngle = Math.atan2(startDirection[1], startDirection[0])
-      const labelOffset = getOffsetAlongArc(
-        startAngle,
-        args.labelAngle,
-        directionSign
-      )
-      const overflow = Math.max(0, labelOffset - sweep)
-      const onArc = labelOffset <= sweep + 1e-6
+      const endAngle = Math.atan2(endDirection[1], endDirection[0])
 
-      const interval1 = rayIntervalWithinSegment(
-        args.line1,
-        args.center,
-        startDirection
-      )
-      const interval2 = rayIntervalWithinSegment(
-        args.line2,
-        args.center,
-        endDirection
-      )
-      const reachCount = Number(Boolean(interval1)) + Number(Boolean(interval2))
-      const overlapLength =
-        interval1 && interval2
-          ? Math.max(
-              0,
-              Math.min(interval1.end, interval2.end) -
-                Math.max(interval1.start, interval2.start)
-            )
-          : -1
-
-      candidates.push({
-        startAngle,
-        directionSign,
-        sweep,
-        labelOffset,
-        overflow,
-        onArc,
-        reachCount,
-        overlapLength,
-      })
+      for (const ccw of [true, false]) {
+        const candidate = buildArcCandidate(
+          startAngle,
+          endAngle,
+          ccw,
+          args.labelAngle,
+          args.targetSweep
+        )
+        if (!candidate) {
+          continue
+        }
+        if (!best || isBetterArcCandidate(candidate, best)) {
+          best = candidate
+        }
+      }
     }
   }
 
-  if (candidates.length === 0) {
-    return null
-  }
-
-  const rankedCandidates = candidates.some((candidate) => candidate.onArc)
-    ? candidates.filter((candidate) => candidate.onArc)
-    : candidates
-
-  rankedCandidates.sort((a, b) => {
-    const centerBiasA = Math.abs(a.labelOffset - a.sweep * 0.5)
-    const centerBiasB = Math.abs(b.labelOffset - b.sweep * 0.5)
-    if (centerBiasA !== centerBiasB) {
-      return centerBiasA - centerBiasB
-    }
-    if (a.reachCount !== b.reachCount) {
-      return b.reachCount - a.reachCount
-    }
-    if (a.overlapLength !== b.overlapLength) {
-      return b.overlapLength - a.overlapLength
-    }
-    return a.overflow - b.overflow
-  })
-
-  return rankedCandidates[0]
+  return best
 }
 
-function getOffsetAlongArc(
+function buildArcCandidate(
   startAngle: number,
-  targetAngle: number,
-  directionSign: number
-) {
-  const ccw = directionSign >= 0
-  return getAngleDiff(startAngle, targetAngle, ccw)
-}
-
-type DistanceRange = {
-  start: number
-  end: number
-}
-
-function rayIntervalWithinSegment(
-  line: LineSegment,
-  center: Coords2d,
-  rayDirection: Coords2d
-): DistanceRange | null {
-  const p1 =
-    (line[0][0] - center[0]) * rayDirection[0] +
-    (line[0][1] - center[1]) * rayDirection[1]
-  const p2 =
-    (line[1][0] - center[0]) * rayDirection[0] +
-    (line[1][1] - center[1]) * rayDirection[1]
-  const low = Math.min(p1, p2)
-  const high = Math.max(p1, p2)
-  if (high < EPSILON) {
+  endAngle: number,
+  ccw: boolean,
+  labelAngle: number,
+  targetSweep: number
+): ArcCandidate | null {
+  const sweep = getAngleDiff(startAngle, endAngle, ccw)
+  if (sweep < EPSILON) {
     return null
   }
 
+  const labelOffset = getAngleDiff(startAngle, labelAngle, ccw)
   return {
-    start: Math.max(0, low),
-    end: Math.max(0, high),
+    startAngle,
+    ccw,
+    sweep,
+    labelOffset,
+    onArc: labelOffset <= sweep + 1e-6,
+    centerBias: Math.abs(labelOffset - sweep * 0.5),
+    sweepDelta: Math.abs(sweep - targetSweep),
+    overflow: Math.max(0, labelOffset - sweep),
   }
+}
+
+function isBetterArcCandidate(a: ArcCandidate, b: ArcCandidate) {
+  if (a.onArc !== b.onArc) {
+    return a.onArc
+  }
+  if (a.sweepDelta !== b.sweepDelta) {
+    return a.sweepDelta < b.sweepDelta
+  }
+  if (a.centerBias !== b.centerBias) {
+    return a.centerBias < b.centerBias
+  }
+  return a.overflow < b.overflow
 }
 
 function getArcBodyLines(group: Group): Line2[] {
@@ -487,62 +424,81 @@ function getGuideSegment(
   return [segmentEdgePoint, arcEndpoint]
 }
 
-function setArcLinePositions(
-  line: Line2,
+type ArcSection = {
+  positions: number[]
+  startPoint: Vector3
+  endPoint: Vector3
+  startTangent: Vector3
+  endTangent: Vector3
+}
+
+function getArcSection(
   center: Coords2d,
   radius: number,
   startAngle: number,
-  directionSign: number,
+  ccw: boolean,
   startOffset: number,
   endOffset: number
-) {
-  const sweep = Math.max(0, endOffset - startOffset)
-  const segmentCount = Math.max(2, Math.ceil((sweep / TWO_PI) * 64))
-  const positions: number[] = []
-
-  if (sweep < 1e-4) {
-    const point = pointOnArc(
-      center,
-      radius,
-      startAngle,
-      directionSign,
-      startOffset
-    )
-    line.geometry.setPositions([point.x, point.y, 0, point.x, point.y, 0])
-    return
+): ArcSection | null {
+  const clampedStart = Math.max(0, startOffset)
+  const clampedEnd = Math.max(clampedStart, endOffset)
+  const sectionStartAngle = angleAtOffset(startAngle, ccw, clampedStart)
+  const sectionEndAngle = angleAtOffset(startAngle, ccw, clampedEnd)
+  const positions = createArcPositions({
+    center,
+    radius,
+    startAngle: sectionStartAngle,
+    endAngle: sectionEndAngle,
+    ccw,
+  })
+  const pointCount = positions.length / 3
+  if (pointCount < 2) {
+    return null
   }
 
-  for (let index = 0; index <= segmentCount; index++) {
-    const t = index / segmentCount
-    const offset = startOffset + sweep * t
-    const point = pointOnArc(center, radius, startAngle, directionSign, offset)
-    positions.push(point.x, point.y, 0)
+  const startPoint = pointFromPositions(positions, 0)
+  const endPoint = pointFromPositions(positions, pointCount - 1)
+  const fallbackStartTangent = tangentForAngle(sectionStartAngle, ccw)
+  const fallbackEndTangent = tangentForAngle(sectionEndAngle, ccw)
+
+  return {
+    positions,
+    startPoint,
+    endPoint,
+    startTangent: tangentFromPositions(positions, 0, 1) ?? fallbackStartTangent,
+    endTangent:
+      tangentFromPositions(positions, pointCount - 2, pointCount - 1) ??
+      fallbackEndTangent,
   }
-
-  line.geometry.setPositions(positions)
 }
 
-function pointOnArc(
-  center: Coords2d,
-  radius: number,
-  startAngle: number,
-  directionSign: number,
-  offset: number
-) {
-  const angle = startAngle + directionSign * offset
-  return new Vector3(
-    center[0] + Math.cos(angle) * radius,
-    center[1] + Math.sin(angle) * radius,
-    0
-  )
+function angleAtOffset(startAngle: number, ccw: boolean, offset: number) {
+  return startAngle + (ccw ? offset : -offset)
 }
 
-function tangentForArc(angle: number, directionSign: number) {
-  return new Vector3(
-    -directionSign * Math.sin(angle),
-    directionSign * Math.cos(angle),
-    0
-  )
+function pointFromPositions(positions: number[], index: number) {
+  const i = index * 3
+  return new Vector3(positions[i], positions[i + 1], positions[i + 2])
+}
+
+function tangentFromPositions(
+  positions: number[],
+  fromIndex: number,
+  toIndex: number
+): Vector3 | null {
+  const from = pointFromPositions(positions, fromIndex)
+  const to = pointFromPositions(positions, toIndex)
+  const tangent = to.sub(from)
+  if (tangent.lengthSq() < EPSILON) {
+    return null
+  }
+  return tangent.normalize()
+}
+
+function tangentForAngle(angle: number, ccw: boolean) {
+  return ccw
+    ? new Vector3(-Math.sin(angle), Math.cos(angle), 0)
+    : new Vector3(Math.sin(angle), -Math.cos(angle), 0)
 }
 
 function directionToArrowRotation(direction: Vector3) {

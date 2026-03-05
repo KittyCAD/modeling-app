@@ -149,8 +149,6 @@ function getDefaultAngleLabelPosition(
     return null
   }
 
-  const isMajorAngle = isMajorConstraintAngle(angle)
-
   // The distances of the line segment end points from the intersection center
   const line1Dir = normalizeVec(subVec(line1[1], line1[0]))
   const line2Dir = normalizeVec(subVec(line2[1], line2[0]))
@@ -167,8 +165,8 @@ function getDefaultAngleLabelPosition(
     line1SignedDistances,
     line2SignedDistances
   )
-  const radius = commonLineRange
-    ? lerp(commonLineRange[0], commonLineRange[1], isMajorAngle ? 0.9 : 0.5)
+  const radiusSigned = commonLineRange
+    ? findShortestRadiusFromRange(commonLineRange)
     : // No intersection, take the second smallest distance,
       // we could take the third, or the mid point between them..
       [...line1SignedDistances, ...line2SignedDistances].sort(
@@ -178,12 +176,21 @@ function getDefaultAngleLabelPosition(
   //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
   const signedAngle = normalizeAngleRad(angle)
 
-  let result = scaleVec(normalizeVec(line1Dir), radius)
+  let result = scaleVec(normalizeVec(line1Dir), radiusSigned)
   console.log(signedAngle)
   result = rotateVec2d(result, signedAngle / 2)
   result = addVec(center, result)
 
   return result
+}
+
+// finds the shortest radius on the range of projected distances of the 2 lines.
+function findShortestRadiusFromRange(range: [number, number]) {
+  // Try the point at 15% and 85% of the interval, see which one is closer to center.
+  // Note that range has signed values (can be negative).
+  const r1 = lerp(range[0], range[1], 0.15)
+  const r2 = lerp(range[0], range[1], 0.85)
+  return Math.abs(r1) < Math.abs(r2) ? r1 : r2
 }
 
 // Returns the intersection of 2 infinite lines that lie on the given line segments.
