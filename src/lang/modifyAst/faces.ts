@@ -1163,7 +1163,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
   } else if (planeArtifact.type === 'planeOfFace') {
     const faceArtifact = artifactGraph.get(planeArtifact.faceId)
-    if (isFaceArtifact(faceArtifact)) {
+    if (faceArtifact && isFaceArtifact(faceArtifact)) {
       const codeRef = getFaceCodeRef(faceArtifact)
       if (!codeRef) {
         return new Error("Couldn't retrieve code reference for face artifact")
