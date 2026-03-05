@@ -16,12 +16,12 @@ import {
 } from '@src/lang/modifyAst'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
-  getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { toUtf16 } from '@src/lang/errors'
 import {
   getArtifactOfTypes,
   getCapCodeRef,
@@ -37,7 +37,6 @@ import {
   type Expr,
   type PathToNode,
   type Program,
-  type VariableDeclaration,
   type VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
@@ -1128,11 +1127,7 @@ export function retrieveFaceSelectionsFromOpArgs(
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
   artifactGraph: ArtifactGraph,
-  planeArgSource?: string,
-  primitiveResolutionContext?: {
-    ast: Node<Program>
-    wasmInstance: ModuleType
-  }
+  code?: string
 ): Selections | Error {
   if (planeArg.value.type !== 'Plane') {
     return new Error(
@@ -1183,9 +1178,8 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     const primitiveFaceSelection = getPrimitiveFaceSelectionFromFaceIdSource(
       planeArtifact.faceId,
       artifactGraph,
-      planeArgSource,
-      primitiveResolutionContext?.ast,
-      primitiveResolutionContext?.wasmInstance
+      planeArg,
+      code
     )
     if (primitiveFaceSelection) {
       return {
@@ -1205,31 +1199,36 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
 function getPrimitiveFaceSelectionFromFaceIdSource(
   faceId: string,
   artifactGraph: ArtifactGraph,
-  planeArgSource?: string,
-  ast?: Node<Program>,
-  wasmInstance?: ModuleType
+  planeArg: OpArg,
+  code?: string
 ): EnginePrimitiveSelection | undefined {
-  if (!planeArgSource || !ast || !wasmInstance) {
+  if (!code || planeArg.sourceRange.length < 2) {
     return undefined
   }
 
+  const sourceStart = toUtf16(planeArg.sourceRange[0], code)
+  const sourceEnd = toUtf16(planeArg.sourceRange[1], code)
+  if (sourceStart < 0 || sourceEnd <= sourceStart || sourceEnd > code.length) {
+    return undefined
+  }
+  const planeArgSource = code.slice(sourceStart, sourceEnd)
+
   const match = planeArgSource.match(
-    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[^)]*?\bindex\s*=\s*(\d+)\b/s
+    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[\s\S]*?\bindex\s*=\s*(-?\d+)\s*\)/
   )
   if (!match) {
     return undefined
   }
 
   const bodyVariableName = match[1]
-  const primitiveIndex = Number(match[2])
-  if (!Number.isInteger(primitiveIndex)) {
+  const primitiveIndex = Number.parseInt(match[2], 10)
+  if (!Number.isInteger(primitiveIndex) || primitiveIndex < 0) {
     return undefined
   }
   const parentEntityId = getParentSolidIdFromBodyVariableName(
     bodyVariableName,
     artifactGraph,
-    ast,
-    wasmInstance
+    code
   )
   if (!parentEntityId) {
     return undefined
@@ -1247,8 +1246,7 @@ function getPrimitiveFaceSelectionFromFaceIdSource(
 function getParentSolidIdFromBodyVariableName(
   bodyVariableName: string,
   artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
+  code: string
 ): string | undefined {
   let bestMatch: { id: string; rangeStart: number } | undefined
 
@@ -1257,17 +1255,41 @@ function getParentSolidIdFromBodyVariableName(
       continue
     }
 
-    const variableDeclaration = getNodeFromPath<VariableDeclaration>(
-      ast,
-      artifact.codeRef.pathToNode,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (err(variableDeclaration)) {
+    if (artifact.codeRef.range.length < 2) {
       continue
     }
-
-    if (variableDeclaration.node.declaration.id.name !== bodyVariableName) {
+    const declarationStart = toUtf16(artifact.codeRef.range[0], code)
+    const declarationEnd = toUtf16(artifact.codeRef.range[1], code)
+    if (
+      declarationStart < 0 ||
+      declarationEnd <= declarationStart ||
+      declarationEnd > code.length
+    ) {
+      continue
+    }
+    const declarationSource = code.slice(declarationStart, declarationEnd)
+    const variableMatch = declarationSource.match(
+      /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/
+    )
+    const prefixWindow = code.slice(
+      Math.max(0, declarationStart - 4096),
+      declarationStart
+    )
+    let lastAssignedVariableName: string | undefined
+    for (const match of prefixWindow.matchAll(
+      /(?:^|[\r\n])\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/g
+    )) {
+      lastAssignedVariableName = match[1]
+    }
+    const declaredVariableName =
+      variableMatch?.[1] ??
+      // Some codeRef ranges start at the call expression (after the `=`),
+      // so recover the lhs variable name from the immediate prefix.
+      code
+        .slice(Math.max(0, declarationStart - 512), declarationStart)
+        .match(/([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/)?.[1] ??
+      lastAssignedVariableName
+    if (declaredVariableName !== bodyVariableName) {
       continue
     }
 

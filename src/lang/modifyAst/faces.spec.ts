@@ -1127,7 +1127,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 extrude001 = extrude(sketch001, length = 30)
 shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
 plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 2)`
-      const { artifactGraph, operations, ast } = await getAstAndArtifactGraph(
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
         shellWithOffsetPlane,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1138,8 +1138,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
         op.unlabeledArg!,
         artifactGraph,
-        `planeOf(extrude001, face = faceId(extrude001, index = 6))`,
-        { ast, wasmInstance: instanceInThisFile }
+        shellWithOffsetPlane
       )
       if (err(selections)) throw selections
 

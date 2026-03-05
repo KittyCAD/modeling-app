@@ -27,7 +27,6 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
-  assertParse,
   type CallExpressionKw,
   type PipeExpression,
   type Program,
@@ -942,23 +941,10 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
-    let ast: Node<Program>
-    let wasmInstance: ModuleType
-    try {
-      wasmInstance = await rustContext.wasmInstancePromise
-      ast = assertParse(code, wasmInstance)
-    } catch {
-      return { reason: "Couldn't parse code for primitive face retrieval" }
-    }
-
-    const planeArgSource = code.slice(
-      ...operation.unlabeledArg.sourceRange.map(boundToUtf16)
-    )
     const result = retrieveNonDefaultPlaneSelectionFromOpArg(
       operation.unlabeledArg,
       artifactGraph,
-      planeArgSource,
-      { ast, wasmInstance }
+      code
     )
     if (err(result)) {
       return { reason: result.message }
