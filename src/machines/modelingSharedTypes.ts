@@ -47,10 +47,7 @@ export interface Selection {
 
 export interface SketchRegionSelection {
   point: Coords2d
-  segmentId: ArtifactId
-  intersectionSegmentId: ArtifactId
-  intersectionIndex?: number
-  curveClockwise?: boolean
+  sketchId: ArtifactId
 }
 
 export type Selections = {

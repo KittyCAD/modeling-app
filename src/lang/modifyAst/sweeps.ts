@@ -834,21 +834,38 @@ function getSketchVarNameFromRegionSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): string | Error {
-  const regionSegmentId = selection.sketchRegion?.segmentId
-  if (!regionSegmentId) {
-    return new Error('Sketch region selection is missing segmentId')
+  const sketchId = selection.sketchRegion?.sketchId
+  if (!sketchId) {
+    return new Error('Sketch region selection is missing sketchId')
   }
 
-  const regionSegmentArtifact = artifactGraph.get(regionSegmentId)
-  if (!regionSegmentArtifact || regionSegmentArtifact.type !== 'segment') {
+  let sketchArtifact = artifactGraph.get(sketchId)
+  if (!sketchArtifact) {
+    return new Error(`Sketch region sketchId ${sketchId} was not found`)
+  }
+
+  // Normalize to the owning sketch/path artifact when a child artifact was stored.
+  if (sketchArtifact.type === 'segment') {
+    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
+    if (pathArtifact?.type === 'path') {
+      sketchArtifact = pathArtifact
+    }
+  } else if (sketchArtifact.type === 'solid2d') {
+    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
+    if (pathArtifact?.type === 'path') {
+      sketchArtifact = pathArtifact
+    }
+  }
+
+  if (!('codeRef' in sketchArtifact)) {
     return new Error(
-      `Sketch region segmentId ${regionSegmentId} did not resolve to a segment artifact`
+      `Sketch region sketchId ${sketchId} does not provide a code reference`
     )
   }
 
   const candidatePaths: PathToNode[] = [
-    regionSegmentArtifact.codeRef.pathToNode,
-    getNodePathFromSourceRange(ast, regionSegmentArtifact.codeRef.range),
+    sketchArtifact.codeRef.pathToNode,
+    getNodePathFromSourceRange(ast, sketchArtifact.codeRef.range),
   ].filter((path) => path.length > 0)
 
   for (const path of candidatePaths) {
@@ -877,7 +894,7 @@ function getSketchVarNameFromRegionSelection(
   }
 
   return new Error(
-    `Could not resolve sketch block variable for region segmentId ${regionSegmentId}`
+    `Could not resolve sketch block variable for region sketchId ${sketchId}`
   )
 }
 

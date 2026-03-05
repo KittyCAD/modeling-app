@@ -3,6 +3,7 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
+  Point2d,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -81,6 +82,102 @@ import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedS
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+async function getParentEntityIdForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<string | undefined> {
+  const parentResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_parent_id',
+      entity_id: entityId,
+    },
+  })
+  if (!isModelingResponse(parentResponse)) return undefined
+  const parentIdResponse = parentResponse.resp.data.modeling_response
+  if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
+  return parentIdResponse.data.entity_id
+}
+
+async function getRegionQueryPointForRegion(
+  regionId: string,
+  engineCommandManager: ConnectionManager
+): Promise<Coords2d | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_query_point',
+      region_id: regionId,
+    },
+  } as unknown as WebSocketRequest)
+  if (!isModelingResponse(response)) return null
+  const queryPointResponse = response.resp.data.modeling_response as {
+    type: string
+    data: Point2d | { query_point: Point2d }
+  }
+  if (queryPointResponse.type !== 'region_get_query_point') return null
+  const queryPoint =
+    'query_point' in queryPointResponse.data
+      ? queryPointResponse.data.query_point
+      : queryPointResponse.data
+  return [queryPoint.x, queryPoint.y]
+}
+
+function getSketchIdFromArtifact(
+  artifact: Artifact | undefined
+): ArtifactId | null {
+  if (!artifact) return null
+  if (artifact.type === 'path' || artifact.type === 'sketchBlock') {
+    return artifact.id
+  }
+  if (artifact.type === 'segment' || artifact.type === 'solid2d') {
+    return artifact.pathId
+  }
+  return null
+}
+
+async function getSketchRegionSelectionFromEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<Selection | null> {
+  const point = await getRegionQueryPointForRegion(
+    regionEntityId,
+    engineCommandManager
+  ).catch(() => null)
+  if (!point) return null
+
+  const parentEntityId = await getParentEntityIdForEntity(
+    regionEntityId,
+    engineCommandManager
+  ).catch(() => undefined)
+
+  const parentArtifact = parentEntityId
+    ? artifactGraph.get(parentEntityId)
+    : undefined
+  const sketchId =
+    getSketchIdFromArtifact(parentArtifact) ||
+    getSketchIdFromArtifact(artifactGraph.get(regionEntityId))
+  if (!sketchId) return null
+
+  const sketchArtifact = artifactGraph.get(sketchId)
+  if (!sketchArtifact) return null
+
+  const codeRef = getCodeRefsByArtifactId(sketchId, artifactGraph)?.[0]
+  if (!codeRef) return null
+
+  return {
+    artifact: sketchArtifact,
+    codeRef,
+    sketchRegion: {
+      point,
+      sketchId,
+    },
+  }
+}
+
 async function getPrimitiveSelectionForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
@@ -102,21 +199,10 @@ async function getPrimitiveSelectionForEntity(
   const entityGetPrimitiveIndex: EntityGetPrimitiveIndex =
     primitiveIndexResponse.data
 
-  let parentEntityId: string | undefined
-  const parentResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_parent_id',
-      entity_id: entityId,
-    },
-  })
-  if (isModelingResponse(parentResponse)) {
-    const parentIdResponse = parentResponse.resp.data.modeling_response
-    if (parentIdResponse.type === 'entity_get_parent_id') {
-      parentEntityId = parentIdResponse.data.entity_id
-    }
-  }
+  const parentEntityId = await getParentEntityIdForEntity(
+    entityId,
+    engineCommandManager
+  )
 
   return {
     type: 'enginePrimitive',
@@ -143,12 +229,15 @@ export async function getEventForSelectWithPoint(
     artifactGraph,
     engineCommandManager,
     rustContext,
+    allowSketchRegionFallback,
   }: {
     artifactGraph: ArtifactGraph
     engineCommandManager: ConnectionManager
     rustContext: RustContext
+    allowSketchRegionFallback?: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
+  console.log('data', data)
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -186,6 +275,25 @@ export async function getEventForSelectWithPoint(
 
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
+    if (allowSketchRegionFallback) {
+      console.log('allowSketchRegionFallback', allowSketchRegionFallback)
+      const sketchRegionSelection = await getSketchRegionSelectionFromEntity(
+        data.entity_id,
+        artifactGraph,
+        engineCommandManager
+      )
+      console.log('sketchRegionSelection', sketchRegionSelection)
+      if (sketchRegionSelection) {
+        return {
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: sketchRegionSelection,
+          },
+        }
+      }
+    }
+
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
     // but we can still build a primitive selection to be used as fallback for downstream operations
     const primitiveSelection = await getPrimitiveSelectionForEntity(
@@ -224,71 +332,6 @@ export async function getEventForSelectWithPoint(
     }
   }
   return null
-}
-
-export function getEventForSelectRegionFromPoint(
-  data: Extract<
-    OkModelingCmdResponse,
-    { type: 'select_region_from_point' }
-  >['data'],
-  {
-    artifactGraph,
-    point,
-  }: {
-    artifactGraph: ArtifactGraph
-    point: Coords2d
-  }
-): ModelingMachineEvent {
-  if (!data.region) {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
-    }
-  }
-
-  const segmentArtifact = artifactGraph.get(data.region.segment)
-  if (!segmentArtifact || segmentArtifact.type !== 'segment') {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
-    }
-  }
-
-  const segmentCodeRef = getCodeRefsByArtifactId(
-    data.region.segment,
-    artifactGraph
-  )?.[0]
-  const intersectionSegment = artifactGraph.get(
-    data.region.intersection_segment
-  )
-  if (
-    !segmentCodeRef ||
-    !intersectionSegment ||
-    intersectionSegment.type !== 'segment'
-  ) {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
-    }
-  }
-
-  return {
-    type: 'Set selection',
-    data: {
-      selectionType: 'singleCodeCursor',
-      selection: {
-        artifact: segmentArtifact,
-        codeRef: segmentCodeRef,
-        sketchRegion: {
-          point,
-          segmentId: data.region.segment,
-          intersectionSegmentId: data.region.intersection_segment,
-          intersectionIndex: data.region.intersection_index,
-          curveClockwise: data.region.curve_clockwise,
-        },
-      },
-    },
-  }
 }
 
 export function getEventForSegmentSelection(
@@ -979,113 +1022,6 @@ export async function sendSelectEventToEngine(
     if (mr.type === 'select_with_point') return mr.data
   }
   return { entity_id: '' }
-}
-
-export async function sendSelectRegionEventToEngine(
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  videoRef: HTMLVideoElement,
-  systemDeps: {
-    engineCommandManager: ConnectionManager
-    artifactGraph: ArtifactGraph
-    ast: Node<Program>
-  }
-) {
-  const mockStorageKey = 'mockSelectRegionFromPoint'
-  const isMockEnabled =
-    typeof window !== 'undefined' &&
-    window.localStorage.getItem(mockStorageKey) === '1'
-
-  async function createMockRegionResponse() {
-    const selectResult = await sendSelectEventToEngine(e, videoRef, {
-      engineCommandManager: systemDeps.engineCommandManager,
-    })
-    const entityId = selectResult?.entity_id
-    if (!entityId) {
-      return { region: undefined }
-    }
-
-    const artifact = systemDeps.artifactGraph.get(entityId)
-    if (!artifact) {
-      return { region: undefined }
-    }
-
-    let segmentIds: string[] = []
-    if (artifact.type === 'segment') {
-      const path = systemDeps.artifactGraph.get(artifact.pathId)
-      if (path?.type === 'path') {
-        segmentIds = path.segIds
-      } else {
-        segmentIds = [artifact.id]
-      }
-    } else if (artifact.type === 'path') {
-      segmentIds = artifact.segIds
-    } else if (artifact.type === 'solid2d') {
-      const path = systemDeps.artifactGraph.get(artifact.pathId)
-      if (path?.type === 'path') {
-        segmentIds = path.segIds
-      }
-    }
-
-    if (segmentIds.length === 0) {
-      return { region: undefined }
-    }
-
-    const firstSegmentId =
-      artifact.type === 'segment' ? artifact.id : segmentIds[0]
-    const secondSegmentId =
-      segmentIds.find((segmentId) => segmentId !== firstSegmentId) ||
-      firstSegmentId
-
-    return {
-      region: {
-        segment: firstSegmentId,
-        intersection_segment: secondSegmentId,
-        intersection_index: -1,
-        curve_clockwise: false,
-      },
-    }
-  }
-
-  const { x, y } = getNormalisedCoordinates(
-    e,
-    videoRef,
-    systemDeps.engineCommandManager.streamDimensions
-  )
-  let res
-  try {
-    res = await systemDeps.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_region_from_point',
-        selected_at_window: { x, y },
-      },
-      cmd_id: uuidv4(),
-    })
-  } catch (error) {
-    if (!isMockEnabled) return Promise.reject(error)
-    console.warn(
-      'Using mock select_region_from_point response. Disable with localStorage.removeItem("mockSelectRegionFromPoint").',
-      error
-    )
-    return createMockRegionResponse()
-  }
-  if (!res) {
-    console.warn('No response')
-    return isMockEnabled ? createMockRegionResponse() : undefined
-  }
-
-  if (isArray(res)) {
-    res = res[0]
-  }
-  const singleRes = res
-  if (isModelingResponse(singleRes)) {
-    const mr = singleRes.resp.data.modeling_response
-    if (mr.type === 'select_region_from_point') return mr.data
-  }
-  if (isMockEnabled) {
-    return createMockRegionResponse()
-  }
-  return { region: undefined }
 }
 
 export function updateSelections(

@@ -57,10 +57,18 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
+          const currentArgument =
+            context.commandBarActor.getSnapshot().context.currentArgument
+          const allowSketchRegionFallback =
+            !!currentArgument &&
+            (currentArgument.inputType === 'selection' ||
+              currentArgument.inputType === 'selectionMixed') &&
+            currentArgument.selectionTypes.includes('sketchRegion')
           const event = await getEventForSelectWithPoint(engineEvent, {
             rustContext,
             artifactGraph: kclManager.artifactGraph,
             engineCommandManager,
+            allowSketchRegionFallback,
           })
           event && send(event)
         })().catch(reportRejection)
@@ -72,6 +80,7 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
+    context.commandBarActor,
     kclManager,
     send,
     engineCommandManager,

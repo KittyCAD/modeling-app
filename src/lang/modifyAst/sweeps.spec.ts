@@ -270,19 +270,8 @@ s = sketch(on = XY) {
         )
         return !err(node) && node.node.declaration.id.name === 'line1'
       })
-      const line2 = segments.find((segment) => {
-        const codeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
-        if (!codeRef) return false
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 'line2'
-      })
-      if (!line1 || !line2) {
-        throw new Error('Could not find line1/line2 segment artifacts')
+      if (!line1) {
+        throw new Error('Could not find line1 segment artifact')
       }
 
       const line1CodeRef = getCodeRefsByArtifactId(line1.id, artifactGraph)?.[0]
@@ -296,8 +285,7 @@ s = sketch(on = XY) {
             codeRef: line1CodeRef,
             sketchRegion: {
               point: [1, 1],
-              segmentId: line1.id,
-              intersectionSegmentId: line2.id,
+              sketchId: line1.pathId,
             },
           },
         ],
@@ -324,7 +312,7 @@ s = sketch(on = XY) {
       )
     })
 
-    it('should resolve region sketch var from sketchRegion.segmentId only', async () => {
+    it('should resolve region sketch var from sketchRegion.sketchId only', async () => {
       const code = `@settings(experimentalFeatures = allow)
 
 s = sketch(on = XY) {
@@ -367,9 +355,8 @@ t = sketch(on = XY) {
         })
 
       const line1 = findSegmentByVarName('line1')
-      const line2 = findSegmentByVarName('line2')
       const edge1 = findSegmentByVarName('edge1')
-      if (!line1 || !line2 || !edge1) {
+      if (!line1 || !edge1) {
         throw new Error('Could not find expected segment artifacts')
       }
 
@@ -382,12 +369,11 @@ t = sketch(on = XY) {
         graphSelections: [
           {
             artifact: line1,
-            // Intentionally wrong codeRef to verify segmentId is authoritative.
+            // Intentionally wrong codeRef to verify sketchId is authoritative.
             codeRef: wrongCodeRef,
             sketchRegion: {
               point: [1, 1],
-              segmentId: line1.id,
-              intersectionSegmentId: line2.id,
+              sketchId: line1.pathId,
             },
           },
         ],

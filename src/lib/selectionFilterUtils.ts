@@ -13,11 +13,11 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const defaultSelectionFilter: EntityType[] = [
-  'face',
-  'edge',
-  'solid2d',
-  'curve',
-  'object',
+  // 'face',
+  // 'edge',
+  // 'solid2d',
+  // 'curve',
+  // 'object',
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */

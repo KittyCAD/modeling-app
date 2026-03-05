@@ -10,11 +10,7 @@ import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  getEventForSelectRegionFromPoint,
-  sendSelectEventToEngine,
-  sendSelectRegionEventToEngine,
-} from '@src/lib/selections'
+import { sendSelectEventToEngine } from '@src/lib/selections'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
@@ -35,7 +31,7 @@ const TIME_TO_CONNECT = 30_000
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
-  const { settings, project, commands } = useApp()
+  const { settings, project } = useApp()
   const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
@@ -45,7 +41,6 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const commandBarState = commands.useState()
   const projectIORef = project?.projectIORefSignal.value
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
@@ -63,18 +58,6 @@ export const ConnectionStream = (props: {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
-  const shouldSelectSketchRegion = useMemo(() => {
-    const currentArg = commandBarState.context.currentArgument
-    if (!currentArg) return false
-    if (
-      currentArg.inputType !== 'selection' &&
-      currentArg.inputType !== 'selectionMixed'
-    ) {
-      return false
-    }
-    return currentArg.selectionTypes.includes('sketchRegion')
-  }, [commandBarState.context.currentArgument])
-
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       if (!isNetworkOkay) return
@@ -83,49 +66,6 @@ export const ConnectionStream = (props: {
       if (btnName(e.nativeEvent).left) {
         // If we're mousing up from a camera drag, don't send a select event
         if (sceneInfra.camControls.wasDragging === true) return
-
-        if (shouldSelectSketchRegion) {
-          const isMockRegionSelectionEnabled =
-            typeof window !== 'undefined' &&
-            window.localStorage.getItem('mockSelectRegionFromPoint') === '1'
-          const intersectPoint = sceneInfra.getPlaneIntersectPointForMouseEvent(
-            e.nativeEvent
-          )
-          const twoDPoint = intersectPoint?.twoD
-          const fallbackPoint = intersectPoint?.intersection?.point
-          const rawPoint: [number, number] = twoDPoint
-            ? [twoDPoint.x, twoDPoint.y]
-            : fallbackPoint
-              ? [fallbackPoint.x, fallbackPoint.y]
-              : [0, 0]
-          const point: [number, number] = isMockRegionSelectionEnabled
-            ? [Number(rawPoint[0].toFixed(1)), Number(rawPoint[1].toFixed(1))]
-            : rawPoint
-          sendSelectRegionEventToEngine(e, videoRef.current, {
-            engineCommandManager,
-            artifactGraph: kclManager.artifactGraph,
-            ast: kclManager.ast,
-          })
-            .then((result) => {
-              if (!result?.region) {
-                // Fallback to standard selection for non-region picks.
-                // We still skip fallback in classic sketch mode.
-                if (!modelingMachineState.matches('Sketch')) {
-                  void sendSelectEventToEngine(e, videoRef.current!, {
-                    engineCommandManager,
-                  }).catch(reportRejection)
-                }
-                return
-              }
-              const regionEvent = getEventForSelectRegionFromPoint(result, {
-                artifactGraph: kclManager.artifactGraph,
-                point,
-              })
-              modelingSend(regionEvent)
-            })
-            .catch(reportRejection)
-          return
-        }
 
         // If we're in classic sketch mode, don't send generic engine-side select events.
         if (modelingMachineState.matches('Sketch')) return
@@ -140,10 +80,7 @@ export const ConnectionStream = (props: {
       isNetworkOkay,
       modelingMachineState.value,
       sceneInfra.camControls.wasDragging,
-      shouldSelectSketchRegion,
-      kclManager.artifactGraph,
       engineCommandManager,
-      modelingSend,
     ]
   )
 
