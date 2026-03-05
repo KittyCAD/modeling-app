@@ -1,3 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_region_from_point2d_in_triangle.kcl
+---
 @settings(experimentalFeatures = allow)
 
 s = sketch(on = XY) {
@@ -9,7 +13,6 @@ s = sketch(on = XY) {
   coincident([line1.start, line3.end])
   horizontal(line1)
   equalLength([line2, line3])
-  point1 = point(at = [var 3mm, var 0.1mm])
 }
 
-r = region(point = s.point1)
+r = region(point = [3mm, 0.1mm], sketch = s)
