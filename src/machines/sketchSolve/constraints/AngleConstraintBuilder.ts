@@ -149,9 +149,9 @@ function getDefaultAngleLabelPosition(
     return null
   }
 
-  // The distances of the line segment end points from the intersection center
   const line1Dir = normalizeVec(subVec(line1[1], line1[0]))
   const line2Dir = normalizeVec(subVec(line2[1], line2[0]))
+  // The distances of the line segment end points from the intersection (center)
   const line1SignedDistances = [
     dot2d(subVec(line1[0], center), line1Dir),
     dot2d(subVec(line1[1], center), line1Dir),
