@@ -328,6 +328,7 @@ pub enum Constraint {
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Tangent(Tangent),
     Vertical(Vertical),
 }
 
@@ -406,4 +407,10 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Tangent {
+    pub input: Vec<ObjectId>,
 }
