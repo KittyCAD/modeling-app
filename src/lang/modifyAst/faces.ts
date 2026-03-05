@@ -803,7 +803,7 @@ function getSolidSelectionsFromFaceSelections(
   }
 }
 
-function getBodySelectionFromPrimitiveParentEntityId(
+export function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph
 ): Selection | null {
