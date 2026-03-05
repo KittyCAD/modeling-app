@@ -28,18 +28,21 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
-  getCodeRefsByArtifactId,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
   Expr,
   LabeledArg,
   PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
-import type { KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  KclCommandValue,
+  KclExpressionWithVariable,
+} from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   type KclPreludeExtrudeMethod,
@@ -57,177 +60,258 @@ import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 
-function createMemberExpression(object: Expr, property: Expr): Expr {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object,
-    property,
-    computed: false,
-  }
-}
-
-function getSketchVarNameFromSegmentCodeRef(
-  ast: Node<Program>,
-  pathToNode: PathToNode
-): string | Error {
-  const bodyIndex = Number(pathToNode[1]?.[0])
-  if (!Number.isInteger(bodyIndex)) {
-    return new Error('Invalid sketch region segment path')
-  }
-
-  const bodyNode = ast.body[bodyIndex]
-  if (
-    bodyNode?.type !== 'VariableDeclaration' ||
-    bodyNode.declaration.init.type !== 'SketchBlock'
-  ) {
-    return new Error(
-      'Sketch region selections currently require a sketch block selection.'
-    )
-  }
-
-  return bodyNode.declaration.id.name
-}
-
-function getSketchSegmentMemberExpression(
-  segmentId: string,
+function getSketchVarNameFromRegionSelection(
+  selection: Selection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): { expr: Expr; sketchVarName: string } | Error {
-  const segment = getArtifactOfTypes(
-    { key: segmentId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(segment)) {
-    return segment
+): string | Error {
+  const getSketchVarNameFromCall = (
+    callExpression: CallExpressionKw
+  ): string | undefined => {
+    const sketchArg = callExpression.arguments[0]?.arg
+    if (sketchArg?.type === 'Name' && sketchArg.path.length === 0) {
+      return sketchArg.name.name
+    }
+    return undefined
   }
 
-  const segmentCodeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
-  if (!segmentCodeRef) {
-    return new Error(`Could not find code reference for segment ${segment.id}`)
+  const getSketchVarNameFromDeclaration = (
+    declaration: VariableDeclaration
+  ): string | undefined => {
+    const init = declaration.declaration.init
+    if (init.type === 'SketchBlock') {
+      return declaration.declaration.id.name
+    }
+
+    if (init.type === 'CallExpressionKw') {
+      if (init.callee.name.name === 'startSketchOn') {
+        return declaration.declaration.id.name
+      }
+      return getSketchVarNameFromCall(init)
+    }
+
+    if (init.type === 'PipeExpression') {
+      const firstPipeExpression = init.body[0]
+      if (
+        firstPipeExpression?.type === 'Name' &&
+        firstPipeExpression.path.length === 0
+      ) {
+        return firstPipeExpression.name.name
+      }
+      if (firstPipeExpression?.type === 'CallExpressionKw') {
+        if (firstPipeExpression.callee.name.name === 'startSketchOn') {
+          return declaration.declaration.id.name
+        }
+        const sketchFromFirstPipe =
+          getSketchVarNameFromCall(firstPipeExpression)
+        if (sketchFromFirstPipe) {
+          return sketchFromFirstPipe
+        }
+      }
+
+      for (const expression of init.body) {
+        if (expression.type !== 'CallExpressionKw') {
+          continue
+        }
+        const sketchFromExpression = getSketchVarNameFromCall(expression)
+        if (sketchFromExpression) {
+          return sketchFromExpression
+        }
+      }
+    }
+
+    return undefined
   }
 
-  const candidatePaths: PathToNode[] = [
-    segmentCodeRef.pathToNode,
-    getNodePathFromSourceRange(ast, segmentCodeRef.range),
-  ].filter((path) => path.length > 0)
-
-  let segmentDecl:
+  const getVariableDeclarationAtOrAbovePath = (
+    pathToNode: PathToNode
+  ):
     | {
         node: VariableDeclaration
         shallowPath: PathToNode
         deepPath: PathToNode
       }
-    | undefined
-  for (const path of candidatePaths) {
-    const maybeSegmentDecl = getNodeFromPath<VariableDeclaration>(
-      ast,
-      path,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (
-      !err(maybeSegmentDecl) &&
-      maybeSegmentDecl.node.type === 'VariableDeclaration'
-    ) {
-      segmentDecl = maybeSegmentDecl
-      break
+    | undefined => {
+    for (let pathLength = pathToNode.length; pathLength > 0; pathLength--) {
+      const maybeDeclaration = getNodeFromPath<VariableDeclaration>(
+        ast,
+        pathToNode.slice(0, pathLength),
+        wasmInstance,
+        'VariableDeclaration'
+      )
+      if (
+        !err(maybeDeclaration) &&
+        maybeDeclaration.node.type === 'VariableDeclaration'
+      ) {
+        return maybeDeclaration
+      }
     }
+
+    return undefined
   }
 
-  if (!segmentDecl) {
-    return new Error(`Could not resolve segment declaration for ${segment.id}`)
-  }
-  const segmentVarName = segmentDecl.node.declaration.id.name
+  const getTopLevelDeclaration = (
+    pathToNode: PathToNode
+  ): VariableDeclaration | undefined => {
+    const bodyIndex = Number(pathToNode[1]?.[0])
+    if (!Number.isInteger(bodyIndex)) {
+      return undefined
+    }
 
-  const sketchVarName = getSketchVarNameFromSegmentCodeRef(
-    ast,
-    segmentDecl.deepPath
-  )
-  if (err(sketchVarName)) {
-    return new Error(
-      `Segment ${segment.id} is not from a sketch block region-capable sketch`
-    )
+    const bodyNode = ast.body[bodyIndex]
+    if (bodyNode?.type !== 'VariableDeclaration') {
+      return undefined
+    }
+
+    return bodyNode
   }
 
-  return {
-    expr: createMemberExpression(
-      createLocalName(sketchVarName),
-      createLocalName(segmentVarName)
-    ),
-    sketchVarName,
+  const resolveVarNameFromCodeRef = (
+    codeRef: Selection['codeRef']
+  ): string | undefined => {
+    const candidatePaths: PathToNode[] = [
+      codeRef.pathToNode,
+      getNodePathFromSourceRange(ast, codeRef.range),
+    ].filter((path) => path.length > 0)
+
+    for (const path of candidatePaths) {
+      const declarationAtPath = getVariableDeclarationAtOrAbovePath(path)
+      if (!declarationAtPath) {
+        continue
+      }
+
+      const declarationCandidates = [
+        getTopLevelDeclaration(declarationAtPath.deepPath),
+        declarationAtPath.node,
+      ].filter((declaration): declaration is VariableDeclaration =>
+        Boolean(declaration)
+      )
+
+      for (const declaration of declarationCandidates) {
+        const sketchVarName = getSketchVarNameFromDeclaration(declaration)
+        if (sketchVarName) {
+          return sketchVarName
+        }
+      }
+
+      // Last-resort fallback: keep going with the top-level declaration if present,
+      // otherwise use the nearest variable declaration at the path.
+      const topLevelDeclaration = getTopLevelDeclaration(
+        declarationAtPath.deepPath
+      )
+      if (topLevelDeclaration) {
+        return topLevelDeclaration.declaration.id.name
+      }
+      return declarationAtPath.node.declaration.id.name
+    }
+
+    return undefined
   }
+
+  const selectionVarName = resolveVarNameFromCodeRef(selection.codeRef)
+  if (selectionVarName) {
+    return selectionVarName
+  }
+
+  if (selection.artifact?.type === 'segment') {
+    const path = artifactGraph.get(selection.artifact.pathId)
+    if (path?.type === 'path') {
+      const pathVarName = resolveVarNameFromCodeRef(path.codeRef)
+      if (pathVarName) return pathVarName
+    }
+  } else if (selection.artifact?.type === 'solid2d') {
+    const path = artifactGraph.get(selection.artifact.pathId)
+    if (path?.type === 'path') {
+      const pathVarName = resolveVarNameFromCodeRef(path.codeRef)
+      if (pathVarName) return pathVarName
+    }
+  } else if (selection.artifact?.type === 'path') {
+    const pathVarName = resolveVarNameFromCodeRef(selection.artifact.codeRef)
+    if (pathVarName) return pathVarName
+  } else if (selection.artifact?.type === 'sketchBlock') {
+    const sketchVarName = resolveVarNameFromCodeRef(selection.artifact.codeRef)
+    if (sketchVarName) return sketchVarName
+  }
+
+  return new Error('Could not resolve sketch variable for region selection')
 }
 
 function getRegionExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
+  _artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Expr | Error {
   if (!selection.sketchRegion) {
     return new Error('Missing sketch region metadata for selection')
   }
 
-  const {
-    segmentId,
-    intersectionSegmentId,
-    intersectionIndex,
-    curveClockwise,
-  } = selection.sketchRegion
-  const segmentExpr = getSketchSegmentMemberExpression(
-    segmentId,
+  const sketchVarName = getSketchVarNameFromRegionSelection(
+    selection,
     ast,
-    artifactGraph,
+    _artifactGraph,
     wasmInstance
   )
-  if (err(segmentExpr)) {
-    return segmentExpr
+  if (err(sketchVarName)) {
+    return sketchVarName
   }
-  const intersectionExpr = getSketchSegmentMemberExpression(
-    intersectionSegmentId,
-    ast,
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(intersectionExpr)) {
-    return intersectionExpr
-  }
-  if (segmentExpr.sketchVarName !== intersectionExpr.sketchVarName) {
-    return new Error('Region selection segments must belong to the same sketch')
+
+  const [x, y] = selection.sketchRegion.point
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return new Error('Region point coordinates are invalid')
   }
 
   const regionArgs: LabeledArg[] = [
     createLabeledArg(
-      'segments',
-      createArrayExpression([segmentExpr.expr, intersectionExpr.expr])
+      'point',
+      createArrayExpression([
+        createLiteral(x, wasmInstance),
+        createLiteral(y, wasmInstance),
+      ])
     ),
+    createLabeledArg('sketch', createLocalName(sketchVarName)),
   ]
 
-  if (intersectionIndex !== undefined) {
-    regionArgs.push(
-      createLabeledArg(
-        'intersectionIndex',
-        createLiteral(intersectionIndex, wasmInstance)
-      )
-    )
+  return createCallExpressionStdLibKw('region', null, regionArgs)
+}
+
+function isVariableKclExpression(
+  value: unknown
+): value is KclExpressionWithVariable {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'variableName' in value &&
+    typeof value.variableName === 'string'
+  )
+}
+
+function isKclCommandValue(value: unknown): value is KclCommandValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'valueAst' in value &&
+    'valueText' in value &&
+    'valueCalculated' in value
+  )
+}
+
+function getNumericCommandExpr(
+  value: unknown,
+  argName: string,
+  wasmInstance: ModuleType
+): Expr | Error {
+  if (typeof value === 'number') {
+    return createLiteral(value, wasmInstance)
   }
-  if (curveClockwise !== undefined) {
-    regionArgs.push(
-      createLabeledArg(
-        'direction',
-        createLiteral(curveClockwise ? 'cw' : 'ccw', wasmInstance)
-      )
-    )
+  if (isKclCommandValue(value)) {
+    return valueOrVariable(value)
   }
 
-  return createCallExpressionStdLibKw('region', null, regionArgs)
+  return new Error(
+    `Expected ${argName} to be a KCL expression value or number literal`
+  )
 }
 
 export function addExtrude({
@@ -270,7 +354,6 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
-  console.log('selections', sketches)
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
@@ -327,11 +410,25 @@ export function addExtrude({
     }
     vars.exprs.push(expr)
   }
+  if (sketchRegionSelections.length > 0) {
+    // Region selection currently maps to an explicit region(...) value.
+    // Avoid trying to append into arbitrary pipes when mixed selection plumbing
+    // produced a pipe substitution placeholder.
+    vars.pathIfPipe = undefined
+    vars.exprs = vars.exprs.filter((expr) => expr.type !== 'PipeSubstitution')
+  }
 
   // Extra labeled args expressions
-  const lengthExpr = length
-    ? [createLabeledArg('length', valueOrVariable(length))]
-    : []
+  let lengthExpr: LabeledArg[] = []
+  if (length !== undefined) {
+    const lengthValueExpr = getNumericCommandExpr(
+      length,
+      'length',
+      wasmInstance
+    )
+    if (err(lengthValueExpr)) return lengthValueExpr
+    lengthExpr = [createLabeledArg('length', lengthValueExpr)]
+  }
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
@@ -351,26 +448,46 @@ export function addExtrude({
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
-  const bidirectionalLengthExpr = bidirectionalLength
-    ? [
-        createLabeledArg(
-          'bidirectionalLength',
-          valueOrVariable(bidirectionalLength)
-        ),
-      ]
-    : []
+  let bidirectionalLengthExpr: LabeledArg[] = []
+  if (bidirectionalLength !== undefined) {
+    const bidirectionalLengthValueExpr = getNumericCommandExpr(
+      bidirectionalLength,
+      'bidirectionalLength',
+      wasmInstance
+    )
+    if (err(bidirectionalLengthValueExpr)) return bidirectionalLengthValueExpr
+    bidirectionalLengthExpr = [
+      createLabeledArg('bidirectionalLength', bidirectionalLengthValueExpr),
+    ]
+  }
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
-  const twistAngleExpr = twistAngle
-    ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
-    : []
-  const twistAngleStepExpr = twistAngleStep
-    ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
-    : []
+  let twistAngleExpr: LabeledArg[] = []
+  if (twistAngle !== undefined) {
+    const twistAngleValueExpr = getNumericCommandExpr(
+      twistAngle,
+      'twistAngle',
+      wasmInstance
+    )
+    if (err(twistAngleValueExpr)) return twistAngleValueExpr
+    twistAngleExpr = [createLabeledArg('twistAngle', twistAngleValueExpr)]
+  }
+  let twistAngleStepExpr: LabeledArg[] = []
+  if (twistAngleStep !== undefined) {
+    const twistAngleStepValueExpr = getNumericCommandExpr(
+      twistAngleStep,
+      'twistAngleStep',
+      wasmInstance
+    )
+    if (err(twistAngleStepValueExpr)) return twistAngleStepValueExpr
+    twistAngleStepExpr = [
+      createLabeledArg('twistAngleStep', twistAngleStepValueExpr),
+    ]
+  }
   let twistCenterExpr: LabeledArg[] = []
   if (twistCenter) {
     const twistCenterExpression = createPoint2dExpression(
@@ -403,12 +520,11 @@ export function addExtrude({
   ])
 
   // Insert variables for labeled arguments if provided
-  if (length && 'variableName' in length && length.variableName) {
+  if (isVariableKclExpression(length) && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
   if (
-    bidirectionalLength &&
-    'variableName' in bidirectionalLength &&
+    isVariableKclExpression(bidirectionalLength) &&
     bidirectionalLength.variableName
   ) {
     insertVariableAndOffsetPathToNode(
@@ -417,21 +533,13 @@ export function addExtrude({
       mNodeToEdit
     )
   }
-  if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
+  if (isVariableKclExpression(twistAngle) && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
   }
-  if (
-    twistAngleStep &&
-    'variableName' in twistAngleStep &&
-    twistAngleStep.variableName
-  ) {
+  if (isVariableKclExpression(twistAngleStep) && twistAngleStep.variableName) {
     insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, mNodeToEdit)
   }
-  if (
-    twistCenter &&
-    'variableName' in twistCenter &&
-    twistCenter.variableName
-  ) {
+  if (isVariableKclExpression(twistCenter) && twistCenter.variableName) {
     insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, mNodeToEdit)
   }
 

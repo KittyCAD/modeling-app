@@ -16,6 +16,7 @@ import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -130,6 +131,25 @@ profile002 = rectangle(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(`extrude001 = extrude(profile001, length = 1)`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should accept numeric literal length values', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length: 5 as unknown as KclCommandValue,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -320,7 +340,70 @@ s = sketch(on = XY) {
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude001 = extrude(region(segments = [s.line1, s.line2]), length = 1)`
+        `extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)`
+      )
+    })
+
+    it('should resolve sketch var for sketch region from startProfile pipeline', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [1, 0])
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const segments = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'segment'
+      )
+      if (segments.length < 2) {
+        throw new Error('Expected at least two segment artifacts')
+      }
+      const [firstSegment, secondSegment] = segments
+      const firstSegmentCodeRef = getCodeRefsByArtifactId(
+        firstSegment.id,
+        artifactGraph
+      )?.[0]
+      if (!firstSegmentCodeRef) {
+        throw new Error('Could not find code reference for segment artifact')
+      }
+
+      const sketches: Selections = {
+        graphSelections: [
+          {
+            artifact: firstSegment,
+            codeRef: firstSegmentCodeRef,
+            sketchRegion: {
+              point: [0.1, 0.1],
+              segmentId: firstSegment.id,
+              intersectionSegmentId: secondSegment.id,
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(point = [0.1, 0.1], sketch = sketch001), length = 1)`
       )
     })
 

@@ -996,35 +996,6 @@ export async function sendSelectRegionEventToEngine(
     window.localStorage.getItem(mockStorageKey) === '1'
 
   async function createMockRegionResponse() {
-    function isSketchBlockSegment(segmentId: string): boolean {
-      const segment = systemDeps.artifactGraph.get(segmentId)
-      if (!segment || segment.type !== 'segment') return false
-      const codeRef = getCodeRefsByArtifactId(
-        segmentId,
-        systemDeps.artifactGraph
-      )?.[0]
-      if (!codeRef) return false
-
-      const candidatePaths = [
-        codeRef.pathToNode,
-        getNodePathFromSourceRange(systemDeps.ast, codeRef.range),
-      ].filter((path) => path.length > 0)
-
-      for (const path of candidatePaths) {
-        const bodyIndex = Number(path[1]?.[0])
-        if (!Number.isInteger(bodyIndex)) continue
-        const bodyNode = systemDeps.ast.body[bodyIndex]
-        if (
-          bodyNode?.type === 'VariableDeclaration' &&
-          bodyNode.declaration.init.type === 'SketchBlock'
-        ) {
-          return true
-        }
-      }
-
-      return false
-    }
-
     const selectResult = await sendSelectEventToEngine(e, videoRef, {
       engineCommandManager: systemDeps.engineCommandManager,
     })
@@ -1064,12 +1035,6 @@ export async function sendSelectRegionEventToEngine(
     const secondSegmentId =
       segmentIds.find((segmentId) => segmentId !== firstSegmentId) ||
       firstSegmentId
-    if (
-      !isSketchBlockSegment(firstSegmentId) ||
-      !isSketchBlockSegment(secondSegmentId)
-    ) {
-      return { region: undefined }
-    }
 
     return {
       region: {
