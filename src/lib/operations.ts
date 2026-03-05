@@ -27,12 +27,12 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
+  assertParse,
   type CallExpressionKw,
   type PipeExpression,
   type Program,
   type VariableDeclaration,
   type ArtifactGraph,
-  type VariableMap,
   pathToNodeFromRustNodePath,
   type PathToNode,
 } from '@src/lang/wasm'
@@ -905,7 +905,6 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
-  variables,
 }) => {
   const baseCommand = {
     name: 'Offset plane',
@@ -939,6 +938,15 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
+    let ast: Node<Program>
+    let wasmInstance: ModuleType
+    try {
+      wasmInstance = await rustContext.wasmInstancePromise
+      ast = assertParse(code, wasmInstance)
+    } catch {
+      return { reason: "Couldn't parse code for primitive face retrieval" }
+    }
+
     const planeArgSource = code.slice(
       ...operation.unlabeledArg.sourceRange.map(boundToUtf16)
     )
@@ -946,7 +954,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
       operation.unlabeledArg,
       artifactGraph,
       planeArgSource,
-      variables
+      { ast, wasmInstance }
     )
     if (err(result)) {
       return { reason: result.message }
@@ -2432,7 +2440,6 @@ export interface EnterEditFlowProps {
   operation: Operation
   code: string
   artifactGraph: ArtifactGraph
-  variables: VariableMap
   artifact?: Artifact
   rustContext: RustContext
 }
@@ -2443,7 +2450,6 @@ export async function enterEditFlow({
   artifact,
   rustContext,
   artifactGraph,
-  variables,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   // Operate on VariableDeclarations differently from StdLibCall's
   if (operation.type === 'VariableDeclaration') {
@@ -2452,7 +2458,6 @@ export async function enterEditFlow({
       rustContext,
       code,
       artifactGraph,
-      variables,
     })
 
     if ('reason' in eventPayload) {
@@ -2484,7 +2489,6 @@ export async function enterEditFlow({
         artifact,
         rustContext,
         artifactGraph,
-        variables,
       })
       if ('reason' in eventPayload) {
         return new Error(eventPayload.reason)

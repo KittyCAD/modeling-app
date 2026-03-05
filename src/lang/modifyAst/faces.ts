@@ -16,6 +16,7 @@ import {
 } from '@src/lang/modifyAst'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
@@ -36,6 +37,7 @@ import {
   type Expr,
   type PathToNode,
   type Program,
+  type VariableDeclaration,
   type VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
@@ -1133,7 +1135,10 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
   artifactGraph: ArtifactGraph,
   planeArgSource?: string,
-  variables?: VariableMap
+  primitiveResolutionContext?: {
+    ast: Node<Program>
+    wasmInstance: ModuleType
+  }
 ): Selections | Error {
   if (planeArg.value.type !== 'Plane') {
     return new Error(
@@ -1188,8 +1193,10 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
 
     const primitiveFaceSelection = getPrimitiveFaceSelectionFromFaceIdSource(
       planeArtifact.faceId,
+      artifactGraph,
       planeArgSource,
-      variables
+      primitiveResolutionContext?.ast,
+      primitiveResolutionContext?.wasmInstance
     )
     if (primitiveFaceSelection) {
       return {
@@ -1198,7 +1205,9 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       }
     }
 
-    return new Error("Couldn't retrieve primitive face selection from faceId")
+    return new Error(
+      "Couldn't resolve primitive face parent solid from faceId(...)"
+    )
   }
 
   return new Error('Unsupported plane artifact type')
@@ -1206,10 +1215,12 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
 
 function getPrimitiveFaceSelectionFromFaceIdSource(
   faceId: string,
+  artifactGraph: ArtifactGraph,
   planeArgSource?: string,
-  variables?: VariableMap
+  ast?: Node<Program>,
+  wasmInstance?: ModuleType
 ): EnginePrimitiveSelection | undefined {
-  if (!planeArgSource || !variables) {
+  if (!planeArgSource || !ast || !wasmInstance) {
     return undefined
   }
 
@@ -1222,18 +1233,62 @@ function getPrimitiveFaceSelectionFromFaceIdSource(
 
   const bodyVariableName = match[1]
   const primitiveIndex = Number(match[2])
-  const bodyVariable = variables[bodyVariableName]
-  if (bodyVariable?.type !== 'Solid') {
+  if (!Number.isInteger(primitiveIndex)) {
+    return undefined
+  }
+  const parentEntityId = getParentSolidIdFromBodyVariableName(
+    bodyVariableName,
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (!parentEntityId) {
     return undefined
   }
 
   return {
     type: 'enginePrimitive',
     entityId: faceId,
-    parentEntityId: bodyVariable.value.artifactId,
+    parentEntityId,
     primitiveIndex,
     primitiveType: 'face',
   }
+}
+
+function getParentSolidIdFromBodyVariableName(
+  bodyVariableName: string,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): string | undefined {
+  let bestMatch: { id: string; rangeStart: number } | undefined
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'sweep' && artifact.type !== 'compositeSolid') {
+      continue
+    }
+
+    const variableDeclaration = getNodeFromPath<VariableDeclaration>(
+      ast,
+      artifact.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(variableDeclaration)) {
+      continue
+    }
+
+    if (variableDeclaration.node.declaration.id.name !== bodyVariableName) {
+      continue
+    }
+
+    const rangeStart = artifact.codeRef.range[0]
+    if (!bestMatch || rangeStart < bestMatch.rangeStart) {
+      bestMatch = { id: artifact.id, rangeStart }
+    }
+  }
+
+  return bestMatch?.id
 }
 
 export function buildSolidsAndFacesExprs(

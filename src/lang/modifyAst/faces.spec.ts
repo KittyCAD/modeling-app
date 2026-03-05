@@ -1127,12 +1127,11 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 extrude001 = extrude(sketch001, length = 30)
 shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
 plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 2)`
-      const { artifactGraph, operations, variables } =
-        await getAstAndArtifactGraph(
-          shellWithOffsetPlane,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
+      const { artifactGraph, operations, ast } = await getAstAndArtifactGraph(
+        shellWithOffsetPlane,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
       const op = operations.find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
@@ -1140,7 +1139,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         op.unlabeledArg!,
         artifactGraph,
         `planeOf(extrude001, face = faceId(extrude001, index = 6))`,
-        variables
+        { ast, wasmInstance: instanceInThisFile }
       )
       if (err(selections)) throw selections
 
