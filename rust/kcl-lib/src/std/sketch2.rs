@@ -252,17 +252,17 @@ async fn inner_region(
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            // exec_state
-            //     .batch_modeling_cmd(
-            //         meta,
-            //         ModelingCmd::from(
-            //             mcmd::CreateRegionFromQueryPoint::builder()
-            //                 .object_id(sketch.sketch()?.id)
-            //                 .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
-            //                 .build(),
-            //         ),
-            //     )
-            //     .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    meta,
+                    ModelingCmd::from(
+                        mcmd::CreateRegionFromQueryPoint::builder()
+                            .object_id(sketch.sketch()?.id)
+                            .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .build(),
+                    ),
+                )
+                .await?;
 
             sketch
         }
