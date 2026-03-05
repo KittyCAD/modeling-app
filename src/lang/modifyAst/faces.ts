@@ -43,6 +43,7 @@ import {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -711,12 +712,7 @@ export function addOffsetPlane({
     getEnginePrimitiveFaceSelectionsFromSelection(plane).length > 0
   const hasFaceToOffset =
     hasPrimitiveFaceToOffset ||
-    plane.graphSelections.some(
-      (sel) =>
-        sel.artifact?.type === 'cap' ||
-        sel.artifact?.type === 'wall' ||
-        sel.artifact?.type === 'edgeCut'
-    )
+    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
@@ -783,9 +779,7 @@ function getEnginePrimitiveFaceSelectionsFromSelection(
 ): EnginePrimitiveSelection[] {
   return faces.otherSelections.filter(
     (selection): selection is EnginePrimitiveSelection =>
-      typeof selection === 'object' &&
-      'type' in selection &&
-      selection.type === 'enginePrimitive' &&
+      isEnginePrimitiveSelection(selection) &&
       selection.primitiveType === 'face'
   )
 }
@@ -1169,12 +1163,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
   } else if (planeArtifact.type === 'planeOfFace') {
     const faceArtifact = artifactGraph.get(planeArtifact.faceId)
-    if (
-      faceArtifact &&
-      (faceArtifact.type === 'cap' ||
-        faceArtifact.type === 'wall' ||
-        faceArtifact.type === 'edgeCut')
-    ) {
+    if (isFaceArtifact(faceArtifact)) {
       const codeRef = getFaceCodeRef(faceArtifact)
       if (!codeRef) {
         return new Error("Couldn't retrieve code reference for face artifact")
