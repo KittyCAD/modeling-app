@@ -659,6 +659,12 @@ export fn faceId(
 ///   // Fillet the edge at index 2, i.e. the top edge.
 ///   |> fillet(radius = 1, tags = [edgeId(index = 2)])
 /// ```
+/// ```
+/// startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///   |> fillet(radius = 0.5, tags = [edgeId(closestTo = [5, 0, 2])])
+/// ```
 @(impl = std_rust, feature_tree = false)
 export fn edgeId(
   /// The solid whose edges we're trying to find
@@ -666,5 +672,8 @@ export fn edgeId(
   /// Edge to identify.
   /// The index is a stable ordering of edges, used when you can't get the
   /// usual ID of an edge.
-  index: number(Count),
+  index?: number(Count),
+  /// Query the edge closest to this point. Uses absolute global coordinates.
+  closestTo?: Point3d,
 ): Edge {}
+
