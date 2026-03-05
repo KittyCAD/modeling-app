@@ -16,7 +16,6 @@ use crate::{
         normalize_to_solver_distance_unit, solver_numeric_type,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
-
     front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
     std::Args,
 };
