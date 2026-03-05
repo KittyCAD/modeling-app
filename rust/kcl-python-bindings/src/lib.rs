@@ -125,6 +125,8 @@ async fn new_context_state(
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
+    // Must turn on SSAO, without it, transparent images will look opaque.
+    settings.enable_ssao = true;
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
