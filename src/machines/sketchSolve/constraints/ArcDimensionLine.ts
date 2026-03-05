@@ -33,7 +33,10 @@ import {
 import { Vector3 } from 'three'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
-import { getLineIntersection, isMajorConstraintAngle } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
+import {
+  getLineIntersection,
+  isMajorConstraintAngle,
+} from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
 
 const TWO_PI = Math.PI * 2
 const EPSILON = 1e-8

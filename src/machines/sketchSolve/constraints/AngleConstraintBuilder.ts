@@ -186,7 +186,6 @@ function getDefaultAngleLabelPosition(
   return result
 }
 
-
 // Returns the intersection of 2 infinite lines that lie on the given line segments.
 // Returns a valid point even if the line segments themselves don't intersect.
 // Returns null if the lines are parallel,
