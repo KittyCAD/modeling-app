@@ -11,14 +11,12 @@ import {
 } from 'three'
 import {
   CONSTRAINT_TYPE,
-  isDiameterConstraint,
-  isRadiusConstraint,
+  isConstraintWithSource,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
   SpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -31,7 +29,6 @@ import {
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
-import { normalizeAngleRad } from './AngleConstraintBuilder'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -286,10 +283,7 @@ export function updateLabel(
 
     const dimensionLabel = formatNumber(apiNumber)
     const showFnIcon =
-      (isDistanceConstraint(obj) ||
-        isRadiusConstraint(obj) ||
-        isDiameterConstraint(obj)) &&
-      !obj.kind.constraint.source.is_literal
+      isConstraintWithSource(obj) && !obj.kind.constraint.source.is_literal
 
     if (
       label.userData.dimensionLabel !== dimensionLabel ||
@@ -388,7 +382,7 @@ function formatNumber(apiNumber: Number) {
     if (apiNumber.units === 'Rad') {
       value *= 180 / Math.PI
     }
-    return parseFloat(value.toFixed(1)).toString() + "°"
+    return parseFloat(value.toFixed(1)).toString() + '°'
   } else {
     return parseFloat(apiNumber.value.toFixed(3)).toString()
   }

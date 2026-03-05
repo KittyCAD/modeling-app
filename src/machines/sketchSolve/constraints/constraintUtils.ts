@@ -119,6 +119,15 @@ export function isAngleConstraint(obj: ApiObject): obj is AngleConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Angle'
 }
 
+export function isConstraintWithSource(obj: ApiObject) {
+  return (
+    isDistanceConstraint(obj) ||
+    isRadiusConstraint(obj) ||
+    isDiameterConstraint(obj) ||
+    isAngleConstraint(obj)
+  )
+}
+
 export function calculateDimensionLabelScreenPosition(
   constraintId: number,
   modelingState: StateFrom<typeof modelingMachine>,
