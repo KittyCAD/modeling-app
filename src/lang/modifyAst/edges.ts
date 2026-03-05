@@ -327,17 +327,24 @@ function buildEdgeExpr(
       )
     }
 
+    const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+    const primitiveEdgeIdExpr = createCallExpressionStdLibKw(
+      'edgeId',
+      structuredClone(sourceSurfaceExpr),
+      [
+        createLabeledArg(
+          'index',
+          createLiteral(edgeSelection.primitiveIndex, wasmInstance)
+        ),
+      ]
+    )
+
     return {
       modifiedAst: ast,
       edgeExpr: createCallExpressionStdLibKw(
-        'edgeId',
-        structuredClone(sourceSurfaceVars.exprs[0]),
-        [
-          createLabeledArg(
-            'index',
-            createLiteral(edgeSelection.primitiveIndex, wasmInstance)
-          ),
-        ]
+        'getBoundedEdge',
+        sourceSurfaceExpr,
+        [createLabeledArg('edge', primitiveEdgeIdExpr)]
       ),
     }
   }
@@ -365,9 +372,49 @@ function buildEdgeExpr(
     return new Error('Expected exactly one tag for each blend edge.')
   }
 
+  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  if (edgeExpr.type === 'Name') {
+    return {
+      modifiedAst: tagResult.modifiedAst,
+      edgeExpr,
+    }
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    graphEdgeSelection,
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return sourceSurfaceArtifact
+  }
+
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sourceSurfaceArtifact as Artifact,
+          codeRef: sourceSurfaceArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars)) return sourceSurfaceVars
+  if (sourceSurfaceVars.exprs.length !== 1) {
+    return new Error('Expected exactly one source surface for each blend edge.')
+  }
+
+  const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+
   return {
     modifiedAst: tagResult.modifiedAst,
-    edgeExpr: getEdgeTagCall(tagResult.tags[0], edgeArtifact),
+    edgeExpr: createCallExpressionStdLibKw(
+      'getBoundedEdge',
+      sourceSurfaceExpr,
+      [createLabeledArg('edge', edgeExpr)]
+    ),
   }
 }
 

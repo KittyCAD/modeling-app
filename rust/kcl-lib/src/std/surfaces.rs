@@ -8,7 +8,7 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
     output as mout,
-    shared::{BodyType, EntityType, FractionOfEdge, SurfaceEdgeReference},
+    shared::{BodyType, FractionOfEdge, SurfaceEdgeReference},
     websocket::OkWebSocketResponseData,
 };
 
@@ -224,7 +224,7 @@ pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::Primitive(PrimitiveType::BoundedEdge),
-                RuntimeType::edge(),
+                RuntimeType::tagged_edge(),
             ])),
             ArrayLen::Known(2),
         ),
@@ -254,87 +254,11 @@ async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &A
                 upper_bound: 1.0,
             })
         }
-        KclValue::Uuid { value: edge_id, .. } => {
-            let object_id = resolve_object_id_for_edge(edge_id, exec_state, args).await?;
-            Ok(BoundedEdge {
-                face_id: object_id,
-                edge_id,
-                lower_bound: 0.0,
-                upper_bound: 1.0,
-            })
-        }
         _ => Err(KclError::new_internal(KclErrorDetails::new(
             "Unexpected edge value while preparing blend edges.".to_owned(),
             vec![args.source_range],
         ))),
     }
-}
-
-async fn resolve_object_id_for_edge(
-    edge_id: uuid::Uuid,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<uuid::Uuid, KclError> {
-    if args.ctx.no_engine_commands().await {
-        return Ok(edge_id);
-    }
-
-    let mut entity_id = edge_id;
-    // Traverse up the entity hierarchy until we find the owning body object.
-    for _ in 0..8 {
-        let get_entity_type_response = exec_state
-            .send_modeling_cmd(
-                ModelingCmdMeta::from_args(exec_state, args),
-                ModelingCmd::from(mcmd::GetEntityType::builder().entity_id(entity_id).build()),
-            )
-            .await?;
-
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::GetEntityType(entity_type),
-        } = get_entity_type_response
-        else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Engine returned invalid response, it should have returned GetEntityType but it returned {get_entity_type_response:?}"
-                ),
-                vec![args.source_range],
-            )));
-        };
-
-        if matches!(entity_type.entity_type, EntityType::Solid3D | EntityType::Object) {
-            return Ok(entity_id);
-        }
-
-        let get_parent_response = exec_state
-            .send_modeling_cmd(
-                ModelingCmdMeta::from_args(exec_state, args),
-                ModelingCmd::from(mcmd::EntityGetParentId::builder().entity_id(entity_id).build()),
-            )
-            .await?;
-
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::EntityGetParentId(parent),
-        } = get_parent_response
-        else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Engine returned invalid response, it should have returned EntityGetParentId but it returned {get_parent_response:?}"
-                ),
-                vec![args.source_range],
-            )));
-        };
-
-        if parent.entity_id == entity_id {
-            break;
-        }
-
-        entity_id = parent.entity_id;
-    }
-
-    Err(KclError::new_semantic(KclErrorDetails::new(
-        format!("Could not resolve the body for edge `{edge_id}`. Use a tagged edge or pass `getBoundedEdge(...)`."),
-        vec![args.source_range],
-    )))
 }
 
 async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {

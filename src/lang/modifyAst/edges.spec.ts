@@ -905,11 +905,11 @@ chamfer001 = chamfer(
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      console.log('newCode', newCode)
       if (err(newCode)) {
         throw newCode
       }
       expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
       expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
