@@ -58,18 +58,18 @@ export const ConnectionStream = (props: {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       if (!isNetworkOkay) return
       if (!videoRef.current) return
+      // If we're in sketch mode, don't send a engine-side select event
+      if (modelingMachineState.matches('Sketch')) return
+
+      // If we're mousing up from a camera drag, don't send a select event
+      if (sceneInfra.camControls.wasDragging === true) return
 
       if (btnName(e.nativeEvent).left) {
-        // If we're mousing up from a camera drag, don't send a select event
-        if (sceneInfra.camControls.wasDragging === true) return
-
-        // If we're in classic sketch mode, don't send generic engine-side select events.
-        if (modelingMachineState.matches('Sketch')) return
-
         sendSelectEventToEngine(e, videoRef.current, {
           engineCommandManager,
         }).catch(reportRejection)
@@ -80,7 +80,6 @@ export const ConnectionStream = (props: {
       isNetworkOkay,
       modelingMachineState.value,
       sceneInfra.camControls.wasDragging,
-      engineCommandManager,
     ]
   )
 

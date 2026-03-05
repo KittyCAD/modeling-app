@@ -36,7 +36,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import type { Coords2d, PathToNodeMap } from '@src/lang/util'
+import type { PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -103,7 +103,7 @@ async function getParentEntityIdForEntity(
 async function getRegionQueryPointForRegion(
   regionId: string,
   engineCommandManager: ConnectionManager
-): Promise<Coords2d | null> {
+): Promise<Point2d | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
@@ -115,14 +115,10 @@ async function getRegionQueryPointForRegion(
   if (!isModelingResponse(response)) return null
   const queryPointResponse = response.resp.data.modeling_response as {
     type: string
-    data: Point2d | { query_point: Point2d }
+    data: { query_point: Point2d }
   }
   if (queryPointResponse.type !== 'region_get_query_point') return null
-  const queryPoint =
-    'query_point' in queryPointResponse.data
-      ? queryPointResponse.data.query_point
-      : queryPointResponse.data
-  return [queryPoint.x, queryPoint.y]
+  return queryPointResponse.data.query_point
 }
 
 function getSketchIdFromArtifact(

@@ -512,17 +512,6 @@ export class SceneInfra {
     }
   }
 
-  getPlaneIntersectPointForMouseEvent = (
-    mouseEvent: MouseEvent
-  ): {
-    twoD?: Vector2
-    threeD?: Vector3
-    intersection: Intersection
-  } | null => {
-    this.updateCurrentMouseVector(mouseEvent)
-    return this.getPlaneIntersectPoint()
-  }
-
   public mouseMoveThrottling = true // Can be turned off for debugging
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined

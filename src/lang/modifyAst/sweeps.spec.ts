@@ -284,7 +284,7 @@ s = sketch(on = XY) {
             artifact: line1,
             codeRef: line1CodeRef,
             sketchRegion: {
-              point: [1, 1],
+              point: { x: 1, y: 1 },
               sketchId: line1.pathId,
             },
           },
@@ -372,7 +372,7 @@ t = sketch(on = XY) {
             // Intentionally wrong codeRef to verify sketchId is authoritative.
             codeRef: wrongCodeRef,
             sketchRegion: {
-              point: [1, 1],
+              point: { x: 1, y: 1 },
               sketchId: line1.pathId,
             },
           },

@@ -1,4 +1,4 @@
-import type { EntityType } from '@kittycad/lib'
+import type { EntityType, Point2d } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
@@ -46,7 +46,7 @@ export interface Selection {
 }
 
 export interface SketchRegionSelection {
-  point: Coords2d
+  point: Point2d
   sketchId: ArtifactId
 }
 

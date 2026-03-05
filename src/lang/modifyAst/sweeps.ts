@@ -918,7 +918,7 @@ function getRegionExprFromSelection(
     return sketchVarName
   }
 
-  const [x, y] = selection.sketchRegion.point
+  const { x, y } = selection.sketchRegion.point
   if (!Number.isFinite(x) || !Number.isFinite(y)) {
     return new Error('Region point coordinates are invalid')
   }
