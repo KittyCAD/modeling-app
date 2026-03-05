@@ -664,22 +664,34 @@ export function addChamfer({
       pathToNode: PathToNode[] // Array because multi-body selections create multiple chamfer calls
     }
   | Error {
-  // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // 2. Prepare unlabeled and labeled arguments
-  // Group selections by body and add all tags first (before variable insertion)
-  // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
-  const bodyData = groupSelectionsByBodyAndAddTags(
+  const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
   )
-  if (err(bodyData)) return bodyData
-  modifiedAst = bodyData.modifiedAst
+
+  let useEdgeRefs = false
+  let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
+
+  if (!err(edgeRefsBodyData)) {
+    useEdgeRefs = true
+    modifiedAst = edgeRefsBodyData.modifiedAst
+  } else {
+    bodyData = groupSelectionsByBodyAndAddTags(
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(bodyData)) return bodyData
+    modifiedAst = bodyData.modifiedAst
+  }
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
@@ -696,37 +708,57 @@ export function addChamfer({
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
 
-  // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
-  for (const data of bodyData.bodies.values()) {
-    const secondLengthArgs = secondLength
-      ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
-      : []
-    const angleArgs = angle
-      ? [createLabeledArg('angle', valueOrVariable(angle))]
-      : []
-    const tagArgs = tag
-      ? [createLabeledArg('tag', createTagDeclarator(tag))]
-      : []
+  const secondLengthArgs = secondLength
+    ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
+    : []
+  const angleArgs = angle
+    ? [createLabeledArg('angle', valueOrVariable(angle))]
+    : []
+  const tagArgs = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
 
-    const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('length', valueOrVariable(length)),
-      ...secondLengthArgs,
-      ...angleArgs,
-      ...tagArgs,
-    ])
+  if (useEdgeRefs && !err(edgeRefsBodyData)) {
+    for (const data of edgeRefsBodyData.bodies.values()) {
+      const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
+        createLabeledArg('edgeRefs', data.edgeRefsExpr),
+        createLabeledArg('length', valueOrVariable(length)),
+        ...secondLengthArgs,
+        ...angleArgs,
+        ...tagArgs,
+      ])
 
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call,
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: data.pathIfPipe,
-      variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
-      wasmInstance,
-    })
-    if (err(pathToNode)) return pathToNode
-    pathToNodes.push(pathToNode)
+      const pathToNode = setCallInAst({
+        ast: modifiedAst,
+        call,
+        pathToEdit: mNodeToEdit,
+        pathIfNewPipe: data.pathIfPipe,
+        variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+        wasmInstance,
+      })
+      if (err(pathToNode)) return pathToNode
+      pathToNodes.push(pathToNode)
+    }
+  } else if (bodyData) {
+    for (const data of bodyData.bodies.values()) {
+      const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('length', valueOrVariable(length)),
+        ...secondLengthArgs,
+        ...angleArgs,
+        ...tagArgs,
+      ])
+
+      const pathToNode = setCallInAst({
+        ast: modifiedAst,
+        call,
+        pathToEdit: mNodeToEdit,
+        pathIfNewPipe: data.pathIfPipe,
+        variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+        wasmInstance,
+      })
+      if (err(pathToNode)) return pathToNode
+      pathToNodes.push(pathToNode)
+    }
   }
 
   return { modifiedAst, pathToNode: pathToNodes }

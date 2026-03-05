@@ -1821,8 +1821,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edgeRefs=[{faces=[seg01,capEnd001]}], length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edgeRefs=[{faces=[seg01,capStart001]}], length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1905,16 +1905,18 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1.1: Edit sweep
     async function editChamfer(
-      featureTreeIndex: number,
+      operationName: string,
       oldValue: string,
       newValue: string
     ) {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await page.waitForTimeout(300)
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        featureTreeIndex
+        operationName,
+        0
       )
       await operationButton.dblclick({ button: 'left' })
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         currentArgKey: 'length',
@@ -1939,16 +1941,15 @@ extrude001 = extrude(sketch001, length = -12)
     }
 
     await test.step('Edit chamfer via feature tree selection works', async () => {
-      const firstChamferFeatureTreeIndex = 0
       const editedLength = '1'
-      await editChamfer(firstChamferFeatureTreeIndex, '5', editedLength)
+      await editChamfer('chamfer001', '5', editedLength)
       await editor.expectEditor.toContain(
         firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
         { shouldNormalise: true }
       )
 
-      // Edit back to original radius
-      await editChamfer(firstChamferFeatureTreeIndex, editedLength, '5')
+      // Edit back to original length
+      await editChamfer('chamfer001', editedLength, '5')
       await editor.expectEditor.toContain(firstChamferDeclaration, {
         shouldNormalise: true,
       })
@@ -2024,16 +2025,15 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 2.1: Edit chamfer (edgeSweep type)
     await test.step('Edit chamfer via feature tree selection works', async () => {
-      const secondChamferFeatureTreeIndex = 1
       const editedLength = '2'
-      await editChamfer(secondChamferFeatureTreeIndex, '5', editedLength)
+      await editChamfer('chamfer002', '5', editedLength)
       await editor.expectEditor.toContain(
         secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
         { shouldNormalise: true }
       )
 
       // Edit back to original length
-      await editChamfer(secondChamferFeatureTreeIndex, editedLength, '5')
+      await editChamfer('chamfer002', editedLength, '5')
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
@@ -2047,8 +2047,8 @@ extrude001 = extrude(sketch001, length = -12)
     })
     await test.step('Delete chamfer via feature tree selection', async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        1
+        'chamfer002',
+        0
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')

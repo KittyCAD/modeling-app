@@ -761,15 +761,30 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the unlabeled and edge arguments to selections (support both edgeRefs and tags)
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
+  let selection: Selections | Error
+  if (operation.labeledArgs?.edgeRefs) {
+    const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(
+      operation.labeledArgs.edgeRefs,
+      artifactGraph
+    )
+  } else if (operation.labeledArgs?.tags) {
+    selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.labeledArgs.tags,
+      artifactGraph
+    )
+  } else {
+    return {
+      reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+    }
+  }
   if (err(selection)) return { reason: selection.message }
 
   // 2. Convert the length argument from a string to a KCL expression

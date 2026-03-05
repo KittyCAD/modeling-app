@@ -175,8 +175,13 @@ export fn chamfer(
   /// The larger this length to chamfer away, the larger the
   /// new face will be.
   length: number(Length),
-  /// The paths you want to chamfer
-  tags: [Edge; 1+],
+  /// The paths you want to chamfer (legacy API)
+  tags?: [Edge; 1+],
+  /// Edge references using face ids (new API). Each element must be an object with:
+  /// - `faces`: [Face | Tag; 1+] - Array of faces (or tags referring to faces) that share the edge(s) to chamfer
+  /// - `disambiguators?`: [Face | Tag] - Optional array of faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index to select a specific edge when multiple edges share the same faces (0-based)
+  edgeRefs?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
   /// the first and second face are both given by `length`.

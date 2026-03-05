@@ -180,7 +180,7 @@ async fn inner_fillet(
 /// Helper to resolve a KclValue (tag or UUID) to a face UUID.
 /// Tags should refer to faces. If a tag refers to an edge, this will return an error
 /// with a helpful message suggesting to use face tags instead.
-async fn resolve_face_id(
+pub(super) async fn resolve_face_id(
     value: &KclValue,
     _solid_id: uuid::Uuid,
     exec_state: &mut ExecState,
@@ -244,10 +244,64 @@ async fn inner_fillet_with_edge_refs(
 
     let mut solid = solid.clone();
 
-    // Parse edgeRefs and resolve tags to UUIDs
+    let edge_references = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+
+    let id = exec_state.next_uuid();
+    let mut extra_face_ids = Vec::new();
+    let num_extra_ids = edge_references.len() - 1;
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
+                object_id: solid.id,
+                edges_references: edge_references.clone(),
+                cut_type: CutTypeV2::Fillet {
+                    radius: LengthUnit(radius.to_mm()),
+                    second_length: None,
+                },
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
+                strategy: Default::default(),
+                extra_face_ids,
+            }),
+        )
+        .await?;
+
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        }));
+    }
+
+    Ok(solid)
+}
+
+/// Parse edgeRefs (array of KclValue objects with faces, optional disambiguators/index)
+/// into engine EdgeReference structs. Shared by fillet and chamfer.
+pub(super) async fn parse_edge_refs_to_references(
+    edge_refs: Vec<KclValue>,
+    solid_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<kcmc::shared::EdgeReference>, KclError> {
+    if edge_refs.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails {
+            message: "You must provide at least one edgeRef".to_owned(),
+            source_ranges: vec![args.source_range],
+            backtrace: Default::default(),
+        }));
+    }
+
     let mut edge_references = Vec::new();
     for edge_ref_value in edge_refs {
-        // Parse the edgeRef object
         let edge_ref_obj = match edge_ref_value {
             KclValue::Object { value, .. } => value,
             _ => {
@@ -259,7 +313,6 @@ async fn inner_fillet_with_edge_refs(
             }
         };
 
-        // Get faces array
         let faces_value = edge_ref_obj.get("faces").ok_or_else(|| {
             KclError::new_type(KclErrorDetails {
                 message: "edgeRef must have 'faces' field".to_string(),
@@ -287,13 +340,11 @@ async fn inner_fillet_with_edge_refs(
             }));
         }
 
-        // Resolve faces to UUIDs
         let mut face_uuids = Vec::new();
         for face_value in faces_array {
-            face_uuids.push(resolve_face_id(face_value, solid.id, exec_state, &args).await?);
+            face_uuids.push(resolve_face_id(face_value, solid_id, exec_state, args).await?);
         }
 
-        // Get disambiguators (optional)
         let mut disambiguator_uuids = Vec::new();
         if let Some(disambiguators_value) = edge_ref_obj.get("disambiguators") {
             let disambiguators_array = match disambiguators_value {
@@ -307,11 +358,10 @@ async fn inner_fillet_with_edge_refs(
                 }
             };
             for disambiguator_value in disambiguators_array {
-                disambiguator_uuids.push(resolve_face_id(disambiguator_value, solid.id, exec_state, &args).await?);
+                disambiguator_uuids.push(resolve_face_id(disambiguator_value, solid_id, exec_state, args).await?);
             }
         }
 
-        // Get index (optional)
         let index = match edge_ref_obj.get("index") {
             Some(KclValue::Number { value, .. }) => Some(*value as u32),
             Some(_) => {
@@ -321,17 +371,11 @@ async fn inner_fillet_with_edge_refs(
                     backtrace: Default::default(),
                 }));
             }
-            None => None, // Not provided - will fillet all matching edges
+            None => None,
         };
 
-        // Use the EdgeReference from shared module
-        // Note: This requires the updated modeling-api with the new EdgeReference struct
-        // If compilation fails here, make sure modeling-api is rebuilt
-        // Use the EdgeReference from shared module with builder pattern
-        use kcmc::shared::EdgeReference;
-        // Build EdgeReference - only set index if it was explicitly provided
-        // The builder will use None as default if we don't call .index()
-        let builder = EdgeReference::builder()
+        use kcmc::shared::EdgeReference as KcmcEdgeRef;
+        let builder = KcmcEdgeRef::builder()
             .faces(face_uuids)
             .disambiguators(disambiguator_uuids);
 
@@ -344,47 +388,7 @@ async fn inner_fillet_with_edge_refs(
         edge_references.push(edge_ref);
     }
 
-    let id = exec_state.next_uuid();
-    let mut extra_face_ids = Vec::new();
-    let num_extra_ids = edge_references.len() - 1;
-    for _ in 0..num_extra_ids {
-        extra_face_ids.push(exec_state.next_uuid());
-    }
-
-    // Use Solid3dCutEdgeReferences if available, otherwise fall back to Solid3dCutEdges
-    // This requires the updated modeling-api
-    exec_state
-        .batch_end_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
-                object_id: solid.id,
-                edges_references: edge_references.clone(),
-                cut_type: CutTypeV2::Fillet {
-                    radius: LengthUnit(radius.to_mm()),
-                    second_length: None,
-                },
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-                strategy: Default::default(),
-                extra_face_ids,
-            }),
-        )
-        .await?;
-
-    // For now, we don't track edge cuts the same way with the new API
-    // This might need to be updated based on how the engine returns edge IDs
-    // For compatibility, we'll still add the fillet surface if tagged
-    if let Some(ref tag) = tag {
-        solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
-            face_id: id,
-            tag: Some(tag.clone()),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        }));
-    }
-
-    Ok(solid)
+    Ok(edge_references)
 }
 
 #[cfg(test)]

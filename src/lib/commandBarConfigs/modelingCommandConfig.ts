@@ -1480,6 +1480,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
+      if (modRes.pathToNode.length === 0) {
+        return new Error(
+          'Chamfer could not resolve the selection to edges. Ensure an edge is selected.'
+        )
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
