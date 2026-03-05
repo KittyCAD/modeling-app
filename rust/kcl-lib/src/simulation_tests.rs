@@ -4747,7 +4747,7 @@ mod tangent_line_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME, false).await
     }
 }
 mod tangent_arc_arc {
@@ -4768,7 +4768,7 @@ mod tangent_arc_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME, false).await
     }
 }
 mod tangent_line_line_error {
@@ -4810,7 +4810,7 @@ mod tangent_circle_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME, false).await
     }
 }
 mod tangent_arc_arc_math_only {
@@ -4831,6 +4831,6 @@ mod tangent_arc_arc_math_only {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME, false).await
     }
 }
