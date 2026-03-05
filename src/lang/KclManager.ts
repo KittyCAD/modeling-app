@@ -234,29 +234,28 @@ export class ZDSProject {
     if (newPath === null) {
       return
     }
-    const foundPathSignal = this.findEditorPathSignal(newPath)
+    const foundPathSignal = this.findEditor(newPath)
     if (!foundPathSignal) {
       return
     }
-    const found = this.editors.get(foundPathSignal)
+    const found = foundPathSignal[1]
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
-    this.#executingPath.value = foundPathSignal
+    this.#executingPath.value = foundPathSignal[0]
   }
-  findEditorPathSignal(path: string) {
-    return this.editors.keys().find((p) => p.value === path)
+  findEditor(path: string) {
+    return this.editors.entries().find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
-  private get = this.editors.get.bind(this.editors)
   private set = this.editors.set.bind(this.editors)
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
   openEditor(path: string, providedEditor?: KclManager) {
-    const foundPathSignal = this.findEditorPathSignal(path)
-    const found = foundPathSignal ? this.get(foundPathSignal) : undefined
+    const foundEditor = this.findEditor(path)
+    const found = foundEditor?.[1]
     if (found) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
@@ -279,15 +278,19 @@ export class ZDSProject {
   }
 
   closeEditor(path: string) {
-    const foundPathSignal = this.findEditorPathSignal(path)
+    const foundPathSignal = this.findEditor(path)
     if (!foundPathSignal) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    this.editors.delete(foundPathSignal)
+    foundPathSignal[1].close()
+    this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    for (const editor of this.editors.values()) {
+      editor.close()
+    }
     this.editors.clear()
   }
 }
@@ -858,13 +861,16 @@ export class KclManager extends EventTarget {
       })
 
     // Register a file watcher for this file.
-    if (window.electron) {
-      window.electron.watchFileOn(
-        path,
-        this.fileWatcherKey,
-        this.onFileWatchEvent
-      )
-    }
+    window.electron?.watchFileOn(
+      path,
+      this.fileWatcherKey,
+      this.onFileWatchEvent
+    )
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
   }
 
   clearAst() {
