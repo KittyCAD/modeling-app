@@ -7,7 +7,7 @@ import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsCo
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
-import { BROWSER_PATH, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
@@ -98,8 +98,12 @@ export const ModelingPageProvider = ({
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    if (file?.path === undefined) {
+      return
+    }
+
+    const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
+
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commands.send({
@@ -150,7 +154,7 @@ export const ModelingPageProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (window.electron && projectIORef?.value.children && file?.path) {
+    if (projectIORef?.value.children && file?.path) {
       const projectPath = projectIORef.value.path
       const filePath = file.path
       let children = structuredClone(projectIORef.value.children)

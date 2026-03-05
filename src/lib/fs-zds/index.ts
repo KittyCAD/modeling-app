@@ -4,6 +4,12 @@ import electronfs, { type ElectronFSOptions } from '@src/lib/fs-zds/electronfs'
 import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
 
+declare global {
+  interface Window {
+    fsZds: IZooDesignStudioFS
+  }
+}
+
 function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
   return (
     typeof x === 'object' &&
@@ -53,6 +59,10 @@ export const moduleFsViaObject = async (
   backing: StorageBacking
 ): Promise<IZooDesignStudioFS> => {
   return STORAGE_IMPL[backing.type]
+}
+
+export const moduleFsViaWindow = async (backing: StorageBacking) => {
+  window['fsZds'] = STORAGE_IMPL[backing.type]
 }
 
 export const moduleFsViaModuleImport = async (backing: StorageBacking) => {

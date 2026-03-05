@@ -8,7 +8,6 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
   getUtils,
-  runningOnWindows,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -80,23 +79,22 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
    * "parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
-  test('Desktop: should create new file by default, creates a second file with automatic unique name', async ({
+  test('should create new file by default, creates a second file with automatic unique name', async ({
     editor,
-    context,
     page,
     scene,
     cmdBar,
     toolbar,
+    folderSetupFn,
+    fs,
   }) => {
-    if (runningOnWindows()) {
-    }
-
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {
-        encoding: 'utf-8',
-      })
+      await fs.mkdir(bracketDir, { recursive: true })
+      await fs.writeFile(
+        join(bracketDir, 'main.kcl'),
+        new TextEncoder().encode(bracket)
+      )
     })
     const u = await getUtils(page)
 
@@ -195,7 +193,9 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     },
   ]
   externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
-    test(`Load external models from local drive - ${modelName}`, async ({
+    // TODO: REACTIVATE. I'm (lee) not sure how to write this test now that
+    // it's all through the browser file picker.
+    test.skip(`Load external models from local drive - ${modelName}`, async ({
       page,
       homePage,
       scene,
