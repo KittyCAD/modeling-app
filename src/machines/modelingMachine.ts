@@ -1286,16 +1286,12 @@ export const modelingMachine = setup({
     'set selection filter to faces only': ({ context }) => {
       context.kclManager.setSelectionFilter(
         ['face', 'object'],
-        context.sceneEntitiesManager,
         context.wasmInstance
       )
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      context.kclManager.setSelectionFilterToDefault(
-        context.sceneEntitiesManager,
-        context.wasmInstance
-      )
+      context.kclManager.setSelectionFilterToDefault(context.wasmInstance)
     },
     'Delete segments': ({
       context: {

@@ -204,6 +204,23 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.7,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": -6.604,
@@ -692,6 +709,74 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.6,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.6,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.6,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.6,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -872,6 +957,23 @@ description: Artifact commands french-press.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.65882355,
+          "g": 0.65882355,
+          "b": 0.65882355,
+          "a": 1.0
+        },
+        "metalness": 0.7,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -1409,6 +1511,23 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.65882355,
+          "g": 0.65882355,
+          "b": 0.65882355,
+          "a": 1.0
+        },
+        "metalness": 0.7,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -1649,6 +1768,23 @@ description: Artifact commands french-press.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.050980393,
+          "g": 0.050980393,
+          "b": 0.050980393,
+          "a": 1.0
+        },
+        "metalness": 0.1,
+        "roughness": 0.8,
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -2839,8 +2975,8 @@ description: Artifact commands french-press.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -2858,8 +2994,8 @@ description: Artifact commands french-press.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -2877,7 +3013,7 @@ description: Artifact commands french-press.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 56.007,
+          "x": 0.0,
           "y": 0.0,
           "z": 0.0
         }
@@ -2897,19 +3033,144 @@ description: Artifact commands french-press.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "radius": 56.007,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
+          "type": "line",
           "end": {
+            "x": 43.307,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "tangential_arc",
+          "radius": 12.7,
+          "offset": {
             "unit": "degrees",
-            "value": 360.0
+            "value": 90.0
+          }
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 56.007,
+            "y": 178.308,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.254,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "tangential_arc",
+          "radius": 3.8099999999999996,
+          "offset": {
+            "unit": "degrees",
+            "value": 270.0
+          }
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 52.45099999999997,
+            "y": 13.97,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "tangential_arc",
+          "radius": 12.7,
+          "offset": {
+            "unit": "degrees",
+            "value": -90.0
+          }
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 1.2700000000000038,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -2927,36 +3188,26 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
+        "type": "revolve",
+        "target": "[uuid]",
+        "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 185.928,
-        "faces": null,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "axis_is_2d": true,
+        "angle": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "tolerance": 0.0000001,
         "opposite": "None",
-        "extrude_method": "merge",
         "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
       }
     },
     {
@@ -2989,13 +3240,17 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_shell_face",
+        "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]"
-        ],
-        "shell_thickness": 1.778,
-        "hollow": false
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.2
+        },
+        "metalness": 0.05,
+        "roughness": 0.8,
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -3259,6 +3514,23 @@ description: Artifact commands french-press.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.9764706,
+          "g": 0.21568628,
+          "b": 0.023529412,
+          "a": 1.0
+        },
+        "metalness": 0.6,
+        "roughness": 0.3,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -3423,7 +3695,7 @@ description: Artifact commands french-press.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -27.686,
+            "x": -21.843999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -3457,7 +3729,7 @@ description: Artifact commands french-press.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25.145999999999997,
+            "x": 18.541999999999998,
             "y": -0.508,
             "z": 0.0
           },
@@ -3474,7 +3746,7 @@ description: Artifact commands french-press.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 15.23999999999999,
+            "x": 16.001999999999995,
             "y": 14.732000000000001,
             "z": 0.0
           },
@@ -3525,11 +3797,11 @@ description: Artifact commands french-press.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.16,
-            "y": 0.0,
+            "x": 58.419999999999995,
+            "y": 149.35199999999998,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3618,6 +3890,23 @@ description: Artifact commands french-press.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.050980393,
+          "g": 0.050980393,
+          "b": 0.050980393,
+          "a": 1.0
+        },
+        "metalness": 0.1,
+        "roughness": 0.8,
+        "ambient_occlusion": 0.0
       }
     }
   ]
