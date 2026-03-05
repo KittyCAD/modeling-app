@@ -10,10 +10,7 @@ import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
-import {
-  CustomIcon,
-  type CustomIconName,
-} from '@src/components/CustomIcon'
+import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -71,16 +68,6 @@ const preferredWorkflowPaneMap: Record<
 
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
   null
-
-export function rememberOnboardingWorkflowPreference(
-  preference: OnboardingWorkflowPreference
-) {
-  rememberedOnboardingWorkflowPreference = preference
-}
-
-export function clearRememberedOnboardingWorkflowPreference() {
-  rememberedOnboardingWorkflowPreference = null
-}
 
 export function consumeRememberedOnboardingWorkflowPanes():
   | DefaultLayoutPaneID[]
@@ -434,7 +421,7 @@ export function TutorialRequestToast(
 ) {
   const { settings } = useApp()
   function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
-    rememberOnboardingWorkflowPreference(preference)
+    rememberedOnboardingWorkflowPreference = preference
     acceptOnboarding(props)
     toast.dismiss(ONBOARDING_TOAST_ID)
   }
@@ -645,16 +632,12 @@ export function useApplyRememberedOnboardingWorkflowOnExit() {
         return
       }
 
-      // Defer until after onboarding children unmount cleanups finish so this
-      // preferred layout wins over pane-reset effects in individual steps.
-      window.setTimeout(() => {
-        layout.set(
-          setOpenPanes(
-            structuredClone(layout.get() || defaultLayout),
-            preferredOpenPanes
-          )
+      layout.set(
+        setOpenPanes(
+          structuredClone(layout.get() || defaultLayout),
+          preferredOpenPanes
         )
-      }, 0)
+      )
     }
   }, [layout])
 }

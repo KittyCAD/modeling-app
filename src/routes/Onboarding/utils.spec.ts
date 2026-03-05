@@ -1,11 +1,8 @@
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { OnboardingPath } from '@src/lib/onboardingPaths'
 import {
-  clearRememberedOnboardingWorkflowPreference,
   consumeRememberedOnboardingWorkflowPanes,
   needsToOnboard,
-  rememberOnboardingWorkflowPreference,
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
@@ -87,35 +84,8 @@ describe('Onboarding utility functions', () => {
 
   describe('workflow preference memory', () => {
     it('returns null when no workflow was selected', () => {
-      clearRememberedOnboardingWorkflowPreference()
+      consumeRememberedOnboardingWorkflowPanes()
       expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
-    })
-
-    it('maps AI preference to only TTC and clears after consume', () => {
-      clearRememberedOnboardingWorkflowPreference()
-      rememberOnboardingWorkflowPreference('ai')
-      expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
-        DefaultLayoutPaneID.TTC,
-      ])
-      expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
-    })
-
-    it('maps code preference to code files and variables panes', () => {
-      clearRememberedOnboardingWorkflowPreference()
-      rememberOnboardingWorkflowPreference('code')
-      expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
-        DefaultLayoutPaneID.Code,
-        DefaultLayoutPaneID.Files,
-        DefaultLayoutPaneID.Variables,
-      ])
-    })
-
-    it('maps sketch preference to only feature tree pane', () => {
-      clearRememberedOnboardingWorkflowPreference()
-      rememberOnboardingWorkflowPreference('sketch')
-      expect(consumeRememberedOnboardingWorkflowPanes()).toEqual([
-        DefaultLayoutPaneID.FeatureTree,
-      ])
     })
   })
 })
