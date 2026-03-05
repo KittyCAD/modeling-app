@@ -395,7 +395,7 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
       type="button"
       onClick={props.onSelect}
       data-testid={props.dataTestId}
-      className="group relative flex w-full min-w-[11rem] cursor-pointer hover:cursor-pointer flex-col items-center gap-4 bg-transparent p-0 text-default outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="group relative flex w-full min-w-[11rem] cursor-pointer hover:cursor-pointer flex-col items-center bg-transparent p-0 text-default outline-none focus-visible:ring-2 focus-visible:ring-primary border-none"
     >
       <div
         className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
@@ -403,7 +403,7 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
         {props.title}
       </div>
       <span
-        className={`pointer-events-none absolute left-1/2 top-[3.2rem] h-8 -translate-x-1/2 border-l border-chalkboard-50 transition-colors dark:border-chalkboard-80 ${hoverToneClasses}`}
+        className={`pointer-events-none h-8 -translate-x-1/2 border-l border-chalkboard-50 transition-colors dark:border-chalkboard-80 ${hoverToneClasses}`}
       />
       {props.decoration}
       <div
@@ -432,13 +432,15 @@ export function TutorialRequestToast(
       id={ONBOARDING_TOAST_ID}
       className="flex w-full flex-col justify-between gap-6 rounded-sm bg-chalkboard-10 p-5 text-default dark:bg-chalkboard-90"
     >
-      <section className="flex items-start gap-4">
-        <img
-          src={onboardingWorkflowKitt}
-          alt="Kitt mascot"
-          className="h-12 w-12 object-contain"
-        />
-        <div>
+      <section className="flex items-stretch gap-4">
+        <div className="relative shrink-0" style={{ minWidth: '7rem' }}>
+          <img
+            src={onboardingWorkflowKitt}
+            alt="Kitt mascot"
+            className="absolute inset-0 h-full w-full object-contain"
+          />
+        </div>
+        <div className="flex flex-col justify-start">
           <h2 className="m-0 text-[1.9rem] font-semibold leading-tight">
             How would you like to start?
           </h2>
@@ -460,7 +462,7 @@ export function TutorialRequestToast(
               src={onboardingWorkflowAiHeadset}
               alt=""
               aria-hidden
-              className="pointer-events-none absolute left-1/2 top-[3.3rem] h-10 -translate-x-1/2 object-contain"
+              className="pointer-events-none absolute right-px top-[3.3rem] h-10 object-contain"
             />
           }
         />
