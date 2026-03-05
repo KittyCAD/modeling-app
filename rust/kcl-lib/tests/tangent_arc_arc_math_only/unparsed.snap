@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tangent_arc_arc_math_only.kcl
+---
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  a = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  b = arc(start = [var 7mm, var 0mm], end = [var 13mm, var 0mm], center = [var 10mm, var 0mm])
+
+  // Lock both radii so tangency cannot be solved by radius drift.
+radius(a) == 5mm
+radius(b) == 3mm
+
+  // Fix a reference frame and let tangent solve b's x-position.
+a.center.at[0] == 0mm
+a.center.at[1] == 0mm
+b.center.at[1] == 0mm
+
+  tangent([a, b])
+}
+
+assert(s.b.center.at[0], isEqualTo = 8mm, tolerance = 0.001)
+assert(s.b.center.at[1], isEqualTo = 0mm, tolerance = 0.001)
