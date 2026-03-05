@@ -17,8 +17,6 @@ export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   delay?: number
   hoverOnly?: boolean
   inert?: boolean
-  initialOpen?: boolean
-  initialOpenDuration?: number
 }
 
 export default function Tooltip({
@@ -30,8 +28,6 @@ export default function Tooltip({
   delay = 0,
   hoverOnly = false,
   inert = true,
-  initialOpen = false,
-  initialOpenDuration,
   ...rest
 }: TooltipProps) {
   const tooltip = useRef<HTMLDivElement>(null)
@@ -60,19 +56,6 @@ export default function Tooltip({
       parent.removeEventListener('blur', hide)
     }
   }, [])
-
-  useEffect(() => {
-    if (!initialOpen || initialOpenDuration == null || !tooltip.current) return
-    const parent = tooltip.current.parentElement
-    if (!parent) return
-    // @ts-ignore-next-line -- showPopover options
-    tooltip.current.showPopover({ source: parent })
-    const timeout = setTimeout(
-      () => tooltip.current?.hidePopover(),
-      initialOpenDuration
-    )
-    return () => clearTimeout(timeout)
-  }, [initialOpen, initialOpenDuration])
   return (
     <div
       popover="hint"
