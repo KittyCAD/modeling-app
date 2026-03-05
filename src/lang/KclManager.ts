@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -131,6 +131,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { isCodeTheSame } from '@src/lib/codeEditor'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -263,11 +264,15 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager({
+      new KclManager(path, {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
       })
+
+    if (providedEditor) {
+      providedEditor.path = path
+    }
 
     this.set(signal(path), newEditor)
     return newEditor
@@ -417,6 +422,39 @@ export class KclManager extends EventTarget {
 
   // INTERNAL BOOKKEEPING STATE
 
+  private fileWatcherKey = uuidv4()
+  /**
+   * Watching the file system for updates and reacting to them.
+   * TODO: We don't watch for deletions here, should we?
+   */
+  private onFileWatchEvent = (_eventType: string, path: string) => {
+    // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
+    // unless the change was initiated by us (the currently running instance).
+    window.electron
+      ?.readFile(path, {
+        encoding: 'utf-8',
+      })
+      .then((code) => {
+        const isInSketchMode =
+          this.modelingState?.matches('Sketch') ||
+          this.modelingState?.matches('sketchSolveMode')
+
+        if (!isCodeTheSame(code, this.code)) {
+          // Nothing written out yet by ourselves, or it's not the same as the current file content
+          // -> this must be an external change -> re-execute.
+          this.updateCodeEditor(code, {
+            shouldExecute: !isInSketchMode,
+            shouldResetCamera: !isInSketchMode,
+            // We explicitly do not write to the file here since we are loading from
+            // the file system and not the editor.
+            shouldWriteToDisk: false,
+          })
+
+          toast('Reloading file from disk', { icon: '📁' })
+        }
+      })
+      .catch(reportRejection)
+  }
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
   private _switchedFiles = false
@@ -762,7 +800,10 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(systemDeps: SystemDeps) {
+  constructor(
+    public path: string,
+    systemDeps: SystemDeps
+  ) {
     super()
     this.systemDeps = systemDeps
     const getSettings = () =>
@@ -815,6 +856,15 @@ export class KclManager extends EventTarget {
         this._wasmInitFailed.value = true
         reportRejection(e)
       })
+
+    // Register a file watcher for this file.
+    if (window.electron) {
+      window.electron.watchFileOn(
+        path,
+        this.fileWatcherKey,
+        this.onFileWatchEvent
+      )
+    }
   }
 
   clearAst() {
@@ -1949,15 +1999,21 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          this.writingPromise.value = fsZds
+          window.electron?.watchFileOff(this.path, this.fileWatcherKey)
+          fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
             .then(() => {
-              // After a cooldown, allow anyone watching the writingPromise to know
-              // if its safe to watch the file to do what they need to.
-              setTimeout(() => {
-                this.writingPromise.value = null
-              }, 30)
+              // After a cooldown, start watching this file again on disk.
+              if (window.electron) {
+                setTimeout(() => {
+                  window.electron?.watchFileOn(
+                    this.path,
+                    this.fileWatcherKey,
+                    this.onFileWatchEvent
+                  )
+                }, 30)
+              }
             })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
