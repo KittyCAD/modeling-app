@@ -33,7 +33,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
-  CallExpressionKw,
   Expr,
   LabeledArg,
   NumericSuffix,
@@ -59,229 +58,6 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
-
-function getSketchVarNameFromRegionSelection(
-  selection: Selection,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): string | Error {
-  const getSketchVarNameFromCall = (
-    callExpression: CallExpressionKw
-  ): string | undefined => {
-    const sketchArg = callExpression.arguments[0]?.arg
-    if (sketchArg?.type === 'Name' && sketchArg.path.length === 0) {
-      return sketchArg.name.name
-    }
-    return undefined
-  }
-
-  const getSketchVarNameFromDeclaration = (
-    declaration: VariableDeclaration
-  ): string | undefined => {
-    const init = declaration.declaration.init
-    if (init.type === 'SketchBlock') {
-      return declaration.declaration.id.name
-    }
-
-    if (init.type === 'CallExpressionKw') {
-      if (init.callee.name.name === 'startSketchOn') {
-        return declaration.declaration.id.name
-      }
-      return getSketchVarNameFromCall(init)
-    }
-
-    if (init.type === 'PipeExpression') {
-      const firstPipeExpression = init.body[0]
-      if (
-        firstPipeExpression?.type === 'Name' &&
-        firstPipeExpression.path.length === 0
-      ) {
-        return firstPipeExpression.name.name
-      }
-      if (firstPipeExpression?.type === 'CallExpressionKw') {
-        if (firstPipeExpression.callee.name.name === 'startSketchOn') {
-          return declaration.declaration.id.name
-        }
-        const sketchFromFirstPipe =
-          getSketchVarNameFromCall(firstPipeExpression)
-        if (sketchFromFirstPipe) {
-          return sketchFromFirstPipe
-        }
-      }
-
-      for (const expression of init.body) {
-        if (expression.type !== 'CallExpressionKw') {
-          continue
-        }
-        const sketchFromExpression = getSketchVarNameFromCall(expression)
-        if (sketchFromExpression) {
-          return sketchFromExpression
-        }
-      }
-    }
-
-    return undefined
-  }
-
-  const getVariableDeclarationAtOrAbovePath = (
-    pathToNode: PathToNode
-  ):
-    | {
-        node: VariableDeclaration
-        shallowPath: PathToNode
-        deepPath: PathToNode
-      }
-    | undefined => {
-    for (let pathLength = pathToNode.length; pathLength > 0; pathLength--) {
-      const maybeDeclaration = getNodeFromPath<VariableDeclaration>(
-        ast,
-        pathToNode.slice(0, pathLength),
-        wasmInstance,
-        'VariableDeclaration'
-      )
-      if (
-        !err(maybeDeclaration) &&
-        maybeDeclaration.node.type === 'VariableDeclaration'
-      ) {
-        return maybeDeclaration
-      }
-    }
-
-    return undefined
-  }
-
-  const getTopLevelDeclaration = (
-    pathToNode: PathToNode
-  ): VariableDeclaration | undefined => {
-    const bodyIndex = Number(pathToNode[1]?.[0])
-    if (!Number.isInteger(bodyIndex)) {
-      return undefined
-    }
-
-    const bodyNode = ast.body[bodyIndex]
-    if (bodyNode?.type !== 'VariableDeclaration') {
-      return undefined
-    }
-
-    return bodyNode
-  }
-
-  const resolveVarNameFromCodeRef = (
-    codeRef: Selection['codeRef']
-  ): string | undefined => {
-    const candidatePaths: PathToNode[] = [
-      codeRef.pathToNode,
-      getNodePathFromSourceRange(ast, codeRef.range),
-    ].filter((path) => path.length > 0)
-
-    for (const path of candidatePaths) {
-      const declarationAtPath = getVariableDeclarationAtOrAbovePath(path)
-      if (!declarationAtPath) {
-        continue
-      }
-
-      const declarationCandidates = [
-        getTopLevelDeclaration(declarationAtPath.deepPath),
-        declarationAtPath.node,
-      ].filter((declaration): declaration is VariableDeclaration =>
-        Boolean(declaration)
-      )
-
-      for (const declaration of declarationCandidates) {
-        const sketchVarName = getSketchVarNameFromDeclaration(declaration)
-        if (sketchVarName) {
-          return sketchVarName
-        }
-      }
-
-      // Last-resort fallback: keep going with the top-level declaration if present,
-      // otherwise use the nearest variable declaration at the path.
-      const topLevelDeclaration = getTopLevelDeclaration(
-        declarationAtPath.deepPath
-      )
-      if (topLevelDeclaration) {
-        return topLevelDeclaration.declaration.id.name
-      }
-      return declarationAtPath.node.declaration.id.name
-    }
-
-    return undefined
-  }
-
-  const selectionVarName = resolveVarNameFromCodeRef(selection.codeRef)
-  if (selectionVarName) {
-    return selectionVarName
-  }
-
-  if (selection.artifact?.type === 'segment') {
-    const path = artifactGraph.get(selection.artifact.pathId)
-    if (path?.type === 'path') {
-      const pathVarName = resolveVarNameFromCodeRef(path.codeRef)
-      if (pathVarName) return pathVarName
-    }
-  } else if (selection.artifact?.type === 'solid2d') {
-    const path = artifactGraph.get(selection.artifact.pathId)
-    if (path?.type === 'path') {
-      const pathVarName = resolveVarNameFromCodeRef(path.codeRef)
-      if (pathVarName) return pathVarName
-    }
-  } else if (selection.artifact?.type === 'path') {
-    const pathVarName = resolveVarNameFromCodeRef(selection.artifact.codeRef)
-    if (pathVarName) return pathVarName
-  } else if (selection.artifact?.type === 'sketchBlock') {
-    const sketchVarName = resolveVarNameFromCodeRef(selection.artifact.codeRef)
-    if (sketchVarName) return sketchVarName
-  }
-
-  return new Error('Could not resolve sketch variable for region selection')
-}
-
-function getRegionExprFromSelection(
-  selection: Selection,
-  ast: Node<Program>,
-  _artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Expr | Error {
-  if (!selection.sketchRegion) {
-    return new Error('Missing sketch region metadata for selection')
-  }
-
-  const sketchVarName = getSketchVarNameFromRegionSelection(
-    selection,
-    ast,
-    _artifactGraph,
-    wasmInstance
-  )
-  if (err(sketchVarName)) {
-    return sketchVarName
-  }
-
-  const [x, y] = selection.sketchRegion.point
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
-    return new Error('Region point coordinates are invalid')
-  }
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings)) {
-    return settings
-  }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
-    settings.defaultLengthUnit
-  )
-
-  const regionArgs: LabeledArg[] = [
-    createLabeledArg(
-      'point',
-      createArrayExpression([
-        createLiteral(x, wasmInstance, unitSuffix),
-        createLiteral(y, wasmInstance, unitSuffix),
-      ])
-    ),
-    createLabeledArg('sketch', createLocalName(sketchVarName)),
-  ]
-
-  return createCallExpressionStdLibKw('region', null, regionArgs)
-}
 
 export function addExtrude({
   ast,
@@ -1050,4 +826,103 @@ export function retrieveBodyTypeFromOpArg(
   }
 
   return new Error("Couldn't retrieve bodyType argument")
+}
+
+function getSketchVarNameFromRegionSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const regionSegmentId = selection.sketchRegion?.segmentId
+  if (!regionSegmentId) {
+    return new Error('Sketch region selection is missing segmentId')
+  }
+
+  const regionSegmentArtifact = artifactGraph.get(regionSegmentId)
+  if (!regionSegmentArtifact || regionSegmentArtifact.type !== 'segment') {
+    return new Error(
+      `Sketch region segmentId ${regionSegmentId} did not resolve to a segment artifact`
+    )
+  }
+
+  const candidatePaths: PathToNode[] = [
+    regionSegmentArtifact.codeRef.pathToNode,
+    getNodePathFromSourceRange(ast, regionSegmentArtifact.codeRef.range),
+  ].filter((path) => path.length > 0)
+
+  for (const path of candidatePaths) {
+    const segmentDeclaration = getNodeFromPath<VariableDeclaration>(
+      ast,
+      path,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(segmentDeclaration)) {
+      continue
+    }
+
+    const bodyIndex = Number(segmentDeclaration.deepPath[1]?.[0])
+    if (!Number.isInteger(bodyIndex)) {
+      continue
+    }
+
+    const topLevelDeclaration = ast.body[bodyIndex]
+    if (
+      topLevelDeclaration?.type === 'VariableDeclaration' &&
+      topLevelDeclaration.declaration.init.type === 'SketchBlock'
+    ) {
+      return topLevelDeclaration.declaration.id.name
+    }
+  }
+
+  return new Error(
+    `Could not resolve sketch block variable for region segmentId ${regionSegmentId}`
+  )
+}
+
+function getRegionExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  _artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | Error {
+  if (!selection.sketchRegion) {
+    return new Error('Missing sketch region metadata for selection')
+  }
+
+  const sketchVarName = getSketchVarNameFromRegionSelection(
+    selection,
+    ast,
+    _artifactGraph,
+    wasmInstance
+  )
+  if (err(sketchVarName)) {
+    return sketchVarName
+  }
+
+  const [x, y] = selection.sketchRegion.point
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return new Error('Region point coordinates are invalid')
+  }
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
+    settings.defaultLengthUnit
+  )
+
+  const regionArgs: LabeledArg[] = [
+    createLabeledArg(
+      'point',
+      createArrayExpression([
+        createLiteral(x, wasmInstance, unitSuffix),
+        createLiteral(y, wasmInstance, unitSuffix),
+      ])
+    ),
+    createLabeledArg('sketch', createLocalName(sketchVarName)),
+  ]
+
+  return createCallExpressionStdLibKw('region', null, regionArgs)
 }
