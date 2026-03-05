@@ -85,11 +85,22 @@ export const ConnectionStream = (props: {
         if (sceneInfra.camControls.wasDragging === true) return
 
         if (shouldSelectSketchRegion) {
-          const intersectPoint = sceneInfra.getPlaneIntersectPoint()
+          const isMockRegionSelectionEnabled =
+            typeof window !== 'undefined' &&
+            window.localStorage.getItem('mockSelectRegionFromPoint') === '1'
+          const intersectPoint = sceneInfra.getPlaneIntersectPointForMouseEvent(
+            e.nativeEvent
+          )
           const twoDPoint = intersectPoint?.twoD
-          const point: [number, number] = twoDPoint
+          const fallbackPoint = intersectPoint?.intersection?.point
+          const rawPoint: [number, number] = twoDPoint
             ? [twoDPoint.x, twoDPoint.y]
-            : [0, 0]
+            : fallbackPoint
+              ? [fallbackPoint.x, fallbackPoint.y]
+              : [0, 0]
+          const point: [number, number] = isMockRegionSelectionEnabled
+            ? [Number(rawPoint[0].toFixed(1)), Number(rawPoint[1].toFixed(1))]
+            : rawPoint
           sendSelectRegionEventToEngine(e, videoRef.current, {
             engineCommandManager,
             artifactGraph: kclManager.artifactGraph,

@@ -22,6 +22,7 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
+  getSettingsAnnotation,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -35,10 +36,12 @@ import type {
   CallExpressionKw,
   Expr,
   LabeledArg,
+  NumericSuffix,
   PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type {
   KclCommandValue,
   KclExpressionWithVariable,
@@ -261,13 +264,20 @@ function getRegionExprFromSelection(
   if (!Number.isFinite(x) || !Number.isFinite(y)) {
     return new Error('Region point coordinates are invalid')
   }
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
+    settings.defaultLengthUnit
+  )
 
   const regionArgs: LabeledArg[] = [
     createLabeledArg(
       'point',
       createArrayExpression([
-        createLiteral(x, wasmInstance),
-        createLiteral(y, wasmInstance),
+        createLiteral(x, wasmInstance, unitSuffix),
+        createLiteral(y, wasmInstance, unitSuffix),
       ])
     ),
     createLabeledArg('sketch', createLocalName(sketchVarName)),

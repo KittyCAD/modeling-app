@@ -340,7 +340,7 @@ s = sketch(on = XY) {
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)`
+        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
       )
     })
 
@@ -403,7 +403,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude001 = extrude(region(point = [0.1, 0.1], sketch = sketch001), length = 1)`
+        `extrude001 = extrude(region(point = [0.1mm, 0.1mm], sketch = sketch001), length = 1)`
       )
     })
 
