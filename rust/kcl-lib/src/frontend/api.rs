@@ -11,9 +11,9 @@ use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::Numer
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
-    async fn get_files(&self, project: ProjectId) -> Result<Vec<(FileId, String)>>;
+    async fn get_project(&self, project: ProjectId) -> Result<Vec<File>>;
     async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
-    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<String>;
+    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<File>;
     async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
@@ -242,6 +242,12 @@ impl Error {
     pub fn file_id_in_use(id: FileId, path: &str) -> Self {
         Error {
             msg: format!("File ID already in use: {id:?}, currently used for `{path}`"),
+        }
+    }
+
+    pub fn file_id_not_found(project_id: ProjectId, file_id: FileId) -> Self {
+        Error {
+            msg: format!("File ID not found in project: {file_id:?}, project: {project_id:?}"),
         }
     }
 
