@@ -80,6 +80,17 @@ export fn perpendicular(@input: [Segment; 2+]) {}
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn angle(@input: [Segment; 2]) {}
 
+/// Constrain two segments to be tangent.
+///
+/// Supported input type pairs (unordered):
+/// - `Line` / `Circle`
+/// - `Line` / `CircularArc`
+/// - `Circle` / `Circle`
+/// - `Circle` / `CircularArc`
+/// - `CircularArc` / `CircularArc`
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn tangent(@input: [Segment; 2]) {}
+
 /// Constrain a line to be horizontal.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn horizontal(@input: Segment) {}
