@@ -99,10 +99,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
         commandData.argDefaultValues.method = 'existingProject'
       }
     }
-    if (isDesktop() && commandData.name === 'add-kcl-file-to-project') {
-      delete commandData.argDefaultValues?.method
-    }
 
+    // Helper function to send the command exactly once
     let sent = false
     function sendCommand() {
       if (sent) return
@@ -114,7 +112,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       cleanupQueryParams()
     }
 
-    // Web-only: wait for systemIO folders so command validation passes
+    // Web-only: wait for folders to load before sending the command
     if (
       !isDesktop() &&
       commandData.name === 'add-kcl-file-to-project' &&
@@ -125,17 +123,13 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectName)
 
-      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
-        sendCommand()
-        return
-      }
-
       const subscription = systemIO.subscribe((snapshot) => {
         if (foldersIncludeProject(snapshot.context.folders)) {
           subscription.unsubscribe()
           sendCommand()
         }
       })
+
       return () => subscription.unsubscribe()
     }
 
