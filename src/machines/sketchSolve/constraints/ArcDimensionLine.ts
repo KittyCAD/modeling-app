@@ -33,6 +33,7 @@ import {
 import { Vector3 } from 'three'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
+import { getLineIntersection, isMajorConstraintAngle } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
 
 const TWO_PI = Math.PI * 2
 const EPSILON = 1e-8
@@ -47,7 +48,7 @@ export type ArcDimensionLineRenderInput = {
   line1: LineSegment
   line2: LineSegment
   labelPosition: Coords2d
-  isMajorAngle: boolean
+  angle: ApiNumber
 }
 
 export function updateArcDimensionLine(
@@ -208,27 +209,6 @@ export function updateArcDimensionLine(
   updateGuideLine(guideLines[1], renderInput.line2, [endPoint.x, endPoint.y])
 }
 
-// Returns the intersection of 2 infinite lines that lie on the given line segments.
-// Returns a valid point even if the line segments themselves don't intersect.
-// Returns null if the lines are parallel,
-export function getLineIntersection(
-  line1: LineSegment,
-  line2: LineSegment
-): Coords2d | null {
-  const p = line1[0]
-  const q = line2[0]
-  const r = subVec(line1[1], line1[0])
-  const s = subVec(line2[1], line2[0])
-  const denominator = r[0] * s[1] - r[1] * s[0]
-  if (Math.abs(denominator) < EPSILON) {
-    return null
-  }
-
-  const qp = subVec(q, p)
-  const t = (qp[0] * s[1] - qp[1] * s[0]) / denominator
-  return [p[0] + r[0] * t, p[1] + r[1] * t]
-}
-
 function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
   const center = getLineIntersection(renderInput.line1, renderInput.line2)
   if (!center) {
@@ -272,7 +252,7 @@ function buildArcGeometry(renderInput: ArcDimensionLineRenderInput) {
     line1Candidates,
     line2Candidates,
     labelAngle,
-    isMajorAngle: renderInput.isMajorAngle,
+    isMajorAngle: isMajorConstraintAngle(renderInput.angle),
   })
   if (!best) {
     return null
@@ -564,8 +544,4 @@ function tangentForArc(angle: number, directionSign: number) {
 
 function directionToArrowRotation(direction: Vector3) {
   return Math.atan2(direction.y, direction.x) - Math.PI / 2
-}
-
-function normaliseAngleRadians(angle: number) {
-  return ((angle % TWO_PI) + TWO_PI) % TWO_PI
 }
