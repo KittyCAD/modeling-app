@@ -9,7 +9,6 @@ s = sketch(on = XY) {
   coincident([line1.start, line3.end])
   horizontal(line1)
   equalLength([line2, line3])
-  point1 = point(at = [var 0.1mm, var 0.1mm])
 }
 
-r = region(point = s.point1)
+r = region(point = [0.1mm, 0.1mm], sketch = s)
