@@ -85,6 +85,8 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  getMachineApiRunning: () => Promise<boolean>
+  setMachineApiState: (signal: 'on' | 'off') => Promise<boolean>
   onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
   onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (

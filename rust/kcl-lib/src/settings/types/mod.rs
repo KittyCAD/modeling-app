@@ -90,6 +90,9 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// Whether to enable Machine API discovery and printing controls on desktop.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub machine_api: bool,
 }
 
 /// Default to true.
@@ -535,9 +538,9 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{
-        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
-        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
-        TextEditorSettings, UnitLength, default_backface_color,
+        default_backface_color, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings,
+        Configuration, ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings,
+        Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]

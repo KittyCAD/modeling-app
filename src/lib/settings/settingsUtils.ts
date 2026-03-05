@@ -57,6 +57,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      machineApi: configuration?.settings?.app?.machine_api,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -108,6 +109,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        machine_api: configuration?.app?.machineApi,
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,

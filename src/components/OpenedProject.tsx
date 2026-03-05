@@ -171,6 +171,7 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
   const authToken = auth.useToken()
 
   useHotkeys('backspace', (e) => {
@@ -396,7 +397,7 @@ export function OpenedProject() {
         <StatusBar
           globalItems={[
             networkHealthStatus,
-            ...(isDesktop() ? [networkMachineStatus] : []),
+            ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({ location, filePath }),
           ]}
           localItems={[

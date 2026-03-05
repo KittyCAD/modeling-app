@@ -106,6 +106,7 @@ const Home = () => {
 
   const location = useLocation()
   const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
@@ -400,7 +401,7 @@ const Home = () => {
       </div>
       <StatusBar
         globalItems={[
-          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}
