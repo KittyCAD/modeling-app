@@ -2300,6 +2300,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Blend two selected surface edges into a new surface.',
     icon: 'blend',
     needsReview: true,
+    status: 'experimental',
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -2329,6 +2330,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
+        description: 'Note: Only straight edges are supported now.',
       },
     },
   },

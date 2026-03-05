@@ -451,7 +451,7 @@ export const useToolbarConfig = () => {
                     data: { name: 'Blend', groupId: 'modeling' },
                   }),
                 icon: 'blend',
-                status: 'available',
+                status: 'experimental',
                 title: 'Blend',
                 description: 'Blend two selected surface edges.',
                 links: [
