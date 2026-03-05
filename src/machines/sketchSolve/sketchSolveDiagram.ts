@@ -85,6 +85,31 @@ function calculateCurrentAngleBetweenLines(
   return roundOff(normalizedDegrees)
 }
 
+export function buildAngleConstraintInput(
+  line1: ApiObject,
+  line2: ApiObject,
+  objects: ApiObject[]
+) {
+  if (!isLineSegment(line1) || !isLineSegment(line2)) {
+    return null
+  }
+
+  const angle = calculateCurrentAngleBetweenLines(line1, line2, objects)
+  if (angle === null) {
+    return null
+  }
+
+  return {
+    type: 'Angle' as const,
+    lines: [line1.id, line2.id],
+    angle: { value: angle, units: 'Deg' as const },
+    source: {
+      expr: `${angle}deg`,
+      is_literal: true as const,
+    },
+  }
+}
+
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
@@ -353,25 +378,16 @@ export const sketchSolveMachine = setup({
           const first = currentSelections[0]
           const second = currentSelections[1]
           if (isLineSegment(first) && isLineSegment(second)) {
-            // Try to add an angle constraint between 2 lines.
-            const angle = calculateCurrentAngleBetweenLines(
+            const angleConstraint = buildAngleConstraintInput(
               first,
               second,
               objects
             )
-            if (angle !== null) {
+            if (angleConstraint) {
               const result = await context.rustContext.addConstraint(
                 0,
                 context.sketchId,
-                {
-                  type: 'Angle',
-                  lines: segmentsToConstrain,
-                  angle: { value: angle, units: 'Deg' },
-                  source: {
-                    expr: `${angle}deg`,
-                    is_literal: true,
-                  },
-                },
+                angleConstraint,
                 await jsAppSettings(context.rustContext.settingsActor)
               )
               if (result) {
