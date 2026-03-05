@@ -594,8 +594,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   }
 
   const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.unlabeledArg,
     operation.labeledArgs.tags,
-    artifactGraph
+    artifactGraph,
+    code
   )
   if (err(selection)) return { reason: selection.message }
 
@@ -649,8 +651,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   }
 
   const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.unlabeledArg,
     operation.labeledArgs.tags,
-    artifactGraph
+    artifactGraph,
+    code
   )
   if (err(selection)) return { reason: selection.message }
 
