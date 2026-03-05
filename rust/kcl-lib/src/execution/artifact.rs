@@ -260,6 +260,7 @@ pub enum SketchBlockConstraintType {
     Parallel,
     Perpendicular,
     Radius,
+    Tangent,
     Vertical,
 }
 
@@ -276,6 +277,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
             Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
             Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Tangent { .. } => SketchBlockConstraintType::Tangent,
             Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
             Constraint::Angle(..) => SketchBlockConstraintType::Angle,
         }
