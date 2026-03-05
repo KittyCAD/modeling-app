@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
   type useLocation,
@@ -8,7 +8,12 @@ import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
+import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
+import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
+import {
+  CustomIcon,
+  type CustomIconName,
+} from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -33,9 +38,8 @@ import toast from 'react-hot-toast'
 import {
   defaultLayout,
   setOpenPanes,
-  type DefaultLayoutPaneID,
+  DefaultLayoutPaneID,
 } from '@src/lib/layout'
-import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { SystemIOActor } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
@@ -48,6 +52,47 @@ function getStepNumber(
   platform: keyof typeof onboardingPaths = 'desktop'
 ) {
   return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
+}
+
+export type OnboardingWorkflowPreference = 'ai' | 'code' | 'sketch'
+
+const preferredWorkflowPaneMap: Record<
+  OnboardingWorkflowPreference,
+  DefaultLayoutPaneID[]
+> = {
+  ai: [DefaultLayoutPaneID.TTC],
+  code: [
+    DefaultLayoutPaneID.Code,
+    DefaultLayoutPaneID.Files,
+    DefaultLayoutPaneID.Variables,
+  ],
+  sketch: [DefaultLayoutPaneID.FeatureTree],
+}
+
+let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
+  null
+
+export function rememberOnboardingWorkflowPreference(
+  preference: OnboardingWorkflowPreference
+) {
+  rememberedOnboardingWorkflowPreference = preference
+}
+
+export function clearRememberedOnboardingWorkflowPreference() {
+  rememberedOnboardingWorkflowPreference = null
+}
+
+export function consumeRememberedOnboardingWorkflowPanes():
+  | DefaultLayoutPaneID[]
+  | null {
+  if (!rememberedOnboardingWorkflowPreference) {
+    return null
+  }
+
+  const preferredOpenPanes =
+    preferredWorkflowPaneMap[rememberedOnboardingWorkflowPreference]
+  rememberedOnboardingWorkflowPreference = null
+  return [...preferredOpenPanes]
 }
 
 export const OnboardingCard = ({
@@ -163,6 +208,7 @@ export function OnboardingButtons({
   currentSlug,
   platform = 'desktop',
   dismissPosition = 'left',
+  hideNext = false,
   className,
   dismissClassName,
   onNextOverride,
@@ -171,6 +217,7 @@ export function OnboardingButtons({
   currentSlug?: OnboardingPath
   platform?: keyof typeof onboardingPaths
   dismissPosition?: 'left' | 'right'
+  hideNext?: boolean
   className?: string
   dismissClassName?: string
   onNextOverride?: () => void
@@ -237,33 +284,37 @@ export function OnboardingButtons({
             {stepNumber} / {onboardingPathsArray.length}
           </p>
         )}
-        <ActionButton
-          autoFocus
-          tabIndex={0}
-          Element="button"
-          onClick={() => {
-            if (nextStep && nextStep !== 'completed') {
-              const result = onNextOverride ? onNextOverride() : goToNext()
-              if (err(result)) {
-                reportRejection(result)
+        {hideNext ? (
+          <div className="w-[72px]" aria-hidden />
+        ) : (
+          <ActionButton
+            autoFocus
+            tabIndex={0}
+            Element="button"
+            onClick={() => {
+              if (nextStep && nextStep !== 'completed') {
+                const result = onNextOverride ? onNextOverride() : goToNext()
+                if (err(result)) {
+                  reportRejection(result)
+                }
+              } else {
+                dismiss('completed')
               }
-            } else {
-              dismiss('completed')
-            }
-          }}
-          iconStart={{
-            icon:
-              nextStep && nextStep !== 'completed'
-                ? 'arrowShortRight'
-                : 'checkmark',
-            bgClassName: 'dark:bg-chalkboard-80',
-          }}
-          className="dark:hover:bg-chalkboard-80/50"
-          data-testid="onboarding-next"
-          id="onboarding-next"
-        >
-          {nextStep && nextStep !== 'completed' ? 'Next' : 'Finish'}
-        </ActionButton>
+            }}
+            iconStart={{
+              icon:
+                nextStep && nextStep !== 'completed'
+                  ? 'arrowShortRight'
+                  : 'checkmark',
+              bgClassName: 'dark:bg-chalkboard-80',
+            }}
+            className="dark:hover:bg-chalkboard-80/50"
+            data-testid="onboarding-next"
+            id="onboarding-next"
+          >
+            {nextStep && nextStep !== 'completed' ? 'Next' : 'Finish'}
+          </ActionButton>
+        )}
       </div>
     </>
   )
@@ -334,117 +385,140 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   )
 }
 
-interface TutorialToastCardProps extends PropsWithChildren {
-  src: string
-  alt: string
+interface WorkflowInviteOptionCardProps {
+  title: string
+  description: string
+  icon: CustomIconName
+  dataTestId: string
+  onSelect: () => void
+  hoverTone?: 'primary' | 'ml-green' | 'energy-10'
+  decoration?: React.ReactNode
 }
 
-function TutorialToastCard(props: TutorialToastCardProps) {
+function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
+  const hoverToneClasses =
+    props.hoverTone === 'ml-green'
+      ? 'group-hover:border-ml-green group-hover:text-ml-green'
+      : props.hoverTone === 'energy-10'
+        ? 'group-hover:border-energy-10 group-hover:text-energy-10'
+        : 'group-hover:border-primary group-hover:text-primary'
+
   return (
-    <figure className="border b-3 flex flex-col">
-      <img src={props.src} alt={props.alt} />
-      <figcaption className="p-2 text-sm border-t b-3">
-        {props.children}
-      </figcaption>
-    </figure>
+    <button
+      type="button"
+      onClick={props.onSelect}
+      data-testid={props.dataTestId}
+      className="group relative flex w-full min-w-[11rem] cursor-pointer hover:cursor-pointer flex-col items-center gap-4 bg-transparent p-0 text-default outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    >
+      <div
+        className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
+      >
+        {props.title}
+      </div>
+      <span
+        className={`pointer-events-none absolute left-1/2 top-[3.2rem] h-8 -translate-x-1/2 border-l border-chalkboard-50 transition-colors dark:border-chalkboard-80 ${hoverToneClasses}`}
+      />
+      {props.decoration}
+      <div
+        className={`flex h-28 w-full flex-col items-center justify-center gap-3 border border-chalkboard-50 px-3 py-2 text-center text-default transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
+      >
+        <CustomIcon name={props.icon} className="h-8 w-8 text-current" />
+        <p className="m-0 text-sm leading-tight">{props.description}</p>
+      </div>
+    </button>
   )
 }
 
 export function TutorialRequestToast(
-  props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
+  props: OnboardingUtilDeps & { accountUrl: string }
 ) {
   const { settings } = useApp()
-  function onAccept() {
+  function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
+    rememberOnboardingWorkflowPreference(preference)
     acceptOnboarding(props)
     toast.dismiss(ONBOARDING_TOAST_ID)
   }
-
-  const quickTipSrc = (index: number) =>
-    `/quick-tip${props.theme === Themes.Light ? '-light' : ''}-${index}.jpg`
 
   return (
     <div
       data-testid="onboarding-toast"
       id={ONBOARDING_TOAST_ID}
-      className="flex flex-col justify-between gap-6 text-default"
+      className="flex w-full flex-col justify-between gap-6 rounded-sm bg-chalkboard-10 p-5 text-default dark:bg-chalkboard-90"
     >
-      <section className="flex items-center gap-4">
+      <section className="flex items-start gap-4">
         <img
-          src="/kitt-wink.png"
-          alt="Our mascot Kitt says hello!"
-          className="w-20"
+          src={onboardingWorkflowKitt}
+          alt="Kitt mascot"
+          className="h-12 w-12 object-contain"
         />
         <div>
-          <h2 className="font-bold text-2xl">Welcome to Zoo Design Studio</h2>
-          <p className="text-lg text-2">Quick tips</p>
+          <h2 className="m-0 text-[1.9rem] font-semibold leading-tight">
+            How would you like to start?
+          </h2>
+          <p className="mt-1 text-xl text-chalkboard-70 dark:text-chalkboard-30">
+            Choose your adventure
+          </p>
         </div>
       </section>
-      <div className="grid grid-cols-3 gap-4">
-        <TutorialToastCard
-          src={quickTipSrc(1)}
-          alt="a screenshot of the Design Studio interface highlighting the Zookeeper button in the right sidebar"
-        >
-          <strong>Zookeeper</strong> is in the right sidebar, where you can
-          create or modify parts with prompts.{' '}
-        </TutorialToastCard>
-        <TutorialToastCard
-          src={quickTipSrc(2)}
-          alt="a screenshot of the Design Studio interface highlighting the toolbar in the top center of the modeling area"
-        >
-          The top command bar also includes your{' '}
-          <strong>sketching & modeling tools</strong>... extrude, fillet, helix,
-          the works.
-        </TutorialToastCard>
-        <TutorialToastCard
-          src={quickTipSrc(3)}
-          alt="a screenshot of the Design Studio interface highlighting the left sidebar panes"
-        >
-          Navigate the left pane to view your{' '}
-          <strong>
-            Feature Tree, KCL code pane, manage and export files, or add files
-            to your project.
-          </strong>
-        </TutorialToastCard>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <WorkflowInviteOptionCard
+          title="AI"
+          description="Zookeeper, our conversational CAD agent"
+          icon="sparkles"
+          dataTestId="onboarding-workflow-ai"
+          hoverTone="ml-green"
+          onSelect={() => onSelectWorkflow('ai')}
+          decoration={
+            <img
+              src={onboardingWorkflowAiHeadset}
+              alt=""
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-[3.3rem] h-10 -translate-x-1/2 object-contain"
+            />
+          }
+        />
+        <WorkflowInviteOptionCard
+          title="Sketch"
+          description="Design using traditional point-and-click"
+          icon="sketch"
+          dataTestId="onboarding-workflow-sketch"
+          onSelect={() => onSelectWorkflow('sketch')}
+        />
+        <WorkflowInviteOptionCard
+          title="Code"
+          description="Code-driven CAD"
+          icon="code"
+          dataTestId="onboarding-workflow-code"
+          hoverTone="energy-10"
+          onSelect={() => onSelectWorkflow('code')}
+        />
       </div>
-      <div className="flex justify-between gap-8">
+      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr] sm:items-center sm:gap-5">
         <ActionButton
           Element="button"
+          onClick={() => onDismissOnboardingInvite(settings.actor)}
           iconStart={{
             icon: 'close',
-            iconClassName: 'bg-destroy-80 text-6',
+            bgClassName: 'bg-destroy-80 dark:bg-destroy-20',
+            iconClassName: 'text-destroy-10 dark:text-destroy-80',
           }}
-          data-negative-button="dismiss"
+          className="border-chalkboard-40 bg-chalkboard-20 text-default hover:border-chalkboard-50 dark:border-chalkboard-70 dark:bg-chalkboard-80 dark:hover:border-chalkboard-60"
           data-testid="onboarding-not-right-now"
-          name="dismiss"
-          onClick={() => onDismissOnboardingInvite(settings.actor)}
         >
-          Not right now
+          Dismiss
         </ActionButton>
-        <p className="text-center text-2 text-xs">
-          <em>
-            To view your account, manage payment methods, or change tiers,
-            simply{' '}
-            <a
-              href={props.accountUrl}
-              onClick={openExternalBrowserIfDesktop(props.accountUrl)}
-              target="_blank"
-              rel="noreferrer"
-              className="text-default underline underline-offset-2"
-            >
-              click here.
-            </a>
-          </em>
+        <p className="m-0 text-center text-xs italic text-chalkboard-70 dark:text-chalkboard-30">
+          To view your account, manage payment methods, or change tiers, simply{' '}
+          <a
+            href={props.accountUrl}
+            onClick={openExternalBrowserIfDesktop(props.accountUrl)}
+            target="_blank"
+            rel="noreferrer"
+            className="text-default underline underline-offset-2"
+          >
+            click here.
+          </a>
         </p>
-        <ActionButton
-          Element="button"
-          iconStart={{
-            icon: 'arrowShortRight',
-          }}
-          name="accept"
-          onClick={onAccept}
-        >
-          Start tutorial
-        </ActionButton>
       </div>
     </div>
   )
@@ -559,6 +633,30 @@ export function useOnboardingPanes(
         setOpenPanes(structuredClone(layout.get() || defaultLayout), onUnmount)
       )
   }, [onMount, onUnmount, layout])
+}
+
+export function useApplyRememberedOnboardingWorkflowOnExit() {
+  const { layout } = useApp()
+
+  useEffect(() => {
+    return () => {
+      const preferredOpenPanes = consumeRememberedOnboardingWorkflowPanes()
+      if (!preferredOpenPanes) {
+        return
+      }
+
+      // Defer until after onboarding children unmount cleanups finish so this
+      // preferred layout wins over pane-reset effects in individual steps.
+      window.setTimeout(() => {
+        layout.set(
+          setOpenPanes(
+            structuredClone(layout.get() || defaultLayout),
+            preferredOpenPanes
+          )
+        )
+      }, 0)
+    }
+  }, [layout])
 }
 
 export function isModelingCmdGroupReady(
