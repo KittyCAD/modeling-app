@@ -5,6 +5,11 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 
 export function DownloadDesktopApp() {
+  /** NOTE: We're defining a custom warning element here because using the
+   * proper `Tooltip` component conflicts with the z-index of the onboarding
+   * dialog and making this aware of onboarding status would add significant
+   * complexity. This warning can go away once the web app has cloud storage. */
+
   const [showWarning, setShowWarning] = useState(true)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
