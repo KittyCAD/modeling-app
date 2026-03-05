@@ -225,15 +225,12 @@ export async function getEventForSelectWithPoint(
     artifactGraph,
     engineCommandManager,
     rustContext,
-    allowSketchRegionFallback,
   }: {
     artifactGraph: ArtifactGraph
     engineCommandManager: ConnectionManager
     rustContext: RustContext
-    allowSketchRegionFallback?: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
-  console.log('data', data)
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -271,27 +268,25 @@ export async function getEventForSelectWithPoint(
 
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
-    if (allowSketchRegionFallback) {
-      console.log('allowSketchRegionFallback', allowSketchRegionFallback)
-      const sketchRegionSelection = await getSketchRegionSelectionFromEntity(
-        data.entity_id,
-        artifactGraph,
-        engineCommandManager
-      )
-      console.log('sketchRegionSelection', sketchRegionSelection)
-      if (sketchRegionSelection) {
-        return {
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: sketchRegionSelection,
-          },
-        }
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+
+    // we first check if it's a region
+    const sketchRegionSelection = await getSketchRegionSelectionFromEntity(
+      data.entity_id,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (sketchRegionSelection) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: sketchRegionSelection,
+        },
       }
     }
 
-    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
-    // but we can still build a primitive selection to be used as fallback for downstream operations
+    // or we build a primitive selection to be used as fallback for downstream operations
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       data.entity_id,
       engineCommandManager
@@ -778,10 +773,9 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type
-          .replace('wall', 'face')
-          .replace('solid2d', 'profile')
-          .replace('sketchRegion', 'region')}${count > 1 ? 's' : ''}`
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
+          count > 1 ? 's' : ''
+        }`
     )
     .join(', ')
 }
