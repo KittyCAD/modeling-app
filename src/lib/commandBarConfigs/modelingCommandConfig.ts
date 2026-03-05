@@ -97,6 +97,25 @@ type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
+type ExportOptionalArg = 'up' | 'scale'
+
+const exportOptionalArgSupportByType: Partial<
+  Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
+> = {
+  gltf: {
+    up: false,
+    scale: false,
+  },
+}
+
+function isExportOptionalArgSupported(
+  exportType: unknown,
+  arg: ExportOptionalArg
+): boolean {
+  if (typeof exportType !== 'string') return true
+  const supportByArg = exportOptionalArgSupportByType[exportType as OutputTypeKey]
+  return supportByArg?.[arg] ?? true
+}
 
 export const EXTRUSION_RESULTS = [
   'new',
@@ -531,6 +550,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Up',
         required: false,
         prepopulate: true,
+        hidden: (commandContext) =>
+          !isExportOptionalArgSupported(commandContext.argumentsToSubmit.type, 'up'),
         defaultValue: 'z',
         options: (commandContext) => {
           const currentUp =
@@ -550,6 +571,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Scale',
         required: false,
         prepopulate: true,
+        hidden: (commandContext) =>
+          !isExportOptionalArgSupported(
+            commandContext.argumentsToSubmit.type,
+            'scale'
+          ),
         defaultValue: (commandContext) => {
           const machineContext =
             commandContext.selectedCommand?.machineActor?.getSnapshot()
