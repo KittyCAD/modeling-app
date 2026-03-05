@@ -16,7 +16,6 @@ import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -131,25 +130,6 @@ profile002 = rectangle(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(`extrude001 = extrude(profile001, length = 1)`)
-      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-    })
-
-    it('should accept numeric literal length values', async () => {
-      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
-        circleProfileCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length: 5 as unknown as KclCommandValue,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 

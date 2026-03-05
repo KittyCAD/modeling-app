@@ -42,10 +42,7 @@ import type {
   VariableDeclaration,
 } from '@src/lang/wasm'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
-import type {
-  KclCommandValue,
-  KclExpressionWithVariable,
-} from '@src/lib/commandTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   type KclPreludeExtrudeMethod,
@@ -286,44 +283,6 @@ function getRegionExprFromSelection(
   return createCallExpressionStdLibKw('region', null, regionArgs)
 }
 
-function isVariableKclExpression(
-  value: unknown
-): value is KclExpressionWithVariable {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'variableName' in value &&
-    typeof value.variableName === 'string'
-  )
-}
-
-function isKclCommandValue(value: unknown): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
-
-function getNumericCommandExpr(
-  value: unknown,
-  argName: string,
-  wasmInstance: ModuleType
-): Expr | Error {
-  if (typeof value === 'number') {
-    return createLiteral(value, wasmInstance)
-  }
-  if (isKclCommandValue(value)) {
-    return valueOrVariable(value)
-  }
-
-  return new Error(
-    `Expected ${argName} to be a KCL expression value or number literal`
-  )
-}
-
 export function addExtrude({
   ast,
   artifactGraph,
@@ -429,16 +388,9 @@ export function addExtrude({
   }
 
   // Extra labeled args expressions
-  let lengthExpr: LabeledArg[] = []
-  if (length !== undefined) {
-    const lengthValueExpr = getNumericCommandExpr(
-      length,
-      'length',
-      wasmInstance
-    )
-    if (err(lengthValueExpr)) return lengthValueExpr
-    lengthExpr = [createLabeledArg('length', lengthValueExpr)]
-  }
+  const lengthExpr = length
+    ? [createLabeledArg('length', valueOrVariable(length))]
+    : []
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
@@ -458,46 +410,26 @@ export function addExtrude({
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
-  let bidirectionalLengthExpr: LabeledArg[] = []
-  if (bidirectionalLength !== undefined) {
-    const bidirectionalLengthValueExpr = getNumericCommandExpr(
-      bidirectionalLength,
-      'bidirectionalLength',
-      wasmInstance
-    )
-    if (err(bidirectionalLengthValueExpr)) return bidirectionalLengthValueExpr
-    bidirectionalLengthExpr = [
-      createLabeledArg('bidirectionalLength', bidirectionalLengthValueExpr),
-    ]
-  }
+  const bidirectionalLengthExpr = bidirectionalLength
+    ? [
+        createLabeledArg(
+          'bidirectionalLength',
+          valueOrVariable(bidirectionalLength)
+        ),
+      ]
+    : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
-  let twistAngleExpr: LabeledArg[] = []
-  if (twistAngle !== undefined) {
-    const twistAngleValueExpr = getNumericCommandExpr(
-      twistAngle,
-      'twistAngle',
-      wasmInstance
-    )
-    if (err(twistAngleValueExpr)) return twistAngleValueExpr
-    twistAngleExpr = [createLabeledArg('twistAngle', twistAngleValueExpr)]
-  }
-  let twistAngleStepExpr: LabeledArg[] = []
-  if (twistAngleStep !== undefined) {
-    const twistAngleStepValueExpr = getNumericCommandExpr(
-      twistAngleStep,
-      'twistAngleStep',
-      wasmInstance
-    )
-    if (err(twistAngleStepValueExpr)) return twistAngleStepValueExpr
-    twistAngleStepExpr = [
-      createLabeledArg('twistAngleStep', twistAngleStepValueExpr),
-    ]
-  }
+  const twistAngleExpr = twistAngle
+    ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
+  const twistAngleStepExpr = twistAngleStep
+    ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
+    : []
   let twistCenterExpr: LabeledArg[] = []
   if (twistCenter) {
     const twistCenterExpression = createPoint2dExpression(
@@ -530,11 +462,12 @@ export function addExtrude({
   ])
 
   // Insert variables for labeled arguments if provided
-  if (isVariableKclExpression(length) && length.variableName) {
+  if (length && 'variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
   if (
-    isVariableKclExpression(bidirectionalLength) &&
+    bidirectionalLength &&
+    'variableName' in bidirectionalLength &&
     bidirectionalLength.variableName
   ) {
     insertVariableAndOffsetPathToNode(
@@ -543,13 +476,21 @@ export function addExtrude({
       mNodeToEdit
     )
   }
-  if (isVariableKclExpression(twistAngle) && twistAngle.variableName) {
+  if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
   }
-  if (isVariableKclExpression(twistAngleStep) && twistAngleStep.variableName) {
+  if (
+    twistAngleStep &&
+    'variableName' in twistAngleStep &&
+    twistAngleStep.variableName
+  ) {
     insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, mNodeToEdit)
   }
-  if (isVariableKclExpression(twistCenter) && twistCenter.variableName) {
+  if (
+    twistCenter &&
+    'variableName' in twistCenter &&
+    twistCenter.variableName
+  ) {
     insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, mNodeToEdit)
   }
 
