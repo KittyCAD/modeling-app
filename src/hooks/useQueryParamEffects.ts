@@ -16,6 +16,7 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
+import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
 
@@ -35,7 +36,8 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects(kclManager: KclManager) {
-  const { auth, commands } = useApp()
+  const app = useApp()
+  const { auth, commands } = app
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
@@ -81,15 +83,72 @@ export function useQueryParamEffects(kclManager: KclManager) {
   useEffect(() => {
     if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) return
 
-    const commandData = buildGenericCommandArgs(searchParams)
-    if (!commandData) return
+    const rawCommandData = buildGenericCommandArgs(searchParams)
+    if (!rawCommandData) return
+    const commandData = rawCommandData
 
-    // Process regular commands
-    commands.send({
-      type: 'Find and select command',
-      data: commandData,
-    })
-    cleanupQueryParams()
+    // Web-only: prefill command data to automatically add to the demo project
+    if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
+      if (commandData.argDefaultValues?.projectName === 'browser') {
+        const currentProjectName =
+          app.settings.actor.getSnapshot().context.currentProject?.name
+        commandData.argDefaultValues.projectName =
+          currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
+      }
+      if (commandData.argDefaultValues?.projectName) {
+        commandData.argDefaultValues.method = 'existingProject'
+      }
+    }
+    if (isDesktop() && commandData.name === 'add-kcl-file-to-project') {
+      delete commandData.argDefaultValues?.method
+    }
+
+    let sent = false
+    function sendCommand() {
+      if (sent) return
+      sent = true
+      commands.send({
+        type: 'Find and select command',
+        data: commandData,
+      })
+      cleanupQueryParams()
+    }
+
+    // Web-only: wait for systemIO folders so command validation passes
+    if (
+      !isDesktop() &&
+      commandData.name === 'add-kcl-file-to-project' &&
+      commandData.argDefaultValues?.projectName
+    ) {
+      const projectName = commandData.argDefaultValues.projectName
+      const systemIO = app.singletons.systemIOActor
+      const hasFoldersWithProject = () =>
+        (systemIO.getSnapshot().context.folders ?? []).some(
+          (f: { name: string }) => f.name === projectName
+        )
+      if (hasFoldersWithProject()) {
+        sendCommand()
+        return
+      }
+      let timeout: ReturnType<typeof setTimeout>
+      const interval = setInterval(() => {
+        if (hasFoldersWithProject()) {
+          clearInterval(interval)
+          clearTimeout(timeout)
+          sendCommand()
+        }
+      }, 50)
+      timeout = setTimeout(() => {
+        clearInterval(interval)
+        sendCommand()
+      }, 3000)
+      return () => {
+        clearInterval(interval)
+        clearTimeout(timeout)
+      }
+    }
+
+    sendCommand()
 
     // Helper function to clean up query parameters
     function cleanupQueryParams() {

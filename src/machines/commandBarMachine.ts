@@ -324,6 +324,27 @@ export const commandBarMachine = setup({
             : !argConfig.required)
       )
     },
+    'All required arguments provided': ({ context }) => {
+      const { selectedCommand, argumentsToSubmit } = context
+      if (!selectedCommand?.args) return false
+      return Object.entries(selectedCommand.args).every(
+        ([argName, argConfig]) => {
+          if (
+            typeof argConfig.hidden === 'function'
+              ? argConfig.hidden(context)
+              : argConfig.hidden
+          )
+            return true
+          const isRequired =
+            typeof argConfig.required === 'function'
+              ? argConfig.required(context)
+              : argConfig.required
+          if (!isRequired) return true
+          const value = argumentsToSubmit[argName]
+          return value !== undefined && value !== null && value !== ''
+        }
+      )
+    },
     'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
@@ -563,6 +584,10 @@ export const commandBarMachine = setup({
         {
           target: 'Checking Arguments',
           guard: 'All arguments are skippable',
+        },
+        {
+          target: 'Checking Arguments',
+          guard: 'All required arguments provided',
         },
         {
           target: 'Gathering arguments',
