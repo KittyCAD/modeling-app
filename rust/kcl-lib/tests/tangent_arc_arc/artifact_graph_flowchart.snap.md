@@ -12,6 +12,8 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlock]
   5["SketchBlock<br>[41, 271, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlock]
+  6["SketchBlockConstraint Tangent<br>[252, 269, 0]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlock]
   1 --- 2
   1 <--x 5
   2 --- 3

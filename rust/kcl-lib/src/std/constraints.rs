@@ -1713,6 +1713,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let range = args.source_range;
     let (input0, input0_object_id) = extract_tangent_input(&item0, range)?;
     let (input1, input1_object_id) = extract_tangent_input(&item1, range)?;
+    #[cfg(not(feature = "artifact-graph"))]
+    let _ = (input0_object_id, input1_object_id);
 
     enum TangentCase {
         LineArc(ConstrainableLineVars, ConstrainableArcVars),
