@@ -314,10 +314,16 @@ export class ZDSProject {
       `${foundEditorKey ? 'Matches' : 'Does not match'} a file that is being edited`
     )
 
-    // The currently-executing editor should send updates to its RustContext,
-    // so that execution can have an accurate picture of the project state.
-    // GOTCHA: thumbnail.png, project.toml, etc updates are here too. Filter somehow?
-    // this.executingEditor.value?.rustContext.sendUpdateProject(eventType, path)
+    if (path.endsWith('kcl')) {
+      // The currently-executing editor should send updates to its RustContext,
+      // so that execution can have an accurate picture of the project state.
+
+      const fileID = 0 // TODO: Get the actual file ID as understood by rustContext
+
+      this.executingEditor.value?.rustContext
+        .sendUpdateFile(fileID, path)
+        .catch(reportRejection)
+    }
   }
 }
 
@@ -339,7 +345,12 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
+let fileId = 0
+
 export class KclManager extends EventTarget {
+  /** Auto-increments each instantiation */
+  public fileId = fileId++
+
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -652,7 +663,7 @@ export class KclManager extends EventTarget {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
       this._code.value = newCode
-      // this.rustContext.sendUpdateFile(this.path, newCode)
+      this.rustContext.sendUpdateFile(this.fileId, newCode)
     }
   })
 

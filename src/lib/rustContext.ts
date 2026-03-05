@@ -109,6 +109,10 @@ export default class RustContext {
     )
   }
 
+  async sendUpdateFile(fileId: number, code: string) {
+    return this.ctxInstance?.update_file(this.projectId, fileId, code)
+  }
+
   /** Execute a program. */
   async execute(
     node: Node<Program>,
