@@ -1138,7 +1138,7 @@ export fn getCommonEdge(
 export fn getBoundedEdge(
   /// The solid that the edge belongs to.
   @solid: Solid,
-  /// The edge to bound. This can be a tagged edge or an edge UUID from `edgeId(...)`.
+  /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
   edge: Edge,
   /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
   lowerBound?: number(Count),
