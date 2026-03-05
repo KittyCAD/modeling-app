@@ -255,6 +255,43 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  blend: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="blend"
+    >
+      <g clipPath="url(#clip0_13424_16480)">
+        <rect
+          width="4"
+          height="7"
+          transform="matrix(0.866025 0.5 -0.866025 0.5 9.06219 3)"
+          fill="currentColor"
+        />
+      </g>
+      <path
+        d="M12.5106 5.57129C15.2544 7.01001 16.3786 8.80887 16.3318 10.4229C16.2848 12.0417 15.0538 13.7299 12.5223 14.9346L7.42365 11.9863C7.93846 11.6927 8.42095 11.5 8.99982 11.5C9.15249 11.5 9.33485 11.4831 9.49786 11.4053C9.69114 11.3129 9.86406 11.1252 9.88068 10.8506C9.89373 10.633 9.79958 10.4494 9.7254 10.334C9.64316 10.2061 9.53162 10.0789 9.40704 9.95605C9.01447 9.5691 8.33815 9.0766 7.4295 8.50977L12.5106 5.57129Z"
+        stroke="currentColor"
+      />
+      <rect
+        width="7"
+        height="4"
+        transform="matrix(0.866025 0.5 -0.866025 0.5 6.46411 12)"
+        fill="currentColor"
+      />
+      <defs>
+        <clipPath id="clip0_13424_16480">
+          <rect
+            width="4"
+            height="7"
+            fill="none"
+            transform="matrix(0.866025 0.5 -0.866025 0.5 9.06219 3)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  ),
   body: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

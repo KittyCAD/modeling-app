@@ -166,7 +166,8 @@ pub mod front {
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
+            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent, TangentArcCtor,
+            Vertical,
         },
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
