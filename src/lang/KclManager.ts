@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -177,14 +177,12 @@ window.EditorView = EditorView
  * that connects to the geometry engine.
  */
 export class ZDSProject {
-  public projectIORefSignal: Signal<Project>
   get path() {
     return this.projectIORefSignal.value.path
   }
   get name() {
     return this.projectIORefSignal.value.name
   }
-  private app: App
   /** Editors are referenced via Signal in case the file name itself is changed. */
   public editors = new Map<Signal<string>, KclManager>()
   #executingPath = signal<Signal<string> | null>(null)
@@ -200,9 +198,26 @@ export class ZDSProject {
     children: [],
   }))
 
-  constructor(projectRef: typeof this.projectIORefSignal, app: App) {
-    this.projectIORefSignal = projectRef
-    this.app = app
+  private fileWatcherId = uuidv4()
+
+  constructor(
+    public projectIORefSignal: Signal<Project>,
+    private app: App
+  ) {
+    window.electron?.watchFileOn(
+      projectIORefSignal.value.path,
+      this.fileWatcherId,
+      this.onUpdateFromDisk
+    )
+  }
+
+  /** Clean up resources and watchers for Project */
+  public close() {
+    this.closeAllEditors()
+    window.electron?.watchFileOff(
+      this.projectIORefSignal.value.path,
+      this.fileWatcherId
+    )
   }
 
   /** Open a project, with the option to open an initial editor too */
@@ -284,6 +299,25 @@ export class ZDSProject {
 
   closeAllEditors() {
     this.editors.clear()
+  }
+
+  /** Handle updates from the disk representation of the project */
+  private onUpdateFromDisk = (eventType: string, path: string) => {
+    console.log('file system event', {
+      eventType,
+      path,
+    })
+    const foundEditorKey = this.editors
+      .keys()
+      .find((pathSignal) => pathSignal.value === path)
+    console.log(
+      `${foundEditorKey ? 'Matches' : 'Does not match'} a file that is being edited`
+    )
+
+    // The currently-executing editor should send updates to its RustContext,
+    // so that execution can have an accurate picture of the project state.
+    // GOTCHA: thumbnail.png, project.toml, etc updates are here too. Filter somehow?
+    // this.executingEditor.value?.rustContext.sendUpdateProject(eventType, path)
   }
 }
 
@@ -616,7 +650,9 @@ export class KclManager extends EventTarget {
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
-      this._code.value = update.view.state.doc.toString()
+      const newCode = update.view.state.doc.toString()
+      this._code.value = newCode
+      // this.rustContext.sendUpdateFile(this.path, newCode)
     }
   })
 

@@ -306,7 +306,7 @@ export class App implements AppSubsystems {
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
-    this.project?.closeAllEditors()
+    this.project?.close()
     this.project = undefined
   }
 
