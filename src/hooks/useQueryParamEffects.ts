@@ -122,30 +122,21 @@ export function useQueryParamEffects(kclManager: KclManager) {
     ) {
       const projectName = commandData.argDefaultValues.projectName
       const systemIO = app.singletons.systemIOActor
-      const hasFoldersWithProject = () =>
-        (systemIO.getSnapshot().context.folders ?? []).some(
-          (f: { name: string }) => f.name === projectName
-        )
-      if (hasFoldersWithProject()) {
+      const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
+        (folders ?? []).some((f) => f.name === projectName)
+
+      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
         sendCommand()
         return
       }
-      let timeout: ReturnType<typeof setTimeout>
-      const interval = setInterval(() => {
-        if (hasFoldersWithProject()) {
-          clearInterval(interval)
-          clearTimeout(timeout)
+
+      const subscription = systemIO.subscribe((snapshot) => {
+        if (foldersIncludeProject(snapshot.context.folders)) {
+          subscription.unsubscribe()
           sendCommand()
         }
-      }, 50)
-      timeout = setTimeout(() => {
-        clearInterval(interval)
-        sendCommand()
-      }, 3000)
-      return () => {
-        clearInterval(interval)
-        clearTimeout(timeout)
-      }
+      })
+      return () => subscription.unsubscribe()
     }
 
     sendCommand()
