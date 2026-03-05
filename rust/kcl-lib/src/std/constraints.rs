@@ -24,7 +24,8 @@ use crate::{
 use crate::{
     execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
     front::{
-        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Vertical,
+        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Tangent,
+        Vertical,
     },
 };
 
@@ -1633,7 +1634,10 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         Arc(ConstrainableArcVars),
     }
 
-    fn extract_tangent_input(segment_value: &KclValue, range: crate::SourceRange) -> Result<TangentInput, KclError> {
+    fn extract_tangent_input(
+        segment_value: &KclValue,
+        range: crate::SourceRange,
+    ) -> Result<(TangentInput, ObjectId), KclError> {
         let KclValue::Segment { value: segment } = segment_value else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "tangent() arguments must be segments".to_owned(),
@@ -1660,10 +1664,13 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         vec![range],
                     )));
                 };
-                Ok(TangentInput::Line(ConstrainableLineVars {
-                    start: [*start_x, *start_y],
-                    end: [*end_x, *end_y],
-                }))
+                Ok((
+                    TangentInput::Line(ConstrainableLineVars {
+                        start: [*start_x, *start_y],
+                        end: [*end_x, *end_y],
+                    }),
+                    unsolved.object_id,
+                ))
             }
             UnsolvedSegmentKind::Arc { center, start, .. } => {
                 let (
@@ -1678,10 +1685,13 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         vec![range],
                     )));
                 };
-                Ok(TangentInput::Arc(ConstrainableArcVars {
-                    center: [*center_x, *center_y],
-                    start: [*start_x, *start_y],
-                }))
+                Ok((
+                    TangentInput::Arc(ConstrainableArcVars {
+                        center: [*center_x, *center_y],
+                        start: [*start_x, *start_y],
+                    }),
+                    unsolved.object_id,
+                ))
             }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 "tangent() supports only line and circular arc segments".to_owned(),
@@ -1702,8 +1712,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ))
     })?;
     let range = args.source_range;
-    let input0 = extract_tangent_input(&item0, range)?;
-    let input1 = extract_tangent_input(&item1, range)?;
+    let (input0, input0_object_id) = extract_tangent_input(&item0, range)?;
+    let (input1, input1_object_id) = extract_tangent_input(&item1, range)?;
 
     enum TangentCase {
         LineArc(ConstrainableLineVars, ConstrainableArcVars),
@@ -1723,7 +1733,9 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     };
 
     let sketch_var_ty = solver_numeric_type(exec_state);
-    
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "tangent() can only be used inside a sketch block".to_owned(),
@@ -1829,6 +1841,15 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 .solver_constraints
                 .push(SolverConstraint::PointLineDistance(tangent_point, centers_line, 0.0));
         }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = crate::front::Constraint::Tangent(Tangent {
+            input: vec![input0_object_id, input1_object_id],
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
     }
 
     Ok(KclValue::none())
