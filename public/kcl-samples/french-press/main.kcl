@@ -11,7 +11,7 @@ carafeHeight = 7.32
 handleThickness = 0.65
 
 // Upper ring of the metal structure
-sketch001 = startSketchOn(XZ)
+upperRing = startSketchOn(XZ)
   |> startProfile(at = [carafeDiameter / 2, 5.7])
   |> angledLine(angle = 0, length = 0.1, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = -0.75, tag = $rectangleSegmentB001)
@@ -19,17 +19,17 @@ sketch001 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(angle = 360deg, axis = Y)
+  |> appearance(color = "#f93706", metalness = 70, roughness = 30)
 
 // Create an angled plane to sketch the supports
-plane001 = {
+supportsPlane = {
   origin = [-0.26, 0.26, 0.0],
   xAxis = [1, 1, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 // Cross section of the metal supports
-sketch002 = startSketchOn(plane001)
+metalSupports = startSketchOn(supportsPlane)
   |> startProfile(at = [carafeDiameter / 2, 5.7])
   |> xLine(length = 0.1)
   |> yLine(length = -5.2, tag = $edge1)
@@ -56,14 +56,16 @@ sketch002 = startSketchOn(plane001)
        arcDegrees = 360deg,
        rotateDuplicates = true,
      )
+  |> appearance(color = "#f93706", metalness = 60, roughness = 30)
 
 // Cross plate
-sketch003 = startSketchOn(offsetPlane(XY, offset = 1))
+crossPlate = startSketchOn(offsetPlane(XY, offset = 1))
   |> circle(center = [0, 0], radius = carafeDiameter / 2 - 0.15)
+  |> extrude(length = 0.050)
+  |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
 
-extrude001 = extrude(sketch003, length = 0.050)
-
-sketch004 = startSketchOn(extrude001, face = END)
+// Cross plate slot pattern profile
+crossPlateSlotsProfile = startSketchOn(crossPlate, face = END)
   |> startProfile(at = [0.3, 0.17])
   |> yLine(length = 1.2)
   |> arc(angleStart = 90deg, angleEnd = -30deg, radius = 1.2)
@@ -76,10 +78,10 @@ sketch004 = startSketchOn(extrude001, face = END)
        rotateDuplicates = true,
      )
 
-extrude002 = extrude(sketch004, length = -0.050)
+crossPlateSlotsCut = extrude(crossPlateSlotsProfile, length = -0.050)
 
 // Filter screen
-sketch005 = startSketchOn(XZ)
+filterScreen = startSketchOn(XZ)
   |> startProfile(at = [0.15, 1.11])
   |> xLine(endAbsolute = carafeDiameter / 2 - 0.2)
   |> angledLine(angle = 30deg, endAbsoluteX = carafeDiameter / 2 - 0.07, tag = $seg1)
@@ -89,9 +91,10 @@ sketch005 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
+  |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
 
 // Plunger and stem
-sketch006 = startSketchOn(XZ)
+plungerStem = startSketchOn(XZ)
   |> startProfile(at = [0.1, 1])
   |> line(end = [0.1, 0])
   |> angledLine(angle = 10deg, endAbsoluteX = 0.05)
@@ -102,16 +105,16 @@ sketch006 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
+  |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)
 
 // Spiral plate
-sketch007 = startSketchOn(offsetPlane(XY, offset = 1.12))
+spiralPlate = startSketchOn(offsetPlane(XY, offset = 1.12))
   |> circle(center = [0, 0], radius = carafeDiameter / 2 - 0.24)
   |> subtract2d(tool = circle(center = [0, 0], radius = .15))
+  |> extrude(length = 0.050)
 
-extrude003 = extrude(sketch007, length = 0.050)
-
-// Pattern holes in the spiral plate
-sketch008 = startSketchOn(extrude003, face = END)
+// Pattern holes in the spiral plate (large radius)
+spiralPlateLargeHoles = startSketchOn(spiralPlate, face = END)
   |> circle(center = [1.4, 0], radius = .3)
   |> patternCircular2d(
        center = [0, 0],
@@ -119,11 +122,10 @@ sketch008 = startSketchOn(extrude003, face = END)
        arcDegrees = 360deg,
        rotateDuplicates = true,
      )
+  |> extrude(length = -0.050)
 
-extrude004 = extrude(sketch008, length = -0.050)
-
-// Pattern holes in the spiral plate
-sketch009 = startSketchOn(extrude003, face = END)
+// Pattern holes in the spiral plate (small radius)
+spiralPlateSmallHoles = startSketchOn(spiralPlate, face = END)
   |> circle(center = [0.6, 0], radius = .2)
   |> patternCircular2d(
        center = [0, 0],
@@ -131,19 +133,31 @@ sketch009 = startSketchOn(extrude003, face = END)
        arcDegrees = 360deg,
        rotateDuplicates = true,
      )
+  |> extrude(length = -0.050)
 
-extrude005 = extrude(sketch009, length = -0.050)
-
-// Extrude a glass carafe body
-sketch010 = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = carafeDiameter / 2)
-
-// Perform a shell operation to hollow the carafe body with the top face removed
-extrude006 = extrude(sketch010, length = carafeHeight)
-  |> shell(faces = [END], thickness = .07)
+// Revolve a glass carafe body
+carafe = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = carafeDiameter / 2 - .5)
+  |> tangentialArc(angle = 90deg, radius = 0.5)
+  |> yLine(endAbsolute = carafeHeight - (0.15 * 2))
+  |> xLine(length = 0.01)
+  |> tangentialArc(angle = 270deg, radius = 0.15, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteY = 0.55)
+  |> tangentialArc(angle = -90deg, radius = 0.5)
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y)
+  |> appearance(
+       color = "#ffffff",
+       metalness = 5,
+       roughness = 80,
+       opacity = 20,
+     )
 
 // Draw and revolve the lid
-sketch011 = startSketchOn(XZ)
+lid = startSketchOn(XZ)
   |> startProfile(at = [0.2, carafeHeight - 0.7])
   |> xLine(length = carafeDiameter / 2 - 0.3)
   |> yLine(length = 0.7)
@@ -154,21 +168,23 @@ sketch011 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
+  |> appearance(color = "#f93706", metalness = 60, roughness = 30)
 
 // Draw and extrude handle
-sketch012 = startSketchOn(offsetPlane(XZ, offset = handleThickness / 2))
+handle = startSketchOn(offsetPlane(XZ, offset = handleThickness / 2))
   |> startProfile(at = [2.3, 6.4])
   |> line(end = [0.56, 0])
   |> tangentialArc(endAbsolute = [4.1, 5.26])
   |> tangentialArc(endAbsolute = [4.17, 1.6])
   |> tangentialArc(endAbsolute = [3.13, 0.61])
-  |> line(end = [-1.09, 0])
+  |> line(end = [-0.86, 0])
   |> line(end = [0, 0.43])
-  |> line(end = [0.99, -0.02])
+  |> line(end = [0.73, -0.02])
   |> tangentialArc(endAbsolute = [3.63, 1.6])
   |> tangentialArc(endAbsolute = [3.56, 5.15])
   |> tangentialArc(endAbsolute = [2.72, 5.88])
-  |> line(end = [-0.4, 0])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
   |> close()
-extrude007 = extrude(sketch012, length = -handleThickness)
+  |> extrude(length = -handleThickness)
+  |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)
