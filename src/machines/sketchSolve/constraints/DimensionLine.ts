@@ -31,6 +31,7 @@ import {
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+import { normalizeAngleRad } from './AngleConstraintBuilder'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -274,7 +275,7 @@ export function updateLabel(
   group: Group,
   obj: ApiObject,
   constraintColor: number,
-  distance: Number,
+  apiNumber: Number,
   scale: number
 ) {
   const label = group.children.find(
@@ -283,7 +284,7 @@ export function updateLabel(
   if (label?.material.map) {
     const canvas = label.material.map.source.data
 
-    const dimensionLabel = parseFloat(distance.value.toFixed(3)).toString()
+    const dimensionLabel = formatNumber(apiNumber)
     const showFnIcon =
       (isDistanceConstraint(obj) ||
         isRadiusConstraint(obj) ||
@@ -378,5 +379,17 @@ export function updateLabel(
         1
       )
     }
+  }
+}
+
+function formatNumber(apiNumber: Number) {
+  if (['Deg', 'Rad'].includes(apiNumber.units)) {
+    let value = apiNumber.value
+    if (apiNumber.units === 'Rad') {
+      value *= 180 / Math.PI
+    }
+    return parseFloat(value.toFixed(1)).toString() + "°"
+  } else {
+    return parseFloat(apiNumber.value.toFixed(3)).toString()
   }
 }
