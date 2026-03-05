@@ -1,23 +1,23 @@
 ---
 title: "blend"
 subtitle: "Function in std::solid"
-excerpt: "Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to use the full edge span."
+excerpt: "Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or tagged edges to use the full edge span."
 layout: manual
 ---
 
-Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or plain edges to use the full edge span.
+Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or tagged edges to use the full edge span.
 
 ```kcl
-blend(@edges: [BoundedEdge | Edge; 2]): Solid
+blend(@edges: [BoundedEdge | TaggedEdge; 2]): Solid
 ```
 
-Or blend the full edges directly (no `getBoundedEdge`):
+Or blend the full edges directly with tagged edges (no `getBoundedEdge`):
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`Edge`](/docs/kcl-std/types/std-types-Edge); 2] | The two edges that will be blended. Plain [`Edge`](/docs/kcl-std/types/std-types-Edge) values blend the full edge length. | Yes |
+| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 2] | The two edges that will be blended. Tagged edges blend the full edge length. | Yes |
 
 ### Returns
 
