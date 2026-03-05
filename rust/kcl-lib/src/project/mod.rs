@@ -71,6 +71,10 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
+    async fn get_projects(&self, id: ProjectId) -> Result<Vec<(FileId, String)>> {
+        todo!("Do stuff");
+    }
+
     async fn add_file(&self, project_id: ProjectId, file: crate::front::File) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {

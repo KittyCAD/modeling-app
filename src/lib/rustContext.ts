@@ -87,10 +87,7 @@ export default class RustContext {
     this.ctxInstance = ctxInstance
   }
 
-  async sendOpenProject(
-    project: Project,
-    currentFilePath: string | null
-  ): Promise<void> {
+  async sendOpenProject(project: Project, currentFilePath: string | null) {
     this.projectId += 1
     let files: ApiFile[] = []
     collectFiles(project, files)
@@ -107,6 +104,7 @@ export default class RustContext {
       JSON.stringify(files),
       openFile
     )
+    return files
   }
 
   async sendUpdateFile(fileId: number, code: string) {

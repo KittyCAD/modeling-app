@@ -11,7 +11,9 @@ use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::Numer
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
+    async fn get_files(&self, project: ProjectId) -> Result<Vec<(FileId, String)>>;
     async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
+    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<String>;
     async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
