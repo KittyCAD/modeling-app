@@ -13,9 +13,10 @@ use crate::{
     execution::{
         AbstractSegment, ConstrainablePoint2d, ExecState, KclValue, SegmentRepr, SketchConstraint,
         SketchConstraintKind, SketchVarId, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
-        normalize_to_solver_distance_unit,
+        normalize_to_solver_distance_unit, solver_numeric_type,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
+
     front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
     std::Args,
 };
@@ -1721,9 +1722,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
     };
 
-    let sketch_var_ty = crate::execution::types::NumericType::Known(crate::execution::types::UnitType::Length(
-        exec_state.length_unit(),
-    ));
+    let sketch_var_ty = solver_numeric_type(exec_state);
+    
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "tangent() can only be used inside a sketch block".to_owned(),
@@ -1738,7 +1738,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             id: tx,
             initial_value: 0.0,
             ty: sketch_var_ty,
-            meta: Vec::new(),
+            meta: vec![args.source_range.into()],
         }),
     });
     let ty = sketch_state.next_sketch_var_id();
@@ -1747,7 +1747,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             id: ty,
             initial_value: 0.0,
             ty: sketch_var_ty,
-            meta: Vec::new(),
+            meta: vec![args.source_range.into()],
         }),
     });
 
