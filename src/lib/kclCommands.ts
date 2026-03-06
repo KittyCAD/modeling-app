@@ -19,7 +19,6 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -42,7 +41,6 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   kclManager: KclManager
-  rustContext: RustContext
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
@@ -159,10 +157,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               )
               return
             }
-            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-              kclManager: commandProps.kclManager,
-              rustContext: commandProps.rustContext,
-            })
+            updateModelingState(
+              newAst,
+              EXECUTION_TYPE_REAL,
+              commandProps.kclManager
+            )
               .then((result) => {
                 if (err(result)) {
                   toast.error(
@@ -274,10 +273,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: commandProps.kclManager,
-            rustContext: commandProps.rustContext,
-          },
+          commandProps.kclManager,
           {
             focusPath: [pathToNode],
             skipErrorsOnMockExecution: true,
@@ -342,10 +338,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           node: commandProps.kclManager.ast,
           newExpression: value,
         })
-        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
-          rustContext: commandProps.rustContext,
-        }).catch(reportRejection)
+        updateModelingState(
+          newAst,
+          EXECUTION_TYPE_REAL,
+          commandProps.kclManager
+        ).catch(reportRejection)
       },
     },
     {
@@ -441,10 +438,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         // Mutate the variable's value
         variableNode.node.init = value.valueAst
 
-        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
-          rustContext: commandProps.rustContext,
-        }).catch(reportRejection)
+        updateModelingState(
+          newAst,
+          EXECUTION_TYPE_REAL,
+          commandProps.kclManager
+        ).catch(reportRejection)
       },
     },
   ]

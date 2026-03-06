@@ -235,8 +235,9 @@ pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let keep_tools = args
         .get_kw_arg_opt("keepTools", &RuntimeType::bool(), exec_state)?
         .unwrap_or_default();
-    let merge: Option<bool> = args.get_kw_arg_opt("merge", &RuntimeType::bool(), exec_state)?;
-    let merge = merge.unwrap_or_default();
+    let merge = args
+        .get_kw_arg_opt("merge", &RuntimeType::bool(), exec_state)?
+        .unwrap_or_default();
 
     if targets.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
