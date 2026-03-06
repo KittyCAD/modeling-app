@@ -70,7 +70,7 @@ export const baseLoader =
       })
     } catch {
       await projectSkeletonCreate(
-        await fsZds.resolve(
+        fsZds.resolve(
           await getInitialDefaultDir(),
           DEFAULT_WEB_PROJECT_NAME,
           'main.kcl'
@@ -224,7 +224,6 @@ export const fileLoader =
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
     )
-    await kclManager.rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)

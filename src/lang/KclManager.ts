@@ -115,6 +115,7 @@ import {
 } from '@src/editor'
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import type {
+  ApiFile,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -180,14 +181,14 @@ window.EditorView = EditorView
  * that connects to the geometry engine.
  */
 export class ZDSProject {
-  public projectIORefSignal: Signal<Project>
+  private nextFileId = 0
+  files: File[] = []
   get path() {
     return this.projectIORefSignal.value.path
   }
   get name() {
     return this.projectIORefSignal.value.name
   }
-  private app: App
   /** Editors are referenced via Signal in case the file name itself is changed. */
   public editors = new Map<Signal<string>, KclManager>()
   #executingPath = signal<Signal<string> | null>(null)
@@ -203,9 +204,27 @@ export class ZDSProject {
     children: [],
   }))
 
-  constructor(projectRef: typeof this.projectIORefSignal, app: App) {
-    this.projectIORefSignal = projectRef
-    this.app = app
+  private fileWatcherId = uuidv4()
+
+  constructor(
+    public projectIORefSignal: Signal<Project>,
+    private app: App
+  ) {
+    this.files = this.collectProjectFiles(projectIORefSignal.value)
+    window.electron?.watchFileOn(
+      projectIORefSignal.value.path,
+      this.fileWatcherId,
+      this.onUpdateFromDisk
+    )
+  }
+
+  /** Clean up resources and watchers for Project */
+  public close() {
+    this.closeAllEditors()
+    window.electron?.watchFileOff(
+      this.projectIORefSignal.value.path,
+      this.fileWatcherId
+    )
   }
 
   /** Open a project, with the option to open an initial editor too */
@@ -274,9 +293,20 @@ export class ZDSProject {
         },
       })
 
-    if (providedEditor) {
-      providedEditor.path = path
+    // Splice our new editor into our files array
+    const foundFile = this.files.find((f) => f.path.value === path)
+    const foundFileIndex = this.files.findIndex((f) => f.path.value === path)
+    if (foundFile) {
+      newEditor.id = foundFile.id
+      newEditor.path.value = foundFile.path.value
+      this.files = this.files
+        .slice(0, foundFileIndex)
+        .concat(newEditor)
+        .concat(this.files.slice(foundFileIndex + 1))
     }
+
+    newEditor.path.value = path
+
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
     // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
@@ -288,6 +318,16 @@ export class ZDSProject {
     )
 
     this.set(signal(path), newEditor)
+
+    // Initialize a snapshot of the project for Rust
+    // to have for executions and code mods
+    this.getAllKclFiles()
+      .then(async (apiFiles) => {
+        newEditor.rustContext
+          .sendOpenProject(path, apiFiles)
+          .catch(reportRejection)
+      })
+      .catch(reportRejection)
     return newEditor
   }
 
@@ -306,6 +346,76 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+  }
+
+  /** Handle updates from the disk representation of the project */
+  private onUpdateFromDisk = (eventType: string, path: string) => {
+    console.log('file system event', {
+      eventType,
+      path,
+    })
+    const foundEditorKey = this.editors
+      .keys()
+      .find((pathSignal) => pathSignal.value === path)
+    console.log(
+      `${foundEditorKey ? 'Matches' : 'Does not match'} a file that is being edited`
+    )
+
+    const editor = this.executingEditor.value
+    const foundFile = this.files.find((f) => f.path.value === path)
+
+    if (path.endsWith('.kcl')) {
+      switch (eventType) {
+        case 'add':
+          const newFile = new File(path, this.nextFileId++)
+          this.files.push(newFile)
+          // TODO: impl sendAddFile
+          // editor?.rustContext.sendAddFile()
+          break
+        case 'change':
+          if (foundFile && path !== this.executingPath) {
+            foundFile
+              .read()
+              .then((text) =>
+                editor?.rustContext.sendUpdateFile(foundFile.id, text)
+              )
+              .catch(reportRejection)
+          }
+          break
+        case 'unlink':
+          const foundIndex = this.files.findIndex((f) => f.path.value === path)
+          if (foundIndex >= 0 && path !== this.executingPath) {
+            this.files = this.files.filter((_, i) => i !== foundIndex)
+            // TODO: impl sendRemoveFile
+            // editor?.rustContext.sendRemoveFile(foundFile.id)
+          }
+      }
+    }
+  }
+
+  /** Recursively gather KCL files in this project, without reading in their content */
+  private collectProjectFiles = (
+    fileOrDir: FileEntry,
+    files: File[] = []
+  ): File[] => {
+    if (fileOrDir.children) {
+      for (let entry of fileOrDir.children) {
+        if (entry.name.endsWith('.kcl')) {
+          const id = this.nextFileId++
+          const path = entry.path
+          files.push(new File(path, id))
+        } else {
+          this.collectProjectFiles(entry, files)
+        }
+      }
+    }
+
+    return files
+  }
+
+  /** Get all the KCL files in this project as a flat array. */
+  private getAllKclFiles(): Promise<ApiFile[]> {
+    return Promise.all(this.files.map((f) => f.asApiFile()))
   }
 }
 
@@ -327,7 +437,38 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
-export class KclManager extends EventTarget {
+class File extends EventTarget {
+  /** Path to file this editor is operating on */
+  public path: Signal<string>
+
+  read() {
+    return fsZds.readFile(this.path.value, 'utf8')
+  }
+
+  write(newContent: string) {
+    return fsZds.writeFile(this.path.value, File.encoder.encode(newContent))
+  }
+
+  static encoder = new TextEncoder()
+
+  constructor(
+    path: string,
+    public id = 0
+  ) {
+    super()
+    this.path = signal(path)
+  }
+
+  async asApiFile(): Promise<ApiFile> {
+    return this.read().then((text) => ({
+      id: this.id,
+      path: this.path.value,
+      text,
+    }))
+  }
+}
+
+export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -447,7 +588,7 @@ export class KclManager extends EventTarget {
   private onFileWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
-    if (path !== this.path || !this.systemDeps.projectPath) {
+    if (path !== this.path.value || !this.systemDeps.projectPath) {
       return
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
@@ -676,7 +817,9 @@ export class KclManager extends EventTarget {
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
-      this._code.value = update.view.state.doc.toString()
+      const newCode = update.view.state.doc.toString()
+      this._code.value = newCode
+      this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
 
@@ -822,11 +965,8 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(
-    public path: string,
-    systemDeps: SystemDeps
-  ) {
-    super()
+  constructor(path: string, systemDeps: SystemDeps, fileId = 0) {
+    super(path, fileId)
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
@@ -889,7 +1029,7 @@ export class KclManager extends EventTarget {
 
   /** Clean up listeners, watchers, etc */
   public close() {
-    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
+    window.electron?.watchFileOff(this.path.value, this.fileWatcherKey)
   }
 
   clearAst() {
@@ -2024,7 +2164,7 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          window.electron?.watchFileOff(this.path, this.fileWatcherKey)
+          window.electron?.watchFileOff(this.path.value, this.fileWatcherKey)
           fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
@@ -2033,7 +2173,7 @@ export class KclManager extends EventTarget {
               if (window.electron) {
                 setTimeout(() => {
                   window.electron?.watchFileOn(
-                    this.path,
+                    this.path.value,
                     this.fileWatcherKey,
                     this.onFileWatchEvent
                   )
