@@ -13,7 +13,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
-  const { kclManager, sceneInfra } = useSingletons()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   const { state: modelingState } = useModelingContext()
@@ -29,7 +29,7 @@ export function UnitsMenu() {
     if (!inSketchMode) {
       return
     }
-    const camera = sceneInfra.camControls.camera
+    const camera = kclManager.sceneInfra.camControls.camera
     if (!(camera instanceof OrthographicCamera)) {
       console.error(
         'Camera is not an OrthographicCamera, skipping ruler recalculation'
@@ -37,7 +37,7 @@ export function UnitsMenu() {
       return
     }
 
-    let rulerWidth = sceneInfra.getPixelsPerBaseUnit(camera)
+    let rulerWidth = kclManager.sceneInfra.getPixelsPerBaseUnit(camera)
     let displayValue = 1
 
     if (rulerWidth > 150 || rulerWidth < 20) {
@@ -50,12 +50,12 @@ export function UnitsMenu() {
     }
     setRulerWidth(rulerWidth)
     setRulerLabelValue(displayValue)
-  }, [inSketchMode, sceneInfra])
+  }, [inSketchMode, kclManager.sceneInfra])
 
   useEffect(() => {
     const unsubscribers = [
-      sceneInfra.camControls.cameraChange.add(onCameraChange),
-      sceneInfra.baseUnitChange.add(onCameraChange),
+      kclManager.sceneInfra.camControls.cameraChange.add(onCameraChange),
+      kclManager.sceneInfra.baseUnitChange.add(onCameraChange),
     ]
     onCameraChange()
     return () => {
@@ -63,16 +63,16 @@ export function UnitsMenu() {
     }
   }, [
     onCameraChange,
-    sceneInfra.baseUnitChange,
-    sceneInfra.camControls.cameraChange,
+    kclManager.sceneInfra.baseUnitChange,
+    kclManager.sceneInfra.camControls.cameraChange,
   ])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
     kclManager.fileSettings,
-    sceneInfra.baseUnitChange,
-    sceneInfra.camControls.cameraChange,
+    kclManager.sceneInfra.baseUnitChange,
+    kclManager.sceneInfra.camControls.cameraChange,
   ])
 
   return (
