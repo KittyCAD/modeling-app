@@ -33,6 +33,8 @@ export interface MlEphantConversationProps {
   userAvatarSrc?: string
   userBlockedOnPayment?: boolean
   defaultPrompt?: string
+  initialMlCopilotMode?: MlCopilotMode // resolved from project settings
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
@@ -194,6 +196,8 @@ interface MlEphantConversationInputProps {
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
+  initialMlCopilotMode?: MlCopilotMode
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }
 
 export const MlEphantConversationInput = (
@@ -202,12 +206,19 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
-  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [mode, setMode] = useState<MlCopilotMode>(
+    props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+  )
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  useEffect(() => {
+    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+    setMode(next)
+  }, [props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -387,7 +398,10 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             mode={mode}
-            onSetMode={setMode}
+            onSetMode={(m) => {
+              setMode(m)
+              props.onMlCopilotModeChange?.(m)
+            }}
             onAttachFiles={onAttachFiles}
             attachmentsDisabled={props.disabled}
           />
@@ -547,6 +561,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
+              initialMlCopilotMode={props.initialMlCopilotMode}
+              onMlCopilotModeChange={props.onMlCopilotModeChange}
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
