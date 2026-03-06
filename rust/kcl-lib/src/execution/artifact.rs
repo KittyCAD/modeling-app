@@ -1139,6 +1139,37 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::CreateRegion(kcmc::CreateRegion {
+            object_id: origin_path_id,
+            ..
+        })
+        | ModelingCmd::CreateRegionFromQueryPoint(kcmc::CreateRegionFromQueryPoint {
+            object_id: origin_path_id,
+            ..
+        }) => {
+            let mut return_arr = Vec::new();
+            let origin_path = artifacts.get(&ArtifactId::new(*origin_path_id));
+            let Some(Artifact::Path(path)) = origin_path else {
+                internal_error!(
+                    range,
+                    "Expected to find an existing path for the origin path of CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                );
+            };
+            return_arr.push(Artifact::Path(Path {
+                id,
+                plane_id: path.plane_id,
+                seg_ids: Vec::new(),
+                consumed: false,
+                sweep_id: None,
+                trajectory_sweep_id: None,
+                solid2d_id: None,
+                code_ref,
+                composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
+            }));
+            return Ok(return_arr);
+        }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
         })
