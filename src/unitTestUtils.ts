@@ -73,11 +73,10 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
-  const kclManager = new KclManager('some-path', {
+  const kclManager = new KclManager({
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
-    projectPath: 'some-project',
   })
 
   await new Promise((resolve, reject) => {
@@ -158,11 +157,10 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
-  const kclManager = new KclManager('some-path', {
+  const kclManager = new KclManager({
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
-    projectPath: 'some-project',
   })
 
   settingsActor.start()

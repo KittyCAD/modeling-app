@@ -79,7 +79,7 @@ const watchFileOn = (
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
+  const watcher = chokidar.watch(path, { depth: 1 })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
