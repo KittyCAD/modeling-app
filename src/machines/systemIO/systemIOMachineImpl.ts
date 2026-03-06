@@ -321,7 +321,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
       }
 
-      const wasmInstance = await input.kclManager.wasmInstancePromise
+      const wasmInstance = await input.app.wasmPromise
 
       const baseDir = fsZds.join(
         input.context.projectDirectoryPath,
