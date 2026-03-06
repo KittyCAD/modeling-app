@@ -315,6 +315,24 @@ box3D = extrude(box_sketch, length = box_height)
 
 
 @pytest.mark.asyncio
+async def test_kcl_execute_and_bounding_box():
+    box_file = os.path.join(files_dir, "box_with_linter_errors.kcl")
+    response = await kcl.execute_and_bounding_box(box_file, [])
+    assert response is not None
+
+    center = response.get_center()
+    dimensions = response.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25.0, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
     files = await kcl.execute_and_export(lego_file, kcl.FileExportFormat.Step)
