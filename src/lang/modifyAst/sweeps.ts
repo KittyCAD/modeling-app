@@ -121,7 +121,13 @@ export function addExtrude({
     ),
     otherSelections: sketches.otherSelections,
   }
-  if (nonFaceSelections.graphSelections.length > 0) {
+  const hasRegionSelections = nonFaceSelections.otherSelections.some(
+    (selection) =>
+      typeof selection === 'object' &&
+      'type' in selection &&
+      selection.type === 'region'
+  )
+  if (nonFaceSelections.graphSelections.length > 0 || hasRegionSelections) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
       artifactGraph,

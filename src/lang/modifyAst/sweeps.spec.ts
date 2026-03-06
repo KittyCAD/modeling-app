@@ -274,22 +274,15 @@ s = sketch(on = XY) {
         throw new Error('Could not find line1 segment artifact')
       }
 
-      const line1CodeRef = getCodeRefsByArtifactId(line1.id, artifactGraph)?.[0]
-      if (!line1CodeRef) {
-        throw new Error('Could not find line1 code reference')
-      }
       const sketches: Selections = {
-        graphSelections: [
+        graphSelections: [],
+        otherSelections: [
           {
-            artifact: line1,
-            codeRef: line1CodeRef,
-            region: {
-              point: { x: 1, y: 1 },
-              sketchId: line1.pathId,
-            },
+            type: 'region',
+            point: { x: 1, y: 1 },
+            sketchId: line1.pathId,
           },
         ],
-        otherSelections: [],
       }
 
       const length = await getKclCommandValue(
@@ -355,29 +348,19 @@ t = sketch(on = XY) {
         })
 
       const line1 = findSegmentByVarName('line1')
-      const edge1 = findSegmentByVarName('edge1')
-      if (!line1 || !edge1) {
-        throw new Error('Could not find expected segment artifacts')
-      }
-
-      const wrongCodeRef = getCodeRefsByArtifactId(edge1.id, artifactGraph)?.[0]
-      if (!wrongCodeRef) {
-        throw new Error('Could not find code reference for edge1 segment')
+      if (!line1) {
+        throw new Error('Could not find expected line1 segment artifact')
       }
 
       const sketches: Selections = {
-        graphSelections: [
+        graphSelections: [],
+        otherSelections: [
           {
-            artifact: line1,
-            // Intentionally wrong codeRef to verify sketchId is authoritative.
-            codeRef: wrongCodeRef,
-            region: {
-              point: { x: 1, y: 1 },
-              sketchId: line1.pathId,
-            },
+            type: 'region',
+            point: { x: 1, y: 1 },
+            sketchId: line1.pathId,
           },
         ],
-        otherSelections: [],
       }
 
       const length = await getKclCommandValue(

@@ -182,6 +182,7 @@ import {
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
   isEnginePrimitiveSelection,
+  isRegionSelection,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -1621,6 +1622,56 @@ export const modelingMachine = setup({
           // If there are engine commands that need sent off, send them
           // TODO: This should be handled outside of an action as its own
           // actor, so that the system state is more controlled.
+          engineEvents?.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
+          })
+
+          return {
+            selectionRanges: selections,
+          }
+        }
+
+        if (setSelections.selectionType === 'regionSelection') {
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            (selection) =>
+              isRegionSelection(selection) &&
+              selection.sketchId === setSelections.selection.sketchId &&
+              selection.point.x === setSelections.selection.point.x &&
+              selection.point.y === setSelections.selection.point.y
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) =>
+                    !(
+                      isRegionSelection(selection) &&
+                      selection.sketchId === setSelections.selection.sketchId &&
+                      selection.point.x === setSelections.selection.point.x &&
+                      selection.point.y === setSelections.selection.point.y
+                    )
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          const selections: Selections = {
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
+            otherSelections,
+          }
+          const { engineEvents } = handleSelectionBatch({
+            selections,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              wasmInstance,
+            },
+          })
+
           engineEvents?.forEach((event) => {
             engineCommandManager.sendSceneCommand(event).catch(reportRejection)
           })

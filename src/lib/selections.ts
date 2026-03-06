@@ -70,6 +70,7 @@ import type {
   EnginePrimitiveSelection,
   ExtrudeFacePlane,
   OffsetPlane,
+  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
@@ -138,7 +139,7 @@ async function getRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   engineCommandManager: ConnectionManager
-): Promise<Selection | null> {
+): Promise<RegionSelection | null> {
   const point = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
@@ -158,19 +159,12 @@ async function getRegionSelectionFromEntity(
     getSketchIdFromArtifact(artifactGraph.get(regionEntityId))
   if (!sketchId) return null
 
-  const sketchArtifact = artifactGraph.get(sketchId)
-  if (!sketchArtifact) return null
-
-  const codeRef = getCodeRefsByArtifactId(sketchId, artifactGraph)?.[0]
-  if (!codeRef) return null
+  if (!artifactGraph.get(sketchId)) return null
 
   return {
-    artifact: sketchArtifact,
-    codeRef,
-    region: {
-      point,
-      sketchId,
-    },
+    type: 'region',
+    point,
+    sketchId,
   }
 }
 
@@ -216,6 +210,16 @@ export function isEnginePrimitiveSelection(
     typeof selection === 'object' &&
     'type' in selection &&
     selection.type === 'enginePrimitive'
+  )
+}
+
+export function isRegionSelection(
+  selection: Selections['otherSelections'][number]
+): selection is RegionSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'region'
   )
 }
 
@@ -280,7 +284,7 @@ export async function getEventForSelectWithPoint(
       return {
         type: 'Set selection',
         data: {
-          selectionType: 'singleCodeCursor',
+          selectionType: 'regionSelection',
           selection: regionSelection,
         },
       }
@@ -434,11 +438,19 @@ export function handleSelectionBatch({
       })
   })
   selections.otherSelections.forEach((s) => {
-    isEnginePrimitiveSelection(s) &&
+    if (isEnginePrimitiveSelection(s)) {
       selectionToEngine.push({
         id: s.entityId,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isRegionSelection(s)) {
+      selectionToEngine.push({
+        id: s.sketchId,
+        range: defaultSourceRange(),
+      })
+    }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
     selectionToEngine,
@@ -713,6 +725,8 @@ export function getSelectionCountByType(
   selection.otherSelections.forEach((selection) => {
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
+    } else if (isRegionSelection(selection)) {
+      incrementOrInitializeSelectionType('region')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -731,10 +745,6 @@ export function getSelectionCountByType(
   })
 
   selection.graphSelections.forEach((graphSelection) => {
-    if (graphSelection.region) {
-      incrementOrInitializeSelectionType('region')
-      return
-    }
     if (!graphSelection.artifact) {
       /**
        * TODO: remove this heuristic-based selection type detection.
@@ -1051,15 +1061,13 @@ export function updateSelections(
           range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
-        region: previousSelection?.region,
       }
     })
     .filter((x?: Selection) => x !== undefined)
 
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
-  for (const [index, pathToNode] of Object.entries(pathToNodeMap)) {
-    const previousSelection = prevSelectionRanges.graphSelections[Number(index)]
+  for (const [, pathToNode] of Object.entries(pathToNodeMap)) {
     const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
@@ -1067,7 +1075,6 @@ export function updateSelections(
         range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
-      region: previousSelection?.region,
     })
   }
 

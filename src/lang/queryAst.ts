@@ -67,6 +67,7 @@ import type {
   Selection,
   Selections,
   EdgeCutInfo,
+  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -1097,15 +1098,12 @@ export const valueOrVariable = (variable: KclCommandValue) => {
 }
 
 function getSketchVarNameFromRegionSelection(
-  selection: Selection,
+  regionSelection: RegionSelection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): string | Error {
-  const sketchId = selection.region?.sketchId
-  if (!sketchId) {
-    return new Error('Sketch region selection is missing sketchId')
-  }
+  const sketchId = regionSelection.sketchId
 
   let sketchArtifact = artifactGraph.get(sketchId)
   if (!sketchArtifact) {
@@ -1167,17 +1165,13 @@ function getSketchVarNameFromRegionSelection(
 }
 
 function getRegionExprFromSelection(
-  selection: Selection,
+  regionSelection: RegionSelection,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Expr | Error {
-  if (!selection.region) {
-    return new Error('Missing sketch region metadata for selection')
-  }
-
   const sketchVarName = getSketchVarNameFromRegionSelection(
-    selection,
+    regionSelection,
     ast,
     artifactGraph,
     wasmInstance
@@ -1186,7 +1180,7 @@ function getRegionExprFromSelection(
     return sketchVarName
   }
 
-  const { x, y } = selection.region.point
+  const { x, y } = regionSelection.point
   if (!Number.isFinite(x) || !Number.isFinite(y)) {
     return new Error('Region point coordinates are invalid')
   }
@@ -1216,6 +1210,16 @@ type GetVariableExprsOptions = {
   artifactTypeFilter?: Array<Artifact['type']>
 }
 
+function isRegionSelection(
+  selection: Selections['otherSelections'][number]
+): selection is RegionSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'region'
+  )
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
@@ -1233,21 +1237,6 @@ export function getVariableExprsFromSelection(
   let hasRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
-    if (s.region) {
-      hasRegionSelections = true
-      const regionExpr = getRegionExprFromSelection(
-        s,
-        ast,
-        artifactGraph,
-        wasmInstance
-      )
-      if (err(regionExpr)) {
-        return regionExpr
-      }
-      exprs.push(regionExpr)
-      continue
-    }
-
     let variable:
       | {
           node: VariableDeclaration
@@ -1340,6 +1329,22 @@ export function getVariableExprsFromSelection(
     }
 
     console.warn('No match for selection, likely a bug (or bad selection)', s)
+  }
+
+  for (const selectionItem of selection.otherSelections) {
+    if (!isRegionSelection(selectionItem)) continue
+
+    hasRegionSelections = true
+    const regionExpr = getRegionExprFromSelection(
+      selectionItem,
+      ast,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionExpr)) {
+      return regionExpr
+    }
+    exprs.push(regionExpr)
   }
 
   if (exprs.length === 0) {

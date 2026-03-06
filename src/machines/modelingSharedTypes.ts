@@ -32,20 +32,21 @@ export type EnginePrimitiveSelection = {
   primitiveType: EntityType
 }
 
+export interface RegionSelection {
+  type: 'region'
+  point: Point2d
+  sketchId: ArtifactId
+}
+
 export type NonCodeSelection =
   | Axis
   | DefaultPlaneSelection
   | EnginePrimitiveSelection
+  | RegionSelection
 
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
-  region?: RegionSelection
-}
-
-export interface RegionSelection {
-  point: Point2d
-  sketchId: ArtifactId
 }
 
 export type Selections = {
@@ -70,6 +71,10 @@ export type SetSelections =
   | {
       selectionType: 'enginePrimitiveSelection'
       selection: EnginePrimitiveSelection
+    }
+  | {
+      selectionType: 'regionSelection'
+      selection: RegionSelection
     }
   | {
       selectionType: 'completeSelection'
