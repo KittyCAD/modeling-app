@@ -1175,7 +1175,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       }
     }
 
-    const primitiveFaceSelection = getPrimitiveFaceSelectionFromFaceIdSource(
+    const primitiveFaceSelection = getPrimitiveFaceSelectionFromPlaneArg(
       planeArtifact.faceId,
       artifactGraph,
       planeArg,
@@ -1196,35 +1196,22 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
   return new Error('Unsupported plane artifact type')
 }
 
-function getPrimitiveFaceSelectionFromFaceIdSource(
+function getPrimitiveFaceSelectionFromPlaneArg(
   faceId: string,
   artifactGraph: ArtifactGraph,
   planeArg: OpArg,
   code?: string
 ): EnginePrimitiveSelection | undefined {
-  if (!code || planeArg.sourceRange.length < 2) {
+  if (!code) {
     return undefined
   }
 
-  const sourceStart = toUtf16(planeArg.sourceRange[0], code)
-  const sourceEnd = toUtf16(planeArg.sourceRange[1], code)
-  if (sourceStart < 0 || sourceEnd <= sourceStart || sourceEnd > code.length) {
-    return undefined
-  }
-  const planeArgSource = code.slice(sourceStart, sourceEnd)
-
-  const match = planeArgSource.match(
-    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[\s\S]*?\bindex\s*=\s*(-?\d+)\s*\)/
-  )
-  if (!match) {
+  const primitiveFace = getPrimitiveFaceFromPlaneArg(planeArg, code)
+  if (!primitiveFace) {
     return undefined
   }
 
-  const bodyVariableName = match[1]
-  const primitiveIndex = Number.parseInt(match[2], 10)
-  if (!Number.isInteger(primitiveIndex) || primitiveIndex < 0) {
-    return undefined
-  }
+  const { bodyVariableName, primitiveIndex } = primitiveFace
   const parentEntityId = getParentSolidIdFromBodyVariableName(
     bodyVariableName,
     artifactGraph,
@@ -1243,6 +1230,36 @@ function getPrimitiveFaceSelectionFromFaceIdSource(
   }
 }
 
+function getPrimitiveFaceFromPlaneArg(
+  planeArg: OpArg,
+  code?: string
+): { bodyVariableName: string; primitiveIndex: number } | undefined {
+  if (!code || planeArg.sourceRange.length < 2) {
+    return undefined
+  }
+
+  const sourceStart = toUtf16(planeArg.sourceRange[0], code)
+  const sourceEnd = toUtf16(planeArg.sourceRange[1], code)
+  if (sourceStart < 0 || sourceEnd <= sourceStart || sourceEnd > code.length) {
+    return undefined
+  }
+
+  const planeArgSource = code.slice(sourceStart, sourceEnd)
+  const faceIdPattern =
+    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[\s\S]*?\bindex\s*=\s*(-?\d+)\s*\)/
+  const match = planeArgSource.match(faceIdPattern)
+  if (!match) {
+    return undefined
+  }
+
+  const primitiveIndex = Number.parseInt(match[2], 10)
+  if (!Number.isInteger(primitiveIndex) || primitiveIndex < 0) {
+    return undefined
+  }
+
+  return { bodyVariableName: match[1], primitiveIndex }
+}
+
 function getParentSolidIdFromBodyVariableName(
   bodyVariableName: string,
   artifactGraph: ArtifactGraph,
@@ -1255,40 +1272,10 @@ function getParentSolidIdFromBodyVariableName(
       continue
     }
 
-    if (artifact.codeRef.range.length < 2) {
-      continue
-    }
-    const declarationStart = toUtf16(artifact.codeRef.range[0], code)
-    const declarationEnd = toUtf16(artifact.codeRef.range[1], code)
-    if (
-      declarationStart < 0 ||
-      declarationEnd <= declarationStart ||
-      declarationEnd > code.length
-    ) {
-      continue
-    }
-    const declarationSource = code.slice(declarationStart, declarationEnd)
-    const variableMatch = declarationSource.match(
-      /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/
-    )
-    const prefixWindow = code.slice(
-      Math.max(0, declarationStart - 4096),
-      declarationStart
-    )
-    let lastAssignedVariableName: string | undefined
-    for (const match of prefixWindow.matchAll(
-      /(?:^|[\r\n])\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/g
-    )) {
-      lastAssignedVariableName = match[1]
-    }
-    const declaredVariableName =
-      variableMatch?.[1] ??
-      // Some codeRef ranges start at the call expression (after the `=`),
-      // so recover the lhs variable name from the immediate prefix.
+    const declaredVariableName = getDeclaredVariableNameFromArtifactCodeRef(
+      artifact,
       code
-        .slice(Math.max(0, declarationStart - 512), declarationStart)
-        .match(/([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/)?.[1] ??
-      lastAssignedVariableName
+    )
     if (declaredVariableName !== bodyVariableName) {
       continue
     }
@@ -1300,6 +1287,40 @@ function getParentSolidIdFromBodyVariableName(
   }
 
   return bestMatch?.id
+}
+
+function getDeclaredVariableNameFromArtifactCodeRef(
+  artifact: Extract<Artifact, { type: 'sweep' | 'compositeSolid' }>,
+  code: string
+): string | undefined {
+  if (artifact.codeRef.range.length < 2) {
+    return undefined
+  }
+
+  const declarationStart = toUtf16(artifact.codeRef.range[0], code)
+  const declarationEnd = toUtf16(artifact.codeRef.range[1], code)
+  if (
+    declarationStart < 0 ||
+    declarationEnd <= declarationStart ||
+    declarationEnd > code.length
+  ) {
+    return undefined
+  }
+
+  const declarationSource = code.slice(declarationStart, declarationEnd)
+  const declarationMatch = declarationSource.match(
+    /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/
+  )
+  if (declarationMatch) {
+    return declarationMatch[1]
+  }
+
+  // Some ranges start at the call expression, so recover lhs from immediate prefix.
+  const prefix = code.slice(
+    Math.max(0, declarationStart - 512),
+    declarationStart
+  )
+  return prefix.match(/([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/)?.[1]
 }
 
 export function buildSolidsAndFacesExprs(
