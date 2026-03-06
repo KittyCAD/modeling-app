@@ -113,7 +113,8 @@ function isExportOptionalArgSupported(
   arg: ExportOptionalArg
 ): boolean {
   if (typeof exportType !== 'string') return true
-  const supportByArg = exportOptionalArgSupportByType[exportType as OutputTypeKey]
+  const supportByArg =
+    exportOptionalArgSupportByType[exportType as OutputTypeKey]
   return supportByArg?.[arg] ?? true
 }
 
@@ -554,7 +555,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         prepopulate: true,
         hidden: (commandContext) =>
-          !isExportOptionalArgSupported(commandContext.argumentsToSubmit.type, 'up'),
+          !isExportOptionalArgSupported(
+            commandContext.argumentsToSubmit.type,
+            'up'
+          ),
         defaultValue: 'z',
         options: (commandContext) => {
           const currentUp =
@@ -592,9 +596,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const submittedScale = commandContext.argumentsToSubmit.scale
           const resolvedSubmittedScale =
             typeof submittedScale === 'function'
-              ? (submittedScale as (context: typeof commandContext) => UnitLength)(
-                  commandContext
-                )
+              ? (
+                  submittedScale as (
+                    context: typeof commandContext
+                  ) => UnitLength
+                )(commandContext)
               : (submittedScale as UnitLength | undefined)
 
           const currentScale =

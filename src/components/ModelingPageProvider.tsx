@@ -27,9 +27,8 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project } = useApp()
-  const { engineCommandManager, kclManager, rustContext, systemIOActor } =
-    useSingletons()
+  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
