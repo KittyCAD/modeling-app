@@ -240,8 +240,47 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
   // so just adding extra addSubtract cases here
 
   describe('Testing addSplit', () => {
-    it('should add a split call on selected solid and tool', async () => {
-      const code = `sketch001 = startSketchOn(XY)
+    async function runAddSplitTest({
+      code,
+      targetIds,
+      toolIds,
+      merge,
+      keepTools,
+    }: {
+      code: string
+      targetIds: number[]
+      toolIds?: number[]
+      merge?: boolean
+      keepTools?: boolean
+    }) {
+      const {
+        ast,
+        artifactGraph,
+        solids: targets,
+        tools,
+      } = await getSolidsAndTools(
+        code,
+        targetIds,
+        toolIds || [],
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addSplit({
+        ast,
+        artifactGraph,
+        targets,
+        ...(toolIds ? { tools } : {}),
+        merge,
+        keepTools,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      await enginelessExecutor(ast, rustContextInThisFile)
+      return recast(result.modifiedAst, instanceInThisFile)
+    }
+
+    const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5.53)
 extrude001 = extrude(profile001, length = 5, symmetric = true)
 sketch002 = startSketchOn(XY)
@@ -252,32 +291,63 @@ profile002 = startProfile(sketch002, at = [-8.55, 7.53])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = .1)`
-      const expectedNewLine = `split001 = split([extrude001, extrude002], merge = true)`
-      const targetIds = [0, 1]
-      const toolIds: number[] = []
-      const {
-        ast,
-        artifactGraph,
-        solids: targets,
-      } = await getSolidsAndTools(
-        code,
-        targetIds,
-        toolIds,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const result = addSplit({
-        ast,
-        artifactGraph,
-        targets,
-        merge: true,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
+    it('should add a split call with explicit merge true', async () => {
+      const expectedNewLine = `split001 = split([extrude001, extrude002], merge = true)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0, 1],
+        merge: true,
+      })
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      await enginelessExecutor(ast, rustContextInThisFile)
+    })
+
+    it('should omit default merge and keepTools when both are false', async () => {
+      const expectedNewLine = `split001 = split(extrude001, tools = extrude002)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0],
+        toolIds: [1],
+        merge: false,
+        keepTools: false,
+      })
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should emit merge when merge is true', async () => {
+      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0],
+        toolIds: [1],
+        merge: true,
+        keepTools: false,
+      })
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should emit keepTools when keepTools is true', async () => {
+      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, keepTools = true)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0],
+        toolIds: [1],
+        merge: false,
+        keepTools: true,
+      })
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should emit merge then keepTools in a stable order when both are true', async () => {
+      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true, keepTools = true)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0],
+        toolIds: [1],
+        merge: true,
+        keepTools: true,
+      })
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
   })
 })
