@@ -166,6 +166,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
@@ -3739,116 +3740,109 @@ export const modelingMachine = setup({
         wasmInstance: ModuleType
         rustContext: RustContext
       }
-    >(
-      async ({
-        input: { sketchDetails, kclManager, wasmInstance, rustContext },
-      }) => {
-        if (!sketchDetails) {
-          return reject(new Error('No sketch details'))
-        }
-        const existingSketchInfoNoOp = {
-          updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
-          updatedSketchNodePaths: sketchDetails.sketchNodePaths,
-          updatedPlaneNodePath: sketchDetails.planeNodePath,
-          expressionIndexToDelete: -1,
-        } as const
-        if (!sketchDetails?.sketchEntryNodePath?.length) {
-          return existingSketchInfoNoOp
-        }
-        if (
-          !sketchDetails.sketchNodePaths.length &&
-          sketchDetails.planeNodePath.length
-        ) {
-          // new sketch, no profiles yet
-          return existingSketchInfoNoOp
-        }
-        const doesNeedSplitting = doesSketchPipeNeedSplitting(
-          kclManager.ast,
+    >(async ({ input: { sketchDetails, kclManager, wasmInstance } }) => {
+      if (!sketchDetails) {
+        return reject(new Error('No sketch details'))
+      }
+      const existingSketchInfoNoOp = {
+        updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
+        updatedSketchNodePaths: sketchDetails.sketchNodePaths,
+        updatedPlaneNodePath: sketchDetails.planeNodePath,
+        expressionIndexToDelete: -1,
+      } as const
+      if (!sketchDetails?.sketchEntryNodePath?.length) {
+        return existingSketchInfoNoOp
+      }
+      if (
+        !sketchDetails.sketchNodePaths.length &&
+        sketchDetails.planeNodePath.length
+      ) {
+        // new sketch, no profiles yet
+        return existingSketchInfoNoOp
+      }
+      const doesNeedSplitting = doesSketchPipeNeedSplitting(
+        kclManager.ast,
+        sketchDetails.sketchEntryNodePath,
+        wasmInstance
+      )
+      if (err(doesNeedSplitting)) {
+        return reject(doesNeedSplitting)
+      }
+      let moddedAst: Node<Program> = structuredClone(kclManager.ast)
+      let pathToProfile = sketchDetails.sketchEntryNodePath
+      let updatedSketchNodePaths = sketchDetails.sketchNodePaths
+      if (doesNeedSplitting) {
+        const splitResult = splitPipedProfile(
+          moddedAst,
           sketchDetails.sketchEntryNodePath,
           wasmInstance
         )
-        if (err(doesNeedSplitting)) {
-          return reject(doesNeedSplitting)
+        if (err(splitResult)) {
+          return reject(splitResult)
         }
-        let moddedAst: Node<Program> = structuredClone(kclManager.ast)
-        let pathToProfile = sketchDetails.sketchEntryNodePath
-        let updatedSketchNodePaths = sketchDetails.sketchNodePaths
-        if (doesNeedSplitting) {
-          const splitResult = splitPipedProfile(
-            moddedAst,
-            sketchDetails.sketchEntryNodePath,
-            wasmInstance
+        moddedAst = splitResult.modifiedAst
+        pathToProfile = splitResult.pathToProfile
+        updatedSketchNodePaths = [pathToProfile]
+      }
+
+      const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
+      let isLastInPipeThreePointArc = false
+      if (indexToDelete >= 0) {
+        // this is the expression that was added when as sketch tool was used but not completed
+        // i.e first click for the center of the circle, but not the second click for the radius
+        // we added a circle to editor, but they bailed out early so we should remove it
+
+        const pipe = getNodeFromPath<PipeExpression>(
+          moddedAst,
+          pathToProfile,
+          await kclManager.wasmInstancePromise,
+          'PipeExpression'
+        )
+        if (err(pipe)) {
+          isLastInPipeThreePointArc = false
+        } else {
+          const lastInPipe = pipe?.node?.body?.[pipe.node.body.length - 1]
+          if (
+            lastInPipe &&
+            Number(pathToProfile[1][0]) === indexToDelete &&
+            lastInPipe.type === 'CallExpressionKw' &&
+            lastInPipe.callee.type === 'Name' &&
+            lastInPipe.callee.name.name === 'arcTo'
+          ) {
+            isLastInPipeThreePointArc = true
+            pipe.node.body = pipe.node.body.slice(0, -1)
+          }
+        }
+
+        if (!isLastInPipeThreePointArc) {
+          moddedAst.body.splice(indexToDelete, 1)
+          // make sure the deleted expression is removed from the sketchNodePaths
+          updatedSketchNodePaths = updatedSketchNodePaths.filter(
+            (path) => path[1][0] !== indexToDelete
           )
-          if (err(splitResult)) {
-            return reject(splitResult)
-          }
-          moddedAst = splitResult.modifiedAst
-          pathToProfile = splitResult.pathToProfile
-          updatedSketchNodePaths = [pathToProfile]
-        }
-
-        const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
-        let isLastInPipeThreePointArc = false
-        if (indexToDelete >= 0) {
-          // this is the expression that was added when as sketch tool was used but not completed
-          // i.e first click for the center of the circle, but not the second click for the radius
-          // we added a circle to editor, but they bailed out early so we should remove it
-
-          const pipe = getNodeFromPath<PipeExpression>(
-            moddedAst,
-            pathToProfile,
-            await kclManager.wasmInstancePromise,
-            'PipeExpression'
-          )
-          if (err(pipe)) {
-            isLastInPipeThreePointArc = false
-          } else {
-            const lastInPipe = pipe?.node?.body?.[pipe.node.body.length - 1]
-            if (
-              lastInPipe &&
-              Number(pathToProfile[1][0]) === indexToDelete &&
-              lastInPipe.type === 'CallExpressionKw' &&
-              lastInPipe.callee.type === 'Name' &&
-              lastInPipe.callee.name.name === 'arcTo'
-            ) {
-              isLastInPipeThreePointArc = true
-              pipe.node.body = pipe.node.body.slice(0, -1)
-            }
-          }
-
-          if (!isLastInPipeThreePointArc) {
-            moddedAst.body.splice(indexToDelete, 1)
-            // make sure the deleted expression is removed from the sketchNodePaths
-            updatedSketchNodePaths = updatedSketchNodePaths.filter(
-              (path) => path[1][0] !== indexToDelete
-            )
-            // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
-            // as a safe default
-            pathToProfile =
-              pathToProfile[1][0] !== indexToDelete
-                ? pathToProfile
-                : updatedSketchNodePaths[0]
-          }
-        }
-
-        if (
-          doesNeedSplitting ||
-          indexToDelete >= 0 ||
-          isLastInPipeThreePointArc
-        ) {
-          await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
-            kclManager,
-            rustContext,
-          })
-        }
-        return {
-          updatedEntryNodePath: pathToProfile,
-          updatedSketchNodePaths: updatedSketchNodePaths,
-          updatedPlaneNodePath: sketchDetails.planeNodePath,
-          expressionIndexToDelete: -1,
+          // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
+          // as a safe default
+          pathToProfile =
+            pathToProfile[1][0] !== indexToDelete
+              ? pathToProfile
+              : updatedSketchNodePaths[0]
         }
       }
-    ),
+
+      if (
+        doesNeedSplitting ||
+        indexToDelete >= 0 ||
+        isLastInPipeThreePointArc
+      ) {
+        await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, kclManager)
+      }
+      return {
+        updatedEntryNodePath: pathToProfile,
+        updatedSketchNodePaths: updatedSketchNodePaths,
+        updatedPlaneNodePath: sketchDetails.planeNodePath,
+        expressionIndexToDelete: -1,
+      }
+    }),
     'submit-prompt-edit': fromPromise(
       async ({}: {
         input: ModelingCommandSchema['Prompt-to-edit']
@@ -3888,10 +3882,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -3928,10 +3919,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -3967,10 +3955,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4007,10 +3992,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4049,10 +4031,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4090,10 +4069,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4131,10 +4107,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4171,10 +4144,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4211,10 +4181,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4255,10 +4222,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: pathToNode,
           }
@@ -4299,10 +4263,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: pathToNode,
           }
@@ -4342,10 +4303,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [pathToNode],
           }
@@ -4415,10 +4373,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4455,10 +4410,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4495,10 +4447,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4536,10 +4485,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4576,10 +4522,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4617,10 +4560,11 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        await updateModelingState(result.modifiedAst, EXECUTION_TYPE_REAL, {
-          kclManager: input.kclManager,
-          rustContext: input.rustContext,
-        })
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager
+        )
       }
     ),
     gdtFlatnessAstMod: fromPromise(
@@ -4671,10 +4615,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4729,10 +4670,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4768,10 +4706,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -4817,9 +4752,15 @@ export const modelingMachine = setup({
           fileName += `.${data.type}`
         }
 
+        const { up, scale, ...formatData } = data
         const format = {
-          ...data,
+          ...formatData,
         } as Partial<OutputFormat3d>
+        const exportScale =
+          scale ??
+          defaultUnit?.current ??
+          // Fall back to app default units if the project setting is absent.
+          DEFAULT_DEFAULT_LENGTH_UNIT
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
@@ -4832,31 +4773,38 @@ export const modelingMachine = setup({
           format.type === 'step' ||
           format.type === 'stl'
         ) {
-          // Set the default coords.
-          // In the future we can make this configurable.
-          // But for now, its probably best to keep it consistent with the
-          // UI.
-          format.coords = {
-            forward: {
-              axis: 'y',
-              direction: 'negative',
-            },
-            up: {
-              axis: 'z',
-              direction: 'positive',
-            },
-          }
+          // Configure output orientation from export options.
+          format.coords =
+            up === 'y'
+              ? {
+                  forward: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                  up: {
+                    axis: 'y',
+                    direction: 'positive',
+                  },
+                }
+              : {
+                  forward: {
+                    axis: 'y',
+                    direction: 'negative',
+                  },
+                  up: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                }
         }
 
         if (
           format.type === 'obj' ||
           format.type === 'stl' ||
-          format.type === 'ply'
+          format.type === 'ply' ||
+          format.type === 'step'
         ) {
-          if (!defaultUnit?.current) {
-            return new Error('No default unit provided')
-          }
-          format.units = defaultUnit.current
+          format.units = exportScale
         }
 
         if (format.type === 'ply' || format.type === 'stl') {
@@ -4982,10 +4930,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -5022,10 +4967,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -5063,10 +5005,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -5104,10 +5043,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -5144,10 +5080,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -5185,10 +5118,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
+          input.kclManager,
           {
             focusPath: [result.pathToNode],
           }
@@ -6871,8 +6801,6 @@ export const modelingMachine = setup({
               initialSketchSolvePlane: context.sketchSolveInit,
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
-              // Use context values if available, otherwise fall back to singletons
-              rustContext: context.rustContext,
               kclManager: context.kclManager,
             }),
             onDone: {
