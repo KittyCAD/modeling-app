@@ -63,8 +63,6 @@ export type ToolEvents =
 export type ToolContext = {
   tangentInfo?: TangentInfo
   arcId?: number
-  arcStartPointId?: number
-  arcEndPointId?: number
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -488,15 +486,8 @@ export function storeCreatedArcResult({
   })
 
   let arcId: number | undefined
-  let arcStartPointId: number | undefined
-  let arcEndPointId: number | undefined
   if (arcObjId !== undefined) {
     arcId = arcObjId
-    const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
-    if (arcObj?.kind.type === 'Segment' && arcObj.kind.segment.type === 'Arc') {
-      arcStartPointId = arcObj.kind.segment.start
-      arcEndPointId = arcObj.kind.segment.end
-    }
   }
 
   const entitiesToTrack: {
@@ -529,37 +520,6 @@ export function storeCreatedArcResult({
 
   return {
     arcId,
-    arcStartPointId,
-    arcEndPointId,
-  }
-}
-
-function getLineFromDelta(
-  sceneGraphDelta: SceneGraphDelta
-): { lineId: number; startPointId: number; endPointId: number } | Error {
-  const lineId = [...sceneGraphDelta.new_objects].reverse().find((objId) => {
-    const obj = sceneGraphDelta.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
-  })
-
-  if (lineId === undefined) {
-    return new Error(
-      'Expected helper line to be created, but no line was found'
-    )
-  }
-
-  const lineObj = sceneGraphDelta.new_graph.objects[lineId]
-  if (
-    lineObj?.kind.type !== 'Segment' ||
-    lineObj.kind.segment.type !== 'Line'
-  ) {
-    return new Error('Expected a line object in scene graph delta')
-  }
-
-  return {
-    lineId,
-    startPointId: lineObj.kind.segment.start,
-    endPointId: lineObj.kind.segment.end,
   }
 }
 
@@ -743,7 +703,6 @@ export async function finalizeArcActor({
       return { error: 'Failed to find arc after final edit' }
     }
 
-    const arcCenterPointId = arcObj.kind.segment.center
     const tangentArcPointId = arcEndpoints.swapped
       ? arcObj.kind.segment.end
       : arcObj.kind.segment.start
@@ -758,58 +717,12 @@ export async function finalizeArcActor({
       settings
     )
 
-    // Add a construction line helper to be able to set an orthogonal constraint
-    // to enforce tangent direction.
-    const helperLineResult = await rustContext.addSegment(
-      0,
-      sketchId,
-      {
-        type: 'Line',
-        start: {
-          x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-          y: { type: 'Var', value: roundOff(centerPoint[1]), units },
-        },
-        end: {
-          x: { type: 'Var', value: roundOff(startPoint[0]), units },
-          y: { type: 'Var', value: roundOff(startPoint[1]), units },
-        },
-        construction: true,
-      },
-      'tangent-helper-line',
-      settings
-    )
-
-    const helperLine = getLineFromDelta(helperLineResult.sceneGraphDelta)
-    if (helperLine instanceof Error) {
-      return { error: helperLine.message }
-    }
-
-    await rustContext.addConstraint(
-      0,
-      sketchId,
-      {
-        type: 'Coincident',
-        segments: [helperLine.startPointId, arcCenterPointId],
-      },
-      settings
-    )
-
-    await rustContext.addConstraint(
-      0,
-      sketchId,
-      {
-        type: 'Coincident',
-        segments: [helperLine.endPointId, tangentArcPointId],
-      },
-      settings
-    )
-
     return await rustContext.addConstraint(
       0,
       sketchId,
       {
-        type: 'Perpendicular',
-        lines: [tangentLineId, helperLine.lineId],
+        type: 'Tangent',
+        input: [tangentLineId, arcId],
       },
       settings
     )

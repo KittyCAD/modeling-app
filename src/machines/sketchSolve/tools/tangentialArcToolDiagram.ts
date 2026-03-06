@@ -40,8 +40,6 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     tangentInfo: undefined,
     arcId: undefined,
-    arcStartPointId: undefined,
-    arcEndPointId: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
@@ -139,7 +137,7 @@ export const machine = setup({
         src: 'finalizeArc',
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
-          if (!context.arcId || !context.tangentInfo) {
+          if (context.arcId === undefined || !context.tangentInfo) {
             return {
               error: 'Arc id and tangent info must be set before finalizing',
             }
@@ -166,8 +164,6 @@ export const machine = setup({
             assign({
               tangentInfo: undefined,
               arcId: undefined,
-              arcStartPointId: undefined,
-              arcEndPointId: undefined,
             }),
           ],
         },
