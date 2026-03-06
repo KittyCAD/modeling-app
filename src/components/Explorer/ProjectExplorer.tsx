@@ -182,8 +182,8 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const errors = kclManager.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
