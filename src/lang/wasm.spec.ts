@@ -27,6 +27,7 @@ import {
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -408,5 +409,32 @@ describe('isExtensionARelevantExtension', () => {
     const expected = true
     const actual = isExtensionARelevantExtension('steP', extensions)
     expect(actual).toBe(expected)
+  })
+})
+
+describe('Project file lifecycle', () => {
+  it('accepts open, update, and get requests', async () => {
+    const projectFiles: ApiFile[] = [
+      { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },
+      { id: 1, path: 'some/path/to-you.kcl', text: 'The second file 🤑' },
+      { id: 2, path: 'some/path/home.kcl', text: 'The third file 🐘' },
+    ]
+
+    await rustContextInThisFile.sendOpenProject(
+      'not-important-to-test',
+      projectFiles
+    )
+    expect(await rustContextInThisFile.sendGetProject()).toEqual(projectFiles)
+
+    const newText = 'Things sure are changing.'
+    await rustContextInThisFile.sendUpdateFile(1, newText)
+    expect((await rustContextInThisFile.sendGetProject())[1]).toHaveProperty(
+      'text',
+      newText
+    )
+    expect(await rustContextInThisFile.sendGetFile(1)).toHaveProperty(
+      'text',
+      newText
+    )
   })
 })
