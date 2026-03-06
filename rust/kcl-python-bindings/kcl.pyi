@@ -747,7 +747,7 @@ async def execute(path:builtins.str) -> None:
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Sequence[builtins.str]=[]) -> BoundingBoxResponse:
+async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
@@ -774,7 +774,7 @@ async def execute_code(code:builtins.str) -> None:
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Sequence[builtins.str]=[]) -> BoundingBoxResponse:
+async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """

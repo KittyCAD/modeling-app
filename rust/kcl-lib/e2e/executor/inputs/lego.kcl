@@ -1,7 +1,7 @@
 // Lego Brick
 
-lbumps = 10 // number of bumps long
-wbumps = 6 // number of bumps wide
+lbumps = 3 // number of bumps long
+wbumps = 2 // number of bumps wide
 
 pitch = 8.0
 clearance = 0.1
@@ -42,12 +42,12 @@ peg = startSketchOn(s, face = "end")
      ], radius= bumpDiam / 2)
   |> patternLinear2d(
        axis = [1, 0],
-       instances = 6,
+       instances = wbumps,
        distance = 7
      )
   |> patternLinear2d(
        axis = [0, 1],
-       instances = 10,
+       instances = lbumps,
        distance = 7
      )
   |> extrude(length = bumpHeight)

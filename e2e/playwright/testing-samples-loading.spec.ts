@@ -280,3 +280,19 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     })
   })
 })
+
+test.describe('Query parameter command', { tag: '@web' }, () => {
+  test('should add sample to demo project', async ({
+    page,
+    toolbar,
+    editor,
+  }) => {
+    const sampleTitle = 'Socket Head Cap Screw'
+    const sampleSlug = 'socket-head-cap-screw'
+    const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
+    await page.goto(page.url() + queryString)
+
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await editor.expectEditor.toContain(sampleTitle)
+  })
+})

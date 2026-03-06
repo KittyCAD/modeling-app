@@ -57,10 +57,7 @@ export async function mockExecAstAndReportErrors(
 export async function updateModelingState(
   ast: Node<Program>,
   executionType: ExecutionType,
-  dependencies: {
-    kclManager: KclManager
-    rustContext: RustContext
-  },
+  kclManager: KclManager,
   options?: {
     focusPath?: Array<PathToNode>
     isDeleting?: boolean
@@ -74,43 +71,38 @@ export async function updateModelingState(
 
   // Step 0: Mock execute shit so we know it aint broke
   if (!options?.skipErrorsOnMockExecution) {
-    const res = await mockExecAstAndReportErrors(ast, dependencies.rustContext)
+    const res = await mockExecAstAndReportErrors(ast, kclManager.rustContext)
     if (err(res)) {
       return Promise.reject(res)
     }
   }
 
   // Step 1: Update AST without executing (prepare selections)
-  updatedAst = await dependencies.kclManager.updateAst(
+  updatedAst = await kclManager.updateAst(
     ast,
     false, // Execution handled separately for error resilience
     options
   )
 
   // Step 2: Update the code editor and save file
-  await dependencies.kclManager.updateEditorWithAstAndWriteToFile(
-    updatedAst.newAst,
-    {
-      isDeleting: options?.isDeleting,
-    }
-  )
+  await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst, {
+    isDeleting: options?.isDeleting,
+  })
 
   // Step 3: Set focus on the newly added code if needed
   if (updatedAst.selections) {
-    dependencies.kclManager.selectRange(updatedAst.selections)
+    kclManager.selectRange(updatedAst.selections)
   }
 
   // Step 4: Try to execute the new code
   // and continue regardless of errors
   try {
     if (executionType === EXECUTION_TYPE_REAL) {
-      await dependencies.kclManager.executeAst({
+      await kclManager.executeAst({
         ast: updatedAst.newAst,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
-      const didReParse = await dependencies.kclManager.executeAstMock(
-        updatedAst.newAst
-      )
+      const didReParse = await kclManager.executeAstMock(updatedAst.newAst)
       if (err(didReParse)) return reject(didReParse)
     } else if (executionType === EXECUTION_TYPE_NONE) {
       // No execution.
