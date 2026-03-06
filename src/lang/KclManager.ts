@@ -302,7 +302,7 @@ export class ZDSProject {
       this.files = this.files
         .slice(0, foundFileIndex)
         .concat(newEditor)
-        .concat(this.files.slice(foundFileIndex))
+        .concat(this.files.slice(foundFileIndex + 1))
     }
 
     newEditor.path.value = path
