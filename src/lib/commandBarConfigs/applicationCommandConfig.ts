@@ -251,16 +251,12 @@ export function createApplicationCommands({
         required: true,
         skip: true,
         defaultValue: window.electron ? undefined : 'existingProject',
-        options: ({ argumentsToSubmit }, _) => {
-          if (typeof argumentsToSubmit.sample === 'string') {
-            return [
+        options: window.electron
+          ? [
               { name: 'New project', value: 'newProject', isCurrent: true },
               { name: 'Existing project', value: 'existingProject' },
             ]
-          } else {
-            return [{ name: 'Overwrite', value: 'existingProject' }]
-          }
-        },
+          : [{ name: 'Existing project', value: 'existingProject' }],
         valueSummary(value) {
           return value === 'newProject' ? 'New project' : 'Existing project'
         },
