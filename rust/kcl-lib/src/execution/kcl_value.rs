@@ -842,6 +842,17 @@ impl KclValue {
         }
     }
 
+    /// A solved segment.
+    pub fn into_segment(self) -> Option<Segment> {
+        match self {
+            KclValue::Segment { value, .. } => match value.repr {
+                SegmentRepr::Solved { segment } => Some(*segment),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
         match self {
             KclValue::TagIdentifier(value) => Some(value),

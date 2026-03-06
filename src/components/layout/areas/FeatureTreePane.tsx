@@ -61,12 +61,15 @@ import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type Singletons = ReturnType<typeof useSingletons>
-type SystemDeps = Pick<Singletons, 'kclManager' | 'rustContext'> & {
+type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
 }
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
@@ -111,7 +114,8 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const { layout, commands } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
+  const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
     state: modelingState,
@@ -411,7 +415,7 @@ interface OperationProps {
   code: string
   sketchNoFace: boolean
   systemDeps: SystemDeps
-  engineCommandManager: Singletons['engineCommandManager']
+  engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
 }
@@ -876,7 +880,7 @@ const OperationItem = ({
                       onUnhide({
                         hideOperation,
                         targetArtifact: operationArtifact,
-                        systemDeps,
+                        kclManager,
                       })
                         .then((result) => {
                           if (err(result)) {
@@ -900,7 +904,7 @@ const OperationItem = ({
 }
 
 const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
-  const { rustContext, sceneInfra } = systemDeps
+  const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -911,7 +915,7 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           planeId,
           modelingState.context.store.useSketchSolveMode?.current ||
             modelingState.context.forceSketchSolveMode,
-          systemDeps
+          kclManager
         )
       } else {
         const foundDefaultPlane =
@@ -952,14 +956,14 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
         planeId,
         modelingState.context.store.useSketchSolveMode?.current ||
           modelingState.context.forceSketchSolveMode,
-        systemDeps
+        kclManager
       )
     },
     [
       modelingState.context.store.useSketchSolveMode,
       modelingState.context.forceSketchSolveMode,
       sceneInfra,
-      systemDeps,
+      kclManager,
     ]
   )
 

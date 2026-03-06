@@ -80,8 +80,7 @@ export const ClientSideScene = ({
   enableTouchControls: boolean
 }) => {
   const {
-    engineCommandManager,
-    kclManager: { sceneEntitiesManager, sceneInfra },
+    kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
