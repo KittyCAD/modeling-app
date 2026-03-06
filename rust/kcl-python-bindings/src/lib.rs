@@ -195,7 +195,7 @@ async fn execute_and_measure_impl(
 }
 
 fn parse_uuid(entity_id: &str) -> PyResult<Uuid> {
-    Uuid::parse_str(&entity_id).map_err(|err| PyException::new_err(format!("Invalid ID `{entity_id}`: {err}")))
+    Uuid::parse_str(entity_id).map_err(|err| PyException::new_err(format!("Invalid ID `{entity_id}`: {err}")))
 }
 
 fn parse_entity_ids(entity_ids: Vec<String>) -> PyResult<Vec<Uuid>> {
@@ -443,15 +443,17 @@ async fn execute_code_and_measure(
 
 /// Execute a kcl file and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, entity_ids=Vec::new()))]
-async fn execute_and_bounding_box(path: String, entity_ids: Vec<String>) -> PyResult<BoundingBoxResponse> {
+#[pyfunction(signature = (path, entity_ids=None))]
+async fn execute_and_bounding_box(path: String, entity_ids: Option<Vec<String>>) -> PyResult<BoundingBoxResponse> {
+    let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids).await }).await
 }
 
 /// Execute the kcl code and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=Vec::new()))]
-async fn execute_code_and_bounding_box(code: String, entity_ids: Vec<String>) -> PyResult<BoundingBoxResponse> {
+#[pyfunction(signature = (code, entity_ids=None))]
+async fn execute_code_and_bounding_box(code: String, entity_ids: Option<Vec<String>>) -> PyResult<BoundingBoxResponse> {
+    let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids).await }).await
 }
 

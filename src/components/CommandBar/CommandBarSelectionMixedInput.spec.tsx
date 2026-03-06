@@ -59,7 +59,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project-path',
+        projectPath: 'some-project',
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -90,7 +90,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project-path',
+        projectPath: 'some-project',
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -118,7 +118,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project-path',
+        projectPath: 'some-project',
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -146,7 +146,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project-path',
+        projectPath: 'some-project',
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -189,7 +189,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project-path',
+        projectPath: 'some-project',
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,

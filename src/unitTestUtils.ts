@@ -77,7 +77,7 @@ export async function buildTheWorldAndConnectToEngine() {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
-    projectPath: 'some-project-path',
+    projectPath: 'some-project',
   })
 
   await new Promise((resolve, reject) => {
@@ -162,7 +162,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
-    projectPath: 'some-project-path',
+    projectPath: 'some-project',
   })
 
   settingsActor.start()
