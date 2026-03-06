@@ -93,7 +93,9 @@ fn build_server(sh: &Shell, release: &str, target: &Target) -> anyhow::Result<()
     // let _e = sh.push_env("CARGO_PROFILE_RELEASE_DEBUG", "1");
 
     if target.name.contains("-linux-") {
-        // TODO: Audit that the environment access only happens in single-threaded code.
+        // SAFETY: Environment access must only happen in single-threaded code.
+        // Currently, this is only called from the build subcommand of the CLI,
+        // which is single-threaded.
         unsafe { env::set_var("CC", "clang") };
     }
 
