@@ -25,7 +25,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 
 export default function AxisGizmo() {
   const { settings } = useApp()
-  const { sceneInfra } = useSingletons()
+  const { kclManager } = useSingletons()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)
@@ -89,14 +89,14 @@ export default function AxisGizmo() {
     const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      sceneInfra,
+      kclManager.sceneInfra,
       disableOrbitRef,
       doRayCast,
       wrapperRef
     )
 
     const clock = new Clock()
-    const clientCamera = sceneInfra.camControls.camera
+    const clientCamera = kclManager.sceneInfra.camControls.camera
     let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
     const animate = () => {
@@ -104,16 +104,16 @@ export default function AxisGizmo() {
       updateCameraOrientation(
         camera,
         currentQuaternion,
-        sceneInfra.camControls.camera.quaternion,
+        kclManager.sceneInfra.camControls.camera.quaternion,
         delta,
         cameraPassiveUpdateTimer
       )
       renderer.render(scene, camera)
     }
-    sceneInfra.camControls.cameraChange.add(animate)
+    kclManager.sceneInfra.camControls.cameraChange.add(animate)
 
     // Initialize camera orientation/position to match main camera for immediate render
-    const q = sceneInfra.camControls.camera.quaternion
+    const q = kclManager.sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
     renderer.render(scene, camera)
@@ -122,9 +122,9 @@ export default function AxisGizmo() {
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
-      sceneInfra.camControls.cameraChange.remove(animate)
+      kclManager.sceneInfra.camControls.cameraChange.remove(animate)
     }
-  }, [sceneInfra])
+  }, [kclManager.sceneInfra])
 
   return (
     <div

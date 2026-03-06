@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -11,6 +11,7 @@ import { roundOffWithUnits } from '@src/lib/utils'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom, AnyStateMachine } from 'xstate'
+import type { KclManager } from '@src/lang/KclManager'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -81,6 +82,7 @@ function CommandBarVector2DInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector2d'
@@ -88,10 +90,11 @@ function CommandBarVector2DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
+  executingEditor: KclManager
 }) {
-  const { commands } = useApp()
-  const { kclManager, rustContext } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { commands, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const rustContext = kclManager.rustContext
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const argMachineContext = useSelector(

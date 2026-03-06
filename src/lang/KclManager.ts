@@ -1339,7 +1339,6 @@ export class KclManager extends EventTarget {
 
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
-    sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
@@ -1347,7 +1346,7 @@ export class KclManager extends EventTarget {
     setSelectionFilterToDefault({
       engineCommandManager: this.engineCommandManager,
       kclManager: this,
-      sceneEntitiesManager,
+      sceneEntitiesManager: this.sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
       wasmInstance,
@@ -1356,7 +1355,6 @@ export class KclManager extends EventTarget {
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
-    sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
@@ -1365,7 +1363,7 @@ export class KclManager extends EventTarget {
       filter,
       engineCommandManager: this.engineCommandManager,
       kclManager: this,
-      sceneEntitiesManager,
+      sceneEntitiesManager: this.sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
       wasmInstance,
