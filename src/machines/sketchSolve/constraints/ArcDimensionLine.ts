@@ -16,6 +16,7 @@ import {
   DIMENSION_HIDE_THRESHOLD_PX,
   updateLabel,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
+import { dot2d, subVec } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -28,6 +29,8 @@ const ARROW_LENGTH_PX = 10
 export type LineSegment = readonly [Coords2d, Coords2d]
 
 export type ArcLineInfo = {
+  line1: LineSegment
+  line2: LineSegment
   labelPosition: Coords2d
   center: Coords2d
   radius: number
@@ -129,30 +132,67 @@ export function updateArcDimensionLine(
   const arrows = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
   ) as Mesh[]
-  const arrow1 = arrows[0]
-  const arrow2 = arrows[1]
-  if (arrow1 && showArrows) {
-    arrow1.position.copy(startPoint)
-    arrow1.rotation.z = directionToArrowRotation(startTangent.clone().negate())
-    arrow1.scale.setScalar(scale)
-  }
-  if (arrow2 && showArrows) {
-    arrow2.position.copy(endPoint)
-    arrow2.rotation.z = directionToArrowRotation(endTangent)
-    arrow2.scale.setScalar(scale)
+  if (showArrows) {
+    arrows[0].position.copy(startPoint)
+    arrows[0].rotation.z = directionToArrowRotation(
+      startTangent.clone().negate()
+    )
+    arrows[0].scale.setScalar(scale)
+    arrows[1].position.copy(endPoint)
+    arrows[1].rotation.z = directionToArrowRotation(endTangent)
+    arrows[1].scale.setScalar(scale)
   }
 
-  for (const guideLine of getGuideBodyLines(group)) {
-    guideLine.visible = false
-  }
-}
-
-function getGuideBodyLines(group: Group): Line2[] {
-  return group.children.filter(
+  const guideLines = group.children.filter(
     (child) =>
       child.userData.type === DISTANCE_CONSTRAINT_BODY &&
       child.userData.role === ANGLE_CONSTRAINT_GUIDE_BODY_ROLE
   ) as Line2[]
+  updateGuideLine(guideLines[0], renderInput.line1, [
+    startPoint.x,
+    startPoint.y,
+  ])
+  updateGuideLine(guideLines[1], renderInput.line2, [endPoint.x, endPoint.y])
+}
+
+function updateGuideLine(
+  line: Line2,
+  segment: LineSegment,
+  arcEndpoint: Coords2d
+) {
+  const guideSegment = getGuideSegment(segment, arcEndpoint)
+  if (!guideSegment) {
+    line.visible = false
+    return
+  }
+
+  line.visible = true
+  line.geometry.setPositions([
+    guideSegment[0][0],
+    guideSegment[0][1],
+    0,
+    guideSegment[1][0],
+    guideSegment[1][1],
+    0,
+  ])
+  line.geometry.computeBoundingSphere()
+}
+
+function getGuideSegment(
+  segment: LineSegment,
+  arcEndpoint: Coords2d
+): LineSegment | null {
+  const segmentDirection = subVec(segment[1], segment[0])
+  const t =
+    dot2d(subVec(arcEndpoint, segment[0]), segmentDirection) /
+    dot2d(segmentDirection, segmentDirection)
+
+  if (t >= 0 && t <= 1) {
+    return null
+  }
+
+  const segmentEdgePoint = t < 0 ? segment[0] : segment[1]
+  return [segmentEdgePoint, arcEndpoint]
 }
 
 type ArcSection = {

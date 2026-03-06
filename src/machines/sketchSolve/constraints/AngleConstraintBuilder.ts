@@ -164,6 +164,8 @@ function calculateArcRenderInput(
   )
 
   return {
+    line1,
+    line2,
     labelPosition,
     center,
     radius: Math.abs(radiusSigned),
