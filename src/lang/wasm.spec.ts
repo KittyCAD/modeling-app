@@ -27,7 +27,7 @@ import {
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
