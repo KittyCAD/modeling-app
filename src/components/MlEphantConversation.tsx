@@ -38,12 +38,14 @@ export interface MlEphantConversationProps {
 const ML_COPILOT_MODE_META = Object.freeze({
   fast: {
     pretty: 'Fast',
+    description: 'Lighter reasoning. Best for quick edits and simple tasks.',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
   thoughtful: {
     pretty: 'Thoughtful',
+    description: 'More thorough reasoning. Best for complex designs.',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
     ),
@@ -73,10 +75,9 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
 
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
-              {' '}
               {ML_COPILOT_MODE.map((mode) => (
                 <div
                   tabIndex={0}
@@ -86,11 +87,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode)
                   }}
-                  className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode}`}
                 >
-                  {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
-                  {ML_COPILOT_MODE_META[mode].pretty}
+                  {ML_COPILOT_MODE_META[mode].icon({
+                    className: 'w-5 h-5 shrink-0 mt-0.5',
+                  })}
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-medium">
+                      {ML_COPILOT_MODE_META[mode].pretty}
+                    </span>
+                    <span className="text-chalkboard-70 text-[11px] leading-tight">
+                      {ML_COPILOT_MODE_META[mode].description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </>

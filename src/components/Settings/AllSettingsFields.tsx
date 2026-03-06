@@ -38,8 +38,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout } = useApp()
-    const { kclManager, systemIOActor } = useSingletons()
+    const { settings, layout, systemIOActor } = useApp()
+    const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()

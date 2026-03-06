@@ -70,8 +70,8 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
@@ -531,7 +531,7 @@ function ProjectGrid({
   handleRenameProject,
   ...rest
 }: ProjectGridProps) {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const state = useSystemIOState()
 
   return (

@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
@@ -19,7 +18,6 @@ import {
   SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
@@ -430,8 +428,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           requestedCode: string
           requestedSubRoute?: string
-          kclManager: KclManager
-          engineCommandManager: ConnectionManager
+          app: App
         }
       }): Promise<{
         message: string
@@ -969,8 +966,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
@@ -995,8 +991,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
