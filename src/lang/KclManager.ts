@@ -385,7 +385,7 @@ export class ZDSProject {
         case 'unlink':
           const foundIndex = this.files.findIndex((f) => f.path.value === path)
           if (foundIndex >= 0 && path !== this.executingPath) {
-            this.files = this.files.splice(foundIndex, 1)
+            this.files = this.files.filter((_, i) => i !== foundIndex)
             // TODO: impl sendRemoveFile
             // editor?.rustContext.sendRemoveFile(foundFile.id)
           }
