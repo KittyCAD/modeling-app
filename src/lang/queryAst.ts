@@ -3,6 +3,9 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
+  createArrayExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createLiteral,
   createLocalName,
   createPipeSubstitution,
@@ -44,7 +47,12 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
+import {
+  baseUnitToNumericSuffix,
+  kclSettings,
+  recast,
+  sketchFromKclValue,
+} from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -1088,22 +1096,158 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
+function getSketchVarNameFromRegionSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const sketchId = selection.sketchRegion?.sketchId
+  if (!sketchId) {
+    return new Error('Sketch region selection is missing sketchId')
+  }
+
+  let sketchArtifact = artifactGraph.get(sketchId)
+  if (!sketchArtifact) {
+    return new Error(`Sketch region sketchId ${sketchId} was not found`)
+  }
+
+  // Normalize to the owning sketch/path artifact when a child artifact was stored.
+  if (sketchArtifact.type === 'segment') {
+    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
+    if (pathArtifact?.type === 'path') {
+      sketchArtifact = pathArtifact
+    }
+  } else if (sketchArtifact.type === 'solid2d') {
+    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
+    if (pathArtifact?.type === 'path') {
+      sketchArtifact = pathArtifact
+    }
+  }
+
+  if (!('codeRef' in sketchArtifact)) {
+    return new Error(
+      `Sketch region sketchId ${sketchId} does not provide a code reference`
+    )
+  }
+
+  const candidatePaths: PathToNode[] = [
+    sketchArtifact.codeRef.pathToNode,
+    getNodePathFromSourceRange(ast, sketchArtifact.codeRef.range),
+  ].filter((path) => path.length > 0)
+
+  for (const path of candidatePaths) {
+    const segmentDeclaration = getNodeFromPath<VariableDeclaration>(
+      ast,
+      path,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(segmentDeclaration)) {
+      continue
+    }
+
+    const bodyIndex = Number(segmentDeclaration.deepPath[1]?.[0])
+    if (!Number.isInteger(bodyIndex)) {
+      continue
+    }
+
+    const topLevelDeclaration = ast.body[bodyIndex]
+    if (
+      topLevelDeclaration?.type === 'VariableDeclaration' &&
+      topLevelDeclaration.declaration.init.type === 'SketchBlock'
+    ) {
+      return topLevelDeclaration.declaration.id.name
+    }
+  }
+
+  return new Error(
+    `Could not resolve sketch block variable for region sketchId ${sketchId}`
+  )
+}
+
+function getRegionExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | Error {
+  if (!selection.sketchRegion) {
+    return new Error('Missing sketch region metadata for selection')
+  }
+
+  const sketchVarName = getSketchVarNameFromRegionSelection(
+    selection,
+    ast,
+    artifactGraph,
+    wasmInstance
+  )
+  if (err(sketchVarName)) {
+    return sketchVarName
+  }
+
+  const { x, y } = selection.sketchRegion.point
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return new Error('Region point coordinates are invalid')
+  }
+
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
+
+  const regionArgs = [
+    createLabeledArg(
+      'point',
+      createArrayExpression([
+        createLiteral(x, wasmInstance, unitSuffix),
+        createLiteral(y, wasmInstance, unitSuffix),
+      ])
+    ),
+    createLabeledArg('sketch', createLocalName(sketchVarName)),
+  ]
+
+  return createCallExpressionStdLibKw('region', null, regionArgs)
+}
+
+type GetVariableExprsOptions = {
+  lastChildLookup?: boolean
+  artifactTypeFilter?: Array<Artifact['type']>
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
 export function getVariableExprsFromSelection(
   selection: Selections,
+  artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
-  lastChildLookup = false,
-  artifactGraph?: ArtifactGraph,
-  artifactTypeFilter?: Array<Artifact['type']>
+  options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
-  const exprs: Expr[] = []
+  let exprs: Expr[] = []
+  let hasSketchRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    if (s.sketchRegion) {
+      hasSketchRegionSelections = true
+      const sketchRegionExpr = getRegionExprFromSelection(
+        s,
+        ast,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(sketchRegionExpr)) {
+        return sketchRegionExpr
+      }
+      exprs.push(sketchRegionExpr)
+      continue
+    }
+
     let variable:
       | {
           node: VariableDeclaration
@@ -1111,7 +1255,7 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (lastChildLookup && s.artifact && artifactGraph) {
+    if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
@@ -1200,6 +1344,13 @@ export function getVariableExprsFromSelection(
 
   if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
+  }
+
+  if (hasSketchRegionSelections) {
+    // Region selections map to explicit region(...) expressions.
+    // Avoid mixing them with pipe substitutions from selection plumbing.
+    pathIfPipe = undefined
+    exprs = exprs.filter((expr) => expr.type !== 'PipeSubstitution')
   }
 
   return { exprs, pathIfPipe }

@@ -317,6 +317,7 @@ function buildEdgeExpr(
         graphSelections: [sourceSurfaceSelection],
         otherSelections: [],
       },
+      artifactGraph,
       ast,
       wasmInstance
     )
@@ -398,6 +399,7 @@ function buildEdgeExpr(
       ],
       otherSelections: [],
     },
+    artifactGraph,
     ast,
     wasmInstance
   )
@@ -546,11 +548,13 @@ function groupSelectionsByBodyAndAddTags(
 
     const vars = getVariableExprsFromSelection(
       solids,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       nodeToEdit,
-      true,
-      artifactGraph
+      {
+        lastChildLookup: true,
+      }
     )
     if (err(vars)) return vars
 
@@ -657,11 +661,13 @@ export function buildSolidsAndTagsExprs(
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     ast,
     wasmInstance,
     nodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars

@@ -45,11 +45,13 @@ export function addFlipSurface({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     surface,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars

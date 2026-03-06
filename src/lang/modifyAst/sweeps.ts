@@ -2,7 +2,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
-  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -22,7 +21,6 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
-  getSettingsAnnotation,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -35,12 +33,10 @@ import type {
   ArtifactGraph,
   Expr,
   LabeledArg,
-  NumericSuffix,
   PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
-import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
@@ -50,7 +46,7 @@ import {
   KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getFacesExprsFromSelection,
   isFaceArtifact,
@@ -121,14 +117,14 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
-      (selection) =>
-        !selection.sketchRegion && !isFaceArtifact(selection.artifact)
+      (selection) => !isFaceArtifact(selection.artifact)
     ),
     otherSelections: sketches.otherSelections,
   }
   if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       mNodeToEdit
@@ -138,29 +134,6 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
-  }
-
-  const sketchRegionSelections = sketches.graphSelections.filter(
-    (selection) => selection.sketchRegion
-  )
-  for (const selection of sketchRegionSelections) {
-    const expr = getRegionExprFromSelection(
-      selection,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(expr)) {
-      return expr
-    }
-    vars.exprs.push(expr)
-  }
-  if (sketchRegionSelections.length > 0) {
-    // Region selection currently maps to an explicit region(...) value.
-    // Avoid trying to append into arbitrary pipes when mixed selection plumbing
-    // produced a pipe substitution placeholder.
-    vars.pathIfPipe = undefined
-    vars.exprs = vars.exprs.filter((expr) => expr.type !== 'PipeSubstitution')
   }
 
   // Extra labeled args expressions
@@ -300,6 +273,7 @@ export const SWEEP_MODULE = 'sweep'
 
 export function addSweep({
   ast,
+  artifactGraph,
   sketches,
   path,
   wasmInstance,
@@ -311,6 +285,7 @@ export function addSweep({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   path: Selections
   wasmInstance: ModuleType
@@ -334,6 +309,7 @@ export function addSweep({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -404,6 +380,7 @@ export function addSweep({
 
 export function addLoft({
   ast,
+  artifactGraph,
   sketches,
   wasmInstance,
   vDegree,
@@ -415,6 +392,7 @@ export function addLoft({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   wasmInstance: ModuleType
   vDegree?: KclCommandValue
@@ -438,6 +416,7 @@ export function addLoft({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -515,6 +494,7 @@ export function addLoft({
 
 export function addRevolve({
   ast,
+  artifactGraph,
   sketches,
   angle,
   wasmInstance,
@@ -528,6 +508,7 @@ export function addRevolve({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   angle: KclCommandValue
   wasmInstance: ModuleType
@@ -553,6 +534,7 @@ export function addRevolve({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -826,120 +808,4 @@ export function retrieveBodyTypeFromOpArg(
   }
 
   return new Error("Couldn't retrieve bodyType argument")
-}
-
-function getSketchVarNameFromRegionSelection(
-  selection: Selection,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): string | Error {
-  const sketchId = selection.sketchRegion?.sketchId
-  if (!sketchId) {
-    return new Error('Sketch region selection is missing sketchId')
-  }
-
-  let sketchArtifact = artifactGraph.get(sketchId)
-  if (!sketchArtifact) {
-    return new Error(`Sketch region sketchId ${sketchId} was not found`)
-  }
-
-  // Normalize to the owning sketch/path artifact when a child artifact was stored.
-  if (sketchArtifact.type === 'segment') {
-    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
-    if (pathArtifact?.type === 'path') {
-      sketchArtifact = pathArtifact
-    }
-  } else if (sketchArtifact.type === 'solid2d') {
-    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
-    if (pathArtifact?.type === 'path') {
-      sketchArtifact = pathArtifact
-    }
-  }
-
-  if (!('codeRef' in sketchArtifact)) {
-    return new Error(
-      `Sketch region sketchId ${sketchId} does not provide a code reference`
-    )
-  }
-
-  const candidatePaths: PathToNode[] = [
-    sketchArtifact.codeRef.pathToNode,
-    getNodePathFromSourceRange(ast, sketchArtifact.codeRef.range),
-  ].filter((path) => path.length > 0)
-
-  for (const path of candidatePaths) {
-    const segmentDeclaration = getNodeFromPath<VariableDeclaration>(
-      ast,
-      path,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (err(segmentDeclaration)) {
-      continue
-    }
-
-    const bodyIndex = Number(segmentDeclaration.deepPath[1]?.[0])
-    if (!Number.isInteger(bodyIndex)) {
-      continue
-    }
-
-    const topLevelDeclaration = ast.body[bodyIndex]
-    if (
-      topLevelDeclaration?.type === 'VariableDeclaration' &&
-      topLevelDeclaration.declaration.init.type === 'SketchBlock'
-    ) {
-      return topLevelDeclaration.declaration.id.name
-    }
-  }
-
-  return new Error(
-    `Could not resolve sketch block variable for region sketchId ${sketchId}`
-  )
-}
-
-function getRegionExprFromSelection(
-  selection: Selection,
-  ast: Node<Program>,
-  _artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Expr | Error {
-  if (!selection.sketchRegion) {
-    return new Error('Missing sketch region metadata for selection')
-  }
-
-  const sketchVarName = getSketchVarNameFromRegionSelection(
-    selection,
-    ast,
-    _artifactGraph,
-    wasmInstance
-  )
-  if (err(sketchVarName)) {
-    return sketchVarName
-  }
-
-  const { x, y } = selection.sketchRegion.point
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
-    return new Error('Region point coordinates are invalid')
-  }
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings)) {
-    return settings
-  }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
-    settings.defaultLengthUnit
-  )
-
-  const regionArgs: LabeledArg[] = [
-    createLabeledArg(
-      'point',
-      createArrayExpression([
-        createLiteral(x, wasmInstance, unitSuffix),
-        createLiteral(y, wasmInstance, unitSuffix),
-      ])
-    ),
-    createLabeledArg('sketch', createLocalName(sketchVarName)),
-  ]
-
-  return createCallExpressionStdLibKw('region', null, regionArgs)
 }

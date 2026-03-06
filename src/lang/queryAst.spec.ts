@@ -1078,6 +1078,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1121,6 +1122,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1152,6 +1154,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1197,6 +1200,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1243,6 +1247,7 @@ profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1296,11 +1301,13 @@ extrude001 = extrude(profile001, length = 1)
     const lastChildLookup = true // we want to look up the child of the profile variable
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile,
       nodeToEdit,
-      lastChildLookup,
-      artifactGraph
+      {
+        lastChildLookup,
+      }
     )
     if (err(vars)) throw vars
 

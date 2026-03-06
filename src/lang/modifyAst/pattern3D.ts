@@ -57,11 +57,13 @@ export function addPatternCircular3D({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -223,11 +225,13 @@ export function addPatternLinear3D({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars

@@ -37,11 +37,13 @@ export function addUnion({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -91,11 +93,13 @@ export function addIntersect({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -147,12 +151,14 @@ export function addSubtract({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(vars)) {
     return vars
@@ -160,12 +166,14 @@ export function addSubtract({
 
   const toolVars = getVariableExprsFromSelection(
     tools,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(toolVars)) {
     return toolVars
@@ -231,12 +239,14 @@ export function addSplit({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     targets,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(vars)) {
     return vars

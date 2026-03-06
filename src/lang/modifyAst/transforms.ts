@@ -53,11 +53,13 @@ export function addTranslate({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -139,11 +141,13 @@ export function addRotate({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -229,11 +233,13 @@ export function addScale({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -316,11 +322,13 @@ export function addClone({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -375,11 +383,13 @@ export function addAppearance({
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
   if (err(vars)) {
     return vars
@@ -456,11 +466,13 @@ export function addHide({
   const lastChildLookup = objects.graphSelections[0].artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     undefined,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
 
   if (err(vars)) {

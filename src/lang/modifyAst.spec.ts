@@ -1161,6 +1161,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1207,6 +1208,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )

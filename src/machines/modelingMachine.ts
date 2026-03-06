@@ -3915,10 +3915,11 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addSweep({
           ...input.data,
           ast,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -3954,9 +3955,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addLoft({
           ast,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
@@ -3994,9 +3996,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addRevolve({
           ast,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
