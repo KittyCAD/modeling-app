@@ -296,9 +296,10 @@ export function updateLabel(
 
       // Update texture: only if needed because this is not cheap
       const ctx = canvas.getContext('2d')
+      const font = '24px sans-serif'
       if (ctx) {
         // Measure text to compute needed canvas width
-        ctx.font = '24px sans-serif'
+        ctx.font = font
         const textMetrics = ctx.measureText(dimensionLabel)
         label.userData.textWidthPx = textMetrics.width
         const iconWidth = showFnIcon
@@ -329,8 +330,8 @@ export function updateLabel(
 
         // Re-set context state after resize
         const fillColor = '#' + new Color(constraintColor).getHexString()
+        ctx.font = font // needed after canvas resize
         ctx.fillStyle = fillColor
-        ctx.font = '24px sans-serif'
         ctx.textAlign = 'left'
         ctx.textBaseline = 'middle'
 
@@ -356,7 +357,12 @@ export function updateLabel(
       label.material.map.needsUpdate = true
     }
 
-    label.scale.set(canvas.width * scale * 0.5, canvas.height * scale * 0.5, 1)
+    const LABEL_SCALE = 0.5 // Render at 2x resolution for crisper text
+    label.scale.set(
+      canvas.width * scale * LABEL_SCALE,
+      canvas.height * scale * LABEL_SCALE,
+      1
+    )
 
     // Update label hit area to match canvas size
     const labelHitAreas = group.children.filter(
@@ -368,13 +374,13 @@ export function updateLabel(
     if (labelHitArea) {
       labelHitArea.position.copy(label.position)
       labelHitArea.scale.set(
-        canvas.width * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
-        canvas.height * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
+        canvas.width * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
+        canvas.height * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
         1
       )
     }
 
-    return label.userData.textWidthPx ?? 0
+    return (label.userData.textWidthPx ?? 0) * LABEL_SCALE + 8
   }
 
   return 0

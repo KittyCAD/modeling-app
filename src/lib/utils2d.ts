@@ -14,9 +14,18 @@ export function getTangentPointFromPreviousArc(
 ): Coords2d {
   const angleFromOldCenterToArcStart = getAngle(lastArcCenter, lastArcEnd)
   const tangentialAngle = angleFromOldCenterToArcStart + (lastArcCCW ? -90 : 90)
+
+  return polar2d(lastArcEnd, 10, deg2Rad(tangentialAngle))
+}
+
+export function polar2d(
+  center: Coords2d,
+  radius: number,
+  angle: number
+): Coords2d {
   return [
-    Math.cos(deg2Rad(tangentialAngle)) * 10 + lastArcEnd[0],
-    Math.sin(deg2Rad(tangentialAngle)) * 10 + lastArcEnd[1],
+    center[0] + Math.cos(angle) * radius,
+    center[1] + Math.sin(angle) * radius,
   ]
 }
 
