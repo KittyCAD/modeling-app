@@ -325,7 +325,7 @@ async fn inner_region(
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Both point and segments parameters must not be provided. Choose one.".to_owned(),
+                "Cannot provide both point and segments parameters. Choose one.".to_owned(),
                 vec![args.source_range],
             )));
         }
