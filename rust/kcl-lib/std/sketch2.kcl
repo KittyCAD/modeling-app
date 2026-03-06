@@ -109,7 +109,7 @@ export fn vertical(@input: Segment) {}
 /// point to the intersection with the second segment, and turn at each
 /// intersection using the `direction` until returning back to the first
 /// segment.
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, experimental = true, feature_tree = false)
 export fn region(
   /// A point that is within the region's boundary.
   point?: Point2d | Segment,
