@@ -195,7 +195,7 @@ async fn execute_and_measure_impl(
 }
 
 fn parse_uuid(entity_id: &str) -> PyResult<Uuid> {
-    Uuid::parse_str(&entity_id).map_err(|err| PyException::new_err(format!("Invalid ID `{entity_id}`: {err}")))
+    Uuid::parse_str(entity_id).map_err(|err| PyException::new_err(format!("Invalid ID `{entity_id}`: {err}")))
 }
 
 fn parse_entity_ids(entity_ids: Vec<String>) -> PyResult<Vec<Uuid>> {
