@@ -128,13 +128,11 @@ function onSubmitKCLSampleCreation({
 }
 
 export function createApplicationCommands({
-  systemIOActor,
+  app,
   wasmInstance,
-  layout,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  app: App
   wasmInstance: ModuleType
-  layout: App['layout']
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
@@ -152,7 +150,7 @@ export function createApplicationCommands({
          * inside the systemIOMachine. We can have a fancy model machine that loads
          * KCL samples
          */
-        const folders = systemIOActor.getSnapshot().context.folders
+        const folders = app.systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
         const uniqueNameIfNeeded = isProjectNew
@@ -168,7 +166,7 @@ export function createApplicationCommands({
               sample: data.sample,
               kclSample,
               uniqueNameIfNeeded,
-              systemIOActor,
+              systemIOActor: app.systemIOActor,
               isProjectNew,
             })
           }
@@ -178,7 +176,7 @@ export function createApplicationCommands({
           )
           const fr = new FileReader()
           fr.addEventListener('load', () => {
-            systemIOActor.send({
+            app.systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
@@ -200,15 +198,19 @@ export function createApplicationCommands({
       source: {
         inputType: 'options',
         required: true,
-        skip: false,
-        defaultValue: 'local',
+        skip: true,
+        defaultValue: window.electron ? 'local' : 'kcl-samples',
         options() {
           return [
-            {
-              value: 'local',
-              name: 'Local Drive',
-              isCurrent: false,
-            },
+            ...(window.electron
+              ? [
+                  {
+                    value: 'local',
+                    name: 'Local Drive',
+                    isCurrent: false,
+                  },
+                ]
+              : []),
             {
               value: 'kcl-samples',
               name: 'KCL Samples',
@@ -248,6 +250,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
+        defaultValue: window.electron ? undefined : 'existingProject',
         options: ({ argumentsToSubmit }, _) => {
           if (typeof argumentsToSubmit.sample === 'string') {
             return [
@@ -267,9 +270,9 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: undefined,
+        defaultValue: () => app.project?.name,
         options: (_, _context) => {
-          const { folders } = systemIOActor.getSnapshot().context
+          const { folders } = app.systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
           if (!folders) return options
 
@@ -330,7 +333,7 @@ export function createApplicationCommands({
     hideFromSearch: true,
     onSubmit: (data) => {
       if (data) {
-        const folders = systemIOActor.getSnapshot().context.folders
+        const folders = app.systemIOActor.getSnapshot().context.folders
         if (!folders) return
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
@@ -351,7 +354,7 @@ export function createApplicationCommands({
           sample: data.sample,
           kclSample,
           uniqueNameIfNeeded,
-          systemIOActor,
+          systemIOActor: app.systemIOActor,
           isProjectNew: true,
         })
       }
@@ -522,7 +525,7 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'layout',
     groupId: 'application',
-    onSubmit: layout.reset,
+    onSubmit: app.layout.reset,
   }
 
   const setLayoutCommand: Command = {
@@ -535,7 +538,7 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (isUserLoadableLayoutKey(data?.layoutId)) {
-        layout.set(userLoadableLayouts[data.layoutId])
+        app.layout.set(userLoadableLayouts[data.layoutId])
         // This command is silent, we don't toast success, because
         // it is often used in conjunction with other commands and actions
         // that occur on app load, and we don't want to spam the user.
