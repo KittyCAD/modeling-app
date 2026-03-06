@@ -32,6 +32,34 @@ impl Context {
     }
 
     #[wasm_bindgen]
+    pub async fn get_project(&self, project_id: usize) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let result = self
+            .project_manager
+            .get_project(ProjectId(project_id))
+            .await
+            .map_err(|e| format!("Failed to get project state: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize get project result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
+    pub async fn get_file(&self, project_id: usize, file_id: usize) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let result = self
+            .project_manager
+            .get_file(ProjectId(project_id), FileId(file_id))
+            .await
+            .map_err(|e| format!("Failed to get file: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize get file result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
     pub async fn add_file(&self, project: usize, file: &str) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
 

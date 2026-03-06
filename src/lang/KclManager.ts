@@ -115,6 +115,7 @@ import {
 } from '@src/editor'
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import type {
+  ApiFile,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -154,6 +155,7 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
+  projectPath: string
 }
 
 export enum KclManagerEvents {
@@ -177,6 +179,8 @@ window.EditorView = EditorView
  * that connects to the geometry engine.
  */
 export class ZDSProject {
+  private nextFileId = 0
+  files: File[] = []
   get path() {
     return this.projectIORefSignal.value.path
   }
@@ -204,6 +208,7 @@ export class ZDSProject {
     public projectIORefSignal: Signal<Project>,
     private app: App
   ) {
+    this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
       projectIORefSignal.value.path,
       this.fileWatcherId,
@@ -278,13 +283,36 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager({
+      new KclManager(path, {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
+        projectPath: this.path,
       })
 
+    // Splice our new editor into our files array
+    const foundFile = this.files.find((f) => f.path.value === path)
+    const foundFileIndex = this.files.findIndex((f) => f.path.value === path)
+    if (foundFile) {
+      newEditor.id = foundFile.id
+      newEditor.path.value = foundFile.path.value
+      this.files = this.files
+        .slice(0, foundFileIndex)
+        .concat(newEditor)
+        .concat(this.files.slice(foundFileIndex))
+    }
+
     this.set(signal(path), newEditor)
+
+    // Initialize a snapshot of the project for Rust
+    // to have for executions and code mods
+    this.getAllKclFiles()
+      .then(async (apiFiles) => {
+        newEditor.rustContext
+          .sendOpenProject(path, apiFiles)
+          .catch(reportRejection)
+      })
+      .catch(reportRejection)
     return newEditor
   }
 
@@ -314,16 +342,61 @@ export class ZDSProject {
       `${foundEditorKey ? 'Matches' : 'Does not match'} a file that is being edited`
     )
 
-    if (path.endsWith('kcl')) {
-      // The currently-executing editor should send updates to its RustContext,
-      // so that execution can have an accurate picture of the project state.
+    const editor = this.executingEditor.value
+    const foundFile = this.files.find((f) => f.path.value === path)
 
-      const fileID = 0 // TODO: Get the actual file ID as understood by rustContext
-
-      this.executingEditor.value?.rustContext
-        .sendUpdateFile(fileID, path)
-        .catch(reportRejection)
+    if (path.endsWith('.kcl')) {
+      switch (eventType) {
+        case 'add':
+          const newFile = new File(path, this.nextFileId++)
+          this.files.push(newFile)
+          // TODO: impl sendAddFile
+          // editor?.rustContext.sendAddFile()
+          break
+        case 'change':
+          if (foundFile && path !== this.executingPath) {
+            foundFile
+              .read()
+              .then((text) =>
+                editor?.rustContext.sendUpdateFile(foundFile.id, text)
+              )
+              .catch(reportRejection)
+          }
+          break
+        case 'unlink':
+          const foundIndex = this.files.findIndex((f) => f.path.value === path)
+          if (foundIndex >= 0 && path !== this.executingPath) {
+            this.files = this.files.splice(foundIndex, 1)
+            // TODO: impl sendRemoveFile
+            // editor?.rustContext.sendRemoveFile(foundFile.id)
+          }
+      }
     }
+  }
+
+  /** Recursively gather KCL files in this project, without reading in their content */
+  private collectProjectFiles = (
+    fileOrDir: FileEntry,
+    files: File[] = []
+  ): File[] => {
+    if (fileOrDir.children) {
+      for (let entry of fileOrDir.children) {
+        if (entry.name.endsWith('.kcl')) {
+          const id = this.nextFileId++
+          const path = entry.path
+          files.push(new File(path, id))
+        } else {
+          this.collectProjectFiles(entry, files)
+        }
+      }
+    }
+
+    return files
+  }
+
+  /** Get all the KCL files in this project as a flat array. */
+  private getAllKclFiles(): Promise<ApiFile[]> {
+    return Promise.all(this.files.map((f) => f.asApiFile()))
   }
 }
 
@@ -345,12 +418,38 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
-let fileId = 0
+class File extends EventTarget {
+  /** Path to file this editor is operating on */
+  public path: Signal<string>
 
-export class KclManager extends EventTarget {
-  /** Auto-increments each instantiation */
-  public fileId = fileId++
+  read() {
+    return fsZds.readFile(this.path.value, 'utf8')
+  }
 
+  write(newContent: string) {
+    return fsZds.writeFile(this.path.value, File.encoder.encode(newContent))
+  }
+
+  static encoder = new TextEncoder()
+
+  constructor(
+    path: string,
+    public id = 0
+  ) {
+    super()
+    this.path = signal(path)
+  }
+
+  async asApiFile(): Promise<ApiFile> {
+    return this.read().then((text) => ({
+      id: this.id,
+      path: this.path.value,
+      text,
+    }))
+  }
+}
+
+export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -663,7 +762,7 @@ export class KclManager extends EventTarget {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
       this._code.value = newCode
-      this.rustContext.sendUpdateFile(this.fileId, newCode)
+      this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
 
@@ -809,8 +908,8 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(systemDeps: SystemDeps) {
-    super()
+  constructor(path: string, systemDeps: SystemDeps, fileId = 0) {
+    super(path, fileId)
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)

@@ -69,7 +69,7 @@ export const baseLoader =
       })
     } catch {
       await projectSkeletonCreate(
-        await fsZds.resolve(
+        fsZds.resolve(
           await getInitialDefaultDir(),
           defaultProjectName,
           'main.kcl'
@@ -92,7 +92,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager, rustContext, systemIOActor } = app.singletons
+    const { kclManager, systemIOActor } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -223,7 +223,6 @@ export const fileLoader =
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
     )
-    await rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
