@@ -156,6 +156,7 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
+  projectPath: string
 }
 
 export enum KclManagerEvents {
@@ -268,6 +269,9 @@ export class ZDSProject {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
+        get projectPath() {
+          return this.path
+        },
       })
 
     if (providedEditor) {
@@ -441,6 +445,11 @@ export class KclManager extends EventTarget {
    * TODO: We don't watch for deletions here, should we?
    */
   private onFileWatchEvent = (_eventType: string, path: string) => {
+    // TODO: We can remove this once we make it impossible to have
+    // a KclManager without a ZDSProject.
+    if (path !== this.path || !this.systemDeps.projectPath) {
+      return
+    }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     window.electron
