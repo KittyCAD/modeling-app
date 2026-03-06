@@ -20,8 +20,8 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
-  const { settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
 

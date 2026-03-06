@@ -30,12 +30,9 @@ function launchApp(app: App) {
 
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
-  const { singletons } = app
+  const { singletons, systemIOActor } = app
   markOnce('code/willAuth')
-  initializeWindowExceptionHandler(
-    singletons.kclManager,
-    singletons.rustContext
-  )
+  initializeWindowExceptionHandler(singletons.kclManager)
 
   // Don't start the app machine until all these singletons
   // are initialized, and the wasm module is loaded.
@@ -48,7 +45,7 @@ function initSingletonBehavior(app: App) {
         data: {
           commands: [
             ...createApplicationCommands({
-              systemIOActor: singletons.systemIOActor,
+              systemIOActor,
               wasmInstance,
               layout: app.layout,
             }),

@@ -45,7 +45,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
@@ -67,7 +67,7 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
-    rustContext,
+    rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,
