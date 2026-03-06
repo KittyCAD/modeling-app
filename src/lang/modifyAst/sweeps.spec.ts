@@ -283,7 +283,7 @@ s = sketch(on = XY) {
           {
             artifact: line1,
             codeRef: line1CodeRef,
-            sketchRegion: {
+            region: {
               point: { x: 1, y: 1 },
               sketchId: line1.pathId,
             },
@@ -312,7 +312,7 @@ s = sketch(on = XY) {
       )
     })
 
-    it('should resolve region sketch var from sketchRegion.sketchId only', async () => {
+    it('should resolve region sketch var from region.sketchId only', async () => {
       const code = `@settings(experimentalFeatures = allow)
 
 s = sketch(on = XY) {
@@ -371,7 +371,7 @@ t = sketch(on = XY) {
             artifact: line1,
             // Intentionally wrong codeRef to verify sketchId is authoritative.
             codeRef: wrongCodeRef,
-            sketchRegion: {
+            region: {
               point: { x: 1, y: 1 },
               sketchId: line1.pathId,
             },

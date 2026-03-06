@@ -40,10 +40,10 @@ export type NonCodeSelection =
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
-  sketchRegion?: SketchRegionSelection
+  region?: RegionSelection
 }
 
-export interface SketchRegionSelection {
+export interface RegionSelection {
   point: Point2d
   sketchId: ArtifactId
 }

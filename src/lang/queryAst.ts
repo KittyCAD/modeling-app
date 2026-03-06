@@ -1102,7 +1102,7 @@ function getSketchVarNameFromRegionSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): string | Error {
-  const sketchId = selection.sketchRegion?.sketchId
+  const sketchId = selection.region?.sketchId
   if (!sketchId) {
     return new Error('Sketch region selection is missing sketchId')
   }
@@ -1172,7 +1172,7 @@ function getRegionExprFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Expr | Error {
-  if (!selection.sketchRegion) {
+  if (!selection.region) {
     return new Error('Missing sketch region metadata for selection')
   }
 
@@ -1186,7 +1186,7 @@ function getRegionExprFromSelection(
     return sketchVarName
   }
 
-  const { x, y } = selection.sketchRegion.point
+  const { x, y } = selection.region.point
   if (!Number.isFinite(x) || !Number.isFinite(y)) {
     return new Error('Region point coordinates are invalid')
   }
@@ -1230,21 +1230,21 @@ export function getVariableExprsFromSelection(
   const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
-  let hasSketchRegionSelections = false
+  let hasRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
-    if (s.sketchRegion) {
-      hasSketchRegionSelections = true
-      const sketchRegionExpr = getRegionExprFromSelection(
+    if (s.region) {
+      hasRegionSelections = true
+      const regionExpr = getRegionExprFromSelection(
         s,
         ast,
         artifactGraph,
         wasmInstance
       )
-      if (err(sketchRegionExpr)) {
-        return sketchRegionExpr
+      if (err(regionExpr)) {
+        return regionExpr
       }
-      exprs.push(sketchRegionExpr)
+      exprs.push(regionExpr)
       continue
     }
 
@@ -1346,7 +1346,7 @@ export function getVariableExprsFromSelection(
     return new Error("Couldn't map selections to program references")
   }
 
-  if (hasSketchRegionSelections) {
+  if (hasRegionSelections) {
     // Region selections map to explicit region(...) expressions.
     // Avoid mixing them with pipe substitutions from selection plumbing.
     pathIfPipe = undefined

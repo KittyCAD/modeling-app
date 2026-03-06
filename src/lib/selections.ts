@@ -134,7 +134,7 @@ function getSketchIdFromArtifact(
   return null
 }
 
-async function getSketchRegionSelectionFromEntity(
+async function getRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   engineCommandManager: ConnectionManager
@@ -167,7 +167,7 @@ async function getSketchRegionSelectionFromEntity(
   return {
     artifact: sketchArtifact,
     codeRef,
-    sketchRegion: {
+    region: {
       point,
       sketchId,
     },
@@ -271,17 +271,17 @@ export async function getEventForSelectWithPoint(
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
     // we first check if it's a region
-    const sketchRegionSelection = await getSketchRegionSelectionFromEntity(
+    const regionSelection = await getRegionSelectionFromEntity(
       data.entity_id,
       artifactGraph,
       engineCommandManager
     )
-    if (sketchRegionSelection) {
+    if (regionSelection) {
       return {
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
-          selection: sketchRegionSelection,
+          selection: regionSelection,
         },
       }
     }
@@ -731,8 +731,8 @@ export function getSelectionCountByType(
   })
 
   selection.graphSelections.forEach((graphSelection) => {
-    if (graphSelection.sketchRegion) {
-      incrementOrInitializeSelectionType('sketchRegion')
+    if (graphSelection.region) {
+      incrementOrInitializeSelectionType('region')
       return
     }
     if (!graphSelection.artifact) {
@@ -1051,7 +1051,7 @@ export function updateSelections(
           range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
-        sketchRegion: previousSelection?.sketchRegion,
+        region: previousSelection?.region,
       }
     })
     .filter((x?: Selection) => x !== undefined)
@@ -1067,7 +1067,7 @@ export function updateSelections(
         range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
-      sketchRegion: previousSelection?.sketchRegion,
+      region: previousSelection?.region,
     })
   }
 
@@ -1084,7 +1084,7 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'sketchRegion'],
+  profile: ['solid2d', 'region'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
