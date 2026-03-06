@@ -24,6 +24,8 @@ import type {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSkeletonCreate } from '@src/lang/project'
 
+export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
 /**
  * The base loader is used to reroute `/` root path requests,
  * to the home route on desktop, and to a constrained single project view on web.
@@ -51,19 +53,18 @@ export const baseLoader =
 
     // Web, make a default project and redirect to it.
     const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
-    const defaultProjectName = 'demo-project'
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
     const requestedProjectName = fsZds.resolve(
       settings.settings.app.projectDirectory.current,
-      defaultProjectName
+      DEFAULT_WEB_PROJECT_NAME
     )
 
     // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectName)
-      app.singletons.systemIOActor.send({
+      app.systemIOActor.send({
         type: SystemIOMachineEvents.navigateToProject,
         data: { requestedProjectName },
       })
@@ -71,7 +72,7 @@ export const baseLoader =
       await projectSkeletonCreate(
         await fsZds.resolve(
           await getInitialDefaultDir(),
-          defaultProjectName,
+          DEFAULT_WEB_PROJECT_NAME,
           'main.kcl'
         )
       )
@@ -92,7 +93,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager, rustContext, systemIOActor } = app.singletons
+    const { kclManager, rustContext } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -229,7 +230,7 @@ export const fileLoader =
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
       ? appProjectDir
       : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
-    systemIOActor.send({
+    app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
         requestedProjectDirectoryPath,
@@ -267,7 +268,7 @@ export const homeLoader =
       return redirect(PATHS.INDEX)
     }
 
-    app.singletons.systemIOActor.send({
+    app.systemIOActor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
     app.closeProject()
