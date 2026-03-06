@@ -42,7 +42,6 @@ export function addFlipSurface({
     return new Error('flipSurface surfaces must have at least one selection.')
   }
 
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     surface,
     artifactGraph,
@@ -50,7 +49,7 @@ export function addFlipSurface({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
     }
   )
   if (err(vars)) {

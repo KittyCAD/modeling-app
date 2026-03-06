@@ -658,7 +658,6 @@ export function buildSolidsAndTagsExprs(
     otherSelections: [],
   }
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     artifactGraph,
@@ -666,7 +665,7 @@ export function buildSolidsAndTagsExprs(
     wasmInstance,
     nodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
     }
   )
   if (err(vars)) {

@@ -34,7 +34,6 @@ export function addUnion({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     artifactGraph,
@@ -42,7 +41,7 @@ export function addUnion({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
     }
   )
   if (err(vars)) {
@@ -90,7 +89,6 @@ export function addIntersect({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     artifactGraph,
@@ -98,7 +96,7 @@ export function addIntersect({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
     }
   )
   if (err(vars)) {
@@ -148,7 +146,6 @@ export function addSubtract({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     artifactGraph,
@@ -156,7 +153,7 @@ export function addSubtract({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
@@ -171,7 +168,7 @@ export function addSubtract({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
@@ -236,7 +233,6 @@ export function addSplit({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     targets,
     artifactGraph,
@@ -244,7 +240,7 @@ export function addSplit({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup,
+      lastChildLookup: true,
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
