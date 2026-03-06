@@ -13,7 +13,6 @@ import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   CONSTRAINT_COLOR,
-  DIMENSION_HIDE_THRESHOLD_PX,
   updateLabel,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
@@ -47,11 +46,6 @@ export function updateArcDimensionLine(
 ) {
   const { center, radius, startAngle, sweepAngle: sweep } = renderInput
   const arcLengthPx = (radius * sweep) / scale
-  if (arcLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
-    group.visible = false
-    return
-  }
-  group.visible = true
 
   const label = group.children.find(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
