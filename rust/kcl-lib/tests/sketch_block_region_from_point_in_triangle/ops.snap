@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed sketch_block_region_triangle.kcl
+description: Operations executed sketch_block_region_from_point_in_triangle.kcl
 ---
 {
-  "rust/kcl-lib/tests/sketch_block_region_triangle/input.kcl": [
+  "rust/kcl-lib/tests/sketch_block_region_from_point_in_triangle/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "coincident",
