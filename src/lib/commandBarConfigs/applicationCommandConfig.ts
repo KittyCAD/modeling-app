@@ -199,7 +199,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? 'local' : 'kcl-samples',
+        defaultValue: window.electron ? undefined : 'kcl-samples',
         options() {
           return [
             ...(window.electron
