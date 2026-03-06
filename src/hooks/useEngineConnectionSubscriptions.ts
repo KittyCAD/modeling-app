@@ -11,19 +11,11 @@ import {
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = context
+  const { engineCommandManager, kclManager, rustContext } = context
   const stateRef = useRef(state)
   stateRef.current = state
 
@@ -92,8 +84,6 @@ export function useEngineConnectionSubscriptions() {
               {
                 kclManager,
                 rustContext,
-                sceneEntitiesManager,
-                sceneInfra,
               }
             )
           }
@@ -105,10 +95,8 @@ export function useEngineConnectionSubscriptions() {
     context.forceSketchSolveMode,
     state,
     kclManager,
-    sceneInfra,
     rustContext,
     engineCommandManager,
-    sceneEntitiesManager,
   ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
@@ -128,9 +116,7 @@ export async function selectSketchPlane(
   useSketchSolveMode: boolean | undefined,
   systemDeps?: {
     kclManager: KclManager
-    sceneInfra: SceneInfra
     rustContext: RustContext
-    sceneEntitiesManager: SceneEntities
   }
 ) {
   try {
@@ -138,26 +124,26 @@ export async function selectSketchPlane(
     if (!planeOrFaceId) return
 
     if (useSketchSolveMode) {
-      systemDeps.sceneInfra.modelingSend({
+      systemDeps.kclManager.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,
       })
       return
     }
 
-    const defaultSketchPlaneSelected = selectDefaultSketchPlane(
-      planeOrFaceId,
-      systemDeps
-    )
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
+      sceneInfra: systemDeps.kclManager.sceneInfra,
+      rustContext: systemDeps.rustContext,
+    })
     if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
       return
     }
 
     const artifact = systemDeps.kclManager.artifactGraph.get(planeOrFaceId)
-    const offsetPlaneSelected = await selectOffsetSketchPlane(
-      artifact,
-      systemDeps
-    )
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
+      sceneInfra: systemDeps.kclManager.sceneInfra,
+      sceneEntitiesManager: systemDeps.kclManager.sceneEntitiesManager,
+    })
     if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
       return
     }
@@ -168,12 +154,14 @@ export async function selectSketchPlane(
       systemDeps.kclManager.ast,
       systemDeps.kclManager.execState,
       {
-        ...systemDeps,
+        rustContext: systemDeps.rustContext,
+        sceneInfra: systemDeps.kclManager.sceneInfra,
+        sceneEntitiesManager: systemDeps.kclManager.sceneEntitiesManager,
         wasmInstance: await systemDeps.kclManager.wasmInstancePromise,
       }
     )
     if (sweepFaceSelected) {
-      systemDeps.sceneInfra.modelingSend({
+      systemDeps.kclManager.sceneInfra.modelingSend({
         type: 'Select sketch plane',
         data: sweepFaceSelected,
       })

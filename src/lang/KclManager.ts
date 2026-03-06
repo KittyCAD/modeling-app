@@ -132,6 +132,7 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame } from '@src/lib/codeEditor'
+import { getResolvedTheme } from '@src/lib/theme'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -272,6 +273,15 @@ export class ZDSProject {
     if (providedEditor) {
       providedEditor.path = path
     }
+    // Initialize the editor theme
+    // Subsequent changes are listened for within app.onSettingsUpdate()
+    // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
+    newEditor.setEditorTheme(
+      getResolvedTheme(
+        getSettingsFromActorContext(newEditor.systemDeps.settings).app.theme
+          .current
+      )
+    )
 
     this.set(signal(path), newEditor)
     return newEditor
