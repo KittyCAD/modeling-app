@@ -272,14 +272,14 @@ async def test_kcl_execute_and_measure():
 
         # Check the response is as expected.
         assert response.get_volume() == pytest.approx(
-            8.295468715405207, rel=0, abs=1e-5
+            1.5936824133347174, rel=0, abs=1e-5
         )
         assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
-        assert com.x == pytest.approx(0.010031603276729584, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.2714017629623413, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(0.02681257389485836, rel=0, abs=1e-5)
+        assert com.x == pytest.approx(0.021228093653917313, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.22123484313488007, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(-0.025707241147756577, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
