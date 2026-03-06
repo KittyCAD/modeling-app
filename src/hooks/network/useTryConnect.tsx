@@ -1,7 +1,6 @@
 import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   getSettingsFromActorContext,
   jsAppSettings,
@@ -27,18 +26,18 @@ const attemptToConnectToEngine = async ({
   setAppState,
   videoRef,
   setIsSceneReady,
-  settingsEngine,
   timeToConnect,
   engineCommandManager,
+  rustContext,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
-  settingsEngine: SettingsViaQueryString
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  rustContext: RustContext
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
@@ -74,7 +73,7 @@ const attemptToConnectToEngine = async ({
           setStreamIsReady: () => {
             setAppState({ isStreamReady: true })
           },
-          settings: settingsEngine,
+          rustContext,
         })
 
         if (!videoRef.current) {
@@ -128,7 +127,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   rustContext: RustContext
 }) => {
   const providedSettings = getSettingsFromActorContext(settingsActor)
-  const settings = await jsAppSettings(providedSettings)
+  const settings = jsAppSettings(providedSettings)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'rustContext.clearSceneAndBustCache()',
@@ -188,7 +187,7 @@ async function tryConnecting({
   videoRef,
   setIsSceneReady,
   timeToConnect,
-  settings,
+  settingsActor,
   setShowManualConnect,
   sceneInfra,
   engineCommandManager,
@@ -203,7 +202,7 @@ async function tryConnecting({
   videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
-  settings: SettingsViaQueryString
+  settingsActor: SettingsActorType
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
   engineCommandManager: ConnectionManager
@@ -232,15 +231,15 @@ async function tryConnecting({
             setAppState,
             videoRef,
             setIsSceneReady,
-            settingsEngine: settings,
             timeToConnect,
             engineCommandManager,
+            rustContext,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
-            settingsActor: rustContext.settingsActor,
+            settingsActor,
             engineCommandManager,
             kclManager,
             rustContext,

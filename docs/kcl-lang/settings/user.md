@@ -105,6 +105,13 @@ Settings that affect the behavior while modeling.
 
 This setting has the following nested options:
 
+##### backface_color
+
+The default color to use for surface backfaces.
+
+
+**Default:** None
+
 ##### base_unit
 
 The default unit to use in modeling dimensions.
@@ -204,9 +211,9 @@ The number of snaps between minor grid lines. 1 means snapping to each minor gri
 
 **Default:** None
 
-##### use_new_sketch_mode
+##### use_sketch_solve_mode
 
-Toggle new sketch mode implementation
+Default to the experimental solver-based sketch mode for all new sketches.
 
 
 **Default:** None

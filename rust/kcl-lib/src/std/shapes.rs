@@ -180,7 +180,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
-const POINT_ZERO_ZERO: [TyF64; 2] = [
+pub const POINT_ZERO_ZERO: [TyF64; 2] = [
     TyF64::new(0.0, crate::exec::NumericType::mm()),
     TyF64::new(0.0, crate::exec::NumericType::mm()),
 ];
@@ -388,7 +388,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let num_sides: TyF64 = args.get_kw_arg("numSides", &RuntimeType::count(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let inscribed = args.get_kw_arg_opt("inscribed", &RuntimeType::bool(), exec_state)?;
 
     let sketch = inner_polygon(
@@ -411,11 +411,12 @@ async fn inner_polygon(
     sketch_surface_or_group: SketchOrSurface,
     radius: TyF64,
     num_sides: u64,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     inscribed: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     if num_sides < 3 {
         return Err(KclError::new_type(KclErrorDetails::new(
             "Polygon must have at least 3 sides".to_string(),
@@ -558,7 +559,7 @@ async fn inner_polygon(
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
     let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
@@ -583,7 +584,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[allow(clippy::too_many_arguments)]
 async fn inner_ellipse(
     sketch_surface_or_group: SketchOrSurface,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     major_radius: Option<TyF64>,
     major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
@@ -592,6 +593,7 @@ async fn inner_ellipse(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let sketch_surface = sketch_surface_or_group.into_sketch_surface();
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 

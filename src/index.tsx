@@ -41,7 +41,6 @@ function initSingletonBehavior(app: App) {
   // are initialized, and the wasm module is loaded.
   singletons.kclManager.wasmInstancePromise
     .then((wasmInstance) => {
-      singletons.appActor.start()
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
       app.commands.send({
@@ -51,8 +50,7 @@ function initSingletonBehavior(app: App) {
             ...createApplicationCommands({
               systemIOActor: singletons.systemIOActor,
               wasmInstance,
-              appActor: singletons.appActor,
-              setLayout: singletons.setLayout,
+              layout: app.layout,
             }),
           ],
         },

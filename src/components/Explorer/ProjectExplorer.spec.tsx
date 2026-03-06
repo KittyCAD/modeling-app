@@ -6,7 +6,15 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { expect, describe, it, beforeEach, afterEach } from 'vitest'
+import { beforeAll, expect, describe, it, beforeEach, afterEach } from 'vitest'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 // Helper functions within this file to create a project and file entries easier to
 // populate the unit tests

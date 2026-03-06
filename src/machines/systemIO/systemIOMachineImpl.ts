@@ -1,4 +1,5 @@
-import type { IElectronAPI } from '@root/interface'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   createNewProjectDirectory,
   getAppSettingsFilePath,
@@ -6,6 +7,8 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  canReadWriteDirectory,
+  statIsDirectory,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -20,8 +23,6 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { isErr } from '@src/lib/trap'
-import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -40,19 +41,16 @@ import { fromPromise } from 'xstate'
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
 const sharedBulkCreateWorkflow = async ({
-  electron,
   input,
 }: {
-  electron: IElectronAPI
   input: {
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(electron, input.wasmInstance)
+  const configuration = await readAppSettingsFile(input.wasmInstance)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -65,20 +63,20 @@ const sharedBulkCreateWorkflow = async ({
     if (!newProjectName) {
       newProjectName = getUniqueProjectName(
         input.context.defaultProjectFolderName,
-        input.context.folders
+        input.context.folders ?? []
       )
     }
 
     const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
     if (needsInterpolated) {
-      const nextIndex = getNextProjectIndex(newProjectName, folders)
+      const nextIndex = getNextProjectIndex(newProjectName, folders ?? [])
       newProjectName = interpolateProjectNameWithIndex(
         newProjectName,
         nextIndex
       )
     }
 
-    const baseDir = electron.path.join(
+    const baseDir = fsZds.join(
       input.context.projectDirectoryPath,
       newProjectName
     )
@@ -87,7 +85,6 @@ const sharedBulkCreateWorkflow = async ({
       ? requestedFileName
       : (
           await getNextFileName({
-            electron,
             entryName: requestedFileName,
             baseDir,
             wasmInstance: input.wasmInstance,
@@ -96,7 +93,6 @@ const sharedBulkCreateWorkflow = async ({
 
     // Create the project around the file if newProject
     await createNewProjectDirectory(
-      electron,
       newProjectName,
       input.wasmInstance,
       requestedCode,
@@ -119,18 +115,20 @@ const sharedBulkCreateWorkflow = async ({
 }
 
 const sharedBulkDeleteWorkflow = async ({
-  electron,
   input,
 }: {
-  electron: IElectronAPI
   input: {
     requestedProjectName: string
     context: SystemIOContext
     files: RequestedKCLFile[]
-    rootContext: AppMachineContext
     wasmInstance: ModuleType
   }
 }) => {
+  if (!input.context.folders) {
+    console.warn('no folders')
+    return
+  }
+
   const project = input.context.folders.find(
     (f) => f.name === input.requestedProjectName
   )
@@ -151,49 +149,42 @@ const sharedBulkDeleteWorkflow = async ({
 
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
-    await electron.rm(file.absPath)
+    await fsZds.rm(file.absPath)
   }
 
   // How many files we deleted successfully
   return filesToDelete.length
 }
 
-export const systemIOMachineDesktop = systemIOMachine.provide({
+export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const projects = []
         const projectDirectoryPath = context.projectDirectoryPath
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(window.electron, projectDirectoryPath)
+        await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await window.electron.readdir(projectDirectoryPath)
+        const entries = await fsZds.readdir(projectDirectoryPath)
         const { value: canReadWriteProjectDirectory } =
-          await window.electron.canReadWriteDirectory(projectDirectoryPath)
+          await canReadWriteDirectory(projectDirectoryPath)
 
         for (let entry of entries) {
           // Skip directories that start with a dot
           if (entry.startsWith('.')) {
             continue
           }
-          const projectPath = window.electron.path.join(
-            projectDirectoryPath,
-            entry
-          )
+          const projectPath = fsZds.join(projectDirectoryPath, entry)
 
           // if it's not a directory ignore.
           // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await window.electron.statIsDirectory(projectPath)
+          const isDirectory = await statIsDirectory(projectPath)
           if (!isDirectory) {
             continue
           }
           const project: Project = await getProjectInfo(
-            window.electron,
             projectPath,
             await context.wasmInstancePromise
           )
@@ -215,14 +206,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const folders = input.context.folders
+        if (!folders) {
+          return Promise.reject(new Error('no folders'))
+        }
+
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
         await createNewProjectDirectory(
-          window.electron,
           uniqueName,
           await input.context.wasmInstancePromise
         )
@@ -243,10 +234,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           redirect: boolean
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const folders = input.context.folders
+        if (!folders) {
+          return Promise.reject(new Error('no folders'))
+        }
+
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
         let newProjectName: string = requestedProjectName
@@ -266,11 +258,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await renameProjectDirectory(
-          window.electron,
-          window.electron.path.join(
-            input.context.projectDirectoryPath,
-            projectName
-          ),
+          fsZds.join(input.context.projectDirectoryPath, projectName),
           newProjectName
         )
 
@@ -288,11 +276,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        await window.electron.rm(
-          window.electron.path.join(
+        await fsZds.rm(
+          fsZds.join(
             input.context.projectDirectoryPath,
             input.requestedProjectName
           ),
@@ -307,85 +292,66 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.createKCLFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileNameWithExtension: string
-          requestedCode: string
-          rootContext: AppMachineContext
-          requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
-        }
-      }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        const requestedProjectName = input.requestedProjectName
-        const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension
-        const requestedCode = input.requestedCode
-        const folders = input.context.folders
+    [SystemIOMachineActors.createKCLFile]: fromPromise(async ({ input }) => {
+      const requestedProjectName = input.requestedProjectName
+      const requestedFileNameWithExtension =
+        input.requestedFileNameWithExtension
+      const requestedCode = input.requestedCode
+      const folders = input.context.folders
 
-        let newProjectName = requestedProjectName
-
-        if (!newProjectName) {
-          newProjectName = getUniqueProjectName(
-            input.context.defaultProjectFolderName,
-            input.context.folders
-          )
-        }
-
-        const needsInterpolated =
-          doesProjectNameNeedInterpolated(newProjectName)
-        if (needsInterpolated) {
-          const nextIndex = getNextProjectIndex(newProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            newProjectName,
-            nextIndex
-          )
-        }
-
-        const wasmInstance = await input.wasmInstancePromise
-
-        const baseDir = window.electron.join(
-          input.context.projectDirectoryPath,
-          newProjectName
-        )
-        const { name: newFileName } = await getNextFileName({
-          electron: window.electron,
-          entryName: requestedFileNameWithExtension,
-          baseDir,
-          wasmInstance,
-        })
-
-        const configuration = await readAppSettingsFile(
-          window.electron,
-          wasmInstance
-        )
-
-        // Create the project around the file if newProject
-        await createNewProjectDirectory(
-          window.electron,
-          newProjectName,
-          await input.wasmInstancePromise,
-          requestedCode,
-          configuration,
-          newFileName,
-          input.context.projectDirectoryPath
-        )
-
-        return {
-          message: 'Successfully created file.',
-          fileName: newFileName,
-          projectName: newProjectName,
-          subRoute: input.requestedSubRoute || '',
-        }
+      if (!folders) {
+        return Promise.reject(new Error('no folders'))
       }
-    ),
+
+      let newProjectName = requestedProjectName
+
+      if (!newProjectName) {
+        newProjectName = getUniqueProjectName(
+          input.context.defaultProjectFolderName,
+          folders
+        )
+      }
+
+      const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
+      if (needsInterpolated) {
+        const nextIndex = getNextProjectIndex(newProjectName, folders)
+        newProjectName = interpolateProjectNameWithIndex(
+          newProjectName,
+          nextIndex
+        )
+      }
+
+      const wasmInstance = await input.kclManager.wasmInstancePromise
+
+      const baseDir = fsZds.join(
+        input.context.projectDirectoryPath,
+        newProjectName
+      )
+      const { name: newFileName } = await getNextFileName({
+        entryName: requestedFileNameWithExtension,
+        baseDir,
+        wasmInstance,
+      })
+
+      const configuration = await readAppSettingsFile(wasmInstance)
+
+      // Create the project around the file if newProject
+      await createNewProjectDirectory(
+        newProjectName,
+        wasmInstance,
+        requestedCode,
+        configuration,
+        newFileName,
+        input.context.projectDirectoryPath
+      )
+
+      return {
+        message: 'Successfully created file.',
+        fileName: newFileName,
+        projectName: newProjectName,
+        subRoute: input.requestedSubRoute || '',
+      }
+    }),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
         input,
@@ -395,16 +361,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectDirectoryPath: string
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const requestProjectDirectoryPath = input.requestedProjectDirectoryPath
         if (!requestProjectDirectoryPath) {
           return { value: true, error: undefined }
         }
-        const result = await window.electron.canReadWriteDirectory(
-          requestProjectDirectoryPath
-        )
+        const result = await canReadWriteDirectory(requestProjectDirectoryPath)
         return result
       }
     ),
@@ -418,15 +379,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        const path = window.electron.path.join(
+        const path = fsZds.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
           input.requestedFileName
         )
-        await window.electron.rm(path)
+        await fsZds.rm(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -441,17 +399,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const { wasmInstancePromise, ...otherInput } = input
         const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...otherInput,
             wasmInstance,
@@ -470,20 +423,15 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
           wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const { wasmInstancePromise, ...otherInput } = input
         const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...otherInput,
             wasmInstance,
@@ -505,19 +453,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
-            rootContext: AppMachineContext
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
           }
         }) => {
-          if (!window.electron) {
-            return Promise.reject(new Error('No file system present'))
-          }
           const wasmInstance = await input.context.wasmInstancePromise
           const message = await sharedBulkCreateWorkflow({
-            electron: window.electron,
             input: {
               ...input,
               wasmInstance,
@@ -526,7 +469,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           })
           // We won't delete until everything's created / updated first.
           const totalDeleted = await sharedBulkDeleteWorkflow({
-            electron: window.electron,
             input: {
               ...input,
               wasmInstance,
@@ -549,19 +491,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const wasmInstance = await input.context.wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...input,
             wasmInstance,
@@ -576,156 +513,137 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.renameFolder]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          rootContext: AppMachineContext
-          requestedFolderName: string
-          folderName: string
-          absolutePathToParentDirectory: string
-          requestedProjectName?: string
-          requestedFileNameWithExtension?: string
-        }
-      }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        const {
-          folderName,
-          requestedFolderName,
-          absolutePathToParentDirectory,
-        } = input
-        const oldPath = window.electron.path.join(
-          absolutePathToParentDirectory,
-          folderName
-        )
-        const newPath = window.electron.path.join(
-          absolutePathToParentDirectory,
-          requestedFolderName
-        )
+    [SystemIOMachineActors.renameFolder]: fromPromise(async ({ input }) => {
+      const { folderName, requestedFolderName, absolutePathToParentDirectory } =
+        input
+      const oldPath = fsZds.join(absolutePathToParentDirectory, folderName)
+      const newPath = fsZds.join(
+        absolutePathToParentDirectory,
+        requestedFolderName
+      )
 
-        const requestedProjectName = input.requestedProjectName || ''
-        const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension || ''
+      const requestedProjectName = input.requestedProjectName || ''
+      const requestedFileNameWithExtension =
+        input.requestedFileNameWithExtension || ''
 
-        // ignore the rename if the resulting paths are the same
-        if (oldPath === newPath) {
-          return {
-            message: `Old folder is the same as new.`,
-            folderName,
-            requestedFolderName,
-            requestedProjectName,
-            requestedFileNameWithExtension,
-          }
-        }
-
-        // if there are any siblings with the same name, report error.
-        const entries = await window.electron.readdir(
-          window.electron.path.dirname(newPath)
-        )
-
-        for (let entry of entries) {
-          if (entry === requestedFolderName) {
-            return Promise.reject(new Error('Folder name already exists.'))
-          }
-        }
-
-        await window.electron.rename(oldPath, newPath)
-
+      // ignore the rename if the resulting paths are the same
+      if (oldPath === newPath) {
         return {
-          message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
+          message: `Old folder is the same as new.`,
           folderName,
           requestedFolderName,
           requestedProjectName,
           requestedFileNameWithExtension,
         }
       }
-    ),
-    [SystemIOMachineActors.renameFile]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          context: SystemIOContext
-          rootContext: AppMachineContext
-          requestedFileNameWithExtension: string
-          fileNameWithExtension: string
-          absolutePathToParentDirectory: string
+
+      // if there are any siblings with the same name, report error.
+      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+
+      for (let entry of entries) {
+        if (entry === requestedFolderName) {
+          return Promise.reject(new Error('Folder name already exists.'))
         }
-      }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        const {
-          fileNameWithExtension,
-          requestedFileNameWithExtension,
-          absolutePathToParentDirectory,
-        } = input
+      }
 
-        const oldPath = window.electron.path.join(
-          absolutePathToParentDirectory,
-          fileNameWithExtension
+      await fsZds.rename(oldPath, newPath)
+
+      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // migrate systemIOMachine into a system that operates on that.
+      //
+      // Replace the signal value for the currently-opened executing editor if its
+      // parent directory was renamed
+      if (
+        input.app.project?.executingPathSignal.value?.value.includes(oldPath)
+      ) {
+        const v = input.app.project.executingPathSignal.value.value
+        input.app.project.executingPathSignal.value.value = v.replace(
+          oldPath,
+          newPath
         )
-        const newPath = window.electron.path.join(
-          absolutePathToParentDirectory,
-          requestedFileNameWithExtension
-        )
+      }
 
-        const projectDirectoryPath = input.context.projectDirectoryPath
-        const projectName = getProjectDirectoryFromKCLFilePath(
-          newPath,
-          projectDirectoryPath
-        )
-        const filePathWithExtensionRelativeToProject =
-          parentPathRelativeToProject(newPath, projectDirectoryPath)
+      return {
+        message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
+        folderName,
+        requestedFolderName,
+        requestedProjectName,
+        requestedFileNameWithExtension,
+      }
+    }),
+    [SystemIOMachineActors.renameFile]: fromPromise(async ({ input }) => {
+      const {
+        fileNameWithExtension,
+        requestedFileNameWithExtension,
+        absolutePathToParentDirectory,
+      } = input
 
-        // no-op
-        if (oldPath === newPath) {
-          return {
-            message: `Old file is the same as new.`,
-            projectName: projectName,
-            filePathWithExtensionRelativeToProject,
-          }
-        }
+      const oldPath = fsZds.join(
+        absolutePathToParentDirectory,
+        fileNameWithExtension
+      )
+      const newPath = fsZds.join(
+        absolutePathToParentDirectory,
+        requestedFileNameWithExtension
+      )
 
-        // if there are any siblings with the same name, report error.
-        const entries = await window.electron.readdir(
-          window.electron.path.dirname(newPath)
-        )
+      const projectDirectoryPath = input.context.projectDirectoryPath
+      const projectName = getProjectDirectoryFromKCLFilePath(
+        newPath,
+        projectDirectoryPath
+      )
+      const filePathWithExtensionRelativeToProject =
+        parentPathRelativeToProject(newPath, projectDirectoryPath)
 
-        for (let entry of entries) {
-          if (entry === requestedFileNameWithExtension) {
-            return Promise.reject(new Error('Filename already exists.'))
-          }
-        }
-
-        await window.electron.rename(oldPath, newPath)
-
+      // no-op
+      if (oldPath === newPath) {
         return {
-          message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+          message: `Old file is the same as new.`,
           projectName: projectName,
           filePathWithExtensionRelativeToProject,
         }
       }
-    ),
+
+      // if there are any siblings with the same name, report error.
+      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+
+      for (let entry of entries) {
+        if (entry === requestedFileNameWithExtension) {
+          return Promise.reject(new Error('Filename already exists.'))
+        }
+      }
+
+      await fsZds.rename(oldPath, newPath)
+
+      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // migrate systemIOMachine into a system that operates on that.
+      //
+      // Replace the signal value for the currently-opened executing editor if
+      // it was renamed.
+      if (
+        input.app.project?.executingPathSignal.value &&
+        input.app.project.executingPathSignal.value.value === oldPath
+      ) {
+        input.app.project.executingPathSignal.value.value = newPath
+      }
+
+      return {
+        message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+        projectName: projectName,
+        filePathWithExtensionRelativeToProject,
+      }
+    }),
     [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
       async ({
         input,
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedPath: string
           requestedProjectName?: string | undefined
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
-        await window.electron.rm(input.requestedPath, { recursive: true })
+        await fsZds.rm(input.requestedPath, { recursive: true })
         let response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -740,18 +658,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
         try {
-          const result = await window.electron.stat(input.requestedAbsolutePath)
+          const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
               new Error(`File ${fileNameWithExtension} already exists`)
@@ -760,7 +674,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         } catch (e) {
           console.error(e)
         }
-        await window.electron.writeFile(input.requestedAbsolutePath, '')
+        await fsZds.writeFile(input.requestedAbsolutePath, new Uint8Array())
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -773,18 +687,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
-        if (!window.electron) {
-          return Promise.reject(new Error('No file system present'))
-        }
         const folderName = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
         try {
-          const result = await window.electron.stat(input.requestedAbsolutePath)
+          const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
               new Error(`Folder ${folderName} already exists`)
@@ -800,7 +710,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             console.error(e)
           }
         }
-        await window.electron.mkdir(input.requestedAbsolutePath, {
+        await fsZds.mkdir(input.requestedAbsolutePath, {
           recursive: true,
         })
         return {
@@ -815,25 +725,17 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
         }
       }) => {
-        if (window.electron) {
-          await window.electron.copy(input.src, input.target, {
-            recursive: true,
-            force: false,
-          })
-          return {
-            message: 'Copied successfully',
-            requestedAbsolutePath: '',
-          }
-        } else {
-          return {
-            message: 'no file system found',
-            requestedAbsolutePath: '',
-          }
+        await fsZds.cp(input.src, input.target, {
+          recursive: true,
+          force: false,
+        })
+        return {
+          message: 'Copied successfully',
+          requestedAbsolutePath: '',
         }
       }
     ),
@@ -843,42 +745,38 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
           successMessage?: string
           requestedProjectName?: string
         }
       }) => {
-        if (window.electron) {
-          const result = await window.electron.move(input.src, input.target)
-          if (
-            isErr(result) &&
-            // Where did the error code go? It's available in preload.ts
-            result.message.includes('ENOTEMPTY') &&
-            window.electron
-          ) {
-            // TODO: this force deletion behavior assumes this move is only
-            // really used in our archive/restore workflow. We should make
-            // dedicated archive/restore code paths for that if we need cases
-            // where we want to check with the user before going through with forcing.
-            await window.electron.rm(input.target, {
+        try {
+          // TODO: this force deletion behavior assumes this move is only
+          // really used in our archive/restore workflow. We should make
+          // dedicated archive/restore code paths for that if we need cases
+          // where we want to check with the user before going through with forcing.
+          const statRes = await fsZds.stat(input.src)
+          const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
+
+          if (isDirectory) {
+            await fsZds.mkdir(input.target, { recursive: true })
+            await fsZds.cp(input.src, input.target, { recursive: true })
+          } else {
+            const targetWithoutBasename = await fsZds.dirname(input.target)
+            await fsZds.mkdir(targetWithoutBasename, { recursive: true })
+            await fsZds.cp(input.src, input.target, {
               recursive: true,
-              force: true,
             })
-            await window.electron.move(input.src, input.target)
           }
-          return {
-            message: input.successMessage || 'Moved successfully',
-            requestedAbsolutePath: '',
-            requestedProjectName: input.requestedProjectName || '',
-          }
-        } else {
-          return {
-            message: 'no file system found',
-            requestedAbsolutePath: '',
-            requestedProjectName: input.requestedProjectName || '',
-          }
+          await fsZds.rm(input.src, { recursive: true })
+        } catch (e: unknown) {
+          console.log(e)
+        }
+        return {
+          message: input.successMessage || 'Moved successfully',
+          requestedAbsolutePath: '',
+          requestedProjectName: input.requestedProjectName || '',
         }
       }
     ),
@@ -888,14 +786,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
       // We need the settings path to find the sibling `ml-conversations.json`
       try {
-        const json = await window.electron?.readFile(
-          window.electron?.path.join(
-            window.electron?.path.dirname(
-              await getAppSettingsFilePath(window.electron)
-            ),
+        const json = await fsZds.readFile(
+          fsZds.join(
+            fsZds.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
-          'utf-8'
+          { encoding: 'utf-8' }
         )
         return jsonToMlConversations(json ?? '')
       } catch (e) {
@@ -915,20 +811,21 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
       }) => {
-        const next = new Map(args.input.context.mlEphantConversations)
+        const next: Map<any, any> = new Map(
+          args.input.context.mlEphantConversations
+        )
         next.set(
           args.input.event.data.projectId,
           args.input.event.data.conversationId
         )
         const json = mlConversationsToJson(next)
-        await window.electron?.writeFile(
-          window.electron?.path.join(
-            window.electron?.path.dirname(
-              await getAppSettingsFilePath(window.electron)
-            ),
+        const te = new TextEncoder()
+        await fsZds.writeFile(
+          fsZds.join(
+            fsZds.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
-          json
+          te.encode(json)
         )
         return next
       }

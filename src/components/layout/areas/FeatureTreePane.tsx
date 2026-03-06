@@ -58,12 +58,16 @@ import {
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { useSignals } from '@preact/signals-react/runtime'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 type Singletons = ReturnType<typeof useSingletons>
-type SystemDeps = Pick<
-  Singletons,
-  'kclManager' | 'sceneInfra' | 'sceneEntitiesManager' | 'rustContext'
-> & { commandBarActor: CommandBarActorType }
+type SystemDeps = Pick<Singletons, 'kclManager' | 'rustContext'> & {
+  commandBarActor: CommandBarActorType
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -105,28 +109,24 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 }
 
 export const FeatureTreePaneContents = memo(() => {
-  const { commands } = useApp()
-  const {
-    engineCommandManager,
-    getLayout,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-    setLayout,
-  } = useSingletons()
+  useSignals()
+  const { layout, commands } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const {
     send: modelingSend,
     state: modelingState,
     actor: modelingActor,
   } = useModelingContext()
-  const systemDeps: SystemDeps = {
-    kclManager,
-    sceneInfra,
-    sceneEntitiesManager,
-    rustContext,
-    commandBarActor: commands.actor,
-  }
+  const systemDeps: SystemDeps = useMemo(
+    () => ({
+      kclManager,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      rustContext,
+      commandBarActor: commands.actor,
+    }),
+    [kclManager, rustContext, commands.actor]
+  )
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
@@ -171,9 +171,9 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   function goToError() {
-    const l = getLayout()
+    const l = layout.signal.value
     if (!isCodePaneOpen(l)) {
-      openCodePane(l, setLayout)
+      openCodePane(l, layout.set)
     }
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
@@ -428,8 +428,9 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
 }: OperationProps) => {
-  const { getLayout, setLayout } = useSingletons()
-  const { kclManager, sceneInfra, commandBarActor } = systemDeps
+  useSignals()
+  const { layout } = useApp()
+  const { kclManager, commandBarActor } = systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -611,7 +612,7 @@ const OperationItem = ({
         kclManager.artifactGraph
       )
       if (artifact?.id) {
-        sceneInfra.modelingSend({
+        kclManager.sceneInfra.modelingSend({
           type: 'Enter sketch',
           data: { forceNewSketch: true },
         })
@@ -628,9 +629,9 @@ const OperationItem = ({
           if (item.type === 'GroupEnd') {
             return
           }
-          const l = getLayout()
+          const l = layout.signal.value
           if (!isCodePaneOpen(l)) {
-            openCodePane(l, setLayout)
+            openCodePane(l, layout.set)
           }
           selectOperation().catch(reportRejection)
         }}
@@ -652,9 +653,9 @@ const OperationItem = ({
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
-                const l = getLayout()
+                const l = layout.signal.value
                 if (!isCodePaneOpen(l)) {
-                  openCodePane(l, setLayout)
+                  openCodePane(l, layout.set)
                 }
                 selectOperation(functionRange).catch(reportRejection)
               }}
@@ -812,7 +813,7 @@ const OperationItem = ({
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [item]
+    [item, layout.signal.value]
   )
 
   const enabled = !sketchNoFace || isOffsetPlane(item)
@@ -908,7 +909,8 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       if (sketchNoFace) {
         void selectSketchPlane(
           planeId,
-          modelingState.context.store.useNewSketchMode?.current,
+          modelingState.context.store.useSketchSolveMode?.current ||
+            modelingState.context.forceSketchSolveMode,
           systemDeps
         )
       } else {
@@ -932,7 +934,11 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useNewSketchMode]
+    [
+      sketchNoFace,
+      modelingState.context.store.useSketchSolveMode,
+      modelingState.context.forceSketchSolveMode,
+    ]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -944,11 +950,17 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
 
       void selectSketchPlane(
         planeId,
-        modelingState.context.store.useNewSketchMode?.current,
+        modelingState.context.store.useSketchSolveMode?.current ||
+          modelingState.context.forceSketchSolveMode,
         systemDeps
       )
     },
-    [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
+    [
+      modelingState.context.store.useSketchSolveMode,
+      modelingState.context.forceSketchSolveMode,
+      sceneInfra,
+      systemDeps,
+    ]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

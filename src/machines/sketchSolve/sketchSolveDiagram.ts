@@ -10,8 +10,6 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -122,7 +120,7 @@ async function addAxisDistanceConstraint(
         is_literal: true,
       },
     },
-    await jsAppSettings(context.rustContext.settingsActor)
+    jsAppSettings(context.kclManager.systemDeps.settings)
   )
   if (result) {
     self.send({
@@ -141,8 +139,6 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
     input: {} as {
       // dependencies
-      sceneInfra: SceneInfra
-      sceneEntitiesManager: SceneEntities
       rustContext: RustContext
       kclManager: KclManager
       // end dependencies
@@ -243,8 +239,8 @@ export const sketchSolveMachine = setup({
         sceneGraphDelta: input.initialSceneGraphDelta,
       },
       sketchId: input?.sketchId || 0,
-      sceneInfra: input.sceneInfra,
-      sceneEntitiesManager: input.sceneEntitiesManager,
+      sceneInfra: input.kclManager.sceneInfra,
+      sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.rustContext,
       kclManager: input.kclManager,
     }
@@ -297,7 +293,7 @@ export const sketchSolveMachine = setup({
             type: 'Coincident',
             segments: context.selectedIds,
           },
-          await jsAppSettings(context.rustContext.settingsActor)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -399,8 +395,12 @@ export const sketchSolveMachine = setup({
                 type: 'Radius',
                 radius: { value: distance, units },
                 arc: segmentsToConstrain[0],
+                source: {
+                  expr: distance.toString(),
+                  is_literal: true,
+                },
               },
-              await jsAppSettings(context.rustContext.settingsActor)
+              jsAppSettings(context.kclManager.systemDeps.settings)
             )
             if (result) {
               self.send({
@@ -472,7 +472,7 @@ export const sketchSolveMachine = setup({
               is_literal: true,
             },
           },
-          await jsAppSettings(context.rustContext.settingsActor)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -515,7 +515,7 @@ export const sketchSolveMachine = setup({
             type: 'Parallel',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.rustContext.settingsActor)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -538,7 +538,7 @@ export const sketchSolveMachine = setup({
             type: 'Perpendicular',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.rustContext.settingsActor)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -561,7 +561,7 @@ export const sketchSolveMachine = setup({
             type: 'LinesEqualLength',
             lines: context.selectedIds,
           },
-          await jsAppSettings(context.rustContext.settingsActor)
+          jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {
           self.send({
@@ -586,7 +586,7 @@ export const sketchSolveMachine = setup({
               type: 'Vertical',
               line: id,
             },
-            await jsAppSettings(context.rustContext.settingsActor)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
         if (result) {
@@ -612,7 +612,7 @@ export const sketchSolveMachine = setup({
               type: 'Horizontal',
               line: id,
             },
-            await jsAppSettings(context.rustContext.settingsActor)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
         if (result) {
@@ -702,7 +702,7 @@ export const sketchSolveMachine = setup({
             0,
             context.sketchId,
             segmentsToEdit,
-            await jsAppSettings(context.rustContext.settingsActor)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
           .catch((err) => {
             console.error('failed to toggle construction geometry', err)
@@ -755,7 +755,7 @@ export const sketchSolveMachine = setup({
             context.sketchId,
             constraintIds,
             segmentIds,
-            await jsAppSettings(context.rustContext.settingsActor)
+            jsAppSettings(context.kclManager.systemDeps.settings)
           )
           .catch((err) => {
             console.error('failed to delete objects', err)

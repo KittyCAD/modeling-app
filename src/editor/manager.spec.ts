@@ -1,10 +1,13 @@
 import type { Diagnostic } from '@codemirror/lint'
-
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { expect, describe, it } from 'vitest'
 import { App } from '@src/lib/app'
 
 describe('EditorManager Class', () => {
-  const singletons = new App().singletons
+  const singletons = App.fromProvided({
+    wasmPromise: Promise.resolve({} as ModuleType),
+  }).singletons
+
   describe('makeUniqueDiagnostics', () => {
     it('should filter out duplicated diagnostics', () => {
       const duplicatedDiagnostics: Diagnostic[] = [

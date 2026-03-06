@@ -51,8 +51,12 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import {
+  CONSTRAINT_TYPE,
+  isConstraint,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -199,7 +203,7 @@ export function buildSegmentCtorFromObject(
   obj: ApiObject,
   objects: Array<ApiObject>
 ): SegmentCtor | null {
-  if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+  if (isPointSegment(obj)) {
     return {
       type: 'Point',
       position: {
@@ -509,14 +513,14 @@ export function updateSceneGraphFromDelta({
     )
 
     // Render constraints
-    if (obj.kind.type === 'Constraint') {
+    if (isConstraint(obj)) {
       const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
       )
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (!constraintGroup) {
-        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj, objects)
+        constraintGroup = segmentUtilsMap.Constraint.init(obj)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -528,7 +532,7 @@ export function updateSceneGraphFromDelta({
         }
       }
       if (constraintGroup) {
-        segmentUtilsMap.DimensionConstraint.update(
+        segmentUtilsMap.Constraint.update(
           constraintGroup,
           obj,
           objects,
@@ -756,7 +760,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
-        segmentUtilsMap.DimensionConstraint.update(
+        segmentUtilsMap.Constraint.update(
           constraintGroup,
           obj,
           objects,
@@ -835,7 +839,7 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
     const objId = group.userData.object_id
     const obj = objects[objId]
     if (obj) {
-      segmentUtilsMap.DimensionConstraint.update(
+      segmentUtilsMap.Constraint.update(
         group as Group,
         obj,
         objects,
@@ -941,7 +945,7 @@ export async function deleteDraftEntities({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     if (result) {
@@ -991,7 +995,7 @@ export async function deleteDraftEntitiesPromise({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     //

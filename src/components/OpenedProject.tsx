@@ -1,14 +1,10 @@
+import type { Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
@@ -40,7 +36,6 @@ import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -48,6 +43,7 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   defaultLayout,
   DefaultLayoutPaneID,
@@ -66,6 +62,9 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
+import { isMobile } from '@src/lib/isMobile'
+import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -74,29 +73,23 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
-  const { auth, billing, settings } = useApp()
-  const {
-    systemIOActor,
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    useLayout,
-    setLayout,
-    getLayout,
-  } = useSingletons()
+  useSignals()
+  const { auth, billing, settings, layout, project } = useApp()
+  const { systemIOActor, engineCommandManager, kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const lastOperation = useLastOperation()
+  const projects = useFolders()
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -107,12 +100,34 @@ export function OpenedProject() {
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = loaderData.project?.name || null
-  const projectPath = loaderData.project?.path || null
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
+
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+
+  // Handle our project folder disappearing (Go back to Projects listing)
+  useEffect(() => {
+    if (
+      projects &&
+      projects.length > 0 &&
+      projects.every((p: Project) => p.name !== projectName) &&
+      [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.renamingProject,
+        SystemIOMachineStates.importFileFromURL,
+      ].includes(lastOperation) === false
+    ) {
+      void navigate(PATHS.HOME)
+    }
+
+    if (projects && projects.length === 0) {
+      void navigate(PATHS.HOME)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, lastOperation])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
   useEffect(() => {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
@@ -121,28 +136,22 @@ export function OpenedProject() {
       .executeCode()
       .then(async () => {
         await resetCameraPosition({
-          sceneInfra,
+          sceneInfra: kclManager.sceneInfra,
           engineCommandManager,
           settingsActor,
         })
       })
       .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [
-    systemIOState,
-    kclManager,
-    sceneInfra,
-    engineCommandManager,
-    settingsActor,
-  ])
+  }, [systemIOState, kclManager, engineCommandManager, settingsActor])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      loaderData.file || null
+      project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, loaderData.file])
+  }, [onProjectOpen, projectName, projectPath, project])
 
   useEffect(() => {
     // Clear conversation
@@ -156,7 +165,6 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
-  const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -174,6 +182,11 @@ export function OpenedProject() {
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => {
+      if (!filePath) {
+        console.warn('bug: filePath is undefined')
+        return
+      }
+
       void navigate(filePath + PATHS.SETTINGS)
     },
     kclManager,
@@ -207,6 +220,8 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  const href = 'href' in location ? location.href : ''
+
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
@@ -214,7 +229,7 @@ export function OpenedProject() {
       settingsValues.app.onboardingStatus.current ||
       settingsValues.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() && // Only show if we're in the browser,
+      !window.electron &&
       authToken && // we're logged in,
       searchParams.size === 0 && // we haven't come via a website "try in browser" link,
       needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
@@ -239,10 +254,11 @@ export function OpenedProject() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    settingsValues.app.onboardingStatus,
-    settingsValues.app.theme,
-    location,
+    settingsValues.app.onboardingStatus.current,
+    settingsValues.app.theme.current,
+    href,
     navigate,
     searchParams.size,
     authToken,
@@ -303,7 +319,9 @@ export function OpenedProject() {
 
   const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
     () =>
-      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+      getOpenPanes({ rootLayout: layout.signal.value }).includes(
+        DefaultLayoutPaneID.TTC
+      )
         ? [
             {
               id: 'zookeeper-credits',
@@ -311,7 +329,7 @@ export function OpenedProject() {
             },
           ]
         : [],
-    [layout]
+    [layout.signal.value]
   )
 
   const undoRedoButtons = useMemo(
@@ -341,21 +359,26 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={loaderData}
+            project={project?.projectIORefSignal.value}
+            file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
           >
-            <CommandBarOpenButton />
-            <ShareButton />
+            {!isMobile() && (
+              <>
+                <CommandBarOpenButton />
+                <ShareButton />
+              </>
+            )}
           </AppHeader>
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
-            layout={layout || defaultLayout}
-            getLayout={getLayout}
-            setLayout={setLayout}
+            layout={layout.signal.value || defaultLayout}
+            getLayout={layout.get}
+            setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settingsValues.app.showDebugPanel.current}

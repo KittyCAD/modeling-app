@@ -3,7 +3,7 @@ import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import { MarkdownText } from '@src/components/MarkdownText'
 
@@ -23,9 +23,8 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { wasmPromise, commands } = useApp()
+  const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name

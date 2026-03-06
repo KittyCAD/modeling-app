@@ -1,9 +1,8 @@
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
+import { createContext, use, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 import { useAppState } from '@src/AppState'
@@ -25,7 +24,6 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectAllInCurrentSketch } from '@src/lib/selections'
-import type { IndexLoaderData } from '@src/lib/types'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
@@ -37,6 +35,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -53,26 +52,10 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { machineManager, commands, settings } = useApp()
-  const {
-    engineCommandManager,
-    getLayout,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-    setLayout,
-  } = useSingletons()
+  useSignals()
+  const { machineManager, commands, settings, layout, project } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const settingsActor = settings.actor
-  const systemDeps = useMemo(
-    () => ({
-      sceneInfra,
-      rustContext,
-      sceneEntitiesManager,
-      commandBarActor: commands.actor,
-    }),
-    [sceneInfra, rustContext, sceneEntitiesManager, commands.actor]
-  )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
@@ -81,19 +64,20 @@ export const ModelingMachineProvider = ({
       defaultUnit,
       cameraProjection,
       cameraOrbit,
-      useNewSketchMode,
+      useSketchSolveMode,
       snapToGrid,
     },
   } = settingsValues
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const projects = useFolders()
-  const { project, file } = loaderData
-  const theProject = useRef<Project | undefined>(project)
+  const theProject = useRef<Project | undefined>(
+    project?.projectIORefSignal.value
+  )
+  const file = project?.executingFileEntry.value
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!project || !file || !projects) {
       return
     }
 
@@ -107,7 +91,7 @@ export const ModelingMachineProvider = ({
     }
     theProject.current = foundYourProject
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projects, loaderData, file])
+  }, [projects, file])
 
   const streamRef = useRef<HTMLDivElement>(null)
 
@@ -131,16 +115,14 @@ export const ModelingMachineProvider = ({
         machineManager,
         engineCommandManager,
         kclManager,
-        sceneInfra,
         rustContext,
-        sceneEntitiesManager,
         commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
         // React Suspense will await this
         wasmInstance,
         store: {
-          useNewSketchMode,
+          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },
@@ -151,9 +133,9 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(getLayout())
+    const rootLayout = structuredClone(layout.signal.value)
     const toggle = (id: DefaultLayoutPaneID) =>
-      setLayout(
+      layout.set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: id,
@@ -285,7 +267,9 @@ export const ModelingMachineProvider = ({
         }
         previousCameraOrbit.current = cameraOrbit.current
         // Gotcha: This will absolutely brick E2E tests if called incorrectly.
-        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+        kclManager.sceneInfra.camControls
+          .resetCameraPosition()
+          .catch(reportRejection)
       })
       .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -331,7 +315,8 @@ export const ModelingMachineProvider = ({
     // While you are in sketch mode you should be able to control the enable rotate
     // Once you exit it goes back to normal
     if (inSketchMode) {
-      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+      kclManager.sceneInfra.camControls.enableRotate =
+        allowOrbitInSketchMode.current
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
@@ -382,7 +367,7 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition({
-      sceneInfra,
+      sceneInfra: kclManager.sceneInfra,
       engineCommandManager,
       settingsActor,
     }).catch(reportRejection)
@@ -409,7 +394,7 @@ export const ModelingMachineProvider = ({
       e.preventDefault()
       const selection = selectAllInCurrentSketch(
         kclManager.artifactGraph,
-        systemDeps
+        kclManager.sceneEntitiesManager
       )
       modelingSend({
         type: 'Set selection',

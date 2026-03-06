@@ -141,11 +141,11 @@ middle()`)
 })
 
 test('Opening multiple panes persists when switching projects', async ({
-  context,
   page,
-}, testInfo) => {
+  folderSetupFn,
+}) => {
   // Setup multiple projects.
-  await context.folderSetupFn(async (dir) => {
+  await folderSetupFn(async (dir) => {
     const routerTemplateDir = join(dir, 'router-template-slate')
     const bracketDir = join(dir, 'bracket')
     await Promise.all([
@@ -211,11 +211,11 @@ test('Opening multiple panes persists when switching projects', async ({
 })
 
 test('external change of file contents are reflected in editor', async ({
-  context,
   page,
-}, testInfo) => {
+  folderSetupFn,
+}) => {
   const PROJECT_DIR_NAME = 'lee-was-here'
-  const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {
+  const { dir: projectsDir } = await folderSetupFn(async (dir) => {
     const aProjectDir = join(dir, PROJECT_DIR_NAME)
     await fsp.mkdir(aProjectDir, { recursive: true })
   })

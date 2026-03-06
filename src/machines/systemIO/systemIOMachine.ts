@@ -1,9 +1,10 @@
+import type { KclManager } from '@src/lang/KclManager'
+import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
-import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
@@ -18,6 +19,7 @@ import {
   SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
@@ -377,8 +379,7 @@ export const systemIOMachine = setup({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        const folders: Project[] = []
-        return folders
+        return [] as Project[]
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -428,9 +429,9 @@ export const systemIOMachine = setup({
           requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
-          rootContext: AppMachineContext
           requestedSubRoute?: string
-          wasmInstancePromise: Promise<ModuleType>
+          kclManager: KclManager
+          engineCommandManager: ConnectionManager
         }
       }): Promise<{
         message: string
@@ -477,7 +478,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           wasmInstancePromise: Promise<ModuleType>
         }
       }): Promise<{
@@ -496,7 +496,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           requestedSubRoute?: string
           wasmInstancePromise: Promise<ModuleType>
@@ -517,7 +516,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           files: RequestedKCLFile[]
-          rootContext: AppMachineContext
           requestedProjectName: string
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
@@ -539,7 +537,6 @@ export const systemIOMachine = setup({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
-            rootContext: AppMachineContext
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -559,12 +556,12 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedFolderName: string
           folderName: string
           absolutePathToParentDirectory: string
           requestedProjectName?: string
           requestedFileNameWithExtension?: string
+          app: App
         }
       }) => {
         return {
@@ -582,10 +579,10 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedFileNameWithExtension: string
           fileNameWithExtension: string
           absolutePathToParentDirectory: string
+          app: App
         }
       }) => {
         return {
@@ -601,7 +598,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedPath: string
           requestedProjectName?: string | undefined
         }
@@ -619,7 +615,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -635,7 +630,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           requestedAbsolutePath: string
         }
       }) => {
@@ -651,7 +645,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
         }
@@ -668,7 +661,6 @@ export const systemIOMachine = setup({
       }: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
           src: string
           target: string
           successMessage?: string
@@ -708,7 +700,7 @@ export const systemIOMachine = setup({
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
   context: ({ input }) => ({
     ...input,
-    folders: [],
+    folders: undefined,
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
@@ -728,6 +720,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -883,6 +876,7 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.creatingProject,
               requestedProjectName: ({ event }) => {
                 return { name: event.output.name }
               },
@@ -921,6 +915,13 @@ export const systemIOMachine = setup({
               },
             }),
             SystemIOMachineActions.toastSuccess,
+            assign({
+              lastOperation: SystemIOMachineStates.renamingProject,
+              requestedProjectName: ({ event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_renameProject)
+                return { name: event.output.newName }
+              },
+            }),
           ],
         },
         onError: {
@@ -943,6 +944,9 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.deletingProject,
+            }),
             SystemIOMachineActions.toastSuccess,
             SystemIOMachineActions.setLastProjectDeleteRequest,
           ],
@@ -965,8 +969,8 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            rootContext: self.system.get('root').getSnapshot().context,
-            wasmInstancePromise: context.wasmInstancePromise,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
           }
         },
         onDone: {
@@ -991,8 +995,8 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            rootContext: self.system.get('root').getSnapshot().context,
-            wasmInstancePromise: context.wasmInstancePromise,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
           }
         },
         onDone: {
@@ -1000,6 +1004,7 @@ export const systemIOMachine = setup({
           // Clear on web? not desktop
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.importFileFromURL,
               requestedProjectName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
                 return {
@@ -1080,7 +1085,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             wasmInstancePromise: context.wasmInstancePromise,
           }
         },
@@ -1105,7 +1109,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedSubRoute: event.data.requestedSubRoute,
@@ -1116,6 +1119,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,
@@ -1144,7 +1149,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
@@ -1192,7 +1196,6 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
@@ -1240,7 +1243,7 @@ export const systemIOMachine = setup({
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1266,7 +1269,7 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1288,7 +1291,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedPath: event.data.requestedPath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1310,7 +1312,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedAbsolutePath: event.data.requestedAbsolutePath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1332,7 +1333,6 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedAbsolutePath: event.data.requestedAbsolutePath,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1358,7 +1358,7 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
+            app: context.app,
           }
         },
         onDone: {
@@ -1408,16 +1408,18 @@ export const systemIOMachine = setup({
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
+            app: context.app,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.renamingFolderAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1456,13 +1458,14 @@ export const systemIOMachine = setup({
             context,
             requestedPath: event.data.requestedPath,
             requestedProjectName: event.data.requestedProjectName,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.deletingFileOrFolderAndNavigate,
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1492,7 +1495,6 @@ export const systemIOMachine = setup({
             context,
             src: event.data.src,
             target: event.data.target,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1516,7 +1518,6 @@ export const systemIOMachine = setup({
             src: event.data.src,
             target: event.data.target,
             successMessage: event.data.successMessage,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
@@ -1541,7 +1542,6 @@ export const systemIOMachine = setup({
             target: event.data.target,
             requestedProjectName: event.data.requestedProjectName,
             successMessage: event.data.successMessage,
-            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {

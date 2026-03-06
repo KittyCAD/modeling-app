@@ -24,6 +24,9 @@ and then rotate it to the correct orientation.
 
 For sketches, you can use this to rotate a sketch and then loft it with another sketch.
 
+By default, this does a local rotation, around the sketch/body's center.
+To rotate around the global scene coordinates, use `global = true`.
+
 ### Using Roll, Pitch, and Yaw
 
 When rotating a part in 3D space, "roll," "pitch," and "yaw" refer to the

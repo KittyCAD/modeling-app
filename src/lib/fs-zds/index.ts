@@ -1,5 +1,14 @@
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
+import electronfs, { type ElectronFSOptions } from '@src/lib/fs-zds/electronfs'
+import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
+import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
+
+declare global {
+  interface Window {
+    fsZds: IZooDesignStudioFS
+  }
+}
 
 function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
   return (
@@ -23,16 +32,23 @@ function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
 
 export enum StorageName {
   NoopFS = 'noopfs',
+  ElectronFS = 'electronfs',
+  NodeFS = 'nodefs',
+  OPFS = 'opfs',
 }
 
 const STORAGE_IMPL: Record<StorageName, IZooDesignStudioFS> = {
   [StorageName.NoopFS]: noopfs.impl,
+  [StorageName.ElectronFS]: electronfs.impl,
+  [StorageName.NodeFS]: nodefs.impl,
+  [StorageName.OPFS]: opfs.impl,
 }
 
-export type StorageBacking = {
-  type: StorageName.NoopFS
-  options: NoopFSOptions
-}
+export type StorageBacking =
+  | { type: StorageName.NoopFS; options: NoopFSOptions }
+  | { type: StorageName.ElectronFS; options: ElectronFSOptions }
+  | { type: StorageName.NodeFS; options: NodeFSOptions }
+  | { type: StorageName.OPFS; options: OPFSOptions }
 
 // We must assign an object to this variable, and not undefined, because this
 // object will act as a reference to all modules that import it. This reference
@@ -43,6 +59,10 @@ export const moduleFsViaObject = async (
   backing: StorageBacking
 ): Promise<IZooDesignStudioFS> => {
   return STORAGE_IMPL[backing.type]
+}
+
+export const moduleFsViaWindow = async (backing: StorageBacking) => {
+  window['fsZds'] = STORAGE_IMPL[backing.type]
 }
 
 export const moduleFsViaModuleImport = async (backing: StorageBacking) => {

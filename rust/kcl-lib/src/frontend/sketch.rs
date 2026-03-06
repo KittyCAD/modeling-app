@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ExecutorContext,
+    front::Plane,
     frontend::api::{
         Expr, FileId, Number, ObjectId, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
@@ -152,11 +153,8 @@ pub struct Sketch {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchCtor {
-    /// Identifier representing the plane or face to sketch on. This could be a
-    /// built-in plane like `XY`, a variable referencing a plane, or a variable
-    /// referencing a face. But currently, it may not be an arbitrary
-    /// expression. Notably, negative planes are not supported.
-    pub on: String,
+    /// The sketch surface.
+    pub on: Plane,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -321,6 +319,7 @@ pub struct CircleCtor {
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
+    Angle(Angle),
     Diameter(Diameter),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
@@ -329,6 +328,7 @@ pub enum Constraint {
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Tangent(Tangent),
     Vertical(Vertical),
 }
 
@@ -346,6 +346,14 @@ pub struct Distance {
     pub source: ConstraintSource,
 }
 
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Angle {
+    pub lines: Vec<ObjectId>,
+    pub angle: Number,
+    pub source: ConstraintSource,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ConstraintSource {
@@ -358,6 +366,8 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(default)]
+    pub source: ConstraintSource,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -365,6 +375,8 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(default)]
+    pub source: ConstraintSource,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -395,4 +407,10 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Tangent {
+    pub input: Vec<ObjectId>,
 }

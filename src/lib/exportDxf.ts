@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import { isArray } from '@src/lib/utils'
 import { getOperationVariableName } from '@src/lib/operations'
 import type { KclManager } from '@src/lang/KclManager'
@@ -245,17 +246,14 @@ export async function exportSketchToDxf(
         const testSettingsPath = await window.electron.getAppTestProperty(
           'TEST_SETTINGS_FILE_KEY'
         )
-        const downloadDir = window.electron.join(
+        const downloadDir = fsZds.join(
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await window.electron.mkdir(downloadDir, { recursive: true })
+        await fsZds.mkdir(downloadDir, { recursive: true })
 
         try {
-          await window.electron.writeFile(
-            window.electron.join(downloadDir, fileName),
-            decodedData
-          )
+          await fsZds.writeFile(fsZds.join(downloadDir, fileName), decodedData)
         } catch (e: unknown) {
           console.error('Write file failed:', e)
           toast.error('Failed to save file', { id: toastId })
@@ -283,7 +281,7 @@ export async function exportSketchToDxf(
       }
 
       try {
-        await window.electron.writeFile(filePathMeta.filePath, decodedData)
+        await fsZds.writeFile(filePathMeta.filePath, decodedData)
       } catch (e: unknown) {
         console.error('Write file failed:', e)
         toast.error('Failed to save file', { id: toastId })

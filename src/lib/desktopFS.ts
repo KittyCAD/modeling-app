@@ -1,5 +1,4 @@
-import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
+import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import type { FileEntry } from '@src/lib/project'
@@ -122,7 +121,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = window.electron ? await window.electron.getPath('appData') : '/'
+  const user = await fsZds.getPath('appData')
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {
@@ -135,12 +134,10 @@ export async function getSettingsFolderPaths(projectPath?: string) {
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
 export async function getNextFileName({
-  electron: _electron,
   entryName,
   baseDir,
   wasmInstance,
 }: {
-  electron: IElectronAPI
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
@@ -160,15 +157,24 @@ export async function getNextFileName({
 
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension
-  let createdPath = fsManager.path.join(baseDir, createdName)
+  let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
-  while (await fsManager.exists(createdPath)) {
-    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
-    createdName =
-      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
-    createdPath = fsManager.path.join(baseDir, createdName)
-    i++
+  try {
+    while (await fsZds.stat(createdPath)) {
+      const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
+      createdName =
+        entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
+      createdPath = fsZds.join(baseDir, createdName)
+      i++
+    }
+  } catch (e) {
+    // I (lee) know, the behavior is weird. It's because `stat` is the way to
+    // check for file existence, and on throw, it will escape this loop, which
+    // I did not originally write - this code used the synchronous, deprecated
+    // `exists` method.
+    console.error(e)
   }
+
   return {
     name: createdName,
     path: createdPath,
@@ -178,22 +184,27 @@ export async function getNextFileName({
 /**
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
-export function getNextDirName({
-  electron,
+export async function getNextDirName({
   entryName,
   baseDir,
 }: {
-  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {
   let createdName = entryName
-  let createdPath = electron.path.join(baseDir, createdName)
+  let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
-  while (electron.exists(createdPath)) {
-    createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-    createdPath = electron.path.join(baseDir, createdName)
-    i++
+
+  // This code is fucking cursed -- lee
+  try {
+    while (true) {
+      await fsZds.stat(createdPath)
+      createdName = entryName.replace(/-\d+$/, '') + `-${i}`
+      createdPath = fsZds.join(baseDir, createdName)
+      i++
+    }
+  } catch (e) {
+    console.error(e)
   }
   return {
     name: createdName,

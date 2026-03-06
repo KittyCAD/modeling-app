@@ -1,4 +1,5 @@
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   packRgbToColor,
   SKETCH_SELECTION_COLOR,
@@ -45,48 +46,30 @@ export function deriveSegmentFreedom(
   if (segmentData.type === 'Line') {
     const startPoint = getObjById(segmentData.start)
     const endPoint = getObjById(segmentData.end)
-    if (
-      startPoint?.kind?.type === 'Segment' &&
-      startPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
     }
-    if (
-      endPoint?.kind?.type === 'Segment' &&
-      endPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(endPoint)) {
       pointFreedoms.push(endPoint.kind.segment.freedom ?? null)
     }
   } else if (segmentData.type === 'Arc') {
     const startPoint = getObjById(segmentData.start)
     const endPoint = getObjById(segmentData.end)
     const centerPoint = getObjById(segmentData.center)
-    if (
-      startPoint?.kind?.type === 'Segment' &&
-      startPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
     }
-    if (
-      endPoint?.kind?.type === 'Segment' &&
-      endPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(endPoint)) {
       pointFreedoms.push(endPoint.kind.segment.freedom ?? null)
     }
-    if (
-      centerPoint?.kind?.type === 'Segment' &&
-      centerPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(centerPoint)) {
       pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
     }
   } else if (segmentData.type === 'Circle') {
     // Circle has a start point (center) - need to check if there are other points
     // For now, just check the start point
     const startPoint = getObjById(segmentData.start)
-    if (
-      startPoint?.kind?.type === 'Segment' &&
-      startPoint.kind.segment.type === 'Point'
-    ) {
+    if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
     }
   }

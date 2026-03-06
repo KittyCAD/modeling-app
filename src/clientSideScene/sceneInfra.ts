@@ -329,7 +329,8 @@ export class SceneInfra {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInitPromise: Promise<ModuleType>
+    wasmInitPromise: Promise<ModuleType>,
+    getSettings: typeof this.camControls.getSettings
   ) {
     this.wasmInstancePromise = wasmInitPromise
     // SCENE
@@ -353,6 +354,7 @@ export class SceneInfra {
     this.camControls = new CameraControls(
       this.renderer.domElement,
       engineCommandManager,
+      getSettings,
       false
     )
     this.camControls.cameraChange.add(this.onCameraChange)

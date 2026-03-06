@@ -12,6 +12,7 @@ import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
@@ -30,6 +31,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
+import { hexToRgba } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -132,6 +134,20 @@ export class Setting<T = unknown> {
 }
 
 const MS_IN_MINUTE = 1000 * 60
+const COLOR_INPUT_DEBOUNCE_MS = 500
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
 
 /**
  * Helper function to fetch user features and determine if the corresponding setting should be visible
@@ -157,11 +173,30 @@ function hideWithoutFeatureFlag(
         return defaultHide
       }
 
-      // Use the KittyCAD library to fetch user features
-      const client = createKCClient(token)
-      const featuresData = await kcCall(() =>
-        users.user_features_get({ client })
-      )
+      const now = Date.now()
+      const cacheValid =
+        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+      type FeaturesResult = CachedFeaturesData | Error
+      let featuresData: FeaturesResult
+
+      if (cacheValid && featuresCache) {
+        featuresData = featuresCache.data
+      } else if (featuresFetchPromise) {
+        featuresData = await featuresFetchPromise
+      } else {
+        const client = createKCClient(token)
+        featuresFetchPromise = kcCall(() =>
+          users.user_features_get({ client })
+        ).then((result) => {
+          featuresFetchPromise = null
+          if (isCachedFeaturesData(result)) {
+            featuresCache = { data: result, fetchedAt: Date.now() }
+          }
+          return result
+        })
+        featuresData = await featuresFetchPromise
+      }
 
       if (featuresData instanceof Error) {
         console.error('Error fetching user features:', featuresData.message)
@@ -373,6 +408,43 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      backfaceColor: new Setting<string>({
+        defaultValue: DEFAULT_BACKFACE_COLOR,
+        description: 'Default backface color for surfaces',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.backfaceColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
+      }),
       /**
        * The controls for how to navigate the 3D view
        */
@@ -447,16 +519,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Use the new sketch mode implementation - solver (Dev only)
        * Visibility is controlled by the 'new_sketch_mode' feature flag.
        * If the feature flag exists, the setting will be visible.
        * Otherwise, it will be hidden.
        */
-      useNewSketchMode: new Setting<boolean>({
+      useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
         hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
         defaultValue: false,
-        description: 'Use the new sketch mode implementation',
+        description:
+          'Default to the experimental solver-based sketch mode for all new sketches.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

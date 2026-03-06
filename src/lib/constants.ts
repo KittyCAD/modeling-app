@@ -14,10 +14,6 @@ export const MAX_PADDING = 7
  */
 export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
-/** Name given the temporary "project" in the browser version of the app */
-export const BROWSER_PROJECT_NAME = 'browser'
-/** Name given the temporary file in the browser version of the app */
-export const BROWSER_FILE_NAME = 'main'
 /**
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
@@ -58,6 +54,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  BLEND: 'blend',
   SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
@@ -270,6 +267,11 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+/**
+ * A query parameter to allow the app to be accessed on mobile devices.
+ * Used to test mobile experience as we improve it to be release-able.
+ */
+export const ALLOW_MOBILE_QUERY_PARAM = 'allow-mobile'
 
 // Only used by the desktop app
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
@@ -322,16 +324,11 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
 
-// Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
+// Zookeeper input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
-export const DEFAULT_BACKFACE_COLOR = {
-  a: 1.0,
-  b: 0.05,
-  g: 0.05,
-  r: 0.95,
-}
+export const DEFAULT_BACKFACE_COLOR = '#F20D0D'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

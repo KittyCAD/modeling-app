@@ -555,6 +555,21 @@ class PlyStorage(Enum):
     Encode payload as binary using big endian.
     """
 
+class StepPresentation(Enum):
+    r"""
+    Describes the presentation style of the EXPRESS exchange format.
+    """
+    Compact = ...
+    r"""
+    Condenses the text to reduce the size of the file.
+    """
+    Pretty = ...
+    r"""
+    Add extra spaces to make the text more easily readable.
+    
+    This is the default setting.
+    """
+
 class StlStorage(Enum):
     r"""
     Export storage.

@@ -48,7 +48,7 @@ export const initializeWindowExceptionHandler = (
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
             await rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(rustContext.settingsActor),
+              jsAppSettings(rustContext.settingsActor),
               undefined
             )
           } catch (e) {
