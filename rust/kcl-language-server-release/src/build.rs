@@ -93,7 +93,8 @@ fn build_server(sh: &Shell, release: &str, target: &Target) -> anyhow::Result<()
     // let _e = sh.push_env("CARGO_PROFILE_RELEASE_DEBUG", "1");
 
     if target.name.contains("-linux-") {
-        env::set_var("CC", "clang");
+        // TODO: Audit that the environment access only happens in single-threaded code.
+        unsafe { env::set_var("CC", "clang") };
     }
 
     let target_name = &target.name;
