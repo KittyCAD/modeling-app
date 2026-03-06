@@ -2944,22 +2944,19 @@ export function onHide(props: {
 export async function onUnhide(props: {
   hideOperation: HideOperation
   targetArtifact: Artifact
-  systemDeps: {
-    kclManager: KclManager
-    rustContext: RustContext
-  }
+  kclManager: KclManager
 }) {
   if (props.hideOperation.unlabeledArg === null) {
     return new Error('Missing unlabeled arg for hide operation')
   }
-  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  let modifiedAst = structuredClone(props.kclManager.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
 
   if (
     props.hideOperation.unlabeledArg.value.type === 'Array' &&
     'codeRef' in props.targetArtifact
   ) {
-    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
     // Multi-item case: remove that target artifact's name
     const termToDelete = getVariableNameFromNodePath(
       pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
@@ -2973,7 +2970,7 @@ export async function onUnhide(props: {
     }
 
     const deleteResult = deleteTermFromUnlabeledArgumentArray(
-      props.systemDeps.kclManager.ast,
+      props.kclManager.ast,
       pathToNode,
       wasmInstance,
       termToDelete
@@ -2993,7 +2990,7 @@ export async function onUnhide(props: {
   return updateModelingState(
     modifiedAst,
     EXECUTION_TYPE_REAL,
-    props.systemDeps,
+    props.kclManager,
     {
       focusPath: [],
     }

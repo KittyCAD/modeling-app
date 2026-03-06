@@ -342,10 +342,11 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager({
+    const kclManager = new KclManager('', {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: '',
     })
 
     if (typeof window !== 'undefined') {
@@ -377,8 +378,6 @@ export class App implements AppSubsystems {
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     return {
-      engineCommandManager: kclManager.engineCommandManager,
-      rustContext: kclManager.rustContext,
       kclManager,
     }
   }
@@ -402,9 +401,9 @@ export class App implements AppSubsystems {
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.engineCommandManager.connection
+      this.singletons.kclManager.engineCommandManager.connection
     ) {
-      this.singletons.engineCommandManager
+      this.singletons.kclManager.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -427,10 +426,12 @@ export class App implements AppSubsystems {
       opposingTheme
     )
     this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.engineCommandManager.connection) {
+    if (this.singletons.kclManager.engineCommandManager.connection) {
       Promise.all([
-        this.singletons.engineCommandManager.setTheme(newTheme),
-        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
+        this.singletons.kclManager.engineCommandManager.setTheme(newTheme),
+        this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+          newBackfaceColor
+        ),
       ]).catch(reportRejection)
     }
 
@@ -453,9 +454,9 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.engineCommandManager.connection
+        this.singletons.kclManager.engineCommandManager.connection
       ) {
-        this.singletons.rustContext
+        this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
             this.singletons.kclManager.currentFilePath || undefined

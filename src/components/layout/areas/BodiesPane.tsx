@@ -17,7 +17,6 @@ import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMen
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { sendSelectionEvent } from '@src/lib/featureTree'
-import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
 import { toUtf16 } from '@src/lang/errors'
@@ -78,11 +77,7 @@ function BodyItem({
   artifact,
   hideOperation,
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
-  const { kclManager, rustContext } = useSingletons()
-  const systemDeps = useMemo(
-    () => ({ kclManager, rustContext }),
-    [kclManager, rustContext]
-  )
+  const { kclManager } = useSingletons()
   const { actor: modelingActor, send: modelingSend } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
@@ -123,7 +118,7 @@ function BodyItem({
                 onUnhide({
                   hideOperation,
                   targetArtifact: artifact,
-                  systemDeps,
+                  kclManager,
                 })
                   .then((result) => {
                     if (err(result)) {

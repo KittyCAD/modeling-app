@@ -11,7 +11,6 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
@@ -189,7 +188,6 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
     input: {} as {
       // dependencies
-      rustContext: RustContext
       kclManager: KclManager
       // end dependencies
       initialSketchSolvePlane?:
@@ -291,7 +289,7 @@ export const sketchSolveMachine = setup({
       sketchId: input?.sketchId || 0,
       sceneInfra: input.kclManager.sceneInfra,
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
-      rustContext: input.rustContext,
+      rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
     }
   },
