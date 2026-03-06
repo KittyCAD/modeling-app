@@ -191,6 +191,7 @@ export type SpriteLabel = Sprite & {
     dimensionLabel: string
     constraintColor: number
     showFnIcon: boolean
+    textWidthPx?: number
   }
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>

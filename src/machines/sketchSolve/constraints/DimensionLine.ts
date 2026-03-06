@@ -39,7 +39,6 @@ const LABEL_CANVAS_PADDING = 4 // horizontal padding on each side
 export const LABEL_CANVAS_HEIGHT = 32
 export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
-export const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
 const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
@@ -159,6 +158,7 @@ export function updateDimensionLine(
 
   group.visible = true
   const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+  let labelTextWidthPx = 0
 
   // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
   for (const child of group.children) {
@@ -171,9 +171,14 @@ export function updateDimensionLine(
     child.visible = isLabelVisual ? showLabel : true
   }
 
+  if (showLabel) {
+    const theme = getResolvedTheme(sceneInfra.theme)
+    const constraintColor = CONSTRAINT_COLOR[theme]
+    labelTextWidthPx = updateLabel(group, obj, constraintColor, distance, scale)
+  }
+
   // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
-  const halfGap =
-    showLabel && !isDiameter ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
+  const halfGap = showLabel && !isDiameter ? labelTextWidthPx * 0.5 * scale : 0
   const gapStart = lineCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
   const gapEnd = lineCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(
@@ -218,12 +223,6 @@ export function updateDimensionLine(
   arrow2.position.copy(end)
   arrow2.rotation.z = angle - Math.PI / 2
   arrow2.scale.setScalar(scale)
-
-  if (showLabel) {
-    const theme = getResolvedTheme(sceneInfra.theme)
-    const constraintColor = CONSTRAINT_COLOR[theme]
-    updateLabel(group, obj, constraintColor, distance, scale)
-  }
 
   // Update hit areas for lines
   const hitAreas = group.children.filter(
@@ -301,6 +300,7 @@ export function updateLabel(
         // Measure text to compute needed canvas width
         ctx.font = '24px sans-serif'
         const textMetrics = ctx.measureText(dimensionLabel)
+        label.userData.textWidthPx = textMetrics.width
         const iconWidth = showFnIcon
           ? FUNCTION_ICON_SIZE + FUNCTION_ICON_GAP
           : 0
@@ -373,7 +373,11 @@ export function updateLabel(
         1
       )
     }
+
+    return label.userData.textWidthPx ?? 0
   }
+
+  return 0
 }
 
 function formatNumber(apiNumber: Number) {

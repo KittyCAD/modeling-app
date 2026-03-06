@@ -2,7 +2,10 @@ import type {
   Number as ApiNumber,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
+import {
+  DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_HIT_AREA,
+} from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
@@ -19,7 +22,7 @@ import {
 import {
   ANGLE_CONSTRAINT_ARC_BODY_ROLE,
   ANGLE_CONSTRAINT_GUIDE_BODY_ROLE,
-  type ArcDimensionLineRenderInput,
+  type ArcLineInfo,
   type LineSegment,
   updateArcDimensionLine,
 } from '@src/machines/sketchSolve/constraints/ArcDimensionLine'
@@ -78,6 +81,14 @@ function initializeAngleConstraintLines(
   group: Group,
   resources: ConstraintResources
 ) {
+  for (const child of group.children.filter(
+    (child) =>
+      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+      child.userData.subtype === DISTANCE_CONSTRAINT_BODY
+  )) {
+    group.remove(child)
+  }
+
   const bodyLines = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
   ) as Line2[]
@@ -101,7 +112,7 @@ function initializeAngleConstraintLines(
 function calculateArcRenderInput(
   obj: ApiObject,
   objects: ApiObject[]
-): ArcDimensionLineRenderInput | null {
+): ArcLineInfo | null {
   if (!isAngleConstraint(obj)) {
     return null
   }
@@ -113,37 +124,6 @@ function calculateArcRenderInput(
     return null
   }
 
-  const angle = obj.kind.constraint.angle
-  const labelPosition = getDefaultAngleLabelPosition(line1, line2, angle)
-  if (!labelPosition) {
-    return null
-  }
-
-  return {
-    line1,
-    line2,
-    labelPosition,
-    angle,
-  }
-}
-
-export function normalizeAngleRad(angle: ApiNumber) {
-  const angleRadians =
-    angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
-  const normalized = ((angleRadians % TWO_PI) + TWO_PI) % TWO_PI
-  return normalized
-}
-
-// Major angles are ones > 180deg
-export function isMajorConstraintAngle(angle: ApiNumber) {
-  return normalizeAngleRad(angle) > Math.PI
-}
-
-function getDefaultAngleLabelPosition(
-  line1: LineSegment,
-  line2: LineSegment,
-  angle: ApiNumber
-): Coords2d | null {
   const center = getLineIntersection(line1, line2)
   if (!center) {
     return null
@@ -174,14 +154,34 @@ function getDefaultAngleLabelPosition(
       )[1]
 
   //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
-  const signedAngle = normalizeAngleRad(angle)
+  const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
 
-  let result = scaleVec(normalizeVec(line1Dir), radiusSigned)
-  console.log(signedAngle)
-  result = rotateVec2d(result, signedAngle / 2)
-  result = addVec(center, result)
+  const startVector = scaleVec(normalizeVec(line1Dir), radiusSigned)
+  const startAngle = Math.atan2(startVector[1], startVector[0])
+  const labelPosition = addVec(
+    center,
+    rotateVec2d(startVector, signedAngle / 2)
+  )
 
-  return result
+  return {
+    labelPosition,
+    center,
+    radius: Math.abs(radiusSigned),
+    startAngle,
+    sweepAngle: signedAngle,
+  }
+}
+
+export function normalizeAngleRad(angle: ApiNumber) {
+  const angleRadians =
+    angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
+  const normalized = ((angleRadians % TWO_PI) + TWO_PI) % TWO_PI
+  return normalized
+}
+
+// Major angles are ones > 180deg
+export function isMajorConstraintAngle(angle: ApiNumber) {
+  return normalizeAngleRad(angle) > Math.PI
 }
 
 // finds the shortest radius on the range of projected distances of the 2 lines.
