@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing sketch_block_lines_coincident_simple.kcl
+description: Variables in memory after executing sketch_block_region_from_point_in_triangle.kcl
 ---
 {
   "__sketch_1_on": {
@@ -35,10 +35,204 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
       }
     }
   },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "r": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.20674594013619027,
+            -0.06852748084846844
+          ],
+          "tag": {
+            "commentStart": 65,
+            "end": 70,
+            "moduleId": 0,
+            "start": 65,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            3.3967460225035606,
+            -0.06852748084842362
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.3967460225035606,
+            -0.06852748084842362
+          ],
+          "tag": null,
+          "to": [
+            3.3967460225035526,
+            -0.06852748084837883
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.3967460225035526,
+            -0.06852748084837883
+          ],
+          "tag": {
+            "commentStart": 137,
+            "end": 142,
+            "moduleId": 0,
+            "start": 137,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            1.5950000411833656,
+            4.787054952178176
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.5950000411833656,
+            4.787054952178176
+          ],
+          "tag": null,
+          "to": [
+            1.5950000411833656,
+            4.78705495217822
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.5950000411833656,
+            4.78705495217822
+          ],
+          "tag": {
+            "commentStart": 254,
+            "end": 259,
+            "moduleId": 0,
+            "start": 254,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -0.2067459401361986,
+            -0.06852748084851323
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -0.20674594013619027,
+          -0.06852748084846844
+        ],
+        "to": [
+          -0.20674594013619027,
+          -0.06852748084846844
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "mm"
+    }
+  },
   "s": {
     "type": "Object",
     "value": {
-      "l1": {
+      "line1": {
         "type": "Segment",
         "value": {
           "repr": {
@@ -50,7 +244,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                   "line": {
                     "start": [
                       {
-                        "n": 1.0,
+                        "n": -0.20674594013619027,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +252,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 2.0,
+                        "n": -0.06852748084846844,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +262,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     ],
                     "end": [
                       {
-                        "n": 3.0,
+                        "n": 3.3967460225035606,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +270,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 4.0,
+                        "n": -0.06852748084842362,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -87,33 +281,33 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "ctor": {
                       "start": {
                         "x": {
-                          "type": "Number",
-                          "value": 1.0,
+                          "type": "Var",
+                          "value": 0.0,
                           "units": "Mm"
                         },
                         "y": {
-                          "type": "Number",
-                          "value": 2.0,
+                          "type": "Var",
+                          "value": 0.0,
                           "units": "Mm"
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 10.0,
+                          "value": 3.88,
                           "units": "Mm"
                         },
                         "y": {
                           "type": "Var",
-                          "value": 11.0,
+                          "value": 0.0,
                           "units": "Mm"
                         }
                       }
                     },
                     "start_object_id": 2,
                     "end_object_id": 3,
-                    "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
                     "construction": false
                   }
                 },
@@ -151,26 +345,26 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
-                  "value": "l1"
+                  "value": "line1"
                 }
               }
             }
           }
         }
       },
-      "l2": {
+      "line2": {
         "type": "Segment",
         "value": {
           "repr": {
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
+                "objectId": 7,
                 "kind": {
                   "line": {
                     "start": [
                       {
-                        "n": 14.0,
+                        "n": 3.3967460225035526,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -178,7 +372,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 15.0,
+                        "n": -0.06852748084837883,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -188,7 +382,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     ],
                     "end": [
                       {
-                        "n": 12.0,
+                        "n": 1.5950000411833656,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -196,7 +390,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 13.0,
+                        "n": 4.787054952178176,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -208,32 +402,32 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                       "start": {
                         "x": {
                           "type": "Var",
-                          "value": 10.0,
+                          "value": 3.88,
                           "units": "Mm"
                         },
                         "y": {
                           "type": "Var",
-                          "value": 11.0,
+                          "value": 0.0,
                           "units": "Mm"
                         }
                       },
                       "end": {
                         "x": {
-                          "type": "Number",
-                          "value": 12.0,
+                          "type": "Var",
+                          "value": 0.92,
                           "units": "Mm"
                         },
                         "y": {
-                          "type": "Number",
-                          "value": 13.0,
+                          "type": "Var",
+                          "value": 4.67,
                           "units": "Mm"
                         }
                       }
                     },
-                    "start_object_id": 7,
-                    "end_object_id": 8,
-                    "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
+                    "start_object_id": 5,
+                    "end_object_id": 6,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
                     "construction": false
                   }
                 },
@@ -271,26 +465,26 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
-                  "value": "l2"
+                  "value": "line2"
                 }
               }
             }
           }
         }
       },
-      "l3": {
+      "line3": {
         "type": "Segment",
         "value": {
           "repr": {
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 14,
+                "objectId": 11,
                 "kind": {
                   "line": {
                     "start": [
                       {
-                        "n": 40.0,
+                        "n": 1.5950000411833656,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -298,7 +492,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 41.0,
+                        "n": 4.78705495217822,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -308,7 +502,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     ],
                     "end": [
                       {
-                        "n": 23.0,
+                        "n": -0.2067459401361986,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -316,7 +510,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 24.0,
+                        "n": -0.06852748084851323,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -328,32 +522,32 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                       "start": {
                         "x": {
                           "type": "Var",
-                          "value": 20.0,
+                          "value": 0.92,
                           "units": "Mm"
                         },
                         "y": {
                           "type": "Var",
-                          "value": 21.0,
+                          "value": 4.67,
                           "units": "Mm"
                         }
                       },
                       "end": {
                         "x": {
-                          "type": "Number",
-                          "value": 23.0,
+                          "type": "Var",
+                          "value": -0.03,
                           "units": "Mm"
                         },
                         "y": {
-                          "type": "Number",
-                          "value": 24.0,
+                          "type": "Var",
+                          "value": -0.04,
                           "units": "Mm"
                         }
                       }
                     },
-                    "start_object_id": 12,
-                    "end_object_id": 13,
-                    "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
+                    "start_object_id": 9,
+                    "end_object_id": 10,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
                     "construction": false
                   }
                 },
@@ -391,127 +585,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
-                  "value": "l3"
-                }
-              }
-            }
-          }
-        }
-      },
-      "l4": {
-        "type": "Segment",
-        "value": {
-          "repr": {
-            "Solved": {
-              "segment": {
-                "id": "[uuid]",
-                "objectId": 17,
-                "kind": {
-                  "line": {
-                    "start": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 31.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 40.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 41.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 31.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 32.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 33.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "start_object_id": 15,
-                    "end_object_id": 16,
-                    "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
-                  }
-                },
-                "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "kind": "Custom",
-                  "objectId": 0,
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
-                  },
-                  "type": "plane",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  }
-                },
-                "sketchId": "[uuid]",
-                "tag": {
-                  "type": "TagIdentifier",
-                  "value": "l4"
+                  "value": "line3"
                 }
               }
             }
@@ -533,20 +607,20 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    1.0,
-                    2.0
+                    -0.20674594013619027,
+                    -0.06852748084846844
                   ],
                   "tag": {
-                    "commentStart": 102,
-                    "end": 104,
+                    "commentStart": 65,
+                    "end": 70,
                     "moduleId": 0,
-                    "start": 102,
+                    "start": 65,
                     "type": "TagDeclarator",
-                    "value": "l1"
+                    "value": "line1"
                   },
                   "to": [
-                    3.0,
-                    4.0
+                    3.3967460225035606,
+                    -0.06852748084842362
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -557,13 +631,13 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    3.0,
-                    4.0
+                    3.3967460225035606,
+                    -0.06852748084842362
                   ],
                   "tag": null,
                   "to": [
-                    14.0,
-                    15.0
+                    3.3967460225035526,
+                    -0.06852748084837883
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -574,20 +648,20 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    14.0,
-                    15.0
+                    3.3967460225035526,
+                    -0.06852748084837883
                   ],
                   "tag": {
-                    "commentStart": 258,
-                    "end": 260,
+                    "commentStart": 137,
+                    "end": 142,
                     "moduleId": 0,
-                    "start": 258,
+                    "start": 137,
                     "type": "TagDeclarator",
-                    "value": "l2"
+                    "value": "line2"
                   },
                   "to": [
-                    12.0,
-                    13.0
+                    1.5950000411833656,
+                    4.787054952178176
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -598,13 +672,13 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    12.0,
-                    13.0
+                    1.5950000411833656,
+                    4.787054952178176
                   ],
                   "tag": null,
                   "to": [
-                    40.0,
-                    41.0
+                    1.5950000411833656,
+                    4.78705495217822
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -615,61 +689,20 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    40.0,
-                    41.0
+                    1.5950000411833656,
+                    4.78705495217822
                   ],
                   "tag": {
-                    "commentStart": 423,
-                    "end": 425,
+                    "commentStart": 254,
+                    "end": 259,
                     "moduleId": 0,
-                    "start": 423,
+                    "start": 254,
                     "type": "TagDeclarator",
-                    "value": "l3"
+                    "value": "line3"
                   },
                   "to": [
-                    23.0,
-                    24.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    23.0,
-                    24.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    30.0,
-                    31.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    30.0,
-                    31.0
-                  ],
-                  "tag": {
-                    "commentStart": 485,
-                    "end": 487,
-                    "moduleId": 0,
-                    "start": 485,
-                    "type": "TagDeclarator",
-                    "value": "l4"
-                  },
-                  "to": [
-                    40.0,
-                    41.0
+                    -0.2067459401361986,
+                    -0.06852748084851323
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -708,12 +741,12 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
               },
               "start": {
                 "from": [
-                  1.0,
-                  2.0
+                  -0.20674594013619027,
+                  -0.06852748084846844
                 ],
                 "to": [
-                  1.0,
-                  2.0
+                  -0.20674594013619027,
+                  -0.06852748084846844
                 ],
                 "units": "mm",
                 "tag": null,
@@ -723,40 +756,36 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 }
               },
               "tags": {
-                "l1": {
+                "line1": {
                   "type": "TagIdentifier",
-                  "value": "l1"
+                  "value": "line1"
                 },
-                "l2": {
+                "line2": {
                   "type": "TagIdentifier",
-                  "value": "l2"
+                  "value": "line2"
                 },
-                "l3": {
+                "line3": {
                   "type": "TagIdentifier",
-                  "value": "l3"
-                },
-                "l4": {
-                  "type": "TagIdentifier",
-                  "value": "l4"
+                  "value": "line3"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "mm",
-              "isClosed": "no"
+              "isClosed": "implicitly"
             }
           }
         },
         "constrainable": false
       },
-      "p1": {
+      "point1": {
         "type": "Segment",
         "value": {
           "repr": {
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
+                "objectId": 16,
                 "kind": {
                   "point": {
                     "position": [
@@ -769,7 +798,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 4.0,
+                        "n": 0.1,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -780,18 +809,18 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "ctor": {
                       "position": {
                         "x": {
-                          "type": "Number",
+                          "type": "Var",
                           "value": 3.0,
                           "units": "Mm"
                         },
                         "y": {
-                          "type": "Number",
-                          "value": 4.0,
+                          "type": "Var",
+                          "value": 0.1,
                           "units": "Mm"
                         }
                       }
                     },
-                    "freedom": "Fixed"
+                    "freedom": "Free"
                   }
                 },
                 "surface": {
@@ -828,93 +857,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
-                  "value": "p1"
-                }
-              }
-            }
-          }
-        }
-      },
-      "p2": {
-        "type": "Segment",
-        "value": {
-          "repr": {
-            "Solved": {
-              "segment": {
-                "id": "[uuid]",
-                "objectId": 10,
-                "kind": {
-                  "point": {
-                    "position": [
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 15.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "position": {
-                        "x": {
-                          "type": "Number",
-                          "value": 14.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 15.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "freedom": "Fixed"
-                  }
-                },
-                "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "kind": "Custom",
-                  "objectId": 0,
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
-                  },
-                  "type": "plane",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  }
-                },
-                "sketchId": "[uuid]",
-                "tag": {
-                  "type": "TagIdentifier",
-                  "value": "p2"
+                  "value": "point1"
                 }
               }
             }
