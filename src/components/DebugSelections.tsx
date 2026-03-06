@@ -16,13 +16,10 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { reportRejection } from '@src/lib/trap'
 
-type SingletonDeps = Pick<
-  ReturnType<typeof useSingletons>,
-  'kclManager' | 'engineCommandManager'
->
+type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
 
 async function clearSceneSelection(deps: SingletonDeps) {
-  await deps.engineCommandManager.sendSceneCommand({
+  await deps.kclManager.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_clear',
@@ -33,7 +30,7 @@ async function clearSceneSelection(deps: SingletonDeps) {
 
 // Pass in a list of scene ids to select in the 3d scene
 async function sceneSelection(ids: string[], deps: SingletonDeps) {
-  await deps.engineCommandManager.sendSceneCommand({
+  await deps.kclManager.engineCommandManager.sendSceneCommand({
     cmd_id: uuidv4(),
     type: 'modeling_cmd_req',
     cmd: {
@@ -48,7 +45,7 @@ function formatArtifactGraph(
   wasmInstance: ModuleType,
   deps: SingletonDeps
 ) {
-  const idsWithTypes = Array.from(artifactGraph).map(([key, artifact]) => {
+  const idsWithTypes = Array.from(artifactGraph).map(([_, artifact]) => {
     const type = artifact.type
     const id = artifact.id
     let codeRefToIds: string[] = []
@@ -119,7 +116,7 @@ function codeRangeToIds(
 ): string[] {
   if (!range) return []
 
-  const { kclManager, engineCommandManager } = deps
+  const { kclManager } = deps
   const selections = {
     graphSelections: [
       {
@@ -151,7 +148,7 @@ function codeRangeToIds(
     artifactGraph: kclManager.artifactGraph,
     artifactIndex: kclManager.artifactIndex,
     systemDeps: {
-      engineCommandManager: engineCommandManager,
+      engineCommandManager: kclManager.engineCommandManager,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
       wasmInstance: wasmInstance,
     },
@@ -251,13 +248,12 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager, engineCommandManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
       kclManager,
-      engineCommandManager,
     }),
-    [kclManager, engineCommandManager]
+    [kclManager]
   )
   const [selectedId, _setSelectedId] = useState('')
   const [selectedRange, _setSelectedRange] = useState('')

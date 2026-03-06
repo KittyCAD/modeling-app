@@ -93,7 +93,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager, rustContext } = app.singletons
+    const { kclManager } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -224,7 +224,7 @@ export const fileLoader =
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
     )
-    await rustContext.sendOpenProject(project, currentFilePath)
+    await kclManager.rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
