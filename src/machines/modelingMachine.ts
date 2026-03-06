@@ -166,6 +166,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
@@ -195,7 +196,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
-import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
@@ -293,6 +294,7 @@ export type ModelingMachineEvent =
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
+  | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD' }
@@ -4268,6 +4270,46 @@ export const modelingMachine = setup({
         )
       }
     ),
+    blendAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Blend'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph } = input.kclManager
+        const astResult = addBlend({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     deleteSelectionAstMod: fromPromise(
       ({
         input: { selectionRanges, systemDeps },
@@ -4710,9 +4752,15 @@ export const modelingMachine = setup({
           fileName += `.${data.type}`
         }
 
+        const { up, scale, ...formatData } = data
         const format = {
-          ...data,
+          ...formatData,
         } as Partial<OutputFormat3d>
+        const exportScale =
+          scale ??
+          defaultUnit?.current ??
+          // Fall back to app default units if the project setting is absent.
+          DEFAULT_DEFAULT_LENGTH_UNIT
 
         // Set all the un-configurable defaults here.
         if (format.type === 'gltf') {
@@ -4725,31 +4773,38 @@ export const modelingMachine = setup({
           format.type === 'step' ||
           format.type === 'stl'
         ) {
-          // Set the default coords.
-          // In the future we can make this configurable.
-          // But for now, its probably best to keep it consistent with the
-          // UI.
-          format.coords = {
-            forward: {
-              axis: 'y',
-              direction: 'negative',
-            },
-            up: {
-              axis: 'z',
-              direction: 'positive',
-            },
-          }
+          // Configure output orientation from export options.
+          format.coords =
+            up === 'y'
+              ? {
+                  forward: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                  up: {
+                    axis: 'y',
+                    direction: 'positive',
+                  },
+                }
+              : {
+                  forward: {
+                    axis: 'y',
+                    direction: 'negative',
+                  },
+                  up: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                }
         }
 
         if (
           format.type === 'obj' ||
           format.type === 'stl' ||
-          format.type === 'ply'
+          format.type === 'ply' ||
+          format.type === 'step'
         ) {
-          if (!defaultUnit?.current) {
-            return new Error('No default unit provided')
-          }
-          format.units = defaultUnit.current
+          format.units = exportScale
         }
 
         if (format.type === 'ply' || format.type === 'stl') {
@@ -5249,6 +5304,10 @@ export const modelingMachine = setup({
 
         Chamfer: {
           target: 'Applying chamfer',
+        },
+
+        Blend: {
+          target: 'Applying blend',
         },
 
         Appearance: {
@@ -7041,6 +7100,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying blend': {
+      invoke: {
+        src: 'blendAstMod',
+        id: 'blendAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Blend') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }

@@ -10,7 +10,8 @@ Given an edge index, find its ID.
 ```kcl
 edgeId(
   @body: Solid,
-  index: number(_),
+  index?: number(_),
+  closestTo?: Point3d,
 ): Edge
 ```
 
@@ -21,7 +22,8 @@ edgeId(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges we're trying to find | Yes |
-| `index` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Edge to identify. The index is a stable ordering of edges, used when you can't get the usual ID of an edge. | Yes |
+| `index` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Edge to identify. The index is a stable ordering of edges, used when you can't get the usual ID of an edge. | No |
+| `closestTo` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | Query the edge closest to this point. Uses absolute global coordinates. | No |
 
 ### Returns
 
@@ -48,6 +50,28 @@ cylinder = startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-edgeId0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+startSketchOn(XY)
+  |> rectangle(width = 10, height = 10, center = [0, 0])
+  |> extrude(length = 2)
+  |> fillet(radius = 0.5, tags = [edgeId(closestTo = [5, 0, 2])])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the edgeId function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-edgeId1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-edgeId1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

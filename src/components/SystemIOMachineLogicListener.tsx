@@ -34,8 +34,9 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { auth, billing, settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
+  // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()

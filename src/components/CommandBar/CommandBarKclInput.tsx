@@ -22,7 +22,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -33,6 +33,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
 import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { Compartment, EditorState } from '@codemirror/state'
+import type { KclManager } from '@src/lang/KclManager'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -62,6 +63,7 @@ function CommandBarKclInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'kcl'
@@ -69,11 +71,10 @@ function CommandBarKclInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  executingEditor: KclManager
 }) {
-  const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
-  const rustContext = kclManager.rustContext
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { commands, settings, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -179,7 +180,7 @@ function CommandBarKclInput({
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
-    rustContext,
+    rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,

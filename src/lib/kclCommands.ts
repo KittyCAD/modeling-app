@@ -19,7 +19,6 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type { SystemIOActor } from '@src/lib/app'
 import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -33,6 +32,7 @@ import type { Project } from '@src/lib/project'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import fsZds from '@src/lib/fs-zds'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
