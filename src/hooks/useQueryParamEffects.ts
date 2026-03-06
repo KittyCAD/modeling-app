@@ -119,7 +119,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       commandData.argDefaultValues?.projectName
     ) {
       const projectName = commandData.argDefaultValues.projectName
-      const systemIO = app.singletons.systemIOActor
+      const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectName)
 
