@@ -10,8 +10,6 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -141,8 +139,6 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
     input: {} as {
       // dependencies
-      sceneInfra: SceneInfra
-      sceneEntitiesManager: SceneEntities
       rustContext: RustContext
       kclManager: KclManager
       // end dependencies
@@ -243,8 +239,8 @@ export const sketchSolveMachine = setup({
         sceneGraphDelta: input.initialSceneGraphDelta,
       },
       sketchId: input?.sketchId || 0,
-      sceneInfra: input.sceneInfra,
-      sceneEntitiesManager: input.sceneEntitiesManager,
+      sceneInfra: input.kclManager.sceneInfra,
+      sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.rustContext,
       kclManager: input.kclManager,
     }
