@@ -97,11 +97,13 @@ export default class RustContext {
     )
   }
 
-  async sendGetProject() {
+  /** Helper to verify the state on the WASM side, useful for testing */
+  async getProjectState() {
     return this.ctxInstance?.get_project(this.projectId)
   }
 
-  async sendGetFile(fileId: number) {
+  /** Helper to verify the state on the WASM side, useful for testing */
+  async getFileState(fileId: number) {
     return this.ctxInstance?.get_file(this.projectId, fileId)
   }
 

@@ -424,15 +424,15 @@ describe('Project file lifecycle', () => {
       'not-important-to-test',
       projectFiles
     )
-    expect(await rustContextInThisFile.sendGetProject()).toEqual(projectFiles)
+    expect(await rustContextInThisFile.getProjectState()).toEqual(projectFiles)
 
     const newText = 'Things sure are changing.'
     await rustContextInThisFile.sendUpdateFile(1, newText)
-    expect((await rustContextInThisFile.sendGetProject())[1]).toHaveProperty(
+    expect((await rustContextInThisFile.getProjectState())[1]).toHaveProperty(
       'text',
       newText
     )
-    expect(await rustContextInThisFile.sendGetFile(1)).toHaveProperty(
+    expect(await rustContextInThisFile.getFileState(1)).toHaveProperty(
       'text',
       newText
     )
