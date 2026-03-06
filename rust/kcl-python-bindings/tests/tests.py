@@ -284,6 +284,37 @@ async def test_kcl_execute_and_measure():
 
 
 @pytest.mark.asyncio
+async def test_kcl_execute_code_and_bounding_box():
+    code = """
+box_width = 25
+box_depth = 25
+box_height = 50
+
+box_sketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = box_width)
+  |> yLine(length = box_depth)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+
+box3D = extrude(box_sketch, length = box_height)
+"""
+    response = await kcl.execute_code_and_bounding_box(code)
+    assert response is not None
+
+    center = response.get_center()
+    dimensions = response.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25.0, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
     files = await kcl.execute_and_export(lego_file, kcl.FileExportFormat.Step)
