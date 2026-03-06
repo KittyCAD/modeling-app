@@ -2028,7 +2028,7 @@ export class KclManager extends EventTarget {
                     this.fileWatcherKey,
                     this.onFileWatchEvent
                   )
-                }, 30)
+                }, 1_000)
               }
             })
             .catch((err: Error) => {
