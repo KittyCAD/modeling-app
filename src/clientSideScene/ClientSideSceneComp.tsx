@@ -49,7 +49,9 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isTween, setIsTween] = useState(false)
 
   const { state } = useModelingContext()
-  const { sceneInfra } = useSingletons()
+  const {
+    kclManager: { sceneInfra },
+  } = useSingletons()
 
   useEffect(() => {
     sceneInfra.camControls.setIsCamMovingCallback(
@@ -77,8 +79,10 @@ export const ClientSideScene = ({
   cameraControls: CameraSystem
   enableTouchControls: boolean
 }) => {
-  const { engineCommandManager, sceneEntitiesManager, sceneInfra } =
-    useSingletons()
+  const {
+    engineCommandManager,
+    kclManager: { sceneEntitiesManager, sceneInfra },
+  } = useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -764,7 +768,9 @@ const throttled = (sceneInfra: SceneInfra) =>
 
 export const CamDebugSettings = () => {
   const { commands } = useApp()
-  const { sceneInfra } = useSingletons()
+  const {
+    kclManager: { sceneInfra },
+  } = useSingletons()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties
   )

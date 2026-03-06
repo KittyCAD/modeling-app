@@ -46,7 +46,7 @@ fn solver_unit(exec_state: &ExecState) -> UnitLength {
     exec_state.length_unit()
 }
 
-pub(super) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
+pub(crate) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
     NumericType::Known(UnitType::Length(solver_unit(exec_state)))
 }
 

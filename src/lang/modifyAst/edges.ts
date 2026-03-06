@@ -218,6 +218,206 @@ export function addChamfer({
   return { modifiedAst, pathToNode: pathToNodes }
 }
 
+export function addBlend({
+  ast,
+  artifactGraph,
+  edges,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  edges: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can freely edit it
+  let modifiedAst = structuredClone(ast)
+
+  // 2. Validate the edge selection
+  const selectedEdges = getEdgeSelections(edges)
+  if (selectedEdges.length !== 2) {
+    return new Error('Blend requires exactly two selected edges.')
+  }
+
+  // 3. Build two edges and use them in blend([edge1, edge2])
+  const edgeExprs: Expr[] = []
+  for (const edgeSelection of selectedEdges) {
+    const edgeResult = buildEdgeExpr(
+      edgeSelection,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(edgeResult)) return edgeResult
+    modifiedAst = edgeResult.modifiedAst
+    edgeExprs.push(edgeResult.edgeExpr)
+  }
+
+  const call = createCallExpressionStdLibKw(
+    'blend',
+    createArrayExpression(edgeExprs),
+    []
+  )
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.BLEND,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
+
+function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
+  return [
+    ...edges.graphSelections,
+    ...edges.otherSelections.filter(
+      (selection): selection is EnginePrimitiveSelection =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    ),
+  ]
+}
+
+function buildEdgeExpr(
+  edgeSelection: EdgeSelectionForExpr,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
+  if (
+    typeof edgeSelection === 'object' &&
+    'type' in edgeSelection &&
+    edgeSelection.type === 'enginePrimitive'
+  ) {
+    if (!edgeSelection.parentEntityId) {
+      return new Error(
+        'Blend primitive edge selections must include a parent entity.'
+      )
+    }
+
+    const sourceSurfaceSelection = getBodySelectionFromPrimitiveParentEntityId(
+      edgeSelection.parentEntityId,
+      artifactGraph
+    )
+    if (!sourceSurfaceSelection) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+
+    const sourceSurfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [sourceSurfaceSelection],
+        otherSelections: [],
+      },
+      ast,
+      wasmInstance
+    )
+    if (err(sourceSurfaceVars)) return sourceSurfaceVars
+    if (sourceSurfaceVars.exprs.length !== 1) {
+      return new Error(
+        'Expected exactly one source surface for each blend edge.'
+      )
+    }
+
+    const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+    const primitiveEdgeIdExpr = createCallExpressionStdLibKw(
+      'edgeId',
+      structuredClone(sourceSurfaceExpr),
+      [
+        createLabeledArg(
+          'index',
+          createLiteral(edgeSelection.primitiveIndex, wasmInstance)
+        ),
+      ]
+    )
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        sourceSurfaceExpr,
+        [createLabeledArg('edge', primitiveEdgeIdExpr)]
+      ),
+    }
+  }
+
+  const graphEdgeSelection = edgeSelection as Selection
+  const edgeArtifact = graphEdgeSelection.artifact
+  if (
+    !edgeArtifact ||
+    (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+  ) {
+    return new Error(
+      'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
+    )
+  }
+
+  const tagResult = modifyAstWithTagsForSelection(
+    ast,
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  if (err(tagResult)) return tagResult
+  if (tagResult.tags.length !== 1) {
+    return new Error('Expected exactly one tag for each blend edge.')
+  }
+
+  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  if (edgeExpr.type === 'Name') {
+    return {
+      modifiedAst: tagResult.modifiedAst,
+      edgeExpr,
+    }
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    graphEdgeSelection,
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return sourceSurfaceArtifact
+  }
+
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sourceSurfaceArtifact as Artifact,
+          codeRef: sourceSurfaceArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars)) return sourceSurfaceVars
+  if (sourceSurfaceVars.exprs.length !== 1) {
+    return new Error('Expected exactly one source surface for each blend edge.')
+  }
+
+  const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+
+  return {
+    modifiedAst: tagResult.modifiedAst,
+    edgeExpr: createCallExpressionStdLibKw(
+      'getBoundedEdge',
+      sourceSurfaceExpr,
+      [createLabeledArg('edge', edgeExpr)]
+    ),
+  }
+}
+
 // Utility functions
 
 /**

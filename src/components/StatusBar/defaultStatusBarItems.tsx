@@ -1,5 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
+import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
@@ -7,9 +8,7 @@ import {
 } from '@src/components/environment/Environment'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import type { Location } from 'react-router-dom'
 
 export const defaultGlobalStatusBarItems = ({
@@ -31,14 +30,8 @@ export const defaultGlobalStatusBarItems = ({
       }
     : {
         id: 'download-desktop-app',
-        element: 'externalLink',
-        label: 'Download the app',
-        href: withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`),
-        icon: 'download',
-        toolTip: {
-          children:
-            "The present web app is limited in features. We don't want you to miss out!",
-        },
+        'data-testid': 'download-desktop-app',
+        component: DownloadDesktopApp,
       },
   ...(isDesktop()
     ? [
