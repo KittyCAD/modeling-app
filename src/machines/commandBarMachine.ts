@@ -6,6 +6,7 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import { isDesktop } from '@src/lib/isDesktop'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -324,9 +325,15 @@ export const commandBarMachine = setup({
             : !argConfig.required)
       )
     },
+    // Only for add-kcl-file-to-project on web
     'All required arguments provided': ({ context }) => {
+      if (isDesktop()) return false
       const { selectedCommand, argumentsToSubmit } = context
-      if (!selectedCommand?.args) return false
+      if (
+        selectedCommand?.name !== 'add-kcl-file-to-project' ||
+        !selectedCommand?.args
+      )
+        return false
       return Object.entries(selectedCommand.args).every(
         ([argName, argConfig]) => {
           if (

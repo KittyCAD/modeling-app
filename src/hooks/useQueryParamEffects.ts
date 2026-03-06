@@ -129,7 +129,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
           sendCommand()
         }
       })
-
       return () => subscription.unsubscribe()
     }
 
