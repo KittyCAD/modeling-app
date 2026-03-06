@@ -328,6 +328,23 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
 export class KclManager extends EventTarget {
+  public pathSignal = signal('')
+  get path() {
+    return this.pathSignal.value
+  }
+  set path(newPath: string) {
+    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
+
+    if (newPath.length > 0) {
+      window.electron?.watchFileOn(
+        newPath,
+        this.fileWatcherKey,
+        this.onFileWatchEvent
+      )
+    }
+
+    this.pathSignal.value = newPath
+  }
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -822,8 +839,9 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(systemDeps: SystemDeps) {
+  constructor(path: string, systemDeps: SystemDeps) {
     super()
+    this.path = path
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
@@ -882,6 +900,11 @@ export class KclManager extends EventTarget {
       this.fileWatcherKey,
       this.onFileWatchEvent
     )
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
   }
 
   /** Clean up listeners, watchers, etc */
@@ -2025,6 +2048,18 @@ export class KclManager extends EventTarget {
           fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
+            .then(() => {
+              // After a cooldown, start watching this file again on disk.
+              if (window.electron && this.path.length) {
+                setTimeout(() => {
+                  window.electron?.watchFileOn(
+                    this.path,
+                    this.fileWatcherKey,
+                    this.onFileWatchEvent
+                  )
+                }, 1_000)
+              }
+            })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)
