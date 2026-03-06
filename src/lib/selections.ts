@@ -163,6 +163,7 @@ async function getRegionSelectionFromEntity(
 
   return {
     type: 'region',
+    id: regionEntityId,
     point,
     sketchId,
   }
@@ -447,7 +448,7 @@ export function handleSelectionBatch({
     }
     if (isRegionSelection(s)) {
       selectionToEngine.push({
-        id: s.sketchId,
+        id: s.id,
         range: defaultSourceRange(),
       })
     }

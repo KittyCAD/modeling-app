@@ -279,6 +279,7 @@ s = sketch(on = XY) {
         otherSelections: [
           {
             type: 'region',
+            id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: line1.pathId,
           },
@@ -357,6 +358,7 @@ t = sketch(on = XY) {
         otherSelections: [
           {
             type: 'region',
+            id: 'region-1',
             point: { x: 1, y: 1 },
             sketchId: line1.pathId,
           },

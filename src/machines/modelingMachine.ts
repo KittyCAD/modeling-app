@@ -1635,9 +1635,7 @@ export const modelingMachine = setup({
           const shouldDeselect = selectionRanges.otherSelections.some(
             (selection) =>
               isRegionSelection(selection) &&
-              selection.sketchId === setSelections.selection.sketchId &&
-              selection.point.x === setSelections.selection.point.x &&
-              selection.point.y === setSelections.selection.point.y
+              selection.id === setSelections.selection.id
           )
 
           const otherSelections = kclManager.isShiftDown
@@ -1646,9 +1644,7 @@ export const modelingMachine = setup({
                   (selection) =>
                     !(
                       isRegionSelection(selection) &&
-                      selection.sketchId === setSelections.selection.sketchId &&
-                      selection.point.x === setSelections.selection.point.x &&
-                      selection.point.y === setSelections.selection.point.y
+                      selection.id === setSelections.selection.id
                     )
                 )
               : [...selectionRanges.otherSelections, setSelections.selection]
