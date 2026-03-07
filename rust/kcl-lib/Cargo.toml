@@ -66,7 +66,7 @@ indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
 kcl-derive-docs = { version = "0.2.132", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.2.132", path = "../kcl-error" }
-kcl-ezpz = { workspace = true }
+ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
