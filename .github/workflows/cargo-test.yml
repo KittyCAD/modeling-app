@@ -149,7 +149,7 @@ jobs:
           cd rust
           cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
       - name: Upload archive to workflow
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
