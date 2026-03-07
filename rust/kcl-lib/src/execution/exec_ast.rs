@@ -2701,13 +2701,18 @@ impl Node<BinaryExpression> {
                     return Ok(KclValue::Bool { value: true, meta });
                 }
                 // Different sketch variables.
-                (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
-                    // TODO: sketch-api: Collapse the two sketch variables into
-                    // one constraint variable.
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "TODO: Different sketch variables".to_owned(),
-                        vec![self.into()],
-                    )));
+                (KclValue::SketchVar { value: var0 }, KclValue::SketchVar { value: var1, .. }) => {
+                    let constraint = Constraint::ScalarEqual(
+                        var0.id.to_constraint_id(self.as_source_range())?,
+                        var1.id.to_constraint_id(self.as_source_range())?,
+                    );
+                    let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                        let message = "Being inside a sketch block should have already been checked above".to_owned();
+                        debug_assert!(false, "{}", &message);
+                        return Err(internal_err(message, self));
+                    };
+                    sketch_block_state.solver_constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
                 }
                 // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
