@@ -943,7 +943,8 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   } else {
     const result = retrieveNonDefaultPlaneSelectionFromOpArg(
       operation.unlabeledArg,
-      artifactGraph
+      artifactGraph,
+      code
     )
     if (err(result)) {
       return { reason: result.message }

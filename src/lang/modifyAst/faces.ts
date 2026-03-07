@@ -21,6 +21,7 @@ import {
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { toUtf16 } from '@src/lang/errors'
 import {
   getArtifactOfTypes,
   getCapCodeRef,
@@ -41,6 +42,7 @@ import {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -704,19 +706,25 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
+  const includePrimitiveFaceIndices = true
+  const hasPrimitiveFaceToOffset =
+    getEnginePrimitiveFaceSelectionsFromSelection(plane).length > 0
+  const hasFaceToOffset =
+    hasPrimitiveFaceToOffset ||
+    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      {
+        // Keeping lookup aligned with deleteFace so we map selected parent solids directly.
+        lastChildLookup: false,
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+        includePrimitiveFaceIndices,
+      }
     )
     if (err(result)) {
       return result
@@ -770,9 +778,7 @@ function getEnginePrimitiveFaceSelectionsFromSelection(
 ): EnginePrimitiveSelection[] {
   return faces.otherSelections.filter(
     (selection): selection is EnginePrimitiveSelection =>
-      typeof selection === 'object' &&
-      'type' in selection &&
-      selection.type === 'enginePrimitive' &&
+      isEnginePrimitiveSelection(selection) &&
       selection.primitiveType === 'face'
   )
 }
@@ -1120,7 +1126,8 @@ export function retrieveFaceSelectionsFromOpArgs(
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code?: string
 ): Selections | Error {
   if (planeArg.value.type !== 'Plane') {
     return new Error(
@@ -1150,31 +1157,170 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
-    const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
-      artifactGraph
+    const faceArtifact = artifactGraph.get(planeArtifact.faceId)
+    if (faceArtifact && isFaceArtifact(faceArtifact)) {
+      const codeRef = getFaceCodeRef(faceArtifact)
+      if (!codeRef) {
+        return new Error("Couldn't retrieve code reference for face artifact")
+      }
+
+      return {
+        graphSelections: [
+          {
+            artifact: faceArtifact,
+            codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    }
+
+    const primitiveFaceSelection = getPrimitiveFaceSelectionFromPlaneArg(
+      planeArtifact.faceId,
+      artifactGraph,
+      planeArg,
+      code
     )
-    if (err(faceArtifact)) {
-      return new Error("Couldn't retrieve face artifact for planeOfFace")
+    if (primitiveFaceSelection) {
+      return {
+        graphSelections: [],
+        otherSelections: [primitiveFaceSelection],
+      }
     }
 
-    const codeRef = getFaceCodeRef(faceArtifact)
-    if (!codeRef) {
-      return new Error("Couldn't retrieve code reference for face artifact")
-    }
-
-    return {
-      graphSelections: [
-        {
-          artifact: faceArtifact,
-          codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
+    return new Error(
+      "Couldn't resolve primitive face parent solid from faceId(...)"
+    )
   }
 
   return new Error('Unsupported plane artifact type')
+}
+
+function getPrimitiveFaceSelectionFromPlaneArg(
+  faceId: string,
+  artifactGraph: ArtifactGraph,
+  planeArg: OpArg,
+  code?: string
+): EnginePrimitiveSelection | undefined {
+  if (!code) {
+    return undefined
+  }
+
+  const primitiveFace = getPrimitiveFaceFromPlaneArg(planeArg, code)
+  if (!primitiveFace) {
+    return undefined
+  }
+
+  const { bodyVariableName, primitiveIndex } = primitiveFace
+  const parentEntityId = getParentSolidIdFromBodyVariableName(
+    bodyVariableName,
+    artifactGraph,
+    code
+  )
+  if (!parentEntityId) {
+    return undefined
+  }
+
+  return {
+    type: 'enginePrimitive',
+    entityId: faceId,
+    parentEntityId,
+    primitiveIndex,
+    primitiveType: 'face',
+  }
+}
+
+function getPrimitiveFaceFromPlaneArg(
+  planeArg: OpArg,
+  code?: string
+): { bodyVariableName: string; primitiveIndex: number } | undefined {
+  if (!code || planeArg.sourceRange.length < 2) {
+    return undefined
+  }
+
+  const sourceStart = toUtf16(planeArg.sourceRange[0], code)
+  const sourceEnd = toUtf16(planeArg.sourceRange[1], code)
+  if (sourceStart < 0 || sourceEnd <= sourceStart || sourceEnd > code.length) {
+    return undefined
+  }
+
+  const planeArgSource = code.slice(sourceStart, sourceEnd)
+  const faceIdPattern =
+    /faceId\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,[\s\S]*?\bindex\s*=\s*(-?\d+)\s*\)/
+  const match = planeArgSource.match(faceIdPattern)
+  if (!match) {
+    return undefined
+  }
+
+  const primitiveIndex = Number.parseInt(match[2], 10)
+  if (!Number.isInteger(primitiveIndex) || primitiveIndex < 0) {
+    return undefined
+  }
+
+  return { bodyVariableName: match[1], primitiveIndex }
+}
+
+function getParentSolidIdFromBodyVariableName(
+  bodyVariableName: string,
+  artifactGraph: ArtifactGraph,
+  code: string
+): string | undefined {
+  let bestMatch: { id: string; rangeStart: number } | undefined
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'sweep' && artifact.type !== 'compositeSolid') {
+      continue
+    }
+
+    const declaredVariableName = getDeclaredVariableNameFromArtifactCodeRef(
+      artifact,
+      code
+    )
+    if (declaredVariableName !== bodyVariableName) {
+      continue
+    }
+
+    const rangeStart = artifact.codeRef.range[0]
+    if (!bestMatch || rangeStart < bestMatch.rangeStart) {
+      bestMatch = { id: artifact.id, rangeStart }
+    }
+  }
+
+  return bestMatch?.id
+}
+
+function getDeclaredVariableNameFromArtifactCodeRef(
+  artifact: Extract<Artifact, { type: 'sweep' | 'compositeSolid' }>,
+  code: string
+): string | undefined {
+  if (artifact.codeRef.range.length < 2) {
+    return undefined
+  }
+
+  const declarationStart = toUtf16(artifact.codeRef.range[0], code)
+  const declarationEnd = toUtf16(artifact.codeRef.range[1], code)
+  if (
+    declarationStart < 0 ||
+    declarationEnd <= declarationStart ||
+    declarationEnd > code.length
+  ) {
+    return undefined
+  }
+
+  const declarationSource = code.slice(declarationStart, declarationEnd)
+  const declarationMatch = declarationSource.match(
+    /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/
+  )
+  if (declarationMatch) {
+    return declarationMatch[1]
+  }
+
+  // Some ranges start at the call expression, so recover lhs from immediate prefix.
+  const prefix = code.slice(
+    Math.max(0, declarationStart - 512),
+    declarationStart
+  )
+  return prefix.match(/([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/)?.[1]
 }
 
 export function buildSolidsAndFacesExprs(
