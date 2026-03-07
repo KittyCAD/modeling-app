@@ -1044,6 +1044,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ezpz"
+version = "0.2.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1ac55af9fed69031cb718f7bfc8f411fdf0d391b2c15da7f9a2c95cd38b0720"
+dependencies = [
+ "faer",
+ "indexmap 2.13.0",
+ "libm",
+ "mutants",
+ "thiserror 2.0.18",
+ "winnow",
+]
+
+[[package]]
 name = "faer"
 version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2210,20 +2224,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-ezpz"
-version = "0.2.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97e33d2ececbd9e243e8458014fb79f07c310357addedf9c09c97adb51743eb2"
-dependencies = [
- "faer",
- "indexmap 2.13.0",
- "libm",
- "mutants",
- "thiserror 2.0.18",
- "winnow",
-]
-
-[[package]]
 name = "kcl-language-server"
 version = "0.2.132"
 dependencies = [
@@ -2283,6 +2283,7 @@ dependencies = [
  "dashmap 6.1.0",
  "dhat",
  "expectorate",
+ "ezpz",
  "fnv",
  "form_urlencoded",
  "futures",
@@ -2300,7 +2301,6 @@ dependencies = [
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
- "kcl-ezpz",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
