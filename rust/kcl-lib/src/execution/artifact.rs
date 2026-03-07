@@ -1152,7 +1152,7 @@ fn artifacts_to_update(
             let Some(Artifact::Path(path)) = origin_path else {
                 internal_error!(
                     range,
-                    "Expected to find an existing path for the origin path of CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                    "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
             };
             return_arr.push(Artifact::Path(Path {
