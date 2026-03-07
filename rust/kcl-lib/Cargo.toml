@@ -46,7 +46,7 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
-chrono = "0.4.43"
+chrono = "0.4.44"
 clap = { version = "4.5.60", default-features = false, optional = true, features = [
   "std",
   "derive",
