@@ -23,7 +23,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   SceneGraphDelta,
   SketchCtor,
-  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import type {
@@ -190,7 +189,10 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type {
+  EquipTool,
+  UpdateSketchOutcomeEvent,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -424,14 +426,7 @@ export type ModelingMachineEvent =
         | 'construction'
     }
   | { type: 'unequip tool' }
-  | {
-      type: 'update sketch outcome'
-      data: {
-        kclSource: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        debounceEditorUpdate?: boolean
-      }
-    }
+  | UpdateSketchOutcomeEvent
   | {
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }

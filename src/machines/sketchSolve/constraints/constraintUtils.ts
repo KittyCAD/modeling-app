@@ -6,6 +6,7 @@ import type { Sprite, SpriteMaterial, Texture } from 'three'
 import { Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { Coords2d } from '@src/lang/util'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -24,6 +25,46 @@ export function pointToVec3(obj: PointSegment) {
   return new Vector3(position.x.value, position.y.value, 0)
 }
 
+export function isLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+}
+
+export type LineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Line' } }
+}
+
+export function getLinePointSegments(
+  lineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+): [PointSegment, PointSegment] | null {
+  if (!isLineSegment(lineObj)) {
+    return null
+  }
+
+  const startObj = objects[lineObj.kind.segment.start]
+  const endObj = objects[lineObj.kind.segment.end]
+  if (!isPointSegment(startObj) || !isPointSegment(endObj)) {
+    return null
+  }
+
+  return [startObj, endObj]
+}
+
+export function getLinePoints(
+  lineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+) {
+  const pointSegments = getLinePointSegments(lineObj, objects)
+  if (!pointSegments) {
+    return null
+  }
+  return [
+    pointToCoords2d(pointSegments[0]),
+    pointToCoords2d(pointSegments[1]),
+  ] as const
+}
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
@@ -60,6 +101,10 @@ export type DiameterConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Diameter' } }
 }
 
+export type AngleConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Angle' } }
+}
+
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
 }
@@ -68,6 +113,19 @@ export function isDiameterConstraint(
   obj: ApiObject
 ): obj is DiameterConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
+}
+
+export function isAngleConstraint(obj: ApiObject): obj is AngleConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Angle'
+}
+
+export function isConstraintWithSource(obj: ApiObject) {
+  return (
+    isDistanceConstraint(obj) ||
+    isRadiusConstraint(obj) ||
+    isDiameterConstraint(obj) ||
+    isAngleConstraint(obj)
+  )
 }
 
 export function calculateDimensionLabelScreenPosition(
@@ -133,8 +191,16 @@ export type SpriteLabel = Sprite & {
     dimensionLabel: string
     constraintColor: number
     showFnIcon: boolean
+    textWidthPx?: number
   }
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
+}
+
+export function pointToCoords2d(point: PointSegment): Coords2d {
+  return [
+    point.kind.segment.position.x.value,
+    point.kind.segment.position.y.value,
+  ]
 }
