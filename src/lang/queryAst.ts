@@ -70,6 +70,7 @@ import type {
   RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isRegionSelection } from '@src/lib/selections'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1208,16 +1209,6 @@ function getRegionExprFromSelection(
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
-}
-
-function isRegionSelection(
-  selection: Selections['otherSelections'][number]
-): selection is RegionSelection {
-  return (
-    typeof selection === 'object' &&
-    'type' in selection &&
-    selection.type === 'region'
-  )
 }
 
 // Go from a selection to a list of KCL expressions that

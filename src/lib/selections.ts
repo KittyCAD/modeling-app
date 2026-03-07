@@ -1068,7 +1068,7 @@ export function updateSelections(
 
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
-  for (const [, pathToNode] of Object.entries(pathToNodeMap)) {
+  for (const pathToNode of Object.values(pathToNodeMap)) {
     const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
