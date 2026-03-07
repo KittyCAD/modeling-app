@@ -1,5 +1,5 @@
 use anyhow::Result;
-use kcl_ezpz::{
+use ezpz::{
     Constraint as SolverConstraint,
     datatypes::{
         AngleKind,
@@ -457,7 +457,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     start_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -468,7 +468,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     start_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -483,7 +483,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     end_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -494,7 +494,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     end_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -509,7 +509,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     center_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -520,7 +520,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(ezpz::Constraint::Fixed(
                     center_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -531,16 +531,16 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     // Build the implicit arc constraint.
     let range = args.source_range;
-    let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::inputs::DatumCircularArc {
-        center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let constraint = ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
+        center: ezpz::datatypes::inputs::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
         ),
-        start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+        start: ezpz::datatypes::inputs::DatumPoint::new_xy(
             start_x.to_constraint_id(range)?,
             start_y.to_constraint_id(range)?,
         ),
-        end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
             end_x.to_constraint_id(range)?,
             end_y.to_constraint_id(range)?,
         ),
@@ -616,11 +616,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             match (p1_x, p1_y) {
                                 (UnsolvedExpr::Unknown(p1_x), UnsolvedExpr::Unknown(p1_y)) => {
                                     let constraint = SolverConstraint::PointsCoincident(
-                                        kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        ezpz::datatypes::inputs::DatumPoint::new_xy(
                                             p0_x.to_constraint_id(range)?,
                                             p0_y.to_constraint_id(range)?,
                                         ),
-                                        kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        ezpz::datatypes::inputs::DatumPoint::new_xy(
                                             p1_x.to_constraint_id(range)?,
                                             p1_y.to_constraint_id(range)?,
                                         ),
@@ -1073,7 +1073,7 @@ fn coincident_constraints_fixed(
     p1_y: &KclValue,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<(kcl_ezpz::Constraint, kcl_ezpz::Constraint), KclError> {
+) -> Result<(ezpz::Constraint, ezpz::Constraint), KclError> {
     let p1_x_number_value =
         normalize_to_solver_distance_unit(p1_x, p1_x.into(), exec_state, "coincident constraint value")?;
     let p1_y_number_value =
@@ -1574,24 +1574,24 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
     };
 
     let range = args.source_range;
-    let solver_line0_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p0_x.to_constraint_id(range)?,
         line0_p0_y.to_constraint_id(range)?,
     );
-    let solver_line0_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p1_x.to_constraint_id(range)?,
         line0_p1_y.to_constraint_id(range)?,
     );
-    let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
-    let solver_line1_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
+    let solver_line1_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p0_x.to_constraint_id(range)?,
         line1_p0_y.to_constraint_id(range)?,
     );
-    let solver_line1_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line1_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p1_x.to_constraint_id(range)?,
         line1_p1_y.to_constraint_id(range)?,
     );
-    let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
+    let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
     let constraint = SolverConstraint::LinesEqualLength(solver_line0, solver_line1);
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
@@ -1870,10 +1870,10 @@ impl LinesAtAngleKind {
         }
     }
 
-    fn to_solver_angle(self) -> kcl_ezpz::datatypes::AngleKind {
+    fn to_solver_angle(self) -> ezpz::datatypes::AngleKind {
         match self {
-            LinesAtAngleKind::Parallel => kcl_ezpz::datatypes::AngleKind::Parallel,
-            LinesAtAngleKind::Perpendicular => kcl_ezpz::datatypes::AngleKind::Perpendicular,
+            LinesAtAngleKind::Parallel => ezpz::datatypes::AngleKind::Parallel,
+            LinesAtAngleKind::Perpendicular => ezpz::datatypes::AngleKind::Perpendicular,
         }
     }
 
@@ -1888,14 +1888,14 @@ impl LinesAtAngleKind {
 
 /// Convert between two different libraries with similar angle representations
 #[expect(unused)]
-fn into_kcmc_angle(angle: kcl_ezpz::datatypes::Angle) -> kcmc::shared::Angle {
+fn into_kcmc_angle(angle: ezpz::datatypes::Angle) -> kcmc::shared::Angle {
     kcmc::shared::Angle::from_degrees(angle.to_degrees())
 }
 
 /// Convert between two different libraries with similar angle representations
 #[expect(unused)]
-fn into_ezpz_angle(angle: kcmc::shared::Angle) -> kcl_ezpz::datatypes::Angle {
-    kcl_ezpz::datatypes::Angle::from_degrees(angle.to_degrees())
+fn into_ezpz_angle(angle: kcmc::shared::Angle) -> ezpz::datatypes::Angle {
+    ezpz::datatypes::Angle::from_degrees(angle.to_degrees())
 }
 
 pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -2163,24 +2163,24 @@ async fn lines_at_angle(
     };
 
     let range = args.source_range;
-    let solver_line0_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p0_x.to_constraint_id(range)?,
         line0_p0_y.to_constraint_id(range)?,
     );
-    let solver_line0_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p1_x.to_constraint_id(range)?,
         line0_p1_y.to_constraint_id(range)?,
     );
-    let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
-    let solver_line1_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
+    let solver_line1_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p0_x.to_constraint_id(range)?,
         line1_p0_y.to_constraint_id(range)?,
     );
-    let solver_line1_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+    let solver_line1_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p1_x.to_constraint_id(range)?,
         line1_p1_y.to_constraint_id(range)?,
     );
-    let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
+    let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
     let constraint = SolverConstraint::LinesAtAngle(solver_line0, solver_line1, angle_kind.to_solver_angle());
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
@@ -2236,16 +2236,16 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             UnsolvedExpr::Unknown(p1_y),
         ) => {
             let range = args.source_range;
-            let solver_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            let solver_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                 p0_x.to_constraint_id(range)?,
                 p0_y.to_constraint_id(range)?,
             );
-            let solver_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            let solver_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                 p1_x.to_constraint_id(range)?,
                 p1_y.to_constraint_id(range)?,
             );
-            let solver_line = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
-            let constraint = kcl_ezpz::Constraint::Horizontal(solver_line);
+            let solver_line = ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
+            let constraint = ezpz::Constraint::Horizontal(solver_line);
             #[cfg(feature = "artifact-graph")]
             let constraint_id = exec_state.next_object_id();
             // Save the constraint to be used for solving.
@@ -2305,16 +2305,16 @@ pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             UnsolvedExpr::Unknown(p1_y),
         ) => {
             let range = args.source_range;
-            let solver_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            let solver_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                 p0_x.to_constraint_id(range)?,
                 p0_y.to_constraint_id(range)?,
             );
-            let solver_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            let solver_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                 p1_x.to_constraint_id(range)?,
                 p1_y.to_constraint_id(range)?,
             );
-            let solver_line = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
-            let constraint = kcl_ezpz::Constraint::Vertical(solver_line);
+            let solver_line = ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
+            let constraint = ezpz::Constraint::Vertical(solver_line);
             #[cfg(feature = "artifact-graph")]
             let constraint_id = exec_state.next_object_id();
             // Save the constraint to be used for solving.

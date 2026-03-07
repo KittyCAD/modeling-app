@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use ahash::AHashSet;
+use ezpz::Warning;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kcl_ezpz::Warning;
 use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
@@ -31,7 +31,7 @@ pub(super) struct FreedomAnalysis {
 }
 
 impl FreedomAnalysis {
-    pub(super) fn from_ezpz_analysis(analysis: kcl_ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
+    pub(super) fn from_ezpz_analysis(analysis: ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
         let underconstrained_vec: Vec<u32> = analysis.into_underconstrained();
         let underconstrained = AHashSet::from_iter(underconstrained_vec.iter().copied());
 
@@ -400,12 +400,12 @@ pub(crate) struct Solved {
 }
 
 impl Solved {
-    /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
+    /// Create a Solved from a ezpz::SolveOutcome, building the set of variables
     /// involved in unsatisfied constraints by examining the original constraints.
     /// Only marks variables from required constraints (not optional) as conflicted.
     pub(crate) fn from_ezpz_outcome(
-        value: kcl_ezpz::SolveOutcome,
-        constraints: &[kcl_ezpz::Constraint],
+        value: ezpz::SolveOutcome,
+        constraints: &[ezpz::Constraint],
         num_required_constraints: usize,
     ) -> Self {
         // Build a set of variables involved in unsatisfied constraints
@@ -432,46 +432,46 @@ impl Solved {
 
 /// Extract variable IDs from a constraint and add them to the set.
 /// This is a helper function to find which variables are involved in a constraint.
-fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, variable_set: &mut AHashSet<usize>) {
+fn extract_variable_ids_from_constraint(constraint: &ezpz::Constraint, variable_set: &mut AHashSet<usize>) {
     match constraint {
-        kcl_ezpz::Constraint::Fixed(id, _) => {
+        ezpz::Constraint::Fixed(id, _) => {
             variable_set.insert(*id as usize);
         }
-        kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
+        ezpz::Constraint::Distance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
-        kcl_ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
+        ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
-        kcl_ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
+        ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
-        kcl_ezpz::Constraint::Horizontal(line) | kcl_ezpz::Constraint::Vertical(line) => {
+        ezpz::Constraint::Horizontal(line) | ezpz::Constraint::Vertical(line) => {
             extract_ids_from_line(line, variable_set);
         }
-        kcl_ezpz::Constraint::PointsCoincident(pt0, pt1) => {
+        ezpz::Constraint::PointsCoincident(pt0, pt1) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
-        kcl_ezpz::Constraint::Arc(arc) => {
+        ezpz::Constraint::Arc(arc) => {
             extract_ids_from_arc(arc, variable_set);
         }
-        kcl_ezpz::Constraint::PointLineDistance(point, line, _) => {
+        ezpz::Constraint::PointLineDistance(point, line, _) => {
             extract_ids_from_point(point, variable_set);
             extract_ids_from_line(line, variable_set);
         }
-        kcl_ezpz::Constraint::PointArcCoincident(arc, point) => {
+        ezpz::Constraint::PointArcCoincident(arc, point) => {
             extract_ids_from_arc(arc, variable_set);
             extract_ids_from_point(point, variable_set);
         }
-        kcl_ezpz::Constraint::LinesEqualLength(line0, line1) => {
+        ezpz::Constraint::LinesEqualLength(line0, line1) => {
             extract_ids_from_line(line0, variable_set);
             extract_ids_from_line(line1, variable_set);
         }
-        kcl_ezpz::Constraint::LinesAtAngle(line0, line1, _) => {
+        ezpz::Constraint::LinesAtAngle(line0, line1, _) => {
             extract_ids_from_line(line0, variable_set);
             extract_ids_from_line(line1, variable_set);
         }
@@ -493,21 +493,21 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
 
 /// Extract variable IDs from a DatumPoint.
 /// DatumPoint has public fields x_id and y_id that we can access directly.
-fn extract_ids_from_point(pt: &kcl_ezpz::datatypes::inputs::DatumPoint, variable_set: &mut AHashSet<usize>) {
+fn extract_ids_from_point(pt: &ezpz::datatypes::inputs::DatumPoint, variable_set: &mut AHashSet<usize>) {
     variable_set.insert(pt.x_id as usize);
     variable_set.insert(pt.y_id as usize);
 }
 
 /// Extract variable IDs from a DatumLineSegment.
 /// DatumLineSegment has public fields p0 and p1 (start and end points).
-fn extract_ids_from_line(line: &kcl_ezpz::datatypes::inputs::DatumLineSegment, variable_set: &mut AHashSet<usize>) {
+fn extract_ids_from_line(line: &ezpz::datatypes::inputs::DatumLineSegment, variable_set: &mut AHashSet<usize>) {
     extract_ids_from_point(&line.p0, variable_set);
     extract_ids_from_point(&line.p1, variable_set);
 }
 
 /// Extract variable IDs from a DatumCircularArc.
 /// DatumCircularArc has public fields center, start, and end (all DatumPoint).
-fn extract_ids_from_arc(arc: &kcl_ezpz::datatypes::inputs::DatumCircularArc, variable_set: &mut AHashSet<usize>) {
+fn extract_ids_from_arc(arc: &ezpz::datatypes::inputs::DatumCircularArc, variable_set: &mut AHashSet<usize>) {
     extract_ids_from_point(&arc.center, variable_set);
     extract_ids_from_point(&arc.start, variable_set);
     extract_ids_from_point(&arc.end, variable_set);
