@@ -893,18 +893,6 @@ export class KclManager extends EventTarget {
         this._wasmInitFailed.value = true
         reportRejection(e)
       })
-
-    // Register a file watcher for this file.
-    window.electron?.watchFileOn(
-      path,
-      this.fileWatcherKey,
-      this.onFileWatchEvent
-    )
-  }
-
-  /** Clean up listeners, watchers, etc */
-  public close() {
-    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
   }
 
   /** Clean up listeners, watchers, etc */
