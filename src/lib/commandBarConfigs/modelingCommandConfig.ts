@@ -706,7 +706,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'cap', 'wall'],
+        selectionTypes: ['solid2d', 'segment', 'cap', 'wall', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -789,6 +789,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -805,7 +806,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -862,6 +863,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -878,7 +880,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -927,6 +929,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -943,7 +946,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

@@ -34,14 +34,15 @@ export function addUnion({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -88,14 +89,15 @@ export function addIntersect({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -144,15 +146,16 @@ export function addSubtract({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(vars)) {
     return vars
@@ -160,12 +163,14 @@ export function addSubtract({
 
   const toolVars = getVariableExprsFromSelection(
     tools,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(toolVars)) {
     return toolVars
@@ -228,15 +233,16 @@ export function addSplit({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     targets,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(vars)) {
     return vars

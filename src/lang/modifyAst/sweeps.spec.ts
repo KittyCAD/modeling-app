@@ -13,6 +13,7 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   buildTheWorldAndConnectToEngine,
@@ -235,6 +236,71 @@ extrude002 = extrude(seg01, length = 3)`)
         `extrude001 = extrude([profile001, profile002], length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call from a sketch region selection', async () => {
+      const sketchBlockCode = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        sketchBlockCode,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+          return false
+        }
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 's'
+      })
+      if (!sketchArtifact) {
+        throw new Error('Could not find sketch artifact for s')
+      }
+
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketchArtifact.id,
+          },
+        ],
+      }
+
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
+      )
     })
 
     it('should add a multi-profile extrude call on a profile and a cap', async () => {
@@ -743,17 +809,19 @@ profile002 = startProfile(sketch002, at = [0, 0])
 
       const sketches = createSelectionFromPathArtifact([artifact1])
       const path = createSelectionFromPathArtifact([artifact2])
-      return { ast, sketches, path }
+      return { ast, artifactGraph, sketches, path }
     }
 
     it('should add a basic sweep call', async () => {
-      const { ast, sketches, path } = await getAstAndSketchesForSweep(
-        circleAndLineCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
+      const { ast, artifactGraph, sketches, path } =
+        await getAstAndSketchesForSweep(
+          circleAndLineCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
       const result = addSweep({
         ast,
+        artifactGraph,
         sketches,
         path,
         wasmInstance: instanceInThisFile,
@@ -767,14 +835,98 @@ profile002 = startProfile(sketch002, at = [0, 0])
       )
     })
 
-    it('should add a sweep call with surface bodyType', async () => {
-      const { ast, sketches, path } = await getAstAndSketchesForSweep(
-        circleAndLineCode,
+    it('should add a sweep call from a sketch region selection', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = -5)
+  |> tangentialArc(endAbsolute = [-20, 5])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
         instanceInThisFile,
-        kclManagerInThisFile
+        rustContextInThisFile
       )
+
+      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+          return false
+        }
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 's'
+      })
+      if (!sketchArtifact) {
+        throw new Error('Could not find sketch artifact for s')
+      }
+
+      const pathArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'path') {
+          return false
+        }
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 'profile001'
+      })
+      if (!pathArtifact) {
+        throw new Error('Could not find path artifact for profile001')
+      }
+
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketchArtifact.id,
+          },
+        ],
+      }
+      const path = createSelectionFromArtifacts([pathArtifact], artifactGraph)
+
       const result = addSweep({
         ast,
+        artifactGraph,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `sweep001 = sweep(region(point = [1mm, 1mm], sketch = s), path = profile001)`
+      )
+    })
+
+    it('should add a sweep call with surface bodyType', async () => {
+      const { ast, artifactGraph, sketches, path } =
+        await getAstAndSketchesForSweep(
+          circleAndLineCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+      const result = addSweep({
+        ast,
+        artifactGraph,
         sketches,
         path,
         bodyType: 'SURFACE',
@@ -790,15 +942,17 @@ profile002 = startProfile(sketch002, at = [0, 0])
     })
 
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
-      const { ast, sketches, path } = await getAstAndSketchesForSweep(
-        circleAndLineCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
+      const { ast, artifactGraph, sketches, path } =
+        await getAstAndSketchesForSweep(
+          circleAndLineCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
       const sectional = true
       const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({
         ast,
+        artifactGraph,
         sketches,
         path,
         sectional,
@@ -825,16 +979,18 @@ sweep001 = sweep(
   sectional = true,
   relativeTo = sweep::SKETCH_PLANE,
 )`
-      const { ast, sketches, path } = await getAstAndSketchesForSweep(
-        circleAndLineCodeWithSweep,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
+      const { ast, artifactGraph, sketches, path } =
+        await getAstAndSketchesForSweep(
+          circleAndLineCodeWithSweep,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
       const sectional = false
       const relativeTo = 'TRAJECTORY'
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
         ast,
+        artifactGraph,
         sketches,
         path,
         sectional,
@@ -883,6 +1039,7 @@ profile003 = startProfile(sketch002, at = [0, 0])
       const path = createSelectionFromPathArtifact([artifacts[2]])
       const result = addSweep({
         ast,
+        artifactGraph,
         sketches,
         path,
         wasmInstance: instanceInThisFile,
@@ -907,7 +1064,7 @@ sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 20)
 `
     it('should add a basic loft call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -915,6 +1072,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
+        artifactGraph,
         sketches,
         wasmInstance: instanceInThisFile,
       })
@@ -925,8 +1083,109 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       // Don't think we can find the artifact here for loft?
     })
 
+    it('should add a loft call from a sketch region selection', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}
+
+plane001 = offsetPlane(XY, offset = 10)
+
+t = sketch(on = plane001) {
+  edge1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  edge2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([edge1.end, edge2.start])
+  edge3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([edge2.end, edge3.start])
+  coincident([edge1.start, edge3.end])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+          return false
+        }
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 's'
+      })
+      if (!sketchArtifact) {
+        throw new Error('Could not find sketch artifact for s')
+      }
+
+      const secondSketchArtifact = [...artifactGraph.values()].find(
+        (artifact) => {
+          if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+            return false
+          }
+          const node = getNodeFromPath<{
+            declaration: { id: { name: string } }
+          }>(
+            ast,
+            artifact.codeRef.pathToNode,
+            instanceInThisFile,
+            'VariableDeclaration'
+          )
+          return !err(node) && node.node.declaration.id.name === 't'
+        }
+      )
+      if (!secondSketchArtifact) {
+        throw new Error('Could not find sketch artifact for t')
+      }
+
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketchArtifact.id,
+          },
+          {
+            type: 'region',
+            id: 'region-2',
+            point: { x: 1, y: 1 },
+            sketchId: secondSketchArtifact.id,
+          },
+        ],
+      }
+
+      const result = addLoft({
+        ast,
+        artifactGraph,
+        sketches,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`loft001 = loft([`)
+      expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = s)`)
+      expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = t)`)
+    })
+
     it('should add a basic loft call with surface bodyType', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -934,6 +1193,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
+        artifactGraph,
         sketches,
         bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
@@ -955,7 +1215,7 @@ plane001 = offsetPlane(XY, offset = 5)
 sketch002 = startSketchOn(plane001)
 profile002 = startProfile(sketch002, at = [-0.75, -3.04])
   |> line(end = [8.17, 4.09])`
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         openPaths,
         instanceInThisFile,
         kclManagerInThisFile
@@ -963,6 +1223,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
+        artifactGraph,
         sketches,
         bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
@@ -989,7 +1250,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
     it('should edit a loft call with vDegree', async () => {
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCodeWithLoft,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1003,6 +1264,7 @@ loft001 = loft([profile001, profile002])`
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addLoft({
         ast,
+        artifactGraph,
         sketches,
         vDegree,
         nodeToEdit,
@@ -1023,7 +1285,7 @@ loft001 = loft([profile001, profile002])`
 profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 
     it('should add basic revolve call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1037,6 +1299,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const axis = 'X'
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         axis,
@@ -1051,8 +1314,75 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       )
     })
 
+    it('should add a revolve call from a sketch region selection', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+          return false
+        }
+        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return !err(node) && node.node.declaration.id.name === 's'
+      })
+      if (!sketchArtifact) {
+        throw new Error('Could not find sketch artifact for s')
+      }
+
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketchArtifact.id,
+          },
+        ],
+      }
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches,
+        angle,
+        axis: 'X',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `revolve001 = revolve(region(point = [1mm, 1mm], sketch = s), angle = 10, axis = X)`
+      )
+    })
+
     it('should add basic revolve call with surface bodyType', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1066,6 +1396,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const axis = 'X'
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         axis,
@@ -1087,7 +1418,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     })
 
     it('should add basic revolve call with symmetric true', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1102,6 +1433,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const symmetric = true
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         axis,
@@ -1121,7 +1453,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     })
 
     it('should add a basic multi-profile revolve call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleAndRectProfilesCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -1134,6 +1466,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const axis = 'X'
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         axis,
@@ -1178,6 +1511,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       )
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         edge,
@@ -1225,6 +1559,7 @@ sketch002 = startSketchOn(XY)
       )
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         edge,
@@ -1246,11 +1581,12 @@ revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
     it('should edit revolve call, changing axis and setting both lengths', async () => {
       const code = `${circleCode}
 revolve001 = revolve(profile001, angle = 10, axis = X)`
-      const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
-        code,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
+      const { ast, artifactGraph, sketches } =
+        await getAstAndSketchSelectionsEngineless(
+          code,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
       expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '20',
@@ -1266,6 +1602,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addRevolve({
         ast,
+        artifactGraph,
         sketches,
         angle,
         bidirectionalAngle,
