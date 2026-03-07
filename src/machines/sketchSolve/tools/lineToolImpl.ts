@@ -80,9 +80,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         )
         try {
           isEditInProgress = true
-          const settings = await jsAppSettings(
-            context.rustContext.settingsActor
-          )
+          const settings = jsAppSettings(context.rustContext.settingsActor)
           // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
           const result = await context.rustContext.editSegments(
             0,

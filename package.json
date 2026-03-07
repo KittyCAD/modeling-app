@@ -28,7 +28,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^3.1.23",
+    "@kittycad/lib": "^3.1.37",
     "@kittycad/react-shared": "^1.2.0",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.7",
@@ -78,7 +78,7 @@
     "web-vitals": "^3.5.2",
     "why-is-node-running": "^3.2.2",
     "xstate": "^5.19.2",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "scripts": {
     "prepare": "husky",

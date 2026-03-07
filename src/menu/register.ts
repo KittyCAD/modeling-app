@@ -1,8 +1,6 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -17,8 +15,6 @@ export function modelingMenuCallbackMostActions({
   settings,
   navigate,
   filePath,
-  engineCommandManager,
-  sceneInfra,
   authActor,
   commandBarActor,
   kclManager,
@@ -26,9 +22,7 @@ export function modelingMenuCallbackMostActions({
 }: {
   settings: SettingsType
   navigate: NavigateFunction
-  filePath: string
-  engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
+  filePath: string | undefined
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
@@ -81,12 +75,28 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
@@ -104,6 +114,10 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
@@ -169,36 +183,38 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'View.Standard views.Right view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Back view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Top view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Left view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Front view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
-      sceneInfra.camControls
+      kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-      sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      kclManager.sceneInfra.camControls
+        .resetCameraPosition()
+        .catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
       // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      engineCommandManager
+      kclManager.engineCommandManager
         .sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

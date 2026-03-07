@@ -1483,7 +1483,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>
-        await jsAppSettings(context.rustContext.settingsActor),
+        jsAppSettings(context.rustContext.settingsActor),
     }),
     onClick: createOnClickCallback({
       getParentGroup,

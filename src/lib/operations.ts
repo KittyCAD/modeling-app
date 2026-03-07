@@ -593,8 +593,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   }
 
   const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.unlabeledArg,
     operation.labeledArgs.tags,
-    artifactGraph
+    artifactGraph,
+    code
   )
   if (err(selection)) return { reason: selection.message }
 
@@ -648,8 +650,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   }
 
   const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.unlabeledArg,
     operation.labeledArgs.tags,
-    artifactGraph
+    artifactGraph,
+    code
   )
   if (err(selection)) return { reason: selection.message }
 
@@ -1782,6 +1786,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'text',
     prepareToEdit: prepareToEditAppearance,
   },
+  blend: {
+    label: 'Blend',
+    icon: 'blend',
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
@@ -1926,6 +1934,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  deleteFace: {
+    label: 'Delete Face',
+    icon: 'deleteFace',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
@@ -1933,6 +1947,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   concentric: {
     label: 'Concentric Constraint',
     icon: 'concentric',
+  },
+  diameter: {
+    label: 'Diameter Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
   },
   distance: {
     label: 'Distance Constraint',
@@ -1965,6 +1983,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  radius: {
+    label: 'Radius Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
   },
   symmetric: {
     label: 'Symmetric Constraint',
@@ -2830,6 +2852,20 @@ async function prepareToEditAppearance({
     roughness = result
   }
 
+  let opacity: KclCommandValue | undefined
+  if (operation.labeledArgs.opacity) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.opacity.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve opacity argument" }
+    }
+    opacity = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2838,6 +2874,7 @@ async function prepareToEditAppearance({
     color,
     metalness,
     roughness,
+    opacity,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -2903,22 +2940,19 @@ export function onHide(props: {
 export async function onUnhide(props: {
   hideOperation: HideOperation
   targetArtifact: Artifact
-  systemDeps: {
-    kclManager: KclManager
-    rustContext: RustContext
-  }
+  kclManager: KclManager
 }) {
   if (props.hideOperation.unlabeledArg === null) {
     return new Error('Missing unlabeled arg for hide operation')
   }
-  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  let modifiedAst = structuredClone(props.kclManager.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
 
   if (
     props.hideOperation.unlabeledArg.value.type === 'Array' &&
     'codeRef' in props.targetArtifact
   ) {
-    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
     // Multi-item case: remove that target artifact's name
     const termToDelete = getVariableNameFromNodePath(
       pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
@@ -2932,7 +2966,7 @@ export async function onUnhide(props: {
     }
 
     const deleteResult = deleteTermFromUnlabeledArgumentArray(
-      props.systemDeps.kclManager.ast,
+      props.kclManager.ast,
       pathToNode,
       wasmInstance,
       termToDelete
@@ -2952,7 +2986,7 @@ export async function onUnhide(props: {
   return updateModelingState(
     modifiedAst,
     EXECUTION_TYPE_REAL,
-    props.systemDeps,
+    props.kclManager,
     {
       focusPath: [],
     }

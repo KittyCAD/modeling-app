@@ -3,7 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
 import { useSelector } from '@xstate/react'
@@ -26,9 +26,8 @@ function CommandBarPathInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { wasmPromise, commands } = useApp()
+  const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
   useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)

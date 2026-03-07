@@ -1046,21 +1046,6 @@
     ]
   },
   {
-    "file": "1120t74-pipe.step",
-    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/mcmaster-parts/1120t74-pipe.step",
-    "multipleFiles": true,
-    "title": "ISO-10303-21;",
-    "description": "HEADER;",
-    "files": [
-      "1120t74-pipe.step",
-      "68095k348-flange.step",
-      "91251a404-bolt.step",
-      "9472k188-gasket.step",
-      "95479a127-hex-nut.step",
-      "98017a257-washer.step"
-    ]
-  },
-  {
     "file": "main.kcl",
     "categories": [
       "Maker"
@@ -1221,6 +1206,12 @@
       "95479a127-hex-nut.kcl",
       "98017a257-washer.kcl",
       "main.kcl",
+      "mcmaster-parts/1120t74-pipe.step",
+      "mcmaster-parts/68095k348-flange.step",
+      "mcmaster-parts/91251a404-bolt.step",
+      "mcmaster-parts/9472k188-gasket.step",
+      "mcmaster-parts/95479a127-hex-nut.step",
+      "mcmaster-parts/98017a257-washer.step",
       "parameters.kcl"
     ]
   },
@@ -1937,6 +1928,21 @@
     "multipleFiles": false,
     "title": "Twisted wires",
     "description": "Strange sculpture inspired by hot wire cutting.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Electronics",
+      "Connector",
+      "Consumer Hardware"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "usb-c/main.kcl",
+    "multipleFiles": false,
+    "title": "USB-C Connector Assembly",
+    "description": "Parametric model of a USB-C style connector shell, rear housing, and swept cable.",
     "files": [
       "main.kcl"
     ]

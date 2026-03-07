@@ -1,9 +1,7 @@
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { isDesktop } from '@src/lib/isDesktop'
 
 export type OnboardingPath = OnboardingStatus & `/${string}`
 export type DesktopOnboardingPath = OnboardingPath & `/desktop${string}`
-export type BrowserOnboardingPath = OnboardingPath & `/browser${string}`
 
 // companion to "desktop routes" in `OnboardingRoutes` enum in Rust
 export const desktopOnboardingPaths: Record<string, DesktopOnboardingPath> = {
@@ -24,28 +22,11 @@ export const desktopOnboardingPaths: Record<string, DesktopOnboardingPath> = {
   conclusion: '/desktop/conclusion',
 }
 
-// companion to "web routes" in `OnboardingRoutes` enum in Rust
-export const browserOnboardingPaths: Record<string, BrowserOnboardingPath> = {
-  welcome: '/browser',
-  scene: '/browser/scene',
-  toolbar: '/browser/toolbar',
-  textToCadWelcome: '/browser/text-to-cad',
-  textToCadPrompt: '/browser/text-to-cad-prompt',
-  featureTreePane: '/browser/feature-tree-pane',
-  promptToEditWelcome: '/browser/prompt-to-edit',
-  promptToEditPrompt: '/browser/prompt-to-edit-prompt',
-  promptToEditResult: '/browser/prompt-to-edit-result',
-  conclusion: '/browser/conclusion',
-}
-
 export const onboardingPaths = {
   desktop: desktopOnboardingPaths,
-  browser: browserOnboardingPaths,
 }
 /** Whatever the first onboarding path on the current platform is. */
-export const onboardingStartPath = Object.values(
-  onboardingPaths[isDesktop() ? 'desktop' : 'browser']
-)[0]
+export const onboardingStartPath = Object.values(onboardingPaths['desktop'])[0]
 
 export const isOnboardingPath = (input: string): input is OnboardingStatus => {
   return Object.values(onboardingPaths)

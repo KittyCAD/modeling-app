@@ -6,7 +6,7 @@ description: Operations executed sketch_block_region_triangle.kcl
   "rust/kcl-lib/tests/sketch_block_region_triangle/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -43,7 +43,7 @@ description: Operations executed sketch_block_region_triangle.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -80,7 +80,7 @@ description: Operations executed sketch_block_region_triangle.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -117,7 +117,7 @@ description: Operations executed sketch_block_region_triangle.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -146,7 +146,7 @@ description: Operations executed sketch_block_region_triangle.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -198,44 +198,6 @@ description: Operations executed sketch_block_region_triangle.kcl
           },
           {
             "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "sketch2::region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -340,7 +302,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -364,7 +326,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -388,7 +350,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -412,7 +374,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -436,7 +398,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -460,7 +422,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -484,7 +446,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -508,7 +470,7 @@ description: Operations executed sketch_block_region_triangle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"

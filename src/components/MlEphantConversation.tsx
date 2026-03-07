@@ -33,17 +33,21 @@ export interface MlEphantConversationProps {
   userAvatarSrc?: string
   userBlockedOnPayment?: boolean
   defaultPrompt?: string
+  initialMlCopilotMode?: MlCopilotMode // resolved from project settings
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
   fast: {
     pretty: 'Fast',
+    description: 'Lighter reasoning. Best for quick edits and simple tasks.',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
   thoughtful: {
     pretty: 'Thoughtful',
+    description: 'More thorough reasoning. Best for complex designs.',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
     ),
@@ -73,10 +77,9 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
 
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
-              {' '}
               {ML_COPILOT_MODE.map((mode) => (
                 <div
                   tabIndex={0}
@@ -86,11 +89,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode)
                   }}
-                  className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode}`}
                 >
-                  {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
-                  {ML_COPILOT_MODE_META[mode].pretty}
+                  {ML_COPILOT_MODE_META[mode].icon({
+                    className: 'w-5 h-5 shrink-0 mt-0.5',
+                  })}
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-medium">
+                      {ML_COPILOT_MODE_META[mode].pretty}
+                    </span>
+                    <span className="text-chalkboard-70 text-[11px] leading-tight">
+                      {ML_COPILOT_MODE_META[mode].description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </>
@@ -184,6 +196,8 @@ interface MlEphantConversationInputProps {
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
+  initialMlCopilotMode?: MlCopilotMode
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }
 
 export const MlEphantConversationInput = (
@@ -192,12 +206,19 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
-  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [mode, setMode] = useState<MlCopilotMode>(
+    props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+  )
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  useEffect(() => {
+    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+    setMode(next)
+  }, [props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -377,7 +398,10 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             mode={mode}
-            onSetMode={setMode}
+            onSetMode={(m) => {
+              setMode(m)
+              props.onMlCopilotModeChange?.(m)
+            }}
             onAttachFiles={onAttachFiles}
             attachmentsDisabled={props.disabled}
           />
@@ -537,6 +561,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
+              initialMlCopilotMode={props.initialMlCopilotMode}
+              onMlCopilotModeChange={props.onMlCopilotModeChange}
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}

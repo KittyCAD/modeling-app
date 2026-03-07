@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import { Fragment, useMemo } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -21,6 +21,8 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
 
+import fsZds from '@src/lib/fs-zds'
+
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
@@ -39,7 +41,7 @@ const ProjectSidebarMenu = ({
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
-      <div className="relative group/home cursor-pointer">
+      <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
         {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
       </div>
@@ -68,10 +70,22 @@ function AppLogoLink({
   const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  return isDesktop() ? (
+  if (!window.electron) {
+    return (
+      <div
+        data-testid="app-logo"
+        className="relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+      >
+        <Logo data-onboarding-id="app-logo" className={logoClassName} />
+        <span className="sr-only">{APP_NAME}</span>
+      </div>
+    )
+  }
+
+  return (
     <Link
       data-testid="app-logo"
       onClick={() => {
@@ -84,11 +98,6 @@ function AppLogoLink({
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
-  ) : (
-    <div className={wrapperClassName} data-testid="app-logo">
-      <Logo data-onboarding-id="app-logo" className={logoClassName} />
-      <span className="sr-only">{APP_NAME}</span>
-    </div>
   )
 }
 
@@ -100,9 +109,8 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const platform = usePlatform()
-  const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
@@ -136,9 +144,10 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_PROJECT
-              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            const targetPath =
+              filePath !== undefined
+                ? filePath + PATHS.SETTINGS_PROJECT
+                : PATHS.HOME + PATHS.SETTINGS_PROJECT
             void navigate(targetPath)
           },
         },
@@ -233,7 +242,7 @@ function ProjectMenuPopover({
       findCommand,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      engineCommandManager,
+      kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]
@@ -243,10 +252,9 @@ function ProjectMenuPopover({
   const breadCrumb = {
     projectName: project?.name || '',
     sep: '/',
-    filename:
-      window.electron && file?.name
-        ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
-        : APP_NAME,
+    filename: file?.name
+      ? file.name.slice(file.name.lastIndexOf(fsZds.sep) + 1)
+      : APP_NAME,
   }
   const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
 
@@ -260,7 +268,7 @@ function ProjectMenuPopover({
           className="flex items-baseline py-0.5 text-sm gap-1"
           title={breadCrumbTooltip}
         >
-          {isDesktop() && project?.name && (
+          {project?.name && (
             <>
               <span
                 className="hidden whitespace-nowrap md:block max-w-80 truncate"
