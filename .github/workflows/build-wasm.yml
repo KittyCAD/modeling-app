@@ -104,13 +104,13 @@ jobs:
           ls -R rust/kcl-wasm-lib/pkg
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-ts-rs-bindings
           path: |
