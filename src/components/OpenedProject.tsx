@@ -52,7 +52,6 @@ import {
 } from '@src/lib/layout'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
-import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions,
@@ -241,7 +240,6 @@ export function OpenedProject() {
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,
