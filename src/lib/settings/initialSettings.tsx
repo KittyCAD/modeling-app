@@ -260,6 +260,17 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      machineApi: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        hideOnPlatform: 'web',
+        description:
+          'Whether to enable Machine API discovery and printing controls on desktop',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Zookeeper reasoning mode
        */

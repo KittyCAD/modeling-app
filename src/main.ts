@@ -74,6 +74,8 @@ const scheduleMenuGC = () => {
   }, 10000)
 }
 
+type MachineApiSignal = 'on' | 'off'
+
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
 
@@ -353,10 +355,30 @@ app.resizeWindow = async (width: number, height: number) => {
 
 // @ts-ignore can't declaration merge with App
 app.testProperty = {}
+// @ts-ignore can't declaration merge with App
+app.machineApiState = 'off' as MachineApiSignal
+
+const getMachineApiState = (): MachineApiSignal =>
+  // @ts-ignore can't declaration merge with App
+  app.machineApiState
+
+const setMachineApiState = (signal: MachineApiSignal) => {
+  // @ts-ignore can't declaration merge with App
+  app.machineApiState = signal
+}
 
 ipcMain.handle('app.testProperty', (event, propertyName) => {
   // @ts-ignore can't declaration merge with App
   return app.testProperty[propertyName]
+})
+
+ipcMain.handle('machine-api.get-state', () => {
+  return getMachineApiState() === 'on'
+})
+
+ipcMain.handle('machine-api.set-state', (_event, signal: MachineApiSignal) => {
+  setMachineApiState(signal)
+  return getMachineApiState() === 'on'
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
@@ -477,6 +499,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
+  if (getMachineApiState() !== 'on') {
+    return null
+  }
+
   return discoverMachineApi({
     createBonjour: (onError) => new Bonjour({}, onError),
     onError: (error) => {

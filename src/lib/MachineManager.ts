@@ -35,21 +35,29 @@ export class MachineManager implements IMachineManager {
   }
   readonly machinesSignal = this.#machines
   machineApiIp: string | null = null
+  #isRunning = signal(false)
   #currentMachine = signal<components['schemas']['MachineInfoResponse'] | null>(
     null
   )
   pulseTimeoutDurationMS = 1_000
   #pulseTimeout = signal<ReturnType<typeof setTimeout> | undefined>(undefined)
-  started = computed(() => this.#pulseTimeout.value !== undefined)
+  started = computed(() => this.#isRunning.value)
 
   constructor(callbacks = noOpConstructorProps) {
     this.callbacks = callbacks
   }
 
   updateLoop = () => {
+    if (!this.started.value) {
+      return
+    }
+
     clearTimeout(this.#pulseTimeout.value)
     this.update()
       .then(() => {
+        if (!this.started.value) {
+          return
+        }
         this.#pulseTimeout.value = setTimeout(
           this.updateLoop,
           this.pulseTimeoutDurationMS
@@ -63,12 +71,25 @@ export class MachineManager implements IMachineManager {
     if (this.started.value) {
       return
     }
-    return this.update().then(this.updateLoop).catch(reportRejection)
+    this.#isRunning.value = true
+    return this.update()
+      .then(() => {
+        if (!this.started.value) {
+          return
+        }
+
+        this.updateLoop()
+      })
+      .catch(reportRejection)
   }
 
   stop() {
+    this.#isRunning.value = false
     clearTimeout(this.#pulseTimeout.value)
     this.#pulseTimeout.value = undefined
+    this.machineApiIp = null
+    this.#machines.value = []
+    this.#currentMachine.value = null
   }
 
   private async update() {
@@ -77,7 +98,11 @@ export class MachineManager implements IMachineManager {
       this.#machines.value = await this.callbacks.listMachines(
         this.machineApiIp
       )
+      return
     }
+
+    this.#machines.value = []
+    this.#currentMachine.value = null
   }
 
   noMachinesReason(): string | undefined {
