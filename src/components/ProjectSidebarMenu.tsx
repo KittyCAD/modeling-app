@@ -109,7 +109,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
@@ -244,7 +244,7 @@ function ProjectMenuPopover({
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      engineCommandManager,
+      kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]

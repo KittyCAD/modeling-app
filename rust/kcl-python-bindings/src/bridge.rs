@@ -3,6 +3,7 @@ use kittycad_modeling_cmds as kcmc;
 use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
 
+pub mod bounding_box;
 pub mod physical_properties;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]

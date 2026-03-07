@@ -26,7 +26,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -74,7 +74,7 @@ export function useViewControlMenuItems() {
         onClick={() => {
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
-            engineCommandManager,
+            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -151,10 +151,7 @@ export function useViewControlMenuItems() {
             void selectSketchPlane(
               planeOrFaceId,
               modelingState.context.store.useSketchSolveMode?.current,
-              {
-                kclManager,
-                rustContext,
-              }
+              kclManager
             )
           }
         }}
@@ -192,10 +189,8 @@ export function useViewControlMenuItems() {
       sketching,
       snapToGrid,
       gizmoType,
-      engineCommandManager,
       layout.signal.value,
       kclManager,
-      rustContext,
       settings,
     ]
   )

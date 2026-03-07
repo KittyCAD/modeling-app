@@ -35,7 +35,7 @@ import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
   const { auth, billing, settings, systemIOActor } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
@@ -82,7 +82,7 @@ export function SystemIOMachineLogicListener() {
     // Open the requested file in the requested project
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
-    engineCommandManager.rejectAllModelingCommands(
+    kclManager.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
     )
 
@@ -257,7 +257,7 @@ export function SystemIOMachineLogicListener() {
     mlEphantManagerActor,
     billing.actor,
     token,
-    engineCommandManager,
+    kclManager.engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&

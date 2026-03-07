@@ -41,8 +41,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  */
 export const Router = () => {
   const app = useApp()
-  const { engineCommandManager } = useSingletons()
-  const networkStatus = useNetworkStatus(engineCommandManager)
+  const { kclManager } = useSingletons()
+  const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
   const router = useMemo(
     () =>
       createRouter([
@@ -166,11 +166,10 @@ export const Router = () => {
 
 function CoreDump() {
   const { auth } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const token = auth.useToken()
   const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
+    () => new CoreDumpManager(kclManager, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )

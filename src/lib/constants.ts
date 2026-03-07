@@ -328,7 +328,7 @@ export const LAYOUT_SAVE_THROTTLE = 500
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
-export const DEFAULT_BACKFACE_COLOR = '#F20D0D'
+export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

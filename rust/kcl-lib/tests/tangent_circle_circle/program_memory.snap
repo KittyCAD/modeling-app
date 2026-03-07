@@ -645,6 +645,261 @@ description: Variables in memory after executing tangent_circle_circle.kcl
             }
           }
         }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.000000006999910873162207,
+                    -0.0000000000000006123233998615528
+                  ],
+                  "from": [
+                    -4.999999995350777,
+                    0.0
+                  ],
+                  "radius": 5.000000002350688,
+                  "tag": {
+                    "commentStart": 100,
+                    "end": 105,
+                    "moduleId": 0,
+                    "start": 100,
+                    "type": "TagDeclarator",
+                    "value": "a_top"
+                  },
+                  "to": [
+                    5.0000000093505985,
+                    -0.0000000000000018369701995846583
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    5.0000000093505985,
+                    -0.0000000000000018369701995846583
+                  ],
+                  "tag": null,
+                  "to": [
+                    5.000000008154963,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.000000006988340572888774,
+                    -0.0
+                  ],
+                  "from": [
+                    5.000000008154963,
+                    0.0
+                  ],
+                  "radius": 5.000000001166622,
+                  "tag": {
+                    "commentStart": 198,
+                    "end": 203,
+                    "moduleId": 0,
+                    "start": 198,
+                    "type": "TagDeclarator",
+                    "value": "a_bot"
+                  },
+                  "to": [
+                    -4.999999994178282,
+                    0.0000000000000006123233997165466
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -4.999999994178282,
+                    0.0000000000000006123233997165466
+                  ],
+                  "tag": null,
+                  "to": [
+                    5.000000022350425,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    8.000000024364034,
+                    -0.00000000000000036739403999080203
+                  ],
+                  "from": [
+                    5.000000022350425,
+                    0.0
+                  ],
+                  "radius": 3.0000000020136097,
+                  "tag": {
+                    "commentStart": 453,
+                    "end": 458,
+                    "moduleId": 0,
+                    "start": 453,
+                    "type": "TagDeclarator",
+                    "value": "b_top"
+                  },
+                  "to": [
+                    11.000000026377645,
+                    -0.0000000000000011021821199724061
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    11.000000026377645,
+                    -0.0000000000000011021821199724061
+                  ],
+                  "tag": null,
+                  "to": [
+                    11.000000026354897,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    8.000000025354975,
+                    -0.0
+                  ],
+                  "from": [
+                    11.000000026354897,
+                    0.0
+                  ],
+                  "radius": 3.000000000999922,
+                  "tag": {
+                    "commentStart": 552,
+                    "end": 557,
+                    "moduleId": 0,
+                    "start": 552,
+                    "type": "TagDeclarator",
+                    "value": "b_bot"
+                  },
+                  "to": [
+                    5.000000024355053,
+                    0.00000000000000036739403986666106
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -4.999999995350777,
+                  0.0
+                ],
+                "to": [
+                  -4.999999995350777,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "a_bot": {
+                  "type": "TagIdentifier",
+                  "value": "a_bot"
+                },
+                "a_top": {
+                  "type": "TagIdentifier",
+                  "value": "a_top"
+                },
+                "b_bot": {
+                  "type": "TagIdentifier",
+                  "value": "b_bot"
+                },
+                "b_top": {
+                  "type": "TagIdentifier",
+                  "value": "b_top"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
       }
     },
     "constrainable": false

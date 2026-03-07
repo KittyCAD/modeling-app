@@ -1,7 +1,6 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -16,7 +15,6 @@ export function modelingMenuCallbackMostActions({
   settings,
   navigate,
   filePath,
-  engineCommandManager,
   authActor,
   commandBarActor,
   kclManager,
@@ -25,7 +23,6 @@ export function modelingMenuCallbackMostActions({
   settings: SettingsType
   navigate: NavigateFunction
   filePath: string | undefined
-  engineCommandManager: ConnectionManager
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
@@ -217,7 +214,7 @@ export function modelingMenuCallbackMostActions({
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
       // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      engineCommandManager
+      kclManager.engineCommandManager
         .sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

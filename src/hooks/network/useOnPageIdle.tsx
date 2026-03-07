@@ -12,7 +12,7 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
@@ -93,7 +93,7 @@ export const useOnPageIdle = ({
               message: 'Calling tearDown()',
             })
             // We do a full tear down at the moment.
-            engineCommandManager.tearDown()
+            kclManager.engineCommandManager.tearDown()
             idleCallback()
           }
         }
@@ -104,7 +104,7 @@ export const useOnPageIdle = ({
     IDLE_TIME_MS,
     idleCallback,
     modelingMachineState,
-    engineCommandManager,
+    kclManager.engineCommandManager,
     kclManager.sceneInfra.camControls,
   ])
 

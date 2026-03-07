@@ -54,7 +54,7 @@ export const ModelingMachineProvider = ({
 }) => {
   useSignals()
   const { machineManager, commands, settings, layout, project } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
@@ -122,9 +122,9 @@ export const ModelingMachineProvider = ({
     {
       input: {
         machineManager,
-        engineCommandManager,
+        engineCommandManager: kclManager.engineCommandManager,
         kclManager,
-        rustContext,
+        rustContext: kclManager.rustContext,
         commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
@@ -263,7 +263,7 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    engineCommandManager.connection?.deferredPeerConnection?.promise
+    kclManager.engineCommandManager.connection?.deferredPeerConnection?.promise
       .then(() => {
         if (
           previousCameraOrbit.current === null ||
@@ -290,18 +290,18 @@ export const ModelingMachineProvider = ({
         modelingSend({ type: 'Cancel' })
       }
     }
-    engineCommandManager.connection?.addEventListener(
+    kclManager.engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      engineCommandManager.connection?.removeEventListener(
+      kclManager.engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager.connection, modelingSend])
+  }, [kclManager.engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')
@@ -310,7 +310,10 @@ export const ModelingMachineProvider = ({
     if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
-        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+        letEngineAnimateAndSyncCamAfter(
+          kclManager.engineCommandManager,
+          targetId
+        )
           .then(() => {})
           .catch((e) => {
             console.error(
@@ -377,7 +380,7 @@ export const ModelingMachineProvider = ({
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition({
       sceneInfra: kclManager.sceneInfra,
-      engineCommandManager,
+      engineCommandManager: kclManager.engineCommandManager,
       settingsActor,
     }).catch(reportRejection)
   })
