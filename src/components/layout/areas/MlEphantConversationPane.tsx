@@ -34,6 +34,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -302,6 +303,8 @@ export const MlEphantConversationPane = (props: {
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
+      initialMlCopilotMode={props.settings.app.zookeeperMode.current}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
     />
   )
 }

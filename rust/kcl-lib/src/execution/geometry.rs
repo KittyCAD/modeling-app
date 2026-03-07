@@ -1961,7 +1961,7 @@ impl ExtrudeSurface {
 pub struct SketchVarId(pub usize);
 
 impl SketchVarId {
-    pub fn to_constraint_id(self, range: SourceRange) -> Result<kcl_ezpz::Id, KclError> {
+    pub fn to_constraint_id(self, range: SourceRange) -> Result<ezpz::Id, KclError> {
         self.0.try_into().map_err(|_| {
             KclError::new_type(KclErrorDetails::new(
                 "Cannot convert to constraint ID since the sketch variable ID is too large".to_owned(),
