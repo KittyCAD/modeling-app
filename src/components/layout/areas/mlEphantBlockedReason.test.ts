@@ -21,7 +21,7 @@ describe('getUserBlockedReason', () => {
   })
 
   it('returns undefined when the user is not blocked', () => {
-    expect(getUserBlockedReason({ block: null })).toBeUndefined()
+    expect(getUserBlockedReason({ block: undefined })).toBeUndefined()
     expect(getUserBlockedReason(undefined)).toBeUndefined()
   })
 
