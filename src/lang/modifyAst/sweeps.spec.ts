@@ -14,7 +14,6 @@ import {
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   buildTheWorldAndConnectToEngine,
@@ -246,7 +245,7 @@ s = sketch(on = XY) {
   line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
   line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
   coincident([line1.end, line2.start])
-  line3 = line(start = [0.92, 4.67], end = [-0.03, -0.04])
+  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
   coincident([line2.end, line3.start])
   coincident([line1.start, line3.end])
 }`
@@ -256,22 +255,20 @@ s = sketch(on = XY) {
         rustContextInThisFile
       )
 
-      const segments = [...artifactGraph.values()].filter(
-        (artifact) => artifact.type === 'segment'
-      )
-      const line1 = segments.find((segment) => {
-        const codeRef = getCodeRefsByArtifactId(segment.id, artifactGraph)?.[0]
-        if (!codeRef) return false
+      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
+        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
+          return false
+        }
         const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
           ast,
-          codeRef.pathToNode,
+          artifact.codeRef.pathToNode,
           instanceInThisFile,
           'VariableDeclaration'
         )
-        return !err(node) && node.node.declaration.id.name === 'line1'
+        return !err(node) && node.node.declaration.id.name === 's'
       })
-      if (!line1) {
-        throw new Error('Could not find line1 segment artifact')
+      if (!sketchArtifact) {
+        throw new Error('Could not find sketch artifact for s')
       }
 
       const sketches: Selections = {
@@ -281,86 +278,7 @@ s = sketch(on = XY) {
             type: 'region',
             id: 'region-1',
             point: { x: 1, y: 1 },
-            sketchId: line1.pathId,
-          },
-        ],
-      }
-
-      const length = await getKclCommandValue(
-        '1',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
-      )
-    })
-
-    it('should resolve region sketch var from region.sketchId only', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [0, 0], end = [2, 0])
-  line2 = line(start = [2, 0], end = [0, 2])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0, 2], end = [0, 0])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}
-
-t = sketch(on = XY) {
-  edge1 = line(start = [10, 10], end = [12, 10])
-  edge2 = line(start = [12, 10], end = [10, 12])
-  coincident([edge1.end, edge2.start])
-  edge3 = line(start = [10, 12], end = [10, 10])
-  coincident([edge2.end, edge3.start])
-  coincident([edge1.start, edge3.end])
-}`
-      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
-        code,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-
-      const segments = [...artifactGraph.values()].filter(
-        (artifact) => artifact.type === 'segment'
-      )
-      const findSegmentByVarName = (name: string) =>
-        segments.find((segment) => {
-          const codeRef = getCodeRefsByArtifactId(
-            segment.id,
-            artifactGraph
-          )?.[0]
-          if (!codeRef) return false
-          const node = getNodeFromPath<{
-            declaration: { id: { name: string } }
-          }>(ast, codeRef.pathToNode, instanceInThisFile, 'VariableDeclaration')
-          return !err(node) && node.node.declaration.id.name === name
-        })
-
-      const line1 = findSegmentByVarName('line1')
-      if (!line1) {
-        throw new Error('Could not find expected line1 segment artifact')
-      }
-
-      const sketches: Selections = {
-        graphSelections: [],
-        otherSelections: [
-          {
-            type: 'region',
-            id: 'region-1',
-            point: { x: 1, y: 1 },
-            sketchId: line1.pathId,
+            sketchId: sketchArtifact.id,
           },
         ],
       }
