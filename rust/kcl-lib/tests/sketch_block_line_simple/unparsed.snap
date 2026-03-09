@@ -8,8 +8,8 @@ s = sketch(on = XY) {
   x = var 5mm
   y = var
   l1 = line(start = [x, y], end = [10mm, 0mm])
-x == 1mm
-y == 2mm
+  x == 1mm
+  y == 2mm
 }
 
 assert(s.l1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001mm)
