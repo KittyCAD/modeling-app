@@ -1107,6 +1107,18 @@ t = sketch(on = plane001) {
       expect(newCode).toContain(`loft001 = loft([`)
       expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = s)`)
       expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = t)`)
+      if (err(newCode)) throw newCode
+      const { operations } = await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const loft = operations.find(
+        (op) => op.type === 'StdLibCall' && op.name === 'loft'
+      )
+      if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
+      // TODO: change to false once we https://github.com/KittyCAD/modeling-app/issues/10363 is fixed
+      expect(loft.isError).toBe(true)
     })
 
     it('should add a basic loft call with surface bodyType', async () => {
