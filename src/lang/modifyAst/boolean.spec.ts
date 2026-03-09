@@ -339,7 +339,12 @@ extrude002 = extrude(profile002, length = .1)`
     })
 
     it('should emit merge then keepTools in a stable order when both are true', async () => {
-      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true, keepTools = true)`
+      const expectedNewLine = `split001 = split(
+  extrude001,
+  tools = extrude002,
+  merge = true,
+  keepTools = true,
+)`
       const newCode = await runAddSplitTest({
         code,
         targetIds: [0],
