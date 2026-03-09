@@ -293,9 +293,9 @@ export class ZDSProject {
       })
 
     // Splice our new editor into our files array
-    const foundFile = this.files.find((f) => f.path.value === path)
     const foundFileIndex = this.files.findIndex((f) => f.path.value === path)
-    if (foundFile) {
+    if (foundFileIndex > -1) {
+      const foundFile = this.files[foundFileIndex]
       newEditor.id = foundFile.id
       newEditor.path.value = foundFile.path.value
       this.files = this.files
