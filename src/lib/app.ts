@@ -346,7 +346,7 @@ export class App implements AppSubsystems {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
-      projectPath: '',
+      projectPath: signal(''),
     })
 
     if (typeof window !== 'undefined') {

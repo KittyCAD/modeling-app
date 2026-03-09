@@ -156,7 +156,7 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
-  projectPath: string
+  projectPath: Signal<string>
 }
 
 export enum KclManagerEvents {
@@ -269,9 +269,7 @@ export class ZDSProject {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
-        get projectPath() {
-          return this.path
-        },
+        projectPath: computed(() => this.projectIORefSignal.value.path),
       })
 
     if (providedEditor) {

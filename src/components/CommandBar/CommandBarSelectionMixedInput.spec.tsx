@@ -5,6 +5,7 @@ import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBar
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { App } from '@src/lib/app'
 import { KclManager } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
 
 vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 vi.mock('@src/lang/wasmUtils', async () => {
@@ -59,7 +60,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project',
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -90,7 +91,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project',
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -118,7 +119,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project',
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -146,7 +147,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project',
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -189,7 +190,7 @@ describe('CommandBarSelectionMixedInput', () => {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
-        projectPath: 'some-project',
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
