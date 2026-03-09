@@ -20,6 +20,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { MachineManager } from '@src/lib/MachineManager'
+import { signal } from '@preact/signals-core'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -73,10 +74,11 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
-  const kclManager = new KclManager({
+  const kclManager = new KclManager('some-path', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
+    projectPath: signal('some-project'),
   })
 
   await new Promise((resolve, reject) => {
@@ -157,10 +159,11 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
-  const kclManager = new KclManager({
+  const kclManager = new KclManager('some-path', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
+    projectPath: signal('some-project'),
   })
 
   settingsActor.start()
