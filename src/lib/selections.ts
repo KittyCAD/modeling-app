@@ -122,19 +122,6 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-function getSketchIdFromArtifact(
-  artifact: Artifact | undefined
-): ArtifactId | null {
-  if (!artifact) return null
-  if (artifact.type === 'path' || artifact.type === 'sketchBlock') {
-    return artifact.id
-  }
-  if (artifact.type === 'segment' || artifact.type === 'solid2d') {
-    return artifact.pathId
-  }
-  return null
-}
-
 async function getRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
@@ -143,29 +130,29 @@ async function getRegionSelectionFromEntity(
   const point = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
-  ).catch(() => null)
+  )
   if (!point) return null
 
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
     engineCommandManager
-  ).catch(() => undefined)
+  )
+  if (!parentEntityId) return null
 
-  const parentArtifact = parentEntityId
-    ? artifactGraph.get(parentEntityId)
-    : undefined
-  const sketchId =
-    getSketchIdFromArtifact(parentArtifact) ||
-    getSketchIdFromArtifact(artifactGraph.get(regionEntityId))
-  if (!sketchId) return null
+  const path = artifactGraph.get(parentEntityId)
+  if (!path || path.type !== 'path') return null
 
-  if (!artifactGraph.get(sketchId)) return null
+  // TODO: double check this
+  const sketch = artifactGraph
+    .values()
+    .find((a) => a.type === 'sketchBlock' && a.planeId === path.planeId)
+  if (!sketch) return null
 
   return {
     type: 'region',
     id: regionEntityId,
     point,
-    sketchId,
+    sketchId: sketch.id,
   }
 }
 

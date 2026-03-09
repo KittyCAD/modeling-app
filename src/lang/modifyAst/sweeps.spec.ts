@@ -13,7 +13,6 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   buildTheWorldAndConnectToEngine,
@@ -254,23 +253,9 @@ s = sketch(on = XY) {
         instanceInThisFile,
         rustContextInThisFile
       )
-
-      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
-        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-          return false
-        }
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          artifact.codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 's'
-      })
-      if (!sketchArtifact) {
-        throw new Error('Could not find sketch artifact for s')
-      }
-
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -278,11 +263,10 @@ s = sketch(on = XY) {
             type: 'region',
             id: 'region-1',
             point: { x: 1, y: 1 },
-            sketchId: sketchArtifact.id,
+            sketchId: sketch!.id,
           },
         ],
       }
-
       const length = await getKclCommandValue(
         '1',
         instanceInThisFile,
@@ -856,38 +840,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
         rustContextInThisFile
       )
 
-      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
-        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-          return false
-        }
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          artifact.codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 's'
-      })
-      if (!sketchArtifact) {
-        throw new Error('Could not find sketch artifact for s')
-      }
-
-      const pathArtifact = [...artifactGraph.values()].find((artifact) => {
-        if (artifact.type !== 'path') {
-          return false
-        }
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          artifact.codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 'profile001'
-      })
-      if (!pathArtifact) {
-        throw new Error('Could not find path artifact for profile001')
-      }
-
+      const sketch = artifactGraph
+        .values()
+        .find((s) => s.type === 'sketchBlock')
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -895,12 +850,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
             type: 'region',
             id: 'region-1',
             point: { x: 1, y: 1 },
-            sketchId: sketchArtifact.id,
+            sketchId: sketch!.id,
           },
         ],
       }
-      const path = createSelectionFromArtifacts([pathArtifact], artifactGraph)
-
+      const pathArtifact = [...artifactGraph.values()].findLast(
+        (s) => s.type === 'path'
+      )
+      const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
       const result = addSweep({
         ast,
         artifactGraph,
@@ -1110,43 +1067,12 @@ t = sketch(on = plane001) {
         instanceInThisFile,
         rustContextInThisFile
       )
-
-      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
-        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-          return false
-        }
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          artifact.codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 's'
-      })
-      if (!sketchArtifact) {
-        throw new Error('Could not find sketch artifact for s')
-      }
-
-      const secondSketchArtifact = [...artifactGraph.values()].find(
-        (artifact) => {
-          if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-            return false
-          }
-          const node = getNodeFromPath<{
-            declaration: { id: { name: string } }
-          }>(
-            ast,
-            artifact.codeRef.pathToNode,
-            instanceInThisFile,
-            'VariableDeclaration'
-          )
-          return !err(node) && node.node.declaration.id.name === 't'
-        }
+      const sketch1 = artifactGraph
+        .values()
+        .find((s) => s.type === 'sketchBlock')
+      const sketch2 = [...artifactGraph.values()].findLast(
+        (s) => s.type === 'sketchBlock'
       )
-      if (!secondSketchArtifact) {
-        throw new Error('Could not find sketch artifact for t')
-      }
-
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -1154,17 +1080,16 @@ t = sketch(on = plane001) {
             type: 'region',
             id: 'region-1',
             point: { x: 1, y: 1 },
-            sketchId: sketchArtifact.id,
+            sketchId: sketch1!.id,
           },
           {
             type: 'region',
             id: 'region-2',
             point: { x: 1, y: 1 },
-            sketchId: secondSketchArtifact.id,
+            sketchId: sketch2!.id,
           },
         ],
       }
-
       const result = addLoft({
         ast,
         artifactGraph,
@@ -1330,23 +1255,9 @@ s = sketch(on = XY) {
         instanceInThisFile,
         rustContextInThisFile
       )
-
-      const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
-        if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-          return false
-        }
-        const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-          ast,
-          artifact.codeRef.pathToNode,
-          instanceInThisFile,
-          'VariableDeclaration'
-        )
-        return !err(node) && node.node.declaration.id.name === 's'
-      })
-      if (!sketchArtifact) {
-        throw new Error('Could not find sketch artifact for s')
-      }
-
+      const sketch = artifactGraph
+        .values()
+        .find((s) => s.type === 'sketchBlock')
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -1354,7 +1265,7 @@ s = sketch(on = XY) {
             type: 'region',
             id: 'region-1',
             point: { x: 1, y: 1 },
-            sketchId: sketchArtifact.id,
+            sketchId: sketch!.id,
           },
         ],
       }
@@ -1363,7 +1274,6 @@ s = sketch(on = XY) {
         instanceInThisFile,
         rustContextInThisFile
       )
-
       const result = addRevolve({
         ast,
         artifactGraph,

@@ -71,6 +71,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isRegionSelection } from '@src/lib/selections'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1098,71 +1099,64 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
-function getSketchVarNameFromRegionSelection(
-  regionSelection: RegionSelection,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
   wasmInstance: ModuleType
-): string | Error {
-  const sketchId = regionSelection.sketchId
-
-  let sketchArtifact = artifactGraph.get(sketchId)
-  if (!sketchArtifact) {
-    return new Error(`Sketch region sketchId ${sketchId} was not found`)
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
   }
 
-  // Normalize to the owning sketch/path artifact when a child artifact was stored.
-  if (sketchArtifact.type === 'segment') {
-    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
-    if (pathArtifact?.type === 'path') {
-      sketchArtifact = pathArtifact
-    }
-  } else if (sketchArtifact.type === 'solid2d') {
-    const pathArtifact = artifactGraph.get(sketchArtifact.pathId)
-    if (pathArtifact?.type === 'path') {
-      sketchArtifact = pathArtifact
-    }
-  }
-
-  if (!('codeRef' in sketchArtifact)) {
-    return new Error(
-      `Sketch region sketchId ${sketchId} does not provide a code reference`
-    )
-  }
-
-  const candidatePaths: PathToNode[] = [
-    sketchArtifact.codeRef.pathToNode,
-    getNodePathFromSourceRange(ast, sketchArtifact.codeRef.range),
-  ].filter((path) => path.length > 0)
-
-  for (const path of candidatePaths) {
-    const segmentDeclaration = getNodeFromPath<VariableDeclaration>(
-      ast,
-      path,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (err(segmentDeclaration)) {
-      continue
-    }
-
-    const bodyIndex = Number(segmentDeclaration.deepPath[1]?.[0])
-    if (!Number.isInteger(bodyIndex)) {
-      continue
-    }
-
-    const topLevelDeclaration = ast.body[bodyIndex]
-    if (
-      topLevelDeclaration?.type === 'VariableDeclaration' &&
-      topLevelDeclaration.declaration.init.type === 'SketchBlock'
-    ) {
-      return topLevelDeclaration.declaration.id.name
-    }
-  }
-
-  return new Error(
-    `Could not resolve sketch block variable for region sketchId ${sketchId}`
+  const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
+    program,
+    pathToNode,
+    wasmInstance,
+    ['CallExpressionKw', 'SketchBlock']
   )
+  if (
+    err(call) ||
+    !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
+  ) {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
 }
 
 function getRegionExprFromSelection(
@@ -1171,14 +1165,17 @@ function getRegionExprFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Expr | Error {
-  const sketchVarName = getSketchVarNameFromRegionSelection(
-    regionSelection,
+  const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+  if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+    return new Error("Couldn't retrieve sketch block artifact")
+  }
+  const sketchVarName = getVariableNameFromNodePath(
+    sketchArtifact.codeRef.pathToNode,
     ast,
-    artifactGraph,
     wasmInstance
   )
-  if (err(sketchVarName)) {
-    return sketchVarName
+  if (!sketchVarName) {
+    return new Error("Couldn't retrieve sketch block variable")
   }
 
   const { x, y } = regionSelection.point
