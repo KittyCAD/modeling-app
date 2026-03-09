@@ -462,7 +462,7 @@ export class KclManager extends EventTarget {
   private onFileWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
-    if (path !== this.path || !this.systemDeps.projectPath) {
+    if (path !== this.path || !this.systemDeps.projectPath.value) {
       return
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
