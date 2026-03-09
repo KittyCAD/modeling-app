@@ -157,8 +157,8 @@ pub(crate) struct SketchBlockState {
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
-    pub solver_constraints: Vec<kcl_ezpz::Constraint>,
-    pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
+    pub solver_constraints: Vec<ezpz::Constraint>,
+    pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
