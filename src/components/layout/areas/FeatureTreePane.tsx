@@ -520,7 +520,7 @@ const OperationItem = ({
         const codeRef = getFaceCodeRef(artifact)
         if (codeRef) {
           const entityRef = artifactToEntityRef(artifact.type, artifact.id)
-          sceneInfra.modelingSend({
+          systemDeps.sceneInfra.modelingSend({
             type: 'Set selection',
             data: {
               selectionType: 'singleCodeCursor',
@@ -552,7 +552,7 @@ const OperationItem = ({
   }, [
     item,
     commandBarActor,
-    sceneInfra,
+    systemDeps.sceneInfra,
     selectOperation,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,

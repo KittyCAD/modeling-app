@@ -98,12 +98,7 @@ export function useEngineConnectionSubscriptions() {
             void selectSketchPlane(
               planeId,
               context.store.useNewSketchMode?.current,
-              {
-                kclManager,
-                rustContext,
-                sceneEntitiesManager,
-                sceneInfra,
-              }
+              kclManager
             )
           }
           return
@@ -134,8 +129,6 @@ export function useEngineConnectionSubscriptions() {
     send,
     engineCommandManager,
     rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
   ])
 
   useEffect(() => {

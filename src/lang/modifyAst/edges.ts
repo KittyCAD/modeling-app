@@ -8,7 +8,6 @@ import {
   createArrayExpression,
   createTagDeclarator,
   createObjectExpression,
-  createLiteral,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,

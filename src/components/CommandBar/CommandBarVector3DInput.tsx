@@ -88,6 +88,7 @@ function CommandBarVector3DInput({
 }) {
   const { commands } = useApp()
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const rustContext = kclManager.rustContext
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)

@@ -1646,27 +1646,25 @@ export function selectAllInCurrentSketch(
 ): Selections {
   const graphSelectionsV2: SelectionV2[] = []
 
-  Object.keys(sceneEntitiesManager.activeSegments).forEach(
-    (pathToNodeStr) => {
-      for (const [artifactId, artifact] of artifactGraph) {
-        if (!['path', 'segment'].includes(artifact.type)) continue
-        const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
-        if (!codeRefs?.length) continue
-        if (JSON.stringify(codeRefs[0].pathToNode) !== pathToNodeStr) continue
-        graphSelectionsV2.push({
-          entityRef: artifactToEntityRef(
-            artifact.type,
-            artifactId,
-            artifact.type === 'segment'
-              ? (artifact as { pathId: string }).pathId
-              : undefined
-          ),
-          codeRef: codeRefs[0],
-        })
-        break
-      }
+  Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNodeStr) => {
+    for (const [artifactId, artifact] of artifactGraph) {
+      if (!['path', 'segment'].includes(artifact.type)) continue
+      const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+      if (!codeRefs?.length) continue
+      if (JSON.stringify(codeRefs[0].pathToNode) !== pathToNodeStr) continue
+      graphSelectionsV2.push({
+        entityRef: artifactToEntityRef(
+          artifact.type,
+          artifactId,
+          artifact.type === 'segment'
+            ? (artifact as { pathId: string }).pathId
+            : undefined
+        ),
+        codeRef: codeRefs[0],
+      })
+      break
     }
-  )
+  })
 
   return {
     graphSelectionsV2,
