@@ -4638,8 +4638,8 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
-line1.start.at[0] == 0
-line1.start.at[1] == 0
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5382,7 +5382,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-horizontalDistance([point1, point2]) == 2mm
+  horizontalDistance([point1, point2]) == 2mm
 }
 "
         );
@@ -5454,7 +5454,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-radius(arc1) == 5mm
+  radius(arc1) == 5mm
 }
 "
         );
@@ -5516,7 +5516,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-verticalDistance([point1, point2]) == 2mm
+  verticalDistance([point1, point2]) == 2mm
 }
 "
         );
@@ -5656,7 +5656,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-diameter(arc1) == 10mm
+  diameter(arc1) == 10mm
 }
 "
         );
