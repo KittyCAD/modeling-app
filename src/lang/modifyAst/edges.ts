@@ -22,7 +22,6 @@ import {
   resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { toUtf16 } from '@src/lang/errors'
 import type {
   Artifact,
   ArtifactGraph,
@@ -45,9 +44,11 @@ import type {
   EntityReference,
   EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
+import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getFaceCodeRef,
   getSweepArtifactFromSelection,
   getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
@@ -59,27 +60,34 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
-import { getBodySelectionFromPrimitiveParentEntityId } from './faces'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 
 /**
- * Converts an edge selection to an EntityReference with face information.
- * This is used for the new face-based edge selection API.
+ * Converts a resolved edge selection to an EntityReference with face information.
+ * This is used for the new face-based edge selection API (selectionsV2).
  */
 function edgeSelectionToEntityReference(
-  selection: Selection,
+  selection: ResolvedGraphSelection & { artifact: Artifact },
   artifactGraph: ArtifactGraph
 ): EntityReference | Error {
-  if (!selection.artifact) {
-    return new Error('Selection does not have an artifact')
-  }
-
   const artifact = selection.artifact
-  if (artifact.type !== 'sweepEdge' && artifact.type !== 'segment') {
-    return new Error('Selection is not an edge')
+  // Edge artifacts are segment or edgeCut (sweepEdge removed in selectionsV2)
+  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
+  if (artifact.type === 'segment') {
+    segmentArtifact = artifact
+  } else if (artifact.type === 'edgeCut') {
+    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
+    const firstEdgeId = edgeIds?.[0]
+    if (!firstEdgeId) return new Error('EdgeCut has no edge_ids')
+    const edgeArtifact = artifactGraph.get(firstEdgeId)
+    if (edgeArtifact?.type === 'segment') segmentArtifact = edgeArtifact
+  }
+  if (!segmentArtifact) {
+    return new Error('Selection is not an edge (segment or edgeCut)')
   }
 
   // Get the faces that form this edge
-  const commonFaces = getCommonFacesForEdge(artifact, artifactGraph)
+  const commonFaces = getCommonFacesForEdge(segmentArtifact, artifactGraph)
   if (err(commonFaces)) {
     return commonFaces
   }
@@ -141,7 +149,7 @@ export function createEdgeRefObjectExpression(
   wasmInstance: ModuleType,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
-  originalEdgeSelection?: Selection,
+  originalEdgeSelection?: ResolvedGraphSelection,
   fallbackCodeRef?: CodeRef
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   // Resolve face UUIDs to tags
@@ -169,7 +177,10 @@ export function createEdgeRefObjectExpression(
       // For Solid2D edges, we need to use the original edge selection or fallback codeRef to tag the segment
       let segmentPathToNode: PathToNode | undefined
 
-      if (originalEdgeSelection?.artifact?.type === 'segment') {
+      if (
+        originalEdgeSelection?.artifact &&
+        originalEdgeSelection.artifact.type === 'segment'
+      ) {
         // Use the segment artifact's codeRef
         segmentPathToNode = originalEdgeSelection.artifact.codeRef.pathToNode
       } else if (fallbackCodeRef?.pathToNode) {
@@ -204,7 +215,10 @@ export function createEdgeRefObjectExpression(
       // Normal case: tag the face artifact
       const tagResult = modifyAstWithTagsForSelection(
         currentAst,
-        { artifact: faceArtifact, codeRef: codeRefs[0] },
+        {
+          artifact: faceArtifact,
+          codeRef: codeRefs[0],
+        } as ResolvedGraphSelection,
         artifactGraph,
         wasmInstance
       )
@@ -234,7 +248,10 @@ export function createEdgeRefObjectExpression(
 
       const tagResult = modifyAstWithTagsForSelection(
         currentAst,
-        { artifact: disambArtifact, codeRef: codeRefs[0] },
+        {
+          artifact: disambArtifact,
+          codeRef: codeRefs[0],
+        } as ResolvedGraphSelection,
         artifactGraph,
         wasmInstance
       )
@@ -279,7 +296,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  nodeToEdit?: PathToNode,
+  _options?: { includePrimitiveEdgeIndices?: boolean }
 ):
   | {
       modifiedAst: Node<Program>
@@ -325,11 +343,13 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       if (!faceArtifact) continue
 
       // Get the sweep artifact
+      const faceCodeRef =
+        v2Sel.codeRef ??
+        getFaceCodeRef(faceArtifact) ??
+        getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
+      if (!faceCodeRef) continue
       const sweepArtifact = getSweepArtifactFromSelection(
-        {
-          artifact: faceArtifact,
-          codeRef: v2Sel.codeRef || faceArtifact.faceCodeRef,
-        },
+        { artifact: faceArtifact, codeRef: faceCodeRef },
         artifactGraph
       )
       if (err(sweepArtifact)) {
@@ -381,11 +401,13 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       )
         continue
 
+      const firstFaceCodeRef =
+        firstV2Sel.codeRef ??
+        getFaceCodeRef(faceArtifact) ??
+        getCodeRefsByArtifactId(firstFaceId, artifactGraph)?.[0]
+      if (!firstFaceCodeRef) continue
       const sweepArtifact = getSweepArtifactFromSelection(
-        {
-          artifact: faceArtifact,
-          codeRef: firstV2Sel.codeRef || faceArtifact.faceCodeRef,
-        },
+        { artifact: faceArtifact, codeRef: firstFaceCodeRef },
         artifactGraph
       )
       if (err(sweepArtifact)) continue
@@ -461,10 +483,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       } else {
         // Resolve V2 selections and convert to EntityReferences
         for (const v2Sel of bodySelections.graphSelectionsV2) {
-          const selection = resolveSelectionV2(v2Sel, artifactGraph)
-          if (!selection) continue
+          const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+          if (!resolved?.artifact) continue
           const entityRef = edgeSelectionToEntityReference(
-            selection,
+            { codeRef: resolved.codeRef, artifact: resolved.artifact },
             artifactGraph
           )
           if (err(entityRef) || entityRef.type !== 'edge') {
@@ -884,7 +906,10 @@ function buildEdgeExpr(
         otherSelections: [],
       },
       ast,
-      wasmInstance
+      wasmInstance,
+      undefined,
+      false,
+      artifactGraph
     )
     if (err(sourceSurfaceVars)) return sourceSurfaceVars
     if (sourceSurfaceVars.exprs.length !== 1) {
@@ -915,21 +940,22 @@ function buildEdgeExpr(
     }
   }
 
-  const graphEdgeSelection = edgeSelection as Selection
+  const graphEdgeSelection = edgeSelection as SelectionV2
   const resolved = resolveSelectionV2(graphEdgeSelection, artifactGraph)
   const edgeArtifact = resolved?.artifact
   if (
+    !resolved?.codeRef ||
     !edgeArtifact ||
-    (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+    (edgeArtifact.type !== 'segment' && edgeArtifact.type !== 'edgeCut')
   ) {
     return new Error(
-      'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
+      'Blend only supports segment, edgeCut, and enginePrimitiveEdge selections.'
     )
   }
 
   const tagResult = modifyAstWithTagsForSelection(
     ast,
-    graphEdgeSelection,
+    { codeRef: resolved.codeRef, artifact: resolved.artifact },
     artifactGraph,
     wasmInstance,
     ['oppositeAndAdjacentEdges']
@@ -959,17 +985,17 @@ function buildEdgeExpr(
     {
       graphSelectionsV2: [
         {
-          entityRef: artifactToEntityRef(
-            sourceSurfaceArtifact.type,
-            sourceSurfaceArtifact.id
-          ),
+          entityRef: artifactToEntityRef('sweep', sourceSurfaceArtifact.id),
           codeRef: sourceSurfaceArtifact.codeRef,
         },
       ],
       otherSelections: [],
     },
     ast,
-    wasmInstance
+    wasmInstance,
+    undefined,
+    false,
+    artifactGraph
   )
   if (err(sourceSurfaceVars)) return sourceSurfaceVars
   if (sourceSurfaceVars.exprs.length !== 1) {
@@ -1344,7 +1370,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     }
 
     const artifact = getArtifactOfTypes(
-      { key, types: ['segment', 'sweepEdge', 'edgeCut'] },
+      { key, types: ['segment', 'edgeCut'] },
       artifactGraph
     )
     if (err(artifact)) {
@@ -1477,7 +1503,7 @@ function isEdgeTreatmentType(name: string): name is EdgeTreatmentType {
 }
 export async function deleteEdgeTreatment(
   ast: Node<Program>,
-  selection: Selection,
+  selection: ResolvedGraphSelection,
   wasmInstance: ModuleType
 ): Promise<Node<Program> | Error> {
   /**
@@ -1491,9 +1517,12 @@ export async function deleteEdgeTreatment(
    */
 
   // 1. Validate Selection Type
-  const { artifact } = selection
+  const { artifact, codeRef } = selection
   if (!artifact || artifact.type !== 'edgeCut') {
     return new Error('Selection is not an edge cut')
+  }
+  if (!codeRef) {
+    return new Error('Selection has no codeRef')
   }
 
   const { subType } = artifact
@@ -1505,7 +1534,7 @@ export async function deleteEdgeTreatment(
   const astClone = structuredClone(ast)
   const edgeTreatmentNode = getNodeFromPath<
     VariableDeclarator | ExpressionStatement
-  >(astClone, selection?.codeRef?.pathToNode, wasmInstance, [
+  >(astClone, codeRef.pathToNode, wasmInstance, [
     'VariableDeclarator',
     'ExpressionStatement',
   ])
@@ -1525,16 +1554,13 @@ export async function deleteEdgeTreatment(
       edgeTreatmentNode.node.init?.type !== 'PipeExpression')
   ) {
     // Handle both standalone cases (assigned and unassigned)
-    const deleteResult = deleteTopLevelStatement(
-      astClone,
-      selection.codeRef.pathToNode
-    )
+    const deleteResult = deleteTopLevelStatement(astClone, codeRef.pathToNode)
     if (err(deleteResult)) return deleteResult
     return astClone
   } else {
     const deleteResult = deleteNodeInExtrudePipe(
       astClone,
-      selection.codeRef.pathToNode,
+      codeRef.pathToNode,
       wasmInstance
     )
     if (err(deleteResult)) return deleteResult
@@ -1546,13 +1572,6 @@ export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
 ): Node<Name | CallExpressionKw> {
-  let tagCall: Expr = createLocalName(tag)
-
-  // Modify the tag based on selectionType
-  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
-    tagCall = createCallExpressionStdLibKw('getOppositeEdge', tagCall, [])
-  } else if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
-    tagCall = createCallExpressionStdLibKw('getNextAdjacentEdge', tagCall, [])
-  }
-  return tagCall
+  // selectionsV2: edge artifacts are segment or edgeCut (sweepEdge removed); use tag directly
+  return createLocalName(tag)
 }

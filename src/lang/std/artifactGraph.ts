@@ -28,7 +28,8 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+/** Resolved graph selection (artifact + codeRef). SelectionV2 resolved via resolveSelectionV2. */
+export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -299,12 +300,11 @@ export function getEdgeCutConsumedCodeRef(
     return new Error('edgeCut has no edge_ids or consumedEdgeId')
   }
   const seg = getArtifactOfTypes(
-    { key: consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    { key: consumedEdgeId, types: ['segment'] },
     artifactGraph
   )
   if (err(seg)) return seg
-  if (seg.type === 'segment') return seg.codeRef
-  return getSweepEdgeCodeRef(seg, artifactGraph)
+  return seg.codeRef
 }
 
 export function getSweepFromSuspectedSweepSurface(
@@ -317,7 +317,7 @@ export function getSweepFromSuspectedSweepSurface(
   )
   if (err(artifact)) return artifact
   if (artifact.type === 'wall' || artifact.type === 'cap') {
-    const sweepId = artifact.sweepId
+    const sweepId = (artifact as { sweepId?: string }).sweepId
     if (sweepId == null || sweepId === '') {
       return new Error('wall/cap has no sweepId')
     }
@@ -331,7 +331,7 @@ export function getSweepFromSuspectedSweepSurface(
     return new Error('edgeCut has no edge_ids or consumedEdgeId')
   }
   const segOrEdge = getArtifactOfTypes(
-    { key: consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    { key: consumedEdgeId, types: ['segment'] },
     artifactGraph
   )
   if (err(segOrEdge)) return segOrEdge
@@ -345,16 +345,14 @@ export function getSweepFromSuspectedSweepSurface(
       artifactGraph
     )
     if (err(path)) return path
-    if (!path.sweepId) return new Error('Path does not have a sweepId')
+    const pathSweepId = (path as { sweepId?: string }).sweepId
+    if (!pathSweepId) return new Error('Path does not have a sweepId')
     return getArtifactOfTypes(
-      { key: path.sweepId, types: ['sweep'] },
+      { key: pathSweepId, types: ['sweep'] },
       artifactGraph
     )
   }
-  return getArtifactOfTypes(
-    { key: segOrEdge.sweepId, types: ['sweep'] },
-    artifactGraph
-  )
+  return new Error('Could not resolve sweep from edge')
 }
 
 export function getCommonFacesForEdge(
@@ -371,18 +369,11 @@ export function getCommonFacesForEdge(
 }
 
 export function getSweepArtifactFromSelection(
-  selection: Selection,
+  selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
   let sweepArtifact: Artifact | null = null
-  if (selection.artifact?.type === 'sweepEdge') {
-    const _artifact = getArtifactOfTypes(
-      { key: selection.artifact.sweepId, types: ['sweep'] },
-      artifactGraph
-    )
-    if (err(_artifact)) return _artifact
-    sweepArtifact = _artifact
-  } else if (selection.artifact?.type === 'segment') {
+  if (selection.artifact?.type === 'segment') {
     const pathId = selection.artifact.pathId
     if (pathId == null || pathId === '') {
       return new Error('segment artifact has no pathId; cannot resolve sweep')
@@ -392,9 +383,10 @@ export function getSweepArtifactFromSelection(
       artifactGraph
     )
     if (err(_pathArtifact)) return _pathArtifact
-    if (!_pathArtifact.sweepId) return new Error('Path does not have a sweepId')
+    const pathSweepId = (_pathArtifact as { sweepId?: string }).sweepId
+    if (!pathSweepId) return new Error('Path does not have a sweepId')
     const _artifact = getArtifactOfTypes(
-      { key: _pathArtifact.sweepId, types: ['sweep'] },
+      { key: pathSweepId, types: ['sweep'] },
       artifactGraph
     )
     if (err(_artifact)) return _artifact
@@ -403,8 +395,12 @@ export function getSweepArtifactFromSelection(
     selection.artifact?.type === 'cap' ||
     selection.artifact?.type === 'wall'
   ) {
+    const sweepId = (selection.artifact as { sweepId?: string }).sweepId
+    if (sweepId == null || sweepId === '') {
+      return new Error('wall/cap has no sweepId')
+    }
     const _artifact = getArtifactOfTypes(
-      { key: selection.artifact.sweepId, types: ['sweep'] },
+      { key: sweepId, types: ['sweep'] },
       artifactGraph
     )
     if (err(_artifact)) return _artifact
@@ -417,10 +413,7 @@ export function getSweepArtifactFromSelection(
       : (selection.artifact as { consumedEdgeId?: string }).consumedEdgeId
     if (consumedEdgeId != null && consumedEdgeId !== '') {
       const segOrEdge = getArtifactOfTypes(
-        {
-          key: consumedEdgeId,
-          types: ['segment', 'sweepEdge'],
-        },
+        { key: consumedEdgeId, types: ['segment'] },
         artifactGraph
       )
       if (!err(segOrEdge)) {
@@ -485,10 +478,6 @@ export function getCodeRefsByArtifactId(
     const codeRef = getWallCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
-  } else if (artifact?.type === 'sweepEdge') {
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) return null
-    return [codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
   } else if (artifact?.type === 'edgeCut') {
@@ -570,7 +559,7 @@ function getPlaneFromWall(
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
-function getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
+function _getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
   const sweep = getArtifactOfTypes(
     { key: edge.sweepId, types: ['sweep'] },
     graph
@@ -638,8 +627,6 @@ export function getPlaneFromArtifact(
     return artifact
   if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
   if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
-  if (artifact.type === 'sweepEdge')
-    return getPlaneFromSweepEdge(artifact, graph)
   if (artifact.type === 'startSketchOnFace')
     return getPlaneFromStartSketchOnFace(artifact, graph)
   if (artifact.type === 'startSketchOnPlane')

@@ -57,7 +57,6 @@ export type {
   Segment as SegmentArtifact,
   Solid2d as Solid2dArtifact,
   Sweep as SweepArtifact,
-  SweepEdge,
   Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'

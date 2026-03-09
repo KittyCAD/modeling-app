@@ -14,7 +14,6 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
   getEdgeCutMeta,
@@ -48,11 +47,14 @@ import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type {
   Selections,
   SelectionV2,
   EdgeCutInfo,
+  EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 
 export function addShell({
   ast,
@@ -765,8 +767,6 @@ export function addOffsetPlane({
   }
 }
 
-// Utilities
-
 function getEnginePrimitiveFaceSelectionsFromSelection(
   faces: Selections
 ): EnginePrimitiveSelection[] {
@@ -779,36 +779,10 @@ function getEnginePrimitiveFaceSelectionsFromSelection(
   )
 }
 
-function getSolidSelectionsFromFaceSelections(
-  faces: Selections,
-  artifactGraph: ArtifactGraph
-): Selections {
-  return {
-    graphSelections: faces.graphSelections.flatMap((face) => {
-      if (!face.artifact) {
-        return []
-      }
-      const sweep = getSweepFromSuspectedSweepSurface(
-        face.artifact.id,
-        artifactGraph
-      )
-      if (err(sweep) || !sweep) {
-        return []
-      }
-
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }),
-    otherSelections: [],
-  }
-}
-
 export function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph
-): Selection | null {
+): ResolvedGraphSelection | null {
   const parentArtifact = artifactGraph.get(parentEntityId)
   if (!parentArtifact) {
     return null
@@ -865,55 +839,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
   }
 }
 
-function getSolidSelectionsFromPrimitiveFaceSelections(
-  primitiveFaceSelections: EnginePrimitiveSelection[],
-  artifactGraph: ArtifactGraph
-): Selections | Error {
-  const uniqueParentIds = [
-    ...new Set(
-      primitiveFaceSelections
-        .map((selection) => selection.parentEntityId)
-        .filter((id): id is string => typeof id === 'string' && id.length > 0)
-    ),
-  ]
-  if (!uniqueParentIds.length) {
-    if (!primitiveFaceSelections.length) {
-      return {
-        graphSelections: [],
-        otherSelections: [],
-      }
-    }
-    return new Error(
-      'Delete Face could not resolve a parent solid for the selected primitive faces.'
-    )
-  }
-
-  const graphSelectionsByArtifactId = new Map<string, Selection>()
-  for (const parentId of uniqueParentIds) {
-    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-      parentId,
-      artifactGraph
-    )
-    if (!bodySelection?.artifact) {
-      continue
-    }
-
-    graphSelectionsByArtifactId.set(bodySelection.artifact.id, bodySelection)
-  }
-
-  const graphSelections = [...graphSelectionsByArtifactId.values()]
-  if (!graphSelections.length) {
-    return new Error(
-      'Delete Face could not map selected primitive faces to editable solids in this file.'
-    )
-  }
-
-  return {
-    graphSelections,
-    otherSelections: [],
-  }
-}
-
 function getFaceIdExprsFromPrimitiveSelections(
   primitiveFaceSelections: EnginePrimitiveSelection[],
   artifactGraph: ArtifactGraph,
@@ -945,7 +870,20 @@ function getFaceIdExprsFromPrimitiveSelections(
     }
 
     const parentSelection: Selections = {
-      graphSelections: [bodySelection],
+      graphSelectionsV2: [
+        bodySelection.artifact
+          ? {
+              entityRef: artifactToEntityRef(
+                bodySelection.artifact.type,
+                bodySelection.artifact.id,
+                bodySelection.artifact.type === 'segment'
+                  ? (bodySelection.artifact as { pathId?: string }).pathId
+                  : undefined
+              ),
+              codeRef: bodySelection.codeRef,
+            }
+          : { codeRef: bodySelection.codeRef },
+      ],
       otherSelections: [],
     }
     const vars = getVariableExprsFromSelection(
