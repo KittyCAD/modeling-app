@@ -10,22 +10,27 @@ flowchart LR
     5["Segment<br>[45, 508, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   end
+  subgraph path6 [Path]
+    6["Path<br>[514, 538, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
   1["Plane<br>[45, 508, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  6["SketchBlock<br>[45, 508, 0]"]
+  7["SketchBlock<br>[45, 508, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  7["SketchBlockConstraint Coincident<br>[215, 251, 0]"]
+  8["SketchBlockConstraint Coincident<br>[215, 251, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  8["SketchBlockConstraint Coincident<br>[337, 373, 0]"]
+  9["SketchBlockConstraint Coincident<br>[337, 373, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  9["SketchBlockConstraint Coincident<br>[376, 412, 0]"]
+  10["SketchBlockConstraint Coincident<br>[376, 412, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  10["SketchBlockConstraint Horizontal<br>[415, 432, 0]"]
+  11["SketchBlockConstraint Horizontal<br>[415, 432, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  11["SketchBlockConstraint LinesEqualLength<br>[435, 462, 0]"]
+  12["SketchBlockConstraint LinesEqualLength<br>[435, 462, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 6
+  1 <--x 7
   2 --- 3
   2 --- 4
   2 --- 5
