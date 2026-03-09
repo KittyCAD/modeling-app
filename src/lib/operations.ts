@@ -1776,6 +1776,78 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditSplit: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Boolean Split',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  if (!operation.unlabeledArg) {
+    return { reason: "Couldn't retrieve operation arguments" }
+  }
+
+  const targets = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    artifactGraph
+  )
+  if (err(targets)) {
+    return { reason: "Couldn't retrieve targets" }
+  }
+
+  let tools: Selections | undefined
+  const toolsArg = operation.labeledArgs?.tools
+  if (toolsArg) {
+    const toolsResult = retrieveSelectionsFromOpArg(toolsArg, artifactGraph)
+    if (err(toolsResult)) {
+      return { reason: "Couldn't retrieve tools" }
+    }
+    tools = toolsResult
+  }
+
+  let merge: boolean | undefined
+  const mergeArg = operation.labeledArgs?.merge
+  if (mergeArg) {
+    const mergeValue = code.slice(
+      ...mergeArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (mergeValue !== 'true' && mergeValue !== 'false') {
+      return { reason: "Couldn't retrieve merge argument" }
+    }
+    merge = mergeValue === 'true'
+  }
+
+  let keepTools: boolean | undefined
+  const keepToolsArg = operation.labeledArgs?.keepTools
+  if (keepToolsArg) {
+    const keepToolsValue = code.slice(
+      ...keepToolsArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (keepToolsValue !== 'true' && keepToolsValue !== 'false') {
+      return { reason: "Couldn't retrieve keepTools argument" }
+    }
+    keepTools = keepToolsValue === 'true'
+  }
+
+  const argDefaultValues: ModelingCommandSchema['Boolean Split'] = {
+    targets,
+    tools,
+    merge,
+    keepTools,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -2021,7 +2093,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'split',
     supportsAppearance: true,
     supportsTransform: true,
-    // prepareToEdit: prepareToEditSplit, // TODO: add once merge can be edited
+    prepareToEdit: prepareToEditSplit,
   },
   startSketchOn: {
     label: 'Sketch',
