@@ -212,14 +212,18 @@ export function addSplit({
   ast,
   artifactGraph,
   targets,
+  tools,
   merge,
+  keepTools,
   nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   targets: Selections
-  merge: boolean
+  tools?: Selections
+  merge?: boolean
+  keepTools?: boolean
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -242,17 +246,61 @@ export function addSplit({
     return vars
   }
 
+  const hasTools = Boolean(
+    tools &&
+      (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
+  )
+  const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
+  let pathIfNewPipe = vars.pathIfPipe
+
+  if (hasTools && tools) {
+    const toolVars = getVariableExprsFromSelection(
+      tools,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit,
+      lastChildLookup,
+      artifactGraph,
+      ['compositeSolid', 'sweep']
+    )
+    if (err(toolVars)) {
+      return toolVars
+    }
+
+    const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
+    if (toolsExpr === null) {
+      return new Error('No tools provided for split operation')
+    }
+    if (vars.pathIfPipe && toolVars.pathIfPipe) {
+      return new Error(
+        'Cannot use both targets and tools in a split operation with a pipe'
+      )
+    }
+
+    pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+    labeledArgs.push(createLabeledArg('tools', toolsExpr))
+  }
+
+  if (merge) {
+    labeledArgs.push(
+      createLabeledArg('merge', createLiteral(true, wasmInstance))
+    )
+  }
+  if (hasTools && keepTools) {
+    labeledArgs.push(
+      createLabeledArg('keepTools', createLiteral(true, wasmInstance))
+    )
+  }
+
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('split', objectsExpr, [
-    createLabeledArg('merge', createLiteral(merge, wasmInstance)),
-  ])
+  const call = createCallExpressionStdLibKw('split', objectsExpr, labeledArgs)
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SPLIT,
     wasmInstance,
