@@ -219,19 +219,46 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let bounded_edges = args.get_unlabeled_kw_arg(
+    let edges: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "edges",
         &RuntimeType::Array(
-            Box::new(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::BoundedEdge),
+                RuntimeType::tagged_edge(),
+            ])),
             ArrayLen::Known(2),
         ),
         exec_state,
     )?;
 
+    let mut bounded_edges = Vec::with_capacity(edges.len());
+    for edge in edges {
+        bounded_edges.push(resolve_blend_edge(edge, exec_state, &args).await?);
+    }
+
     inner_blend(bounded_edges, exec_state, args.clone())
         .await
         .map(Box::new)
         .map(|value| KclValue::Solid { value })
+}
+
+async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &Args) -> Result<BoundedEdge, KclError> {
+    match edge {
+        KclValue::BoundedEdge { value, .. } => Ok(value),
+        KclValue::TagIdentifier(tag) => {
+            let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
+            Ok(BoundedEdge {
+                face_id: tagged_edge.geometry.id(),
+                edge_id: tagged_edge.id,
+                lower_bound: 0.0,
+                upper_bound: 1.0,
+            })
+        }
+        _ => Err(KclError::new_internal(KclErrorDetails::new(
+            "Unexpected edge value while preparing blend edges.".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
 }
 
 async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {

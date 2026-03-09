@@ -8,7 +8,7 @@ import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
@@ -17,8 +17,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd } = useApp()
-  const { kclManager } = useSingletons()
+  const { commands: cmd, project } = useApp()
   const commandBarState = cmd.useState()
   const {
     context: { selectedCommand, currentArgument, commands },
@@ -57,12 +56,17 @@ export const CommandBar = () => {
         cmd.send({ type: 'Close' })
       }
     },
-    kclManager
+    project?.executingEditor.value ?? undefined
   )
-  useHotkeyWrapper(['esc'], () => cmd.send({ type: 'Close' }), kclManager, {
-    enableOnFormTags: true,
-    enableOnContentEditable: true,
-  })
+  useHotkeyWrapper(
+    ['esc'],
+    () => cmd.send({ type: 'Close' }),
+    project?.executingEditor.value ?? undefined,
+    {
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    }
+  )
 
   function stepBack() {
     const entries = (

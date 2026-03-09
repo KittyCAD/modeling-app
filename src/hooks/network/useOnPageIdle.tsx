@@ -12,7 +12,7 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
-  const { engineCommandManager, kclManager, sceneInfra } = useSingletons()
+  const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
@@ -81,19 +81,19 @@ export const useOnPageIdle = ({
           ) {
             timeoutStart.current = null
             try {
-              await sceneInfra.camControls.saveRemoteCameraState()
+              await kclManager.sceneInfra.camControls.saveRemoteCameraState()
             } catch (e) {
               console.warn('unable to save old camera state on idle', e)
-              sceneInfra.camControls.clearOldCameraState()
+              kclManager.sceneInfra.camControls.clearOldCameraState()
             }
-            console.log(sceneInfra.camControls.oldCameraState)
+            console.log(kclManager.sceneInfra.camControls.oldCameraState)
             console.warn('detected idle, tearing down connection.')
             EngineDebugger.addLog({
               label: 'useOnPageIdle',
               message: 'Calling tearDown()',
             })
             // We do a full tear down at the moment.
-            engineCommandManager.tearDown()
+            kclManager.engineCommandManager.tearDown()
             idleCallback()
           }
         }
@@ -104,8 +104,8 @@ export const useOnPageIdle = ({
     IDLE_TIME_MS,
     idleCallback,
     modelingMachineState,
-    engineCommandManager,
-    sceneInfra.camControls,
+    kclManager.engineCommandManager,
+    kclManager.sceneInfra.camControls,
   ])
 
   useEffect(() => {

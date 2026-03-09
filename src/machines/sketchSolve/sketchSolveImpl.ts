@@ -941,7 +941,7 @@ export async function deleteDraftEntities({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     if (result) {
@@ -991,7 +991,7 @@ export async function deleteDraftEntitiesPromise({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     //

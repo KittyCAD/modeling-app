@@ -1,3 +1,4 @@
+import type { EntityType } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
@@ -9,8 +10,6 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -25,7 +24,18 @@ export type DefaultPlaneSelection = {
   id: string
 }
 
-export type NonCodeSelection = Axis | DefaultPlaneSelection
+export type EnginePrimitiveSelection = {
+  type: 'enginePrimitive'
+  entityId: string
+  parentEntityId?: string
+  primitiveIndex: number
+  primitiveType: EntityType
+}
+
+export type NonCodeSelection =
+  | Axis
+  | DefaultPlaneSelection
+  | EnginePrimitiveSelection
 
 export type EntityReference =
   | {
@@ -92,6 +102,10 @@ export type SetSelections =
   | {
       selectionType: 'defaultPlaneSelection'
       selection: DefaultPlaneSelection
+    }
+  | {
+      selectionType: 'enginePrimitiveSelection'
+      selection: EnginePrimitiveSelection
     }
   | {
       selectionType: 'completeSelection'
@@ -225,7 +239,7 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useNewSketchMode?: Setting<boolean>
+  useSketchSolveMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 
@@ -246,8 +260,6 @@ export type MoveDesc = { line: number; snippet: string }
 export type ModelingMachineInput = {
   kclManager: KclManager
   engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
-  sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   machineManager: MachineManager
   wasmInstance: ModuleType
@@ -281,6 +293,7 @@ export type ModelingMachineInternalContext = {
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
+  forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext

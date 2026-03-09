@@ -49,7 +49,7 @@ test.describe(
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
     test(`Insert kcl parts into assembly as whole module import`, async ({
-      context,
+      folderSetupFn,
       page,
       homePage,
       scene,
@@ -62,7 +62,7 @@ test.describe(
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const projDir = path.join(dir, projectName)
           const nestedProjDir = path.join(dir, projectName, 'nested', 'twice')
           await fsp.mkdir(projDir, { recursive: true })
@@ -183,7 +183,10 @@ test.describe(
       editor: EditorFixture,
       toolbar: ToolbarFixture,
       cmdBar: CmdBarFixture,
-      selectionType: 'scene' | 'feature-tree'
+      selectionType: 'scene' | 'feature-tree',
+      folderSetupFn: (
+        fn: (dir: string) => Promise<void>
+      ) => Promise<{ dir: string }>
     ) {
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
       async function selectBracket() {
@@ -201,10 +204,9 @@ test.describe(
           throw new Error('unreachable')
         }
       }
-
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
@@ -576,6 +578,7 @@ test.describe(
       toolbar,
       cmdBar,
       tronApp,
+      folderSetupFn,
     }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
       await testBracketInsertionThenTransformsThenDeletion(
@@ -586,7 +589,8 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
-        'feature-tree'
+        'feature-tree',
+        folderSetupFn
       )
     })
 
@@ -599,6 +603,7 @@ test.describe(
       toolbar,
       cmdBar,
       tronApp,
+      folderSetupFn,
     }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
       await testBracketInsertionThenTransformsThenDeletion(
@@ -609,12 +614,13 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
-        'scene'
+        'scene',
+        folderSetupFn
       )
     })
 
     test(`Insert foreign parts into assembly and delete them`, async ({
-      context,
+      folderSetupFn,
       page,
       homePage,
       scene,
@@ -630,7 +636,7 @@ test.describe(
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
@@ -744,7 +750,7 @@ test.describe(
     })
 
     test('Assembly gets reexecuted when imported models are updated externally', async ({
-      context,
+      folderSetupFn,
       page,
       homePage,
       scene,
@@ -757,7 +763,7 @@ test.describe(
       const projectName = 'assembly'
 
       await test.step('Setup parts and expect imported model', async () => {
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const projectDir = path.join(dir, projectName)
           await fsp.mkdir(projectDir, { recursive: true })
           await Promise.all([
@@ -796,7 +802,7 @@ foreign
         await doAndWaitForImageDiff(
           page,
           async () => {
-            await context.folderSetupFn(async (dir) => {
+            await folderSetupFn(async (dir) => {
               // Append appearance to the cube.kcl file
               await fsp.appendFile(
                 path.join(dir, projectName, 'cube.kcl'),
@@ -813,7 +819,7 @@ foreign
       await test.step('Change imported step file and expect change', async () => {
         // Expect pipe to take over the red cube but leave some space where the washer was
         await doAndWaitForImageDiff(page, async () => {
-          await context.folderSetupFn(async (dir) => {
+          await folderSetupFn(async (dir) => {
             // Replace the washer with a pipe
             await fsp.copyFile(
               kclSamplesPath(
@@ -833,7 +839,7 @@ foreign
     })
 
     test(`Point-and-click clone`, async ({
-      context,
+      folderSetupFn,
       page,
       homePage,
       scene,
@@ -848,7 +854,7 @@ foreign
       const cloneLine = `clone001 = clone(washer)`
 
       await test.step('Setup parts and expect imported model', async () => {
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const projectDir = path.join(dir, projectName)
           await fsp.mkdir(projectDir, { recursive: true })
           await Promise.all([

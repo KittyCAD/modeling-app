@@ -232,39 +232,36 @@ pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let targets: Vec<Solid> = args.get_unlabeled_kw_arg("targets", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tools: Option<Vec<Solid>> = args.get_kw_arg_opt("tools", &RuntimeType::solids(), exec_state)?;
-    let tools = tools.unwrap_or_default();
-    let merge: bool = args.get_kw_arg("merge", &RuntimeType::bool(), exec_state)?;
+    let keep_tools = args
+        .get_kw_arg_opt("keepTools", &RuntimeType::bool(), exec_state)?
+        .unwrap_or_default();
+    let merge = args
+        .get_kw_arg_opt("merge", &RuntimeType::bool(), exec_state)?
+        .unwrap_or_default();
 
-    if !merge {
+    if targets.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Zoo currently only supports merge = true for split".to_string(),
+            "At least one target body is required.".to_string(),
             vec![args.source_range],
         )));
     }
 
-    let mut bodies = Vec::with_capacity(targets.len() + tools.len());
-    bodies.extend(targets);
-    bodies.extend(tools);
-    if bodies.len() < 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "At least two bodies are required for an Imprint operation.".to_string(),
-            vec![args.source_range],
-        )));
-    }
-
-    let body = inner_imprint(bodies, tolerance, exec_state, args).await?;
+    let body = inner_imprint(targets, tools, keep_tools, merge, tolerance, exec_state, args).await?;
     Ok(body.into())
 }
 
 pub(crate) async fn inner_imprint(
-    bodies: Vec<Solid>,
+    targets: Vec<Solid>,
+    tools: Option<Vec<Solid>>,
+    keep_tools: bool,
+    merge: bool,
     tolerance: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_out_id = exec_state.next_uuid();
 
-    let mut body = bodies[0].clone();
+    let mut body = targets[0].clone();
     body.set_id(body_out_id);
     let mut new_solids = vec![body.clone()];
 
@@ -272,21 +269,31 @@ pub(crate) async fn inner_imprint(
         return Ok(new_solids);
     }
 
-    // Flush the fillets for the solids.
+    let separate_bodies = !merge;
+
+    // Flush pending edge-cut operations for any solids consumed by imprint.
+    let mut imprint_solids = targets.clone();
+    if let Some(tool_solids) = tools.as_ref() {
+        imprint_solids.extend_from_slice(tool_solids);
+    }
     exec_state
-        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &bodies)
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &imprint_solids)
         .await?;
 
-    let body_ids = bodies.iter().map(|body| body.id).collect();
+    let body_ids = targets.iter().map(|body| body.id).collect();
+    let tool_ids = tools.as_ref().map(|tools| tools.iter().map(|tool| tool.id).collect());
+    let tolerance = LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    let imprint_cmd = mcmd::BooleanImprint::builder()
+        .body_ids(body_ids)
+        .tolerance(tolerance)
+        .separate_bodies(separate_bodies)
+        .keep_tools(keep_tools)
+        .maybe_tool_ids(tool_ids)
+        .build();
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
-            ModelingCmd::from(
-                mcmd::BooleanImprint::builder()
-                    .body_ids(body_ids)
-                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
-                    .build(),
-            ),
+            ModelingCmd::from(imprint_cmd),
         )
         .await?;
 

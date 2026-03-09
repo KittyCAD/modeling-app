@@ -15,7 +15,7 @@ use crate::{
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
@@ -67,6 +67,7 @@ const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
 const RADIUS_FN: &str = "radius";
+const TANGENT_FN: &str = "tangent";
 const VERTICAL_FN: &str = "vertical";
 
 const LINE_PROPERTY_START: &str = "start";
@@ -660,6 +661,7 @@ impl SketchApi for FrontendState {
             Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, &mut new_ast).await?,
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
             Constraint::Angle(lines_at_angle) => self.add_angle(sketch, lines_at_angle, &mut new_ast).await?,
+            Constraint::Tangent(tangent) => self.add_tangent(sketch, tangent, &mut new_ast).await?,
         };
 
         let result = self
@@ -896,6 +898,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Angle(angle) => {
                     self.add_angle(sketch, angle, &mut new_ast).await?;
+                }
+                Constraint::Tangent(tangent) => {
+                    self.add_tangent(sketch, tangent, &mut new_ast).await?;
                 }
             }
         }
@@ -2193,6 +2198,67 @@ impl FrontendState {
         Ok(sketch_block_range)
     }
 
+    async fn add_tangent(
+        &mut self,
+        sketch: ObjectId,
+        tangent: Tangent,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[seg0_id, seg1_id] = tangent.input.as_slice() else {
+            return Err(Error {
+                msg: format!(
+                    "Tangent constraint must have exactly 2 segments, got {}",
+                    tangent.input.len()
+                ),
+            });
+        };
+        let sketch_id = sketch;
+
+        let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
+            msg: format!("Segment not found: {seg0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: seg0_segment } = &seg0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {seg0_object:?}"),
+            });
+        };
+        let seg0_ast = match seg0_segment {
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
+            _ => {
+                return Err(Error {
+                    msg: format!("Tangent supports only line/arc segments, got: {seg0_segment:?}"),
+                });
+            }
+        };
+
+        let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
+            msg: format!("Segment not found: {seg1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: seg1_segment } = &seg1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {seg1_object:?}"),
+            });
+        };
+        let seg1_ast = match seg1_segment {
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
+            _ => {
+                return Err(Error {
+                    msg: format!("Tangent supports only line/arc segments, got: {seg1_segment:?}"),
+                });
+            }
+        };
+
+        let tangent_ast = create_tangent_ast(seg0_ast, seg1_ast);
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: tangent_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_radius(
         &mut self,
         sketch: ObjectId,
@@ -2822,6 +2888,7 @@ impl FrontendState {
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
                 Constraint::Angle(angle) => angle.lines.iter().any(|line_id| segment_ids_set.contains(line_id)),
+                Constraint::Tangent(tangent) => tangent.input.iter().any(|seg_id| segment_ids_set.contains(seg_id)),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
@@ -3630,7 +3697,7 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
 
 // Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
 
-/// Create an AST node for sketch2::coincident([expr1, expr2])
+/// Create an AST node for coincident([expr1, expr2])
 pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::Expr {
     // Create array [expr1, expr2]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -3639,7 +3706,7 @@ pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::
         non_code_meta: Default::default(),
     })));
 
-    // Create sketch2::coincident([...])
+    // Create coincident([...])
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
@@ -3649,7 +3716,7 @@ pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::
     })))
 }
 
-/// Create an AST node for sketch2::line(start = [...], end = [...])
+/// Create an AST node for line(start = [...], end = [...])
 pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
@@ -3669,7 +3736,7 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
     })))
 }
 
-/// Create an AST node for sketch2::horizontal(line)
+/// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
@@ -3680,7 +3747,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     })))
 }
 
-/// Create an AST node for sketch2::vertical(line)
+/// Create an AST node for vertical(line)
 pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
@@ -3709,7 +3776,7 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create an AST node for sketch2::equalLength([line1, line2])
+/// Create an AST node for equalLength([line1, line2])
 pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Expr) -> ast::Expr {
     // Create array [line1, line2]
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -3718,7 +3785,7 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
         non_code_meta: Default::default(),
     })));
 
-    // Create sketch2::equalLength([...])
+    // Create equalLength([...])
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
         unlabeled: Some(array_expr),
@@ -3728,12 +3795,29 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
     })))
 }
 
-#[cfg(test)]
+/// Create an AST node for tangent([seg1, seg2])
+pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> ast::Expr {
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![seg1_expr, seg2_expr],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(TANGENT_FN)),
+        unlabeled: Some(array_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+#[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
-        front::{Distance, Object, Plane, Sketch},
+        front::{Distance, Object, Plane, Sketch, Tangent},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
     };
@@ -5988,6 +6072,62 @@ angle([line1, line2]) == 30deg
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_segments_tangent() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let arc1_id = *sketch.segments.get(6).unwrap();
+
+        let constraint = Constraint::Tangent(Tangent {
+            input: vec![line1_id, arc1_id],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  tangent([line1, arc1])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            10,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_face_simple() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
@@ -6141,8 +6281,8 @@ sketch(on = plane) {
 
 width = 2mm
 sketch(on = offsetPlane(XY, offset = width)) {
-  line1 = sketch2::line(start = [var 0, var 0], end = [var 1mm, var 0])
-  sketch2::distance([line1.start, line1.end]) == width
+  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])
+  distance([line1.start, line1.end]) == width
 }
 ";
         let program = Program::parse(initial_source).unwrap().0.unwrap();

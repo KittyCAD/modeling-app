@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
 const mockProject: Project = {
   name: 'test',
@@ -26,6 +27,13 @@ const mockProject: Project = {
     },
   ],
 }
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.OPFS,
+    options: {},
+  })
+})
 
 describe('project system', () => {
   it('can open, close project', async () => {

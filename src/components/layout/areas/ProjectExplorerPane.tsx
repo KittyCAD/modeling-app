@@ -26,8 +26,8 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { commands, project, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
@@ -43,7 +43,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!project || !file || !projects) {
       return
     }
 
@@ -124,11 +124,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         // immediately navigate
         navigateHelper()
       }
-    } else if (
-      window.electron &&
-      isRelevantFile(entry.path) &&
-      projectRef.current?.value.path
-    ) {
+    } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
       // Allow insert if it is a importable file
       toast.custom(
         ToastInsert({

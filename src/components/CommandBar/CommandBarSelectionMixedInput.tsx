@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
@@ -16,7 +16,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -24,16 +24,17 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
-  wasmInstance,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
-  wasmInstance: ModuleType
+  executingEditor: KclManager
 }) {
-  const { commands } = useApp()
-  const { engineCommandManager, kclManager, sceneEntitiesManager } =
-    useSingletons()
+  const { commands, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const engineCommandManager = kclManager.engineCommandManager
+  const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)

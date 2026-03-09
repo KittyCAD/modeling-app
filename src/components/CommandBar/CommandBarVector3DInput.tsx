@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -9,6 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { isKclCommandValue } from '@src/lib/commandUtils'
+import type { KclManager } from '@src/lang/KclManager'
 
 function CoordinateInput({
   label,
@@ -75,6 +76,7 @@ function CommandBarVector3DInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector3d'
@@ -82,9 +84,9 @@ function CommandBarVector3DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
+  executingEditor: KclManager
 }) {
   const { commands } = useApp()
-  const { kclManager, rustContext } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
@@ -241,7 +243,9 @@ function CommandBarVector3DInput({
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
     // Calculate the KCL expression
-    stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
+    stringToKclExpression(vectorExpression, kclManager.rustContext, {
+      allowArrays: true,
+    })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
           toast.error('Unable to create valid vector expression')

@@ -44,7 +44,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v14
+        uses: dawidd6/action-download-artifact@v16
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -133,7 +133,7 @@ jobs:
         run: |
           npm run files:set-windows-codesign-config
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-files
           path: |
@@ -219,35 +219,35 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ matrix.platform == 'linux' }}
         with:
           name: out-arm64-linux
           path: |
             out/*-arm64-linux.*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ matrix.platform == 'linux' }}
         with:
           name: out-x64-linux
           path: |
             out/*-x86_64-linux.*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ matrix.platform == 'macos' }}
         with:
           name: out-universal-macos
           path: |
             out/*universal-mac.*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ matrix.platform == 'windows' }}
         with:
           name: out-universal-windows
           path: |
             out/*universal-win.exe
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
@@ -326,16 +326,10 @@ jobs:
               "pub_date": $pub_date,
               "notes": $notes,
               "platforms": {
-                "dmg-arm64": {
+                "dmg-universal": {
                   "url": $mac_universal_url
                 },
-                "dmg-x64": {
-                  "url": $mac_universal_url
-                },
-                "exe-arm64": {
-                  "url": $windows_universal_url
-                },
-                "exe-x64": {
+                "exe-universal": {
                   "url": $windows_universal_url
                 },
                 "appimage-arm64": {
@@ -348,7 +342,7 @@ jobs:
             }' > out/last_download.json
             cat out/last_download.json
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: out-download-json
           path: out/last_download.json

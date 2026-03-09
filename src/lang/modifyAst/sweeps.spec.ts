@@ -6,7 +6,7 @@ import {
   getAstAndArtifactGraph,
   getAstAndSketchSelections,
   getCapFromCylinder,
-  getFacesFromBox,
+  getWalls,
   getKclCommandValue,
   runNewAstAndCheckForSweep,
   runNewAstAndCountSweeps,
@@ -497,7 +497,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         kclManagerInThisFile,
         1
       )
-      const to = getFacesFromBox(artifactGraph, 1)
+      const to = getWalls(artifactGraph, 1)
       const result = addExtrude({
         ast,
         artifactGraph,
@@ -534,7 +534,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         kclManagerInThisFile,
         1
       )
-      const to = getFacesFromBox(artifactGraph, 1)
+      const to = getWalls(artifactGraph, 1)
       const result = addExtrude({
         ast,
         artifactGraph,

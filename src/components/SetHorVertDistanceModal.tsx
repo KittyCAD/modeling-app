@@ -48,7 +48,7 @@ export const GetInfoModal = ({
   initialVariableName,
   selectionRanges,
 }: GetInfoModalProps) => {
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
   const [value, setValue] = useState(
@@ -71,7 +71,7 @@ export const GetInfoModal = ({
     value: value,
     initialVariableName,
     selectionRanges,
-    rustContext,
+    rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,

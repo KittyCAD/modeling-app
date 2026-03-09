@@ -437,6 +437,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     cmdBar,
   }) => {
+    page.on('console', console.log)
+
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -2198,8 +2200,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30)
-    `
+extrude001 = extrude(sketch001, length = 30)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2213,9 +2214,9 @@ extrude001 = extrude(sketch001, length = 30)
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 5)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 2)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2307,6 +2308,72 @@ extrude001 = extrude(sketch001, length = 30)
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(shellDeclaration)
+    })
+  })
+
+  test(`Delete Face point-and-click`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.selectSurface('delete-face')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'faces',
+        currentArgValue: '',
+        headerArguments: {
+          Faces: '',
+        },
+        highlightedHeaderArg: 'faces',
+        commandName: 'Delete Face',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Faces: '1 cap',
+        },
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(deleteDeclaration)
+    })
+
+    await test.step('Delete delete face via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'surface001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(deleteDeclaration)
     })
   })
 
@@ -2564,6 +2631,95 @@ box = extrude(profile, length = 30)`
         activeLines: [expectedTranslateCode],
         highlightedCode: '',
       })
+    })
+  })
+
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()`
+    const blendDeclaration = `blend001 = blend([seg01, seg02])`
+
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await expect(toolbar.selectionStatus).toContainText(/2 segments?/)
+
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 segments',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
     })
   })
 
@@ -4763,9 +4919,17 @@ extrude001 = extrude(profile001, length = 10)`
       await scene.settled(cmdBar)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
-        `hole001 = hole::hole(
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+hole001 = hole::hole(
   extrude001,
-  face = END,
+  face = capEnd001,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),
@@ -4903,7 +5067,7 @@ extrude001 = extrude(profile001, length = 10)`
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,
-  face = END,
+  face = capEnd001,
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),

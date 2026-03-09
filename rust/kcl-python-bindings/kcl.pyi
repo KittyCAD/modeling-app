@@ -18,6 +18,13 @@ class Base64Data:
     """
     ...
 
+class BoundingBoxResponse:
+    r"""
+    Resulting bounding-box data from a `BoundingBox` modeling command.
+    """
+    def get_center(self) -> Point3d: ...
+    def get_dimensions(self) -> Point3d: ...
+
 class CameraLookAt:
     def __new__(cls, vantage:Point3d, center:Point3d, up:Point3d) -> CameraLookAt: ...
 
@@ -555,6 +562,21 @@ class PlyStorage(Enum):
     Encode payload as binary using big endian.
     """
 
+class StepPresentation(Enum):
+    r"""
+    Describes the presentation style of the EXPRESS exchange format.
+    """
+    Compact = ...
+    r"""
+    Condenses the text to reduce the size of the file.
+    """
+    Pretty = ...
+    r"""
+    Add extra spaces to make the text more easily readable.
+    
+    This is the default setting.
+    """
+
 class StlStorage(Enum):
     r"""
     Export storage.
@@ -725,6 +747,11 @@ async def execute(path:builtins.str) -> None:
     Execute the kcl code from a file path.
     """
 
+async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
+    r"""
+    Execute a kcl file and return the model's bounding box.
+    """
+
 async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
@@ -745,6 +772,11 @@ async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat
 async def execute_code(code:builtins.str) -> None:
     r"""
     Execute the kcl code.
+    """
+
+async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
+    r"""
+    Execute the kcl code and return the model's bounding box.
     """
 
 async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:

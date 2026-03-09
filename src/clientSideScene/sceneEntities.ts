@@ -1358,10 +1358,7 @@ export class SceneEntities {
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_MOCK,
-          {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          },
+          this.kclManager,
           {
             // TODO: understand why this is needed
             skipErrorsOnMockExecution: true,
@@ -1621,10 +1618,7 @@ export class SceneEntities {
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
-        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          rustContext: this.rustContext,
-        })
+        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
@@ -1854,10 +1848,7 @@ export class SceneEntities {
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
@@ -2060,10 +2051,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
       },
@@ -2298,10 +2286,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
       },
@@ -2565,10 +2550,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
           } else {
@@ -2784,10 +2766,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }
       },

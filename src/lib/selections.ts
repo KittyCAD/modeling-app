@@ -46,7 +46,10 @@ import type {
 } from '@src/lang/wasm'
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandSelectionType,
+} from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -64,6 +67,7 @@ import {
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  EnginePrimitiveSelection,
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
@@ -78,6 +82,7 @@ import type {
 import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -159,9 +164,11 @@ export async function getEventForQueryEntityTypeWithPoint(
   engineEvent: any, // Using any for now since TypeScript types may not be updated yet
   {
     artifactGraph,
+    engineCommandManager,
     rustContext,
   }: {
     artifactGraph: ArtifactGraph
+    engineCommandManager: ConnectionManager
     rustContext: RustContext
   }
 ): Promise<ModelingMachineEvent | null> {
@@ -728,7 +735,7 @@ export function isSketchPipe(
 }
 
 // This accounts for non-geometry selections under "other"
-export type ResolvedSelectionType = Artifact['type'] | 'other'
+export type ResolvedSelectionType = CommandSelectionType | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 
 /**
@@ -759,6 +766,18 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if ('name' in sel) {
       incrementOrInitializeSelectionType('plane')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'face'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveFace')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'edge'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveEdge')
+    } else {
+      incrementOrInitializeSelectionType('other')
     }
   })
 
@@ -1237,17 +1256,19 @@ export function updateSelections(
 }
 
 const semanticEntityNames: {
-  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+  [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap'],
+  face: ['wall', 'cap', 'enginePrimitiveFace'],
   profile: ['solid2d'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }
 
 /** Convert selections to a human-readable format */
-export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
+export function getSemanticSelectionType(
+  selectionType: CommandSelectionType[]
+) {
   const semanticSelectionType = new Set()
   for (const type of selectionType) {
     for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
@@ -1621,13 +1642,11 @@ export async function selectionBodyFace(
 
 export function selectAllInCurrentSketch(
   artifactGraph: ArtifactGraph,
-  systemDeps: {
-    sceneEntitiesManager: SceneEntities
-  }
+  sceneEntitiesManager: SceneEntities
 ): Selections {
   const graphSelectionsV2: SelectionV2[] = []
 
-  Object.keys(systemDeps.sceneEntitiesManager.activeSegments).forEach(
+  Object.keys(sceneEntitiesManager.activeSegments).forEach(
     (pathToNodeStr) => {
       for (const [artifactId, artifact] of artifactGraph) {
         if (!['path', 'segment'].includes(artifact.type)) continue
