@@ -171,7 +171,8 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v8
-        name: prepared-files
+        with:
+          name: prepared-files
 
       - name: Copy prepared files
         run: |
