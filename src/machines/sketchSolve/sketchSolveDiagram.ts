@@ -7,7 +7,6 @@ import {
   fromPromise,
 } from 'xstate'
 import type {
-  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
