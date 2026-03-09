@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -133,6 +133,7 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { getResolvedTheme } from '@src/lib/theme'
+import { isCodeTheSame } from '@src/lib/codeEditor'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -156,6 +157,7 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
+  projectPath: Signal<string>
 }
 
 export enum KclManagerEvents {
@@ -283,10 +285,11 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager({
+      new KclManager(path, {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
+        projectPath: computed(() => this.projectIORefSignal.value.path),
       })
 
     // Splice our new editor into our files array
@@ -362,7 +365,7 @@ export class ZDSProject {
           this.files.push(newFile)
           newFile
             .asApiFile()
-            .then(editor?.rustContext.sendAddFile)
+            .then((file) => editor?.rustContext.sendAddFile(file))
             .catch(reportRejection)
           break
         case 'change':
@@ -379,7 +382,9 @@ export class ZDSProject {
           const foundIndex = this.files.findIndex((f) => f.path.value === path)
           if (foundIndex >= 0 && path !== this.executingPath && foundFile) {
             this.files = this.files.filter((_, i) => i !== foundIndex)
-            editor?.rustContext.sendRemoveFile(foundFile.id)
+            editor?.rustContext
+              .sendRemoveFile(foundFile.id)
+              .catch(reportRejection)
           }
       }
     }
@@ -580,7 +585,11 @@ export class KclManager extends File {
   private onFileWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
-    if (path !== this.path.value || !this.systemDeps.projectPath) {
+    if (
+      path !== this.path.value ||
+      !this.systemDeps.projectPath ||
+      this.path.value.length < 1
+    ) {
       return
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,

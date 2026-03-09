@@ -342,10 +342,13 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager({
+    // TODO: Remove this and make the app handle no executing editor,
+    // so we don't need to stub with empty strings
+    const kclManager = new KclManager('', {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: signal(''),
     })
 
     if (typeof window !== 'undefined') {
