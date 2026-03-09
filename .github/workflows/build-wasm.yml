@@ -37,7 +37,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v14
+        uses: dawidd6/action-download-artifact@v16
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -104,13 +104,13 @@ jobs:
           ls -R rust/kcl-wasm-lib/pkg
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: prepared-ts-rs-bindings
           path: |

@@ -30,7 +30,7 @@ function launchApp(app: App) {
 
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
-  const { singletons, systemIOActor } = app
+  const { singletons } = app
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(singletons.kclManager)
 
@@ -45,9 +45,8 @@ function initSingletonBehavior(app: App) {
         data: {
           commands: [
             ...createApplicationCommands({
-              systemIOActor,
+              app,
               wasmInstance,
-              layout: app.layout,
             }),
           ],
         },
