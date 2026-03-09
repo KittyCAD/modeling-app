@@ -119,9 +119,12 @@ fn recast_body(
                 result.push_str(&stmt.recast(options, indentation_level));
             }
             BodyItem::ExpressionStatement(expression_statement) => {
+                let mut tmp_buf = String::new();
                 expression_statement
                     .expression
-                    .recast(&mut result, options, indentation_level, ExprContext::Other)
+                    .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
+                options.write_indentation(&mut result, indentation_level);
+                result.push_str(tmp_buf.trim_start());
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
                 variable_declaration.recast(&mut result, options, indentation_level);
@@ -3352,6 +3355,45 @@ fn foo() {
         let code = "\
 fn foo() {
   x = 1
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_unary_expression() {
+        let code = "\
+fn foo() {
+  -x
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_array_expression() {
+        let code = "\
+fn foo() {
+  [1, 2]
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_name_expression() {
+        let code = "\
+fn foo() {
+  x
 }
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
