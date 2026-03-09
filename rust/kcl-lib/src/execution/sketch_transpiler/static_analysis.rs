@@ -117,7 +117,8 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<(), KclEr
             let mut return_expr = None;
             for expr in node.body.iter_mut() {
                 if let ast::Expr::CallExpressionKw(call) = expr {
-                    match call.callee.name.name.as_ref() {
+                    let callee_name = call.callee.name.name.as_ref();
+                    match callee_name {
                         "startSketchOn" => {
                             // TODO: Handle a pipe value like:
                             // `XY |> startSketchOn()`
@@ -133,8 +134,8 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<(), KclEr
                                 ..Default::default()
                             });
                         }
-                        "xLine" | "yLine" => {
-                            let is_vertical = &call.callee.name.name == "yLine";
+                        "line" | "xLine" | "yLine" => {
+                            let is_vertical = callee_name == "yLine";
 
                             if let Some(profile) = &mut profile {
                                 let (start_pt, end_pt) = if let Some(position) = &profile.position
@@ -211,48 +212,52 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<(), KclEr
                                 profile.segment_names.push(name.clone());
                                 context.defined_names.insert(name.clone());
 
-                                // Create horizontal/vertical constraint.
-                                let horizontal_call = ast::BodyItem::ExpressionStatement(ast::Node::new_node(
-                                    Default::default(),
-                                    Default::default(),
-                                    Default::default(),
-                                    ast::ExpressionStatement {
-                                        expression: ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
-                                            if is_vertical { "vertical" } else { "horizontal" },
-                                            Some(ast::Expr::Name(Box::new(ast::Name::new(name.as_str())))),
-                                            Default::default(),
-                                        ))),
-                                        digest: None,
-                                    },
-                                ));
-                                profile.sketch_block_body.push(horizontal_call);
-
-                                // Create length constraint.
-                                if let Some(length_arg) = find_arg(&call.arguments, "length") {
-                                    let distance_call = ast::CallExpressionKw::new(
-                                        "distance",
-                                        Some(array2_ast(
-                                            name_dot_name_ast(&name, "start"),
-                                            name_dot_name_ast(&name, "end"),
-                                        )),
-                                        Default::default(),
-                                    );
-                                    let length_stmt = ast::BodyItem::ExpressionStatement(ast::Node::new_node(
+                                if callee_name == "xLine" || callee_name == "yLine" {
+                                    // Create horizontal/vertical constraint.
+                                    let horizontal_call = ast::BodyItem::ExpressionStatement(ast::Node::new_node(
                                         Default::default(),
                                         Default::default(),
                                         Default::default(),
                                         ast::ExpressionStatement {
-                                            expression: ast::Expr::BinaryExpression(Box::new(
-                                                ast::BinaryExpression::new(
-                                                    BinaryOperator::Eq,
-                                                    ast::BinaryPart::CallExpressionKw(Box::new(distance_call)),
-                                                    ast::BinaryPart::try_from(length_arg.clone())?,
+                                            expression: ast::Expr::CallExpressionKw(Box::new(
+                                                ast::CallExpressionKw::new(
+                                                    if is_vertical { "vertical" } else { "horizontal" },
+                                                    Some(ast::Expr::Name(Box::new(ast::Name::new(name.as_str())))),
+                                                    Default::default(),
                                                 ),
                                             )),
                                             digest: None,
                                         },
                                     ));
-                                    profile.sketch_block_body.push(length_stmt);
+                                    profile.sketch_block_body.push(horizontal_call);
+
+                                    // Create length constraint.
+                                    if let Some(length_arg) = find_arg(&call.arguments, "length") {
+                                        let distance_call = ast::CallExpressionKw::new(
+                                            "distance",
+                                            Some(array2_ast(
+                                                name_dot_name_ast(&name, "start"),
+                                                name_dot_name_ast(&name, "end"),
+                                            )),
+                                            Default::default(),
+                                        );
+                                        let length_stmt = ast::BodyItem::ExpressionStatement(ast::Node::new_node(
+                                            Default::default(),
+                                            Default::default(),
+                                            Default::default(),
+                                            ast::ExpressionStatement {
+                                                expression: ast::Expr::BinaryExpression(Box::new(
+                                                    ast::BinaryExpression::new(
+                                                        BinaryOperator::Eq,
+                                                        ast::BinaryPart::CallExpressionKw(Box::new(distance_call)),
+                                                        ast::BinaryPart::try_from(length_arg.clone())?,
+                                                    ),
+                                                )),
+                                                digest: None,
+                                            },
+                                        ));
+                                        profile.sketch_block_body.push(length_stmt);
+                                    }
                                 }
 
                                 // If the start point was not a literal Point2d,
