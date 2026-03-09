@@ -117,7 +117,7 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             "Must use either `index` or `closestTo`".to_string(),
             vec![args.source_range],
         ))),
-        (None, Some(closest_to)) => inner_edge_id_by_point(closest_to, exec_state, args).await,
+        (None, Some(closest_to)) => inner_edge_id_by_point(body, closest_to, exec_state, args).await,
         (Some(edge_index), None) => inner_edge_id(body, edge_index, exec_state, args).await,
         (Some(_), Some(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot use both `index` and `closestTo`".to_string(),
@@ -173,6 +173,7 @@ async fn inner_edge_id(
 
 /// Finds ID of edge closest to this point.
 async fn inner_edge_id_by_point(
+    body: Solid,
     closest_point: Point3d<f64>,
     exec_state: &mut ExecState,
     args: Args,
@@ -185,7 +186,12 @@ async fn inner_edge_id_by_point(
         let edge_uuid_response = exec_state
             .send_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::ClosestEdge::builder().closest_to(closest_point).build()),
+                ModelingCmd::from(
+                    mcmd::ClosestEdge::builder()
+                        .object_id(body.id)
+                        .closest_to(closest_point)
+                        .build(),
+                ),
             )
             .await?;
 
