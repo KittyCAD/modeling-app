@@ -1289,16 +1289,18 @@ export const modelingMachine = setup({
       context.kclManager.sceneInfra.resetMouseListeners()
     },
     'set modeling idle double-click callback': ({ context }) => {
-      context.sceneInfra.setCallbacks({
+      const sceneInfra = context.kclManager.sceneInfra
+      if (!sceneInfra) return
+      sceneInfra.setCallbacks({
         onClick: (args) => {
           if (args?.mouseEvent?.detail === 2) {
             void tryEnterSketchOnDoubleClickFromScene(
               args,
-              context.sceneInfra.renderer.domElement,
+              sceneInfra.renderer.domElement,
               {
                 engineCommandManager: context.engineCommandManager,
                 kclManager: context.kclManager,
-                sceneInfra: context.sceneInfra,
+                sceneInfra,
               }
             )
           }

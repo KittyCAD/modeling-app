@@ -43,6 +43,7 @@ import type {
   Selection,
   SelectionV2,
   EntityReference,
+  EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
 import {
   getArtifactOfTypes,
@@ -58,6 +59,7 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { getBodySelectionFromPrimitiveParentEntityId } from './faces'
 
 /**
  * Converts an edge selection to an EntityReference with face information.
@@ -828,7 +830,7 @@ type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [
-    ...edges.graphSelections,
+    ...edges.graphSelectionsV2,
     ...edges.otherSelections.filter(
       (selection): selection is EnginePrimitiveSelection =>
         isEnginePrimitiveSelection(selection) &&
@@ -864,7 +866,21 @@ function buildEdgeExpr(
 
     const sourceSurfaceVars = getVariableExprsFromSelection(
       {
-        graphSelections: [sourceSurfaceSelection],
+        graphSelectionsV2: [
+          sourceSurfaceSelection.artifact
+            ? {
+                entityRef: artifactToEntityRef(
+                  sourceSurfaceSelection.artifact.type,
+                  sourceSurfaceSelection.artifact.id,
+                  sourceSurfaceSelection.artifact.type === 'segment'
+                    ? (sourceSurfaceSelection.artifact as { pathId: string })
+                        .pathId
+                    : undefined
+                ),
+                codeRef: sourceSurfaceSelection.codeRef,
+              }
+            : { codeRef: sourceSurfaceSelection.codeRef },
+        ],
         otherSelections: [],
       },
       ast,
@@ -900,7 +916,8 @@ function buildEdgeExpr(
   }
 
   const graphEdgeSelection = edgeSelection as Selection
-  const edgeArtifact = graphEdgeSelection.artifact
+  const resolved = resolveSelectionV2(graphEdgeSelection, artifactGraph)
+  const edgeArtifact = resolved?.artifact
   if (
     !edgeArtifact ||
     (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
@@ -931,7 +948,7 @@ function buildEdgeExpr(
   }
 
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    graphEdgeSelection,
+    resolved as { artifact: Artifact; codeRef: CodeRef },
     artifactGraph
   )
   if (err(sourceSurfaceArtifact)) {
@@ -940,9 +957,12 @@ function buildEdgeExpr(
 
   const sourceSurfaceVars = getVariableExprsFromSelection(
     {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: sourceSurfaceArtifact as Artifact,
+          entityRef: artifactToEntityRef(
+            sourceSurfaceArtifact.type,
+            sourceSurfaceArtifact.id
+          ),
           codeRef: sourceSurfaceArtifact.codeRef,
         },
       ],
@@ -1042,7 +1062,7 @@ function groupSelectionsByBodyAndAddTags(
 
       if (!selectionsByBody.has(bodyKey)) {
         selectionsByBody.set(bodyKey, {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [],
         })
       }
@@ -1074,16 +1094,23 @@ function groupSelectionsByBodyAndAddTags(
     modifiedAst = taggedAst
 
     let bodySelectionForSolids: Selection | undefined
-    if (bodySelections.graphSelections.length > 0) {
-      const sweep = getSweepArtifactFromSelection(
-        bodySelections.graphSelections[0],
+    if (bodySelections.graphSelectionsV2.length > 0) {
+      const firstResolved = resolveSelectionV2(
+        bodySelections.graphSelectionsV2[0],
         artifactGraph
       )
-      if (err(sweep)) return sweep
-      bodySelectionForSolids = {
-        codeRef: sweep.codeRef,
+      if (firstResolved) {
+        const sweep = getSweepArtifactFromSelection(
+          firstResolved,
+          artifactGraph
+        )
+        if (err(sweep)) return sweep
+        bodySelectionForSolids = {
+          codeRef: sweep.codeRef,
+        }
       }
-    } else {
+    }
+    if (!bodySelectionForSolids) {
       bodySelectionForSolids =
         primitiveSelectionsByBody.get(bodyKey)?.bodySelection
     }

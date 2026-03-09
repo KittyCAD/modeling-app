@@ -69,6 +69,7 @@ import type {
   DefaultPlane,
   EnginePrimitiveSelection,
   ExtrudeFacePlane,
+  NonCodeSelection,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -86,6 +87,17 @@ import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedS
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
+export function isEnginePrimitiveSelection(
+  s: NonCodeSelection
+): s is EnginePrimitiveSelection {
+  return (
+    typeof s === 'object' &&
+    s !== null &&
+    'type' in s &&
+    (s as { type: string }).type === 'enginePrimitive'
+  )
+}
 
 export function normalizeEntityReference(
   reference: unknown
