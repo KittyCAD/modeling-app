@@ -319,6 +319,8 @@ export class ZDSProject {
 
     this.set(signal(path), newEditor)
 
+    markOnce('project/startCollectFiles')
+
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
     this.getAllKclFiles()
@@ -326,6 +328,7 @@ export class ZDSProject {
         newEditor.rustContext
           .sendOpenProject(path, apiFiles)
           .catch(reportRejection)
+        markOnce('project/endCollectFiles')
       })
       .catch(reportRejection)
     return newEditor
@@ -350,10 +353,6 @@ export class ZDSProject {
 
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
-    console.log('file system event', {
-      eventType,
-      path,
-    })
     const foundEditorKey = this.editors
       .keys()
       .find((pathSignal) => pathSignal.value === path)
