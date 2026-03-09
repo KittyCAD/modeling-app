@@ -105,6 +105,17 @@ profile002 = rectangle(
   height = 2,
 )`
 
+  const triangleRegion = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [0.05, 0.05])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}`
+
   describe('Testing addExtrude', () => {
     it('should add a basic extrude call', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
@@ -238,18 +249,8 @@ extrude002 = extrude(seg01, length = 3)`)
     })
 
     it('should add an extrude call from a sketch region selection', async () => {
-      const sketchBlockCode = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
-  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}`
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
-        sketchBlockCode,
+        triangleRegion,
         instanceInThisFile,
         rustContextInThisFile
       )
@@ -285,6 +286,7 @@ s = sketch(on = XY) {
       expect(newCode).toContain(
         `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a multi-profile extrude call on a profile and a cap', async () => {
@@ -820,16 +822,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
     })
 
     it('should add a sweep call from a sketch region selection', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
-  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}
+      const code = `${triangleRegion}
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = -5)
@@ -872,6 +865,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       expect(newCode).toContain(
         `sweep001 = sweep(region(point = [1mm, 1mm], sketch = s), path = profile001)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a sweep call with surface bodyType', async () => {
@@ -1041,16 +1035,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
     })
 
     it('should add a loft call from a sketch region selection', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
-  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}
+      const code = `${triangleRegion}
 
 plane001 = offsetPlane(XY, offset = 10)
 
@@ -1252,18 +1237,8 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     })
 
     it('should add a revolve call from a sketch region selection', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
-  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}`
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
-        code,
+        triangleRegion,
         instanceInThisFile,
         rustContextInThisFile
       )
@@ -1301,6 +1276,7 @@ s = sketch(on = XY) {
       expect(newCode).toContain(
         `revolve001 = revolve(region(point = [1mm, 1mm], sketch = s), angle = 10, axis = X)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add basic revolve call with surface bodyType', async () => {
