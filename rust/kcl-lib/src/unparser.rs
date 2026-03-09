@@ -296,7 +296,9 @@ impl ImportStatement {
 pub(crate) enum ExprContext {
     Pipe,
     FnDecl,
+    /// Being used as an argument to a call expression, which is in a pipe expression.
     PipeCallArg,
+    /// Being used as an argument to a call expression.
     CallArg,
     Other,
 }
@@ -489,11 +491,7 @@ fn recast_call(
     indentation_level: usize,
     ctxt: ExprContext,
 ) {
-    let smart_indent_level = if ctxt.in_pipe() {
-        0
-    } else {
-        indentation_level
-    };
+    let smart_indent_level = if ctxt.in_pipe() { 0 } else { indentation_level };
     let name = callee;
 
     if let Some(suggestion) = deprecation(&name.name.inner.name, DeprecationKind::Function) {
