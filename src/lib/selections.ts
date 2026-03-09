@@ -79,6 +79,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import isEqual from 'react-fast-compare'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -142,10 +143,13 @@ async function getRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
-  // TODO: double check this
   const sketch = artifactGraph
     .values()
-    .find((a) => a.type === 'sketchBlock' && a.planeId === path.planeId)
+    .find(
+      (a) =>
+        a.type === 'sketchBlock' &&
+        isEqual(a.codeRef.pathToNode, path.codeRef.pathToNode)
+    )
   if (!sketch) return null
 
   return {
