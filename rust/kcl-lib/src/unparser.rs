@@ -308,10 +308,6 @@ impl ExprContext {
         matches!(self, ExprContext::Pipe | ExprContext::PipeCallArg)
     }
 
-    fn in_call_arg(self) -> bool {
-        matches!(self, ExprContext::CallArg | ExprContext::PipeCallArg)
-    }
-
     fn call_arg_context(self) -> ExprContext {
         if self.in_pipe() {
             ExprContext::PipeCallArg
@@ -888,7 +884,7 @@ impl MemberExpression {
 }
 
 impl BinaryExpression {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) {
         let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
@@ -920,9 +916,6 @@ impl BinaryExpression {
         self.left.recast(&mut left, options, 0, ctxt);
         let mut right = String::new();
         self.right.recast(&mut right, options, 0, ctxt);
-        if !ctxt.in_call_arg() {
-            options.write_indentation(buf, indentation_level);
-        }
         write!(
             buf,
             "{} {} {}",
@@ -3411,7 +3404,7 @@ brakcetPlane = {
   origin = { x = length / 2 },
   origin = { x = length / 2 },
   origin = { x = length / 2 },
-  origin = { x = length / 2 },
+  origin = { x = length / 2 }
 }
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
