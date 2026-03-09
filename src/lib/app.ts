@@ -342,11 +342,10 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager('', {
+    const kclManager = new KclManager({
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
-      projectPath: '',
     })
 
     if (typeof window !== 'undefined') {

@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback, uuidv4 } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -132,7 +132,6 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { isCodeTheSame } from '@src/lib/codeEditor'
 import { getResolvedTheme } from '@src/lib/theme'
 
 interface ExecuteArgs {
@@ -157,7 +156,6 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
-  projectPath: string
 }
 
 export enum KclManagerEvents {
@@ -255,28 +253,29 @@ export class ZDSProject {
     if (newPath === null) {
       return
     }
-    const foundPathSignal = this.findEditor(newPath)
+    const foundPathSignal = this.findEditorPathSignal(newPath)
     if (!foundPathSignal) {
       return
     }
-    const found = foundPathSignal[1]
+    const found = this.editors.get(foundPathSignal)
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
-    this.#executingPath.value = foundPathSignal[0]
+    this.#executingPath.value = foundPathSignal
   }
-  findEditor(path: string) {
-    return this.editors.entries().find(([p]) => p.value === path)
+  findEditorPathSignal(path: string) {
+    return this.editors.keys().find((p) => p.value === path)
   }
 
   // Saving some keystrokes
+  private get = this.editors.get.bind(this.editors)
   private set = this.editors.set.bind(this.editors)
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
   openEditor(path: string, providedEditor?: KclManager) {
-    const foundEditor = this.findEditor(path)
-    const found = foundEditor?.[1]
+    const foundPathSignal = this.findEditorPathSignal(path)
+    const found = foundPathSignal ? this.get(foundPathSignal) : undefined
     if (found) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
@@ -284,13 +283,10 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager(path, {
+      new KclManager({
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
-        get projectPath() {
-          return this.path
-        },
       })
 
     // Splice our new editor into our files array
@@ -335,19 +331,15 @@ export class ZDSProject {
   }
 
   closeEditor(path: string) {
-    const foundPathSignal = this.findEditor(path)
+    const foundPathSignal = this.findEditorPathSignal(path)
     if (!foundPathSignal) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    foundPathSignal[1].close()
-    this.editors.delete(foundPathSignal[0])
+    this.editors.delete(foundPathSignal)
   }
 
   closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
-    }
     this.editors.clear()
   }
 
@@ -640,11 +632,11 @@ export class KclManager extends File {
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
-  /**
-    Indicator Promise that is pending while a live write is happening.
-    If this value isn't `null`, don't watch for file system writes it was probably us!
-   */
-  public writingPromise = signal<Promise<unknown> | null>(null)
+  // The last code written by the app, used to compare against external changes to the current file
+  public lastWrite: {
+    code: string // last code written by ZDS
+    time: number // Unix epoch time in milliseconds
+  } | null = null
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -943,7 +935,7 @@ export class KclManager extends File {
         console.error('Error when updating Rust state after user edit:', error)
       }
     },
-    1000
+    300
   )
 
   private createEditorExtensions() {
@@ -2058,6 +2050,7 @@ export class KclManager extends File {
   updateCurrentFilePath(path: string) {
     if (this._currentFilePath !== path) {
       this._currentFilePath = path
+      this.lastWrite = null
     }
   }
   get currentFileName() {
@@ -2157,6 +2150,10 @@ export class KclManager extends File {
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
+        this.lastWrite = {
+          code: newCode ?? '',
+          time: Date.now(),
+        }
         this.timeoutWriter = setTimeout(() => {
           if (!path) {
             return reject(new Error('currentFilePath not set'))
