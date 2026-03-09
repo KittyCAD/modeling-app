@@ -772,12 +772,8 @@ test.describe(
               path.join(projectDir, 'cube.kcl')
             ),
             fsp.copyFile(
-              kclSamplesPath(
-                path.join(
-                  'pipe-flange-assembly',
-                  'mcmaster-parts',
-                  '98017a257-washer.step'
-                )
+              executorInputPath(
+                path.join('mcmaster-parts', '98017a257-washer.step')
               ),
               path.join(projectDir, 'foreign.step')
             ),
@@ -822,12 +818,8 @@ foreign
           await folderSetupFn(async (dir) => {
             // Replace the washer with a pipe
             await fsp.copyFile(
-              kclSamplesPath(
-                path.join(
-                  'pipe-flange-assembly',
-                  'mcmaster-parts',
-                  '1120t74-pipe.step'
-                )
+              executorInputPath(
+                path.join('mcmaster-parts', '1120t74-pipe.step')
               ),
               path.join(dir, projectName, 'foreign.step')
             )
