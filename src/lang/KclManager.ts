@@ -228,7 +228,7 @@ export class ZDSProject {
   }
 
   /** Open a project, with the option to open an initial editor too */
-  static open(
+  static async open(
     projectRef: Signal<Project>,
     app: App,
     initialOpenFilePath?: string,
@@ -237,7 +237,7 @@ export class ZDSProject {
   ) {
     const newProject = new ZDSProject(projectRef, app)
     if (initialOpenFilePath) {
-      newProject.openEditor(initialOpenFilePath, initialOpenEditor)
+      await newProject.openEditor(initialOpenFilePath, initialOpenEditor)
       newProject.executingPath = initialOpenFilePath
     }
     return newProject
@@ -275,7 +275,7 @@ export class ZDSProject {
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
-  openEditor(path: string, providedEditor?: KclManager) {
+  async openEditor(path: string, providedEditor?: KclManager) {
     const foundPathSignal = this.findEditorPathSignal(path)
     const found = foundPathSignal ? this.get(foundPathSignal) : undefined
     if (found) {
@@ -318,18 +318,22 @@ export class ZDSProject {
 
     this.set(signal(path), newEditor)
 
-    markOnce('project/startCollectFiles')
-
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
-    this.getAllKclFiles()
-      .then(async (apiFiles) => {
-        newEditor.rustContext
-          .sendOpenProject(path, apiFiles)
-          .catch(reportRejection)
-        markOnce('project/endCollectFiles')
-      })
+    markOnce('project/startCollectFiles')
+    const apiFiles = await this.getAllKclFiles()
+    if (err(apiFiles)) {
+      reportRejection(apiFiles)
+      return newEditor
+    }
+    markOnce('project/endCollectFiles')
+
+    markOnce('project/startSendProjectToWasm')
+    await newEditor.rustContext
+      .sendOpenProject(path, apiFiles)
       .catch(reportRejection)
+    markOnce('project/endSendProjectToWasm')
+
     return newEditor
   }
 
@@ -895,6 +899,10 @@ export class KclManager extends File {
       // these are short term hacks while in rapid development for sketch revamp
       // should be clean up.
       try {
+        console.log(
+          'FRANK, what is the project snapshot?',
+          await this.rustContext.getProjectState()
+        )
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
           const setProgramOutcome = await this.rustContext.hackSetProgram(

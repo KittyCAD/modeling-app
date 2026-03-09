@@ -291,13 +291,13 @@ export class App implements AppSubsystems {
   }
 
   // TODO: Remove providedEditor once the app can handle not always having a KclManager
-  openProject(
+  async openProject(
     projectIORef: Project,
     initialOpenFile?: string,
     providedEditor?: KclManager
   ) {
     const projectIORefSignal = signal(projectIORef)
-    this.project = ZDSProject.open(
+    this.project = await ZDSProject.open(
       projectIORefSignal,
       this,
       initialOpenFile,

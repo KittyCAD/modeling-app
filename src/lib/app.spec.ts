@@ -41,7 +41,7 @@ describe('project system', () => {
       wasmPromise: loadWasm(),
     })
 
-    app.openProject(
+    await app.openProject(
       mockProject,
       mockProject.children![0].path,
       app.singletons.kclManager

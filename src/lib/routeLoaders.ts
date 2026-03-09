@@ -219,7 +219,7 @@ export const fileLoader =
 
     // This starts subscribing to settingsActor updates
     // TODO: Make settings not an XState actor, this is too convoluted.
-    app.openProject(
+    await app.openProject(
       project,
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
