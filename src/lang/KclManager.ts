@@ -369,8 +369,10 @@ export class ZDSProject {
         case 'add':
           const newFile = new File(path, this.nextFileId++)
           this.files.push(newFile)
-          // TODO: impl sendAddFile
-          // editor?.rustContext.sendAddFile()
+          newFile
+            .asApiFile()
+            .then(editor?.rustContext.sendAddFile)
+            .catch(reportRejection)
           break
         case 'change':
           if (foundFile && path !== this.executingPath) {
@@ -384,10 +386,9 @@ export class ZDSProject {
           break
         case 'unlink':
           const foundIndex = this.files.findIndex((f) => f.path.value === path)
-          if (foundIndex >= 0 && path !== this.executingPath) {
+          if (foundIndex >= 0 && path !== this.executingPath && foundFile) {
             this.files = this.files.filter((_, i) => i !== foundIndex)
-            // TODO: impl sendRemoveFile
-            // editor?.rustContext.sendRemoveFile(foundFile.id)
+            editor?.rustContext.sendRemoveFile(foundFile.id)
           }
       }
     }

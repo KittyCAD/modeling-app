@@ -86,6 +86,7 @@ export default class RustContext {
     this.ctxInstance = ctxInstance
   }
 
+  /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
     // TODO: The rust side should really honor having no current file ID
     const currentFileId =
@@ -107,8 +108,16 @@ export default class RustContext {
     return this.ctxInstance?.get_file(this.projectId, fileId)
   }
 
+  async sendAddFile(file: ApiFile) {
+    return this.ctxInstance?.add_file(this.projectId, JSON.stringify(file))
+  }
+
   async sendUpdateFile(fileId: number, code: string) {
     return this.ctxInstance?.update_file(this.projectId, fileId, code)
+  }
+
+  async sendRemoveFile(fileId: number) {
+    return this.ctxInstance?.remove_file(this.projectId, fileId)
   }
 
   /** Execute a program. */
