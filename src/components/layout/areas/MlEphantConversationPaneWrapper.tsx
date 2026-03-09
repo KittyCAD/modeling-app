@@ -18,8 +18,8 @@ import { useSignals } from '@preact/signals-react/runtime'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
-  const { auth, billing, settings, project } = useApp()
-  const { kclManager, systemIOActor } = useSingletons()
+  const { auth, billing, settings, project, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
@@ -63,6 +63,12 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           loaderFile,
           settings: settingsValues,
           user,
+          onMlCopilotModeChange: (mode) => {
+            settings.actor.send({
+              type: 'set.app.zookeeperMode',
+              data: { level: 'project', value: mode },
+            })
+          },
         }}
       />
     </LayoutPanel>

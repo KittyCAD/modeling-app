@@ -5,9 +5,7 @@ import {
   RouterProvider,
   createBrowserRouter,
   createHashRouter,
-  redirect,
 } from 'react-router-dom'
-
 import { OpenedProject } from '@src/components/OpenedProject'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
@@ -17,16 +15,12 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  BROWSER_PROJECT_NAME,
-} from '@src/lib/constants'
 import { CoreDumpManager } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
@@ -46,8 +40,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  */
 export const Router = () => {
   const app = useApp()
-  const { engineCommandManager } = useSingletons()
-  const networkStatus = useNetworkStatus(engineCommandManager)
+  const { kclManager } = useSingletons()
+  const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
   const router = useMemo(
     () =>
       createRouter([
@@ -60,24 +54,7 @@ export const Router = () => {
             {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
-              loader: async ({ request }) => {
-                const onDesktop = isDesktop()
-                const url = new URL(request.url)
-                if (onDesktop) {
-                  return redirect(PATHS.HOME + (url.search || ''))
-                } else {
-                  const searchParams = new URLSearchParams(url.search)
-                  if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
-                    return redirect(
-                      PATHS.FILE +
-                        '/%2F' +
-                        BROWSER_PROJECT_NAME +
-                        (url.search || '')
-                    )
-                  }
-                }
-                return null
-              },
+              loader: baseLoader({ app }),
             },
             {
               loader: fileLoader({
@@ -187,11 +164,10 @@ export const Router = () => {
 
 function CoreDump() {
   const { auth } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const token = auth.useToken()
   const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
+    () => new CoreDumpManager(kclManager, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )

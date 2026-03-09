@@ -41,7 +41,7 @@ export async function deleteSelectionPromise({
         }
       | undefined = undefined
     try {
-      const settings = await jsAppSettings(systemDeps.rustContext.settingsActor)
+      const settings = jsAppSettings(systemDeps.rustContext.settingsActor)
       switch (selection.artifact.type) {
         case 'sketchBlock':
           result = await systemDeps.rustContext.deleteSketch(
@@ -120,10 +120,7 @@ export async function deleteSelectionPromise({
   await updateModelingState(
     astToApply,
     EXECUTION_TYPE_REAL,
-    {
-      kclManager: systemDeps.kclManager,
-      rustContext: systemDeps.rustContext,
-    },
+    systemDeps.kclManager,
     {
       isDeleting: true,
     }

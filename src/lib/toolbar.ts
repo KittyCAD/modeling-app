@@ -444,6 +444,26 @@ export const useToolbarConfig = () => {
             id: 'surface',
             array: [
               {
+                id: 'blend-surface',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Blend', groupId: 'modeling' },
+                  }),
+                icon: 'blend',
+                status: 'experimental',
+                title: 'Blend',
+                description: 'Blend two selected surface edges.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-blend'
+                    ),
+                  },
+                ],
+              },
+              {
                 id: 'flip-surface',
                 onClick: () =>
                   commands.send({
@@ -475,13 +495,24 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'delete-face',
-                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
-                onClick: () => {},
-                status: 'unavailable',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Delete Face', groupId: 'modeling' },
+                  }),
+                icon: 'deleteFace',
+                status: 'experimental',
                 title: 'Delete Face',
                 description:
-                  'Deletes a face from a body, leaving an open surface.',
-                links: [],
+                  'Delete a face from a body (a solid, or a polysurface).',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-deleteFace'
+                    ),
+                  },
+                ],
               },
             ],
           },

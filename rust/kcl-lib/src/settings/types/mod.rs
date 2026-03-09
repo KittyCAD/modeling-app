@@ -262,7 +262,7 @@ fn default_length_unit_millimeters() -> UnitLength {
 
 // Also defined at src/lib/constants.ts#L333-L335
 fn default_backface_color() -> String {
-    "#F20D0D".to_string()
+    "#00D5FF".to_string()
 }
 
 fn is_default_backface_color(color: &String) -> bool {
@@ -524,38 +524,6 @@ pub enum OnboardingStatus {
     #[serde(rename = "/desktop/conclusion")]
     #[display("/desktop/conclusion")]
     DesktopConclusion,
-
-    // Browser Routes
-    #[serde(rename = "/browser")]
-    #[display("/browser")]
-    BrowserWelcome,
-    #[serde(rename = "/browser/scene")]
-    #[display("/browser/scene")]
-    BrowserScene,
-    #[serde(rename = "/browser/toolbar")]
-    #[display("/browser/toolbar")]
-    BrowserToolbar,
-    #[serde(rename = "/browser/text-to-cad")]
-    #[display("/browser/text-to-cad")]
-    BrowserTextToCadWelcome,
-    #[serde(rename = "/browser/text-to-cad-prompt")]
-    #[display("/browser/text-to-cad-prompt")]
-    BrowserTextToCadPrompt,
-    #[serde(rename = "/browser/feature-tree-pane")]
-    #[display("/browser/feature-tree-pane")]
-    BrowserFeatureTreePane,
-    #[serde(rename = "/browser/prompt-to-edit")]
-    #[display("/browser/prompt-to-edit")]
-    BrowserPromptToEditWelcome,
-    #[serde(rename = "/browser/prompt-to-edit-prompt")]
-    #[display("/browser/prompt-to-edit-prompt")]
-    BrowserPromptToEditPrompt,
-    #[serde(rename = "/browser/prompt-to-edit-result")]
-    #[display("/browser/prompt-to-edit-result")]
-    BrowserPromptToEditResult,
-    #[serde(rename = "/browser/conclusion")]
-    #[display("/browser/conclusion")]
-    BrowserConclusion,
 }
 
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {

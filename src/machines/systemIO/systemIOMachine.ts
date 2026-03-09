@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
@@ -19,7 +18,6 @@ import {
   SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
@@ -379,8 +377,7 @@ export const systemIOMachine = setup({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        const folders: Project[] = []
-        return folders
+        return [] as Project[]
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -431,8 +428,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           requestedCode: string
           requestedSubRoute?: string
-          kclManager: KclManager
-          engineCommandManager: ConnectionManager
+          app: App
         }
       }): Promise<{
         message: string
@@ -701,7 +697,7 @@ export const systemIOMachine = setup({
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
   context: ({ input }) => ({
     ...input,
-    folders: [],
+    folders: undefined,
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
@@ -721,6 +717,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -876,6 +873,7 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.creatingProject,
               requestedProjectName: ({ event }) => {
                 return { name: event.output.name }
               },
@@ -914,6 +912,13 @@ export const systemIOMachine = setup({
               },
             }),
             SystemIOMachineActions.toastSuccess,
+            assign({
+              lastOperation: SystemIOMachineStates.renamingProject,
+              requestedProjectName: ({ event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_renameProject)
+                return { name: event.output.newName }
+              },
+            }),
           ],
         },
         onError: {
@@ -936,6 +941,9 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.deletingProject,
+            }),
             SystemIOMachineActions.toastSuccess,
             SystemIOMachineActions.setLastProjectDeleteRequest,
           ],
@@ -958,8 +966,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
@@ -984,8 +991,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
@@ -993,6 +999,7 @@ export const systemIOMachine = setup({
           // Clear on web? not desktop
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.importFileFromURL,
               requestedProjectName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
                 return {
@@ -1107,6 +1114,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,
@@ -1404,6 +1413,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.renamingFolderAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1448,6 +1459,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.deletingFileOrFolderAndNavigate,
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,

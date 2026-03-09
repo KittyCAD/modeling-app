@@ -130,3 +130,15 @@ export type MaybePressOrBlur =
   | null
 /** A form submission handler function that is triggered by submission or blurring focus */
 export type SubmitByPressOrBlur = (e: MaybePressOrBlur) => void
+
+// Supporting types for PromisifyProps<I>
+type AwaitedReturn<R> = R extends Promise<infer U> ? U : R
+type PromisifyFn<F> = F extends (...args: infer A) => infer R
+  ? (...args: A) => Promise<AwaitedReturn<R>>
+  : F
+/** Promisify only function properties, leave others unchanged */
+export type PromisifyProps<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any
+    ? PromisifyFn<T[K]>
+    : T[K]
+}

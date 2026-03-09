@@ -2,9 +2,11 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/app'
 import { useEffect, useState, useRef } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -32,6 +34,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -69,27 +72,6 @@ export const MlEphantConversationPane = (props: {
     }
 
     let project: Project = props.theProject
-
-    if (!window.electron) {
-      // If there is no project, we'll create a fake one. Expectation is for
-      // this to only happen on web.
-      project = {
-        metadata: null,
-        kcl_file_count: 1,
-        directory_count: 0,
-        default_file: '/main.kcl',
-        path: '/' + props.settings.meta.id.current,
-        name: props.settings.meta.id.current,
-        children: [
-          {
-            name: 'main.kcl',
-            path: `/main.kcl`,
-            children: null,
-          },
-        ],
-        readWriteAccess: true,
-      }
-    }
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
@@ -321,6 +303,8 @@ export const MlEphantConversationPane = (props: {
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
+      initialMlCopilotMode={props.settings.app.zookeeperMode.current}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
     />
   )
 }

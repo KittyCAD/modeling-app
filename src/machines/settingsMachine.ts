@@ -406,6 +406,11 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
+        'set.app.zookeeperMode': {
+          target: 'persisting settings',
+          actions: ['setSettingAtLevel'],
+        },
+
         'set.modeling.cameraProjection': {
           target: 'persisting settings',
 
