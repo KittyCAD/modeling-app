@@ -262,12 +262,14 @@ export function addSplit({
   if (hasTools && tools) {
     const toolVars = getVariableExprsFromSelection(
       tools,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       mNodeToEdit,
-      lastChildLookup,
-      artifactGraph,
-      ['compositeSolid', 'sweep']
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
     )
     if (err(toolVars)) {
       return toolVars

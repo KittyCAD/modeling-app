@@ -54,6 +54,7 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+import { isRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -121,13 +122,10 @@ export function addExtrude({
     ),
     otherSelections: sketches.otherSelections,
   }
-  const hasRegionSelections = nonFaceSelections.otherSelections.some(
-    (selection) =>
-      typeof selection === 'object' &&
-      'type' in selection &&
-      selection.type === 'region'
-  )
-  if (nonFaceSelections.graphSelections.length > 0 || hasRegionSelections) {
+  if (
+    nonFaceSelections.graphSelections.length > 0 ||
+    nonFaceSelections.otherSelections.some((s) => isRegionSelection(s))
+  ) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
       artifactGraph,
