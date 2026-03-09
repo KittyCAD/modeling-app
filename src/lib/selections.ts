@@ -140,6 +140,7 @@ async function getRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
+  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
   const sketch = artifactGraph
     .values()
     .find(
