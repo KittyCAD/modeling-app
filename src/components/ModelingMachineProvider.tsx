@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useEffect, useRef } from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'

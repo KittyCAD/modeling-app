@@ -200,10 +200,6 @@ export function projectConfigurationToSettingsPayload(
       ),
       showDebugPanel:
         configuration?.settings?.app?.show_debug_panel ?? undefined,
-      zookeeperMode: (() => {
-        const v = configuration?.settings?.app?.zookeeper_mode
-        return v === 'fast' || v === 'thoughtful' ? v : undefined
-      })(),
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
@@ -250,7 +246,6 @@ export function settingsPayloadToProjectConfiguration(
         onboarding_status: configuration?.app?.onboardingStatus,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
-        zookeeper_mode: configuration?.app?.zookeeperMode,
         named_views: deepPartialNamedViewsToNamedViews(
           configuration?.app?.namedViews
         ),
