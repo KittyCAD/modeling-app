@@ -33,7 +33,8 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
+import { useProject } from '@src/components/ProjectEditorProviders'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -74,14 +75,15 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { auth, billing, settings, layout, systemIOActor } = useApp()
+  const project = useProject()
+  const kclManager = project.executingEditor.value
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -130,7 +132,10 @@ export function OpenedProject() {
   // Only fires on state changes, to deal with Zookeeper control.
   useEffect(() => {
     if (systemIOState !== 'idle') return
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
+    if (
+      !kclManager ||
+      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false
+    )
       return
     kclManager
       .executeCode()
@@ -161,7 +166,7 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
 
-  useHotKeyListener(kclManager)
+  useHotKeyListener(kclManager ?? undefined)
 
   const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
@@ -173,11 +178,11 @@ export function OpenedProject() {
   // with the wrapper.
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
-    kclManager.undo()
+    kclManager?.undo()
   })
   useHotkeys('mod+shift+z', (e) => {
     e.preventDefault()
-    kclManager.redo()
+    kclManager?.redo()
   })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
@@ -189,7 +194,7 @@ export function OpenedProject() {
 
       void navigate(filePath + PATHS.SETTINGS)
     },
-    kclManager,
+    kclManager ?? undefined,
     {
       splitKey: '|',
     }
@@ -200,7 +205,7 @@ export function OpenedProject() {
     () => {
       toast.success('Your work is auto-saved in real-time')
     },
-    kclManager
+    kclManager ?? undefined
   )
 
   useEngineConnectionSubscriptions()
@@ -240,7 +245,6 @@ export function OpenedProject() {
           TutorialRequestToast({
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
@@ -267,14 +271,12 @@ export function OpenedProject() {
     settingsActor,
   ])
 
-  // This is, at time of writing, the only spot we need @preact/signals-react,
-  // because we can't use the core `effect()` function for this signal, because
+  // We can't use the core `effect()` function for this signal, because
   // it is initially set to `true`, and will break the web app.
-  // TODO: get the loading pattern of KclManager in order so that it's for real available,
-  // then you might be able to uninstall this package and stick to just using signals-core.
+  // TODO: get the loading pattern of KclManager in order so that it's for real available
   useSignalEffect(() => {
     const needsWasmInitFailedToast =
-      !isDesktop() && kclManager.wasmInitFailedSignal.value
+      !isDesktop() && kclManager?.wasmInitFailedSignal.value
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
@@ -305,7 +307,7 @@ export function OpenedProject() {
   }, [])
 
   const experimentalFeaturesLevel =
-    kclManager.fileSettings.experimentalFeatures ??
+    kclManager?.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
   const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
     experimentalFeaturesLevel.type !== 'Deny'
@@ -333,13 +335,16 @@ export function OpenedProject() {
   )
 
   const undoRedoButtons = useMemo(
-    () => (
-      <UndoRedoButtons
-        data-testid="app-header-undo-redo"
-        kclManager={kclManager}
-        className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
-      />
-    ),
+    () =>
+      !!kclManager ? (
+        <UndoRedoButtons
+          data-testid="app-header-undo-redo"
+          kclManager={kclManager}
+          className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+        />
+      ) : (
+        <></>
+      ),
     [kclManager]
   )
 
@@ -383,7 +388,6 @@ export function OpenedProject() {
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settingsValues.app.showDebugPanel.current}
             notifications={notifications}
-            artifactGraph={kclManager.artifactGraph}
           />
         </section>
         <StatusBar
@@ -413,10 +417,12 @@ export function OpenedProject() {
               'data-testid': 'selection-status',
               element: 'text',
               label:
-                getSelectionTypeDisplayText(
-                  kclManager.astSignal.value,
-                  modelingState.context.selectionRanges
-                ) ?? 'No selection',
+                (!!kclManager &&
+                  getSelectionTypeDisplayText(
+                    kclManager.astSignal.value,
+                    modelingState.context.selectionRanges
+                  )) ||
+                'No selection',
               toolTip: {
                 children: 'Currently selected geometry',
               },

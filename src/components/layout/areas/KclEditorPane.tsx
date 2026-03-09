@@ -2,7 +2,7 @@ import { Menu } from '@headlessui/react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
@@ -11,8 +11,8 @@ import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
-
-type Singletons = ReturnType<typeof useSingletons>
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
+import type { KclManager } from '@src/lang/KclManager'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -44,7 +44,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
     editorParent.current?.appendChild(kclManager.editorView.dom)
@@ -61,7 +61,7 @@ export const KclEditorPaneContents = () => {
   )
 }
 
-function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
+function copyKclCodeToClipboard(kclManager: KclManager) {
   if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy')
     return
@@ -82,7 +82,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)

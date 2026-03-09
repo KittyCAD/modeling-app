@@ -17,7 +17,7 @@ import { reportRejection } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getDeleteKeys } from '@src/lib/utils'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
@@ -36,6 +36,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -54,7 +55,7 @@ export const ModelingMachineProvider = ({
 }) => {
   useSignals()
   const { machineManager, commands, settings, layout, project } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()

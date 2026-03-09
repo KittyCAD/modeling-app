@@ -30,6 +30,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  TEST_LOCALSTORAGE_PERSIST_KEY,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
 import type {
@@ -267,18 +268,7 @@ export class ZDSProject {
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
-  async openEditor(
-    path: string,
-    /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
-     * once the app can handle not having a KclManager.
-     */
-    providedEditor?: KclManager,
-    /** TODO: Remove `providedCode` once no tests rely on initializing
-     * editor state through localstorage.
-     */
-    providedCode?: string,
-    isExecuting = true
-  ) {
+  async openEditor(path: string, isExecuting = true) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
     if (found) {
@@ -293,18 +283,12 @@ export class ZDSProject {
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
-    if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
-    }
-
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
         : new File(path, this.nextFileId++),
-      systemDeps,
-      providedEditor,
-      providedCode
+      systemDeps
     )
 
     // Splice our new editor into our files array
@@ -365,8 +349,8 @@ export class ZDSProject {
   }
 
   closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
+    for (const editor of this.editors) {
+      editor[1].close()
     }
     this.editors.clear()
   }
@@ -1079,34 +1063,15 @@ export class KclManager extends File {
    * Upgrade a File to an Editor, reading its contents for the initial editor state.
    * TODO: Remove providedEditor once the app can handle an undefined currently-executing editor.
    */
-  static async fromFile(
-    file: File,
-    systemDeps: SystemDeps,
-    providedEditor?: KclManager,
-    providedCode?: string
-  ) {
+  static async fromFile(file: File, systemDeps: SystemDeps) {
     const initialCode = normalizeLineEndings(
-      providedCode || (await file.read())
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      (window?.electron?.process.env.NODE_ENV === 'test' &&
+        window.localStorage?.getItem(TEST_LOCALSTORAGE_PERSIST_KEY)) ||
+        (await file.read())
     )
-
-    if (!providedEditor) {
-      return new KclManager(file.path, initialCode, systemDeps, file.id)
-    }
-
-    // TODO: remove all this once the app can handle an undefined currently-executing editor
-    providedEditor.path = file.path
-    providedEditor.id = file.id
-    providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
-    return providedEditor
+    return new KclManager(file.path, initialCode, systemDeps, file.id)
   }
 
   constructor(
@@ -1182,6 +1147,7 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     this.unwatch()
+    this.cancelAllExecutions()
     this.unsubscribeFromSettings?.unsubscribe()
   }
 

@@ -18,7 +18,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
-import type { KclManager } from '@src/lang/KclManager'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -35,7 +34,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * `?createFile`
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
-export function useQueryParamEffects(kclManager: KclManager) {
+export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()

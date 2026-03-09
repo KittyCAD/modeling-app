@@ -1,5 +1,4 @@
 import isEqual from 'react-fast-compare'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { LayoutType } from '@src/lib/layout/types'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
@@ -120,7 +119,6 @@ interface LayoutRootNodeProps {
   // Values that affect the layout (pane buttons, menus, etc).
   showDebugPanel: SettingsType['app']['showDebugPanel']['current']
   notifications: boolean[]
-  artifactGraph: ArtifactGraph
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
@@ -205,8 +203,7 @@ export const LayoutRootNode = memo(
     isEqual(oldProps.layout, newProps.layout) &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
-    isEqual(oldProps.notifications, newProps.notifications) &&
-    isEqual(oldProps.artifactGraph, newProps.artifactGraph)
+    isEqual(oldProps.notifications, newProps.notifications)
 )
 
 /*

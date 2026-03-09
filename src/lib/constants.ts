@@ -351,3 +351,5 @@ export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
 ]
 
 export const ARCHIVE_DIR = 'archive'
+
+export const TEST_LOCALSTORAGE_PERSIST_KEY = 'persistCode'

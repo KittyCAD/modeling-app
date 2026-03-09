@@ -21,7 +21,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
@@ -31,6 +31,12 @@ import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
+import {
+  ExecutingEditorProvider,
+  ProjectProvider,
+} from '@src/components/ProjectEditorProviders'
+import { useSignal } from '@preact/signals-react'
+import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -40,8 +46,11 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  */
 export const Router = () => {
   const app = useApp()
-  const { kclManager } = useSingletons()
-  const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
+  useSignals()
+  const projectSignal = useSignal(app.project)
+  const networkStatus = useNetworkStatus(
+    projectSignal.value?.executingEditor.value?.engineCommandManager
+  )
   const router = useMemo(
     () =>
       createRouter([
@@ -64,22 +73,27 @@ export const Router = () => {
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,
               element: (
-                <ModelingPageProvider>
-                  <Suspense
-                    fallback={
-                      <div className="absolute inset-0 grid place-content-center">
-                        <Loading>Loading Design Studio...</Loading>
-                      </div>
-                    }
-                  >
-                    <ModelingMachineProvider>
-                      <CoreDump />
-                      <Outlet />
-                      <OpenedProject />
-                      <CommandBar />
-                    </ModelingMachineProvider>
-                  </Suspense>
-                </ModelingPageProvider>
+                <ProjectProvider>
+                  {/** TODO: Decouple opening project from opening an executing editor and move this provider down! */}
+                  <ExecutingEditorProvider>
+                    <ModelingPageProvider>
+                      <Suspense
+                        fallback={
+                          <div className="absolute inset-0 grid place-content-center">
+                            <Loading>Loading Design Studio...</Loading>
+                          </div>
+                        }
+                      >
+                        <ModelingMachineProvider>
+                          <CoreDump />
+                          <Outlet />
+                          <OpenedProject />
+                          <CommandBar />
+                        </ModelingMachineProvider>
+                      </Suspense>
+                    </ModelingPageProvider>
+                  </ExecutingEditorProvider>
+                </ProjectProvider>
               ),
               children: [
                 {
@@ -163,36 +177,40 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { auth } = useApp()
-  const { kclManager } = useSingletons()
+  const { wasmPromise, auth, project } = useApp()
+  useSignals()
+  const projectSignal = useSignal(project)
+  const kclManager = projectSignal.value?.executingEditor.value
   const token = auth.useToken()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(kclManager, token),
+    () => (!!kclManager ? new CoreDumpManager(kclManager, token) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    []
+    [kclManager]
   )
   useHotkeyWrapper(
     ['mod + shift + period'],
     () => {
-      toast
-        .promise(
-          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
-          {
-            loading: 'Starting core dump...',
-            success: 'Core dump completed successfully',
-            error: 'Error while exporting core dump',
-          },
-          {
-            success: {
-              // Note: this extended duration is especially important for Playwright e2e testing
-              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-              duration: 6000,
+      if (coreDumpManager) {
+        toast
+          .promise(
+            coreDump(coreDumpManager, wasmPromise, true),
+            {
+              loading: 'Starting core dump...',
+              success: 'Core dump completed successfully',
+              error: 'Error while exporting core dump',
             },
-          }
-        )
-        .catch(reportRejection)
+            {
+              success: {
+                // Note: this extended duration is especially important for Playwright e2e testing
+                // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+                duration: 6000,
+              },
+            }
+          )
+          .catch(reportRejection)
+      }
     },
-    kclManager
+    kclManager ?? undefined
   )
   return null
 }

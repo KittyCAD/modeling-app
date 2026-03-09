@@ -21,7 +21,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
@@ -39,7 +39,6 @@ export const AllSettingsFields = forwardRef(
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     const { settings, layout, systemIOActor } = useApp()
-    const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
@@ -66,7 +65,6 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        kclManager,
         systemIOActor,
         settingsActor: settings.actor,
         executingPath,

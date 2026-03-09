@@ -3,16 +3,19 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
+import { useProject } from '@src/components/ProjectEditorProviders'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useSignals } from '@preact/signals-react/runtime'
 
 const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
+  useSignals()
   const { billing, commands } = useApp()
-  const { kclManager } = useSingletons()
+  const project = useProject()
   const platform = usePlatform()
 
   const [showOptions, setShowOptions] = useState(false)
@@ -61,11 +64,12 @@ export const ShareButton = memo(function ShareButton() {
     scopes: ['modeling'],
   })
 
-  const ast = kclManager.astSignal.value
+  const ast = project.executingEditor.value?.astSignal.value
 
   // It doesn't make sense for the user to be able to click on this
   // until we get what their subscription allows for.
   const disabled =
+    !ast ||
     ast.body.some((n) => n.type === 'ImportStatement') ||
     billingContext.hasSubscription === undefined
 

@@ -1,6 +1,6 @@
-import { Signal } from '@preact/signals-core'
+import type { Signal } from '@preact/signals-core'
+import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { useSignals } from '@preact/signals-react/runtime'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { useApp } from '@src/lib/boot'
 import React from 'react'
 

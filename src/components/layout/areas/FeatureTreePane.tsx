@@ -32,7 +32,7 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
@@ -63,9 +63,11 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
+import type { KclManager } from '@src/lang/KclManager'
 
-type Singletons = ReturnType<typeof useSingletons>
-type SystemDeps = Pick<Singletons, 'kclManager'> & {
+type SystemDeps = {
+  kclManager: KclManager
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
@@ -114,7 +116,7 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const { layout, commands } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,

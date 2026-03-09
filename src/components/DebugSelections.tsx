@@ -1,4 +1,3 @@
-import { useSingletons } from '@src/lib/boot'
 import { useMemo, useState } from 'react'
 import { uuidv4 } from '@src/lib/utils'
 import { processCodeMirrorRanges } from '@src/lib/selections'
@@ -15,11 +14,12 @@ import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { reportRejection } from '@src/lib/trap'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { KclManager } from '@src/lang/KclManager'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
-type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
-
-async function clearSceneSelection(deps: SingletonDeps) {
-  await deps.kclManager.engineCommandManager.sendSceneCommand({
+async function clearSceneSelection(engineCommandManager: ConnectionManager) {
+  await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_clear',
@@ -29,8 +29,11 @@ async function clearSceneSelection(deps: SingletonDeps) {
 }
 
 // Pass in a list of scene ids to select in the 3d scene
-async function sceneSelection(ids: string[], deps: SingletonDeps) {
-  await deps.kclManager.engineCommandManager.sendSceneCommand({
+async function sceneSelection(
+  ids: string[],
+  engineCommandManager: ConnectionManager
+) {
+  await engineCommandManager.sendSceneCommand({
     cmd_id: uuidv4(),
     type: 'modeling_cmd_req',
     cmd: {
@@ -43,7 +46,7 @@ async function sceneSelection(ids: string[], deps: SingletonDeps) {
 function formatArtifactGraph(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
-  deps: SingletonDeps
+  kclManager: KclManager
 ) {
   const idsWithTypes = Array.from(artifactGraph).map(([_, artifact]) => {
     const type = artifact.type
@@ -55,12 +58,12 @@ function formatArtifactGraph(
     if ('codeRef' in artifact) {
       const codeRef = artifact.codeRef
       range = codeRef.range
-      codeRefToIds = codeRangeToIds(codeRef.range, wasmInstance, deps)
-      sourceRanges = idToCodeRange(id, deps) || []
+      codeRefToIds = codeRangeToIds(codeRef.range, wasmInstance, kclManager)
+      sourceRanges = idToCodeRange(id, kclManager) || []
       const result = computeOperationList(
-        generateOperationList(deps),
+        generateOperationList(kclManager),
         wasmInstance,
-        deps
+        kclManager
       )
       const featureTrees = result.filter((feature) => {
         if ('sourceRange' in feature) {
@@ -87,14 +90,20 @@ function formatArtifactGraph(
   return idsWithTypes
 }
 
-async function selectionFromId(id: string, deps: SingletonDeps) {
-  await clearSceneSelection(deps)
-  await sceneSelection([id], deps)
+async function selectionFromId(
+  id: string,
+  engineCommandManager: ConnectionManager
+) {
+  await clearSceneSelection(engineCommandManager)
+  await sceneSelection([id], engineCommandManager)
 }
 
-async function selectCodeMirrorRange(range: SourceRange, deps: SingletonDeps) {
+async function selectCodeMirrorRange(
+  range: SourceRange,
+  kclManager: KclManager
+) {
   if (!range) return
-  await clearSceneSelection(deps)
+  await clearSceneSelection(kclManager.engineCommandManager)
   const selections: Selections = {
     graphSelections: [
       {
@@ -106,17 +115,16 @@ async function selectCodeMirrorRange(range: SourceRange, deps: SingletonDeps) {
     ],
     otherSelections: [],
   }
-  deps.kclManager.selectRange(selections)
+  kclManager.selectRange(selections)
 }
 
 function codeRangeToIds(
   range: SourceRange,
   wasmInstance: ModuleType,
-  deps: SingletonDeps
+  kclManager: KclManager
 ): string[] {
   if (!range) return []
 
-  const { kclManager } = deps
   const selections = {
     graphSelections: [
       {
@@ -182,8 +190,7 @@ function getEntityIdsFromCmds(
   return ids
 }
 
-function idToCodeRange(id: string, deps: SingletonDeps) {
-  const { kclManager } = deps
+function idToCodeRange(id: string, kclManager: KclManager) {
   if (id) {
     const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
     if (codeRefs) {
@@ -200,8 +207,7 @@ function idToCodeRange(id: string, deps: SingletonDeps) {
 }
 
 // Ported from the feature tree codebase
-function generateOperationList(deps: SingletonDeps) {
-  const { kclManager } = deps
+function generateOperationList(kclManager: KclManager) {
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -234,13 +240,13 @@ function generateOperationList(deps: SingletonDeps) {
 function computeOperationList(
   operationList: Operation[],
   wasmInstance: ModuleType,
-  deps: SingletonDeps
+  kclManager: KclManager
 ) {
   const idsWithTypes = operationList.map((operation) => {
     let codeRefToIds: string[] = []
     if ('sourceRange' in operation) {
       const sourceRange: SourceRange = operation.sourceRange
-      codeRefToIds = codeRangeToIds(sourceRange, wasmInstance, deps)
+      codeRefToIds = codeRangeToIds(sourceRange, wasmInstance, kclManager)
     }
     return { codeRefToIds, ...operation }
   })
@@ -248,13 +254,7 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager } = useSingletons()
-  const singletonDeps: SingletonDeps = useMemo(
-    () => ({
-      kclManager,
-    }),
-    [kclManager]
-  )
+  const { editor: kclManager } = useExecutingEditor()
   const [selectedId, _setSelectedId] = useState('')
   const [selectedRange, _setSelectedRange] = useState('')
   const setSelectedId = (id: string) => {
@@ -272,16 +272,16 @@ export function DebugSelections() {
     return formatArtifactGraph(
       kclManager.artifactGraph,
       wasmInstance,
-      singletonDeps
+      kclManager
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
 
   const operationList = useMemo(() => {
     return computeOperationList(
-      generateOperationList(singletonDeps),
+      generateOperationList(kclManager),
       wasmInstance,
-      singletonDeps
+      kclManager
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
@@ -300,9 +300,10 @@ export function DebugSelections() {
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    selectionFromId(artifact.id, singletonDeps).catch(
-                      reportRejection
-                    )
+                    selectionFromId(
+                      artifact.id,
+                      kclManager.engineCommandManager
+                    ).catch(reportRejection)
                     setSelectedId(artifact.id)
                   }}
                 >
@@ -315,10 +316,9 @@ export function DebugSelections() {
                   tabIndex={0}
                   onClick={() => {
                     if (artifact.range) {
-                      selectCodeMirrorRange(
-                        artifact.range,
-                        singletonDeps
-                      ).catch(reportRejection)
+                      selectCodeMirrorRange(artifact.range, kclManager).catch(
+                        reportRejection
+                      )
                       const rangeString = artifact.range.join(',')
                       setSelectedRange(rangeString)
                     }
@@ -340,7 +340,7 @@ export function DebugSelections() {
                         const codeRef = {
                           range: range,
                         }
-                        selectCodeMirrorRange(range, singletonDeps).catch(
+                        selectCodeMirrorRange(range, kclManager).catch(
                           reportRejection
                         )
                         const rangeString = codeRef.range.join(',')
@@ -359,10 +359,9 @@ export function DebugSelections() {
                   tabIndex={0}
                   onClick={() => {
                     if (artifact.range) {
-                      selectCodeMirrorRange(
-                        artifact.range,
-                        singletonDeps
-                      ).catch(reportRejection)
+                      selectCodeMirrorRange(artifact.range, kclManager).catch(
+                        reportRejection
+                      )
                       const rangeString = artifact.range.join(',')
                       setSelectedRange(rangeString)
                     }
@@ -378,9 +377,10 @@ export function DebugSelections() {
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        selectionFromId(id, singletonDeps).catch(
-                          reportRejection
-                        )
+                        selectionFromId(
+                          id,
+                          kclManager.engineCommandManager
+                        ).catch(reportRejection)
                         setSelectedId(id)
                       }}
                     >
@@ -413,7 +413,7 @@ export function DebugSelections() {
                           role="button"
                           tabIndex={0}
                           onClick={() => {
-                            selectCodeMirrorRange(range, singletonDeps).catch(
+                            selectCodeMirrorRange(range, kclManager).catch(
                               reportRejection
                             )
                             const rangeString = range.join(',')
@@ -431,9 +431,10 @@ export function DebugSelections() {
                             role="button"
                             tabIndex={0}
                             onClick={() => {
-                              selectionFromId(id, singletonDeps).catch(
-                                reportRejection
-                              )
+                              selectionFromId(
+                                id,
+                                kclManager.engineCommandManager
+                              ).catch(reportRejection)
                               setSelectedId(id)
                             }}
                           >
@@ -471,7 +472,7 @@ export function DebugSelections() {
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    selectCodeMirrorRange(range, singletonDeps).catch(
+                    selectCodeMirrorRange(range, kclManager).catch(
                       reportRejection
                     )
                     const rangeString = range.join(',')
@@ -489,7 +490,10 @@ export function DebugSelections() {
                     role="button"
                     tabIndex={0}
                     onClick={() => {
-                      selectionFromId(id, singletonDeps).catch(reportRejection)
+                      selectionFromId(
+                        id,
+                        kclManager.engineCommandManager
+                      ).catch(reportRejection)
                       setSelectedId(id)
                     }}
                   >

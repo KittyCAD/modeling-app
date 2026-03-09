@@ -4,9 +4,22 @@ import { expect, describe, it } from 'vitest'
 import { App } from '@src/lib/app'
 
 describe('EditorManager Class', () => {
-  const singletons = App.fromProvided({
+  const app = App.fromProvided({
     wasmPromise: Promise.resolve({} as ModuleType),
-  }).singletons
+  })
+  const project = app.openProject(
+    {
+      path: 'some-project',
+      name: 'i-should-really-change-this-api',
+      children: [],
+      default_file: 'main.kcl',
+      directory_count: 0,
+      kcl_file_count: 1,
+      metadata: null,
+      readWriteAccess: true,
+    },
+    'some-file'
+  )
 
   describe('makeUniqueDiagnostics', () => {
     it('should filter out duplicated diagnostics', () => {
@@ -40,7 +53,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = singletons.kclManager.makeUniqueDiagnostics(
+      const actual = project.executingEditor.value?.makeUniqueDiagnostics(
         duplicatedDiagnostics
       )
       expect(actual).toStrictEqual(expected)
@@ -82,7 +95,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = singletons.kclManager.makeUniqueDiagnostics(
+      const actual = project.executingEditor.value?.makeUniqueDiagnostics(
         duplicatedDiagnostics
       )
       expect(actual).toStrictEqual(expected)

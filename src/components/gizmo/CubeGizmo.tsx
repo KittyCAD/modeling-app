@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { useApp, useSingletons } from '@src/lib/boot'
-
+import { useApp } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
 export default function CubeGizmo() {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
 

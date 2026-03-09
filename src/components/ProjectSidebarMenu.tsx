@@ -15,13 +15,15 @@ import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
 
 import fsZds from '@src/lib/fs-zds'
+import { useSignal, useSignals } from '@preact/signals-react/runtime'
+import { useProject } from '@src/components/ProjectEditorProviders'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -67,7 +69,10 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { kclManager } = useSingletons()
+  useSignals()
+  const { project: projectFromApp } = useApp()
+  const projectSignal = useSignal(projectFromApp)
+  const kclManager = projectSignal.value?.executingEditor.value
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
@@ -90,7 +95,9 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        kclManager.switchedFiles = true
+        if (kclManager) {
+          kclManager.switchedFiles = true
+        }
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -109,7 +116,9 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  useSignals()
+  const projectFromApp = useProject()
+  const kclManager = projectFromApp.executingEditor.value
   const platform = usePlatform()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -228,7 +237,9 @@ function ProjectMenuPopover({
           className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            kclManager.switchedFiles = true
+            if (kclManager) {
+              kclManager.switchedFiles = true
+            }
           },
         },
       ].filter(
@@ -242,7 +253,7 @@ function ProjectMenuPopover({
       findCommand,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      kclManager.engineCommandManager,
+      kclManager?.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]

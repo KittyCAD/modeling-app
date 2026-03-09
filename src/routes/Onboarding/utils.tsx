@@ -12,7 +12,6 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { KclManager } from '@src/lang/KclManager'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
@@ -273,7 +272,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  kclManager: KclManager
   systemIOActor: SystemIOActor
   settingsActor: SettingsActorType
   navigate: NavigateFunction

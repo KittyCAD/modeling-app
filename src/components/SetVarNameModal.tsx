@@ -7,7 +7,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean
@@ -29,7 +29,7 @@ export const SetVarNameModal = ({
   valueName,
   selectionRanges,
 }: SetVarNameModalProps) => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',

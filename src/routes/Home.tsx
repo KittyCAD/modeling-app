@@ -55,7 +55,7 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
@@ -71,10 +71,9 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { auth, billing, commands, settings, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -222,8 +221,7 @@ const Home = () => {
   // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    kclManager.cancelAllExecutions()
-  }, [kclManager])
+  }, [])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -263,7 +261,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      kclManager,
                       systemIOActor,
                       settingsActor,
                       executingPath,

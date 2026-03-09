@@ -4,7 +4,7 @@ import { ActionIcon } from '@src/components/ActionIcon'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -15,11 +15,12 @@ import {
 } from '@src/machines/mlEphantManagerMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
   const { auth, billing, settings, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()

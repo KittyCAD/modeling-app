@@ -9,11 +9,15 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import fsZds from '@src/lib/fs-zds'
 import { useSignals } from '@preact/signals-react/runtime'
+import {
+  useExecutingEditor,
+  useProject,
+} from '@src/components/ProjectEditorProviders'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -27,8 +31,9 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { auth, commands, settings, systemIOActor } = useApp()
+  const project = useProject()
+  const { editor: kclManager } = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()

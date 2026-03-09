@@ -16,10 +16,10 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Suspense, use } from 'react'
 import Loading from '@src/components/Loading'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export const MemoryPaneMenu = () => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const variables = kclManager.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
@@ -73,7 +73,7 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const theme = useResolvedTheme()
   const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()

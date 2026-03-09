@@ -1,5 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { type KclManager, ZDSProject } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'

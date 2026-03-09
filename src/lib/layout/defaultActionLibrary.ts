@@ -1,9 +1,11 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { isMobile } from '@src/lib/isMobile'
+import { useProject } from '@src/components/ProjectEditorProviders'
+import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * For now we have strict action types but in future
@@ -11,14 +13,15 @@ import { isMobile } from '@src/lib/isMobile'
  */
 export const useDefaultActionLibrary = () => {
   const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  useSignals()
+  const project = useProject()
 
   return Object.freeze({
     export: {
       useHidden: () => false,
       useDisabled: () => {
         const engineIsReady = useReliesOnEngine(
-          kclManager.isExecutingSignal.value ?? false
+          project.executingEditor.value?.isExecutingSignal.value ?? false
         )
         return engineIsReady ? 'Need engine connection to export' : undefined
       },

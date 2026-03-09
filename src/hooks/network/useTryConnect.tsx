@@ -5,7 +5,6 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
@@ -16,6 +15,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -313,7 +313,7 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<
