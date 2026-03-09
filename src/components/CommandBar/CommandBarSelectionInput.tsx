@@ -40,8 +40,12 @@ function CommandBarSelectionInput({
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.astSignal.value, selection)
-  }, [selection, kclManager.astSignal.value])
+    return getSelectionCountByType(
+      kclManager.astSignal.value,
+      selection,
+      kclManager.artifactGraph
+    )
+  }, [selection, kclManager.astSignal.value, kclManager.artifactGraph])
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)

@@ -39,7 +39,7 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import { base64Decode, type Artifact, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -137,11 +137,13 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   const selectOperation = useCallback(
-    (sourceRange: SourceRange) => {
+    (sourceRange: SourceRange, preferredArtifactType?: Artifact['type']) => {
+      // Pass raw range so getArtifactFromRange can match artifact graph (byte offsets); sendSelectionEvent uses UTF-16 only for codeRef
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        sourceRange,
         kclManager,
         modelingSend,
+        preferredArtifactType,
       })
     },
     [modelingSend, kclManager]
@@ -421,7 +423,10 @@ interface OperationProps {
   systemDeps: SystemDeps
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
-  onSelect: (sourceRange: SourceRange) => void
+  onSelect: (
+    sourceRange: SourceRange,
+    preferredArtifactType?: Artifact['type']
+  ) => void
 }
 /**
  * A button with an icon, name, and context menu
@@ -491,7 +496,12 @@ const OperationItem = ({
         if (item.type === 'GroupEnd') {
           return
         }
-        onSelect(sourceRangeFromRust(item.sourceRange))
+        const preferredType =
+          item.type === 'StdLibCall' &&
+          (item as { name?: string }).name?.toLowerCase() === 'helix'
+            ? 'helix'
+            : undefined
+        onSelect(sourceRangeFromRust(item.sourceRange), preferredType)
       }
     },
     [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]

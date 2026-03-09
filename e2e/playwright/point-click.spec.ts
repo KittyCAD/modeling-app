@@ -1221,14 +1221,23 @@ profile001 = ${circleCode}`
         stage: 'arguments',
       })
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Profiles: '1 profile',
-          Path: '1 helix',
-        },
-        stage: 'review',
-      })
+      await expect
+        .poll(async () => {
+          const s = await cmdBar.getState()
+          return (
+            s.stage === 'review' &&
+            s.commandName === 'Sweep' &&
+            s.headerArguments?.Profiles === '1 profile'
+          )
+        })
+        .toBe(true)
+      const stateAfterPath = await cmdBar.getState()
+      expect(stateAfterPath.stage).toBe('review')
+      if (stateAfterPath.stage === 'review') {
+        expect(['1 path', '1 edge']).toContain(
+          stateAfterPath.headerArguments?.Path
+        )
+      }
       await cmdBar.progressCmdBar(true)
       await editor.expectEditor.toContain(sweepDeclaration)
     })

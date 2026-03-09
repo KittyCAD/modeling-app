@@ -78,25 +78,25 @@ export function prepareEditCommand(
   })
 }
 
-export function sendSelectionEvent(
-  input: {
-    sourceRange: SourceRange
-    kclManager: KclManager
-    modelingSend: ActorRefFrom<typeof modelingMachine>['send']
-  },
-  convertRangeToUtf16 = false
-) {
+export function sendSelectionEvent(input: {
+  sourceRange: SourceRange
+  kclManager: KclManager
+  modelingSend: ActorRefFrom<typeof modelingMachine>['send']
+  /** When clicking an operation in the feature tree, pass e.g. 'helix' so we resolve that artifact type */
+  preferredArtifactType?: Artifact['type']
+}) {
   const artifact =
-    getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
-    undefined
-
+    getArtifactFromRange(
+      input.sourceRange,
+      input.kclManager.artifactGraph,
+      input.preferredArtifactType
+    ) ?? undefined
+  // Artifact graph uses byte-offset ranges; editor/codeRef use UTF-16. Use raw range for artifact lookup, UTF-16 for codeRef.
   const codeRef = codeRefFromRange(
-    convertRangeToUtf16
-      ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
-      : input.sourceRange,
+    sourceRangeToUtf16(input.sourceRange, input.kclManager.code),
     input.kclManager.ast
   )
-  const entityRef = artifact
+  let entityRef = artifact
     ? artifactToEntityRef(
         artifact.type,
         artifact.id,
@@ -105,6 +105,13 @@ export function sendSelectionEvent(
           : undefined
       )
     : undefined
+  if (artifact && !entityRef) {
+    if (artifact.type === 'path') {
+      entityRef = { type: 'solid2d', solid2d_id: String(artifact.id) }
+    } else if (artifact.type === 'helix') {
+      entityRef = { type: 'solid2d_edge', edge_id: String(artifact.id) }
+    }
+  }
 
   const selection = { entityRef, codeRef }
 

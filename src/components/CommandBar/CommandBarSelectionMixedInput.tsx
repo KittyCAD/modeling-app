@@ -44,8 +44,12 @@ export default function CommandBarSelectionMixedInput({
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.ast, selection)
-  }, [selection, kclManager.ast])
+    return getSelectionCountByType(
+      kclManager.ast,
+      selection,
+      kclManager.artifactGraph
+    )
+  }, [selection, kclManager.ast, kclManager.artifactGraph])
 
   // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {

@@ -179,6 +179,9 @@ export const ConnectionStream = (props: {
                 } else if (refType === 'segment') {
                   const segmentId = ref.segment_id ?? ref.segmentId
                   if (typeof segmentId === 'string') entityId = segmentId
+                } else if (refType === 'helix') {
+                  const helixId = ref.helix_id ?? ref.helixId ?? ref.id
+                  if (typeof helixId === 'string') entityId = helixId
                 }
               }
             }
@@ -216,9 +219,12 @@ export const ConnectionStream = (props: {
             )
             if (!entityRef) {
               if (artifact.type === 'path') {
-                entityRef = { type: 'solid2d', solid2d_id: artifact.id }
+                entityRef = { type: 'solid2d', solid2d_id: String(artifact.id) }
               } else if (artifact.type === 'helix') {
-                entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
+                entityRef = {
+                  type: 'solid2d_edge',
+                  edge_id: String(artifact.id),
+                }
               }
             }
             if (!entityRef) return

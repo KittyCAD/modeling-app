@@ -32,6 +32,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
   getArtifactOfTypes,
+  getArtifactFromRange,
   getSolid2dCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
@@ -197,9 +198,40 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   let entityRef = normalizeEntityReference(reference)
   if (!entityRef) {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor', selection: {} },
+    // Engine may return ref types not yet in EntityReference (e.g. helix); extract id for artifact lookup
+    const ref = reference as Record<string, unknown>
+    const refType = String(ref?.type).toLowerCase()
+    let entityIdFromRef: string | undefined
+    if (refType === 'path') {
+      const pathId = ref.path_id ?? ref.pathId
+      if (typeof pathId === 'string') entityIdFromRef = pathId
+    } else if (refType === 'segment') {
+      const segmentId = ref.segment_id ?? ref.segmentId
+      if (typeof segmentId === 'string') entityIdFromRef = segmentId
+    } else if (refType === 'helix') {
+      const helixId = ref.helix_id ?? ref.helixId ?? ref.id
+      if (typeof helixId === 'string') entityIdFromRef = helixId
+    }
+    if (entityIdFromRef) {
+      const artifact = getArtifactOfTypes(
+        {
+          key: entityIdFromRef,
+          types: ['path', 'solid2d', 'segment', 'helix'],
+        },
+        artifactGraph
+      )
+      if (!err(artifact)) {
+        if (artifact.type === 'path')
+          entityRef = { type: 'solid2d', solid2d_id: artifact.id }
+        else if (artifact.type === 'helix')
+          entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
+      }
+    }
+    if (!entityRef) {
+      return {
+        type: 'Set selection',
+        data: { selectionType: 'singleCodeCursor', selection: {} },
+      }
     }
   }
 
@@ -759,7 +791,8 @@ export type SelectionCountsByType = Map<ResolvedSelectionType, number>
  */
 export function getSelectionCountByType(
   ast: Node<Program>,
-  selection?: Selections
+  selection?: Selections,
+  artifactGraph?: ArtifactGraph
 ): SelectionCountsByType | 'none' {
   const selectionsByType: SelectionCountsByType = new Map()
   if (
@@ -795,12 +828,31 @@ export function getSelectionCountByType(
 
   selection.graphSelectionsV2.forEach((v2Selection) => {
     if (v2Selection.entityRef) {
-      if (
+      // solid2d_edge first: may be helix (count as path) or segment curve (count as segment)
+      if (v2Selection.entityRef.type === 'solid2d_edge') {
+        if (artifactGraph) {
+          const edgeId = v2Selection.entityRef.edge_id
+          let artifact =
+            artifactGraph.get(edgeId) ?? artifactGraph.get(String(edgeId))
+          if (!artifact) {
+            artifact =
+              [...artifactGraph.values()].find(
+                (a) => a.id === edgeId || String(a.id) === String(edgeId)
+              ) ?? undefined
+          }
+          if (artifact?.type === 'helix') {
+            incrementOrInitializeSelectionType('path')
+          } else {
+            incrementOrInitializeSelectionType('segment')
+          }
+        } else {
+          incrementOrInitializeSelectionType('segment')
+        }
+      } else if (
         v2Selection.entityRef.type === 'edge' ||
-        v2Selection.entityRef.type === 'solid2d_edge' ||
         v2Selection.entityRef.type === 'segment'
       ) {
-        // All edge-like refs from query_entity_type_with_point: show as "edges" (no segment/sweepEdge leak)
+        // All other edge-like refs: show as "edges"
         incrementOrInitializeSelectionType('segment')
       } else if (v2Selection.entityRef.type === 'vertex') {
         incrementOrInitializeSelectionType('other')
@@ -815,6 +867,19 @@ export function getSelectionCountByType(
       }
     } else if (v2Selection.codeRef && isSingleCursorInPipe(selection, ast)) {
       incrementOrInitializeSelectionType('segment')
+    } else if (v2Selection.codeRef && artifactGraph) {
+      // Selection may have codeRef only (e.g. feature tree click when getArtifactFromRange failed); resolve and count helix as path
+      const artifact = getArtifactFromRange(
+        v2Selection.codeRef.range,
+        artifactGraph
+      )
+      if (artifact?.type === 'helix') {
+        incrementOrInitializeSelectionType('path')
+      } else if (artifact?.type === 'path') {
+        incrementOrInitializeSelectionType('path')
+      } else {
+        incrementOrInitializeSelectionType('other')
+      }
     } else {
       incrementOrInitializeSelectionType('other')
     }
@@ -1776,7 +1841,13 @@ export function getCodeRefsFromEntityReference(
       }
     }
   } else if (entityRef.type === 'solid2d_edge' && entityRef.edge_id) {
-    // For Solid2D edges, the edge_id is the curve UUID
+    // edge_id may be a helix artifact (we represent helix as solid2d_edge for engine 1:1)
+    const edgeArtifact = artifactGraph.get(entityRef.edge_id)
+    if (edgeArtifact?.type === 'helix') {
+      const refs = getCodeRefsByArtifactId(entityRef.edge_id, artifactGraph)
+      if (refs?.length) codeRefs.push({ range: refs[0].range })
+    }
+    // For Solid2D edges (segment curves), the edge_id is the curve UUID
     // We need to find which segment this curve belongs to
     // Search through all paths with solid2dId to find the matching segment
     for (const [_pathId, pathArtifact] of artifactGraph.entries()) {

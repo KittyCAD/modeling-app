@@ -764,29 +764,57 @@ function isNodeSafe(node: Expr): boolean {
 }
 
 /**
- * Get an artifact from a code source range
+ * Get an artifact from a code source range.
+ * @param preferredType - When set (e.g. 'helix' when clicking Helix in feature tree), return that artifact type if it matches the range.
  */
 export function getArtifactFromRange(
   range: SourceRange,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  preferredType?: Artifact['type']
 ): Artifact | null {
   let firstCandidate: Artifact | null = null
+  let preferredMatch: Artifact | null = null
   for (const artifact of artifactGraph.values()) {
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
         codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
       if (match) {
-        // Favor the first sketch block artifact since multiple artifacts may be
-        // created here.
+        if (preferredType && artifact.type === preferredType) {
+          preferredMatch = artifact
+        }
+        // Favor sketch block, then helix/path (for feature tree selection), then first match
         if (artifact.type === 'sketchBlock') {
+          return artifact
+        }
+        if (artifact.type === 'helix' || artifact.type === 'path') {
           return artifact
         }
         firstCandidate = firstCandidate ?? artifact
       }
     }
   }
-  // Fallback to the first candidate or null if it wasn't found.
+  if (preferredMatch) return preferredMatch
+  // When preferredType is set (e.g. 'helix' from feature tree) but no exact match, try containment either way
+  if (preferredType) {
+    for (const artifact of artifactGraph.values()) {
+      if (artifact.type !== preferredType) continue
+      const codeRef = getFaceCodeRef(artifact)
+      if (!codeRef) continue
+      const opContainsArtifact =
+        range[0] <= codeRef.range[0] && range[1] >= codeRef.range[1]
+      const artifactContainsOp =
+        codeRef.range[0] <= range[0] && codeRef.range[1] >= range[1]
+      if (opContainsArtifact || artifactContainsOp) return artifact
+    }
+  }
+  // When explicitly selecting helix from feature tree but no range matched, prefer the first helix so the selection resolves (e.g. single-helix sweep test)
+  if (preferredType === 'helix') {
+    const firstHelix = [...artifactGraph.values()].find(
+      (a) => a.type === 'helix'
+    )
+    if (firstHelix) return firstHelix
+  }
   return firstCandidate
 }
 
