@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
+import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -30,13 +31,17 @@ const mockProject: Project = {
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
-    type: StorageName.OPFS,
+    type: StorageName.NodeFS,
     options: {},
   })
 })
 
 describe('project system', () => {
   it('can open, close project', async () => {
+    // Stub out File read and write implementations
+    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.write = () => Promise.resolve()
+
     const app = App.fromProvided({
       wasmPromise: loadWasm(),
     })

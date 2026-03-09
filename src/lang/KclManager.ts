@@ -438,16 +438,22 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
-class File extends EventTarget {
+export class File extends EventTarget {
   /** Path to file this editor is operating on */
   public path: Signal<string>
 
+  static ioImplementations = {
+    read: (path: string) => fsZds.readFile(path, 'utf8'),
+    write: (path: string, content: string) =>
+      fsZds.writeFile(path, File.encoder.encode(content)),
+  }
+
   read() {
-    return fsZds.readFile(this.path.value, 'utf8')
+    return File.ioImplementations.read(this.path.value)
   }
 
   write(newContent: string) {
-    return fsZds.writeFile(this.path.value, File.encoder.encode(newContent))
+    return File.ioImplementations.write(this.path.value, newContent)
   }
 
   static encoder = new TextEncoder()
