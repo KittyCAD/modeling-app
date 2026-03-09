@@ -1079,23 +1079,7 @@ t = sketch(on = XY) {
       ast,
       rustContextInThisFile
     )
-
-    const sketchArtifact = [...artifactGraph.values()].find((artifact) => {
-      if (!(artifact.type === 'path' || artifact.type === 'sketchBlock')) {
-        return false
-      }
-      const node = getNodeFromPath<{ declaration: { id: { name: string } } }>(
-        ast,
-        artifact.codeRef.pathToNode,
-        instanceInThisFile,
-        'VariableDeclaration'
-      )
-      return !err(node) && node.node.declaration.id.name === 's'
-    })
-    if (!sketchArtifact) {
-      throw new Error('Could not find sketch artifact for s')
-    }
-
+    const sketch = artifactGraph.values().find((a) => a.type === 'sketchBlock')
     const selections: Selections = {
       graphSelections: [],
       otherSelections: [
@@ -1103,11 +1087,10 @@ t = sketch(on = XY) {
           type: 'region',
           id: 'region-1',
           point: { x: 1, y: 1 },
-          sketchId: sketchArtifact.id,
+          sketchId: sketch!.id,
         },
       ],
     }
-
     const vars = getVariableExprsFromSelection(
       selections,
       artifactGraph,
