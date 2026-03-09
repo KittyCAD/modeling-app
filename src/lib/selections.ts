@@ -113,12 +113,9 @@ async function getRegionQueryPointForRegion(
       type: 'region_get_query_point',
       region_id: regionId,
     },
-  } as unknown as WebSocketRequest)
+  })
   if (!isModelingResponse(response)) return null
-  const queryPointResponse = response.resp.data.modeling_response as {
-    type: string
-    data: { query_point: Point2d }
-  }
+  const queryPointResponse = response.resp.data.modeling_response
   if (queryPointResponse.type !== 'region_get_query_point') return null
   return queryPointResponse.data.query_point
 }
