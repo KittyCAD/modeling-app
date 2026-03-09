@@ -46,7 +46,7 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
-chrono = "0.4.43"
+chrono = "0.4.44"
 clap = { version = "4.5.60", default-features = false, optional = true, features = [
   "std",
   "derive",
@@ -66,7 +66,7 @@ indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
 kcl-derive-docs = { version = "0.2.132", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.2.132", path = "../kcl-error" }
-kcl-ezpz = { workspace = true }
+ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
@@ -98,7 +98,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
-tempfile = "3.25"
+tempfile = "3.26"
 thiserror = "2.0.18"
 toml = "1.0.3"
 ts-rs = { version = "12.0.1", features = [
