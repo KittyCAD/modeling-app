@@ -11,10 +11,10 @@ s1 = sketch(on = XY) {
   line4 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
 
   // Constrain the line segment endpoints
-line4.start.at[0] == 0
-line4.start.at[1] == 0
-line4.end.at[0] == 10
-line4.end.at[1] == 0
+  line4.start.at[0] == 0
+  line4.start.at[1] == 0
+  line4.end.at[0] == 10
+  line4.end.at[1] == 0
 
   // Create another line with a start point
   line5 = line(start = [var, var], end = [var, var])
@@ -22,8 +22,8 @@ line4.end.at[1] == 0
   // Constrain line5 endpoints
   // Note: We don't constrain line5.start.at[0] directly
   // and instead let the coincident constraint determine it
-line5.end.at[0] == 15
-line5.end.at[1] == 0
+  line5.end.at[0] == 15
+  line5.end.at[1] == 0
 
   // Make line5.start coincident with line4 (point-segment)
   // This matches the user's example syntax: coincident([line5.start, line4])
