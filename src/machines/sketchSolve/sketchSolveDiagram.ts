@@ -48,64 +48,12 @@ import {
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
-  getLinePoints,
+  buildAngleConstraintInput,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
-
-// Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
-function calculateCurrentAngleBetweenLines(
-  line1: ApiObject,
-  line2: ApiObject,
-  objects: ApiObject[]
-): number | null {
-  const line1Points = getLinePoints(line1, objects)
-  const line2Points = getLinePoints(line2, objects)
-  if (!line1Points || !line2Points) {
-    return null
-  }
-
-  const v1 = subVec(line1Points[1], line1Points[0])
-  const v2 = subVec(line2Points[1], line2Points[0])
-  const v1Length = length2d(v1)
-  const v2Length = length2d(v2)
-  if (v1Length === 0 || v2Length === 0) {
-    return null
-  }
-
-  const angleRad = getSignedAngleBetweenVec(v1, v2)
-  const angleDeg = (angleRad * 180) / Math.PI // [-PI, PI] -> [-180, 180]
-  const normalizedDegrees = ((angleDeg % 360) + 360) % 360 // [-180, 180] -> [0, 360]
-  return roundOff(normalizedDegrees)
-}
-
-export function buildAngleConstraintInput(
-  line1: ApiObject,
-  line2: ApiObject,
-  objects: ApiObject[]
-) {
-  if (!isLineSegment(line1) || !isLineSegment(line2)) {
-    return null
-  }
-
-  const angle = calculateCurrentAngleBetweenLines(line1, line2, objects)
-  if (angle === null) {
-    return null
-  }
-
-  return {
-    type: 'Angle' as const,
-    lines: [line1.id, line2.id],
-    angle: { value: angle, units: 'Deg' as const },
-    source: {
-      expr: `${angle}deg`,
-      is_literal: true as const,
-    },
-  }
-}
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,

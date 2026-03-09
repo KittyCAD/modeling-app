@@ -4,7 +4,7 @@ import {
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { buildAngleConstraintInput } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { buildAngleConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []
