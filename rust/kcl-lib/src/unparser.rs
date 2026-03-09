@@ -3401,6 +3401,26 @@ fn foo() {
     }
 
     #[test]
+    fn indented_member_assignment() {
+        let code = "\
+brakcetPlane = {
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
     fn badly_formatted_inline_calls() {
         let code = "\
 return union([right, left])
