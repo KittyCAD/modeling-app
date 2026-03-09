@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use ezpz::{Constraint, NonLinearSystemError};
 use indexmap::IndexMap;
-use kcl_ezpz::{Constraint, NonLinearSystemError};
 use kittycad_modeling_cmds as kcmc;
 
 #[cfg(feature = "artifact-graph")]
@@ -1305,14 +1305,14 @@ impl Node<SketchBlock> {
             .solver_constraints
             .iter()
             .cloned()
-            .map(kcl_ezpz::ConstraintRequest::highest_priority)
+            .map(ezpz::ConstraintRequest::highest_priority)
             .chain(
                 // Optional constraints have a lower priority.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|c| kcl_ezpz::ConstraintRequest::new(c, 1)),
+                    .map(|c| ezpz::ConstraintRequest::new(c, 1)),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
@@ -1349,18 +1349,18 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config::default().with_max_iterations(50);
+        let config = ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
+            ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
                 (outcome.outcome, Some(freedom_analysis))
             })
         } else {
-            kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+            ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         // Build a combined list of all constraints (regular + optional) for conflict detection
         let num_required_constraints = sketch_block_state.solver_constraints.len();
-        let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
+        let all_constraints: Vec<ezpz::Constraint> = sketch_block_state
             .solver_constraints
             .iter()
             .cloned()
@@ -2797,25 +2797,25 @@ impl Node<BinaryExpression> {
                             let cy = line1.vars[0].y.to_constraint_id(range)?;
                             let dx = line1.vars[1].x.to_constraint_id(range)?;
                             let dy = line1.vars[1].y.to_constraint_id(range)?;
-                            let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
-                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
-                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
+                            let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
                             );
-                            let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(
-                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
-                                kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
+                            let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
                             );
                             let desired_angle = match n.ty {
                                 NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
                                 | NumericType::Default {
                                     len: _,
                                     angle: kcmc::units::UnitAngle::Degrees,
-                                } => kcl_ezpz::datatypes::Angle::from_degrees(n.n),
+                                } => ezpz::datatypes::Angle::from_degrees(n.n),
                                 NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
                                 | NumericType::Default {
                                     len: _,
                                     angle: kcmc::units::UnitAngle::Radians,
-                                } => kcl_ezpz::datatypes::Angle::from_radians(n.n),
+                                } => ezpz::datatypes::Angle::from_radians(n.n),
                                 NumericType::Known(crate::exec::UnitType::Count)
                                 | NumericType::Known(crate::exec::UnitType::GenericLength)
                                 | NumericType::Known(crate::exec::UnitType::GenericAngle)
@@ -2830,7 +2830,7 @@ impl Node<BinaryExpression> {
                             let solver_constraint = Constraint::LinesAtAngle(
                                 solver_line0,
                                 solver_line1,
-                                kcl_ezpz::datatypes::AngleKind::Other(desired_angle),
+                                ezpz::datatypes::AngleKind::Other(desired_angle),
                             );
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
@@ -2888,11 +2888,11 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
@@ -2996,16 +2996,16 @@ impl Node<BinaryExpression> {
                                     ));
                                 }
                             };
-                            let solver_arc = kcl_ezpz::datatypes::inputs::DatumCircularArc {
-                                center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
+                                center: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     center.vars.x.to_constraint_id(range)?,
                                     center.vars.y.to_constraint_id(range)?,
                                 ),
-                                start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                start: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     start.vars.x.to_constraint_id(range)?,
                                     start.vars.y.to_constraint_id(range)?,
                                 ),
-                                end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                end: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     end_x_var.to_constraint_id(range)?,
                                     end_y_var.to_constraint_id(range)?,
                                 ),
@@ -3102,19 +3102,18 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
                             // Horizontal distance: p1.x - p0.x = n
                             // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
                             // So we swap the points to get p1.x - p0.x = n
-                            let solver_constraint =
-                                kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
+                            let solver_constraint = ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
@@ -3170,18 +3169,18 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
                             // Vertical distance: p1.y - p0.y = n
                             // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
                             // So we swap the points to get p1.y - p0.y = n
-                            let solver_constraint = kcl_ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
+                            let solver_constraint = ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
