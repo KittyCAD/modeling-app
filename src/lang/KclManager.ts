@@ -272,8 +272,12 @@ export class ZDSProject {
         projectPath: computed(() => this.projectIORefSignal.value.path),
       })
 
+    // TODO: Remove this block after the app can handle no executing editor
     if (providedEditor) {
       providedEditor.path = path
+      providedEditor.systemDeps.projectPath = computed(
+        () => this.projectIORefSignal.value.path
+      )
     }
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
