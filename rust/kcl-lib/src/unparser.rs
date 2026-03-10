@@ -3434,4 +3434,27 @@ return union([right, left])
         let expected = code;
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn fn_args_prefixed_with_spaces() {
+        let code = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
+  holeType =   hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)";
+        let expected = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        assert_eq!(recasted, expected);
+    }
 }
