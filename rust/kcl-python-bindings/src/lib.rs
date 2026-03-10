@@ -76,10 +76,10 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
         }
     } else {
         // Otherwise be sure we have a kcl file.
-        if let Some(ext) = path.extension() {
-            if ext != "kcl" {
-                return Err(anyhow::anyhow!("File must have a .kcl extension"));
-            }
+        if let Some(ext) = path.extension()
+            && ext != "kcl"
+        {
+            return Err(anyhow::anyhow!("File must have a .kcl extension"));
         }
     }
 
