@@ -6678,4 +6678,3 @@ sketch2 = sketch(on = XY) {
         mock_ctx.close().await;
     }
 }
-
