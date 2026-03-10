@@ -3,6 +3,9 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
+  createArrayExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createLiteral,
   createLocalName,
   createPipeSubstitution,
@@ -47,7 +50,12 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
+import {
+  baseUnitToNumericSuffix,
+  kclSettings,
+  recast,
+  sketchFromKclValue,
+} from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -64,8 +72,11 @@ import type {
   Selections,
   SelectionV2,
   EdgeCutInfo,
+  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isRegionSelection } from '@src/lib/selections'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1201,20 +1212,130 @@ export function resolveSelectionV2(
   return { codeRef, artifact }
 }
 
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
+  wasmInstance: ModuleType
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+
+  const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
+    program,
+    pathToNode,
+    wasmInstance,
+    ['CallExpressionKw', 'SketchBlock']
+  )
+  if (
+    err(call) ||
+    !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
+  ) {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
+}
+
+function getRegionExprFromSelection(
+  regionSelection: RegionSelection,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | Error {
+  const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+  if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+    return new Error("Couldn't retrieve sketch block artifact")
+  }
+  const sketchVarName = getVariableNameFromNodePath(
+    sketchArtifact.codeRef.pathToNode,
+    ast,
+    wasmInstance
+  )
+  if (!sketchVarName) {
+    return new Error("Couldn't retrieve sketch block variable")
+  }
+
+  const { x, y } = regionSelection.point
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return new Error('Region point coordinates are invalid')
+  }
+
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
+
+  const regionArgs = [
+    createLabeledArg(
+      'point',
+      createArrayExpression([
+        createLiteral(x, wasmInstance, unitSuffix),
+        createLiteral(y, wasmInstance, unitSuffix),
+      ])
+    ),
+    createLabeledArg('sketch', createLocalName(sketchVarName)),
+  ]
+
+  return createCallExpressionStdLibKw('region', null, regionArgs)
+}
+
+type GetVariableExprsOptions = {
+  lastChildLookup?: boolean
+  artifactTypeFilter?: Array<Artifact['type']>
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
 export function getVariableExprsFromSelection(
   selection: Selections,
+  artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
-  lastChildLookup = false,
-  artifactGraph?: ArtifactGraph,
-  artifactTypeFilter?: Array<Artifact['type']>
+  options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
-  const exprs: Expr[] = []
+  let exprs: Expr[] = []
+  let hasRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelectionsV2) {
     const resolved = resolveSelectionV2(s, artifactGraph)
@@ -1315,8 +1436,31 @@ export function getVariableExprsFromSelection(
     console.warn('No match for selection, likely a bug (or bad selection)', s)
   }
 
+  for (const selectionItem of selection.otherSelections) {
+    if (!isRegionSelection(selectionItem)) continue
+
+    hasRegionSelections = true
+    const regionExpr = getRegionExprFromSelection(
+      selectionItem,
+      ast,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionExpr)) {
+      return regionExpr
+    }
+    exprs.push(regionExpr)
+  }
+
   if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
+  }
+
+  if (hasRegionSelections) {
+    // Region selections map to explicit region(...) expressions.
+    // Avoid mixing them with pipe substitutions from selection plumbing.
+    pathIfPipe = undefined
+    exprs = exprs.filter((expr) => expr.type !== 'PipeSubstitution')
   }
 
   return { exprs, pathIfPipe }

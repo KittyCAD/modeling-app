@@ -1,7 +1,7 @@
-import type { EntityType } from '@kittycad/lib'
+import type { EntityType, Point2d } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { CodeRef } from '@src/lang/std/artifactGraph'
+import type { ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -32,10 +32,18 @@ export type EnginePrimitiveSelection = {
   primitiveType: EntityType
 }
 
+export interface RegionSelection {
+  type: 'region'
+  id: string
+  point: Point2d
+  sketchId: ArtifactId
+}
+
 export type NonCodeSelection =
   | Axis
   | DefaultPlaneSelection
   | EnginePrimitiveSelection
+  | RegionSelection
 
 export type EntityReference =
   | {
@@ -106,6 +114,10 @@ export type SetSelections =
   | {
       selectionType: 'enginePrimitiveSelection'
       selection: EnginePrimitiveSelection
+    }
+  | {
+      selectionType: 'regionSelection'
+      selection: RegionSelection
     }
   | {
       selectionType: 'completeSelection'

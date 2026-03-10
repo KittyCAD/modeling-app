@@ -184,6 +184,7 @@ import {
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
   isEnginePrimitiveSelection,
+  isRegionSelection,
   selectionBodyFace,
   tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
@@ -1580,8 +1581,8 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
-              ? selectionRanges.graphSelections
+            graphSelectionsV2: kclManager.isShiftDown
+              ? selectionRanges.graphSelectionsV2
               : [],
             otherSelections,
           }
@@ -1600,6 +1601,52 @@ export const modelingMachine = setup({
           // If there are engine commands that need sent off, send them
           // TODO: This should be handled outside of an action as its own
           // actor, so that the system state is more controlled.
+          engineEvents?.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
+          })
+
+          return {
+            selectionRanges: selections,
+          }
+        }
+
+        if (setSelections.selectionType === 'regionSelection') {
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            (selection) =>
+              isRegionSelection(selection) &&
+              selection.id === setSelections.selection.id
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) =>
+                    !(
+                      isRegionSelection(selection) &&
+                      selection.id === setSelections.selection.id
+                    )
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          const selections: Selections = {
+            graphSelectionsV2: kclManager.isShiftDown
+              ? selectionRanges.graphSelectionsV2
+              : [],
+            otherSelections,
+          }
+          const { engineEvents } = handleSelectionBatch({
+            selections,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              wasmInstance,
+            },
+          })
+
           engineEvents?.forEach((event) => {
             engineCommandManager.sendSceneCommand(event).catch(reportRejection)
           })
@@ -3891,11 +3938,11 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addSweep({
           ...input.data,
           ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -3928,9 +3975,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addLoft({
           ast,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
@@ -3965,10 +4013,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = input.kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addRevolve({
           ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })

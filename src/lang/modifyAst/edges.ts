@@ -905,6 +905,7 @@ function buildEdgeExpr(
         ],
         otherSelections: [],
       },
+      artifactGraph,
       ast,
       wasmInstance,
       undefined,
@@ -991,6 +992,7 @@ function buildEdgeExpr(
       ],
       otherSelections: [],
     },
+    artifactGraph,
     ast,
     wasmInstance,
     undefined,
@@ -1160,11 +1162,13 @@ function groupSelectionsByBodyAndAddTags(
 
     const vars = getVariableExprsFromSelection(
       solids,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       nodeToEdit,
-      true,
-      artifactGraph
+      {
+        lastChildLookup: true,
+      }
     )
     if (err(vars)) return vars
 
@@ -1270,14 +1274,15 @@ export function buildSolidsAndTagsExprs(
     otherSelections: [],
   }
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     ast,
     wasmInstance,
     nodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars

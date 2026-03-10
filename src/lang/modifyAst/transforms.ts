@@ -51,14 +51,15 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -137,14 +138,15 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -227,14 +229,15 @@ export function addScale({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -313,14 +316,16 @@ export function addClone({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  const lastChildLookup = true
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -372,14 +377,15 @@ export function addAppearance({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -459,11 +465,13 @@ export function addHide({
   const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(
     objects,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     undefined,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup,
+    }
   )
 
   if (err(vars)) {

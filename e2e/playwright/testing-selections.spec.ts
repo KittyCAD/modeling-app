@@ -418,16 +418,12 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
     await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
       await clickOnFace()
-      await expect(toolbar.selectionStatus).toContainText(
-        '1 face'
-      )
+      await expect(toolbar.selectionStatus).toContainText('1 face')
     })
 
     await test.step(`Clicking in the corner resets the selection`, async () => {
       await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText(
-        '1 face'
-      )
+      await expect(toolbar.selectionStatus).not.toContainText('1 face')
     })
   })
 
@@ -455,16 +451,12 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
     await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
       await clickOnEdge()
-      await expect(toolbar.selectionStatus).toContainText(
-        '1 edge'
-      )
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step(`Clicking in the corner resets the selection`, async () => {
       await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText(
-        '1 edge'
-      )
+      await expect(toolbar.selectionStatus).not.toContainText('1 edge')
     })
   })
 })

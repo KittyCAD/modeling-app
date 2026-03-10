@@ -72,6 +72,7 @@ import type {
   ExtrudeFacePlane,
   NonCodeSelection,
   OffsetPlane,
+  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
@@ -84,8 +85,6 @@ import type {
 import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
@@ -97,6 +96,16 @@ export function isEnginePrimitiveSelection(
     s !== null &&
     'type' in s &&
     (s as { type: string }).type === 'enginePrimitive'
+  )
+}
+
+export function isRegionSelection(
+  selection: Selections['otherSelections'][number]
+): selection is RegionSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'region'
   )
 }
 
@@ -280,7 +289,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     // This is a temporary approach - ideally we'd query the engine for the edge ID
     // For now, we'll try to find it from the artifact graph
     const faceArtifacts = entityRef.faces
-      .map((faceId) => artifactGraph.get(faceId))
+      .map((faceId: string) => artifactGraph.get(faceId))
       .filter(Boolean)
     if (faceArtifacts.length > 0) {
       // Try to find a sweepEdge that connects these faces
@@ -809,17 +818,13 @@ export function getSelectionCountByType(
   selection.otherSelections.forEach((sel) => {
     if (typeof sel === 'string') {
       incrementOrInitializeSelectionType('other')
+    } else if (isRegionSelection(sel)) {
+      incrementOrInitializeSelectionType('region')
     } else if ('name' in sel) {
       incrementOrInitializeSelectionType('plane')
-    } else if (
-      selection.type === 'enginePrimitive' &&
-      selection.primitiveType === 'face'
-    ) {
+    } else if (sel.type === 'enginePrimitive' && sel.primitiveType === 'face') {
       incrementOrInitializeSelectionType('enginePrimitiveFace')
-    } else if (
-      selection.type === 'enginePrimitive' &&
-      selection.primitiveType === 'edge'
-    ) {
+    } else if (sel.type === 'enginePrimitive' && sel.primitiveType === 'edge') {
       incrementOrInitializeSelectionType('enginePrimitiveEdge')
     } else {
       incrementOrInitializeSelectionType('other')
@@ -996,12 +1001,13 @@ function findOverlappingArtifactsFromIndex(
   selection: Selection,
   index: ArtifactIndex
 ): ArtifactEntry[] {
-  if (!selection.codeRef?.range) {
+  const range = selection.codeRef?.range
+  if (!range) {
     console.warn('Selection missing code reference range')
     return []
   }
 
-  const selectionRange = selection.codeRef.range
+  const selectionRange = range
   const results: ArtifactEntry[] = []
 
   // Binary search to find the last range where range[0] < selectionRange[0]
@@ -1074,9 +1080,13 @@ function createSelectionToEngine(
   selection: Selection,
   candidateId?: ArtifactId
 ): SelectionToEngine {
+  const codeRef = selection.codeRef
+  if (!codeRef?.range) {
+    return { range: defaultSourceRange() }
+  }
   return {
     ...(candidateId && { id: candidateId }),
-    range: selection.codeRef.range,
+    range: codeRef.range,
   }
 }
 
@@ -1101,9 +1111,9 @@ export function codeToIdSelections(
         return []
       }
 
-      // Direct artifact case
-      if (selection.artifact?.id) {
-        return [createSelectionToEngine(selection, selection.artifact.id)]
+      const resolved = resolveSelectionV2(selection, artifactGraph)
+      if (resolved?.artifact?.id) {
+        return [createSelectionToEngine(selection, resolved.artifact.id)]
       }
 
       // Find matching artifacts by code range overlap
@@ -1336,8 +1346,12 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'enginePrimitiveFace'],
-  profile: ['solid2d'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
+  profile: ['solid2d', 'region'],
+  edge: [
+    'segment',
+    'enginePrimitiveEdge',
+    ...(['sweepEdge', 'edgeCutEdge'] as unknown[] as CommandSelectionType[]),
+  ],
   point: [],
   plane: ['defaultPlane'],
 }

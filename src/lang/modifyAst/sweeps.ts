@@ -3,10 +3,10 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
-  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createName,
   createTagDeclarator,
 } from '@src/lang/create'
 import {
@@ -60,6 +60,7 @@ import {
 } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+import { isRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -182,6 +183,7 @@ export function addExtrude({
   if (nonFaceSelections.graphSelectionsV2.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       mNodeToEdit
@@ -371,6 +373,7 @@ export function addSweep({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -447,6 +450,7 @@ export function addSweep({
 
 export function addLoft({
   ast,
+  artifactGraph,
   sketches,
   wasmInstance,
   vDegree,
@@ -458,6 +462,7 @@ export function addLoft({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   wasmInstance: ModuleType
   vDegree?: KclCommandValue
@@ -481,6 +486,7 @@ export function addLoft({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -641,6 +647,7 @@ export function addRevolve({
 
   const vars = getVariableExprsFromSelection(
     normalizedSketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
