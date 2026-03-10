@@ -433,3 +433,54 @@ export fn holesLinear(
 
   return subtract(solid, tools = drilled)
 }
+
+/// Build the 3D shape of the hole which needs to be cut out.
+fn holeAtGeometry(@plane, holeBottom, holeBody, holeType) {
+  profil = sketchHoleProfile(
+    startSketchOn(plane),
+    holeBottom = hole::flat(),
+    holeBody = hole::blind(depth = 2, diameter = 1),
+    holeType = hole::counterbore(diameter = 1.4, depth = 1),
+    shift = 0,
+  )
+  return revolveHole(profil.profile, edge = profil.axis)
+}
+
+/// Put a hole through the given targets, using a custom plane.
+/// The plane's origin determines the hole's center.
+/// The plane's X and Y axis determine which way the hole is pointing
+/// (it points down the normal i.e. Z axis, following the right-hand rule).
+/// This can be used to insert a hole where there is no face, or into a non-planar face.
+/// ```
+/// // Model a cube.
+/// cube1 = startSketchOn(XY)
+///   |> rectangle(width = 3, height = 3, center = [0, 0])
+///   |> extrude(length = 3, symmetric = true)
+/// 
+/// // Define a custom plane, into which a hole will be cut.
+/// customPlane = {
+///   origin = { x = 0, y = 0, z = -2 },
+///   xAxis = { x = 1, y = 0, z = 0 },
+///   yAxis = { x = 0, y = 0, z = -1 },
+/// }
+/// 
+/// // Cut the hole through the cube, into the plane.
+/// hole::holeAt(
+///   [cube1],
+///   plane = customPlane,
+///   holeBottom = hole::flat(),
+///   holeBody = hole::blind(depth = 2, diameter = 1),
+///   holeType = hole::counterbore(diameter = 1.4, depth = 1),
+/// )
+/// ```
+export fn holeAt(@targets, plane, holeBottom, holeBody, holeType) {
+  return subtract(
+    targets,
+    tools = holeAtGeometry(
+      plane,
+      holeBottom,
+      holeBody,
+      holeType,
+    ),
+  )
+}
