@@ -2,12 +2,15 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import {
+  MlEphantConversation,
+  type QueuedMessage,
+} from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -41,6 +44,8 @@ export const MlEphantConversationPane = (props: {
   const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   )
+  const [queue, setQueue] = useState<QueuedMessage[]>([])
+  const isSubmittingFromQueue = useRef(false)
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -128,6 +133,45 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
+  const onProcessOrQueue = (
+    request: string,
+    mode: MlCopilotMode,
+    attachments: File[]
+  ) => {
+    if (isProcessing) {
+      setQueue((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          text: request,
+          mode,
+          attachments,
+        },
+      ])
+      return
+    }
+    onProcess(request, mode, attachments).catch(reportRejection)
+  }
+
+  const onRemoveFromQueue = useCallback((id: string) => {
+    setQueue((prev) => prev.filter((msg) => msg.id !== id))
+  }, [])
+
+  // Auto-submit the next queued message when current processing completes
+  useEffect(() => {
+    if (!isProcessing && queue.length > 0 && !isSubmittingFromQueue.current) {
+      isSubmittingFromQueue.current = true
+      const next = queue[0]
+      setQueue((prev) => prev.slice(1))
+      onProcess(next.text, next.mode, next.attachments)
+        .catch(reportRejection)
+        .finally(() => {
+          isSubmittingFromQueue.current = false
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isProcessing, queue])
+
   if (needsReconnect && timeoutReconnect.current === undefined) {
     timeoutReconnect.current = setTimeout(() => {
       onReconnect()
@@ -136,6 +180,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
+    setQueue([])
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
     })
@@ -292,14 +337,17 @@ export const MlEphantConversationPane = (props: {
         mode: MlCopilotMode,
         attachments: File[]
       ) => {
-        onProcess(request, mode, attachments).catch(reportRejection)
+        onProcessOrQueue(request, mode, attachments)
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       onCancel={onCancel}
-      disabled={isProcessing || needsReconnect}
+      disabled={needsReconnect}
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
+      isProcessing={isProcessing}
+      queue={queue}
+      onRemoveFromQueue={onRemoveFromQueue}
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}

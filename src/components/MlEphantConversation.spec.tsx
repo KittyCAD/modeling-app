@@ -69,6 +69,9 @@ describe('MlEphantConversation', () => {
           contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
+          isProcessing={!hasPromptCompleted}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
         />
       )
     }
@@ -180,6 +183,9 @@ describe('MlEphantConversation', () => {
         disabled={false}
         hasPromptCompleted={true}
         contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
       />
     )
 
@@ -216,6 +222,9 @@ describe('MlEphantConversation', () => {
           disabled={disabled}
           hasPromptCompleted={true}
           contexts={[]}
+          isProcessing={false}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
         />
       )
     }
