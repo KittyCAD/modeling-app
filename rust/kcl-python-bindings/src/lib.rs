@@ -14,7 +14,7 @@ use kittycad_modeling_cmds::{
     format::{InputFormat3d, OutputFormat3d},
     ok_response::OkModelingCmdResponse,
     shared::FileExportFormat,
-    units::UnitLength,
+    units::{UnitAngle, UnitLength},
     websocket::{OkWebSocketResponseData, RawFile},
 };
 use pyo3::{
@@ -97,6 +97,28 @@ struct KclProgram {
     program: kcl_lib::Program,
     path: Option<PathBuf>,
     filename: String,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Debug, Clone, Copy)]
+pub struct DefaultUnits {
+    length: UnitLength,
+    angle: UnitAngle,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl DefaultUnits {
+    #[getter]
+    fn length(&self) -> PyResult<UnitLength> {
+        Ok(self.length)
+    }
+
+    #[getter]
+    fn angle(&self) -> PyResult<UnitAngle> {
+        Ok(self.angle)
+    }
 }
 
 async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
@@ -264,6 +286,31 @@ async fn parse(path: String) -> PyResult<bool> {
         let _parsed = load_and_parse(KclInput::Path(path)).await?;
 
         Ok(true)
+    })
+    .await
+}
+
+/// Get the default length and angle units from a kcl file.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn default_units(path: String) -> PyResult<DefaultUnits> {
+    spawn_py(async move {
+        let KclProgram {
+            code,
+            program,
+            filename,
+            ..
+        } = load_and_parse(KclInput::Path(path)).await?;
+
+        let settings = program
+            .meta_settings()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?
+            .unwrap_or_default();
+
+        Ok(DefaultUnits {
+            length: settings.default_length_units,
+            angle: settings.default_angle_units,
+        })
     })
     .await
 }
@@ -867,6 +914,7 @@ fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> P
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
+    m.add_class::<DefaultUnits>()?;
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
     m.add_class::<FileExportFormat>()?;
@@ -902,6 +950,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
+    m.add_function(wrap_pyfunction!(default_units, m)?)?;
     m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
