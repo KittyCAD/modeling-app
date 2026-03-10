@@ -1,5 +1,5 @@
 use kittycad_modeling_cmds::{self as kcmc, ok_response::output as mout, units::*};
-use pyo3::{exceptions::PyException, pyclass, pymethods, PyResult};
+use pyo3::{PyResult, exceptions::PyException, pyclass, pymethods};
 
 /// Set of physical properties you'd like to run on the model.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]

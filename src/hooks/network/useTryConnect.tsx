@@ -313,7 +313,7 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<
@@ -325,9 +325,9 @@ export const useTryConnect = () => {
     tryConnecting: (args: TryConnectingArgs) =>
       tryConnecting({
         ...args,
-        engineCommandManager,
+        engineCommandManager: kclManager.engineCommandManager,
         kclManager,
-        rustContext,
+        rustContext: kclManager.rustContext,
       }),
     isConnecting,
     numberOfConnectionAttempts,

@@ -16,7 +16,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const currentLevel: WarningLevel =
     kclManager.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
@@ -59,10 +59,11 @@ export function ExperimentalFeaturesMenu() {
                               `Failed to set file experimental features level: ${newAst.message}`
                             )
                           } else {
-                            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-                              kclManager,
-                              rustContext,
-                            })
+                            updateModelingState(
+                              newAst,
+                              EXECUTION_TYPE_REAL,
+                              kclManager
+                            )
                               .then((result) => {
                                 if (err(result)) {
                                   toast.error(

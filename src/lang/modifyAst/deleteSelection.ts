@@ -120,10 +120,7 @@ export async function deleteSelectionPromise({
   await updateModelingState(
     astToApply,
     EXECUTION_TYPE_REAL,
-    {
-      kclManager: systemDeps.kclManager,
-      rustContext: systemDeps.rustContext,
-    },
+    systemDeps.kclManager,
     {
       isDeleting: true,
     }

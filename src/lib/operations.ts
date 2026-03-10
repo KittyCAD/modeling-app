@@ -18,6 +18,7 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
+  getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { StdLibCallOp } from '@src/lang/queryAst'
@@ -27,13 +28,9 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
-  type CallExpressionKw,
-  type PipeExpression,
   type Program,
-  type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
-  type PathToNode,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -1776,6 +1773,78 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditSplit: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Boolean Split',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  if (!operation.unlabeledArg) {
+    return { reason: "Couldn't retrieve operation arguments" }
+  }
+
+  const targets = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    artifactGraph
+  )
+  if (err(targets)) {
+    return { reason: "Couldn't retrieve targets" }
+  }
+
+  let tools: Selections | undefined
+  const toolsArg = operation.labeledArgs?.tools
+  if (toolsArg) {
+    const toolsResult = retrieveSelectionsFromOpArg(toolsArg, artifactGraph)
+    if (err(toolsResult)) {
+      return { reason: "Couldn't retrieve tools" }
+    }
+    tools = toolsResult
+  }
+
+  let merge: boolean | undefined
+  const mergeArg = operation.labeledArgs?.merge
+  if (mergeArg) {
+    const mergeValue = code.slice(
+      ...mergeArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (mergeValue !== 'true' && mergeValue !== 'false') {
+      return { reason: "Couldn't retrieve merge argument" }
+    }
+    merge = mergeValue === 'true'
+  }
+
+  let keepTools: boolean | undefined
+  const keepToolsArg = operation.labeledArgs?.keepTools
+  if (keepToolsArg) {
+    const keepToolsValue = code.slice(
+      ...keepToolsArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (keepToolsValue !== 'true' && keepToolsValue !== 'false') {
+      return { reason: "Couldn't retrieve keepTools argument" }
+    }
+    keepTools = keepToolsValue === 'true'
+  }
+
+  const argDefaultValues: ModelingCommandSchema['Boolean Split'] = {
+    targets,
+    tools,
+    merge,
+    keepTools,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -1785,6 +1854,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Appearance',
     icon: 'text',
     prepareToEdit: prepareToEditAppearance,
+  },
+  blend: {
+    label: 'Blend',
+    icon: 'blend',
   },
   chamfer: {
     label: 'Chamfer',
@@ -2017,7 +2090,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'split',
     supportsAppearance: true,
     supportsTransform: true,
-    // prepareToEdit: prepareToEditSplit, // TODO: add once merge can be edited
+    prepareToEdit: prepareToEditSplit,
   },
   startSketchOn: {
     label: 'Sketch',
@@ -2232,8 +2305,17 @@ export function getOperationVariableName(
     return undefined
   }
 
+  // Handle inner sketch block variables
+  if (
+    op.type === 'StdLibCall' &&
+    op.nodePath.steps.some((s) => s.type === 'SketchBlock')
+  ) {
+    return undefined
+  }
+
   if (
     op.type !== 'StdLibCall' &&
+    op.type !== 'SketchSolve' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
     !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
@@ -2269,63 +2351,6 @@ export function getOperationVariableName(
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
   return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
-}
-
-export function getVariableNameFromNodePath(
-  pathToNode: PathToNode,
-  program: Program,
-  wasmInstance: ModuleType
-): string | undefined {
-  if (pathToNode.length === 0) {
-    return undefined
-  }
-
-  const call = getNodeFromPath<CallExpressionKw>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'CallExpressionKw'
-  )
-  if (err(call) || call.node.type !== 'CallExpressionKw') {
-    return undefined
-  }
-  // Find the var name from the variable declaration.
-  const varDec = getNodeFromPath<VariableDeclaration>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
-  )
-  if (err(varDec)) {
-    return undefined
-  }
-  if (varDec.node.type !== 'VariableDeclaration') {
-    // There's no variable declaration for this call.
-    return undefined
-  }
-  const varName = varDec.node.declaration.id.name
-  // If the operation is a simple assignment, we can use the variable name.
-  if (varDec.node.declaration.init === call.node) {
-    return varName
-  }
-  // If the AST node is in a pipe expression, we can only use the variable
-  // name if it's the last operation in the pipe.
-  const pipe = getNodeFromPath<PipeExpression>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'PipeExpression'
-  )
-  if (err(pipe)) {
-    return undefined
-  }
-  if (
-    pipe.node.type === 'PipeExpression' &&
-    pipe.node.body[pipe.node.body.length - 1] === call.node
-  ) {
-    return varName
-  }
-  return undefined
 }
 
 /**
@@ -2936,22 +2961,19 @@ export function onHide(props: {
 export async function onUnhide(props: {
   hideOperation: HideOperation
   targetArtifact: Artifact
-  systemDeps: {
-    kclManager: KclManager
-    rustContext: RustContext
-  }
+  kclManager: KclManager
 }) {
   if (props.hideOperation.unlabeledArg === null) {
     return new Error('Missing unlabeled arg for hide operation')
   }
-  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  let modifiedAst = structuredClone(props.kclManager.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
 
   if (
     props.hideOperation.unlabeledArg.value.type === 'Array' &&
     'codeRef' in props.targetArtifact
   ) {
-    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
     // Multi-item case: remove that target artifact's name
     const termToDelete = getVariableNameFromNodePath(
       pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
@@ -2965,7 +2987,7 @@ export async function onUnhide(props: {
     }
 
     const deleteResult = deleteTermFromUnlabeledArgumentArray(
-      props.systemDeps.kclManager.ast,
+      props.kclManager.ast,
       pathToNode,
       wasmInstance,
       termToDelete
@@ -2985,7 +3007,7 @@ export async function onUnhide(props: {
   return updateModelingState(
     modifiedAst,
     EXECUTION_TYPE_REAL,
-    props.systemDeps,
+    props.kclManager,
     {
       focusPath: [],
     }
