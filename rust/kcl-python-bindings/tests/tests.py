@@ -363,8 +363,9 @@ async def test_kcl_execute_code_and_measure_bounding_box_cm():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_code_and_measure_bounding_box_no_units():
+async def test_kcl_execute_code_and_measure_bounding_box_mm():
     request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
     response = await kcl.execute_code_and_measure(box_code, request)
     assert response is not None
 
