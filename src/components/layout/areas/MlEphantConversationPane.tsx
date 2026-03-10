@@ -157,6 +157,23 @@ export const MlEphantConversationPane = (props: {
     setQueue((prev) => prev.filter((msg) => msg.id !== id))
   }, [])
 
+  const onSteer = useCallback((id: string) => {
+    // Move the steered message to the front of the queue
+    setQueue((prev) => {
+      const index = prev.findIndex((msg) => msg.id === id)
+      if (index === -1) return prev
+      const steered = prev[index]
+      return [steered, ...prev.filter((_, i) => i !== index)]
+    })
+    // Interrupt the current prompt; when end_of_stream arrives,
+    // isProcessing goes false and the auto-submit effect sends the
+    // front-of-queue message.
+    props.sendBillingUpdate()
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.Interrupt,
+    })
+  }, [props.mlEphantManagerActor, props.sendBillingUpdate])
+
   // Auto-submit the next queued message when current processing completes
   useEffect(() => {
     if (!isProcessing && queue.length > 0 && !isSubmittingFromQueue.current) {
@@ -348,6 +365,7 @@ export const MlEphantConversationPane = (props: {
       isProcessing={isProcessing}
       queue={queue}
       onRemoveFromQueue={onRemoveFromQueue}
+      onSteer={onSteer}
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}

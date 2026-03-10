@@ -45,6 +45,7 @@ export interface MlEphantConversationProps {
   isProcessing: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
+  onSteer: (id: string) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
@@ -585,6 +586,14 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                   <span className="text-3 shrink-0">
                     {ML_COPILOT_MODE_META[msg.mode].pretty}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => props.onSteer(msg.id)}
+                    className="shrink-0 px-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
+                    aria-label={`Send queued message ${index + 1} now`}
+                  >
+                    Steer
+                  </button>
                   <button
                     type="button"
                     onClick={() => props.onRemoveFromQueue(msg.id)}

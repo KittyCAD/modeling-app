@@ -72,6 +72,7 @@ describe('MlEphantConversation', () => {
           isProcessing={!hasPromptCompleted}
           queue={[]}
           onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
         />
       )
     }
@@ -186,6 +187,7 @@ describe('MlEphantConversation', () => {
         isProcessing={false}
         queue={[]}
         onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
       />
     )
 
@@ -225,6 +227,7 @@ describe('MlEphantConversation', () => {
           isProcessing={false}
           queue={[]}
           onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
         />
       )
     }
