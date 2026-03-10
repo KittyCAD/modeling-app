@@ -6,21 +6,20 @@ use std::{
 
 use anyhow::Result;
 use kcl_lib::{
-    lint::{checks, Discovered, FindingFamily},
     ExecutorContext,
+    lint::{Discovered, FindingFamily, checks},
 };
 use kittycad_modeling_cmds::{
-    self as kcmc,
+    self as kcmc, ImageFormat, ImportFile, ModelingCmd,
     format::{InputFormat3d, OutputFormat3d},
     ok_response::OkModelingCmdResponse,
     shared::FileExportFormat,
     units::UnitLength,
     websocket::{OkWebSocketResponseData, RawFile},
-    ImageFormat, ImportFile, ModelingCmd,
 };
 use pyo3::{
-    exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
-    wrap_pyfunction, Bound, PyErr, PyResult, Python,
+    Bound, PyErr, PyResult, Python, exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods,
+    pymodule, types::PyModule, wrap_pyfunction,
 };
 use pyo3_stub_gen::define_stub_info_gatherer;
 use serde::{Deserialize, Serialize};
@@ -77,10 +76,10 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
         }
     } else {
         // Otherwise be sure we have a kcl file.
-        if let Some(ext) = path.extension() {
-            if ext != "kcl" {
-                return Err(anyhow::anyhow!("File must have a .kcl extension"));
-            }
+        if let Some(ext) = path.extension()
+            && ext != "kcl"
+        {
+            return Err(anyhow::anyhow!("File must have a .kcl extension"));
         }
     }
 
