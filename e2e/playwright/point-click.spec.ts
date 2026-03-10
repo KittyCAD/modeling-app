@@ -2792,7 +2792,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Surface: '1 sweep',
+          Surface: '1 path',
         },
         commandName: 'Flip Surface',
       })
@@ -2863,7 +2863,7 @@ extrude001 = extrude(profile001, length = 1)`
         currentArgKey: 'color',
         currentArgValue: '',
         headerArguments: {
-          Objects: '1 sweep',
+          Objects: '1 path',
           Color: '',
         },
         highlightedHeaderArg: 'color',
@@ -2874,7 +2874,7 @@ extrude001 = extrude(profile001, length = 1)`
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
-          Objects: '1 sweep',
+          Objects: '1 path',
           Color: '#ff0000',
         },
         stage: 'review',
@@ -2998,7 +2998,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '',
               Axis: '',
               Center: '',
@@ -3017,7 +3017,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: '',
               Center: '',
@@ -3035,7 +3035,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'center',
             currentArgValue: '[0, 0, 0]',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '',
@@ -3052,7 +3052,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3070,7 +3070,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'arcDegrees',
             currentArgValue: '360deg',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3086,7 +3086,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3103,7 +3103,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'rotateDuplicates',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3119,7 +3119,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3137,7 +3137,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3154,7 +3154,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3513,7 +3513,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '',
               Distance: '',
               Axis: '',
@@ -3532,7 +3532,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'distance',
             currentArgValue: KCL_DEFAULT_LENGTH,
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '',
               Axis: '',
@@ -3551,7 +3551,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: '',
@@ -3570,7 +3570,7 @@ solid001 = extrude(sketch001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3585,7 +3585,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3599,7 +3599,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 sweep',
+              Solids: '1 path',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3854,7 +3854,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'tolerance',
             currentArgValue: '0.1mm',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '',
             },
             highlightedHeaderArg: 'tolerance',
@@ -3869,7 +3869,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
             },
           })
@@ -3885,7 +3885,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'precision',
             currentArgValue: '3',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '',
             },
@@ -3899,7 +3899,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
             },
@@ -3915,7 +3915,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePosition',
             currentArgValue: '[0, 0]',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '',
@@ -3931,7 +3931,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3947,7 +3947,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3962,7 +3962,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3979,7 +3979,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontPointSize',
             currentArgValue: '36',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3996,7 +3996,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4014,7 +4014,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontScale',
             currentArgValue: '1.0',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4032,7 +4032,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4395,7 +4395,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'name',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: '',
             },
             highlightedHeaderArg: 'name',
@@ -4409,7 +4409,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
             },
           })
@@ -4426,7 +4426,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePosition',
             currentArgValue: '[0, 0]',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '',
             },
@@ -4441,7 +4441,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
             },
@@ -4456,7 +4456,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: '',
@@ -4470,7 +4470,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4486,7 +4486,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontPointSize',
             currentArgValue: '36',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4502,7 +4502,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4519,7 +4519,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontScale',
             currentArgValue: '1.0',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4536,7 +4536,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4816,7 +4816,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '[0, 0]',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '',
           HoleBody: '',
           HoleType: '',
@@ -4831,7 +4831,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: '',
           HoleType: '',
@@ -4846,7 +4846,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '2',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '',
@@ -4863,7 +4863,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '1',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4880,7 +4880,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4897,7 +4897,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4912,7 +4912,7 @@ extrude001 = extrude(profile001, length = 10)`
         stage: 'review',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4935,10 +4935,10 @@ profile001 = startProfile(sketch001, at = [-5, -5])
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+extrude001 = extrude(profile001, length = 10)
 hole001 = hole::hole(
   extrude001,
-  face = capEnd001,
+  face = END,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),
