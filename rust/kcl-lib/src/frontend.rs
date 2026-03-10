@@ -225,27 +225,25 @@ impl SketchApi for FrontendState {
         // Ensure that we allow experimental features since the sketch block
         // won't work without it.
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
-        // Add a sketch block.
-        new_ast.body.push(ast::BodyItem::ExpressionStatement(ast::Node {
-            inner: ast::ExpressionStatement {
-                expression: ast::Expr::SketchBlock(Box::new(ast::Node {
-                    inner: sketch_ast,
-                    start: Default::default(),
-                    end: Default::default(),
-                    module_id: Default::default(),
-                    outer_attrs: Default::default(),
-                    pre_comments: Default::default(),
-                    comment_start: Default::default(),
-                })),
-                digest: None,
+        // Add a sketch block, then convert it to a variable declaration.
+        let sketch_expr_stmt = ast::Node::no_src(ast::ExpressionStatement {
+            expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+            digest: None,
+        });
+        let sketch_expr_range = SourceRange::from(&sketch_expr_stmt.expression);
+        new_ast.body.push(ast::BodyItem::ExpressionStatement(sketch_expr_stmt));
+        let (_, mutate_ret) = mutate_ast_node_by_source_range(
+            &mut new_ast,
+            sketch_expr_range,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "sketch".to_owned(),
             },
-            start: Default::default(),
-            end: Default::default(),
-            module_id: Default::default(),
-            outer_attrs: Default::default(),
-            pre_comments: Default::default(),
-            comment_start: Default::default(),
-        }));
+        )?;
+        let AstMutateCommandReturn::Name(_) = mutate_ret else {
+            return Err(Error {
+                msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
+            });
+        };
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
@@ -3946,7 +3944,7 @@ bad = missing_name
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   point(at = [1in, 2in])
 }
 "
@@ -3983,7 +3981,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   point(at = [3in, 4in])
 }
 "
@@ -4062,7 +4060,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -4111,7 +4109,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   line(start = [1mm, 2mm], end = [13mm, 14mm])
 }
 "
@@ -4200,7 +4198,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
 }
 "
@@ -4262,7 +4260,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
 }
 "
@@ -4404,7 +4402,7 @@ s = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch1 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -6245,7 +6243,7 @@ cube = startSketchOn(XY)
   |> extrude(length = len)
 
 plane = planeOf(cube, face = side)
-sketch(on = plane) {
+sketch1 = sketch(on = plane) {
 }
 "
         );
@@ -6272,6 +6270,46 @@ sketch(on = plane) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_uses_unique_variable_name() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch1 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let sketch_args = SketchCtor {
+            on: Plane::Default(PlaneName::Xy),
+        };
+        let (src_delta, _, _) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch1 = sketch(on = XY) {
+}
+sketch2 = sketch(on = XY) {
+}
+"
+        );
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6640,3 +6678,4 @@ sketch2 = sketch(on = XY) {
         mock_ctx.close().await;
     }
 }
+
