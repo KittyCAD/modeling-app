@@ -98,8 +98,8 @@ startSketchOn(XY)
     )
 
     units = await kcl.default_units(str(kcl_file))
-    assert units.length_unit == kcl.UnitLength.Inches
-    assert units.angle_unit == kcl.UnitAngle.Radians
+    assert units.length == kcl.UnitLength.Inches
+    assert units.angle == kcl.UnitAngle.Radians
 
 
 @pytest.mark.asyncio
@@ -108,8 +108,8 @@ async def test_kcl_default_units_fallback_default(tmp_path):
     kcl_file.write_text("startSketchOn(XY)")
 
     units = await kcl.default_units(str(kcl_file))
-    assert units.length_unit == kcl.UnitLength.Millimeters
-    assert units.angle_unit == kcl.UnitAngle.Degrees
+    assert units.length == kcl.UnitLength.Millimeters
+    assert units.angle == kcl.UnitAngle.Degrees
 
 
 @pytest.mark.asyncio

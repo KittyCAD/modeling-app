@@ -28,6 +28,12 @@ class BoundingBoxResponse:
 class CameraLookAt:
     def __new__(cls, vantage:Point3d, center:Point3d, up:Point3d) -> CameraLookAt: ...
 
+class DefaultUnits:
+    @property
+    def length(self) -> UnitLength: ...
+    @property
+    def angle(self) -> UnitAngle: ...
+
 class Discovered:
     r"""
     Specific discovered lint rule Violation of a particular Finding.
@@ -745,6 +751,11 @@ class UnitVolume(Enum):
     Milliliters = ...
     r"""
     Milliliters (ml) <https://en.wikipedia.org/wiki/Litre>
+    """
+
+async def default_units(path:builtins.str) -> DefaultUnits:
+    r"""
+    Get the default length and angle units from a kcl file.
     """
 
 async def execute(path:builtins.str) -> None:
