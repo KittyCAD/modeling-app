@@ -132,7 +132,7 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame } from '@src/lib/codeEditor'
-import { getResolvedTheme } from '@src/lib/theme'
+import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -279,15 +279,15 @@ export class ZDSProject {
         () => this.projectIORefSignal.value.path
       )
     }
-    // Initialize the editor theme
+
+    // Initialize the theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
     // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor.setEditorTheme(
-      getResolvedTheme(
-        getSettingsFromActorContext(newEditor.systemDeps.settings).app.theme
-          .current
+    newEditor
+      .updateTheme(
+        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
       )
-    )
+      .catch(reportRejection)
 
     this.set(signal(path), newEditor)
     return newEditor
@@ -1613,6 +1613,16 @@ export class KclManager extends EventTarget {
           Transaction.addToHistory.of(false),
         ],
       })
+    }
+  }
+  async updateTheme(newTheme: Themes) {
+    const resolvedTheme = getResolvedTheme(newTheme)
+    const opposingTheme = getOppositeTheme(newTheme)
+    this.sceneInfra.theme = opposingTheme
+    this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.setEditorTheme(resolvedTheme)
+    if (this.engineCommandManager.connection) {
+      return this.engineCommandManager.setTheme(newTheme).catch(reportRejection)
     }
   }
   setEditorTheme(theme: 'light' | 'dark') {
