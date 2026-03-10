@@ -308,6 +308,10 @@ impl ExprContext {
         matches!(self, ExprContext::Pipe | ExprContext::PipeCallArg)
     }
 
+    fn needs_leading_indent(self) -> bool {
+        !matches!(self, ExprContext::CallArg | ExprContext::PipeCallArg)
+    }
+
     fn call_arg_context(self) -> ExprContext {
         if self.in_pipe() {
             ExprContext::PipeCallArg
@@ -516,7 +520,9 @@ fn recast_call(
         } else {
             options.get_indentation(indentation_level)
         };
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
@@ -526,7 +532,9 @@ fn recast_call(
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         write!(buf, "{args}").no_fail();
@@ -3452,7 +3460,8 @@ return union([right, left])
   holeBody = hole::blind(depth = 2, diameter = 1),
   holeType = hole::counterbore(diameter = 1.4, depth = 1),
   cutAt = [1, 1],
-)";
+)
+";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(recasted, expected);
