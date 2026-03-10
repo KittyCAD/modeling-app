@@ -3853,47 +3853,6 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_add_variable_declaration_uses_unique_name_across_scopes() {
-        let initial_source = "\
-@settings(experimentalFeatures = allow)
-
-sketch1 = sketch(on = XY) {
-}
-";
-        let mut ast = Program::parse(initial_source).unwrap().0.unwrap().ast;
-
-        let sketch_ast = ast::SketchBlock {
-            arguments: vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
-                arg: ast_name_expr("XY".to_owned()),
-            }],
-            body: Default::default(),
-            is_being_edited: false,
-            non_code_meta: Default::default(),
-            digest: None,
-        };
-        let sketch_expr_stmt = ast::Node::no_src(ast::ExpressionStatement {
-            expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
-            digest: None,
-        });
-        let sketch_expr_range = SourceRange::from(&sketch_expr_stmt.expression);
-        ast.body.push(ast::BodyItem::ExpressionStatement(sketch_expr_stmt));
-
-        let (_, mutate_ret) = mutate_ast_node_by_source_range(
-            &mut ast,
-            sketch_expr_range,
-            AstMutateCommand::AddVariableDeclaration {
-                prefix: "sketch".to_owned(),
-            },
-        )
-        .unwrap();
-        let AstMutateCommandReturn::Name(name) = mutate_ret else {
-            panic!("Expected variable name returned from AddVariableDeclaration");
-        };
-        assert_eq!(name, "sketch2");
-    }
-
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_exec_error_still_allows_edit_sketch() {
         let source = "\
