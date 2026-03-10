@@ -1494,8 +1494,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
       canEditConstraint: (constraintId: number) => {
         const objects =
-          self.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta.new_graph
-            .objects || []
+          self.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta
+            .new_graph.objects || []
         const constraint = objects[constraintId]
         return !!constraint && isEditableConstraint(constraint)
       },

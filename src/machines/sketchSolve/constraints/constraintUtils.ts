@@ -1,4 +1,7 @@
-import type { ApiConstraint, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { CONSTRAINT_ICON_PATHS } from '@src/components/iconPaths'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
@@ -34,6 +37,19 @@ const EDITABLE_CONSTRAINT_TYPES = new Set<string>([
 export type NonVisualConstraintType =
   (typeof NON_VISUAL_CONSTRAINT_TYPES)[number]
 
+export type ConstraintPlacement = {
+  anchor: Vector3
+  offsetPx?: {
+    x: number
+    y: number
+  }
+}
+
+const POINT_CONSTRAINT_OFFSET_PX = Object.freeze({
+  x: 10,
+  y: 10,
+})
+
 export function isPointSegment(
   obj: ApiObject | undefined | null
 ): obj is PointSegment {
@@ -56,7 +72,10 @@ export function isLineSegment(
 }
 
 export type LineSegment = ApiObject & {
-  kind: { type: 'Segment'; segment: { type: 'Line'; start: number; end: number } }
+  kind: {
+    type: 'Segment'
+    segment: { type: 'Line'; start: number; end: number }
+  }
 }
 
 export function isArcSegment(
@@ -176,6 +195,31 @@ export function getNonVisualConstraintAnchor(
   }
 }
 
+export function getNonVisualConstraintPlacement(
+  obj: NonVisualConstraintObject,
+  objects: ApiObject[]
+): ConstraintPlacement | null {
+  const anchor = getNonVisualConstraintAnchor(obj, objects)
+  if (!anchor) {
+    return null
+  }
+
+  if (obj.kind.constraint.type === 'Coincident') {
+    const pointAnchor = getAveragePointAnchor(
+      obj.kind.constraint.segments,
+      objects
+    )
+    if (pointAnchor) {
+      return {
+        anchor: pointAnchor,
+        offsetPx: POINT_CONSTRAINT_OFFSET_PX,
+      }
+    }
+  }
+
+  return { anchor }
+}
+
 function getAverageAnchor(ids: number[], objects: ApiObject[]): Vector3 | null {
   const anchors = ids
     .map((id) => getEntityAnchor(id, objects))
@@ -191,6 +235,27 @@ function getAverageAnchor(ids: number[], objects: ApiObject[]): Vector3 | null {
   )
 
   return total.multiplyScalar(1 / anchors.length)
+}
+
+function getAveragePointAnchor(
+  ids: number[],
+  objects: ApiObject[]
+): Vector3 | null {
+  const pointAnchors = ids
+    .map((id) => objects[id])
+    .filter(isPointSegment)
+    .map(pointToVec3)
+
+  if (pointAnchors.length === 0) {
+    return null
+  }
+
+  const total = pointAnchors.reduce(
+    (acc, pointAnchor) => acc.add(pointAnchor),
+    new Vector3(0, 0, 0)
+  )
+
+  return total.multiplyScalar(1 / pointAnchors.length)
 }
 
 function getEntityAnchor(id: number, objects: ApiObject[]): Vector3 | null {

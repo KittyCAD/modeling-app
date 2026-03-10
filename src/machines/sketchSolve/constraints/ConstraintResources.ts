@@ -83,7 +83,11 @@ export class ConstraintResources {
     selectedIds: number[],
     hoveredId: number | null
   ): number {
-    return this.getMaterialSet(objId, selectedIds, hoveredId).line.color.getHex()
+    return this.getMaterialSet(
+      objId,
+      selectedIds,
+      hoveredId
+    ).line.color.getHex()
   }
 
   public updateConstraintGroup(

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import type { ApiConstraint, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   getConstraintIconPath,
   getNonVisualConstraintAnchor,
+  getNonVisualConstraintPlacement,
   isEditableConstraint,
   isNonVisualConstraint,
   type NonVisualConstraintObject,
@@ -195,5 +199,22 @@ describe('constraintUtils', () => {
 
     expect(anchor?.x).toBeCloseTo(Math.sqrt(50))
     expect(anchor?.y).toBeCloseTo(Math.sqrt(50))
+  })
+
+  it('offsets point-based coincident constraints from the point in screen space', () => {
+    const objects: ApiObject[] = []
+    objects[1] = createPoint(1, 2, 3)
+    objects[2] = createPoint(2, 10, 3)
+    objects[3] = createLine(3, 1, 2)
+    const coincident = createConstraint(4, {
+      type: 'Coincident',
+      segments: [1, 3],
+    }) as NonVisualConstraintObject
+
+    const placement = getNonVisualConstraintPlacement(coincident, objects)
+
+    expect(placement?.anchor.x).toBe(2)
+    expect(placement?.anchor.y).toBe(3)
+    expect(placement?.offsetPx).toEqual({ x: 10, y: 10 })
   })
 })

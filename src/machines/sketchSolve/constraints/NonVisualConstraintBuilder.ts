@@ -7,7 +7,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/ConstraintSprite'
 import {
   getConstraintIconPath,
-  getNonVisualConstraintAnchor,
+  getNonVisualConstraintPlacement,
   isNonVisualConstraint,
   type NonVisualConstraintObject,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -44,8 +44,8 @@ export class NonVisualConstraintBuilder {
       return
     }
 
-    const anchor = getNonVisualConstraintAnchor(obj, objects)
-    if (!showConstraints || !anchor) {
+    const placement = getNonVisualConstraintPlacement(obj, objects)
+    if (!showConstraints || !placement) {
       group.visible = false
       return
     }
@@ -55,7 +55,8 @@ export class NonVisualConstraintBuilder {
 
     updateConstraintSprite(group, {
       sceneInfra,
-      position: anchor,
+      position: placement.anchor,
+      offsetPx: placement.offsetPx,
       color: this.resources.getConstraintColor(obj.id, selectedIds, hoveredId),
       visible: true,
     })

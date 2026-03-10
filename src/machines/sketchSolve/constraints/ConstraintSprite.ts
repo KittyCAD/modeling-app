@@ -45,6 +45,10 @@ type CreateConstraintSpriteArgs = {
 type UpdateConstraintSpriteArgs = {
   sceneInfra: SceneInfra
   position: Vector3
+  offsetPx?: {
+    x: number
+    y: number
+  }
   color?: ColorRepresentation
   sizePx?: number
   hitAreaSizePx?: number
@@ -93,6 +97,7 @@ export function updateConstraintSprite(
   {
     sceneInfra,
     position,
+    offsetPx,
     color = 0xffffff,
     sizePx = CONSTRAINT_SPRITE_SIZE_PX,
     hitAreaSizePx = CONSTRAINT_SPRITE_HIT_AREA_SIZE_PX,
@@ -103,9 +108,12 @@ export function updateConstraintSprite(
   group.visible = visible
   if (!visible) return
 
-  group.position.copy(position)
-
   const scale = sceneInfra.getClientSceneScaleFactor(group)
+  group.position.copy(position)
+  if (offsetPx) {
+    group.position.x += offsetPx.x * scale
+    group.position.y += offsetPx.y * scale
+  }
   const sprite = group.children.find(
     (child) => child.userData.type === CONSTRAINT_SPRITE
   ) as Sprite | undefined
