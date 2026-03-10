@@ -74,6 +74,7 @@ export type SketchSolveMachineEvent =
   | { type: 'escape' }
   | { type: 'camera scale change' }
   | { type: 'unequip tool' }
+  | { type: 'set show constraints'; data: { enabled: boolean } }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
       type:
@@ -155,6 +156,7 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
+  showConstraints: boolean
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -532,8 +534,9 @@ export function updateSceneGraphFromDelta({
           objects,
           factor,
           context.sceneInfra,
-          selectedIds,
-          context.hoveredId
+          allSelectedIds,
+          context.hoveredId,
+          context.showConstraints
         )
       }
       return
@@ -761,7 +764,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId
+          context.hoveredId,
+          context.showConstraints
         )
       }
       return
@@ -840,7 +844,8 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
         scaleFactor,
         context.sceneInfra,
         context.selectedIds,
-        context.hoveredId
+        context.hoveredId,
+        context.showConstraints
       )
     }
   })

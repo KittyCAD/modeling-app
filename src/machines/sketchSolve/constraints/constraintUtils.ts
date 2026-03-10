@@ -1,4 +1,5 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiConstraint, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { CONSTRAINT_ICON_PATHS } from '@src/components/iconPaths'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -8,6 +9,30 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
+
+export const NON_VISUAL_CONSTRAINT_TYPES = [
+  'Coincident',
+  'Parallel',
+  'Perpendicular',
+  'LinesEqualLength',
+  'Horizontal',
+  'Vertical',
+] as const
+
+const NON_VISUAL_CONSTRAINT_TYPE_SET = new Set<string>(
+  NON_VISUAL_CONSTRAINT_TYPES
+)
+
+const EDITABLE_CONSTRAINT_TYPES = new Set<string>([
+  'Distance',
+  'HorizontalDistance',
+  'VerticalDistance',
+  'Radius',
+  'Diameter',
+])
+
+export type NonVisualConstraintType =
+  (typeof NON_VISUAL_CONSTRAINT_TYPES)[number]
 
 export function isPointSegment(
   obj: ApiObject | undefined | null
@@ -22,6 +47,29 @@ export type PointSegment = ApiObject & {
 export function pointToVec3(obj: PointSegment) {
   const position = obj.kind.segment.position
   return new Vector3(position.x.value, position.y.value, 0)
+}
+
+export function isLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+}
+
+export type LineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Line'; start: number; end: number } }
+}
+
+export function isArcSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+}
+
+export type ArcSegment = ApiObject & {
+  kind: {
+    type: 'Segment'
+    segment: { type: 'Arc'; start: number; end: number; center: number }
+  }
 }
 
 type DistanceConstraintTypes =
@@ -68,6 +116,135 @@ export function isDiameterConstraint(
   obj: ApiObject
 ): obj is DiameterConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
+}
+
+export type NonVisualConstraintObject = ApiObject & {
+  kind: {
+    type: 'Constraint'
+    constraint: ApiConstraint & { type: NonVisualConstraintType }
+  }
+}
+
+export function isNonVisualConstraint(
+  obj: ApiObject
+): obj is NonVisualConstraintObject {
+  return (
+    isConstraint(obj) &&
+    NON_VISUAL_CONSTRAINT_TYPE_SET.has(obj.kind.constraint.type)
+  )
+}
+
+export function isEditableConstraint(obj: ApiObject): boolean {
+  return (
+    isConstraint(obj) && EDITABLE_CONSTRAINT_TYPES.has(obj.kind.constraint.type)
+  )
+}
+
+export function getConstraintIconPath(type: NonVisualConstraintType): string {
+  switch (type) {
+    case 'Coincident':
+      return CONSTRAINT_ICON_PATHS.coincident
+    case 'LinesEqualLength':
+      return CONSTRAINT_ICON_PATHS.equal
+    case 'Horizontal':
+      return CONSTRAINT_ICON_PATHS.horizontal
+    case 'Parallel':
+      return CONSTRAINT_ICON_PATHS.parallel
+    case 'Perpendicular':
+      return CONSTRAINT_ICON_PATHS.perpendicular
+    case 'Vertical':
+      return CONSTRAINT_ICON_PATHS.vertical
+  }
+}
+
+export function getNonVisualConstraintAnchor(
+  obj: NonVisualConstraintObject,
+  objects: ApiObject[]
+): Vector3 | null {
+  const constraint = obj.kind.constraint
+
+  switch (constraint.type) {
+    case 'Horizontal':
+    case 'Vertical':
+      return getEntityAnchor(constraint.line, objects)
+    case 'Parallel':
+    case 'Perpendicular':
+    case 'LinesEqualLength':
+      return getAverageAnchor(constraint.lines, objects)
+    case 'Coincident':
+      return getAverageAnchor(constraint.segments, objects)
+  }
+}
+
+function getAverageAnchor(ids: number[], objects: ApiObject[]): Vector3 | null {
+  const anchors = ids
+    .map((id) => getEntityAnchor(id, objects))
+    .filter((anchor): anchor is Vector3 => anchor !== null)
+
+  if (anchors.length !== ids.length || anchors.length === 0) {
+    return null
+  }
+
+  const total = anchors.reduce(
+    (acc, anchor) => acc.add(anchor),
+    new Vector3(0, 0, 0)
+  )
+
+  return total.multiplyScalar(1 / anchors.length)
+}
+
+function getEntityAnchor(id: number, objects: ApiObject[]): Vector3 | null {
+  const obj = objects[id]
+
+  if (isPointSegment(obj)) {
+    return pointToVec3(obj)
+  }
+
+  if (isLineSegment(obj)) {
+    const start = objects[obj.kind.segment.start]
+    const end = objects[obj.kind.segment.end]
+    if (!isPointSegment(start) || !isPointSegment(end)) {
+      return null
+    }
+
+    return pointToVec3(start).lerp(pointToVec3(end), 0.5)
+  }
+
+  if (isArcSegment(obj)) {
+    const center = objects[obj.kind.segment.center]
+    const start = objects[obj.kind.segment.start]
+    const end = objects[obj.kind.segment.end]
+    if (
+      !isPointSegment(center) ||
+      !isPointSegment(start) ||
+      !isPointSegment(end)
+    ) {
+      return null
+    }
+
+    const centerVec = pointToVec3(center)
+    const startVec = pointToVec3(start)
+    const endVec = pointToVec3(end)
+    const radius = centerVec.distanceTo(startVec)
+    const startAngle = Math.atan2(
+      startVec.y - centerVec.y,
+      startVec.x - centerVec.x
+    )
+    const endAngle = Math.atan2(endVec.y - centerVec.y, endVec.x - centerVec.x)
+    let delta = endAngle - startAngle
+    if (delta < 0) {
+      delta += Math.PI * 2
+    }
+    const midAngle = startAngle + delta / 2
+
+    return new Vector3(
+      centerVec.x + Math.cos(midAngle) * radius,
+      centerVec.y + Math.sin(midAngle) * radius,
+      0
+    )
+  }
+
+  return null
 }
 
 export function calculateDimensionLabelScreenPosition(

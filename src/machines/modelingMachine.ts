@@ -6859,6 +6859,7 @@ export const modelingMachine = setup({
               initialSketchSolvePlane: context.sketchSolveInit,
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
+              showConstraints: context.showConstraints,
               kclManager: context.kclManager,
             }),
             onDone: {
@@ -6935,6 +6936,15 @@ export const modelingMachine = setup({
         },
         construction: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'Toggle show constraints': {
+          actions: [
+            'Toggle show constraints',
+            sendTo('sketchSolveMachine', ({ context }) => ({
+              type: 'set show constraints',
+              data: { enabled: !context.showConstraints },
+            })),
+          ],
         },
         'delete selected': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],

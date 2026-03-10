@@ -147,6 +147,7 @@ export const sketchSolveMachine = setup({
         | null
       sketchId: number
       initialSceneGraphDelta: SceneGraphDelta
+      showConstraints: boolean
     },
   },
   actions: {
@@ -185,6 +186,10 @@ export const sketchSolveMachine = setup({
     'update hovered id': assign(({ event }) => {
       assertEvent(event, 'update hovered id')
       return { hoveredId: event.data.hoveredId }
+    }),
+    'set show constraints': assign(({ event }) => {
+      assertEvent(event, 'set show constraints')
+      return { showConstraints: event.data.enabled }
     }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
@@ -229,6 +234,7 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       hoveredId: null,
+      showConstraints: input.showConstraints,
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         sourceDelta: {
@@ -259,6 +265,9 @@ export const sketchSolveMachine = setup({
     },
     'camera scale change': {
       actions: 'camera scale change',
+    },
+    'set show constraints': {
+      actions: ['set show constraints', 'refresh selection styling'],
     },
     'set draft entities': {
       actions: 'set draft entities',

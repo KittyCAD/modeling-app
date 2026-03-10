@@ -7,10 +7,12 @@ import {
   type ConstraintObject,
   isDiameterConstraint,
   isDistanceConstraint,
+  isNonVisualConstraint,
   isRadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
+import { NonVisualConstraintBuilder } from '@src/machines/sketchSolve/constraints/NonVisualConstraintBuilder'
 import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
 import { getResolvedTheme } from '@src/lib/theme'
 import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
@@ -26,12 +28,17 @@ export class ConstraintBuilder {
     this.resources
   )
   private readonly radiusBuilder = new RadiusConstraintBuilder(this.resources)
+  private readonly nonVisualBuilder = new NonVisualConstraintBuilder(
+    this.resources
+  )
 
   public init(obj: ConstraintObject): Group | null {
     if (isDistanceConstraint(obj)) {
       return this.distanceBuilder.init(obj)
     } else if (isRadiusConstraint(obj) || isDiameterConstraint(obj)) {
       return this.radiusBuilder.init(obj)
+    } else if (isNonVisualConstraint(obj)) {
+      return this.nonVisualBuilder.init(obj)
     }
     console.warn('Unimplemented constraint type')
     return null
@@ -44,7 +51,8 @@ export class ConstraintBuilder {
     scale: number,
     sceneInfra: SceneInfra,
     selectedIds: number[],
-    hoveredId: number | null
+    hoveredId: number | null,
+    showConstraints: boolean
   ) {
     // Technically this only needs to be done once per frame, before rendering, not per object.
     const theme = getResolvedTheme(sceneInfra.theme)
@@ -70,6 +78,16 @@ export class ConstraintBuilder {
         sceneInfra,
         selectedIds,
         hoveredId
+      )
+    } else if (isNonVisualConstraint(obj)) {
+      this.nonVisualBuilder.update(
+        group,
+        obj,
+        objects,
+        sceneInfra,
+        selectedIds,
+        hoveredId,
+        showConstraints
       )
     }
   }

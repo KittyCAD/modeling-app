@@ -78,20 +78,21 @@ export class ConstraintResources {
     this.materials.selected.line.linewidth = linewidth
   }
 
+  public getConstraintColor(
+    objId: number,
+    selectedIds: number[],
+    hoveredId: number | null
+  ): number {
+    return this.getMaterialSet(objId, selectedIds, hoveredId).line.color.getHex()
+  }
+
   public updateConstraintGroup(
     group: Group,
     objId: number,
     selectedIds: number[],
     hoveredId: number | null
   ) {
-    // Pick material set based on hover/selected state
-    const isSelected = selectedIds.includes(objId)
-    const isHovered = hoveredId === objId
-    const materialSet = isHovered
-      ? this.materials.hovered
-      : isSelected
-        ? this.materials.selected
-        : this.materials.default
+    const materialSet = this.getMaterialSet(objId, selectedIds, hoveredId)
 
     // Swap materials on lines and arrows
     for (const child of group.children) {
@@ -104,6 +105,21 @@ export class ConstraintResources {
         child.material = materialSet.arrow
       }
     }
+  }
+
+  private getMaterialSet(
+    objId: number,
+    selectedIds: number[],
+    hoveredId: number | null
+  ) {
+    const isSelected = selectedIds.includes(objId)
+    const isHovered = hoveredId === objId
+
+    return isHovered
+      ? this.materials.hovered
+      : isSelected
+        ? this.materials.selected
+        : this.materials.default
   }
 }
 

@@ -63,6 +63,7 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
+  isEditableConstraint,
   isPointSegment as isPointApiSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -475,6 +476,7 @@ export function createOnClickCallback({
   getParentGroup,
   onUpdateSelectedIds,
   onEditConstraint,
+  canEditConstraint,
 }: {
   getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
   onUpdateSelectedIds: (data: {
@@ -482,6 +484,7 @@ export function createOnClickCallback({
     duringAreaSelectIds: Array<number>
   }) => void
   onEditConstraint: (constraintId: number) => void
+  canEditConstraint: (constraintId: number) => boolean
 }): (arg: {
   selected?: Object3D
   mouseEvent: MouseEvent
@@ -497,7 +500,8 @@ export function createOnClickCallback({
     if (
       mouseEvent.detail === 2 &&
       selected?.parent?.userData.type === CONSTRAINT_TYPE &&
-      entityUnderCursorId
+      entityUnderCursorId &&
+      canEditConstraint(entityUnderCursorId)
     ) {
       // Double clicking on Constraint
       onEditConstraint(entityUnderCursorId)
@@ -1487,6 +1491,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
           type: 'start editing constraint',
           data: { constraintId },
         })
+      },
+      canEditConstraint: (constraintId: number) => {
+        const objects =
+          self.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects || []
+        const constraint = objects[constraintId]
+        return !!constraint && isEditableConstraint(constraint)
       },
     }),
     onMouseEnter: createOnMouseEnterCallback({

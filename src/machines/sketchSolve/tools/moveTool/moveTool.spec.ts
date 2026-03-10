@@ -1335,12 +1335,14 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
     const pointGroup = createPointSegmentGroup({ segmentId: 13 })
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1360,11 +1362,13 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1387,11 +1391,13 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn(() => parentGroup)
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1414,11 +1420,13 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1443,11 +1451,13 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1470,11 +1480,13 @@ describe('createOnClickCallback', () => {
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
       onEditConstraint,
+      canEditConstraint,
     })
 
     await callback({
@@ -1486,6 +1498,67 @@ describe('createOnClickCallback', () => {
     // Line segments should be selectable
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [5],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should start editing editable constraints on double click', async () => {
+    const constraintGroup = new Group()
+    constraintGroup.name = '17'
+    constraintGroup.userData = { type: 'CONSTRAINT', object_id: 17 }
+    const hitArea = new Group()
+    constraintGroup.add(hitArea)
+    const getParentGroup = vi.fn(() => constraintGroup)
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => true)
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+      onEditConstraint,
+      canEditConstraint,
+    })
+
+    await callback({
+      selected: hitArea,
+      mouseEvent: new MouseEvent('click', { detail: 2 }),
+      intersects: [],
+    })
+
+    expect(canEditConstraint).toHaveBeenCalledWith(17)
+    expect(onEditConstraint).toHaveBeenCalledWith(17)
+    expect(onUpdateSelectedIds).not.toHaveBeenCalled()
+  })
+
+  it('should keep non-editable constraints select-only on double click', async () => {
+    const constraintGroup = new Group()
+    constraintGroup.name = '23'
+    constraintGroup.userData = { type: 'CONSTRAINT', object_id: 23 }
+    const hitArea = new Group()
+    constraintGroup.add(hitArea)
+    const getParentGroup = vi.fn(() => constraintGroup)
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const canEditConstraint = vi.fn(() => false)
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+      onEditConstraint,
+      canEditConstraint,
+    })
+
+    await callback({
+      selected: hitArea,
+      mouseEvent: new MouseEvent('click', { detail: 2 }),
+      intersects: [],
+    })
+
+    expect(canEditConstraint).toHaveBeenCalledWith(23)
+    expect(onEditConstraint).not.toHaveBeenCalled()
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [23],
       duringAreaSelectIds: [],
     })
   })
