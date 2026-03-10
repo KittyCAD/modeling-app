@@ -187,9 +187,8 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'update hovered id')
       return { hoveredId: event.data.hoveredId }
     }),
-    'set show constraints': assign(({ event }) => {
-      assertEvent(event, 'set show constraints')
-      return { showConstraints: event.data.enabled }
+    'toggle show constraints': assign(({ context }) => {
+      return { showConstraints: !context.showConstraints }
     }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
@@ -266,8 +265,8 @@ export const sketchSolveMachine = setup({
     'camera scale change': {
       actions: 'camera scale change',
     },
-    'set show constraints': {
-      actions: ['set show constraints', 'refresh selection styling'],
+    'toggle show constraints': {
+      actions: ['toggle show constraints', 'refresh selection styling'],
     },
     'set draft entities': {
       actions: 'set draft entities',

@@ -6940,10 +6940,7 @@ export const modelingMachine = setup({
         'Toggle show constraints': {
           actions: [
             'Toggle show constraints',
-            sendTo('sketchSolveMachine', ({ context }) => ({
-              type: 'set show constraints',
-              data: { enabled: !context.showConstraints },
-            })),
+            sendTo('sketchSolveMachine', { type: 'toggle show constraints' }),
           ],
         },
         'delete selected': {

@@ -74,7 +74,7 @@ export type SketchSolveMachineEvent =
   | { type: 'escape' }
   | { type: 'camera scale change' }
   | { type: 'unequip tool' }
-  | { type: 'set show constraints'; data: { enabled: boolean } }
+  | { type: 'toggle show constraints' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
       type:
