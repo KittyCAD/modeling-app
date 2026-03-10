@@ -74,7 +74,16 @@ export default function CommandBarSelectionMixedInput({
       selection,
       kclManager.artifactGraph
     )
-    if (err(coercedSelections)) return // Coercion failed, skip update
+    if (err(coercedSelections)) {
+      return // Coercion failed, skip update
+    }
+
+    // Don't replace selection with empty: e.g. Clone from feature tree has solid2d (import)
+    // which doesn't coerce to a body, so coercion yields []. Preserve original selection.
+    const coercedLen = coercedSelections.graphSelectionsV2?.length ?? 0
+    if (coercedLen === 0) {
+      return
+    }
 
     // Immediately update the modeling machine state with coerced selection
     // This needs to happen BEFORE the selection filter is applied

@@ -877,6 +877,7 @@ foreign
       await test.step('Clone the part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('washer', 0)
+        await op.scrollIntoViewIfNeeded()
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-clone').click()
         await cmdBar.expectState({
@@ -896,7 +897,7 @@ foreign
           currentArgKey: 'variableName',
           currentArgValue: '',
           headerArguments: {
-            Objects: '1 plane',
+            Objects: '1 profile',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -906,7 +907,7 @@ foreign
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 plane',
+            Objects: '1 profile',
             VariableName: 'clone001',
           },
           commandName: 'Clone',
