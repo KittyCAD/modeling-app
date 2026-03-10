@@ -263,6 +263,7 @@ export type ModelingMachineInternalContext = {
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
+  showConstraints: boolean
   forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &

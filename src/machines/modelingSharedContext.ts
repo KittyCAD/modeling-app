@@ -70,6 +70,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     planesInitialized: false,
     sketchSolveToolName: null,
     sketchSolveTool: null,
+    showConstraints: false,
     initialSceneGraphDelta: dummyInitSketchGraphDelta,
   }
 
@@ -112,6 +113,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     planesInitialized: false,
     sketchSolveTool: null,
     sketchSolveToolName: null,
+    showConstraints: false,
     initialSceneGraphDelta: dummyInitSketchGraphDelta,
     ...systemDeps,
   }

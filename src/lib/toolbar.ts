@@ -1706,6 +1706,19 @@ export const useToolbarConfig = () => {
             links: [],
             isActive: (state) => false,
           },
+          {
+            id: 'show-constraints',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Toggle show constraints',
+              }),
+            icon: 'eyeOpen',
+            status: 'available',
+            title: 'Show constraints',
+            description: 'Show non-visual constraint icons in the sketch scene',
+            links: [],
+            isActive: (state) => state.context.showConstraints,
+          },
         ],
       },
     }),

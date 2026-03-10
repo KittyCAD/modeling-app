@@ -408,6 +408,9 @@ export type ModelingMachineEvent =
       type: 'Restore default plane visibility'
     }
   | {
+      type: 'Toggle show constraints'
+    }
+  | {
       type: 'equip tool'
       data: { tool: EquipTool }
     }
@@ -1893,6 +1896,11 @@ export const modelingMachine = setup({
           ...context.defaultPlaneVisibility,
           ...context.savedDefaultPlaneVisibility,
         },
+      }
+    }),
+    'Toggle show constraints': assign(({ context }) => {
+      return {
+        showConstraints: !context.showConstraints,
       }
     }),
     'show sketch error toast': assign(() => {
@@ -7688,6 +7696,10 @@ export const modelingMachine = setup({
     'Toggle default plane visibility': {
       reenter: false,
       actions: 'Toggle default plane visibility',
+    },
+
+    'Toggle show constraints': {
+      actions: 'Toggle show constraints',
     },
 
     'sketch solve tool changed': {
