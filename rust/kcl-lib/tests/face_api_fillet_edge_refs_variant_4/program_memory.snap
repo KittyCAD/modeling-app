@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing face_api_fillet_edge_refs_variants.kcl
+description: Variables in memory after executing face_api_fillet_edge_refs_variant_4.kcl
 ---
 {
   "endCap": {
@@ -20,10 +20,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 738,
-            "end": 755,
+            "commentStart": 598,
+            "end": 615,
             "moduleId": 0,
-            "start": 738,
+            "start": 598,
             "type": "TagDeclarator",
             "value": "myDisambigutator"
           },
@@ -34,10 +34,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 795,
-            "end": 813,
+            "commentStart": 655,
+            "end": 673,
             "moduleId": 0,
-            "start": 795,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "myDisambigutator2"
           },
@@ -66,10 +66,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               4.75
             ],
             "tag": {
-              "commentStart": 738,
-              "end": 755,
+              "commentStart": 598,
+              "end": 615,
               "moduleId": 0,
-              "start": 738,
+              "start": 598,
               "type": "TagDeclarator",
               "value": "myDisambigutator"
             },
@@ -90,10 +90,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               2.44
             ],
             "tag": {
-              "commentStart": 795,
-              "end": 813,
+              "commentStart": 655,
+              "end": 673,
               "moduleId": 0,
-              "start": 795,
+              "start": 655,
               "type": "TagDeclarator",
               "value": "myDisambigutator2"
             },
@@ -216,10 +216,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 330,
-            "end": 335,
+            "commentStart": 262,
+            "end": 267,
             "moduleId": 0,
-            "start": 330,
+            "start": 262,
             "type": "TagDeclarator",
             "value": "yoyo"
           },
@@ -237,10 +237,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 404,
-            "end": 407,
+            "commentStart": 336,
+            "end": 339,
             "moduleId": 0,
-            "start": 404,
+            "start": 336,
             "type": "TagDeclarator",
             "value": "hi"
           },
@@ -251,10 +251,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 487,
-            "end": 496,
+            "commentStart": 419,
+            "end": 428,
             "moduleId": 0,
-            "start": 487,
+            "start": 419,
             "type": "TagDeclarator",
             "value": "startCap"
           },
@@ -265,10 +265,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 467,
-            "end": 474,
+            "commentStart": 399,
+            "end": 406,
             "moduleId": 0,
-            "start": 467,
+            "start": 399,
             "type": "TagDeclarator",
             "value": "endCap"
           },
@@ -290,10 +290,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               0.0
             ],
             "tag": {
-              "commentStart": 330,
-              "end": 335,
+              "commentStart": 262,
+              "end": 267,
               "moduleId": 0,
-              "start": 330,
+              "start": 262,
               "type": "TagDeclarator",
               "value": "yoyo"
             },
@@ -331,10 +331,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               12.0
             ],
             "tag": {
-              "commentStart": 404,
-              "end": 407,
+              "commentStart": 336,
+              "end": 339,
               "moduleId": 0,
-              "start": 404,
+              "start": 336,
               "type": "TagDeclarator",
               "value": "hi"
             },
@@ -470,10 +470,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
             4.75
           ],
           "tag": {
-            "commentStart": 738,
-            "end": 755,
+            "commentStart": 598,
+            "end": 615,
             "moduleId": 0,
-            "start": 738,
+            "start": 598,
             "type": "TagDeclarator",
             "value": "myDisambigutator"
           },
@@ -494,10 +494,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
             2.44
           ],
           "tag": {
-            "commentStart": 795,
-            "end": 813,
+            "commentStart": 655,
+            "end": 673,
             "moduleId": 0,
-            "start": 795,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "myDisambigutator2"
           },
@@ -604,10 +604,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
             0.0
           ],
           "tag": {
-            "commentStart": 330,
-            "end": 335,
+            "commentStart": 262,
+            "end": 267,
             "moduleId": 0,
-            "start": 330,
+            "start": 262,
             "type": "TagDeclarator",
             "value": "yoyo"
           },
@@ -645,10 +645,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
             12.0
           ],
           "tag": {
-            "commentStart": 404,
-            "end": 407,
+            "commentStart": 336,
+            "end": 339,
             "moduleId": 0,
-            "start": 404,
+            "start": 336,
             "type": "TagDeclarator",
             "value": "hi"
           },
@@ -775,10 +775,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 330,
-            "end": 335,
+            "commentStart": 262,
+            "end": 267,
             "moduleId": 0,
-            "start": 330,
+            "start": 262,
             "type": "TagDeclarator",
             "value": "yoyo"
           },
@@ -796,10 +796,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 404,
-            "end": 407,
+            "commentStart": 336,
+            "end": 339,
             "moduleId": 0,
-            "start": 404,
+            "start": 336,
             "type": "TagDeclarator",
             "value": "hi"
           },
@@ -810,10 +810,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 487,
-            "end": 496,
+            "commentStart": 419,
+            "end": 428,
             "moduleId": 0,
-            "start": 487,
+            "start": 419,
             "type": "TagDeclarator",
             "value": "startCap"
           },
@@ -824,10 +824,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 467,
-            "end": 474,
+            "commentStart": 399,
+            "end": 406,
             "moduleId": 0,
-            "start": 467,
+            "start": 399,
             "type": "TagDeclarator",
             "value": "endCap"
           },
@@ -849,10 +849,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               0.0
             ],
             "tag": {
-              "commentStart": 330,
-              "end": 335,
+              "commentStart": 262,
+              "end": 267,
               "moduleId": 0,
-              "start": 330,
+              "start": 262,
               "type": "TagDeclarator",
               "value": "yoyo"
             },
@@ -890,10 +890,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
               12.0
             ],
             "tag": {
-              "commentStart": 404,
-              "end": 407,
+              "commentStart": 336,
+              "end": 339,
               "moduleId": 0,
-              "start": 404,
+              "start": 336,
               "type": "TagDeclarator",
               "value": "hi"
             },

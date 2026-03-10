@@ -4708,22 +4708,127 @@ mod sketch_block_lines_coincident_collinear {
         super::execute(TEST_NAME, true).await
     }
 }
-mod face_api_fillet_edge_refs_variants {
-    const TEST_NAME: &str = "face_api_fillet_edge_refs_variants";
+mod face_api_fillet_edge_refs_variant_1 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_1";
 
-    /// Test parsing KCL.
     #[test]
     fn parse() {
         super::parse(TEST_NAME)
     }
 
-    /// Test that parsing and unparsing KCL produces the original KCL input.
     #[tokio::test(flavor = "multi_thread")]
     async fn unparse() {
         super::unparse(TEST_NAME).await
     }
 
-    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_2 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_2";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_3 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_3";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_4 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_4";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_5 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_5";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_6 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_6";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_refs_variant_7 {
+    const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_7";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await

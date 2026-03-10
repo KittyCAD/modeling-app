@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed face_api_fillet_edge_refs_variants.kcl
+description: Operations executed face_api_fillet_edge_refs_variant_4.kcl
 ---
 {
-  "rust/kcl-lib/tests/face_api_fillet_edge_refs_variants/input.kcl": [
+  "rust/kcl-lib/tests/face_api_fillet_edge_refs_variant_4/input.kcl": [
     {
       "type": "VariableDeclaration",
       "name": "startX",
@@ -244,227 +244,6 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
               {
                 "type": "Object",
                 "value": {
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "disambiguators": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "startCap",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  },
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "disambiguators": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "endCap",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  },
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
                   "disambiguators": {
                     "type": "Array",
                     "value": [
@@ -513,236 +292,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "disambiguators": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "myDisambigutator",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  },
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  },
-                  "index": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "edgeRefs": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "faces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hi",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "yoyo",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  },
-                  "index": {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 15
+            "index": 9
           },
           {
             "type": "ExpressionStatementExpr"
@@ -850,7 +400,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -874,7 +424,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -898,7 +448,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -922,7 +472,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -946,7 +496,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -970,7 +520,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -994,7 +544,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1018,7 +568,7 @@ description: Operations executed face_api_fillet_edge_refs_variants.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
