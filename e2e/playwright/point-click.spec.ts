@@ -910,7 +910,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 sweepEdge`,
+          Edge: '1 edge',
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
@@ -923,7 +923,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 sweepEdge`,
+          Edge: '1 edge',
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
@@ -940,7 +940,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = seg01,
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -2010,7 +2010,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Length: '',
         },
         stage: 'arguments',
@@ -2019,7 +2019,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Length: '5',
         },
         stage: 'review',
@@ -2223,9 +2223,9 @@ extrude001 = extrude(sketch001, length = 30)`
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+      'shell001 = shell(extrude001, faces = END, thickness = 5)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+      'shell001 = shell(extrude001, faces = END, thickness = 2)'
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2247,7 +2247,7 @@ extrude001 = extrude(sketch001, length = 30)`
         currentArgKey: 'thickness',
         currentArgValue: '5',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
           Thickness: '',
         },
         highlightedHeaderArg: 'thickness',
@@ -2257,7 +2257,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
           Thickness: '5',
         },
         commandName: 'Shell',
@@ -2333,7 +2333,7 @@ extrude001 = extrude(sketch001, length = 30)`
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = END)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2361,7 +2361,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
         },
         commandName: 'Delete Face',
       })
@@ -2471,7 +2471,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
           Profiles: '1 profile',
           Angle: '',
           AxisOrEdge: 'Edge',
-          Edge: '1 segment',
+          Edge: '1 edge',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2483,7 +2483,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
           Profiles: '1 profile',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
-          Edge: '1 segment',
+          Edge: '1 edge',
         },
         stage: 'review',
       })
@@ -2562,7 +2562,7 @@ box = extrude(profile, length = 30)`
 
     await test.step('Select an edge first (before opening translate)', async () => {
       await editor.selectText(segmentToSelect)
-      await expect(toolbar.selectionStatus).toContainText('1 segment')
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step('Open translate via context menu and verify coercion', async () => {
