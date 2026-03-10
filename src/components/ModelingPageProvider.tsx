@@ -27,14 +27,8 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneInfra,
-    systemIOActor,
-  } = useSingletons()
+  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
@@ -50,7 +44,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(engineCommandManager, settingsActor)
+    } = createNamedViewsCommand(kclManager.engineCommandManager, settingsActor)
 
     const {
       topViewCommand,
@@ -89,7 +83,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [commands, engineCommandManager, settingsActor, kclManager])
+  }, [commands, settingsActor, kclManager])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -142,11 +136,9 @@ export const ModelingPageProvider = ({
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
     commandBarActor: commands.actor,
-    engineCommandManager,
     filePath,
     kclManager,
     navigate,
-    sceneInfra,
     settings: settingsValues,
     settingsActor,
   })
@@ -194,7 +186,6 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
       project: projectIORef?.value,
-      rustContext,
       systemIOActor,
       wasmInstance,
     })

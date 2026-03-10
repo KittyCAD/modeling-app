@@ -910,7 +910,7 @@ pub(crate) struct MemoryStats {
     lock_waits: AtomicUsize,
 }
 
-// Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutatation
+// Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutation
 // of stored values.
 mod env {
     use std::marker::PhantomPinned;

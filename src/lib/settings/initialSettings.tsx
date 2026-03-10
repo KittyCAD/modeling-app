@@ -3,7 +3,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { type UserFeatureEntry, users } from '@kittycad/lib'
+import { type MlCopilotMode, type UserFeatureEntry, users } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -14,6 +14,7 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_ML_COPILOT_MODE,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
@@ -258,6 +259,13 @@ export function createSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
+      }),
+      /**
+       * Zookeeper reasoning mode
+       */
+      zookeeperMode: new Setting<MlCopilotMode>({
+        defaultValue: DEFAULT_ML_COPILOT_MODE,
+        validate: (v) => v === 'fast' || v === 'thoughtful',
       }),
       /**
        * Stream resource saving behavior toggle

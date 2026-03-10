@@ -3,6 +3,7 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
+  Point2d,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -69,6 +70,7 @@ import type {
   EnginePrimitiveSelection,
   ExtrudeFacePlane,
   OffsetPlane,
+  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
@@ -77,9 +79,84 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import isEqual from 'react-fast-compare'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
+async function getParentEntityIdForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<string | undefined> {
+  const parentResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_parent_id',
+      entity_id: entityId,
+    },
+  })
+  if (!isModelingResponse(parentResponse)) return undefined
+  const parentIdResponse = parentResponse.resp.data.modeling_response
+  if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
+  return parentIdResponse.data.entity_id
+}
+
+async function getRegionQueryPointForRegion(
+  regionId: string,
+  engineCommandManager: ConnectionManager
+): Promise<Point2d | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_query_point',
+      region_id: regionId,
+    },
+  })
+  if (!isModelingResponse(response)) return null
+  const queryPointResponse = response.resp.data.modeling_response
+  if (queryPointResponse.type !== 'region_get_query_point') return null
+  return queryPointResponse.data.query_point
+}
+
+async function getRegionSelectionFromEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<RegionSelection | null> {
+  const point = await getRegionQueryPointForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!point) return null
+
+  const parentEntityId = await getParentEntityIdForEntity(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!parentEntityId) return null
+
+  const path = artifactGraph.get(parentEntityId)
+  if (!path || path.type !== 'path') return null
+
+  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
+  const sketch = artifactGraph
+    .values()
+    .find(
+      (a) =>
+        a.type === 'sketchBlock' &&
+        isEqual(a.codeRef.pathToNode, path.codeRef.pathToNode)
+    )
+  if (!sketch) return null
+
+  return {
+    type: 'region',
+    id: regionEntityId,
+    point,
+    sketchId: sketch.id,
+  }
+}
 
 async function getPrimitiveSelectionForEntity(
   entityId: string,
@@ -102,21 +179,10 @@ async function getPrimitiveSelectionForEntity(
   const entityGetPrimitiveIndex: EntityGetPrimitiveIndex =
     primitiveIndexResponse.data
 
-  let parentEntityId: string | undefined
-  const parentResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_parent_id',
-      entity_id: entityId,
-    },
-  })
-  if (isModelingResponse(parentResponse)) {
-    const parentIdResponse = parentResponse.resp.data.modeling_response
-    if (parentIdResponse.type === 'entity_get_parent_id') {
-      parentEntityId = parentIdResponse.data.entity_id
-    }
-  }
+  const parentEntityId = await getParentEntityIdForEntity(
+    entityId,
+    engineCommandManager
+  )
 
   return {
     type: 'enginePrimitive',
@@ -134,6 +200,16 @@ export function isEnginePrimitiveSelection(
     typeof selection === 'object' &&
     'type' in selection &&
     selection.type === 'enginePrimitive'
+  )
+}
+
+export function isRegionSelection(
+  selection: Selections['otherSelections'][number]
+): selection is RegionSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'region'
   )
 }
 
@@ -187,7 +263,24 @@ export async function getEventForSelectWithPoint(
   let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
-    // but we can still build a primitive selection to be used as fallback for downstream operations
+
+    // we first check if it's a region
+    const regionSelection = await getRegionSelectionFromEntity(
+      data.entity_id,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (regionSelection) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'regionSelection',
+          selection: regionSelection,
+        },
+      }
+    }
+
+    // or we build a primitive selection to be used as fallback for downstream operations
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       data.entity_id,
       engineCommandManager
@@ -335,11 +428,19 @@ export function handleSelectionBatch({
       })
   })
   selections.otherSelections.forEach((s) => {
-    isEnginePrimitiveSelection(s) &&
+    if (isEnginePrimitiveSelection(s)) {
       selectionToEngine.push({
         id: s.entityId,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isRegionSelection(s)) {
+      selectionToEngine.push({
+        id: s.id,
+        range: defaultSourceRange(),
+      })
+    }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
     selectionToEngine,
@@ -614,6 +715,8 @@ export function getSelectionCountByType(
   selection.otherSelections.forEach((selection) => {
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
+    } else if (isRegionSelection(selection)) {
+      incrementOrInitializeSelectionType('region')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -978,7 +1081,7 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'enginePrimitiveFace'],
-  profile: ['solid2d'],
+  profile: ['solid2d', 'region'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
@@ -1361,29 +1464,24 @@ export async function selectionBodyFace(
 
 export function selectAllInCurrentSketch(
   artifactGraph: ArtifactGraph,
-  systemDeps: {
-    sceneEntitiesManager: SceneEntities
-  }
+  sceneEntitiesManager: SceneEntities
 ): Selections {
   const graphSelections: Selection[] = []
 
-  Object.keys(systemDeps.sceneEntitiesManager.activeSegments).forEach(
-    (pathToNode) => {
-      const artifact = artifactGraph
-        .values()
-        .find(
-          (g) =>
-            'codeRef' in g &&
-            JSON.stringify(g.codeRef.pathToNode) === pathToNode
-        )
-      if (artifact && ['path', 'segment'].includes(artifact.type)) {
-        const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-        if (codeRefs?.length) {
-          graphSelections.push({ artifact, codeRef: codeRefs[0] })
-        }
+  Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
+    const artifact = artifactGraph
+      .values()
+      .find(
+        (g) =>
+          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
+      )
+    if (artifact && ['path', 'segment'].includes(artifact.type)) {
+      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+      if (codeRefs?.length) {
+        graphSelections.push({ artifact, codeRef: codeRefs[0] })
       }
     }
-  )
+  })
 
   return {
     graphSelections,

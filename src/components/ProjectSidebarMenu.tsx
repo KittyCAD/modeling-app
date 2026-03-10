@@ -109,7 +109,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { engineCommandManager, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const platform = usePlatform()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -242,7 +242,7 @@ function ProjectMenuPopover({
       findCommand,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      engineCommandManager,
+      kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]
@@ -268,7 +268,7 @@ function ProjectMenuPopover({
           className="flex items-baseline py-0.5 text-sm gap-1"
           title={breadCrumbTooltip}
         >
-          {window.electron && project?.name && (
+          {project?.name && (
             <>
               <span
                 className="hidden whitespace-nowrap md:block max-w-80 truncate"

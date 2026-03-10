@@ -24,9 +24,9 @@ export function KclInput(props: {
   style?: React.CSSProperties
 }) {
   const { settings: settingsSystem } = useApp()
-  const { rustContext, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const settings = settingsSystem.useSettings()
-  const wasmInstance = use(rustContext.wasmInstancePromise)
+  const wasmInstance = use(kclManager.rustContext.wasmInstancePromise)
 
   const variables = kclManager.variablesSignal.value
 

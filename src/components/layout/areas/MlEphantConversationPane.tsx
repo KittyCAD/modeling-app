@@ -2,9 +2,11 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/app'
 import { useEffect, useState, useRef } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -32,6 +34,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -300,6 +303,8 @@ export const MlEphantConversationPane = (props: {
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
+      initialMlCopilotMode={props.settings.app.zookeeperMode.current}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
     />
   )
 }

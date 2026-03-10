@@ -8,8 +8,8 @@ s = sketch(on = XY) {
   arc1 = arc(start = [var 1.5mm, var], end = [var, var 2mm], center = [var, var])
   // Point at the origin.
   p0 = point(at = [var, var])
-p0.at[0] == 0
-p0.at[1] == 0
+  p0.at[0] == 0
+  p0.at[1] == 0
   // Constrain the center of the arc to be coincident with the point at the
   // origin.
   coincident([arc1.center, p0])
@@ -24,8 +24,8 @@ p0.at[1] == 0
 
   // Point at (1,0).
   p1 = point(at = [var, var])
-p1.at[0] == 1mm
-p1.at[1] == 0
+  p1.at[0] == 1mm
+  p1.at[1] == 0
   // We can't specify a line length yet, so constrain the line's end to a point.
   coincident([lineX.end, p1])
   // Make the lines equal length.

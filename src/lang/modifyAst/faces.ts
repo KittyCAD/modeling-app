@@ -954,12 +954,13 @@ function getFaceIdExprsFromPrimitiveSelections(
     }
     const vars = getVariableExprsFromSelection(
       parentSelection,
+      artifactGraph,
       ast,
       wasmInstance,
       nodeToEdit,
-      false,
-      artifactGraph,
-      ['sweep']
+      {
+        artifactTypeFilter: ['sweep'],
+      }
     )
     if (err(vars)) {
       return vars
@@ -1367,12 +1368,14 @@ export function buildSolidsAndFacesExprs(
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     nodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    artifactTypeFilter
+    {
+      lastChildLookup,
+      artifactTypeFilter,
+    }
   )
   if (err(vars)) {
     return vars

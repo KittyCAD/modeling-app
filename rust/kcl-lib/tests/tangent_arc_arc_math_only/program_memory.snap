@@ -341,6 +341,159 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
             }
           }
         }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0000000009999663319604224,
+                    -0.0000000000000006123233996352115
+                  ],
+                  "from": [
+                    -4.999999999502505,
+                    0.0
+                  ],
+                  "radius": 5.000000000502471,
+                  "tag": {
+                    "commentStart": 65,
+                    "end": 66,
+                    "moduleId": 0,
+                    "start": 65,
+                    "type": "TagDeclarator",
+                    "value": "a"
+                  },
+                  "to": [
+                    5.000000001502437,
+                    -0.0000000000000018369701989056345
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    5.000000001502437,
+                    -0.0000000000000018369701989056345
+                  ],
+                  "tag": null,
+                  "to": [
+                    5.000000003252377,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    8.000000003629077,
+                    -0.00000000000000036739403979033847
+                  ],
+                  "from": [
+                    5.000000003252377,
+                    0.0
+                  ],
+                  "radius": 3.0000000003767004,
+                  "tag": {
+                    "commentStart": 159,
+                    "end": 160,
+                    "moduleId": 0,
+                    "start": 159,
+                    "type": "TagDeclarator",
+                    "value": "b"
+                  },
+                  "to": [
+                    11.000000004005777,
+                    -0.0000000000000011021821193710155
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -4.999999999502505,
+                  0.0
+                ],
+                "to": [
+                  -4.999999999502505,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "a": {
+                  "type": "TagIdentifier",
+                  "value": "a"
+                },
+                "b": {
+                  "type": "TagIdentifier",
+                  "value": "b"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
       }
     },
     "constrainable": false

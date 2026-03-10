@@ -1,7 +1,7 @@
-import type { EntityType } from '@kittycad/lib'
+import type { EntityType, Point2d } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -10,8 +10,6 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -34,10 +32,18 @@ export type EnginePrimitiveSelection = {
   primitiveType: EntityType
 }
 
+export interface RegionSelection {
+  type: 'region'
+  id: string
+  point: Point2d
+  sketchId: ArtifactId
+}
+
 export type NonCodeSelection =
   | Axis
   | DefaultPlaneSelection
   | EnginePrimitiveSelection
+  | RegionSelection
 
 export interface Selection {
   artifact?: Artifact
@@ -66,6 +72,10 @@ export type SetSelections =
   | {
       selectionType: 'enginePrimitiveSelection'
       selection: EnginePrimitiveSelection
+    }
+  | {
+      selectionType: 'regionSelection'
+      selection: RegionSelection
     }
   | {
       selectionType: 'completeSelection'
@@ -220,8 +230,6 @@ export type MoveDesc = { line: number; snippet: string }
 export type ModelingMachineInput = {
   kclManager: KclManager
   engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
-  sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   machineManager: MachineManager
   wasmInstance: ModuleType
