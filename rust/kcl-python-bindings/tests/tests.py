@@ -30,6 +30,21 @@ car_wheel_dir = os.path.join(
     "car-wheel-assembly",
 )
 
+box_code = """
+box_width = 25
+box_depth = 25
+box_height = 50
+
+box_sketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = box_width)
+  |> yLine(length = box_depth)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+
+box3D = extrude(box_sketch, length = box_height)
+"""
+
 
 @pytest.mark.asyncio
 async def test_kcl_execute_with_exception():
@@ -284,22 +299,28 @@ async def test_kcl_execute_and_measure():
 
 
 @pytest.mark.asyncio
+async def test_kcl_execute_code_and_measure_bounding_box():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Centimeters)
+    response = await kcl.execute_code_and_measure(box_code, request)
+    assert response is not None
+
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+
+    assert center.x == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(5.0, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(5.0, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(5.0, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(10.0, rel=0, abs=1e-5)
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_code_and_bounding_box():
-    code = """
-box_width = 25
-box_depth = 25
-box_height = 50
-
-box_sketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = box_width)
-  |> yLine(length = box_depth)
-  |> xLine(endAbsolute = profileStartX(%))
-  |> close()
-
-box3D = extrude(box_sketch, length = box_height)
-"""
-    response = await kcl.execute_code_and_bounding_box(code)
+    response = await kcl.execute_code_and_bounding_box(box_code)
     assert response is not None
 
     center = response.get_center()

@@ -201,10 +201,14 @@ fn parse_entity_ids(entity_ids: Vec<String>) -> PyResult<Vec<Uuid>> {
     entity_ids.into_iter().map(|s| parse_uuid(&s)).collect()
 }
 
-async fn execute_and_bounding_box_impl(input: KclInput, entity_ids: Vec<String>) -> PyResult<BoundingBoxResponse> {
+async fn execute_and_bounding_box_impl(
+    input: KclInput,
+    entity_ids: Vec<String>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
     let entity_ids = parse_entity_ids(entity_ids)?;
     let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
-    let result = get_bounding_box(&ctx, entity_ids).await;
+    let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
     ctx.close().await;
     result
 }
@@ -442,18 +446,26 @@ async fn execute_code_and_measure(
 
 /// Execute a kcl file and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, entity_ids=None))]
-async fn execute_and_bounding_box(path: String, entity_ids: Option<Vec<String>>) -> PyResult<BoundingBoxResponse> {
+#[pyfunction(signature = (path, entity_ids=None, output_unit=None))]
+async fn execute_and_bounding_box(
+    path: String,
+    entity_ids: Option<Vec<String>>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids).await }).await
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit).await }).await
 }
 
 /// Execute the kcl code and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None))]
-async fn execute_code_and_bounding_box(code: String, entity_ids: Option<Vec<String>>) -> PyResult<BoundingBoxResponse> {
+#[pyfunction(signature = (code, entity_ids=None, output_unit=None))]
+async fn execute_code_and_bounding_box(
+    code: String,
+    entity_ids: Option<Vec<String>>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids).await }).await
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit).await }).await
 }
 
 /// Customize a snapshot.
@@ -594,6 +606,7 @@ async fn measure_model_properties(
         center_of_mass,
         surface_area,
         density,
+        bounding_box,
     } = request;
     // volume
     if let Some(volume_req) = volume {
@@ -695,17 +708,46 @@ async fn measure_model_properties(
         };
         out.surface_area = Some(surface_area_resp);
     }
+    // Bounding box
+    if let Some(bb_req) = bounding_box {
+        let bb_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(bb_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BoundingBox(bb_resp),
+        } = bb_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {bb_resp:?}",
+            )));
+        };
+        out.bounding_box = Some(bb_resp);
+    }
 
     Ok(out)
 }
 
-async fn get_bounding_box(ctx: &ExecutorContext, entity_ids: Vec<Uuid>) -> PyResult<BoundingBoxResponse> {
+async fn get_bounding_box(
+    ctx: &ExecutorContext,
+    entity_ids: Vec<Uuid>,
+    output_unit: Option<UnitLength>,
+) -> PyResult<BoundingBoxResponse> {
     let bounding_box_resp = ctx
         .engine
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
-            &ModelingCmd::from(kcmc::BoundingBox::builder().entity_ids(entity_ids).build()),
+            &ModelingCmd::from(
+                kcmc::BoundingBox::builder()
+                    .maybe_output_unit(output_unit)
+                    .entity_ids(entity_ids)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {

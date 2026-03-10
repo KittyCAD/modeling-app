@@ -249,6 +249,10 @@ class PhysicalPropertiesRequest:
         r"""
         Requests the density of the model.
         """
+    def set_bounding_box(self, output_unit:UnitLength) -> None:
+        r"""
+        Requests the bounding box of the model.
+        """
 
 class PhysicalPropertiesResponse:
     r"""
@@ -261,6 +265,7 @@ class PhysicalPropertiesResponse:
     def get_surface_area(self) -> builtins.float: ...
     def get_surface_area_unit(self) -> UnitArea: ...
     def get_density(self) -> builtins.float: ...
+    def get_bounding_box(self) -> BoundingBoxResponse: ...
     def get_density_unit(self) -> UnitDensity: ...
     def get_mass(self) -> builtins.float: ...
     def get_mass_unit(self) -> UnitMass: ...
@@ -747,7 +752,7 @@ async def execute(path:builtins.str) -> None:
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
+async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
@@ -774,7 +779,7 @@ async def execute_code(code:builtins.str) -> None:
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None) -> BoundingBoxResponse:
+async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """
