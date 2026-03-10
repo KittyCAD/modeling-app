@@ -5,6 +5,7 @@ import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBar
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { App } from '@src/lib/app'
 import { KclManager } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
 
 vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 vi.mock('@src/lang/wasmUtils', async () => {
@@ -55,10 +56,11 @@ describe('CommandBarSelectionMixedInput', () => {
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager({
+      const executingEditor = new KclManager('some-path', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -85,10 +87,11 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager({
+      const executingEditor = new KclManager('some-path', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -112,10 +115,11 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager({
+      const executingEditor = new KclManager('some-path', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -139,10 +143,11 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should send clear selection command only once on mount', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager({
+      const executingEditor = new KclManager('some-path', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -181,10 +186,11 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should set hasClearedSelection state after clearing', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager({
+      const executingEditor = new KclManager('some-path', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
+        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,

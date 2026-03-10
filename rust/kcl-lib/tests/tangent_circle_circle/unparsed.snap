@@ -20,15 +20,15 @@ s = sketch(on = XY) {
   coincident([b_top.end, b_bot.start])
 
   // Keep radii fixed so tangency cannot be satisfied by radius drift.
-radius(a_top) == 5mm
-radius(a_bot) == 5mm
-radius(b_top) == 3mm
-radius(b_bot) == 3mm
+  radius(a_top) == 5mm
+  radius(a_bot) == 5mm
+  radius(b_top) == 3mm
+  radius(b_bot) == 3mm
 
   // Fix frame to remove rigid-body ambiguity.
-a_top.center.at[0] == 0mm
-a_top.center.at[1] == 0mm
-b_top.center.at[1] == 0mm
+  a_top.center.at[0] == 0mm
+  a_top.center.at[1] == 0mm
+  b_top.center.at[1] == 0mm
 
   tangent([a_top, b_top])
 }
