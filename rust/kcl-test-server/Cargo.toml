@@ -2,7 +2,7 @@
 name = "kcl-test-server"
 description = "A test server for KCL"
 version = "0.2.132"
-edition = "2021"
+edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 
