@@ -30,7 +30,27 @@ car_wheel_dir = os.path.join(
     "car-wheel-assembly",
 )
 
+box_code = """
+box_width = 25
+box_depth = 25
+box_height = 50
 
+box_sketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = box_width)
+  |> yLine(length = box_depth)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+
+box3D = extrude(box_sketch, length = box_height)
+"""
+
+requires_engine = pytest.mark.skipif(
+    "ZOO_API_TOKEN" not in os.environ, reason="requires ZOO_API_TOKEN"
+)
+
+
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_with_exception():
     # Read from a file.
@@ -42,6 +62,7 @@ async def test_kcl_execute_with_exception():
         assert "lksjndflsskjfnak;jfna##" in str(e)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute():
     # Read from a file.
@@ -64,6 +85,31 @@ async def test_kcl_parse():
     # Read from a file.
     result = await kcl.parse(lego_file)
     assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_default_units(tmp_path):
+    kcl_file = tmp_path / "default-units.kcl"
+    kcl_file.write_text(
+        """@settings(defaultLengthUnit = in, defaultAngleUnit = rad)
+
+startSketchOn(XY)
+"""
+    )
+
+    units = await kcl.default_units(str(kcl_file))
+    assert units.length == kcl.UnitLength.Inches
+    assert units.angle == kcl.UnitAngle.Radians
+
+
+@pytest.mark.asyncio
+async def test_kcl_default_units_fallback_default(tmp_path):
+    kcl_file = tmp_path / "default-units.kcl"
+    kcl_file.write_text("startSketchOn(XY)")
+
+    units = await kcl.default_units(str(kcl_file))
+    assert units.length == kcl.UnitLength.Millimeters
+    assert units.angle == kcl.UnitAngle.Degrees
 
 
 @pytest.mark.asyncio
@@ -95,6 +141,7 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
     assert result is True
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_with_engine_exception_should_fail():
     # Read from a file.
@@ -124,6 +171,7 @@ async def test_kcl_mock_execute_code():
         assert result is True
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
@@ -134,6 +182,7 @@ async def test_kcl_execute_code():
         await kcl.execute_code(code)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_snapshot():
     # Read from a file.
@@ -146,6 +195,7 @@ async def test_kcl_execute_code_and_snapshot():
         assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export():
     # Read from a file.
@@ -165,6 +215,7 @@ async def test_kcl_execute_code_and_export():
         assert len(contents) > 0
 
 
+@requires_engine
 @flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
@@ -172,6 +223,7 @@ async def test_kcl_execute_dir_assembly():
     await kcl.execute(car_wheel_dir)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
@@ -180,6 +232,7 @@ async def test_kcl_execute_and_snapshot():
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_options():
     camera = kcl.CameraLookAt(
@@ -205,6 +258,7 @@ async def test_kcl_execute_and_snapshot_options():
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_import_and_snapshots():
     camera = kcl.CameraLookAt(
@@ -233,6 +287,7 @@ async def test_import_and_snapshots():
         assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_import_and_snapshots_single():
     # Read from a file.
@@ -246,6 +301,7 @@ async def test_import_and_snapshots_single():
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
@@ -255,6 +311,7 @@ async def test_kcl_execute_and_snapshot_dir():
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_measure():
     # Read from a file.
@@ -283,23 +340,52 @@ async def test_kcl_execute_and_measure():
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_measure_bounding_box_cm():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Centimeters)
+    response = await kcl.execute_code_and_measure(box_code, request)
+    assert response is not None
+
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+
+    assert center.x == pytest.approx(1.25, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(1.25, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(2.5, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(5.0, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_measure_bounding_box_mm():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+    response = await kcl.execute_code_and_measure(box_code, request)
+    assert response is not None
+
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_bounding_box():
-    code = """
-box_width = 25
-box_depth = 25
-box_height = 50
-
-box_sketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = box_width)
-  |> yLine(length = box_depth)
-  |> xLine(endAbsolute = profileStartX(%))
-  |> close()
-
-box3D = extrude(box_sketch, length = box_height)
-"""
-    response = await kcl.execute_code_and_bounding_box(code)
+    response = await kcl.execute_code_and_bounding_box(box_code)
     assert response is not None
 
     center = response.get_center()
@@ -314,6 +400,7 @@ box3D = extrude(box_sketch, length = box_height)
     assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_bounding_box():
     box_file = os.path.join(files_dir, "box_with_linter_errors.kcl")
@@ -332,6 +419,7 @@ async def test_kcl_execute_and_bounding_box():
     assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
@@ -426,6 +514,7 @@ def test_kcl_lint_fix_no_style():
         assert after_fixing.new_code == code
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
