@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a bug report for the Zoo Design Studio
-title: "[BUG]: "
-labels: ["bug"]
+title: ""
+type: Bug
 assignees: []
 body:
   - type: markdown
