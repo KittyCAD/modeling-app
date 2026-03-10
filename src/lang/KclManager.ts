@@ -255,29 +255,28 @@ export class ZDSProject {
     if (newPath === null) {
       return
     }
-    const foundPathSignal = this.findEditorPathSignal(newPath)
+    const foundPathSignal = this.findEditor(newPath)
     if (!foundPathSignal) {
       return
     }
-    const found = this.editors.get(foundPathSignal)
+    const found = foundPathSignal[1]
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
-    this.#executingPath.value = foundPathSignal
+    this.#executingPath.value = foundPathSignal[0]
   }
-  findEditorPathSignal(path: string) {
-    return this.editors.keys().find((p) => p.value === path)
+  findEditor(path: string) {
+    return this.editors.entries().find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
-  private get = this.editors.get.bind(this.editors)
   private set = this.editors.set.bind(this.editors)
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
   async openEditor(path: string, providedEditor?: KclManager) {
-    const foundPathSignal = this.findEditorPathSignal(path)
-    const found = foundPathSignal ? this.get(foundPathSignal) : undefined
+    const foundEditor = this.findEditor(path)
+    const found = foundEditor?.[1]
     if (found) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
@@ -293,18 +292,26 @@ export class ZDSProject {
       })
 
     // Splice our new editor into our files array
-    const foundFileIndex = this.files.findIndex((f) => f.path.value === path)
+    const foundFileIndex = this.files.findIndex((f) => f.path === path)
     if (foundFileIndex > -1) {
       const foundFile = this.files[foundFileIndex]
       newEditor.id = foundFile.id
-      newEditor.path.value = foundFile.path.value
+      newEditor.path = foundFile.path
       this.files = this.files
         .slice(0, foundFileIndex)
         .concat(newEditor)
         .concat(this.files.slice(foundFileIndex + 1))
     }
 
-    newEditor.path.value = path
+    newEditor.path = path
+
+    // TODO: Remove this block after the app can handle no executing editor
+    if (providedEditor) {
+      providedEditor.path = path
+      providedEditor.systemDeps.projectPath = computed(
+        () => this.projectIORefSignal.value.path
+      )
+    }
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -338,15 +345,19 @@ export class ZDSProject {
   }
 
   closeEditor(path: string) {
-    const foundPathSignal = this.findEditorPathSignal(path)
+    const foundPathSignal = this.findEditor(path)
     if (!foundPathSignal) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    this.editors.delete(foundPathSignal)
+    foundPathSignal[1].close()
+    this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    for (const editor of this.editors.values()) {
+      editor.close()
+    }
     this.editors.clear()
   }
 
@@ -360,7 +371,7 @@ export class ZDSProject {
     )
 
     const editor = this.executingEditor.value
-    const foundFile = this.files.find((f) => f.path.value === path)
+    const foundFile = this.files.find((f) => f.path === path)
 
     if (path.endsWith('.kcl')) {
       switch (eventType) {
@@ -368,7 +379,7 @@ export class ZDSProject {
           const newFile = new File(path, this.nextFileId++)
           this.files.push(newFile)
           newFile
-            .asApiFile()
+            .asRustApiFile()
             .then((file) => editor?.rustContext.sendAddFile(file))
             .catch(reportRejection)
           break
@@ -383,7 +394,7 @@ export class ZDSProject {
           }
           break
         case 'unlink':
-          const foundIndex = this.files.findIndex((f) => f.path.value === path)
+          const foundIndex = this.files.findIndex((f) => f.path === path)
           if (foundIndex >= 0 && path !== this.executingPath && foundFile) {
             this.files = this.files.filter((_, i) => i !== foundIndex)
             editor?.rustContext
@@ -416,7 +427,7 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((f) => f.asApiFile()))
+    return Promise.all(this.files.map((f) => f.asRustApiFile()))
   }
 }
 
@@ -440,39 +451,74 @@ export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
 export class File extends EventTarget {
   /** Path to file this editor is operating on */
-  public path: Signal<string>
+  private pathSignal: Signal<string>
+  private fileWatcherKey = uuidv4()
+  public watching: boolean = false
+  public onWatchEvent: (eventType: string, path: string) => void = () => ({})
+  get path() {
+    return this.pathSignal.value
+  }
+  set path(newPath: string) {
+    if (this.watching) {
+      this.unwatch()
 
-  static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
-    write: (path: string, content: string) =>
-      fsZds.writeFile(path, File.encoder.encode(content)),
+      // Don't watch empty file paths, that's the whole file system!
+      if (newPath.length > 0) {
+        this.watch()
+      }
+    }
+
+    this.pathSignal.value = newPath
   }
 
   read() {
-    return File.ioImplementations.read(this.path.value)
+    return File.ioImplementations.read(this.pathSignal.value)
   }
 
   write(newContent: string) {
-    return File.ioImplementations.write(this.path.value, newContent)
+    return File.ioImplementations.write(this.pathSignal.value, newContent)
   }
 
-  static encoder = new TextEncoder()
+  watch() {
+    File.ioImplementations.watch(
+      this.path,
+      this.fileWatcherKey,
+      this.onWatchEvent
+    )
+    this.watching = true
+  }
+
+  unwatch() {
+    File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
+    this.watching = false
+  }
 
   constructor(
     path: string,
     public id = 0
   ) {
     super()
-    this.path = signal(path)
+    this.pathSignal = signal(path)
   }
 
-  async asApiFile(): Promise<ApiFile> {
+  /** Present file data in format that RUST-WASM side needs it */
+  async asRustApiFile(): Promise<ApiFile> {
     return this.read().then((text) => ({
       id: this.id,
-      path: this.path.value,
+      path: this.pathSignal.value,
       text,
     }))
   }
+
+  /** Allows environments to swap their implementation of these IO-interfacing functions */
+  static ioImplementations = {
+    read: (path: string) => fsZds.readFile(path, 'utf8'),
+    write: (path: string, content: string) =>
+      fsZds.writeFile(path, File.encoder.encode(content)),
+    watch: window.electron?.watchFileOn || (() => {}),
+    unwatch: window.electron?.watchFileOff || (() => {}),
+  }
+  static encoder = new TextEncoder()
 }
 
 export class KclManager extends File {
@@ -587,27 +633,23 @@ export class KclManager extends File {
 
   // INTERNAL BOOKKEEPING STATE
 
-  private fileWatcherKey = uuidv4()
   /**
    * Watching the file system for updates and reacting to them.
-   * TODO: We don't watch for deletions here, should we?
    */
-  private onFileWatchEvent = (_eventType: string, path: string) => {
+  public onWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
     if (
-      path !== this.path.value ||
-      !this.systemDeps.projectPath ||
-      this.path.value.length < 1
+      path !== this.path ||
+      !this.systemDeps.projectPath.value ||
+      this.path.length < 1
     ) {
       return
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
-    window.electron
-      ?.readFile(path, {
-        encoding: 'utf-8',
-      })
+    File.ioImplementations
+      .read(path)
       .then((code) => {
         const isInSketchMode =
           this.modelingState?.matches('Sketch') ||
@@ -651,11 +693,11 @@ export class KclManager extends File {
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
-  // The last code written by the app, used to compare against external changes to the current file
-  public lastWrite: {
-    code: string // last code written by ZDS
-    time: number // Unix epoch time in milliseconds
-  } | null = null
+  /**
+    Indicator Promise that is pending while a live write is happening.
+    If this value isn't `null`, don't watch for file system writes it was probably us!
+   */
+  public writingPromise = signal<Promise<unknown> | null>(null)
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -954,7 +996,7 @@ export class KclManager extends File {
         console.error('Error when updating Rust state after user edit:', error)
       }
     },
-    300
+    1000
   )
 
   private createEditorExtensions() {
@@ -1029,18 +1071,11 @@ export class KclManager extends File {
         this._wasmInitFailed.value = true
         reportRejection(e)
       })
-
-    // Register a file watcher for this file.
-    window.electron?.watchFileOn(
-      path,
-      this.fileWatcherKey,
-      this.onFileWatchEvent
-    )
   }
 
   /** Clean up listeners, watchers, etc */
   public close() {
-    window.electron?.watchFileOff(this.path.value, this.fileWatcherKey)
+    this.unwatch()
   }
 
   clearAst() {
@@ -2069,7 +2104,6 @@ export class KclManager extends File {
   updateCurrentFilePath(path: string) {
     if (this._currentFilePath !== path) {
       this._currentFilePath = path
-      this.lastWrite = null
     }
   }
   get currentFileName() {
@@ -2169,10 +2203,6 @@ export class KclManager extends File {
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
-        this.lastWrite = {
-          code: newCode ?? '',
-          time: Date.now(),
-        }
         this.timeoutWriter = setTimeout(() => {
           if (!path) {
             return reject(new Error('currentFilePath not set'))
@@ -2180,21 +2210,15 @@ export class KclManager extends File {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          window.electron?.watchFileOff(this.path.value, this.fileWatcherKey)
+          this.unwatch()
           fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
             .then(() => {
               // After a cooldown, start watching this file again on disk.
-              if (window.electron) {
-                setTimeout(() => {
-                  window.electron?.watchFileOn(
-                    this.path.value,
-                    this.fileWatcherKey,
-                    this.onFileWatchEvent
-                  )
-                }, 1_000)
-              }
+              setTimeout(() => {
+                this.watch()
+              }, 1_000)
             })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)

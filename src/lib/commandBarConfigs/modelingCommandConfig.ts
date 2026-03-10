@@ -416,8 +416,11 @@ export type ModelingCommandSchema = {
     faces: Selections
   }
   'Boolean Split': {
+    nodeToEdit?: PathToNode
     targets: Selections
-    merge: boolean
+    tools?: Selections
+    merge?: boolean
+    keepTools?: boolean
   }
   Blend: {
     edges: Selections
@@ -706,7 +709,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'cap', 'wall'],
+        selectionTypes: ['solid2d', 'segment', 'cap', 'wall', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -789,6 +792,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -805,7 +809,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -862,6 +866,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -878,7 +883,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -927,6 +932,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -943,7 +949,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d', 'segment', 'region'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1345,18 +1351,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       targets: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tools: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        clearSelectionFirst: true,
+        multiple: true,
+        required: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       merge: {
         inputType: 'boolean',
-        required: true,
-        defaultValue: true,
-        hidden: true, // TODO: revisit once KCL supports false
-        skip: true,
+        required: false,
+      },
+      keepTools: {
+        inputType: 'boolean',
+        required: false,
       },
     },
   },

@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
     Program,
+    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
 };
 use wasm_bindgen::prelude::*;
 
@@ -496,7 +496,7 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim function from kcl-lib
-        use kcl_lib::front::{execute_trim_loop_with_context, Coords2d as Coords2dCore};
+        use kcl_lib::front::{Coords2d as Coords2dCore, execute_trim_loop_with_context};
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch

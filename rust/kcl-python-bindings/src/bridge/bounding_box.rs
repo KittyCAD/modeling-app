@@ -1,5 +1,5 @@
 use kittycad_modeling_cmds::ok_response::output as mout;
-use pyo3::{pyclass, pymethods, PyResult};
+use pyo3::{PyResult, pyclass, pymethods};
 
 /// Resulting bounding-box data from a `BoundingBox` modeling command.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]

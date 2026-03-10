@@ -52,6 +52,7 @@ export type CommandSelectionType =
   | Artifact['type']
   | 'enginePrimitiveFace'
   | 'enginePrimitiveEdge'
+  | 'region'
 export type FileFilter = {
   name: string
   extensions: string[]

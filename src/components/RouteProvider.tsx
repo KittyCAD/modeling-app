@@ -1,10 +1,7 @@
-import { isCodeTheSame } from '@src/lib/codeEditor'
 import fsZds from '@src/lib/fs-zds'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
-import toast from 'react-hot-toast'
-
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
@@ -75,35 +72,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // is very high in the context tree, higher than mlEphant's.
       if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
 
-      const isCurrentFile = loadedFile?.path === path
-      if (isCurrentFile) {
-        if (window.electron) {
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
-          // unless the change was initiated by us (the currently running instance).
-          const code = await window.electron.readFile(path, {
-            encoding: 'utf-8',
-          })
-
-          const lastWrittenCode = kclManager.lastWrite?.code
-          if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
-            const isInSketchMode =
-              kclManager.modelingState?.matches('Sketch') ||
-              kclManager.modelingState?.matches('sketchSolveMode')
-
-            // Nothing written out yet by ourselves, or it's not the same as the current file content
-            // -> this must be an external change -> re-execute.
-            kclManager.updateCodeEditor(code, {
-              shouldExecute: !isInSketchMode,
-              shouldResetCamera: !isInSketchMode,
-              // We explicitly do not write to the file here since we are loading from
-              // the file system and not the editor.
-              shouldWriteToDisk: false,
-            })
-
-            toast('Reloading file from disk', { icon: '📁' })
-          }
-        }
-      } else {
+      // We only react on files other than the currently-executing one here
+      // because the currently-executing one is handled with its own watcher in
+      // KclManager. In future, all files and folders will watch themselves.
+      if (loadedFile?.path !== path) {
         const fileNameWithExtension = getStringAfterLastSeparator(path)
         // Is the file from the change event type imported into the currently opened file
         const isImportedInCurrentFile = kclManager.ast.body.some(
