@@ -2223,9 +2223,9 @@ extrude001 = extrude(sketch001, length = 30)`
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 5)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 2)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()

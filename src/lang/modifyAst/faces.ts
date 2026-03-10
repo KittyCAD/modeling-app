@@ -26,6 +26,7 @@ import {
 import {
   getArtifactOfTypes,
   getCapCodeRef,
+  getCapForPathId,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepFromSuspectedSweepSurface,
@@ -54,7 +55,10 @@ import type {
   EdgeCutInfo,
   EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagForCapFace,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 
 export function addShell({
   ast,
@@ -933,9 +937,25 @@ export function getFacesExprsFromSelection(
       console.warn('No artifact found for face', v2Sel)
       return []
     }
-    const artifact = resolved.artifact
+    let artifact = resolved.artifact
+    if (artifact.type === 'path') {
+      const capForPath = getCapForPathId(artifact.id, artifactGraph)
+      if (err(capForPath)) return []
+      artifact = capForPath
+    }
     if (artifact.type === 'cap') {
-      return createLiteral(artifact.subType, wasmInstance)
+      // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
+      const tagResult = modifyAstWithTagForCapFace(
+        ast,
+        artifact,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        console.warn('Failed to add cap tag to extrude', tagResult)
+        return []
+      }
+      return [createLocalName(tagResult.tag)]
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
       let targetArtifact: Artifact | undefined
       let edgeCutMeta: EdgeCutInfo | null = null
@@ -978,7 +998,7 @@ export function getFacesExprsFromSelection(
         return []
       }
 
-      return createLocalName(tagResult.tag)
+      return [createLocalName(tagResult.tag)]
     } else {
       console.warn('Face was not a cap or wall or chamfer', v2Sel)
       return []
@@ -1035,7 +1055,9 @@ export function retrieveFaceSelectionsFromOpArgs(
         return codeRef
       }
 
-      candidates.set(artifact.subType, { artifact, codeRef })
+      const entry = { artifact, codeRef }
+      candidates.set(artifact.subType, entry)
+      candidates.set(artifact.id, entry)
     } else if (
       artifact.type === 'wall' &&
       sweepIdsSet.has(artifact.sweepId) &&
@@ -1050,7 +1072,9 @@ export function retrieveFaceSelectionsFromOpArgs(
       }
 
       const { codeRef } = segArtifact
-      candidates.set(artifact.segId, { artifact, codeRef })
+      const entry = { artifact, codeRef }
+      candidates.set(artifact.segId, entry)
+      candidates.set(artifact.id, entry)
     }
   }
 
@@ -1180,12 +1204,16 @@ export function buildSolidsAndFacesExprs(
   const solids: Selections = {
     graphSelectionsV2: faces.graphSelectionsV2.flatMap((f) => {
       const resolved = resolveSelectionV2(f, artifactGraph)
-      if (!resolved?.artifact) return []
+      if (!resolved?.artifact) {
+        return []
+      }
       const sweep = getSweepFromSuspectedSweepSurface(
         resolved.artifact.id,
         artifactGraph
       )
-      if (err(sweep) || !sweep) return []
+      if (err(sweep) || !sweep) {
+        return []
+      }
       return [
         {
           entityRef: artifactToEntityRef('sweep', sweep.id),

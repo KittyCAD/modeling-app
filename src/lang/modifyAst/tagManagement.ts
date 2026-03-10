@@ -380,9 +380,8 @@ function modifyAstWithTagForFaceSelection(
       tag: tag,
     }
   }
-  // CASE 2: Handle cap face - tag the extrusion/sweep
+  // CASE 2: Handle cap face - tag the extrusion/sweep (mutates ast in place)
   else if (selection.artifact.type === 'cap') {
-    // Each handler function creates its own clone and returns a new AST
     const result = modifyAstWithTagForCapFace(
       ast,
       selection.artifact,
@@ -390,10 +389,9 @@ function modifyAstWithTagForFaceSelection(
       wasmInstance
     )
     if (err(result)) return result
-    const { modifiedAst, tag } = result
     return {
-      modifiedAst: modifiedAst,
-      tag: tag,
+      modifiedAst: ast,
+      tag: result.tag,
     }
   }
   // CASE 3: Handle edgeCut face - tag the underlying segment
@@ -465,34 +463,31 @@ function modifyAstWithTagForWallFace(
 }
 
 /**
- * Tags a cap face (end of extrude) by modifying the sweep call
- * Handles both start and end caps with appropriate tag names
+ * Tags a cap face (end of extrude) by modifying the sweep call in place.
+ * Handles both start and end caps with appropriate tag names (tagEnd/tagStart).
+ * Mutates `ast`; use instead of END/START so edit flows can resolve the face.
  *
- * @param ast AST to modify
+ * @param ast AST to modify in place
  * @param capFace Cap face artifact
  * @param artifactGraph Artifact graph
- * @returns Modified AST and created tag
+ * @returns Created or existing tag name
  */
-function modifyAstWithTagForCapFace(
+export function modifyAstWithTagForCapFace(
   ast: Node<Program>,
   capFace: Artifact,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): { modifiedAst: Node<Program>; tag: string } | Error {
+): { tag: string } | Error {
   if (capFace.type !== 'cap') {
     return new Error('Selection artifact is not a valid cap type')
   }
-  // Clone AST
-  const astClone = structuredClone(ast)
 
-  // Get the sweep artifact for this cap
   const sweepArtifact = getArtifactOfTypes(
     { key: capFace.sweepId, types: ['sweep'] },
     artifactGraph
   )
   if (err(sweepArtifact)) return sweepArtifact
 
-  // Currently only supporting extrusion
   if (
     sweepArtifact.subType !== 'extrusion' &&
     sweepArtifact.subType !== 'revolve' &&
@@ -502,43 +497,29 @@ function modifyAstWithTagForCapFace(
   }
 
   const pathToSweepNode = sweepArtifact.codeRef.pathToNode
-
   const callExp = getNodeFromPath<CallExpressionKw>(
-    astClone,
+    ast,
     pathToSweepNode,
     wasmInstance,
     ['CallExpressionKw']
   )
   if (err(callExp)) return callExp
 
-  // Get the cap type (Start or End)
   const capType = capitaliseFC(capFace.subType)
-
-  // Use the appropriate tag parameter name (tagStart or tagEnd)
   const tagParamName = `tag${capType}`
 
-  // Check for existing tag with this parameter name
   const existingTag = callExp.node.arguments.find(
     (arg) => arg.label?.name === tagParamName
   )
 
   if (existingTag && existingTag.arg.type === 'TagDeclarator') {
-    // Use existing tag
-    return {
-      modifiedAst: astClone,
-      tag: existingTag.arg.value,
-    }
-  } else {
-    // Create new tag
-    const newTag = findUniqueName(astClone, `cap${capType}`)
-    const tagCall = createLabeledArg(tagParamName, createTagDeclarator(newTag))
-    callExp.node.arguments.push(tagCall)
-
-    return {
-      modifiedAst: astClone,
-      tag: newTag,
-    }
+    return { tag: existingTag.arg.value }
   }
+
+  const newTag = findUniqueName(ast, `cap${capType}`)
+  const tagCall = createLabeledArg(tagParamName, createTagDeclarator(newTag))
+  callExp.node.arguments.push(tagCall)
+  return { tag: newTag }
 }
 
 /**

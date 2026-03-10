@@ -135,9 +135,12 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
     return new Error(`No artifact found with key ${key}`)
   }
   const artifact = map.get(key)
-  if (!artifact) return new Error(`No artifact found with key ${key}`)
-  if (!types.includes(artifact?.type))
-    return new Error(`Expected ${types} but got ${artifact?.type}`)
+  if (!artifact) {
+    return new Error(`No artifact found with key ${key}`)
+  }
+  if (!types.includes(artifact?.type)) {
+    return new Error(`Expected ${types.join(',')} but got ${artifact?.type}`)
+  }
   return artifact as Extract<Artifact, { type: T[number] }>
 }
 
@@ -307,26 +310,64 @@ export function getEdgeCutConsumedCodeRef(
   return seg.codeRef
 }
 
+/**
+ * When the engine returns a path id for a cap face (e.g. tagged end cap),
+ * find a cap that belongs to a sweep using this path. Prefers 'end' cap.
+ */
+export function getCapForPathId(
+  pathId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'cap' }> | Error {
+  let foundCap: Extract<Artifact, { type: 'cap' }> | undefined
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'sweep') continue
+    const sweep = artifact as SweepArtifact
+    if (sweep.pathId !== pathId) continue
+    const sweepId = sweep.id
+    for (const a of artifactGraph.values()) {
+      if (a.type !== 'cap') continue
+      const cap = a as { sweepId?: string; subType?: string }
+      if (cap.sweepId !== sweepId) continue
+      if (cap.subType === 'end') return a
+      if (!foundCap) foundCap = a
+    }
+    return foundCap ?? new Error(`No cap found for path ${pathId}`)
+  }
+  return new Error(`No cap found for path ${pathId}`)
+}
+
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
-  const artifact = getArtifactOfTypes(
+  let faceArtifact:
+    | Extract<Artifact, { type: 'wall' | 'cap' | 'edgeCut' }>
+    | undefined
+  const direct = getArtifactOfTypes(
     { key: id, types: ['wall', 'cap', 'edgeCut'] },
     artifactGraph
   )
-  if (err(artifact)) return artifact
-  if (artifact.type === 'wall' || artifact.type === 'cap') {
-    const sweepId = (artifact as { sweepId?: string }).sweepId
+  if (!err(direct)) {
+    faceArtifact = direct
+  } else {
+    const capForPath = getCapForPathId(id, artifactGraph)
+    if (!err(capForPath)) {
+      faceArtifact = capForPath
+    } else {
+      return direct
+    }
+  }
+  if (faceArtifact.type === 'wall' || faceArtifact.type === 'cap') {
+    const sweepId = (faceArtifact as { sweepId?: string }).sweepId
     if (sweepId == null || sweepId === '') {
       return new Error('wall/cap has no sweepId')
     }
     return getArtifactOfTypes({ key: sweepId, types: ['sweep'] }, artifactGraph)
   }
-  const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
+  const edgeIds = (faceArtifact as { edge_ids?: string[] }).edge_ids
   const consumedEdgeId = edgeIds?.length
     ? edgeIds[0]
-    : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    : (faceArtifact as { consumedEdgeId?: string }).consumedEdgeId
   if (consumedEdgeId == null || consumedEdgeId === '') {
     return new Error('edgeCut has no edge_ids or consumedEdgeId')
   }
