@@ -104,9 +104,11 @@ function getPointFromObjects(
 function getLineTangentDirection({
   objects,
   lineId,
+  tangentPointId,
 }: {
   objects: Array<ApiObject>
   lineId: number
+  tangentPointId: number
 }): Coords2d | null {
   const lineObj = objects[lineId]
   if (
@@ -123,7 +125,17 @@ function getLineTangentDirection({
     return null
   }
 
-  const tangentDirection = normalizeVec(subVec(endPoint, startPoint))
+  let tangentDirection: Coords2d | null = null
+  if (lineObj.kind.segment.start === tangentPointId) {
+    tangentDirection = normalizeVec(subVec(startPoint, endPoint))
+  } else if (lineObj.kind.segment.end === tangentPointId) {
+    tangentDirection = normalizeVec(subVec(endPoint, startPoint))
+  }
+
+  if (!tangentDirection) {
+    return null
+  }
+
   if (isInvalidUnitVector(tangentDirection)) {
     return null
   }
@@ -203,11 +215,7 @@ export function resolveTangentInfoFromClick({
     const line = clickedObj.kind.segment
     const startPoint = getPointFromObjects(objects, line.start)
     const endPoint = getPointFromObjects(objects, line.end)
-    const tangentDirection = getLineTangentDirection({
-      objects,
-      lineId: clickedId,
-    })
-    if (!startPoint || !endPoint || !tangentDirection) {
+    if (!startPoint || !endPoint) {
       return null
     }
 
@@ -215,6 +223,15 @@ export function resolveTangentInfoFromClick({
     const endDistance = distance2d(endPoint, clickPoint)
 
     if (startDistance <= endDistance) {
+      const tangentDirection = getLineTangentDirection({
+        objects,
+        lineId: clickedId,
+        tangentPointId: line.start,
+      })
+      if (!tangentDirection) {
+        return null
+      }
+
       return {
         lineId: clickedId,
         tangentStart: {
@@ -223,6 +240,15 @@ export function resolveTangentInfoFromClick({
         },
         tangentDirection,
       }
+    }
+
+    const tangentDirection = getLineTangentDirection({
+      objects,
+      lineId: clickedId,
+      tangentPointId: line.end,
+    })
+    if (!tangentDirection) {
+      return null
     }
 
     return {
@@ -262,6 +288,7 @@ export function resolveTangentInfoFromClick({
     const tangentDirection = getLineTangentDirection({
       objects,
       lineId: ownerId,
+      tangentPointId: pointId,
     })
     if (!pointCoords || !tangentDirection) {
       return null

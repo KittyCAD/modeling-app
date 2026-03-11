@@ -55,7 +55,7 @@ describe('tangentialArcToolImpl', () => {
       expect(tangentInfoNearStart).toEqual({
         lineId: 3,
         tangentStart: { id: 1, point: [0, 0] },
-        tangentDirection: [1, 0],
+        tangentDirection: [-1, 0],
       })
       expect(tangentInfoNearEnd).toEqual({
         lineId: 3,
@@ -76,13 +76,23 @@ describe('tangentialArcToolImpl', () => {
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
       const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
 
-      const tangentInfo = resolveTangentInfoFromClick({
+      const tangentInfoAtStart = resolveTangentInfoFromClick({
+        clickedId: 1,
+        clickPoint: [0, 0],
+        sceneGraphDelta,
+      })
+      const tangentInfoAtEnd = resolveTangentInfoFromClick({
         clickedId: 2,
         clickPoint: [20, 0],
         sceneGraphDelta,
       })
 
-      expect(tangentInfo).toEqual({
+      expect(tangentInfoAtStart).toEqual({
+        lineId: 3,
+        tangentStart: { id: 1, point: [0, 0] },
+        tangentDirection: [-1, 0],
+      })
+      expect(tangentInfoAtEnd).toEqual({
         lineId: 3,
         tangentStart: { id: 2, point: [20, 0] },
         tangentDirection: [1, 0],
