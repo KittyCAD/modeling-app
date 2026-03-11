@@ -38,9 +38,9 @@ base_unit = "mm"
             UnitLength::Millimeters
         );
 
-        // Serializing defaults should omit modeling/base_unit entirely.
+        // Serializing the settings file back should not change it.
         let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(serialized, "");
+        assert_eq!(serialized, with_mm);
 
         // An empty [settings.modeling] section should still default to mm.
         let empty_modeling_section = r#"[settings.modeling]
@@ -48,6 +48,7 @@ base_unit = "mm"
         let parsed2 = toml::from_str::<Configuration>(empty_modeling_section).unwrap();
         assert_eq!(
             parsed2
+                .clone()
                 .settings
                 .modeling
                 .unwrap_or_default()
@@ -56,6 +57,9 @@ base_unit = "mm"
                 .0,
             UnitLength::Millimeters
         );
+        // Serializing the settings file back should not change it.
+        let serialized = toml::to_string(&parsed2).unwrap();
+        assert_eq!(serialized, empty_modeling_section);
     }
 
     #[test]
