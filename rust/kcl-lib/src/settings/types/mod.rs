@@ -42,23 +42,23 @@ impl Configuration {
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
     /// The settings for the Design Studio.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub app: Option<AppSettings>,
     /// Settings that affect the behavior while modeling.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub modeling: Option<ModelingSettings>,
     /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub text_editor: Option<TextEditorSettings>,
     /// Settings that affect the behavior of project management.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub project: Option<ProjectSettings>,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub command_bar: Option<CommandBarSettings>,
 }
@@ -69,26 +69,26 @@ pub struct Settings {
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub appearance: Option<AppearanceSettings>,
     /// The onboarding status of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub onboarding_status: Option<OnboardingStatus>,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,
         deserialize_with = "deserialize_stream_idle_mode",
         alias = "streamIdleMode",
-        skip_serializing_if = "is_default"
+        skip_serializing_if = "Option::is_none"
     )]
     stream_idle_mode: Option<u32>,
     /// Allow orbiting in sketch mode.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_orbit_in_sketch_mode: Option<bool>,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_debug_panel: Option<bool>,
 }
 
@@ -142,7 +142,7 @@ impl From<FloatOrInt> for f64 {
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
     /// The overall theme of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme: Option<AppTheme>,
 }
 
@@ -232,54 +232,54 @@ impl From<BackfaceDefault> for String {
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
     /// If not given, defaults to millimeters.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base_unit: Option<LengthDefaultMm>,
     /// The projection mode the camera should use while modeling.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub camera_projection: Option<CameraProjectionType>,
     /// The methodology the camera should use to orbit around the model.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub camera_orbit: Option<CameraOrbitType>,
     /// The controls for how to navigate the 3D view.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mouse_controls: Option<MouseControlType>,
     /// Which type of orientation gizmo to use.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gizmo_type: Option<GizmoType>,
     /// Toggle touch controls for 3D view navigation
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_touch_controls: Option<DefaultTrue>,
     /// Default to the experimental solver-based sketch mode for all new sketches.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_sketch_solve_mode: Option<bool>,
     /// Highlight edges of 3D objects?
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight_edges: Option<DefaultTrue>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub backface_color: Option<BackfaceDefault>,
     /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_scale_grid: Option<bool>,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
     /// If true, the grid cells will be fixed-size, where the width is your default length unit.
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<DefaultTrue>,
     /// When enabled, tools like line, rectangle, etc. will snap to the grid.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snap_to_grid: Option<bool>,
     /// The space between major grid lines, specified in the current unit.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub major_grid_spacing: Option<f64>,
     /// The number of minor grid lines per major grid line.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minor_grids_per_major: Option<f64>,
     /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snaps_per_minor: Option<f64>,
 }
 
@@ -384,11 +384,11 @@ pub enum GizmoType {
 #[ts(export)]
 pub struct TextEditorSettings {
     /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub text_wrapping: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_wrapping: Option<DefaultTrue>,
     /// Whether to make the cursor blink in the editor.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub blinking_cursor: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blinking_cursor: Option<DefaultTrue>,
 }
 
 /// Same as TextEditorSettings but applies to a per-project basis.
@@ -410,11 +410,11 @@ pub struct ProjectTextEditorSettings {
 #[ts(export)]
 pub struct ProjectSettings {
     /// The directory to save and load projects from.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub directory: std::path::PathBuf,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub directory: Option<std::path::PathBuf>,
     /// The default project name to use when creating a new project.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub default_project_name: ProjectNameTemplate,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_project_name: Option<ProjectNameTemplate>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -446,8 +446,8 @@ impl From<String> for ProjectNameTemplate {
 #[ts(export)]
 pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub include_settings: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_settings: Option<DefaultTrue>,
 }
 
 /// Same as CommandBarSettings but applies to a per-project basis.
@@ -579,25 +579,24 @@ mod tests {
     #[test]
     fn test_settings_parse_basic() {
         let settings_file = r#"[settings.app]
-default_project_name = "untitled"
-directory = ""
 onboarding_status = "dismissed"
 
 [settings.app.appearance]
 theme = "dark"
 
 [settings.modeling]
-enable_ssao = false
 base_unit = "in"
-mouse_controls = "zoo"
 camera_projection = "perspective"
-
-[settings.project]
-default_project_name = "untitled"
-directory = ""
+mouse_controls = "zoo"
+enable_ssao = false
 
 [settings.text_editor]
-text_wrapping = true"#;
+text_wrapping = true
+
+[settings.project]
+directory = ""
+default_project_name = "untitled"
+"#;
 
         let expected = Configuration {
             settings: Settings {
@@ -617,11 +616,11 @@ text_wrapping = true"#;
                     ..Default::default()
                 }),
                 project: Some(ProjectSettings {
-                    default_project_name: ProjectNameTemplate("untitled".to_string()),
-                    directory: "".into(),
+                    default_project_name: Some(ProjectNameTemplate("untitled".to_string())),
+                    directory: Some("".into()),
                 }),
                 text_editor: Some(TextEditorSettings {
-                    text_wrapping: true.into(),
+                    text_wrapping: Some(true.into()),
                     ..Default::default()
                 }),
                 command_bar: None,
@@ -630,11 +629,11 @@ text_wrapping = true"#;
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(parsed, expected);
 
-        let expected_unwrap = CommandBarSettings {
-            include_settings: true.into(),
-        };
+        let expected_unwrap = CommandBarSettings { include_settings: None };
         let actual_unwrap = expected.clone().settings.command_bar.unwrap_or_default();
         assert_eq!(actual_unwrap, expected_unwrap);
+        let actual_unwrap = actual_unwrap.include_settings.unwrap_or_default();
+        assert_eq!(actual_unwrap.0, true);
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
