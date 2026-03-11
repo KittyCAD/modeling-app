@@ -1027,16 +1027,18 @@ export function retrieveFaceSelectionsFromOpArgs(
     return solids
   }
 
-  // TODO: need to support multiple solids there
-  const firstResolved = solids.graphSelectionsV2[0]
-    ? resolveSelectionV2(solids.graphSelectionsV2[0], artifactGraph)
-    : null
-  const sweepArtifact = firstResolved?.artifact
-  if (!sweepArtifact || sweepArtifact.type !== 'sweep') {
+  // Collect sweep IDs from all solids (shell can have multiple solids e.g. [thing1, thing2])
+  const sweepIdsSet = new Set<string>()
+  for (const sel of solids.graphSelectionsV2) {
+    const resolved = resolveSelectionV2(sel, artifactGraph)
+    const artifact = resolved?.artifact
+    if (artifact?.type === 'sweep') {
+      sweepIdsSet.add(artifact.id)
+    }
+  }
+  if (sweepIdsSet.size === 0) {
     return new Error('No sweep artifact found in solids selection')
   }
-  const sweepId = sweepArtifact.id
-  const sweepIdsSet = new Set([sweepId])
   const candidates = new Map<
     string,
     {
@@ -1117,11 +1119,18 @@ export function retrieveFaceSelectionsFromOpArgs(
         })
       } else {
         console.warn(
-          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
+          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection',
+          { artifact_id: v.artifact_id, candidatesKeys: [...candidates.keys()] }
         )
       }
     } else {
-      console.warn('Face value is not a String or TagIdentifier', v)
+      console.warn('Face value is not a String or TagIdentifier', v, {
+        type: v.type,
+        ...(v.type === 'TagIdentifier' && {
+          artifact_id: v.artifact_id,
+          inCandidates: v.artifact_id != null && candidates.has(v.artifact_id),
+        }),
+      })
       continue
     }
   }
