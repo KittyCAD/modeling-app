@@ -11,14 +11,12 @@ import {
 } from 'three'
 import {
   CONSTRAINT_TYPE,
-  isDiameterConstraint,
-  isRadiusConstraint,
+  isConstraintWithSource,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
   SpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { isDistanceConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -41,7 +39,6 @@ const LABEL_CANVAS_PADDING = 4 // horizontal padding on each side
 export const LABEL_CANVAS_HEIGHT = 32
 export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
-const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
 const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
@@ -161,6 +158,7 @@ export function updateDimensionLine(
 
   group.visible = true
   const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+  let labelTextWidthPx = 0
 
   // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
   for (const child of group.children) {
@@ -173,9 +171,14 @@ export function updateDimensionLine(
     child.visible = isLabelVisual ? showLabel : true
   }
 
+  if (showLabel) {
+    const theme = getResolvedTheme(sceneInfra.theme)
+    const constraintColor = CONSTRAINT_COLOR[theme]
+    labelTextWidthPx = updateLabel(group, obj, constraintColor, distance, scale)
+  }
+
   // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
-  const halfGap =
-    showLabel && !isDiameter ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
+  const halfGap = showLabel && !isDiameter ? labelTextWidthPx * 0.5 * scale : 0
   const gapStart = lineCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
   const gapEnd = lineCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(
@@ -221,12 +224,6 @@ export function updateDimensionLine(
   arrow2.rotation.z = angle - Math.PI / 2
   arrow2.scale.setScalar(scale)
 
-  if (showLabel) {
-    const theme = getResolvedTheme(sceneInfra.theme)
-    const constraintColor = CONSTRAINT_COLOR[theme]
-    updateLabel(group, obj, constraintColor, distance, scale)
-  }
-
   // Update hit areas for lines
   const hitAreas = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
@@ -270,11 +267,11 @@ export function updateLineHitArea(
   hitArea.scale.set(length, hitWidth, 1)
 }
 
-function updateLabel(
+export function updateLabel(
   group: Group,
   obj: ApiObject,
   constraintColor: number,
-  distance: Number,
+  apiNumber: Number,
   scale: number
 ) {
   const label = group.children.find(
@@ -283,12 +280,9 @@ function updateLabel(
   if (label?.material.map) {
     const canvas = label.material.map.source.data
 
-    const dimensionLabel = parseFloat(distance.value.toFixed(3)).toString()
+    const dimensionLabel = formatNumber(apiNumber)
     const showFnIcon =
-      (isDistanceConstraint(obj) ||
-        isRadiusConstraint(obj) ||
-        isDiameterConstraint(obj)) &&
-      !obj.kind.constraint.source.is_literal
+      isConstraintWithSource(obj) && !obj.kind.constraint.source.is_literal
 
     if (
       label.userData.dimensionLabel !== dimensionLabel ||
@@ -302,10 +296,12 @@ function updateLabel(
 
       // Update texture: only if needed because this is not cheap
       const ctx = canvas.getContext('2d')
+      const font = '24px sans-serif'
       if (ctx) {
         // Measure text to compute needed canvas width
-        ctx.font = '24px sans-serif'
+        ctx.font = font
         const textMetrics = ctx.measureText(dimensionLabel)
+        label.userData.textWidthPx = textMetrics.width
         const iconWidth = showFnIcon
           ? FUNCTION_ICON_SIZE + FUNCTION_ICON_GAP
           : 0
@@ -334,8 +330,8 @@ function updateLabel(
 
         // Re-set context state after resize
         const fillColor = '#' + new Color(constraintColor).getHexString()
+        ctx.font = font // needed after canvas resize
         ctx.fillStyle = fillColor
-        ctx.font = '24px sans-serif'
         ctx.textAlign = 'left'
         ctx.textBaseline = 'middle'
 
@@ -361,7 +357,12 @@ function updateLabel(
       label.material.map.needsUpdate = true
     }
 
-    label.scale.set(canvas.width * scale * 0.5, canvas.height * scale * 0.5, 1)
+    const LABEL_SCALE = 0.5 // Render at 2x resolution for crisper text
+    label.scale.set(
+      canvas.width * scale * LABEL_SCALE,
+      canvas.height * scale * LABEL_SCALE,
+      1
+    )
 
     // Update label hit area to match canvas size
     const labelHitAreas = group.children.filter(
@@ -373,10 +374,26 @@ function updateLabel(
     if (labelHitArea) {
       labelHitArea.position.copy(label.position)
       labelHitArea.scale.set(
-        canvas.width * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
-        canvas.height * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
+        canvas.width * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
+        canvas.height * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
         1
       )
     }
+
+    return (label.userData.textWidthPx ?? 0) * LABEL_SCALE + 8
+  }
+
+  return 0
+}
+
+function formatNumber(apiNumber: Number) {
+  if (['Deg', 'Rad'].includes(apiNumber.units)) {
+    let value = apiNumber.value
+    if (apiNumber.units === 'Rad') {
+      value *= 180 / Math.PI
+    }
+    return parseFloat(value.toFixed(1)).toString() + '°'
+  } else {
+    return parseFloat(apiNumber.value.toFixed(3)).toString()
   }
 }
