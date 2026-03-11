@@ -132,7 +132,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { isCodeTheSame } from '@src/lib/codeEditor'
+import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
 
 interface ExecuteArgs {
@@ -261,11 +261,16 @@ export class ZDSProject {
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
-  // TODO: Remove providedEditor, replace with options about if the editor is the executing one
-  // once the app can handle not having a KclManager.
   async openEditor(
     path: string,
+    /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
+     * once the app can handle not having a KclManager.
+     */
     providedEditor?: KclManager,
+    /** TODO: Remove `providedCode` once no tests rely on initializing
+     * editor state through localstorage.
+     */
+    providedCode?: string,
     isExecuting = true
   ) {
     const foundEditor = this.findEditor(path)
@@ -292,7 +297,8 @@ export class ZDSProject {
         ? this.files[foundFileIndex]
         : new File(path, this.nextFileId++),
       systemDeps,
-      providedEditor
+      providedEditor,
+      providedCode
     )
 
     // Splice our new editor into our files array
@@ -1029,9 +1035,12 @@ export class KclManager extends File {
   static async fromFile(
     file: File,
     systemDeps: SystemDeps,
-    providedEditor?: KclManager
+    providedEditor?: KclManager,
+    providedCode?: string
   ) {
-    const initialCode = await file.read()
+    const initialCode = normalizeLineEndings(
+      providedCode || (await file.read())
+    )
 
     if (!providedEditor) {
       return new KclManager(file.path, initialCode, systemDeps, file.id)
