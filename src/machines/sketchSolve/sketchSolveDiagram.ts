@@ -46,6 +46,11 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import {
+  buildAngleConstraintInput,
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -61,10 +66,7 @@ async function addAxisDistanceConstraint(
       context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
         segmentsToConstrain[0]
       ]
-    if (
-      first?.kind?.type === 'Segment' &&
-      first?.kind?.segment?.type === 'Line'
-    ) {
+    if (isLineSegment(first)) {
       segmentsToConstrain = [first.kind.segment.start, first.kind.segment.end]
     }
   }
@@ -81,12 +83,7 @@ async function addAxisDistanceConstraint(
   if (currentSelections.length === 2) {
     const first = currentSelections[0]
     const second = currentSelections[1]
-    if (
-      first?.kind?.type === 'Segment' &&
-      first?.kind.segment?.type === 'Point' &&
-      second?.kind?.type === 'Segment' &&
-      second?.kind.segment?.type === 'Point'
-    ) {
+    if (isPointSegment(first) && isPointSegment(second)) {
       const point1 = {
         x: first.kind.segment.position.x,
         y: first.kind.segment.position.y,
@@ -308,26 +305,47 @@ export const sketchSolveMachine = setup({
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const segmentsToConstrain = context.selectedIds
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
         const currentSelections = segmentsToConstrain
-          .map(
-            (id) =>
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-          )
+          .map((id) => objects[id])
           .filter(Boolean)
         let distance = DEFAULT_DISTANCE_FALLBACK
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
         )
-        // Calculate distance between two points if both are point segments
+
         if (currentSelections.length === 2) {
           const first = currentSelections[0]
           const second = currentSelections[1]
-          if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind.segment?.type === 'Point' &&
-            second?.kind?.type === 'Segment' &&
-            second?.kind.segment?.type === 'Point'
-          ) {
+          if (isLineSegment(first) && isLineSegment(second)) {
+            const angleConstraint = buildAngleConstraintInput(
+              first,
+              second,
+              objects
+            )
+            if (angleConstraint) {
+              const result = await context.rustContext.addConstraint(
+                0,
+                context.sketchId,
+                angleConstraint,
+                await jsAppSettings(context.rustContext.settingsActor)
+              )
+              if (result) {
+                self.send({
+                  type: 'update sketch outcome',
+                  data: {
+                    sourceDelta: result.kclSource,
+                    sceneGraphDelta: result.sceneGraphDelta,
+                  },
+                })
+              }
+              return
+            }
+          }
+
+          // Calculate distance between two points if both are point segments
+          if (isPointSegment(first) && isPointSegment(second)) {
             // the units of these points will have already been normalized to the user's default units
             // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
             const point1 = {
@@ -362,12 +380,7 @@ export const sketchSolveMachine = setup({
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
                 first.kind.segment.start
               ]
-            if (
-              centerPoint?.kind?.type === 'Segment' &&
-              centerPoint.kind.segment?.type === 'Point' &&
-              startPoint?.kind?.type === 'Segment' &&
-              startPoint.kind.segment?.type === 'Point'
-            ) {
+            if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
               const point1 = {
                 x: centerPoint.kind.segment.position.x,
                 y: centerPoint.kind.segment.position.y,
@@ -410,10 +423,7 @@ export const sketchSolveMachine = setup({
               })
             }
             return
-          } else if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind?.segment?.type === 'Line'
-          ) {
+          } else if (isLineSegment(first)) {
             // Calculate distance for line segment from its endpoints
             const startPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
@@ -423,12 +433,7 @@ export const sketchSolveMachine = setup({
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
                 first.kind.segment.end
               ]
-            if (
-              startPoint?.kind?.type === 'Segment' &&
-              startPoint.kind.segment?.type === 'Point' &&
-              endPoint?.kind?.type === 'Segment' &&
-              endPoint.kind.segment?.type === 'Point'
-            ) {
+            if (isPointSegment(startPoint) && isPointSegment(endPoint)) {
               const point1 = {
                 x: startPoint.kind.segment.position.x,
                 y: startPoint.kind.segment.position.y,
@@ -450,9 +455,7 @@ export const sketchSolveMachine = setup({
         }
         // distance() accepts two points: when user selects one line, pass its endpoints
         const pointsForDistance =
-          currentSelections.length === 1 &&
-          currentSelections[0]?.kind?.type === 'Segment' &&
-          currentSelections[0].kind.segment?.type === 'Line'
+          currentSelections.length === 1 && isLineSegment(currentSelections[0])
             ? [
                 currentSelections[0].kind.segment.start,
                 currentSelections[0].kind.segment.end,
