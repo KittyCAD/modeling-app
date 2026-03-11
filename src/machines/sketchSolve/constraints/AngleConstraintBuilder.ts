@@ -17,7 +17,7 @@ import {
   rotateVec2d,
   addVec,
   dot2d,
-  TWO_PI,
+  TAU,
 } from '@src/lib/utils2d'
 import {
   ANGLE_CONSTRAINT_ARC_BODY_ROLE,
@@ -177,7 +177,7 @@ function calculateArcRenderInput(
 export function normalizeAngleRad(angle: ApiNumber) {
   const angleRadians =
     angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
-  const normalized = ((angleRadians % TWO_PI) + TWO_PI) % TWO_PI
+  const normalized = ((angleRadians % TAU) + TAU) % TAU
   return normalized
 }
 

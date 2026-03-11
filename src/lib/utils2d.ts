@@ -5,7 +5,7 @@ export function deg2Rad(deg: number): number {
   return (deg * Math.PI) / 180
 }
 
-export const TWO_PI = Math.PI * 2
+export const TAU = Math.PI * 2
 
 export function getTangentPointFromPreviousArc(
   lastArcCenter: Coords2d,
