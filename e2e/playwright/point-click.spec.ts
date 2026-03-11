@@ -4935,10 +4935,10 @@ profile001 = startProfile(sketch001, at = [-5, -5])
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 10)
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 hole001 = hole::hole(
   extrude001,
-  face = END,
+  face = capEnd001,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),
