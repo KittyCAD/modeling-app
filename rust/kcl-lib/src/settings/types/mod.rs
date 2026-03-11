@@ -613,7 +613,7 @@ text_wrapping = true"#;
                     base_unit: Some(From::from(UnitLength::Inches)),
                     mouse_controls: Some(MouseControlType::Zoo),
                     camera_projection: Some(CameraProjectionType::Perspective),
-                    fixed_size_grid: Some(true.into()),
+                    fixed_size_grid: None,
                     ..Default::default()
                 }),
                 project: Some(ProjectSettings {
@@ -624,30 +624,21 @@ text_wrapping = true"#;
                     text_wrapping: true.into(),
                     ..Default::default()
                 }),
-                command_bar: Some(CommandBarSettings {
-                    include_settings: true.into(),
-                }),
+                command_bar: None,
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(parsed, expected);
 
+        let expected_unwrap = CommandBarSettings {
+            include_settings: true.into(),
+        };
+        let actual_unwrap = expected.clone().settings.command_bar.unwrap_or_default();
+        assert_eq!(actual_unwrap, expected_unwrap);
+
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(
-            serialized,
-            r#"[settings.app]
-onboarding_status = "dismissed"
-
-[settings.app.appearance]
-theme = "dark"
-
-[settings.modeling]
-base_unit = "in"
-camera_projection = "perspective"
-enable_ssao = false
-"#
-        );
+        assert_eq!(serialized, settings_file);
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
