@@ -9161,7 +9161,7 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Draw one half of the cooling sketchs"
+          "// Draw one half of the cooling sketch"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -9306,7 +9306,7 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Draw the other mirrored half of cooling sketchs"
+          "// Draw the other mirrored half of cooling sketch"
         ],
         "start": 0,
         "type": "VariableDeclaration",
