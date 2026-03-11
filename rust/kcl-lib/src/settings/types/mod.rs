@@ -47,23 +47,23 @@ pub struct Settings {
     /// The settings for the Design Studio.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub app: AppSettings,
+    pub app: Option<AppSettings>,
     /// Settings that affect the behavior while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub modeling: ModelingSettings,
+    pub modeling: Option<ModelingSettings>,
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub text_editor: TextEditorSettings,
+    pub text_editor: Option<TextEditorSettings>,
     /// Settings that affect the behavior of project management.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub project: ProjectSettings,
+    pub project: Option<ProjectSettings>,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub command_bar: CommandBarSettings,
+    pub command_bar: Option<CommandBarSettings>,
 }
 
 /// Application wide settings.
@@ -74,10 +74,10 @@ pub struct AppSettings {
     /// The settings for the appearance of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
-    pub appearance: AppearanceSettings,
+    pub appearance: Option<AppearanceSettings>,
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub onboarding_status: OnboardingStatus,
+    pub onboarding_status: Option<OnboardingStatus>,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,
@@ -88,23 +88,14 @@ pub struct AppSettings {
     stream_idle_mode: Option<u32>,
     /// Allow orbiting in sketch mode.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub allow_orbit_in_sketch_mode: bool,
+    pub allow_orbit_in_sketch_mode: Option<bool>,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub show_debug_panel: bool,
+    pub show_debug_panel: Option<bool>,
     /// Whether to enable Machine API discovery and printing controls on desktop.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub machine_api: bool,
-}
-
-/// Default to true.
-fn make_it_so() -> bool {
-    true
-}
-
-fn is_true(b: &bool) -> bool {
-    *b
+    pub machine_api: Option<bool>,
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -158,7 +149,7 @@ impl From<FloatOrInt> for f64 {
 pub struct AppearanceSettings {
     /// The overall theme of the app.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub theme: AppTheme,
+    pub theme: Option<AppTheme>,
 }
 
 /// The overall appearance of the app.
@@ -202,64 +193,99 @@ impl From<AppTheme> for kittycad::types::Color {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[serde(transparent)]
+pub struct LengthDefaultMm(pub UnitLength);
+
+impl Default for LengthDefaultMm {
+    fn default() -> Self {
+        Self(default_length_unit_millimeters())
+    }
+}
+
+impl From<LengthDefaultMm> for UnitLength {
+    fn from(val: LengthDefaultMm) -> Self {
+        val.0
+    }
+}
+
+impl From<UnitLength> for LengthDefaultMm {
+    fn from(unit: UnitLength) -> Self {
+        Self(unit)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[serde(transparent)]
+pub struct BackfaceDefault(pub String);
+
+impl Default for BackfaceDefault {
+    fn default() -> Self {
+        Self(default_backface_color())
+    }
+}
+
+impl From<BackfaceDefault> for String {
+    fn from(val: BackfaceDefault) -> Self {
+        val.0
+    }
+}
+
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate, Default)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default = "default_length_unit_millimeters", skip_serializing_if = "is_default")]
-    pub base_unit: UnitLength,
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub base_unit: Option<LengthDefaultMm>,
     /// The projection mode the camera should use while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub camera_projection: CameraProjectionType,
+    pub camera_projection: Option<CameraProjectionType>,
     /// The methodology the camera should use to orbit around the model.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub camera_orbit: CameraOrbitType,
+    pub camera_orbit: Option<CameraOrbitType>,
     /// The controls for how to navigate the 3D view.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub mouse_controls: MouseControlType,
+    pub mouse_controls: Option<MouseControlType>,
     /// Which type of orientation gizmo to use.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub gizmo_type: GizmoType,
+    pub gizmo_type: Option<GizmoType>,
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_touch_controls: DefaultTrue,
+    pub enable_touch_controls: Option<DefaultTrue>,
     /// Default to the experimental solver-based sketch mode for all new sketches.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub use_sketch_solve_mode: bool,
+    pub use_sketch_solve_mode: Option<bool>,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
-    pub highlight_edges: DefaultTrue,
+    pub highlight_edges: Option<DefaultTrue>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_ssao: DefaultTrue,
+    pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.
-    #[serde(
-        default = "default_backface_color",
-        skip_serializing_if = "is_default_backface_color"
-    )]
-    pub backface_color: String,
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub backface_color: Option<BackfaceDefault>,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
-    pub show_scale_grid: bool,
+    pub show_scale_grid: Option<bool>,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
     /// If true, the grid cells will be fixed-size, where the width is your default length unit.
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
-    pub fixed_size_grid: bool,
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub fixed_size_grid: Option<DefaultTrue>,
     /// When enabled, tools like line, rectangle, etc. will snap to the grid.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub snap_to_grid: bool,
+    pub snap_to_grid: Option<bool>,
     /// The space between major grid lines, specified in the current unit.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub major_grid_spacing: f64,
+    pub major_grid_spacing: Option<f64>,
     /// The number of minor grid lines per major grid line.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub minor_grids_per_major: f64,
+    pub minor_grids_per_major: Option<f64>,
     /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub snaps_per_minor: f64,
+    pub snaps_per_minor: Option<f64>,
 }
 
 fn default_length_unit_millimeters() -> UnitLength {
@@ -269,33 +295,6 @@ fn default_length_unit_millimeters() -> UnitLength {
 // Also defined at src/lib/constants.ts#L333-L335
 fn default_backface_color() -> String {
     "#00D5FF".to_string()
-}
-
-fn is_default_backface_color(color: &String) -> bool {
-    *color == default_backface_color()
-}
-
-impl Default for ModelingSettings {
-    fn default() -> Self {
-        Self {
-            base_unit: UnitLength::Millimeters,
-            camera_projection: Default::default(),
-            camera_orbit: Default::default(),
-            mouse_controls: Default::default(),
-            gizmo_type: Default::default(),
-            enable_touch_controls: Default::default(),
-            use_sketch_solve_mode: Default::default(),
-            highlight_edges: Default::default(),
-            enable_ssao: Default::default(),
-            backface_color: default_backface_color(),
-            show_scale_grid: Default::default(),
-            fixed_size_grid: true,
-            snap_to_grid: Default::default(),
-            major_grid_spacing: Default::default(),
-            minor_grids_per_major: Default::default(),
-            snaps_per_minor: Default::default(),
-        }
-    }
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -562,7 +561,17 @@ mod tests {
 
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
-        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            default_backface_color()
+        );
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -570,7 +579,16 @@ mod tests {
 
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
-        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(
+            parsed
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            default_backface_color()
+        );
     }
 
     #[test]
@@ -580,8 +598,8 @@ default_project_name = "untitled"
 directory = ""
 onboarding_status = "dismissed"
 
-  [settings.app.appearance]
-  theme = "dark"
+[settings.app.appearance]
+theme = "dark"
 
 [settings.modeling]
 enable_ssao = false
@@ -598,30 +616,32 @@ text_wrapping = true"#;
 
         let expected = Configuration {
             settings: Settings {
-                app: AppSettings {
-                    onboarding_status: OnboardingStatus::Dismissed,
-                    appearance: AppearanceSettings { theme: AppTheme::Dark },
+                app: Some(AppSettings {
+                    onboarding_status: Some(OnboardingStatus::Dismissed),
+                    appearance: Some(AppearanceSettings {
+                        theme: Some(AppTheme::Dark),
+                    }),
                     ..Default::default()
-                },
-                modeling: ModelingSettings {
-                    enable_ssao: false.into(),
-                    base_unit: UnitLength::Inches,
-                    mouse_controls: MouseControlType::Zoo,
-                    camera_projection: CameraProjectionType::Perspective,
-                    fixed_size_grid: true,
+                }),
+                modeling: Some(ModelingSettings {
+                    enable_ssao: Some(false.into()),
+                    base_unit: Some(From::from(UnitLength::Inches)),
+                    mouse_controls: Some(MouseControlType::Zoo),
+                    camera_projection: Some(CameraProjectionType::Perspective),
+                    fixed_size_grid: Some(true.into()),
                     ..Default::default()
-                },
-                project: ProjectSettings {
+                }),
+                project: Some(ProjectSettings {
                     default_project_name: ProjectNameTemplate("untitled".to_string()),
                     directory: "".into(),
-                },
-                text_editor: TextEditorSettings {
+                }),
+                text_editor: Some(TextEditorSettings {
                     text_wrapping: true.into(),
                     ..Default::default()
-                },
-                command_bar: CommandBarSettings {
+                }),
+                command_bar: Some(CommandBarSettings {
                     include_settings: true.into(),
-                },
+                }),
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
@@ -655,7 +675,17 @@ backface_color = "#112233"
 "##;
 
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
-        assert_eq!(parsed.settings.modeling.backface_color, "#112233");
+        assert_eq!(
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            "#112233"
+        );
 
         let serialized = toml::to_string(&parsed).unwrap();
         let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
