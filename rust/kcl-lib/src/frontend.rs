@@ -225,6 +225,7 @@ impl SketchApi for FrontendState {
         // Ensure that we allow experimental features since the sketch block
         // won't work without it.
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
+<<<<<<< pierremtb/issue10386-experiment
         // Add a sketch block, then convert it to a variable declaration.
         let sketch_expr_stmt = ast::Node::no_src(ast::ExpressionStatement {
             expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
@@ -244,6 +245,25 @@ impl SketchApi for FrontendState {
                 msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
             });
         };
+=======
+        // Add a sketch block as a variable declaration directly, avoiding
+        // source-range mutation on a no-src node.
+        let defined_names = find_defined_names(&new_ast);
+        let sketch_name = next_free_name("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
+        let sketch_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new(
+                &sketch_name,
+                ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+            ),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        new_ast
+            .body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                sketch_decl,
+            ))));
+>>>>>>> main
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
@@ -3486,7 +3506,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     ast::BinaryPart::CallExpressionKw(call)
                         if matches!(
                             call.callee.name.name.as_str(),
-                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
+                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
                         )
                 );
                 if left_is_constraint {
@@ -6296,7 +6316,11 @@ sketch1 = sketch(on = XY) {
         frontend.hack_set_program(&ctx, program).await.unwrap();
 
         let sketch_args = SketchCtor {
+<<<<<<< pierremtb/issue10386-experiment
             on: Plane::Default(PlaneName::Xy),
+=======
+            on: Plane::Default(PlaneName::Yz),
+>>>>>>> main
         };
         let (src_delta, _, _) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -6310,7 +6334,11 @@ sketch1 = sketch(on = XY) {
 
 sketch1 = sketch(on = XY) {
 }
+<<<<<<< pierremtb/issue10386-experiment
 sketch2 = sketch(on = XY) {
+=======
+sketch2 = sketch(on = YZ) {
+>>>>>>> main
 }
 "
         );

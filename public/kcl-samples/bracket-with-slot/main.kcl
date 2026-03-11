@@ -59,9 +59,9 @@ bracketWithCountersunkHole = hole::hole(
   bracketBodySolid,
   face = seg02,
   cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
-  holeType =   hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
+  holeType = hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
 )
 
 // slot sketch
