@@ -1891,7 +1891,7 @@ description: Operations executed pdu-faceplate.kcl
     },
     {
       "type": "VariableDeclaration",
-      "name": "powerPlugOveralWidth",
+      "name": "powerPlugOverallWidth",
       "value": {
         "type": "Number",
         "value": 323.6,

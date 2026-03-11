@@ -2398,7 +2398,7 @@ description: Result of parsing v-block.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "plateu",
+                      "value": "plateau",
                       "style": "line"
                     }
                   }

@@ -16,6 +16,9 @@ hollow(
 
 Remove volume from a 3-dimensional shape such that a wall of the
 provided thickness remains around the exterior of the shape.
+By default, it'll look visually the same, but you can see the difference
+if you use `appearance` to make it transparent, or cut it open with
+a `subtract`.
 
 ### Arguments
 
@@ -32,15 +35,32 @@ provided thickness remains around the exterior of the shape.
 ### Examples
 
 ```kcl
-// Hollow a basic sketch.
-firstSketch = startSketchOn(XY)
-  |> startProfile(at = [-12, 12])
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
+// Make two cubes, utterly identical,
+// except that one (left) is hollowed out,
+// and the other one (right) isn't.
+width = 2
+solidCube = startSketchOn(-XZ)
+  |> startProfile(at = [-width, width])
+  |> line(end = [width, 0])
+  |> line(end = [0, -width])
+  |> line(end = [-width, 0])
   |> close()
-  |> extrude(length = 6)
+  |> extrude(length = width, symmetric = true)
+
+hollowCube = clone(solidCube)
   |> hollow(thickness = 0.25)
+  |> translate(x = width * 1.1)
+
+// Make a tool that spans the top half of both cubes,
+// so we can cut open the cubes and look at their insides.
+tool = startSketchOn(offsetPlane(XY, offset = width))
+  |> startProfile(at = [0, width])
+  |> line(end = [width * 3, 0])
+  |> line(end = [0, -width * 2])
+  |> line(end = [-width * 3, 0])
+  |> close()
+  |> extrude(length = width, symmetric = true)
+subtract([solidCube, hollowCube], tools = tool)
 
 ```
 
@@ -52,33 +72,6 @@ firstSketch = startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
-
-```kcl
-// Hollow a basic sketch.
-firstSketch = startSketchOn(-XZ)
-  |> startProfile(at = [-12, 12])
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-  |> hollow(thickness = 0.5)
-
-```
-
-
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the hollow function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -112,10 +105,10 @@ hollow(case, thickness = 0.5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hollow function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow2.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

@@ -551,9 +551,9 @@ surface001 = deleteFace(
   extrude001,
   face = capEnd001,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::simple(),
 )`
 
     it('should add a simple hole call on cylinder end cap', async () => {
@@ -645,9 +645,9 @@ hole002 = hole::hole(
   hole001,
   face = capEnd001,
   cutAt = [3, 3],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 3, diameter = 2),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 3, diameter = 2),
+  holeType = hole::simple(),
 )`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -706,9 +706,9 @@ hole002 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::counterbore(depth = 1, diameter = 2),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::counterbore(depth = 1, diameter = 2),
 )`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -775,9 +775,9 @@ hole001 = hole::hole(
   extrude001,
   face = capEnd001,
   cutAt = [1, 1],
-  holeBottom =   hole::drill(pointAngle = 110),
-  holeBody =   hole::blind(depth = 6, diameter = 1.1),
-  holeType =   hole::countersink(angle = 120, diameter = 2),
+  holeBottom = hole::drill(pointAngle = 110),
+  holeBody = hole::blind(depth = 6, diameter = 1.1),
+  holeType = hole::countersink(angle = 120, diameter = 2),
 )`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -793,9 +793,9 @@ hole001 = hole::hole(
   extrude001,
   face = END,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::simple(),
 )`
 
   async function getHoleOp(code: string) {
@@ -868,9 +868,9 @@ hole001 = hole::hole(
   extrude001,
   face = END,
   cutAt = [0, 0],
-  holeBottom =   hole::drill(pointAngle = 110deg),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::simple(),
+  holeBottom = hole::drill(pointAngle = 110deg),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::simple(),
 )`
       const op = await getHoleOp(drillHole)
       const result = await retrieveHoleBottomArgs(
@@ -916,9 +916,9 @@ hole001 = hole::hole(
   extrude001,
   face = END,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::countersink(angle = 90deg, diameter = 2),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::countersink(angle = 90deg, diameter = 2),
 )`
       const op = await getHoleOp(countersinkHole)
       const result = await retrieveHoleTypeArgs(
@@ -940,9 +940,9 @@ hole001 = hole::hole(
   extrude001,
   face = END,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::counterbore(depth = 1, diameter = 2),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::counterbore(depth = 1, diameter = 2),
 )`
       const op = await getHoleOp(countersinkHole)
       const result = await retrieveHoleTypeArgs(
