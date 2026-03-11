@@ -10,7 +10,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program, bust_cache,
+    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
@@ -225,27 +225,6 @@ impl SketchApi for FrontendState {
         // Ensure that we allow experimental features since the sketch block
         // won't work without it.
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
-<<<<<<< pierremtb/issue10386-experiment
-        // Add a sketch block, then convert it to a variable declaration.
-        let sketch_expr_stmt = ast::Node::no_src(ast::ExpressionStatement {
-            expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
-            digest: None,
-        });
-        let sketch_expr_range = SourceRange::from(&sketch_expr_stmt.expression);
-        new_ast.body.push(ast::BodyItem::ExpressionStatement(sketch_expr_stmt));
-        let (_, mutate_ret) = mutate_ast_node_by_source_range(
-            &mut new_ast,
-            sketch_expr_range,
-            AstMutateCommand::AddVariableDeclaration {
-                prefix: "sketch".to_owned(),
-            },
-        )?;
-        let AstMutateCommandReturn::Name(_) = mutate_ret else {
-            return Err(Error {
-                msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
-            });
-        };
-=======
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
         let defined_names = find_defined_names(&new_ast);
@@ -263,7 +242,6 @@ impl SketchApi for FrontendState {
             .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
                 sketch_decl,
             ))));
->>>>>>> main
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
@@ -281,10 +259,6 @@ impl SketchApi for FrontendState {
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
-
-        // TODO: figure out why this is needed to avoid 'Object uuid already exists' errors
-        // when creating a second sketch
-        bust_cache().await;
 
         // We need to do an engine execute so that the plane object gets created
         // and is cached.
@@ -3347,11 +3321,9 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::Name(inner.name().to_owned())));
             }
             if let NodeMut::ExpressionStatement(expr_stmt) = node {
-                let mut defined_names = HashSet::new();
-                for scope_names in &ctx.defined_names_stack {
-                    defined_names.extend(scope_names.iter().cloned());
-                }
-                let Ok(name) = next_free_name(prefix, &defined_names) else {
+                let empty_defined_names = HashSet::new();
+                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
+                let Ok(name) = next_free_name(prefix, defined_names) else {
                     // TODO: Return an error instead?
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
@@ -6316,11 +6288,7 @@ sketch1 = sketch(on = XY) {
         frontend.hack_set_program(&ctx, program).await.unwrap();
 
         let sketch_args = SketchCtor {
-<<<<<<< pierremtb/issue10386-experiment
-            on: Plane::Default(PlaneName::Xy),
-=======
             on: Plane::Default(PlaneName::Yz),
->>>>>>> main
         };
         let (src_delta, _, _) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -6334,11 +6302,7 @@ sketch1 = sketch(on = XY) {
 
 sketch1 = sketch(on = XY) {
 }
-<<<<<<< pierremtb/issue10386-experiment
-sketch2 = sketch(on = XY) {
-=======
 sketch2 = sketch(on = YZ) {
->>>>>>> main
 }
 "
         );
