@@ -221,31 +221,15 @@ export function resolveTangentInfoFromClick({
 
     const startDistance = distance2d(startPoint, clickPoint)
     const endDistance = distance2d(endPoint, clickPoint)
+    const useStartPoint = startDistance <= endDistance
 
-    if (startDistance <= endDistance) {
-      const tangentDirection = getLineTangentDirection({
-        objects,
-        lineId: clickedId,
-        tangentPointId: line.start,
-      })
-      if (!tangentDirection) {
-        return null
-      }
-
-      return {
-        lineId: clickedId,
-        tangentStart: {
-          id: line.start,
-          point: startPoint,
-        },
-        tangentDirection,
-      }
-    }
+    const tangentPointId = useStartPoint ? line.start : line.end
+    const tangentPoint = useStartPoint ? startPoint : endPoint
 
     const tangentDirection = getLineTangentDirection({
       objects,
       lineId: clickedId,
-      tangentPointId: line.end,
+      tangentPointId,
     })
     if (!tangentDirection) {
       return null
@@ -254,8 +238,8 @@ export function resolveTangentInfoFromClick({
     return {
       lineId: clickedId,
       tangentStart: {
-        id: line.end,
-        point: endPoint,
+        id: tangentPointId,
+        point: tangentPoint,
       },
       tangentDirection,
     }
