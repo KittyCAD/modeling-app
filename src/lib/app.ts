@@ -305,6 +305,7 @@ export class App implements AppSubsystems {
 
     return this.project
   }
+
   closeProject() {
     this.project?.close()
     this.project = undefined

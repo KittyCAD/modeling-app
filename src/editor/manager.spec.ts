@@ -3,23 +3,21 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { expect, describe, it } from 'vitest'
 import { App } from '@src/lib/app'
 
-describe('EditorManager Class', () => {
+describe('EditorManager Class', async () => {
   const app = App.fromProvided({
     wasmPromise: Promise.resolve({} as ModuleType),
   })
-  const project = app.openProject(
-    {
-      path: 'some-project',
-      name: 'i-should-really-change-this-api',
-      children: [],
-      default_file: 'main.kcl',
-      directory_count: 0,
-      kcl_file_count: 1,
-      metadata: null,
-      readWriteAccess: true,
-    },
-    'some-file'
-  )
+  const project = await app.openProject({
+    path: 'some-project',
+    name: 'i-should-really-change-this-api',
+    children: [],
+    default_file: 'main.kcl',
+    directory_count: 0,
+    kcl_file_count: 1,
+    metadata: null,
+    readWriteAccess: true,
+  })
+  const editor = await project.openEditor('some-path')
 
   describe('makeUniqueDiagnostics', () => {
     it('should filter out duplicated diagnostics', () => {
@@ -53,9 +51,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = project.executingEditor.value?.makeUniqueDiagnostics(
-        duplicatedDiagnostics
-      )
+      const actual = editor.makeUniqueDiagnostics(duplicatedDiagnostics)
       expect(actual).toStrictEqual(expected)
     })
     it('should filter out duplicated diagnostic and keep some original ones', () => {
@@ -95,9 +91,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = project.executingEditor.value?.makeUniqueDiagnostics(
-        duplicatedDiagnostics
-      )
+      const actual = editor.makeUniqueDiagnostics(duplicatedDiagnostics)
       expect(actual).toStrictEqual(expected)
     })
   })

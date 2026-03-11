@@ -4,23 +4,21 @@ import { expect, vi, describe, test } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { App } from '@src/lib/app'
 
-describe('useOnPageMounted', () => {
+describe('useOnPageMounted', async () => {
   const app = App.fromProvided({
     wasmPromise: Promise.resolve({} as ModuleType),
   })
-  const project = app.openProject(
-    {
-      path: 'some-project',
-      name: 'i-should-really-change-this-api',
-      children: [],
-      default_file: 'main.kcl',
-      directory_count: 0,
-      kcl_file_count: 1,
-      metadata: null,
-      readWriteAccess: true,
-    },
-    'some-file'
-  )
+  const project = await app.openProject({
+    path: 'some-project',
+    name: 'i-should-really-change-this-api',
+    children: [],
+    default_file: 'main.kcl',
+    directory_count: 0,
+    kcl_file_count: 1,
+    metadata: null,
+    readWriteAccess: true,
+  })
+  const editor = await project.openEditor('some-path')
 
   describe('on mounted', () => {
     test('should run once', () => {
@@ -33,7 +31,7 @@ describe('useOnPageMounted', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
 
-      const ecm = project.executingEditor.value?.engineCommandManager
+      const ecm = editor.engineCommandManager
 
       if (!ecm) {
         return
@@ -52,7 +50,7 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      const ecm = project.executingEditor.value?.engineCommandManager
+      const ecm = editor.engineCommandManager
 
       if (!ecm) {
         expect(
@@ -83,7 +81,7 @@ describe('useOnPageMounted', () => {
       unmount()
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
-      const ecm = project.executingEditor.value?.engineCommandManager
+      const ecm = editor.engineCommandManager
 
       if (!ecm) {
         expect(
