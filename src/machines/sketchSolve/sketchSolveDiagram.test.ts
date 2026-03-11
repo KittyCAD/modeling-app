@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { ApiObject, ApiStartOrEnd } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiObject,
+  ApiStartOrEnd,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
   createLineApiObject,
