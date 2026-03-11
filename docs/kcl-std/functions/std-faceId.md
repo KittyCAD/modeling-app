@@ -1,11 +1,11 @@
 ---
 title: "faceId"
 subtitle: "Function in std"
-excerpt: "Given a face index, find its ID."
+excerpt: "Given a face index, find its ID. In general, you should prefer tagging faces to using this function. Use this function if you can't tag a face. For example, if the face comes from imported geometry in a .STEP file, or if it's from an operation that doesn't yet support tagging the faces it creates, like `subtract`."
 layout: manual
 ---
 
-Given a face index, find its ID.
+Given a face index, find its ID. In general, you should prefer tagging faces to using this function. Use this function if you can't tag a face. For example, if the face comes from imported geometry in a .STEP file, or if it's from an operation that doesn't yet support tagging the faces it creates, like `subtract`.
 
 ```kcl
 faceId(

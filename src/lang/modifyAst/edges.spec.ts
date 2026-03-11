@@ -285,7 +285,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   radius = 1,
   tag = $myTag,
 )`
@@ -641,7 +641,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   length = 1,
   secondLength = 1.1,
 )`)
@@ -689,7 +689,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
