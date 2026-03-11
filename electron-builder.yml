@@ -40,7 +40,7 @@ win:
       description: Zoo KCL File
       role: Editor
 nsis:
-  oneClick: false
+  oneClick: true
   perMachine: false
   selectPerMachineByDefault: true
   allowElevation: true
