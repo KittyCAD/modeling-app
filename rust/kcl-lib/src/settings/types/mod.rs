@@ -231,6 +231,7 @@ impl From<BackfaceDefault> for String {
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
+    /// If not given, defaults to millimeters.
     #[serde(default, skip_serializing_if = "is_default")]
     pub base_unit: Option<LengthDefaultMm>,
     /// The projection mode the camera should use while modeling.
