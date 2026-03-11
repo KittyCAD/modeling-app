@@ -37,7 +37,8 @@ where
             && error.is_retryable()
         {
             if config.print_retries {
-                eprintln!("Execute got {error}; retrying...");
+                // Ignore the disable-println feature.
+                std::eprintln!("Execute got {error}; retrying...");
             }
             retries_remaining -= 1;
             continue;
