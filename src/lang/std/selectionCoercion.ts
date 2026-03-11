@@ -61,28 +61,28 @@ export function coerceSelectionsToBody(
           `Unable to find parent body for selected artifact: ${selection.artifact.type}`
         )
       }
-      const maybePath = getArtifactOfTypes(
-        { key: maybeSweep.pathId, types: ['path'] },
+      // Prefer the sweep (3D solid, e.g. extrude result) over the path (2D profile)
+      // so that commands like Translate get the body variable (e.g. box) not the profile.
+      const sweepWithType = getArtifactOfTypes(
+        { key: maybeSweep.id, types: ['sweep'] },
         artifactGraph
       )
-      if (!err(maybePath)) {
-        if (!seenBodyIds.has(maybePath.id)) {
+      if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+        seenBodyIds.add(sweepWithType.id)
+        bodySelections.push({
+          artifact: sweepWithType,
+          codeRef: maybeSweep.codeRef,
+        })
+      } else {
+        const maybePath = getArtifactOfTypes(
+          { key: maybeSweep.pathId, types: ['path'] },
+          artifactGraph
+        )
+        if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
           seenBodyIds.add(maybePath.id)
           bodySelections.push({
             artifact: maybePath,
             codeRef: maybePath.codeRef,
-          })
-        }
-      } else {
-        const sweepWithType = getArtifactOfTypes(
-          { key: maybeSweep.id, types: ['sweep'] },
-          artifactGraph
-        )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
-          bodySelections.push({
-            artifact: sweepWithType,
-            codeRef: maybeSweep.codeRef,
           })
         }
       }
