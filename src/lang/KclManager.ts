@@ -1032,10 +1032,8 @@ export class KclManager extends File {
     providedEditor?: KclManager
   ) {
     const initialCode = await file.read()
-    console.log(`FRANK here is initialCode`, initialCode)
 
     if (!providedEditor) {
-      console.log('no provided editor!')
       return new KclManager(file.path, initialCode, systemDeps, file.id)
     }
 

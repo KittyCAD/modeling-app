@@ -176,7 +176,6 @@ export default class RustContext {
       )
       return execStateFromRust(result)
     } catch (e: any) {
-      console.trace('FRANK FUCKING ERRORS', path)
       return Promise.reject(errFromErrWithOutputs(e))
     }
   }

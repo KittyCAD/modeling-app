@@ -117,19 +117,9 @@ export class App implements AppSubsystems {
   get project() {
     return this.projectSignal.value
   }
-  set project(p: ZDSProject | undefined) {
-    console.trace(
-      `Where ya coming from trying to set my project, friend?`,
-      p?.path
-    )
-    this.projectSignal.value = p
+  set project(newProject: ZDSProject | undefined) {
+    this.projectSignal.value = newProject
   }
-  private projectEffect = effect(() => {
-    console.trace(
-      `this.project.executingEditor got set again, to`,
-      this.project?.executingEditor.value?.path
-    )
-  })
   singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
