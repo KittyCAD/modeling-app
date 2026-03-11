@@ -1,4 +1,6 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { roundOff } from '@src/lib/utils'
+import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -6,6 +8,7 @@ import type { Sprite, SpriteMaterial, Texture } from 'three'
 import { Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { Coords2d } from '@src/lang/util'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -24,6 +27,97 @@ export function pointToVec3(obj: PointSegment) {
   return new Vector3(position.x.value, position.y.value, 0)
 }
 
+export function isLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+}
+
+export type LineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Line' } }
+}
+
+export function getLinePointSegments(
+  lineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+): [PointSegment, PointSegment] | null {
+  if (!isLineSegment(lineObj)) {
+    return null
+  }
+
+  const startObj = objects[lineObj.kind.segment.start]
+  const endObj = objects[lineObj.kind.segment.end]
+  if (!isPointSegment(startObj) || !isPointSegment(endObj)) {
+    return null
+  }
+
+  return [startObj, endObj]
+}
+
+export function getLinePoints(
+  lineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+) {
+  const pointSegments = getLinePointSegments(lineObj, objects)
+  if (!pointSegments) {
+    return null
+  }
+  return [
+    pointToCoords2d(pointSegments[0]),
+    pointToCoords2d(pointSegments[1]),
+  ] as const
+}
+
+// Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
+function calculateCurrentAngleBetweenLines(
+  line1: ApiObject,
+  line2: ApiObject,
+  objects: ApiObject[]
+): number | null {
+  const line1Points = getLinePoints(line1, objects)
+  const line2Points = getLinePoints(line2, objects)
+  if (!line1Points || !line2Points) {
+    return null
+  }
+
+  const v1 = subVec(line1Points[1], line1Points[0])
+  const v2 = subVec(line2Points[1], line2Points[0])
+  const v1Length = length2d(v1)
+  const v2Length = length2d(v2)
+  if (v1Length === 0 || v2Length === 0) {
+    return null
+  }
+
+  const angleRad = getSignedAngleBetweenVec(v1, v2)
+  const angleDeg = (angleRad * 180) / Math.PI
+  const normalizedDegrees = ((angleDeg % 360) + 360) % 360
+  return roundOff(normalizedDegrees)
+}
+
+export function buildAngleConstraintInput(
+  line1: ApiObject,
+  line2: ApiObject,
+  objects: ApiObject[]
+) {
+  if (!isLineSegment(line1) || !isLineSegment(line2)) {
+    return null
+  }
+
+  const angle = calculateCurrentAngleBetweenLines(line1, line2, objects)
+  if (angle === null) {
+    return null
+  }
+
+  return {
+    type: 'Angle' as const,
+    lines: [line1.id, line2.id],
+    angle: { value: angle, units: 'Deg' as const },
+    source: {
+      expr: `${angle}deg`,
+      is_literal: true as const,
+    },
+  }
+}
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
@@ -60,6 +154,10 @@ export type DiameterConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Diameter' } }
 }
 
+export type AngleConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Angle' } }
+}
+
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Radius'
 }
@@ -68,6 +166,19 @@ export function isDiameterConstraint(
   obj: ApiObject
 ): obj is DiameterConstraint {
   return isConstraint(obj) && obj.kind.constraint.type === 'Diameter'
+}
+
+export function isAngleConstraint(obj: ApiObject): obj is AngleConstraint {
+  return isConstraint(obj) && obj.kind.constraint.type === 'Angle'
+}
+
+export function isConstraintWithSource(obj: ApiObject) {
+  return (
+    isDistanceConstraint(obj) ||
+    isRadiusConstraint(obj) ||
+    isDiameterConstraint(obj) ||
+    isAngleConstraint(obj)
+  )
 }
 
 export function calculateDimensionLabelScreenPosition(
@@ -133,8 +244,16 @@ export type SpriteLabel = Sprite & {
     dimensionLabel: string
     constraintColor: number
     showFnIcon: boolean
+    textWidthPx?: number
   }
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
+}
+
+export function pointToCoords2d(point: PointSegment): Coords2d {
+  return [
+    point.kind.segment.position.x.value,
+    point.kind.segment.position.y.value,
+  ]
 }
