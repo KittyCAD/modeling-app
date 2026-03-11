@@ -154,7 +154,7 @@ export default (): EnvironmentVariables => {
   }
 
   /**
-   * Allow .env.development.local to override default WebSocket URLs
+   * Allow .env.development.local to override default URLs
    */
   if (zooApiBaseUrl && zooApiBaseUrl !== 'undefined') {
     API_URL = zooApiBaseUrl
