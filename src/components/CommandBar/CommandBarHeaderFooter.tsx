@@ -145,7 +145,14 @@ function CommandBarHeaderFooter({
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue !== undefined ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 

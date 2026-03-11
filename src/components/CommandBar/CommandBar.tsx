@@ -77,7 +77,7 @@ export const CommandBar = () => {
         arg,
         commandBarState.context
       )
-      return !isHidden && (value || isRequired)
+      return !isHidden && (value !== undefined || isRequired)
     })
 
     if (!currentArgument) {

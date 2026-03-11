@@ -443,7 +443,7 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${circleProfileCode}
-extrude001 = extrude(profile001, length = 2)`)
+extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -982,7 +982,12 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = sweep::TRAJECTORY)`
+        `sweep001 = sweep(
+  profile001,
+  path = profile002,
+  sectional = false,
+  relativeTo = sweep::TRAJECTORY,
+)`
       )
     })
 
@@ -1197,6 +1202,28 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
       expect(loft.isError).toBeFalsy()
     })
 
+    it('should add a basic loft call with bezApproximateRational false', async () => {
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        twoCirclesCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        artifactGraph,
+        sketches,
+        bezApproximateRational: false,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bezApproximateRational = false)`
+      )
+    })
+
     it('should edit a loft call with vDegree', async () => {
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
@@ -1375,6 +1402,41 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
   angle = 10,
   axis = X,
   symmetric = true,
+)`)
+    })
+
+    it('should add basic revolve call with symmetric false', async () => {
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        circleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(1)
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const axis = 'X'
+      const symmetric = false
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches,
+        angle,
+        axis,
+        symmetric,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleCode)
+      expect(newCode).toContain(`revolve001 = revolve(
+  profile001,
+  angle = 10,
+  axis = X,
+  symmetric = false,
 )`)
     })
 
