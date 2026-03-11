@@ -37,6 +37,9 @@ import type { Group } from 'three'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
+const OVERLAP_EPSILON = 1e-8
+export const MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX = 20
+
 export class AngleConstraintBuilder {
   private readonly resources: ConstraintResources
 
@@ -59,7 +62,7 @@ export class AngleConstraintBuilder {
     selectedIds: number[],
     hoveredId: number | null
   ) {
-    const renderInput = calculateArcRenderInput(obj, objects)
+    const renderInput = calculateArcRenderInput(obj, objects, scale)
     if (!renderInput) {
       group.visible = false
       return
@@ -109,9 +112,10 @@ function initializeAngleConstraintLines(
   }
 }
 
-function calculateArcRenderInput(
+export function calculateArcRenderInput(
   obj: ApiObject,
-  objects: ApiObject[]
+  objects: ApiObject[],
+  scale: number
 ): ArcLineInfo | null {
   if (!isAngleConstraint(obj)) {
     return null
@@ -152,11 +156,20 @@ function calculateArcRenderInput(
       [...line1SignedDistances, ...line2SignedDistances].sort(
         (a, b) => a - b
       )[1]
+  const shouldApplyNonOverlapFallback =
+    !commonLineRange ||
+    Math.abs(commonLineRange[1] - commonLineRange[0]) < OVERLAP_EPSILON
+  const adjustedRadiusSigned = shouldApplyNonOverlapFallback
+    ? withMinimumMagnitude(
+        radiusSigned,
+        MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX * scale
+      )
+    : radiusSigned
 
   //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
   const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
 
-  const startVector = scaleVec(normalizeVec(line1Dir), radiusSigned)
+  const startVector = scaleVec(normalizeVec(line1Dir), adjustedRadiusSigned)
   const startAngle = Math.atan2(startVector[1], startVector[0])
   const labelPosition = addVec(
     center,
@@ -168,7 +181,7 @@ function calculateArcRenderInput(
     line2,
     labelPosition,
     center,
-    radius: Math.abs(radiusSigned),
+    radius: Math.abs(adjustedRadiusSigned),
     startAngle,
     sweepAngle: signedAngle,
   }
@@ -193,6 +206,13 @@ function findShortestRadiusFromRange(range: [number, number]) {
   const r1 = lerp(range[0], range[1], 0.15)
   const r2 = lerp(range[0], range[1], 0.85)
   return Math.abs(r1) < Math.abs(r2) ? r1 : r2
+}
+
+function withMinimumMagnitude(value: number, minMagnitude: number) {
+  if (value === 0) {
+    return minMagnitude
+  }
+  return Math.sign(value) * Math.max(Math.abs(value), minMagnitude)
 }
 
 // Returns the intersection of 2 infinite lines that lie on the given line segments.
