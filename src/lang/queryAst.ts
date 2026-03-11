@@ -21,6 +21,7 @@ import {
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getFaceCodeRef,
+  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -574,19 +575,18 @@ export function isLinesParallelAndConstrained(
 ):
   | {
       isParallelAndConstrained: boolean
-      selection: Selection | null
+      selection: ResolvedGraphSelection | null
     }
   | Error {
   try {
+    const primaryRange = primaryLine?.codeRef?.range
+    const secondaryRange = secondaryLine?.codeRef?.range
+    if (primaryRange == null || secondaryRange == null) {
+      return { isParallelAndConstrained: false, selection: null }
+    }
     const EPSILON = 0.005
-    const primaryPath = getNodePathFromSourceRange(
-      ast,
-      primaryLine?.codeRef?.range
-    )
-    const secondaryPath = getNodePathFromSourceRange(
-      ast,
-      secondaryLine?.codeRef?.range
-    )
+    const primaryPath = getNodePathFromSourceRange(ast, primaryRange)
+    const secondaryPath = getNodePathFromSourceRange(ast, secondaryRange)
     const _secondaryNode = getNodeFromPath<CallExpressionKw>(
       ast,
       secondaryPath,
@@ -606,10 +606,7 @@ export function isLinesParallelAndConstrained(
     const varName = (varDec as VariableDeclaration)?.declaration.id?.name
     const sg = sketchFromKclValue(memVars[varName], varName)
     if (err(sg)) return sg
-    const _primarySegment = getSketchSegmentFromSourceRange(
-      sg,
-      primaryLine?.codeRef?.range
-    )
+    const _primarySegment = getSketchSegmentFromSourceRange(sg, primaryRange)
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
@@ -625,10 +622,7 @@ export function isLinesParallelAndConstrained(
     const sg2 = sketchFromKclValue(memVars[varName2], varName2)
     if (err(sg2)) return sg2
 
-    const _segment = getSketchSegmentFromSourceRange(
-      sg2,
-      secondaryLine?.codeRef?.range
-    )
+    const _segment = getSketchSegmentFromSourceRange(sg2, secondaryRange)
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
@@ -653,7 +647,7 @@ export function isLinesParallelAndConstrained(
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
-      secondaryLine?.codeRef.range,
+      secondaryRange,
       ast,
       wasmInstance
     )
@@ -676,11 +670,12 @@ export function isLinesParallelAndConstrained(
     const isParallelAndConstrained =
       isParallel && isConstrained && !!prevSourceRange
 
+    const artifact = artifactGraph.get(prevSegment.__geoMeta.id)
     return {
       isParallelAndConstrained,
       selection: {
         codeRef: codeRefFromRange(prevSourceRange, ast),
-        artifact: artifactGraph.get(prevSegment.__geoMeta.id),
+        ...(artifact != null && { artifact }),
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -804,9 +799,11 @@ export function hasSketchPipeBeenExtruded(
   ast: Program,
   wasmInstance: ModuleType
 ) {
+  const pathToNode = selection.codeRef?.pathToNode
+  if (pathToNode == null) return false
   const _node = getNodeFromPath<Node<PipeExpression>>(
     ast,
-    selection.codeRef.pathToNode,
+    pathToNode,
     wasmInstance,
     'PipeExpression'
   )
@@ -815,7 +812,7 @@ export function hasSketchPipeBeenExtruded(
   if (pipeExpression.type !== 'PipeExpression') return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    selection.codeRef.pathToNode,
+    pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )
@@ -1484,6 +1481,9 @@ export function artifactToEntityRef(
       : undefined
   if (artifactType === 'startSketchOnFace')
     return { type: 'face', face_id: artifactId }
+  // Wall and cap are faces from the engine's perspective; map to face entity ref.
+  if (artifactType === 'wall' || artifactType === 'cap')
+    return { type: 'face', face_id: artifactId }
   if (artifactType === 'edgeCut')
     return { type: 'solid2d_edge', edge_id: artifactId }
   return undefined
@@ -1565,9 +1565,10 @@ export function findOperationArtifact(
     .toArray()
     .find((a) => {
       const cr = getFaceCodeRef(a)
+      const crWithNodePath = cr as { nodePath?: unknown } | null
       return (
         cr != null &&
-        JSON.stringify(cr.nodePath) === nodePath &&
+        JSON.stringify(crWithNodePath?.nodePath) === nodePath &&
         cr.range?.every((v, i) => v === opRange[i])
       )
     })
@@ -2092,28 +2093,13 @@ export function getEdgeCutMeta(
       : (artifact as { consumedEdgeId?: string }).consumedEdgeId
     if (consumedEdgeId == null || consumedEdgeId === '') return null
     const consumedArtifact = getArtifactOfTypes(
-      {
-        key: consumedEdgeId,
-        types: ['segment', 'sweepEdge'],
-      },
+      { key: consumedEdgeId, types: ['segment'] },
       artifactGraph
     )
     if (err(consumedArtifact)) return null
-    if (consumedArtifact.type === 'segment') {
-      edgeCutInfo = {
-        type: 'base',
-        segment: consumedArtifact,
-      }
-    } else {
-      const segment = getArtifactOfTypes(
-        { key: consumedArtifact.segId, types: ['segment'] },
-        artifactGraph
-      )
-      if (err(segment)) return null
-      edgeCutInfo = {
-        type: consumedArtifact.subType,
-        segment,
-      }
+    edgeCutInfo = {
+      type: 'base',
+      segment: consumedArtifact,
     }
   }
   if (!edgeCutInfo) return null
