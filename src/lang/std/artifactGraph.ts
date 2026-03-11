@@ -447,7 +447,7 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
-    // Handle edgeCut by getting its consumed edge (segment or sweepEdge)
+    // Handle edgeCut by getting its consumed edge (segment; sweepEdge removed from artifact graph / selectionsV2)
     const edgeIds = (selection.artifact as { edge_ids?: string[] }).edge_ids
     const consumedEdgeId = edgeIds?.length
       ? edgeIds[0]

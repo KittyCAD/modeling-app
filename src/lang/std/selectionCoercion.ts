@@ -47,12 +47,22 @@ export function coerceSelectionsToBody(
       selection.artifact.type === 'compositeSolid' ||
       selection.artifact.type === 'path'
     ) {
-      if (!seenBodyIds.has(selection.artifact.id)) {
+      const entityRef = artifactToEntityRef(
+        selection.artifact.type,
+        selection.artifact.id
+      )
+      if (entityRef && !seenBodyIds.has(selection.artifact.id)) {
         seenBodyIds.add(selection.artifact.id)
         bodySelections.push({
           artifact: selection.artifact,
           codeRef: selection.codeRef,
         })
+      } else if (
+        selection.artifact.type === 'path' &&
+        selection.codeRef.range[1] - selection.codeRef.range[0] !== 0
+      ) {
+        // Path is not an EntityReference the engine returns; pass through as codeRef-only.
+        codeRefOnlyV2.push({ codeRef: selection.codeRef })
       }
     } else {
       const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
@@ -61,29 +71,40 @@ export function coerceSelectionsToBody(
           `Unable to find parent body for selected artifact: ${selection.artifact.type}`
         )
       }
-      // Prefer the sweep (3D solid, e.g. extrude result) over the path (2D profile)
-      // so that commands like Translate get the body variable (e.g. box) not the profile.
-      const sweepWithType = getArtifactOfTypes(
-        { key: maybeSweep.id, types: ['sweep'] },
+      // If parent body is path (no entityRef), pass through original selection as codeRef-only.
+      const maybePath = getArtifactOfTypes(
+        { key: maybeSweep.pathId, types: ['path'] },
         artifactGraph
       )
-      if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-        seenBodyIds.add(sweepWithType.id)
-        bodySelections.push({
-          artifact: sweepWithType,
-          codeRef: maybeSweep.codeRef,
-        })
+      if (
+        !err(maybePath) &&
+        !seenBodyIds.has(maybePath.id) &&
+        !artifactToEntityRef('path', maybePath.id)
+      ) {
+        if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
+          codeRefOnlyV2.push({ codeRef: selection.codeRef })
+        }
       } else {
-        const maybePath = getArtifactOfTypes(
-          { key: maybeSweep.pathId, types: ['path'] },
+        // Prefer the sweep (3D solid) over the path (2D profile) when it has entityRef.
+        const sweepWithType = getArtifactOfTypes(
+          { key: maybeSweep.id, types: ['sweep'] },
           artifactGraph
         )
-        if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
-          seenBodyIds.add(maybePath.id)
+        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+          seenBodyIds.add(sweepWithType.id)
           bodySelections.push({
-            artifact: maybePath,
-            codeRef: maybePath.codeRef,
+            artifact: sweepWithType,
+            codeRef: maybeSweep.codeRef,
           })
+        } else if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
+          const pathEntityRef = artifactToEntityRef('path', maybePath.id)
+          if (pathEntityRef) {
+            seenBodyIds.add(maybePath.id)
+            bodySelections.push({
+              artifact: maybePath,
+              codeRef: maybePath.codeRef,
+            })
+          }
         }
       }
     }
