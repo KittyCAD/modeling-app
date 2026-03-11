@@ -31,7 +31,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
-import { topLevelRange } from '@src/lang/util'
+import { findKwArg, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
   ArtifactGraph,
@@ -2101,7 +2101,38 @@ export function getEdgeCutMeta(
         consumedEdgeId,
         artifactGraph
       )
-      if (!segmentViaWallOrCap) return null
+      if (!segmentViaWallOrCap) {
+        // Segment not in graph (e.g. keyed by artifact id). Derive tag from chamfer/fillet call.
+        const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+          ast,
+          artifact.codeRef?.pathToNode ?? [],
+          wasmInstance,
+          ['CallExpressionKw']
+        )
+        if (err(edgeCutCall) || edgeCutCall.node.type !== 'CallExpressionKw')
+          return null
+        const tagsArg = findKwArg('tags', edgeCutCall.node)
+        if (
+          !tagsArg ||
+          tagsArg.type !== 'ArrayExpression' ||
+          !tagsArg.elements?.length
+        )
+          return null
+        const first = tagsArg.elements[0]
+        const tagName =
+          first?.type === 'Name'
+            ? first.name.name
+            : first?.type === 'CallExpressionKw' &&
+                first.unlabeled?.type === 'Name'
+              ? first.unlabeled.name.name
+              : null
+        if (!tagName) return null
+        return {
+          type: 'edgeCut',
+          subType: 'base',
+          tagName,
+        }
+      }
       consumedArtifact = segmentViaWallOrCap as Extract<
         Artifact,
         { type: 'segment' }
@@ -2116,7 +2147,7 @@ export function getEdgeCutMeta(
   if (!edgeCutInfo) return null
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
-    edgeCutInfo?.segment.codeRef.pathToNode || [],
+    edgeCutInfo.segment.codeRef.pathToNode || [],
     wasmInstance,
     ['CallExpressionKw']
   )

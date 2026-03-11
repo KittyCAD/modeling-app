@@ -93,11 +93,8 @@ export function modifyAstWithTagsForSelection(
 
   // TODO: Add handling for VERTEX selections
 
-  // Handle EDGE selections (segment, edgeCut; sweepEdge removed in selectionsV2)
-  if (
-    selection.artifact.type === 'segment' ||
-    selection.artifact.type === 'edgeCut'
-  ) {
+  // Handle EDGE selections (segment only). EdgeCut is a face (chamfer/fillet produce a face), not an edge.
+  if (selection.artifact.type === 'segment') {
     const edgeResult = modifyAstWithTagsForEdgeSelection(
       ast,
       selection,
@@ -112,8 +109,12 @@ export function modifyAstWithTagsForSelection(
     }
   }
 
-  // Handle FACE selections (edgeCut is handled above as an edge)
-  if (selection.artifact.type === 'wall' || selection.artifact.type === 'cap') {
+  // Handle FACE selections (wall, cap, edgeCut). EdgeCut = chamfer/fillet face.
+  if (
+    selection.artifact.type === 'wall' ||
+    selection.artifact.type === 'cap' ||
+    selection.artifact.type === 'edgeCut'
+  ) {
     const result = modifyAstWithTagForFaceSelection(
       ast,
       selection,
@@ -174,8 +175,8 @@ export function createTagExpressions(
     // Body Entities
     // ----------------------------------------
 
-    // Handle EDGE selections (segment, edgeCut; sweepEdge removed in selectionsV2)
-    if (artifact.type === 'segment' || artifact.type === 'edgeCut') {
+    // Handle EDGE selections (segment only). EdgeCut is a face.
+    if (artifact.type === 'segment') {
       // Default: get common edge of 2 faces scenario
       if (!tagMethods || !tagMethods.includes('oppositeAndAdjacentEdges')) {
         return createCallExpressionStdLibKw('getCommonEdge', null, [
@@ -185,12 +186,16 @@ export function createTagExpressions(
           ),
         ])
       }
-      // oppositeAndAdjacentEdges: use tag directly (sweepEdge subtypes removed)
+      // oppositeAndAdjacentEdges: use tag directly
       return createLocalName(tags[0])
     }
 
-    // Handle FACE selections (edgeCut handled above as edge)
-    else if (artifact.type === 'wall' || artifact.type === 'cap') {
+    // Handle FACE selections (wall, cap, edgeCut)
+    else if (
+      artifact.type === 'wall' ||
+      artifact.type === 'cap' ||
+      artifact.type === 'edgeCut'
+    ) {
       // Face tags are referenced directly
       return createLocalName(tags[0])
     }
@@ -224,27 +229,13 @@ function modifyAstWithTagsForEdgeSelection(
   tagMethods?: string[]
 ): { modifiedAst: Node<Program>; tags: string[] } | Error {
   const artifact = selection.artifact
-  if (
-    !artifact ||
-    (artifact.type !== 'segment' && artifact.type !== 'edgeCut')
-  ) {
-    return new Error('Selection artifact is not a valid edge type')
+  if (!artifact || artifact.type !== 'segment') {
+    return new Error(
+      'Selection artifact is not a valid edge type (segment only)'
+    )
   }
 
-  // Resolve segment for getCommonFacesForEdge (only accepts Segment)
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null =
-    artifact.type === 'segment' ? artifact : null
-  if (artifact.type === 'edgeCut') {
-    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
-    const firstId = edgeIds?.[0]
-    if (firstId) {
-      const edgeArtifact = artifactGraph.get(firstId)
-      if (edgeArtifact?.type === 'segment') segmentArtifact = edgeArtifact
-    }
-  }
-  if (!segmentArtifact) {
-    return new Error('Could not resolve segment for edge selection')
-  }
+  const segmentArtifact = artifact
 
   let astClone = structuredClone(ast)
   const tags: string[] = []
