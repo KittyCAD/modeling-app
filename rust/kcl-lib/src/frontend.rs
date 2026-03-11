@@ -225,25 +225,23 @@ impl SketchApi for FrontendState {
         // Ensure that we allow experimental features since the sketch block
         // won't work without it.
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
-        // Add a sketch block, then convert it to a variable declaration.
-        let sketch_expr_stmt = ast::Node::no_src(ast::ExpressionStatement {
-            expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
-            digest: None,
-        });
-        let sketch_expr_range = SourceRange::from(&sketch_expr_stmt.expression);
-        new_ast.body.push(ast::BodyItem::ExpressionStatement(sketch_expr_stmt));
-        let (_, mutate_ret) = mutate_ast_node_by_source_range(
-            &mut new_ast,
-            sketch_expr_range,
-            AstMutateCommand::AddVariableDeclaration {
-                prefix: "sketch".to_owned(),
-            },
-        )?;
-        let AstMutateCommandReturn::Name(_) = mutate_ret else {
-            return Err(Error {
-                msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
-            });
-        };
+        // Add a sketch block as a variable declaration directly, avoiding
+        // source-range mutation on a no-src node.
+        let defined_names = find_defined_names(&new_ast);
+        let sketch_name = next_free_name("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
+        let sketch_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new(
+                &sketch_name,
+                ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+            ),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        new_ast
+            .body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                sketch_decl,
+            ))));
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
@@ -3327,11 +3325,9 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::Name(inner.name().to_owned())));
             }
             if let NodeMut::ExpressionStatement(expr_stmt) = node {
-                let mut defined_names = HashSet::new();
-                for scope_names in &ctx.defined_names_stack {
-                    defined_names.extend(scope_names.iter().cloned());
-                }
-                let Ok(name) = next_free_name(prefix, &defined_names) else {
+                let empty_defined_names = HashSet::new();
+                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
+                let Ok(name) = next_free_name(prefix, defined_names) else {
                     // TODO: Return an error instead?
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
