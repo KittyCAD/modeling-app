@@ -35,6 +35,7 @@ import type {
   ExpressionStatement,
   Identifier,
   Literal,
+  MemberExpression,
   Name,
   PathToNode,
   PipeExpression,
@@ -1208,6 +1209,56 @@ type GetVariableExprsOptions = {
   artifactTypeFilter?: Array<Artifact['type']>
 }
 
+function createSketchBlockMemberExpression(
+  sketchVariableName: string,
+  propertyName: string
+): Node<MemberExpression> {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    object: createLocalName(sketchVariableName),
+    property: createLocalName(propertyName),
+    computed: false,
+  }
+}
+
+function getSketchBlockVariableNameFromPath(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
+): string | undefined {
+  const sketchBlockLookup = getNodeFromPath<SketchBlock>(
+    ast,
+    pathToNode,
+    wasmInstance,
+    'SketchBlock'
+  )
+  if (err(sketchBlockLookup) || sketchBlockLookup.node.type !== 'SketchBlock') {
+    return undefined
+  }
+
+  const sketchVariableLookup = getNodeFromPath<VariableDeclaration>(
+    ast,
+    sketchBlockLookup.shallowPath,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(sketchVariableLookup) ||
+    sketchVariableLookup.node.type !== 'VariableDeclaration' ||
+    sketchVariableLookup.node.declaration.init.type !== 'SketchBlock'
+  ) {
+    return undefined
+  }
+
+  return sketchVariableLookup.node.declaration.id.name
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
@@ -1250,21 +1301,62 @@ export function getVariableExprsFromSelection(
 
       variable = lastChildVariable.variableDeclaration
     } else {
+      let variableLookup:
+        | {
+            node: VariableDeclaration
+            shallowPath: PathToNode
+            deepPath: PathToNode
+          }
+        | undefined
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
         s.codeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration'
       )
-      if (err(directLookup)) {
+      if (
+        !err(directLookup) &&
+        directLookup.node.type === 'VariableDeclaration' &&
+        !(
+          s.artifact?.type === 'segment' &&
+          directLookup.node.declaration.init.type === 'SketchBlock'
+        )
+      ) {
+        variableLookup = directLookup
+      }
+
+      if (!variableLookup) {
+        const rangePath = getNodePathFromSourceRange(ast, s.codeRef.range)
+        const rangeLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          rangePath,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (
+          !err(rangeLookup) &&
+          rangeLookup.node.type === 'VariableDeclaration'
+        ) {
+          variableLookup = rangeLookup
+        }
+      }
+
+      if (!variableLookup) {
         continue
       }
 
-      variable = directLookup
+      variable = variableLookup
     }
 
     if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
+      const isSketchBlockVariableDeclaration =
+        variable.node.declaration.init.type === 'SketchBlock'
+      if (isSketchBlockVariableDeclaration) {
+        // sketch(...) { ... } variables are sketch2 objects; callers should use
+        // member refs to concrete segments (e.g. s.line1), not the object itself.
+        continue
+      }
       if (nodeToEdit) {
         const result = getNodeFromPath<VariableDeclaration>(
           ast,
@@ -1284,12 +1376,26 @@ export function getVariableExprsFromSelection(
         }
       }
 
+      const sketchVariableName = getSketchBlockVariableNameFromPath(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance
+      )
+      const isSketchBlockMemberRef =
+        typeof sketchVariableName === 'string' && sketchVariableName !== name
+      const dedupeKey = isSketchBlockMemberRef
+        ? `${sketchVariableName}.${name}`
+        : name
+      const expr = isSketchBlockMemberRef
+        ? createSketchBlockMemberExpression(sketchVariableName, name)
+        : createLocalName(name)
+
       // Pointing to different variable case
-      if (pushedNames[name]) {
+      if (pushedNames[dedupeKey]) {
         continue
       }
-      exprs.push(createLocalName(name))
-      pushedNames[name] = true
+      exprs.push(expr)
+      pushedNames[dedupeKey] = true
       continue
     } else if (variable.node.type === 'CallExpressionKw') {
       // no variable assignment in that call and not a pipe yet, we'll need to create it
@@ -1358,14 +1464,42 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
-  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+  if (
+    opArg.value.type === 'Solid' ||
+    opArg.value.type === 'Sketch' ||
+    opArg.value.type === 'Segment' ||
+    opArg.value.type === 'Face'
+  ) {
+    if (opArg.value.type === 'Segment' || opArg.value.type === 'Face') {
+      artifactIds = [opArg.value.artifact_id]
+    } else {
+      artifactIds = [opArg.value.value.artifactId]
+    }
+  } else if (
+    opArg.value.type === 'Plane' ||
+    opArg.value.type === 'GdtAnnotation'
+  ) {
+    artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Helix') {
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value
-      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
-      .map((v) => v.value.artifactId)
+    artifactIds = opArg.value.value.flatMap((v) => {
+      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
+        return [v.value.artifactId]
+      }
+      if (
+        v.type === 'Segment' ||
+        v.type === 'Face' ||
+        v.type === 'Plane' ||
+        v.type === 'GdtAnnotation' ||
+        v.type === 'ImportedGeometry'
+      ) {
+        return [v.artifact_id]
+      }
+      return []
+    })
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
     artifactIds = [opArg.value.artifact_id]
   } else {

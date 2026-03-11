@@ -872,7 +872,17 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         pathToNode.push(['expr', 'AscribedExpression'])
         break
       case 'SketchBlock':
-        // TODO: sketch-api: implement arguments and body.
+        // Keep this as a marker for the sketch block expression itself.
+        break
+      case 'SketchBlockArg':
+        pathToNode.push(['arguments', 'SketchBlock'])
+        pathToNode.push([step.index, 'index'])
+        pathToNode.push(['arg', LABELED_ARG_FIELD])
+        break
+      case 'SketchBlockBodyItem':
+        pathToNode.push(['body', 'SketchBlock'])
+        pathToNode.push(['items', 'Block'])
+        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.

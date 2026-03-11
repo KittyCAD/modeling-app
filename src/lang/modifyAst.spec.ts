@@ -34,7 +34,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, Literal } from '@src/lang/wasm'
+import type { Identifier, Literal, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
@@ -1227,6 +1227,40 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(pathToNode)) {
       throw pathToNode
     }
+    const newCode = recast(ast, instanceInThisFile)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
+  })
+
+  it('should fall back to creating a new declaration when pathIfNewPipe is stale', () => {
+    const code = `profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const exprs = createVariableExpressionsArray([
+      createLocalName('profile001'),
+    ])
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5, instanceInThisFile)),
+    ])
+
+    // Points to a variable declaration, not a PipeExpression/CallExpressionKw.
+    const stalePathIfNewPipe: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+    ]
+
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathIfNewPipe: stalePathIfNewPipe,
+      variableIfNewDecl: 'extrude',
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+
     const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)

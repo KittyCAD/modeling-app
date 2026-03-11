@@ -39,6 +39,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 RuntimeType::sketch(),
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
+                RuntimeType::segment(),
             ])),
             ArrayLen::Minimum(1),
         ),
@@ -171,6 +172,7 @@ async fn inner_extrude(
     for extrudable in &extrudables {
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
+        let edge_id = extrudable.edge_to_extrude();
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -346,7 +348,7 @@ async fn inner_extrude(
         };
 
         let being_extruded = match extrudable {
-            Extrudable::Sketch(..) => BeingExtruded::Sketch,
+            Extrudable::Sketch(..) | Extrudable::Segment(..) => BeingExtruded::Sketch,
             Extrudable::Face(face_tag) => {
                 let face_id = sketch_or_face_id;
                 let solid_id = match face_tag.geometry() {
@@ -383,7 +385,7 @@ async fn inner_extrude(
                     extrude_method,
                     exec_state,
                     &args,
-                    None,
+                    edge_id,
                     None,
                     body_type,
                     being_extruded,

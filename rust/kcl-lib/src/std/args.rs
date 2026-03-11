@@ -1142,7 +1142,11 @@ impl<'a> FromKclValue<'a> for Extrudable {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = FaceTag::from_kcl_val;
-        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+        let case3 = crate::execution::Segment::from_kcl_val;
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(Self::Face))
+            .or_else(|| case3(arg).map(Box::new).map(Self::Segment))
     }
 }
 

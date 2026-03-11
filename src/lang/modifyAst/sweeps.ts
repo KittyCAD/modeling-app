@@ -56,6 +56,15 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 import { isRegionSelection } from '@src/lib/selections'
 
+function getPathIfNewPipe(
+  exprs: Expr[],
+  pathIfPipe?: PathToNode
+): PathToNode | undefined {
+  return exprs.some((expr) => expr.type === 'PipeSubstitution')
+    ? pathIfPipe
+    : undefined
+}
+
 export function addExtrude({
   ast,
   artifactGraph,
@@ -253,7 +262,7 @@ export function addExtrude({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe: getPathIfNewPipe(vars.exprs, vars.pathIfPipe),
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
     wasmInstance,
   })
@@ -368,7 +377,7 @@ export function addSweep({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe: getPathIfNewPipe(vars.exprs, vars.pathIfPipe),
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
     wasmInstance,
   })
@@ -482,7 +491,7 @@ export function addLoft({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe: getPathIfNewPipe(vars.exprs, vars.pathIfPipe),
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
     wasmInstance,
   })
@@ -614,7 +623,7 @@ export function addRevolve({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe: getPathIfNewPipe(vars.exprs, vars.pathIfPipe),
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
     wasmInstance,
   })

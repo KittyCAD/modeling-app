@@ -2358,6 +2358,111 @@ clone001 = map(extrudes, f = clone)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_accepts_sketch2_segment_references() {
+        let ast = r#"@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])
+  coincident([line1.end, line2.start])
+}
+surface001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let surfaces = mem_get_json(result.exec_state.stack(), result.mem_env, "surface001");
+        let KclValue::HomArray { value, .. } = surfaces else {
+            panic!("Expected an array of solids when extruding two segment refs, got: {surfaces:?}");
+        };
+        assert_eq!(value.len(), 2, "Expected one solid per segment reference");
+        for (index, solid_value) in value.iter().enumerate() {
+            let Some(solid) = solid_value.as_solid() else {
+                panic!("Expected array element {index} to be a solid, got: {solid_value:?}");
+            };
+            assert_eq!(
+                solid.value.len(),
+                1,
+                "Expected solid {index} to contain exactly one extruded surface",
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_accepts_single_sketch2_segment_reference() {
+        let ast = r#"@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])
+  coincident([line1.end, line2.start])
+}
+surface001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let surface = mem_get_json(result.exec_state.stack(), result.mem_env, "surface001");
+        let Some(solid) = surface.as_solid() else {
+            panic!("Expected one solid when extruding a single segment ref, got: {surface:?}");
+        };
+        assert_eq!(
+            solid.value.len(),
+            1,
+            "Expected a single segment extrusion to produce one extruded surface",
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch2_segment_artifacts_have_segment_code_refs() {
+        let ast = r#"@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])
+  coincident([line1.end, line2.start])
+}
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let artifact_graph = &result.exec_state.global.artifacts.graph;
+
+        let segment_code_refs = artifact_graph
+            .iter()
+            .filter_map(|(_, artifact)| match artifact {
+                Artifact::Segment(segment) => Some(segment.code_ref.clone()),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            segment_code_refs.len(),
+            2,
+            "Expected two non-construction segment artifacts"
+        );
+
+        let sketch_block_code_ref = artifact_graph
+            .iter()
+            .find_map(|(_, artifact)| match artifact {
+                Artifact::SketchBlock(sketch_block) => Some(sketch_block.code_ref.clone()),
+                _ => None,
+            })
+            .expect("Expected sketch block artifact");
+
+        assert_ne!(
+            segment_code_refs[0].range, segment_code_refs[1].range,
+            "Each segment should keep its own source range",
+        );
+
+        for segment_code_ref in segment_code_refs {
+            assert_ne!(
+                segment_code_ref.range, sketch_block_code_ref.range,
+                "Segment source range should not collapse to the sketch block range",
+            );
+            assert_ne!(
+                segment_code_ref.node_path, sketch_block_code_ref.node_path,
+                "Segment node_path should not collapse to the sketch block node_path",
+            );
+            assert!(
+                !segment_code_ref.node_path.is_empty(),
+                "Segment node_path should point to the segment expression",
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_array_reduce_nested_array() {
         let code = r#"
 fn id(@el, accum)  { return accum }

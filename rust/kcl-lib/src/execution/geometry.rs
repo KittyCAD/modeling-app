@@ -904,13 +904,15 @@ impl SketchSurface {
     }
 }
 
-/// A Sketch, Face, or TaggedFace.
+/// A sketch, face specifier, or solved segment.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
     /// Face.
     Face(FaceTag),
+    /// Segment.
+    Segment(Box<Segment>),
 }
 
 impl Extrudable {
@@ -924,6 +926,16 @@ impl Extrudable {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            // Segment references should target the specific segment, not the whole sketch path.
+            Extrudable::Segment(segment) => Ok(segment.id),
+        }
+    }
+
+    /// Segment ID to use for post-extrude face lookup, if applicable.
+    pub fn edge_to_extrude(&self) -> Option<uuid::Uuid> {
+        match self {
+            Extrudable::Segment(segment) => Some(segment.id),
+            Extrudable::Sketch(_) | Extrudable::Face(_) => None,
         }
     }
 
@@ -935,6 +947,17 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Segment(segment) => {
+                let mut sketch = segment.sketch.clone()?;
+                sketch.paths.retain(|path| path.get_id() == segment.id);
+                sketch.inner_paths.retain(|path| path.get_id() == segment.id);
+
+                if sketch.paths.is_empty() && sketch.inner_paths.is_empty() {
+                    segment.sketch.clone()
+                } else {
+                    Some(sketch)
+                }
+            }
         }
     }
 
@@ -949,6 +972,7 @@ impl Extrudable {
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
+            Extrudable::Segment(_) => ProfileClosed::No,
         }
     }
 }

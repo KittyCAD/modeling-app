@@ -1115,18 +1115,16 @@ export function setCallInAst({
     Object.assign(result.node, call)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
-    const pipe = getNodeFromPath<PipeExpression>(
+    const pipe = getNodeFromPath<PipeExpression | CallExpressionKw>(
       ast,
       pathIfNewPipe,
       wasmInstance,
-      'PipeExpression'
+      ['PipeExpression', 'CallExpressionKw']
     )
-    if (err(pipe)) {
-      return pipe
-    }
-    if (pipe.node.type === 'PipeExpression') {
+    if (!err(pipe) && pipe.node.type === 'PipeExpression') {
       pipe.node.body.push(call)
-    } else if (pipe.node.type === 'CallExpressionKw') {
+      pathToNode = pathIfNewPipe
+    } else if (!err(pipe) && pipe.node.type === 'CallExpressionKw') {
       const expression = getNodeFromPath<ExpressionStatement>(
         ast,
         pathIfNewPipe,
@@ -1141,12 +1139,24 @@ export function setCallInAst({
         expression.node.expression,
         call,
       ])
+      pathToNode = pathIfNewPipe
     } else {
-      return new Error(
-        'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
-      )
+      // Stale or non-pipe paths should not crash command construction.
+      // Fall back to inserting a new declaration when available.
+      if (variableIfNewDecl) {
+        const name = findUniqueName(ast, variableIfNewDecl)
+        const declaration = createVariableDeclaration(name, call)
+        ast.body.push(declaration)
+        const toFirstKwarg = call.arguments.length > 0
+        pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+      } else if (err(pipe)) {
+        return pipe
+      } else {
+        return new Error(
+          'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+        )
+      }
     }
-    pathToNode = pathIfNewPipe
   } else if (variableIfNewDecl) {
     const name = findUniqueName(ast, variableIfNewDecl)
     const declaration = createVariableDeclaration(name, call)
