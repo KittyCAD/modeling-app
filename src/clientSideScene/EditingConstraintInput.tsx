@@ -7,9 +7,7 @@ import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
-  isDiameterConstraint,
-  isDistanceConstraint,
-  isRadiusConstraint,
+  isConstraintWithSource,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
@@ -134,12 +132,7 @@ function getInitialDimension(
   let initialDimension = ''
   const constraintObject =
     editingConstraintId && getConstraintObject(editingConstraintId, state)
-  if (
-    constraintObject &&
-    (isDistanceConstraint(constraintObject) ||
-      isRadiusConstraint(constraintObject) ||
-      isDiameterConstraint(constraintObject))
-  ) {
+  if (constraintObject && isConstraintWithSource(constraintObject)) {
     initialDimension = constraintObject.kind.constraint.source.expr ?? ''
   }
   return initialDimension

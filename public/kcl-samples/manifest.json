@@ -1434,7 +1434,7 @@
     "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
     "multipleFiles": false,
     "title": "Scrub Daddy Sponge Holder",
-    "description": "A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit mangets with a diameter of 6mm and thickness of 3 mm.",
+    "description": "A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit magnets with a diameter of 6mm and thickness of 3 mm.",
     "files": [
       "main.kcl"
     ]
@@ -1908,7 +1908,7 @@
     "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Tube manifold",
-    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters",
     "files": [
       "main.kcl"
     ]

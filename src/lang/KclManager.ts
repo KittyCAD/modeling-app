@@ -982,7 +982,7 @@ export class KclManager extends File {
             this.sendModelingEvent({
               type: 'update sketch outcome',
               data: {
-                kclSource,
+                sourceDelta: kclSource,
                 sceneGraphDelta,
               },
             })

@@ -27,7 +27,7 @@ vBlockProfile = startProfile(vBlockProfileSketch, at = [-vBlockWidth / 2, 0])
   |> yLine(length = slotHeight)
   |> xLine(length = -slotDepth)
   |> yLine(length = vBlockHeight / 2 - (slotHeight / 2))
-  // plateu
+  // plateau
   |> xLine(length = vBlockWidth / 2 - (vWidth / 2), tag = $seg01)
   |> line(end = [vWidth / 2, -vDepth])
   |> line(end = [vWidth / 2, vDepth])
