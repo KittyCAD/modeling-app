@@ -140,6 +140,9 @@ export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 export const POINT_SEGMENT_HIT_AREA = 'POINT_SEGMENT_HIT_AREA'
+const POINT_SEGMENT_HIT_AREA_RENDER_ORDER = 9
+const POINT_SEGMENT_BODY_RENDER_ORDER = 10
+const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
@@ -345,14 +348,14 @@ class PointSegment implements SketchEntityUtils {
     pointBody.userData.type = POINT_SEGMENT_BODY
     pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
-    pointBody.renderOrder = 10
+    pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
     pointBody.layers.set(SKETCH_LAYER)
     // Visual-only mesh: interaction is handled by POINT_SEGMENT_HIT_AREA.
     pointBody.raycast = () => {}
     pointHitArea.userData.type = POINT_SEGMENT_HIT_AREA
     pointHitArea.userData.isHovered = false
     pointHitArea.name = POINT_SEGMENT_HIT_AREA
-    pointHitArea.renderOrder = 9
+    pointHitArea.renderOrder = POINT_SEGMENT_HIT_AREA_RENDER_ORDER
     pointHitArea.layers.set(SKETCH_LAYER)
     pointHitArea.scale.setScalar(10 / 3)
 
@@ -1081,6 +1084,9 @@ export function updateSegmentHover(
     )
     if (pointBody instanceof Mesh) {
       pointBody.userData.isHovered = isHovered
+      pointBody.renderOrder = isHovered
+        ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
+        : POINT_SEGMENT_BODY_RENDER_ORDER
       segmentUtilsMap.PointSegment.updatePointColors(pointBody, {
         isSelected,
         isHovered,
