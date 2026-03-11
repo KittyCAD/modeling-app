@@ -198,51 +198,15 @@ export function resolveTangentialArcEndpoints(
 
 export function resolveTangentInfoFromClick({
   clickedId,
-  clickPoint,
   sceneGraphDelta,
 }: {
   clickedId: number
-  clickPoint: Coords2d
   sceneGraphDelta: SceneGraphDelta
 }): TangentInfo | null {
   const objects = sceneGraphDelta.new_graph.objects
   const clickedObj = objects[clickedId]
   if (!clickedObj || clickedObj.kind.type !== 'Segment') {
     return null
-  }
-
-  if (clickedObj.kind.segment.type === 'Line') {
-    const line = clickedObj.kind.segment
-    const startPoint = getPointFromObjects(objects, line.start)
-    const endPoint = getPointFromObjects(objects, line.end)
-    if (!startPoint || !endPoint) {
-      return null
-    }
-
-    const startDistance = distance2d(startPoint, clickPoint)
-    const endDistance = distance2d(endPoint, clickPoint)
-    const useStartPoint = startDistance <= endDistance
-
-    const tangentPointId = useStartPoint ? line.start : line.end
-    const tangentPoint = useStartPoint ? startPoint : endPoint
-
-    const tangentDirection = getLineTangentDirection({
-      objects,
-      lineId: clickedId,
-      tangentPointId,
-    })
-    if (!tangentDirection) {
-      return null
-    }
-
-    return {
-      lineId: clickedId,
-      tangentStart: {
-        id: tangentPointId,
-        point: tangentPoint,
-      },
-      tangentDirection,
-    }
   }
 
   if (clickedObj.kind.segment.type === 'Point') {
@@ -309,7 +273,6 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
 
       const tangentInfo = resolveTangentInfoFromClick({
         clickedId,
-        clickPoint: [twoD.x, twoD.y],
         sceneGraphDelta,
       })
       if (!tangentInfo) return

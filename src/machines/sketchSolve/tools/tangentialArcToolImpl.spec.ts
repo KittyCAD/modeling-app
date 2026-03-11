@@ -35,33 +35,18 @@ describe('tangentialArcToolImpl', () => {
   })
 
   describe('resolveTangentInfoFromClick', () => {
-    it('should resolve nearest endpoint when clicking a line segment', () => {
+    it('should return null when clicking a line segment directly', () => {
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
       const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
 
-      const tangentInfoNearStart = resolveTangentInfoFromClick({
+      const tangentInfo = resolveTangentInfoFromClick({
         clickedId: 3,
-        clickPoint: [1, 0],
-        sceneGraphDelta,
-      })
-      const tangentInfoNearEnd = resolveTangentInfoFromClick({
-        clickedId: 3,
-        clickPoint: [19, 0],
         sceneGraphDelta,
       })
 
-      expect(tangentInfoNearStart).toEqual({
-        lineId: 3,
-        tangentStart: { id: 1, point: [0, 0] },
-        tangentDirection: [-1, 0],
-      })
-      expect(tangentInfoNearEnd).toEqual({
-        lineId: 3,
-        tangentStart: { id: 2, point: [20, 0] },
-        tangentDirection: [1, 0],
-      })
+      expect(tangentInfo).toBeNull()
     })
 
     it('should resolve endpoint owner line when clicking a point segment', () => {
@@ -78,12 +63,10 @@ describe('tangentialArcToolImpl', () => {
 
       const tangentInfoAtStart = resolveTangentInfoFromClick({
         clickedId: 1,
-        clickPoint: [0, 0],
         sceneGraphDelta,
       })
       const tangentInfoAtEnd = resolveTangentInfoFromClick({
         clickedId: 2,
-        clickPoint: [20, 0],
         sceneGraphDelta,
       })
 
@@ -111,7 +94,6 @@ describe('tangentialArcToolImpl', () => {
 
       const tangentInfo = resolveTangentInfoFromClick({
         clickedId: 4,
-        clickPoint: [2, 2],
         sceneGraphDelta,
       })
 
