@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { App } from '@src/lib/app'
+import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -30,24 +31,28 @@ const mockProject: Project = {
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
-    type: StorageName.OPFS,
+    type: StorageName.NodeFS,
     options: {},
   })
 })
 
 describe('project system', () => {
   it('can open, close project', async () => {
+    // Stub out File read and write implementations
+    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.write = () => Promise.resolve()
+
     const app = App.fromProvided({
       wasmPromise: loadWasm(),
     })
 
-    app.openProject(
-      mockProject,
-      mockProject.children![0].path,
-      app.singletons.kclManager
-    )
+    const project = await app.openProject(mockProject)
 
     expect(app.project).toBeDefined()
+    expect(app.project?.executingPath).toBeNull()
+    expect(app.project?.executingFileEntry.value.name).toEqual('')
+
+    await project.openEditor(mockProject.children![0].path)
     expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
     expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 
