@@ -190,7 +190,7 @@ function CommandBarHeaderFooter({
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
-                      {argValue ? (
+                      {argValue !== undefined ? (
                         project?.executingEditor.value &&
                         (arg.inputType === 'selection' ||
                           arg.inputType === 'selectionMixed') ? (
@@ -208,6 +208,8 @@ function CommandBarHeaderFooter({
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'boolean' ? (
+                          String(argValue)
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (
