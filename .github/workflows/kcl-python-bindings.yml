@@ -159,7 +159,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
-      - name: Install codespell
+      - name: Create venv
         run: |
           uv venv .venv
           echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
