@@ -133,13 +133,13 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     message: 'rustContext.clearSceneAndBustCache()',
     metadata: {
       jsAppSettings: settings,
-      filePath: kclManager.currentFilePath || undefined,
+      filePath: kclManager.path || undefined,
     },
   })
   // Bust the cache always! A new connection has been made. The engine has no previous state
   await rustContext.clearSceneAndBustCache(
     settings,
-    kclManager.currentFilePath || undefined
+    kclManager.path || undefined
   )
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
