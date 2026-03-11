@@ -1,11 +1,11 @@
 ---
 title: "edgeId"
 subtitle: "Function in std"
-excerpt: "Given an edge index, find its ID."
+excerpt: "Given an edge index, find its ID. In general, you should prefer tagging edges to using this function. Use this function if you can't tag an edge. For example, if the edge comes from imported geometry in a .STEP file, or if it's from an operation that doesn't yet support tagging the edges it creates, like `subtract`."
 layout: manual
 ---
 
-Given an edge index, find its ID.
+Given an edge index, find its ID. In general, you should prefer tagging edges to using this function. Use this function if you can't tag an edge. For example, if the edge comes from imported geometry in a .STEP file, or if it's from an operation that doesn't yet support tagging the edges it creates, like `subtract`.
 
 ```kcl
 edgeId(

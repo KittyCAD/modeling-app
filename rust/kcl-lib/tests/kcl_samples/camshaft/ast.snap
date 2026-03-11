@@ -205,7 +205,7 @@ description: Result of parsing camshaft.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "lobeSeperation",
+            "name": "lobeSeparation",
             "start": 0,
             "type": "Identifier"
           },
@@ -2718,7 +2718,7 @@ description: Result of parsing camshaft.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "lobeSeperation",
+                        "name": "lobeSeparation",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -3004,7 +3004,7 @@ description: Result of parsing camshaft.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "lobeSeperation",
+                                    "name": "lobeSeparation",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
