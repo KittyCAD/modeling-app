@@ -1244,6 +1244,7 @@ export async function getOffsetSketchPlaneData(
   }
 ): Promise<Error | false | OffsetPlane> {
   const { sceneInfra } = systemDeps
+  debugger
   if (artifact?.type !== 'plane') {
     return new Error(
       `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`

@@ -86,6 +86,8 @@ export default class RustContext {
     this.ctxInstance = ctxInstance
   }
 
+  public hasOpenedProject = false
+
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
     // TODO: The rust side should really honor having no current file ID
@@ -96,6 +98,7 @@ export default class RustContext {
       JSON.stringify(kclFiles),
       currentFileId
     )
+    this.hasOpenedProject = true
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
@@ -113,6 +116,9 @@ export default class RustContext {
   }
 
   async sendUpdateFile(fileId: number, code: string) {
+    if (!this.hasOpenedProject) {
+      return
+    }
     return this.ctxInstance?.update_file(this.projectId, fileId, code)
   }
 
@@ -170,6 +176,7 @@ export default class RustContext {
       )
       return execStateFromRust(result)
     } catch (e: any) {
+      console.trace('FRANK FUCKING ERRORS', path)
       return Promise.reject(errFromErrWithOutputs(e))
     }
   }

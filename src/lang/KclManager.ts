@@ -228,19 +228,8 @@ export class ZDSProject {
   }
 
   /** Open a project, with the option to open an initial editor too */
-  static async open(
-    projectRef: Signal<Project>,
-    app: App,
-    initialOpenFilePath?: string,
-    // TODO: This shouldn't be necessary to pass in, once we make the app okay without a permanent KclManager.
-    initialOpenEditor?: KclManager
-  ) {
-    const newProject = new ZDSProject(projectRef, app)
-    if (initialOpenFilePath) {
-      await newProject.openEditor(initialOpenFilePath, initialOpenEditor)
-      newProject.executingPath = initialOpenFilePath
-    }
-    return newProject
+  static async open(projectRef: Signal<Project>, app: App) {
+    return new ZDSProject(projectRef, app)
   }
 
   get executingPath() {
@@ -274,7 +263,11 @@ export class ZDSProject {
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
-  async openEditor(path: string, providedEditor?: KclManager) {
+  async openEditor(
+    path: string,
+    providedEditor?: KclManager,
+    isExecuting = true
+  ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
     if (found) {
@@ -282,36 +275,35 @@ export class ZDSProject {
       return found
     }
 
-    const newEditor =
-      providedEditor ??
-      new KclManager(path, {
-        wasmInstancePromise: this.app.wasmPromise,
-        commandBar: this.app.commands.actor,
-        settings: this.app.settings.actor,
-        projectPath: computed(() => this.projectIORefSignal.value.path),
-      })
+    const systemDeps: SystemDeps = {
+      wasmInstancePromise: this.app.wasmPromise,
+      commandBar: this.app.commands.actor,
+      settings: this.app.settings.actor,
+      projectPath: computed(() => this.projectIORefSignal.value.path),
+    }
+
+    if (providedEditor) {
+      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+    }
+
+    const foundFileIndex = this.files.findIndex((f) => f.path === path)
+    const newEditor = await KclManager.fromFile(
+      foundFileIndex > -1
+        ? this.files[foundFileIndex]
+        : new File(path, this.nextFileId++),
+      systemDeps,
+      providedEditor
+    )
 
     // Splice our new editor into our files array
-    const foundFileIndex = this.files.findIndex((f) => f.path === path)
     if (foundFileIndex > -1) {
-      const foundFile = this.files[foundFileIndex]
-      newEditor.id = foundFile.id
-      newEditor.path = foundFile.path
-      this.files = this.files
-        .slice(0, foundFileIndex)
-        .concat(newEditor)
-        .concat(this.files.slice(foundFileIndex + 1))
+      this.files[foundFileIndex] = newEditor
+    } else {
+      // We must be opening a new file as an editor
+      this.files = [...this.files, newEditor]
     }
 
     newEditor.path = path
-
-    // TODO: Remove this block after the app can handle no executing editor
-    if (providedEditor) {
-      providedEditor.path = path
-      providedEditor.systemDeps.projectPath = computed(
-        () => this.projectIORefSignal.value.path
-      )
-    }
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -341,6 +333,9 @@ export class ZDSProject {
       .catch(reportRejection)
     markOnce('project/endSendProjectToWasm')
 
+    if (isExecuting) {
+      this.executingPath = path
+    }
     return newEditor
   }
 
@@ -365,10 +360,15 @@ export class ZDSProject {
   private onUpdateFromDisk = (eventType: string, path: string) => {
     const foundEditorKey = this.editors
       .keys()
+      .toArray()
       .find((pathSignal) => pathSignal.value === path)
-    console.log(
-      `${foundEditorKey ? 'Matches' : 'Does not match'} a file that is being edited`
-    )
+
+    // We ignore all currently-opened editors. The project watcher is meant
+    // only to notify about the rest of the project's updates, and pass them
+    // into the currently-executing editor.
+    if (foundEditorKey) {
+      return
+    }
 
     const editor = this.executingEditor.value
     const foundFile = this.files.find((f) => f.path === path)
@@ -454,7 +454,10 @@ export class File extends EventTarget {
   private pathSignal: Signal<string>
   private fileWatcherKey = uuidv4()
   public watching: boolean = false
-  public onWatchEvent: (eventType: string, path: string) => void = () => ({})
+  /** Array of listeners. TODO: Make this a CodeMirror-like Facet */
+  public onWatchEvent: ((eventType: string, path: string) => void)[] = [
+    () => ({}),
+  ]
   get path() {
     return this.pathSignal.value
   }
@@ -480,11 +483,9 @@ export class File extends EventTarget {
   }
 
   watch() {
-    File.ioImplementations.watch(
-      this.path,
-      this.fileWatcherKey,
-      this.onWatchEvent
-    )
+    File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
+      this.onWatchEvent.map((f) => f(e, p))
+    })
     this.watching = true
   }
 
@@ -635,8 +636,13 @@ export class KclManager extends File {
 
   /**
    * Watching the file system for updates and reacting to them.
+   * TODO: might need to watch for deletions here or in the project eventually.
+   * It's currently handled elsewhere in SystemIOMachine I believe.
+   *
+   * NOTE: This listener is in *addition* to the base File class one, so it must have a distinct name and
+   * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
    */
-  public onWatchEvent = (_eventType: string, path: string) => {
+  #onWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
     if (
@@ -701,7 +707,6 @@ export class KclManager extends File {
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
-  private _currentFilePath: string | null = null
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
 
@@ -925,7 +930,7 @@ export class KclManager extends File {
       if (shouldWriteToFile) {
         // Need to close over `this._currentFilePath`'s value before deferrment,
         // otherwise the deferred write could have a changed value after rapid navigation
-        void this.writeToFile(newCode, this._currentFilePath)
+        void this.writeToFile(newCode)
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
@@ -1009,17 +1014,57 @@ export class KclManager extends File {
       this.executeKclEffect,
     ]
   }
-  private createEditorView() {
+  private createEditorView(initialCode = '') {
     return new EditorView({
       state: EditorState.create({
-        doc: '',
+        doc: initialCode,
         extensions: this.createEditorExtensions(),
       }),
     })
   }
 
-  constructor(path: string, systemDeps: SystemDeps, fileId = 0) {
+  /**
+   * Upgrade a File to an Editor, reading its contents for the initial editor state.
+   * TODO: Remove providedEditor once the app can handle an undefined currently-executing editor.
+   */
+  static async fromFile(
+    file: File,
+    systemDeps: SystemDeps,
+    providedEditor?: KclManager
+  ) {
+    const initialCode = await file.read()
+    console.log(`FRANK here is initialCode`, initialCode)
+
+    if (!providedEditor) {
+      console.log('no provided editor!')
+      return new KclManager(file.path, initialCode, systemDeps, file.id)
+    }
+
+    // TODO: remove all this once the app can handle an undefined currently-executing editor
+    providedEditor.path = file.path
+    providedEditor.id = file.id
+    providedEditor.codeSignal.value = initialCode
+    providedEditor.updateCodeEditor(initialCode, {
+      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
+      // This way undo and redo are not super weird when opening new files.
+      shouldClearHistory: true,
+      shouldResetCamera: true,
+      // We explicitly do not write to the file here since we are loading from
+      // the file system and not the editor.
+      shouldWriteToDisk: false,
+    })
+    return providedEditor
+  }
+
+  constructor(
+    path: string,
+    initialCode: string,
+    systemDeps: SystemDeps,
+    fileId = 0
+  ) {
     super(path, fileId)
+    // Register our additional, KclManager-specific watch event handler
+    this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
@@ -1047,10 +1092,10 @@ export class KclManager extends File {
     )
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
-    this._editorView = this.createEditorView()
+    this._editorView = this.createEditorView(initialCode)
+    // TODO: Delete this._code, only derive from the editorView's doc
+    this._code.value = initialCode
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
-
-    this._code.value = ''
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1109,7 +1154,7 @@ export class KclManager extends File {
     if (this._astParseFailed && this._switchedFiles) {
       await this.rustContext.clearSceneAndBustCache(
         jsAppSettings(this.systemDeps.settings),
-        this.currentFilePath || undefined
+        this.path
       )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
@@ -1258,7 +1303,7 @@ export class KclManager extends File {
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      path: this.currentFilePath || undefined,
+      path: this.path,
       rustContext: this.rustContext,
     })
 
@@ -1401,6 +1446,7 @@ export class KclManager extends File {
     this.logs = logs
     this._execState.value = execState
     this._variables.value = execState.variables
+    debugger
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
@@ -2098,19 +2144,8 @@ export class KclManager extends File {
       preventDefault: true,
     }))
   }
-  get currentFilePath(): string | null {
-    return this._currentFilePath
-  }
-  updateCurrentFilePath(path: string) {
-    if (this._currentFilePath !== path) {
-      this._currentFilePath = path
-    }
-  }
   get currentFileName() {
-    return (
-      this._currentFilePath?.split(window.electron?.path.sep || '/').pop() ||
-      null
-    )
+    return this.path.split(window.electron?.path.sep || '/').pop() || null
   }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
@@ -2192,27 +2227,23 @@ export class KclManager extends File {
       ],
     })
   }
-  async writeToFile(
-    newCode = this.codeSignal.value,
-    path = this._currentFilePath
-  ) {
+  async writeToFile(newCode = this.codeSignal.value) {
     if (this.isBufferMode) return
-    if (path !== null) {
+    if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
-          if (!path) {
+          if (!this.path) {
             return reject(new Error('currentFilePath not set'))
           }
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           this.unwatch()
-          fsZds
-            .writeFile(path, new TextEncoder().encode(newCode))
+          this.write(newCode)
             .then(resolve)
             .then(() => {
               // After a cooldown, start watching this file again on disk.

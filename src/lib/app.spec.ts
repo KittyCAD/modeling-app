@@ -46,13 +46,13 @@ describe('project system', () => {
       wasmPromise: loadWasm(),
     })
 
-    await app.openProject(
-      mockProject,
-      mockProject.children![0].path,
-      app.singletons.kclManager
-    )
+    const project = await app.openProject(mockProject)
 
     expect(app.project).toBeDefined()
+    expect(app.project?.executingPath).toBeUndefined()
+    expect(app.project?.executingFileEntry.value.name).toEqual('')
+
+    await project.openEditor(mockProject.children![0].path)
     expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
     expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 

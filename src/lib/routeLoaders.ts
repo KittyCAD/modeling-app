@@ -175,18 +175,6 @@ export const fileLoader =
       if (window.electron?.process.env.NODE_ENV === 'test') {
         code = kclManager.localStoragePersistCode() || code
       }
-
-      // Update both the state and the editor's code.
-      kclManager.updateCurrentFilePath(currentFilePath)
-      kclManager.updateCodeEditor(code, {
-        shouldExecute: true,
-        // This way undo and redo are not super weird when opening new files.
-        shouldClearHistory: true,
-        shouldResetCamera: true,
-        // We explicitly do not write to the file here since we are loading from
-        // the file system and not the editor.
-        shouldWriteToDisk: false,
-      })
     }
 
     // Set the file system manager to the project path
@@ -219,8 +207,8 @@ export const fileLoader =
 
     // This starts subscribing to settingsActor updates
     // TODO: Make settings not an XState actor, this is too convoluted.
-    await app.openProject(
-      project,
+    const projectRef = await app.openProject(project)
+    await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager
     )
