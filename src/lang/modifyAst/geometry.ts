@@ -69,14 +69,15 @@ export function addHelix({
   const axisExpr: LabeledArg[] = []
   const cylinderExpr: LabeledArg[] = []
   if (cylinder) {
-    const lastChildLookup = true
     const vars = getVariableExprsFromSelection(
       cylinder,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       mNodeToEdit,
-      lastChildLookup,
-      artifactGraph
+      {
+        lastChildLookup: true,
+      }
     )
     if (err(vars)) {
       return vars

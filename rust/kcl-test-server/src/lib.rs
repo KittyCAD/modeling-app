@@ -3,19 +3,19 @@
 use std::{
     net::SocketAddr,
     sync::{
-        atomic::{AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicUsize, Ordering},
     },
     time::Duration,
 };
 
 use hyper::{
+    Body, Error, Response, Server,
     body::Bytes,
     header::CONTENT_TYPE,
     service::{make_service_fn, service_fn},
-    Body, Error, Response, Server,
 };
-use kcl_lib::{test_server::RequestBody, ExecState, ExecutorContext, Program};
+use kcl_lib::{ExecState, ExecutorContext, Program, test_server::RequestBody};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,

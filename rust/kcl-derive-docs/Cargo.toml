@@ -2,7 +2,7 @@
 name = "kcl-derive-docs"
 description = "A tool for generating documentation from Rust derive macros"
 version = "0.2.132"
-edition = "2021"
+edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
