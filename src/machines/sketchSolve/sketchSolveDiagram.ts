@@ -48,6 +48,7 @@ import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
+  buildTangentConstraintInput,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -288,6 +289,35 @@ export const sketchSolveMachine = setup({
             type: 'Coincident',
             segments: context.selectedIds,
           },
+          jsAppSettings(context.kclManager.systemDeps.settings)
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
+          })
+        }
+      },
+    },
+    Tangent: {
+      actions: async ({ self, context }) => {
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const tangentConstraint = buildTangentConstraintInput(
+          context.selectedIds,
+          objects
+        )
+        if (!tangentConstraint) {
+          return
+        }
+
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          tangentConstraint,
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
         if (result) {

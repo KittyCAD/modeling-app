@@ -37,6 +37,16 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
+export function isArcSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+}
+
+export type ArcSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Arc' } }
+}
+
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -116,6 +126,34 @@ export function buildAngleConstraintInput(
       expr: `${angle}deg`,
       is_literal: true as const,
     },
+  }
+}
+
+export function buildTangentConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+) {
+  if (selectedIds.length !== 2) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  const lineObj = selectedObjects.find(isLineSegment)
+  const arcObj = selectedObjects.find(isArcSegment)
+
+  if (!lineObj || !arcObj) {
+    return null
+  }
+
+  // The scene graph does not currently distinguish 3-point arcs from
+  // center-defined arcs, but TangentArc ctors are explicitly different.
+  if (arcObj.kind.segment.ctor.type !== 'Arc') {
+    return null
+  }
+
+  return {
+    type: 'Tangent' as const,
+    input: [lineObj.id, arcObj.id] as [number, number],
   }
 }
 type DistanceConstraintTypes =
@@ -227,15 +265,32 @@ export function getConstraintObject(
   constraintId: number,
   modelingState: StateFrom<typeof modelingMachine>
 ): ApiObject | undefined {
-  const snapshot = modelingState.children.sketchSolveMachine?.getSnapshot() as
-    | SnapshotFrom<typeof sketchSolveMachine>
-    | undefined
+  const snapshot = getSketchSolveSnapshot(modelingState)
   const objects =
     snapshot?.context?.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ||
     []
 
   const constraintObject = objects[constraintId]
   return constraintObject
+}
+
+export function getSketchSolveSnapshot(
+  modelingState: StateFrom<typeof modelingMachine>
+): SnapshotFrom<typeof sketchSolveMachine> | undefined {
+  return modelingState.children.sketchSolveMachine?.getSnapshot() as
+    | SnapshotFrom<typeof sketchSolveMachine>
+    | undefined
+}
+
+export function getSelectedTangentConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildTangentConstraintInput(selectedIds, objects)
 }
 
 export type SpriteLabel = Sprite & {

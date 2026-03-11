@@ -80,6 +80,7 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
         | 'Horizontal'
