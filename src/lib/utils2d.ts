@@ -45,7 +45,10 @@ export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
 }
 
 export function getMinorAngleBetweenVec(a: Coords2d, b: Coords2d) {
-  return Math.acos(dot2d(a, b) / length2d(a) / length2d(b))
+  const length_a = length2d(a)
+  const length_b = length2d(b)
+  if (length_a === 0 || length_b === 0) return 0
+  return Math.acos(dot2d(a, b) / length_a / length_b)
 }
 
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {
