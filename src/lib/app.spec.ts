@@ -49,7 +49,7 @@ describe('project system', () => {
     const project = await app.openProject(mockProject)
 
     expect(app.project).toBeDefined()
-    expect(app.project?.executingPath).toBeUndefined()
+    expect(app.project?.executingPath).toBeNull()
     expect(app.project?.executingFileEntry.value.name).toEqual('')
 
     await project.openEditor(mockProject.children![0].path)
