@@ -35,9 +35,9 @@ inlet = hole::hole(
   body,
   face = END,
   cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = outletSpacing * 3.9, diameter = inletDiameter),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = outletSpacing * 3.9, diameter = inletDiameter),
+  holeType = hole::simple(),
 )
 
 // Place four outlet holes along the top of the manifold
@@ -50,9 +50,9 @@ outlets = hole::holes(
     [outletSpacing * 1.5, 0],
     [-outletSpacing * 1.5, 0]
   ],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = bodyWidth / 2, diameter = outletDiameter),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = bodyWidth / 2, diameter = outletDiameter),
+  holeType = hole::simple(),
 )
 
 // Create two diagonal spaced mounting thru holes on the side of the manifold
@@ -63,7 +63,7 @@ mountingHoles = hole::holes(
     [-bodyWidth / 4, -outletSpacing],
     [bodyWidth / 4, outletSpacing]
   ],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = bodyWidth * 1.1, diameter = mountingHoleDiameter),
-  holeType =   hole::simple(),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = bodyWidth * 1.1, diameter = mountingHoleDiameter),
+  holeType = hole::simple(),
 )

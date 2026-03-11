@@ -6255,7 +6255,7 @@ description: Result of parsing pdu-faceplate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "powerPlugOveralWidth",
+            "name": "powerPlugOverallWidth",
             "start": 0,
             "type": "Identifier"
           },

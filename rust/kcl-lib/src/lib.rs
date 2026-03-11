@@ -79,6 +79,8 @@ mod simulation_tests;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
+#[cfg(test)]
+mod test_util;
 mod thread;
 mod unparser;
 #[cfg(test)]
