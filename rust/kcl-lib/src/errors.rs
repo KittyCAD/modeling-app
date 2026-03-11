@@ -20,6 +20,12 @@ use crate::{
     front::{Number, Object, ObjectId},
 };
 
+pub trait IsRetryable {
+    /// Returns true if the error is transient and the operation that caused it
+    /// should be retried.
+    fn is_retryable(&self) -> bool;
+}
+
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
 pub enum ExecError {
@@ -58,12 +64,24 @@ impl ExecErrorWithState {
     }
 }
 
+impl IsRetryable for ExecErrorWithState {
+    fn is_retryable(&self) -> bool {
+        self.error.is_retryable()
+    }
+}
+
 impl ExecError {
     pub fn as_kcl_error(&self) -> Option<&crate::KclError> {
         let ExecError::Kcl(k) = &self else {
             return None;
         };
         Some(&k.error)
+    }
+}
+
+impl IsRetryable for ExecError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, ExecError::Kcl(kcl_error) if kcl_error.is_retryable())
     }
 }
 
@@ -138,6 +156,12 @@ pub enum KclError {
 impl From<KclErrorWithOutputs> for KclError {
     fn from(error: KclErrorWithOutputs) -> Self {
         error.error
+    }
+}
+
+impl IsRetryable for KclError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, KclError::EngineHangup { .. } | KclError::EngineInternal { .. })
     }
 }
 
@@ -280,6 +304,15 @@ impl KclErrorWithOutputs {
             filename,
             related,
         })
+    }
+}
+
+impl IsRetryable for KclErrorWithOutputs {
+    fn is_retryable(&self) -> bool {
+        matches!(
+            self.error,
+            KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+        )
     }
 }
 

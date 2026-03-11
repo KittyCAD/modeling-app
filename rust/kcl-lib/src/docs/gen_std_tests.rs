@@ -5,7 +5,11 @@ use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::{ConnectionError, ExecutorContext, errors::ExecErrorWithState, test_util::execute_with_retries};
+use crate::{
+    ConnectionError, ExecutorContext,
+    errors::ExecErrorWithState,
+    util::{RetryConfig, execute_with_retries},
+};
 
 mod type_formatter;
 
@@ -616,7 +620,7 @@ fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
 /// engine.
 async fn run_example_with_retries(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    execute_with_retries(|| run_example(&program)).await?;
+    execute_with_retries(&RetryConfig::default(), || run_example(&program)).await?;
     Ok(())
 }
 
