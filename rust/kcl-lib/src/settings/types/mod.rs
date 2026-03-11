@@ -61,6 +61,9 @@ pub struct Settings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
     pub command_bar: Option<CommandBarSettings>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Application wide settings.
@@ -90,6 +93,9 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_debug_panel: Option<bool>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -144,6 +150,9 @@ pub struct AppearanceSettings {
     /// The overall theme of the app.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme: Option<AppTheme>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// The overall appearance of the app.
@@ -281,6 +290,9 @@ pub struct ModelingSettings {
     /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snaps_per_minor: Option<f64>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 fn default_length_unit_millimeters() -> UnitLength {
@@ -389,6 +401,9 @@ pub struct TextEditorSettings {
     /// Whether to make the cursor blink in the editor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blinking_cursor: Option<DefaultTrue>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Same as TextEditorSettings but applies to a per-project basis.
@@ -402,6 +417,9 @@ pub struct ProjectTextEditorSettings {
     /// Whether to make the cursor blink in the editor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blinking_cursor: Option<bool>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Settings that affect the behavior of project management.
@@ -415,6 +433,9 @@ pub struct ProjectSettings {
     /// The default project name to use when creating a new project.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_project_name: Option<ProjectNameTemplate>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -448,6 +469,9 @@ pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_settings: Option<DefaultTrue>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Same as CommandBarSettings but applies to a per-project basis.
@@ -458,6 +482,9 @@ pub struct ProjectCommandBarSettings {
     /// Whether to include settings in the command bar.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_settings: Option<bool>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// The types of onboarding status.
@@ -580,6 +607,7 @@ mod tests {
     fn test_settings_parse_basic() {
         let settings_file = r#"[settings.app]
 onboarding_status = "dismissed"
+foo = "bar"
 
 [settings.app.appearance]
 theme = "dark"
@@ -604,7 +632,9 @@ default_project_name = "untitled"
                     onboarding_status: Some(OnboardingStatus::Dismissed),
                     appearance: Some(AppearanceSettings {
                         theme: Some(AppTheme::Dark),
+                        other: Default::default(),
                     }),
+                    other: std::collections::HashMap::from([("foo".to_owned(), "bar".into())]),
                     ..Default::default()
                 }),
                 modeling: Some(ModelingSettings {
@@ -618,18 +648,23 @@ default_project_name = "untitled"
                 project: Some(ProjectSettings {
                     default_project_name: Some(ProjectNameTemplate("untitled".to_string())),
                     directory: Some("".into()),
+                    other: Default::default(),
                 }),
                 text_editor: Some(TextEditorSettings {
                     text_wrapping: Some(true.into()),
                     ..Default::default()
                 }),
                 command_bar: None,
+                other: Default::default(),
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(parsed, expected);
 
-        let expected_unwrap = CommandBarSettings { include_settings: None };
+        let expected_unwrap = CommandBarSettings {
+            include_settings: None,
+            other: Default::default(),
+        };
         let actual_unwrap = expected.clone().settings.command_bar.unwrap_or_default();
         assert_eq!(actual_unwrap, expected_unwrap);
         let actual_unwrap = actual_unwrap.include_settings.unwrap_or_default();
