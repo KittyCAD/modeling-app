@@ -952,7 +952,7 @@ export async function deleteDraftEntities({
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
           // Without this draft segments remain written on the file until another write comes.
-          writeToDisk: true, 
+          writeToDisk: true,
         },
       })
     }
