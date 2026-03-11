@@ -13867,7 +13867,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
       "angle": "degrees"
     }
   },
-  "powerPlugOveralWidth": {
+  "powerPlugOverallWidth": {
     "type": "Number",
     "value": 323.6,
     "ty": {
