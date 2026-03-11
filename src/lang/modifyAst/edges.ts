@@ -425,11 +425,11 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
       const vars = getVariableExprsFromSelection(
         solids,
+        artifactGraph,
         modifiedAst,
         wasmInstance,
         nodeToEdit,
-        true,
-        artifactGraph
+        { lastChildLookup: true }
       )
       if (err(vars)) return vars
 
@@ -532,11 +532,11 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
       const vars = getVariableExprsFromSelection(
         solids,
+        artifactGraph,
         modifiedAst,
         wasmInstance,
         nodeToEdit,
-        true,
-        artifactGraph
+        { lastChildLookup: true }
       )
       if (err(vars)) return vars
 
@@ -909,8 +909,7 @@ function buildEdgeExpr(
       ast,
       wasmInstance,
       undefined,
-      false,
-      artifactGraph
+      { lastChildLookup: false }
     )
     if (err(sourceSurfaceVars)) return sourceSurfaceVars
     if (sourceSurfaceVars.exprs.length !== 1) {
@@ -996,8 +995,7 @@ function buildEdgeExpr(
     ast,
     wasmInstance,
     undefined,
-    false,
-    artifactGraph
+    { lastChildLookup: false }
   )
   if (err(sourceSurfaceVars)) return sourceSurfaceVars
   if (sourceSurfaceVars.exprs.length !== 1) {
