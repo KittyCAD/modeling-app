@@ -60,7 +60,6 @@ import {
 } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
-import { isRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
