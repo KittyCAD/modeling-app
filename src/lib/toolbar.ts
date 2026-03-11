@@ -1458,66 +1458,71 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'pointTool',
           },
           {
-            id: 'center-arc',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'centerArcTool' },
-                  }),
-            icon: 'arcCenter',
-            status: 'available',
-            title: 'Center Arc',
-            hotkey: 'A',
-            description: 'Draw an arc by center and two endpoints',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'centerArcTool',
-          },
-          {
-            id: 'three-point-arc',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'threePointArcTool' },
-                  }),
-            icon: 'arc',
-            status: 'available',
-            title: '3-Point Arc',
-            description: 'Draw an arc from start, end, and a third point',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'threePointArcTool',
-          },
-          {
-            id: 'tangential-arc',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'tangentialArcTool' },
-                  }),
-            icon: 'tangent',
-            status: 'available',
-            title: 'Tangential Arc',
-            hotkey: 'Shift+A',
-            description: 'Draw an arc tangent to an existing line endpoint',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'tangentialArcTool',
+            id: 'arcs',
+            array: [
+              {
+                id: 'center-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'centerArcTool' },
+                      }),
+                icon: 'arcCenter',
+                status: 'available',
+                title: 'Center Arc',
+                hotkey: 'A',
+                description: 'Draw an arc by center and two endpoints',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'centerArcTool',
+              },
+              {
+                id: 'three-point-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'threePointArcTool' },
+                      }),
+                icon: 'arc',
+                status: 'available',
+                title: '3-Point Arc',
+                description: 'Draw an arc from start, end, and a third point',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'threePointArcTool',
+              },
+              {
+                id: 'tangential-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'tangentialArcTool' },
+                      }),
+                icon: 'tangent',
+                status: 'available',
+                title: 'Tangential Arc',
+                hotkey: 'Shift+A',
+                description: 'Draw an arc tangent to an existing line endpoint',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'tangentialArcTool',
+              },
+            ],
           },
           {
             id: 'trim',
