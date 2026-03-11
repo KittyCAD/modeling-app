@@ -64,9 +64,7 @@ async function clickSegmentById(
   const box = await scene.getBoundingBoxOrThrow(
     `[data-segment_id="${segmentId}"]`
   )
-  const centerX = box.x + box.width / 2
-  const centerY = box.y + box.height / 2
-  await page.mouse.click(centerX, centerY)
+  await page.mouse.click(box.x, box.y) // box size is 1x1 px so we can ignore width, height
 }
 
 const TEST_CODE = `@settings(experimentalFeatures = allow)
