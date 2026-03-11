@@ -25,9 +25,10 @@ import type {
   Solid2dArtifact as Solid2D,
   SourceRange,
   SweepArtifact,
-  SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
+/** Legacy shape for sweep-edge-like artifact (sweepEdge removed from artifact graph). */
+type SweepEdgeLike = { segId: string; sweepId?: string }
 /** Resolved graph selection (artifact + codeRef). SelectionV2 resolved via resolveSelectionV2. */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
@@ -281,7 +282,7 @@ export function getWallCodeRef(
 }
 
 export function getSweepEdgeCodeRef(
-  edge: SweepEdge,
+  edge: SweepEdgeLike,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const seg = getArtifactOfTypes(
@@ -291,23 +292,71 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
+/** Read consumed edge id from EdgeCut; Rust bindings use camelCase (edgeIds). */
+export function getEdgeCutConsumedEdgeId(
+  edge:
+    | EdgeCut
+    | { edgeIds?: string[]; edge_ids?: string[]; consumedEdgeId?: string }
+): string | null {
+  const edgeIds =
+    (edge as { edgeIds?: string[] }).edgeIds ??
+    (edge as { edge_ids?: string[] }).edge_ids
+  const first = edgeIds?.length ? edgeIds[0] : null
+  return first ?? (edge as { consumedEdgeId?: string }).consumedEdgeId ?? null
+}
+
+/**
+ * Resolve the segment consumed by an edgeCut. The graph may key segments by segment id (direct
+ * lookup) or only expose the edge id on EdgeCut; walls/caps carry that edge id in
+ * edge_cut_edge_ids and the segment id in seg_id, so we resolve via the wall/cap that
+ * references this edge.
+ */
+export function getSegmentForEdgeCut(
+  edgeIdOrEdgeCutId: string,
+  artifactGraph: ArtifactGraph
+): SegmentArtifact | null {
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'wall' && artifact.type !== 'cap') continue
+    const asAny = artifact as {
+      edgeCutEdgeIds?: string[]
+      edge_cut_edge_ids?: string[]
+      segId?: string
+      seg_id?: string
+    }
+    const ids = asAny.edgeCutEdgeIds ?? asAny.edge_cut_edge_ids
+    if (!ids?.includes(edgeIdOrEdgeCutId)) continue
+    const segId = asAny.segId ?? asAny.seg_id
+    if (segId == null) continue
+    const seg = getArtifactOfTypes(
+      { key: segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(seg)) return seg
+  }
+  return null
+}
+
 export function getEdgeCutConsumedCodeRef(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
-  const edgeIds = (edge as { edge_ids?: string[] }).edge_ids
-  const consumedEdgeId = edgeIds?.length
-    ? edgeIds[0]
-    : (edge as { consumedEdgeId?: string }).consumedEdgeId
+  const consumedEdgeId = getEdgeCutConsumedEdgeId(edge)
   if (consumedEdgeId == null || consumedEdgeId === '') {
     return new Error('edgeCut has no edge_ids or consumedEdgeId')
   }
-  const seg = getArtifactOfTypes(
+  let seg = getArtifactOfTypes(
     { key: consumedEdgeId, types: ['segment'] },
     artifactGraph
   )
-  if (err(seg)) return seg
-  return seg.codeRef
+  if (err(seg)) {
+    const segmentViaWallOrCap = getSegmentForEdgeCut(
+      consumedEdgeId,
+      artifactGraph
+    )
+    if (!segmentViaWallOrCap) return seg
+    seg = segmentViaWallOrCap as Extract<Artifact, { type: 'segment' }>
+  }
+  return (seg as SegmentArtifact).codeRef
 }
 
 /**
@@ -364,20 +413,26 @@ export function getSweepFromSuspectedSweepSurface(
     }
     return getArtifactOfTypes({ key: sweepId, types: ['sweep'] }, artifactGraph)
   }
-  const edgeIds = (faceArtifact as { edge_ids?: string[] }).edge_ids
-  const consumedEdgeId = edgeIds?.length
-    ? edgeIds[0]
-    : (faceArtifact as { consumedEdgeId?: string }).consumedEdgeId
+  const consumedEdgeId = getEdgeCutConsumedEdgeId(faceArtifact)
   if (consumedEdgeId == null || consumedEdgeId === '') {
     return new Error('edgeCut has no edge_ids or consumedEdgeId')
   }
-  const segOrEdge = getArtifactOfTypes(
+  let segOrEdge = getArtifactOfTypes(
     { key: consumedEdgeId, types: ['segment'] },
     artifactGraph
   )
-  if (err(segOrEdge)) return segOrEdge
-  if (segOrEdge.type === 'segment') {
-    const pathId = segOrEdge.pathId
+  if (err(segOrEdge)) {
+    const segmentViaWallOrCap = getSegmentForEdgeCut(
+      consumedEdgeId,
+      artifactGraph
+    )
+    if (segmentViaWallOrCap)
+      segOrEdge = segmentViaWallOrCap as Extract<Artifact, { type: 'segment' }>
+    else return segOrEdge
+  }
+  const segment = segOrEdge as SegmentArtifact
+  if ((segment as { type?: string }).type === 'segment') {
+    const pathId = segment.pathId
     if (pathId == null || pathId === '') {
       return new Error('segment has no pathId')
     }
@@ -448,10 +503,7 @@ export function getSweepArtifactFromSelection(
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
     // Handle edgeCut by getting its consumed edge (segment; sweepEdge removed from artifact graph / selectionsV2)
-    const edgeIds = (selection.artifact as { edge_ids?: string[] }).edge_ids
-    const consumedEdgeId = edgeIds?.length
-      ? edgeIds[0]
-      : (selection.artifact as { consumedEdgeId?: string }).consumedEdgeId
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(selection.artifact)
     if (consumedEdgeId != null && consumedEdgeId !== '') {
       const segOrEdge = getArtifactOfTypes(
         { key: consumedEdgeId, types: ['segment'] },
@@ -600,7 +652,8 @@ function getPlaneFromWall(
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
-function _getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
+function _getPlaneFromSweepEdge(edge: SweepEdgeLike, graph: ArtifactGraph) {
+  if (edge.sweepId == null) return new Error('SweepEdgeLike has no sweepId')
   const sweep = getArtifactOfTypes(
     { key: edge.sweepId, types: ['sweep'] },
     graph

@@ -20,7 +20,9 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
+  getEdgeCutConsumedEdgeId,
   getFaceCodeRef,
+  getSegmentForEdgeCut,
   type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
@@ -2085,21 +2087,30 @@ export function getEdgeCutMeta(
   } | null = null
   if (
     artifact?.type === 'edgeCut' &&
-    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+    ((artifact as { subType?: string }).subType === 'chamfer' ||
+      (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
-    const consumedEdgeId = edgeIds?.length
-      ? edgeIds[0]
-      : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
     if (consumedEdgeId == null || consumedEdgeId === '') return null
-    const consumedArtifact = getArtifactOfTypes(
+    let consumedArtifact = getArtifactOfTypes(
       { key: consumedEdgeId, types: ['segment'] },
       artifactGraph
     )
-    if (err(consumedArtifact)) return null
+    if (err(consumedArtifact)) {
+      const segmentViaWallOrCap = getSegmentForEdgeCut(
+        consumedEdgeId,
+        artifactGraph
+      )
+      if (!segmentViaWallOrCap) return null
+      consumedArtifact = segmentViaWallOrCap as Extract<
+        Artifact,
+        { type: 'segment' }
+      >
+    }
+    const segment = consumedArtifact as SegmentArtifact
     edgeCutInfo = {
       type: 'base',
-      segment: consumedArtifact,
+      segment,
     }
   }
   if (!edgeCutInfo) return null
