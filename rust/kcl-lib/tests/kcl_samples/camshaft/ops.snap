@@ -151,7 +151,7 @@ description: Operations executed camshaft.kcl
     },
     {
       "type": "VariableDeclaration",
-      "name": "lobeSeperation",
+      "name": "lobeSeparation",
       "value": {
         "type": "Number",
         "value": 112.0,

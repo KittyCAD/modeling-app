@@ -313,7 +313,7 @@ description: Result of parsing wing-spar.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "sparStockThicknes",
+            "name": "sparStockThickness",
             "start": 0,
             "type": "Identifier"
           },
@@ -2255,7 +2255,7 @@ description: Result of parsing wing-spar.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "Extrude the airfoil to material thicknes, then pattern along the length of the wing spars",
+                      "value": "Extrude the airfoil to material thickness, then pattern along the length of the wing spars",
                       "style": "line"
                     }
                   }
@@ -2663,7 +2663,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -2852,7 +2852,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -3050,7 +3050,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -3192,7 +3192,7 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "sparStockThicknes",
+                        "name": "sparStockThickness",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -4388,7 +4388,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4577,7 +4577,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4766,7 +4766,7 @@ description: Result of parsing wing-spar.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sparStockThicknes",
+                          "name": "sparStockThickness",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4899,7 +4899,7 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "sparStockThicknes",
+                        "name": "sparStockThickness",
                         "start": 0,
                         "type": "Identifier"
                       },
