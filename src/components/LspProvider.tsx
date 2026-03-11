@@ -33,7 +33,7 @@ import { useApp } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
-import { useSignal, useSignals } from '@preact/signals-react/runtime'
+import { useSignals } from '@preact/signals-react/runtime'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
