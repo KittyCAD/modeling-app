@@ -1443,7 +1443,6 @@ export class KclManager extends File {
     this.logs = logs
     this._execState.value = execState
     this._variables.value = execState.variables
-    debugger
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
