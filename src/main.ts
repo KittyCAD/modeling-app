@@ -535,21 +535,28 @@ app.on('ready', () => {
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
   autoUpdater.disableDifferentialDownload = true
+  autoUpdater.autoInstallOnAppQuit = false
 
   // Check for updates in the background at startup and then every 15 minutes
   let backgroundCheckingForUpdates = false
-  const checkForUpdatesBackground = () => {
+  const checkForUpdatesBackground = ({
+    isStartup,
+  }: { isStartup?: boolean }) => {
     backgroundCheckingForUpdates = true
     autoUpdater
       .checkForUpdates()
+      .then(() => {
+        if (isStartup) {
+          autoUpdater.quitAndInstall()
+        }
+      })
       .catch(reportRejection)
       .finally(() => {
         backgroundCheckingForUpdates = false
       })
   }
-  const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
-  setTimeout(checkForUpdatesBackground, oneSecond)
+  checkForUpdatesBackground({ isStartup: true })
   setInterval(checkForUpdatesBackground, fifteenMinutes)
 
   autoUpdater.on('checking-for-update', () => {
