@@ -10,19 +10,18 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { useApp } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
-import { useSignal, useSignals } from '@preact/signals-react/runtime'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
-  const { settings, project, wasmPromise } = useApp()
-  const projectSignal = useSignal(project)
+  const { settings, projectSignal, wasmPromise } = useApp()
   const kclManager = projectSignal.value?.executingEditor.value
   const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = project?.projectIORefSignal.value
-  const loadedFile = project?.executingFileEntry.value
+  const loadedProject = projectSignal.value?.projectIORefSignal.value
+  const loadedFile = projectSignal.value?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined

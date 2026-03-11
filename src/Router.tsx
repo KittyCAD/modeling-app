@@ -35,7 +35,6 @@ import {
   ExecutingEditorProvider,
   ProjectProvider,
 } from '@src/components/ProjectEditorProviders'
-import { useSignal } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
@@ -47,9 +46,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 export const Router = () => {
   const app = useApp()
   useSignals()
-  const projectSignal = useSignal(app.project)
   const networkStatus = useNetworkStatus(
-    projectSignal.value?.executingEditor.value?.engineCommandManager
+    app.projectSignal.value?.executingEditor.value?.engineCommandManager
   )
   const router = useMemo(
     () =>
@@ -177,9 +175,8 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { wasmPromise, auth, project } = useApp()
   useSignals()
-  const projectSignal = useSignal(project)
+  const { wasmPromise, auth, projectSignal } = useApp()
   const kclManager = projectSignal.value?.executingEditor.value
   const token = auth.useToken()
   const coreDumpManager = useMemo(

@@ -74,8 +74,7 @@ type LspContext = {
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   useSignals()
-  const { auth, project } = useApp()
-  const projectSignal = useSignal(project)
+  const { auth, projectSignal } = useApp()
   const kclManager = projectSignal.value?.executingEditor.value
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)

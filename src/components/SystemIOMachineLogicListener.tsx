@@ -32,13 +32,11 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { useSignal } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor, project } = useApp()
+  const { auth, billing, settings, systemIOActor, projectSignal } = useApp()
   useSignals()
-  const projectSignal = useSignal(project)
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()

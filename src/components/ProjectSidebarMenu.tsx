@@ -22,7 +22,7 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
 
 import fsZds from '@src/lib/fs-zds'
-import { useSignal, useSignals } from '@preact/signals-react/runtime'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useProject } from '@src/components/ProjectEditorProviders'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -70,8 +70,7 @@ function AppLogoLink({
   file?: IndexLoaderData['file']
 }) {
   useSignals()
-  const { project: projectFromApp } = useApp()
-  const projectSignal = useSignal(projectFromApp)
+  const { projectSignal } = useApp()
   const kclManager = projectSignal.value?.executingEditor.value
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
