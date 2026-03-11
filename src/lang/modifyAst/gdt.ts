@@ -14,6 +14,7 @@ import {
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { getCapForPathId } from '@src/lang/std/artifactGraph'
 import {
   resolveSelectionV2,
   traverse,
@@ -74,12 +75,21 @@ export function addFlatnessGdt({
   // Clone the AST to avoid mutating the original
   let modifiedAst = structuredClone(ast)
 
-  // Filter to only include face selections (resolve V2 to get artifact)
-  const faceSelections = faces.graphSelectionsV2
-    .map((selV2) => resolveSelectionV2(selV2, artifactGraph))
-    .filter(
-      (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)
-    )
+  // Filter to only include face selections (resolve V2 to get artifact).
+  // When the engine returns a path id for a cap face (edit flow), resolve path → cap.
+  const resolved = faces.graphSelectionsV2.map((selV2) => {
+    const r = resolveSelectionV2(selV2, artifactGraph)
+    if (!r?.artifact) return r
+    if (r.artifact.type === 'path') {
+      const cap = getCapForPathId(r.artifact.id, artifactGraph)
+      if (err(cap)) return r
+      return { artifact: cap, codeRef: r.codeRef }
+    }
+    return r
+  })
+  const faceSelections = resolved.filter(
+    (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)
+  )
 
   if (faceSelections.length === 0) {
     return new Error(
