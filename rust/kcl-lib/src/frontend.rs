@@ -10,7 +10,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program, bust_cache,
+    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
@@ -259,10 +259,6 @@ impl SketchApi for FrontendState {
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
-
-        // TODO: figure out why this is needed to avoid 'Object uuid already exists' errors
-        // when creating a second sketch
-        bust_cache().await;
 
         // We need to do an engine execute so that the plane object gets created
         // and is cached.
@@ -6292,7 +6288,7 @@ sketch1 = sketch(on = XY) {
         frontend.hack_set_program(&ctx, program).await.unwrap();
 
         let sketch_args = SketchCtor {
-            on: Plane::Default(PlaneName::Xy),
+            on: Plane::Default(PlaneName::Yz),
         };
         let (src_delta, _, _) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -6306,7 +6302,7 @@ sketch1 = sketch(on = XY) {
 
 sketch1 = sketch(on = XY) {
 }
-sketch2 = sketch(on = XY) {
+sketch2 = sketch(on = YZ) {
 }
 "
         );
