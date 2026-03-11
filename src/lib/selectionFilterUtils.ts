@@ -18,6 +18,7 @@ export const defaultSelectionFilter: EntityType[] = [
   'solid2d',
   'curve',
   'object',
+  'path',
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */

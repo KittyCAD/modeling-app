@@ -14,9 +14,10 @@ async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expec
             let result_normalized = result.kcl_code.trim();
             let expected_normalized = expected_code.trim();
 
-            assert_eq!(
-                result_normalized, expected_normalized,
-                "Trim result should match expected KCL code"
+            pretty_assertions::assert_eq!(
+                result_normalized,
+                expected_normalized,
+                "Trim result should match expected KCL code (left = actual, right = expected)"
             );
         }
         Err(e) => {
@@ -1505,7 +1506,7 @@ sketch(on = YZ) {
   coincident([line2.start, line9.start])
   coincident([line2.end, line8.start])
   coincident([line10.start, line2])
-distance([
+  distance([
   splitTrimLineDistanceConstraintMigrated.start,
   line2.end
 ]) == 5.54mm
@@ -1696,7 +1697,7 @@ sketch(on = YZ) {
     lineCoincidentWithArcCen.start,
     arcToSplit.center
   ])
-distance([arcToSplit.center, line4.end]) == 20mm
+  distance([arcToSplit.center, line4.end]) == 20mm
   line3 = line(start = [var -0.87mm, var -6.87mm], end = [var 2.91mm, var -11.19mm])
   coincident([arcToSplit.center, line3])
   arc1 = arc(start = [var -5.75mm, var 3.97mm], end = [var -10.28mm, var 0.32mm], center = [var 0.75mm, var -8.72mm])
@@ -1706,7 +1707,7 @@ distance([arcToSplit.center, line4.end]) == 20mm
     lineCoincidentWithArcCen.start,
     arc1.center
   ])
-distance([arc1.center, line4.end]) == 20mm
+  distance([arc1.center, line4.end]) == 20mm
   coincident([arc1.center, line3])
 }
 "#;
@@ -1723,12 +1724,12 @@ sketch(on = YZ) {
   arc1 = arc(start = [var 0.87mm, var 2.9mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
   line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
   line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
-distance([arc1.center, line2.start]) == 3.87mm
+  distance([arc1.center, line2.start]) == 3.87mm
   line3 = line(start = [var -5.61mm, var 5.38mm], end = [var 1.03mm, var 5.53mm])
   line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
   coincident([line3.end, line4.start])
   line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
-distance([line4.end, line3.start]) == 11.98mm
+  distance([line4.end, line3.start]) == 11.98mm
 }
 "#;
 
@@ -1744,11 +1745,11 @@ sketch(on = YZ) {
   arc1 = arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
   line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
   line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
-distance([arc1.center, line2.start]) == 3.87mm
+  distance([arc1.center, line2.start]) == 3.87mm
   line3 = line(start = [var -5.61mm, var 5.38mm], end = [var -0.9mm, var 5.49mm])
   line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
   line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
-distance([line4.end, line3.start]) == 11.98mm
+  distance([line4.end, line3.start]) == 11.98mm
   coincident([line3.end, line5])
   coincident([arc1.start, line1])
 }

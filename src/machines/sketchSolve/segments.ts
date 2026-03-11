@@ -10,7 +10,6 @@ import { hasNumericValue } from '@src/lib/kclHelpers'
 import type { Mesh } from 'three'
 import {
   BufferGeometry,
-  EllipseCurve,
   Group,
   Line,
   LineBasicMaterial,
@@ -35,6 +34,7 @@ import {
 } from '@src/machines/sketchSolve/constructionDashShader'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.
@@ -1139,51 +1139,4 @@ export const segmentUtilsMap = {
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
   Constraint: new ConstraintBuilder(),
-}
-
-/**
- * Similar to src/clientSideScene/segments.ts / createArcGeometry, but:
- * - uses LineGeometry which supports screen space line thickness
- * - isDashed parameter not supported (yet)
- */
-function createArcPositions({
-  center,
-  radius,
-  startAngle,
-  endAngle,
-  ccw,
-}: {
-  center: [number, number]
-  radius: number
-  startAngle: number
-  endAngle: number
-  ccw: boolean
-}): number[] {
-  const arcStart = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    startAngle,
-    endAngle,
-    !ccw,
-    0
-  )
-
-  // Adaptive segmentation: use 100 for a full circle and proportionally less based on the arc length
-  // This doesn't work unfortunately without recreating the geometry and at that point it's not worth it:
-  // https://discourse.threejs.org/t/adding-points-drawcount-for-line2-dynamically/48980/4
-  //
-  // const angleDiff = getAngleDiff(startAngle, endAngle, ccw)
-  // const numberOfPoints = Math.ceil(100 * (angleDiff / (Math.PI * 2)))
-
-  const numberOfPoints = 100
-
-  const points = arcStart.getPoints(numberOfPoints)
-  const positions: number[] = []
-  points.forEach((p) => {
-    positions.push(p.x, p.y, 0)
-  })
-
-  return positions
 }

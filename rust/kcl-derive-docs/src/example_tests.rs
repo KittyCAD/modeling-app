@@ -1,5 +1,5 @@
 use proc_macro2::Span;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 
 pub fn do_for_each_example_test(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
     let item: syn::ItemFn = syn::parse2(item).unwrap();
@@ -241,7 +241,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-fillet-1",
     "std-solid-hollow-0",
     "std-solid-hollow-1",
-    "std-solid-hollow-2",
     "std-solid-patternTransform-0",
     "std-solid-patternTransform-1",
     "std-solid-patternTransform-2",

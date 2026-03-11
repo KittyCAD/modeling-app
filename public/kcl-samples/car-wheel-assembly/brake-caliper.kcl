@@ -139,20 +139,20 @@ fn oLogo(surface, origin, fontSize, depth) {
 
 // Create each letter using the letter functions
 z = zLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [-1.57, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,
 )
 
 o = oLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [-0.545, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,
 )
 oo = oLogo(
-  surface =   startSketchOn(outerSketch, face = END),
+  surface = startSketchOn(outerSketch, face = END),
   origin = [0.585, rotorDiameter * 0.8],
   fontSize = 36,
   depth = -0.025,

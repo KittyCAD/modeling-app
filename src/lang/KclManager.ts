@@ -42,7 +42,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
@@ -131,7 +131,8 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { getResolvedTheme } from '@src/lib/theme'
+import { isCodeTheSame } from '@src/lib/codeEditor'
+import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -155,6 +156,7 @@ interface SystemDeps {
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
+  projectPath: Signal<string>
 }
 
 export enum KclManagerEvents {
@@ -234,29 +236,28 @@ export class ZDSProject {
     if (newPath === null) {
       return
     }
-    const foundPathSignal = this.findEditorPathSignal(newPath)
+    const foundPathSignal = this.findEditor(newPath)
     if (!foundPathSignal) {
       return
     }
-    const found = this.editors.get(foundPathSignal)
+    const found = foundPathSignal[1]
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
-    this.#executingPath.value = foundPathSignal
+    this.#executingPath.value = foundPathSignal[0]
   }
-  findEditorPathSignal(path: string) {
-    return this.editors.keys().find((p) => p.value === path)
+  findEditor(path: string) {
+    return this.editors.entries().find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
-  private get = this.editors.get.bind(this.editors)
   private set = this.editors.set.bind(this.editors)
 
   // TODO: Remove providedEditor, replace with options about if the editor is the executing one
   // once the app can handle not having a KclManager.
   openEditor(path: string, providedEditor?: KclManager) {
-    const foundPathSignal = this.findEditorPathSignal(path)
-    const found = foundPathSignal ? this.get(foundPathSignal) : undefined
+    const foundEditor = this.findEditor(path)
+    const found = foundEditor?.[1]
     if (found) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
@@ -264,36 +265,48 @@ export class ZDSProject {
 
     const newEditor =
       providedEditor ??
-      new KclManager({
+      new KclManager(path, {
         wasmInstancePromise: this.app.wasmPromise,
         commandBar: this.app.commands.actor,
         settings: this.app.settings.actor,
+        projectPath: computed(() => this.projectIORefSignal.value.path),
       })
 
-    // Initialize the editor theme
+    // TODO: Remove this block after the app can handle no executing editor
+    if (providedEditor) {
+      providedEditor.path = path
+      providedEditor.systemDeps.projectPath = computed(
+        () => this.projectIORefSignal.value.path
+      )
+    }
+
+    // Initialize the theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
     // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor.setEditorTheme(
-      getResolvedTheme(
-        getSettingsFromActorContext(newEditor.systemDeps.settings).app.theme
-          .current
+    newEditor
+      .updateTheme(
+        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
       )
-    )
+      .catch(reportRejection)
 
     this.set(signal(path), newEditor)
     return newEditor
   }
 
   closeEditor(path: string) {
-    const foundPathSignal = this.findEditorPathSignal(path)
+    const foundPathSignal = this.findEditor(path)
     if (!foundPathSignal) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    this.editors.delete(foundPathSignal)
+    foundPathSignal[1].close()
+    this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    for (const editor of this.editors.values()) {
+      editor.close()
+    }
     this.editors.clear()
   }
 }
@@ -317,6 +330,23 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
 export class KclManager extends EventTarget {
+  public pathSignal = signal('')
+  get path() {
+    return this.pathSignal.value
+  }
+  set path(newPath: string) {
+    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
+
+    if (newPath.length > 0) {
+      window.electron?.watchFileOn(
+        newPath,
+        this.fileWatcherKey,
+        this.onFileWatchEvent
+      )
+    }
+
+    this.pathSignal.value = newPath
+  }
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -428,6 +458,44 @@ export class KclManager extends EventTarget {
 
   // INTERNAL BOOKKEEPING STATE
 
+  private fileWatcherKey = uuidv4()
+  /**
+   * Watching the file system for updates and reacting to them.
+   * TODO: We don't watch for deletions here, should we?
+   */
+  private onFileWatchEvent = (_eventType: string, path: string) => {
+    // TODO: We can remove this once we make it impossible to have
+    // a KclManager without a ZDSProject.
+    if (path !== this.path || !this.systemDeps.projectPath.value) {
+      return
+    }
+    // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
+    // unless the change was initiated by us (the currently running instance).
+    window.electron
+      ?.readFile(path, {
+        encoding: 'utf-8',
+      })
+      .then((code) => {
+        const isInSketchMode =
+          this.modelingState?.matches('Sketch') ||
+          this.modelingState?.matches('sketchSolveMode')
+
+        if (!isCodeTheSame(code, this.code)) {
+          // Nothing written out yet by ourselves, or it's not the same as the current file content
+          // -> this must be an external change -> re-execute.
+          this.updateCodeEditor(code, {
+            shouldExecute: !isInSketchMode,
+            shouldResetCamera: !isInSketchMode,
+            // We explicitly do not write to the file here since we are loading from
+            // the file system and not the editor.
+            shouldWriteToDisk: false,
+          })
+
+          toast('Reloading file from disk', { icon: '📁' })
+        }
+      })
+      .catch(reportRejection)
+  }
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
   private _switchedFiles = false
@@ -450,11 +518,11 @@ export class KclManager extends EventTarget {
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
-  // The last code written by the app, used to compare against external changes to the current file
-  public lastWrite: {
-    code: string // last code written by ZDS
-    time: number // Unix epoch time in milliseconds
-  } | null = null
+  /**
+    Indicator Promise that is pending while a live write is happening.
+    If this value isn't `null`, don't watch for file system writes it was probably us!
+   */
+  public writingPromise = signal<Promise<unknown> | null>(null)
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -727,7 +795,7 @@ export class KclManager extends EventTarget {
             this.sendModelingEvent({
               type: 'update sketch outcome',
               data: {
-                kclSource,
+                sourceDelta: kclSource,
                 sceneGraphDelta,
               },
             })
@@ -751,7 +819,7 @@ export class KclManager extends EventTarget {
         console.error('Error when updating Rust state after user edit:', error)
       }
     },
-    300
+    1000
   )
 
   private createEditorExtensions() {
@@ -773,8 +841,9 @@ export class KclManager extends EventTarget {
     })
   }
 
-  constructor(systemDeps: SystemDeps) {
+  constructor(path: string, systemDeps: SystemDeps) {
     super()
+    this.path = path
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
@@ -826,6 +895,11 @@ export class KclManager extends EventTarget {
         this._wasmInitFailed.value = true
         reportRejection(e)
       })
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    window.electron?.watchFileOff(this.path, this.fileWatcherKey)
   }
 
   clearAst() {
@@ -1539,6 +1613,16 @@ export class KclManager extends EventTarget {
       })
     }
   }
+  async updateTheme(newTheme: Themes) {
+    const resolvedTheme = getResolvedTheme(newTheme)
+    const opposingTheme = getOppositeTheme(newTheme)
+    this.sceneInfra.theme = opposingTheme
+    this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.setEditorTheme(resolvedTheme)
+    if (this.engineCommandManager.connection) {
+      return this.engineCommandManager.setTheme(newTheme).catch(reportRejection)
+    }
+  }
   setEditorTheme(theme: 'light' | 'dark') {
     this._editorView.dispatch({
       effects: [
@@ -1854,7 +1938,6 @@ export class KclManager extends EventTarget {
   updateCurrentFilePath(path: string) {
     if (this._currentFilePath !== path) {
       this._currentFilePath = path
-      this.lastWrite = null
     }
   }
   get currentFileName() {
@@ -1954,10 +2037,6 @@ export class KclManager extends EventTarget {
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
-        this.lastWrite = {
-          code: newCode ?? '',
-          time: Date.now(),
-        }
         this.timeoutWriter = setTimeout(() => {
           if (!path) {
             return reject(new Error('currentFilePath not set'))
@@ -1965,9 +2044,22 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+          window.electron?.watchFileOff(this.path, this.fileWatcherKey)
           fsZds
             .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
+            .then(() => {
+              // After a cooldown, start watching this file again on disk.
+              if (window.electron && this.path.length) {
+                setTimeout(() => {
+                  window.electron?.watchFileOn(
+                    this.path,
+                    this.fileWatcherKey,
+                    this.onFileWatchEvent
+                  )
+                }, 1_000)
+              }
+            })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)

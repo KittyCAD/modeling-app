@@ -49,7 +49,6 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import type { User } from '@kittycad/lib/dist/types/src'
@@ -342,10 +341,11 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager({
+    const kclManager = new KclManager('', {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: signal(''),
     })
 
     if (typeof window !== 'undefined') {
@@ -418,21 +418,16 @@ export class App implements AppSubsystems {
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
-    const resolvedTheme = getResolvedTheme(newTheme)
-    const opposingTheme = getOppositeTheme(newTheme)
-    this.singletons.kclManager.sceneInfra.theme = opposingTheme
-    this.singletons.kclManager.sceneEntitiesManager.updateSegmentBaseColor(
-      opposingTheme
-    )
-    this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.kclManager.engineCommandManager.connection) {
-      Promise.all([
-        this.singletons.kclManager.engineCommandManager.setTheme(newTheme),
-        this.singletons.kclManager.engineCommandManager.setBackfaceColor(
-          newBackfaceColor
-        ),
-      ]).catch(reportRejection)
-    }
+    Promise.all([
+      this.singletons.kclManager.updateTheme(newTheme),
+      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
+        ? [
+            this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+              newBackfaceColor
+            ),
+          ]
+        : []),
+    ]).catch(reportRejection)
 
     // Execute AST
     try {

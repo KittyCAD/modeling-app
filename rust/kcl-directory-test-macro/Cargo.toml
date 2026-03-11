@@ -2,7 +2,7 @@
 name = "kcl-directory-test-macro"
 description = "A tool for generating tests from a directory of kcl files"
 version = "0.1.132"
-edition = "2021"
+edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 
