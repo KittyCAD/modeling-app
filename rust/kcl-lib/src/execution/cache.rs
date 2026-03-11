@@ -185,6 +185,16 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     // If the settings are different we might need to bust the cache.
     // We specifically do this before checking if they are the exact same.
     if old.settings != new.settings {
+        if old.settings.enable_ssao != new.settings.enable_ssao {
+            // If the SSAO setting is different, we need to clear the scene and
+            // re-execute.
+            return CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: true,
+                program: new.ast.clone(),
+            };
+        }
+
         // If anything else is different we may not need to re-execute, but rather just
         // run the settings again.
         reapply_settings = true;
@@ -572,6 +582,54 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         assert_eq!(result, CacheResult::NoAction(true));
         exec_ctxt.close().await;
+    }
+
+    // Changing the SSAO setting with the exact same file should invalidate the
+    // cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_enable_ssao_setting() {
+        let code = "// Remove the end face for the extrusion.
+firstSketch = startSketchOn(XY)
+  |> startProfile(at = [-12, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
+  |> appearance(color = \"#da4333\", opacity = 50)
+";
+
+        let ExecTestResults {
+            program, mut exec_ctxt, ..
+        } = parse_execute(code).await.unwrap();
+
+        // Change the settings.
+        exec_ctxt.settings.enable_ssao = !exec_ctxt.settings.enable_ssao;
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &Default::default(),
+            },
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        exec_ctxt.close().await;
+
+        let CacheResult::ReExecute {
+            clear_scene,
+            reapply_settings,
+            ..
+        } = result
+        else {
+            panic!("Expected ReExecute, got {result:?}");
+        };
+        assert_eq!(clear_scene, true);
+        assert_eq!(reapply_settings, true);
     }
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
