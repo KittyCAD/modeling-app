@@ -31,7 +31,6 @@ import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
-import type { FileEntry, Project } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -44,13 +43,13 @@ export default class RustContext {
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private projectId = 0
   public readonly planesCreated = new Signal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
-    public readonly settingsActor: SettingsActorType
+    public readonly settingsActor: SettingsActorType,
+    private projectId = 0
   ) {
     wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
@@ -87,26 +86,44 @@ export default class RustContext {
     this.ctxInstance = ctxInstance
   }
 
-  async sendOpenProject(
-    project: Project,
-    currentFilePath: string | null
-  ): Promise<void> {
-    this.projectId += 1
-    let files: ApiFile[] = []
-    collectFiles(project, files)
-    let openFile = 0
-    for (let f of files) {
-      if (f.path === currentFilePath) {
-        openFile = f.id
-      }
-    }
-    // TODO need to find text of files and add it to this call (which might mean we want to call this function later when we're not on the
-    // critical path for opening a project).
+  public hasOpenedProject = false
+
+  /** Project lifecycle method for WASM, setting up initial snapshot of project */
+  async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
+    // TODO: The rust side should really honor having no current file ID
+    const currentFileId =
+      kclFiles.find((f) => f.path === currentFilePath)?.id || -1
     await this.ctxInstance?.open_project(
       this.projectId,
-      JSON.stringify(files),
-      openFile
+      JSON.stringify(kclFiles),
+      currentFileId
     )
+    this.hasOpenedProject = true
+  }
+
+  /** Helper to verify the state on the WASM side, useful for testing */
+  async getProjectState() {
+    return this.ctxInstance?.get_project(this.projectId)
+  }
+
+  /** Helper to verify the state on the WASM side, useful for testing */
+  async getFileState(fileId: number) {
+    return this.ctxInstance?.get_file(this.projectId, fileId)
+  }
+
+  async sendAddFile(file: ApiFile) {
+    return this.ctxInstance?.add_file(this.projectId, JSON.stringify(file))
+  }
+
+  async sendUpdateFile(fileId: number, code: string) {
+    if (!this.hasOpenedProject) {
+      return
+    }
+    return this.ctxInstance?.update_file(this.projectId, fileId, code)
+  }
+
+  async sendRemoveFile(fileId: number) {
+    return this.ctxInstance?.remove_file(this.projectId, fileId)
   }
 
   /** Execute a program. */
@@ -682,22 +699,6 @@ export default class RustContext {
     if (this.ctxInstance) {
       // In a real implementation, you might need to manually free resources
       this.ctxInstance = null
-    }
-  }
-}
-
-const collectFiles = (file: FileEntry, files: ApiFile[]) => {
-  if (file.children) {
-    for (let entry of file.children) {
-      if (entry.name.endsWith('.kcl')) {
-        files.push({
-          id: files.length,
-          path: entry.path,
-          text: '',
-        })
-      } else {
-        collectFiles(entry, files)
-      }
     }
   }
 }
