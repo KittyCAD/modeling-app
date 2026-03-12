@@ -113,7 +113,6 @@ import {
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
-import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -134,6 +133,10 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import {
+  requestCameraReset,
+  requestSkipExecution,
+} from '@src/editor/plugins/execution'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -443,9 +446,6 @@ const PERSIST_CODE_KEY = 'persistCode'
 
 const keymapCompartment = new Compartment()
 
-const editorCodeUpdateAnnotation = Annotation.define<boolean>()
-export const editorCodeUpdateEvent = editorCodeUpdateAnnotation.of(true)
-
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
@@ -712,7 +712,6 @@ export class KclManager extends File {
     If this value isn't `null`, don't watch for file system writes it was probably us!
    */
   public writingPromise = signal<Promise<unknown> | null>(null)
-  public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
   private _convertToVariableEnabled: boolean = false
@@ -877,9 +876,7 @@ export class KclManager extends File {
     }
   )
 
-  static requestCameraResetAnnotation = Annotation.define<boolean>()
   static requestSkipWriteToFile = Annotation.define<boolean>()
-  static requestSkipExecution = Annotation.define<boolean>()
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -896,40 +893,16 @@ export class KclManager extends File {
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
-      update.docChanged &&
-      update.transactions.some((tr) => {
-        // The old KCL ViewPlugin had checks that seemed to check for
-        // certain events, but really they just set the already-true to true.
-        // Leaving here in case we need to switch to an opt-in listener.
-        // const relevantEvents = [
-        //   tr.isUserEvent('input'),
-        //   tr.isUserEvent('delete'),
-        //   tr.isUserEvent('undo'),
-        //   tr.isUserEvent('redo'),
-        //   tr.isUserEvent('move'),
-        //   tr.annotation(lspRenameEvent.type),
-        //   tr.annotation(lspCodeActionEvent.type),
-        // ]
-        const ignoredEvents = [
-          tr.annotation(editorCodeUpdateEvent.type),
-          tr.annotation(copilotPluginEvent.type),
-          tr.annotation(updateOutsideEditorEvent.type),
-          tr.annotation(hotkeyRegisteredAnnotation),
-        ]
-
-        return !ignoredEvents.some((v) => Boolean(v))
-      })
+      this.engineCommandManager.connection?.connected && update.docChanged
 
     const shouldResetCamera = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestCameraResetAnnotation)
+      tr.effects.some((e) => e.is(requestCameraReset) && e.value)
     )
 
     const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
       tr.annotation(KclManager.requestSkipWriteToFile)
     )
-    const shouldWriteToFile =
-      !this.isBufferMode && notIgnoredUpdate && !hasSkipWriteToFileEffect
+    const shouldWriteToFile = notIgnoredUpdate && !hasSkipWriteToFileEffect
 
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
@@ -942,7 +915,7 @@ export class KclManager extends File {
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
-        tr.annotation(KclManager.requestSkipExecution)
+        tr.effects.some((e) => e.is(requestSkipExecution) && e.value)
       )
       if (!hasSkipExecutionAnnotation) {
         this.deferredExecution({ newCode, shouldResetCamera })
@@ -1985,14 +1958,18 @@ export class KclManager extends File {
   clearLocalHistory() {
     // Clear history
     this.editorView.dispatch({
-      effects: [historyCompartment.reconfigure([])],
-      annotations: [editorCodeUpdateEvent],
+      effects: [
+        historyCompartment.reconfigure([]),
+        requestSkipExecution.of(true),
+      ],
     })
 
     // Add history back
     this.editorView.dispatch({
-      effects: [historyCompartment.reconfigure([history()])],
-      annotations: [editorCodeUpdateEvent],
+      effects: [
+        historyCompartment.reconfigure([history()]),
+        requestSkipExecution.of(true),
+      ],
     })
   }
   clearGlobalHistory() {
@@ -2232,21 +2209,17 @@ export class KclManager extends File {
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
-        !resolvedOptions.shouldExecute && resolvedOptions.shouldWriteToDisk
-          ? // Separate annotation for only skipping execution, so that we can write without executing
-            KclManager.requestSkipExecution.of(true)
-          : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
         KclManager.requestSkipWriteToFile.of(
           !resolvedOptions.shouldWriteToDisk
         ),
-        KclManager.requestCameraResetAnnotation.of(
-          resolvedOptions.shouldResetCamera
-        ),
+      ],
+      effects: [
+        requestSkipExecution.of(!resolvedOptions.shouldExecute),
+        requestCameraReset.of(resolvedOptions.shouldResetCamera),
       ],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
-    if (this.isBufferMode) return
     if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
