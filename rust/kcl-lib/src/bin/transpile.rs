@@ -3,7 +3,11 @@
 //! tool before we integrate it into the app.
 use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
 
-use kcl_lib::{ExecutorContext, ExecutorSettings, Program, TypedPath, transpile_all_old_sketches_to_new};
+use kcl_lib::{
+    ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
+    exec::{RetryConfig, execute_with_retries},
+    transpile_all_old_sketches_to_new,
+};
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, std::io::Error> {
@@ -41,26 +45,20 @@ async fn main() -> Result<ExitCode, std::io::Error> {
 
     let project_directory_string = path.parent().map(|p| p.to_string_lossy());
     let project_directory = project_directory_string.map(|p| TypedPath::from(p.as_ref()));
+    let settings = ExecutorSettings {
+        project_directory,
+        ..Default::default()
+    };
 
-    let ctx = ExecutorContext::new_with_client(
-        ExecutorSettings {
-            project_directory,
-            ..Default::default()
-        },
-        None,
-        None,
-    )
-    .await
-    .unwrap();
     let result = async {
         // Execute.
-        let exec_outcome = ctx.run_with_caching(program.clone()).await.map_err(|e| e.error)?;
+        let exec_outcome = execute_with_retries(&RetryConfig::default(), || execute(program.clone(), settings.clone()))
+            .await
+            .map_err(|e| e.error)?;
         // Transpile.
         transpile_all_old_sketches_to_new(&exec_outcome, &mut program)
     }
     .await;
-    // Always close the context.
-    ctx.close().await;
 
     match result {
         Ok(_) => {}
@@ -77,4 +75,16 @@ async fn main() -> Result<ExitCode, std::io::Error> {
     println!("{}", new_source);
 
     Ok(ExitCode::SUCCESS)
+}
+
+/// Execute and close the connection.
+async fn execute(program: Program, settings: ExecutorSettings) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    let ctx = ExecutorContext::new_with_client(settings, None, None)
+        .await
+        .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::internal(format!("{err:?}"))))?;
+    let result = ctx.run_with_caching(program).await;
+    // Always close the context.
+    ctx.close().await;
+
+    result
 }
