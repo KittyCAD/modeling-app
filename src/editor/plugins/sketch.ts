@@ -1,5 +1,9 @@
 import { invertedEffects } from '@codemirror/commands'
-import { Compartment, Extension, StateEffect } from '@codemirror/state'
+import {
+  Compartment,
+  type Extension,
+  type StateEffect,
+} from '@codemirror/state'
 import {
   updateSceneGraphFromDelta,
   updateSketchSceneGraphEffect,

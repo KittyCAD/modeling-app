@@ -1,5 +1,5 @@
 import { invertedEffects } from '@codemirror/commands'
-import { Extension, StateEffect } from '@codemirror/state'
+import { type Extension, StateEffect } from '@codemirror/state'
 
 export const requestCameraReset = StateEffect.define<boolean>()
 export const requestSkipExecution = StateEffect.define<boolean>()
