@@ -892,7 +892,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `sweep001 = sweep(region(point = [1mm, 1mm], sketch = s), path = profile001)`
+        `region001 = region(point = [1mm, 1mm], sketch = s)
+sweep001 = sweep(region001, path = profile001)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1330,7 +1331,8 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `revolve001 = revolve(region(point = [1mm, 1mm], sketch = s), angle = 10, axis = X)`
+        `region001 = region(point = [1mm, 1mm], sketch = s)
+revolve001 = revolve(region001, angle = 10, axis = X)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
