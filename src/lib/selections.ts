@@ -79,7 +79,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import isEqual from 'react-fast-compare'
+import type { Path } from '@rust/kcl-lib/bindings/Artifact'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -120,6 +120,21 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
+export function getSketchBlockFromPath(
+  path: Path,
+  artifactGraph: ArtifactGraph
+) {
+  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
+  const pathToNode = JSON.stringify(path.codeRef.pathToNode)
+  return artifactGraph
+    .values()
+    .find(
+      (a) =>
+        a.type === 'sketchBlock' &&
+        JSON.stringify(a.codeRef.pathToNode) === pathToNode
+    )
+}
+
 async function getRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
@@ -140,14 +155,7 @@ async function getRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
-  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
-  const sketch = artifactGraph
-    .values()
-    .find(
-      (a) =>
-        a.type === 'sketchBlock' &&
-        isEqual(a.codeRef.pathToNode, path.codeRef.pathToNode)
-    )
+  const sketch = getSketchBlockFromPath(path, artifactGraph)
   if (!sketch) return null
 
   return {

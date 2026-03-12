@@ -70,7 +70,7 @@ import type {
   RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isRegionSelection } from '@src/lib/selections'
+import { isRegionSelection, getSketchBlockFromPath } from '@src/lib/selections'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
@@ -1396,13 +1396,15 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    if (artifact.type === 'region' && artifact.queryPoint) {
-      const [x, y] = artifact.queryPoint
+    if (artifact.type === 'path' && artifact.regionQueryPoint) {
+      const sketch = getSketchBlockFromPath(artifact, artifactGraph)
+      if (!sketch) continue
+      const [x, y] = artifact.regionQueryPoint
       otherSelections.push({
         type: 'region',
         id: artifact.id,
         point: { x, y },
-        sketchId: artifact.parentSketchBlockId,
+        sketchId: sketch.id,
       })
       continue
     }

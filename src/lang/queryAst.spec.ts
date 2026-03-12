@@ -1513,11 +1513,18 @@ appearance(extrude001, color = '#FF0000')`
     expect(selection.artifact.type).toEqual('sweep')
   })
 
-  it('should reconstruct a region selection from a region artifact', async () => {
-    const code = `s = startSketchOn(XY)
-profile = circle(s, center = [0, 0], radius = 5)
-r = region(point = [1, 1], sketch = profile)
-extrude(r, length = 1)
+  it('should reconstruct a region selection from a path artifact with region metadata', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
+  line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [0.92, 4.67], end = [0.05, 0.05])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+}
+extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)
 `
     const ast = assertParse(code, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
@@ -1540,12 +1547,16 @@ extrude(r, length = 1)
     const regionArtifact = artifactGraph.get(regionArtifactId)
     if (
       !regionArtifact ||
-      regionArtifact.type !== 'region' ||
-      !regionArtifact.queryPoint
+      regionArtifact.type !== 'path' ||
+      !regionArtifact.regionQueryPoint
     ) {
-      throw new Error('Expected unlabeled arg to reference a region artifact')
+      throw new Error(
+        'Expected unlabeled arg to reference a path artifact with region metadata'
+      )
     }
 
+    const sketch = artifactGraph.values().find((a) => a.type === 'sketchBlock')
+    if (!sketch) throw new Error("Couldn't find sketch block")
     const selections = retrieveSelectionsFromOpArg(
       op.unlabeledArg,
       artifactGraph
@@ -1566,10 +1577,10 @@ extrude(r, length = 1)
     }
 
     expect(regionSelection.id).toEqual(regionArtifact.id)
-    expect(regionSelection.sketchId).toEqual(regionArtifact.parentSketchBlockId)
+    expect(regionSelection.sketchId).toEqual(sketch.id)
     expect(regionSelection.point).toEqual({
-      x: regionArtifact.queryPoint[0],
-      y: regionArtifact.queryPoint[1],
+      x: regionArtifact.regionQueryPoint[0],
+      y: regionArtifact.regionQueryPoint[1],
     })
   })
 })

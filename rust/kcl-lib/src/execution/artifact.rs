@@ -147,18 +147,9 @@ pub struct Path {
     /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_path_id: Option<ArtifactId>,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct Region {
-    pub id: ArtifactId,
-    pub parent_sketch_block_id: ArtifactId,
     /// Query point from `CreateRegionFromQueryPoint`, in millimeters.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub query_point: Option<[f64; 2]>,
-    pub code_ref: CodeRef,
+    pub region_query_point: Option<[f64; 2]>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -446,7 +437,6 @@ pub enum Artifact {
     CompositeSolid(CompositeSolid),
     Plane(Plane),
     Path(Path),
-    Region(Region),
     Segment(Segment),
     Solid2d(Solid2d),
     PlaneOfFace(PlaneOfFace),
@@ -469,7 +459,6 @@ impl Artifact {
             Artifact::CompositeSolid(a) => a.id,
             Artifact::Plane(a) => a.id,
             Artifact::Path(a) => a.id,
-            Artifact::Region(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
@@ -494,7 +483,6 @@ impl Artifact {
             Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
-            Artifact::Region(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
@@ -519,7 +507,6 @@ impl Artifact {
             Artifact::CompositeSolid(_)
             | Artifact::Plane(_)
             | Artifact::Path(_)
-            | Artifact::Region(_)
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
             | Artifact::StartSketchOnFace(_)
@@ -541,7 +528,6 @@ impl Artifact {
             Artifact::CompositeSolid(a) => a.merge(new),
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
-            Artifact::Region(_) => Some(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
@@ -597,6 +583,7 @@ impl Path {
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
+        self.region_query_point = new.region_query_point;
         self.consumed = new.consumed;
 
         None
@@ -975,33 +962,6 @@ fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     *base = new;
 }
 
-fn parent_sketch_block_id_for_path(
-    path: &Path,
-    artifacts: &IndexMap<ArtifactId, Artifact>,
-    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
-) -> ArtifactId {
-    if let Some(sketch_block_id) = artifacts.values().chain(exec_artifacts.values()).find_map(|artifact| {
-        let Artifact::SketchBlock(sketch_block) = artifact else {
-            return None;
-        };
-        (sketch_block.code_ref.range == path.code_ref.range).then_some(sketch_block.id)
-    }) {
-        return sketch_block_id;
-    }
-
-    if let Some(sketch_block_id) = artifacts.values().chain(exec_artifacts.values()).find_map(|artifact| {
-        let Artifact::SketchBlock(sketch_block) = artifact else {
-            return None;
-        };
-        (sketch_block.plane_id == Some(path.plane_id)).then_some(sketch_block.id)
-    }) {
-        return sketch_block_id;
-    }
-
-    // Fallback for older/non-sketch-block flows.
-    path.id
-}
-
 #[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1110,6 +1070,7 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
+                region_query_point: None,
                 consumed: false,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
@@ -1191,28 +1152,34 @@ fn artifacts_to_update(
             object_id: origin_path_id,
             ..
         }) => {
-            let origin_artifact = artifacts.get(&ArtifactId::new(*origin_path_id));
-            let parent_sketch_block_id = match origin_artifact {
-                Some(Artifact::Path(path)) => parent_sketch_block_id_for_path(path, artifacts, exec_artifacts),
-                Some(Artifact::Region(region)) => region.parent_sketch_block_id,
-                _ => {
-                    internal_error!(
-                        range,
-                        "Expected to find an existing path or region for CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_artifact={origin_artifact:?}, cmd={cmd:?}"
-                    );
-                }
+            let mut return_arr = Vec::new();
+            let origin_path = artifacts.get(&ArtifactId::new(*origin_path_id));
+            let Some(Artifact::Path(path)) = origin_path else {
+                internal_error!(
+                    range,
+                "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                );
             };
-            let query_point = if let ModelingCmd::CreateRegionFromQueryPoint(create_region) = cmd {
+            let region_query_point = if let ModelingCmd::CreateRegionFromQueryPoint(create_region) = cmd {
                 Some([create_region.query_point.x.0, create_region.query_point.y.0])
             } else {
                 None
             };
-            return Ok(vec![Artifact::Region(Region {
+            return_arr.push(Artifact::Path(Path {
                 id,
-                parent_sketch_block_id,
-                query_point,
+                plane_id: path.plane_id,
+                seg_ids: Vec::new(),
+                consumed: false,
+                sweep_id: None,
+                trajectory_sweep_id: None,
+                solid2d_id: None,
                 code_ref,
-            })]);
+                composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
+                region_query_point,
+            }));
+            return Ok(return_arr);
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
@@ -1264,6 +1231,7 @@ fn artifacts_to_update(
                         composite_solid_id: None,
                         inner_path_id: None,
                         outer_path_id: None,
+                        region_query_point: None,
                         consumed: false,
                     }
                 };
@@ -1400,7 +1368,6 @@ fn artifacts_to_update(
             let surface_id_to_path_id = |surface_id: ArtifactId| -> Option<ArtifactId> {
                 match artifacts.get(&surface_id) {
                     Some(Artifact::Path(path)) => Some(path.id),
-                    Some(Artifact::Region(region)) => Some(region.id),
                     Some(Artifact::Segment(segment)) => Some(segment.path_id),
                     Some(Artifact::Sweep(sweep)) => Some(sweep.path_id),
                     Some(Artifact::Wall(wall)) => artifacts.get(&wall.sweep_id).and_then(|artifact| match artifact {
@@ -1648,12 +1615,9 @@ fn artifacts_to_update(
                 let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
                     continue;
                 };
-                let Some(path_like_artifact) = artifacts.get(&sweep.path_id) else {
+                let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
                     continue;
                 };
-                if !matches!(path_like_artifact, Artifact::Path(_) | Artifact::Region(_)) {
-                    continue;
-                }
 
                 if let Some(opposite_info) = &edge.opposite_info {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
