@@ -1022,6 +1022,7 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 5,
+          ccw = false,
         )`,
         { shouldNormalise: true }
       )
@@ -3260,9 +3261,10 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
+            reviewValidationError: undefined,
           })
         })
 
@@ -3278,8 +3280,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'axis',
           })
@@ -3580,7 +3582,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '', // True value shows as empty string in header
+              UseOriginal: 'true',
             },
           })
         })
@@ -3594,7 +3596,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3630,7 +3632,7 @@ solid001 = extrude(sketch001, length = 5)`
             Instances: '6',
             Distance: '8',
             Axis: 'Y',
-            UseOriginal: '',
+            UseOriginal: 'true',
           },
           highlightedHeaderArg: 'axis',
         })
@@ -3648,7 +3650,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3664,7 +3666,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3679,7 +3681,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3695,7 +3697,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'distance',
           })
@@ -3710,7 +3712,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3726,7 +3728,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3740,7 +3742,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              // UseOriginal with False value appears as a button in UI, not in header
+              UseOriginal: 'false',
             },
           })
         })
