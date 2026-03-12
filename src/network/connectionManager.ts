@@ -50,7 +50,6 @@ import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -68,7 +67,6 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
-  kclManager: KclManager
 }
 
 export class ConnectionManager extends EventTarget {
@@ -1269,6 +1267,12 @@ export class ConnectionManager extends EventTarget {
   }
 
   /**
+   * A way for outside systems to let us know if we're stale
+   * and we should cancel all future commands before they're sent
+   */
+  public executionIsStale = false
+
+  /**
    * A wrapper around the sendCommand where all inputs are JSON strings
    *
    * This one does not wait for a response.
@@ -1297,9 +1301,9 @@ export class ConnectionManager extends EventTarget {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
-    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.systemDeps.kclManager.executeIsStale) {
+    if (this.executionIsStale) {
       return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
@@ -1337,9 +1341,9 @@ export class ConnectionManager extends EventTarget {
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
-    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.systemDeps.kclManager.executeIsStale) {
+    if (this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
     try {
