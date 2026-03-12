@@ -13,6 +13,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
@@ -1623,6 +1624,27 @@ export const useToolbarConfig = () => {
             title: 'Coincident',
             hotkey: 'C',
             description: 'Constrain points or curves to be coincident',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Tangent',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Tangent',
+              }),
+            icon: 'tangent',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedTangentConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedTangentConstraintInput(state) === null
+                ? 'Select exactly one line and one arc to add a tangent constraint.'
+                : undefined,
+            title: 'Tangent',
+            hotkey: 'Shift+T',
+            description:
+              'Constrain a selected line and arc to be tangent at their shared contact.',
             links: [],
             isActive: (state) => false,
           },
