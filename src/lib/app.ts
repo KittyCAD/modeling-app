@@ -49,7 +49,6 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import type { User } from '@kittycad/lib/dist/types/src'
@@ -114,7 +113,13 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  project?: ZDSProject
+  public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  get project() {
+    return this.projectSignal.value
+  }
+  set project(newProject: ZDSProject | undefined) {
+    this.projectSignal.value = newProject
+  }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -290,19 +295,9 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  // TODO: Remove providedEditor once the app can handle not always having a KclManager
-  openProject(
-    projectIORef: Project,
-    initialOpenFile?: string,
-    providedEditor?: KclManager
-  ) {
+  async openProject(projectIORef: Project) {
     const projectIORefSignal = signal(projectIORef)
-    this.project = ZDSProject.open(
-      projectIORefSignal,
-      this,
-      initialOpenFile,
-      providedEditor
-    )
+    this.project = await ZDSProject.open(projectIORefSignal, this)
 
     // This extension makes it possible to mark FS operations as un/redoable
     effect(() => {
@@ -330,11 +325,13 @@ export class App implements AppSubsystems {
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
+
+    return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
-    this.project?.closeAllEditors()
+    this.project?.close()
     this.project = undefined
   }
 
@@ -342,7 +339,9 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager('', {
+    // TODO: Remove this and make the app handle no executing editor,
+    // so we don't need to stub with empty strings
+    const kclManager = new KclManager('', '', {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
@@ -419,21 +418,16 @@ export class App implements AppSubsystems {
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
-    const resolvedTheme = getResolvedTheme(newTheme)
-    const opposingTheme = getOppositeTheme(newTheme)
-    this.singletons.kclManager.sceneInfra.theme = opposingTheme
-    this.singletons.kclManager.sceneEntitiesManager.updateSegmentBaseColor(
-      opposingTheme
-    )
-    this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.kclManager.engineCommandManager.connection) {
-      Promise.all([
-        this.singletons.kclManager.engineCommandManager.setTheme(newTheme),
-        this.singletons.kclManager.engineCommandManager.setBackfaceColor(
-          newBackfaceColor
-        ),
-      ]).catch(reportRejection)
-    }
+    Promise.all([
+      this.singletons.kclManager.updateTheme(newTheme),
+      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
+        ? [
+            this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+              newBackfaceColor
+            ),
+          ]
+        : []),
+    ]).catch(reportRejection)
 
     // Execute AST
     try {
@@ -459,7 +453,7 @@ export class App implements AppSubsystems {
         this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.currentFilePath || undefined
+            this.singletons.kclManager.path
           )
           .then(() => this.singletons.kclManager.executeCode())
           .catch(reportRejection)

@@ -2665,10 +2665,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2646,
-            "end": 2652,
+            "commentStart": 2640,
+            "end": 2646,
             "moduleId": 0,
-            "start": 2646,
+            "start": 2640,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -2726,10 +2726,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 2646,
-              "end": 2652,
+              "commentStart": 2640,
+              "end": 2646,
               "moduleId": 0,
-              "start": 2646,
+              "start": 2640,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -2890,10 +2890,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             -6.0
           ],
           "tag": {
-            "commentStart": 2646,
-            "end": 2652,
+            "commentStart": 2640,
+            "end": 2646,
             "moduleId": 0,
-            "start": 2646,
+            "start": 2640,
             "type": "TagDeclarator",
             "value": "seg08"
           },

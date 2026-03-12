@@ -97,21 +97,7 @@ export type SketchSolveMachineEvent =
       data: { hoveredId: number | null }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
-  | {
-      type: 'update sketch outcome'
-      data: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        /**
-         * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
-         */
-        debounceEditorUpdate?: boolean
-        /**
-         * If false, skip persisting to disk (useful for high-frequency drag updates)
-         */
-        writeToDisk?: boolean
-      }
-    }
+  | UpdateSketchOutcomeEvent
   | { type: 'delete selected' }
   | {
       type: 'set draft entities'
@@ -127,6 +113,22 @@ export type SketchSolveMachineEvent =
       data: { constraintId: number }
     }
   | { type: 'stop editing constraint' }
+
+export type UpdateSketchOutcomeEvent = {
+  type: 'update sketch outcome'
+  data: {
+    sourceDelta: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    /**
+     * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
+     */
+    debounceEditorUpdate?: boolean
+    /**
+     * If false, skip persisting to disk (useful for high-frequency drag updates)
+     */
+    writeToDisk?: boolean
+  }
+}
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
@@ -949,6 +951,8 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
+          // Without this draft segments remain written on the file until another write comes.
+          writeToDisk: true,
         },
       })
     }

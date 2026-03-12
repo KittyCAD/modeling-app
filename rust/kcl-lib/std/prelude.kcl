@@ -630,6 +630,9 @@ export fn assert(
 
 
 /// Given a face index, find its ID.
+/// In general, you should prefer tagging faces to using this function. Use this function if
+/// you can't tag a face. For example, if the face comes from imported geometry in a .STEP file,
+/// or if it's from an operation that doesn't yet support tagging the faces it creates, like `subtract`.
 /// ```
 /// // Cylinder
 /// cylinder = startSketchOn(XY)
@@ -651,6 +654,9 @@ export fn faceId(
 ): TaggedFace {}
 
 /// Given an edge index, find its ID.
+/// In general, you should prefer tagging edges to using this function. Use this function if
+/// you can't tag an edge. For example, if the edge comes from imported geometry in a .STEP file,
+/// or if it's from an operation that doesn't yet support tagging the edges it creates, like `subtract`.
 /// ```
 /// // Cylinder
 /// cylinder = startSketchOn(XY)
