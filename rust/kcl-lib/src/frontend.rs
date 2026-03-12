@@ -6311,6 +6311,46 @@ sketch2 = sketch(on = YZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_twice_using_same_plane() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch1 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let sketch_args = SketchCtor {
+            on: Plane::Default(PlaneName::Xy),
+        };
+        let (src_delta, _, _) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch1 = sketch(on = XY) {
+}
+sketch2 = sketch(on = XY) {
+}
+"
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_mode_reuses_cached_on_expression() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
