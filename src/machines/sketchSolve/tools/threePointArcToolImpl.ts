@@ -15,6 +15,10 @@ import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSo
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import {
+  isArcSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Three-point arc tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding first point`
@@ -458,7 +462,7 @@ export async function addDraftPointActor({
 
   const pointId = result.sceneGraphDelta.new_objects.find((objId) => {
     const obj = result.sceneGraphDelta.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+    return isPointSegment(obj)
   })
   if (pointId === undefined) {
     return { error: 'Failed to create draft point' }
@@ -523,7 +527,7 @@ export async function createArcActor({
 
   const arcId = result.sceneGraphDelta.new_objects.find((objId) => {
     const obj = result.sceneGraphDelta.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+    return isArcSegment(obj)
   })
   if (arcId === undefined) {
     return { error: 'Failed to create draft arc' }

@@ -25,6 +25,11 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
+import {
+  isArcSegment,
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Tangential arc tool'
 export const CREATING_ARC = `xstate.done.actor.0.${TOOL_ID}.Creating arc`
@@ -205,54 +210,46 @@ export function resolveTangentInfoFromClick({
 }): TangentInfo | null {
   const objects = sceneGraphDelta.new_graph.objects
   const clickedObj = objects[clickedId]
-  if (!clickedObj || clickedObj.kind.type !== 'Segment') {
+  if (!isPointSegment(clickedObj)) {
     return null
   }
 
-  if (clickedObj.kind.segment.type === 'Point') {
-    const pointId = clickedObj.id
-    const ownerId = clickedObj.kind.segment.owner
-    if (ownerId === null) {
-      return null
-    }
-
-    const owner = objects[ownerId]
-    if (
-      !owner ||
-      owner.kind.type !== 'Segment' ||
-      owner.kind.segment.type !== 'Line'
-    ) {
-      return null
-    }
-
-    if (
-      owner.kind.segment.start !== pointId &&
-      owner.kind.segment.end !== pointId
-    ) {
-      return null
-    }
-
-    const pointCoords = getPointFromObjects(objects, pointId)
-    const tangentDirection = getLineTangentDirection({
-      objects,
-      lineId: ownerId,
-      tangentPointId: pointId,
-    })
-    if (!pointCoords || !tangentDirection) {
-      return null
-    }
-
-    return {
-      lineId: ownerId,
-      tangentStart: {
-        id: pointId,
-        point: pointCoords,
-      },
-      tangentDirection,
-    }
+  const pointId = clickedObj.id
+  const ownerId = clickedObj.kind.segment.owner
+  if (ownerId === null) {
+    return null
   }
 
-  return null
+  const owner = objects[ownerId]
+  if (!isLineSegment(owner)) {
+    return null
+  }
+
+  if (
+    owner.kind.segment.start !== pointId &&
+    owner.kind.segment.end !== pointId
+  ) {
+    return null
+  }
+
+  const pointCoords = getPointFromObjects(objects, pointId)
+  const tangentDirection = getLineTangentDirection({
+    objects,
+    lineId: ownerId,
+    tangentPointId: pointId,
+  })
+  if (!pointCoords || !tangentDirection) {
+    return null
+  }
+
+  return {
+    lineId: ownerId,
+    tangentStart: {
+      id: pointId,
+      point: pointCoords,
+    },
+    tangentDirection,
+  }
 }
 
 export function addFirstPointListener({ self, context }: ToolActionArgs) {
@@ -456,7 +453,7 @@ export function storeCreatedArcResult({
 
   const arcObjId = output.sceneGraphDelta.new_objects.find((objId: number) => {
     const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+    return isArcSegment(obj)
   })
 
   let arcId: number | undefined
@@ -478,7 +475,7 @@ export function storeCreatedArcResult({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
     entitiesToTrack.segmentIds.push(...pointIds)

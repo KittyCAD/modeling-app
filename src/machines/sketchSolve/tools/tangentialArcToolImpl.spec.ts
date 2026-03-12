@@ -10,6 +10,7 @@ import {
   resolveTangentialArcEndpoints,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
 import { describe, expect, it } from 'vitest'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 describe('tangentialArcToolImpl', () => {
   describe('findTangentialArcCenter', () => {
@@ -52,10 +53,10 @@ describe('tangentialArcToolImpl', () => {
     it('should resolve endpoint owner line when clicking a point segment', () => {
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
-      if (p1.kind.type === 'Segment' && p1.kind.segment.type === 'Point') {
+      if (isPointSegment(p1)) {
         p1.kind.segment.owner = 3
       }
-      if (p2.kind.type === 'Segment' && p2.kind.segment.type === 'Point') {
+      if (isPointSegment(p2)) {
         p2.kind.segment.owner = 3
       }
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })

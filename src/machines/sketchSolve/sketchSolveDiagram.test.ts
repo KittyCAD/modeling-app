@@ -11,6 +11,7 @@ import {
 import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
+  isArcSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 function createObjectsArray(objects: ApiObject[]) {
@@ -136,11 +137,7 @@ describe('buildTangentConstraintInput', () => {
     const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
     const line = createLineApiObject({ id: 11, start: 4, end: 5 })
 
-    if (
-      arc.kind.type === 'Segment' &&
-      arc.kind.segment.type === 'Arc' &&
-      arc.kind.segment.ctor.type === 'Arc'
-    ) {
+    if (isArcSegment(arc) && arc.kind.segment.ctor.type === 'Arc') {
       const arcCtor = arc.kind.segment.ctor
       arc.kind.segment.ctor = {
         type: 'TangentArc',
