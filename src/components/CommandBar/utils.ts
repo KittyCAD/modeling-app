@@ -8,9 +8,9 @@ export function evaluateCommandBarArg(
 ) {
   const argumentsToSubmit = commandBarContext.argumentsToSubmit
   const value =
-    (typeof argumentsToSubmit[name] === 'function'
+    typeof argumentsToSubmit[name] === 'function'
       ? argumentsToSubmit[name](commandBarContext)
-      : argumentsToSubmit[name]) || ''
+      : argumentsToSubmit[name]
   const isHidden =
     typeof arg.hidden === 'function'
       ? arg.hidden(commandBarContext)

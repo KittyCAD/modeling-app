@@ -14,6 +14,7 @@ extend-exclude = [
   "openapi/*.json",
   "packages/codemirror-lang-kcl/test/all.test.ts",
   "public/kcl-samples",
+  "public/sketch-solve-samples",
   "rust/kcl-lib/tests/kcl_samples",
   "tsconfig.tsbuildinfo",
   "src/lib/machine-api.d.ts",
