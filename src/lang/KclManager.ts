@@ -357,6 +357,19 @@ export class ZDSProject {
     this.editors.delete(foundPathSignal[0])
   }
 
+  async switchExecutingEditor(
+    newPath: string,
+    providedEditor?: KclManager,
+    providedCode?: string
+  ) {
+    if (this.executingPath) {
+      this.closeEditor(this.executingPath)
+    }
+    const editor = await this.openEditor(newPath, providedEditor, providedCode)
+    await this.app.rustContext.sendSwitchFile(editor.id)
+    return editor
+  }
+
   closeAllEditors() {
     for (const editor of this.editors.values()) {
       editor.close()
