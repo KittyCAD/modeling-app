@@ -65,36 +65,67 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 
 // EdgeRef is parsed directly from KclValue, no need for a separate struct
 
+/// Convert tags (edge tag refs) to engine EdgeReference list by resolving each to edge ID then face IDs.
+/// Used when both `tags` and `edgeRefs` are provided to fillet/chamfer.
+pub(super) async fn tags_to_engine_edge_references(
+    solid_id: uuid::Uuid,
+    tags: Vec<EdgeReference>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<kcmc::shared::EdgeReference>, KclError> {
+    let mut refs = Vec::with_capacity(tags.len());
+    for edge_ref in tags {
+        let edge_id = edge_ref.get_engine_id(exec_state, args)?;
+        let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
+        let engine_ref = kcmc::shared::EdgeReference::builder()
+            .faces(face_ids.to_vec())
+            .build();
+        refs.push(engine_ref);
+    }
+    Ok(refs)
+}
+
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    // Check if edgeRefs is provided (new API)
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edgeRefs", &RuntimeType::any_array(), exec_state)?;
+    let tags_result = args.kw_arg_edge_array_and_source("tags");
 
-    if let Some(edge_refs) = edge_refs {
-        // New API: use edgeRefs
+    let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());
+
+    if has_edge_refs && has_tags {
+        // Both provided: merge tags and edgeRefs into one list and use the edgeRefs engine path.
+        let edge_refs = edge_refs.unwrap();
+        let tags_with_source = tags_result.unwrap();
+        validate_unique(&tags_with_source)?;
+        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+        let tags_as_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
+        let edge_refs_parsed = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+        let mut all_refs = tags_as_refs;
+        all_refs.extend(edge_refs_parsed);
+        let value =
+            inner_fillet_with_engine_refs(solid, radius, all_refs, tolerance, tag, exec_state, args).await?;
+        Ok(KclValue::Solid { value })
+    } else if let Some(edge_refs) = edge_refs {
+        // Only edgeRefs
         let value = inner_fillet_with_edge_refs(solid, radius, edge_refs, tolerance, tag, exec_state, args).await?;
         Ok(KclValue::Solid { value })
+    } else if let Ok(tags_with_source) = tags_result {
+        // Only tags
+        validate_unique(&tags_with_source)?;
+        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+        let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+        Ok(KclValue::Solid { value })
     } else {
-        // Old API: use tags (backward compatibility)
-        let tags_result = args.kw_arg_edge_array_and_source("tags");
-        match tags_result {
-            Ok(tags) => {
-                validate_unique(&tags)?;
-                let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-                let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
-                Ok(KclValue::Solid { value })
-            }
-            Err(_) => Err(KclError::new_semantic(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: "You must provide either 'tags' or 'edgeRefs' to fillet edges".to_owned(),
-                backtrace: Default::default(),
-            })),
-        }
+        Err(KclError::new_semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must provide either 'tags' or 'edgeRefs' to fillet edges".to_owned(),
+            backtrace: Default::default(),
+        }))
     }
 }
 
@@ -242,13 +273,40 @@ async fn inner_fillet_with_edge_refs(
         }));
     }
 
-    let mut solid = solid.clone();
-
     let edge_references = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+    inner_fillet_with_engine_refs(solid, radius, edge_references, tolerance, tag, exec_state, args).await
+}
+
+async fn inner_fillet_with_engine_refs(
+    solid: Box<Solid>,
+    radius: TyF64,
+    edge_references: Vec<kcmc::shared::EdgeReference>,
+    tolerance: Option<TyF64>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    if edge_references.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must provide at least one edgeRef".to_owned(),
+            backtrace: Default::default(),
+        }));
+    }
+
+    if tag.is_some() && edge_references.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails {
+            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edgeRef.".to_string(),
+            source_ranges: vec![args.source_range],
+            backtrace: Default::default(),
+        }));
+    }
+
+    let mut solid = solid.clone();
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
-    let num_extra_ids = edge_references.len() - 1;
+    let num_extra_ids = edge_references.len().saturating_sub(1);
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }

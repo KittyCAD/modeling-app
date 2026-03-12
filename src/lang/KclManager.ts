@@ -1334,6 +1334,8 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          artifactGraph: execState.artifactGraph,
         })
       )
       if (this.sceneEntitiesManager) {

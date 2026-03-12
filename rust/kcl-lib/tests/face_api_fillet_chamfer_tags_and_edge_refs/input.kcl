@@ -1,0 +1,20 @@
+// Simulation test: fillet and chamfer with both tags and edgeRefs (merge behavior).
+// Verifies that when both are provided, edges from tags and edgeRefs are all applied.
+
+body = startSketchOn(XY)
+yo = startProfile(body, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $capEnd001)
+  |> fillet(radius = 1, tags = [e1], edgeRefs = [{ faces = [e1, capEnd001] }])
+yo2 = startProfile(body, at = [15, 0])
+  |> line(endAbsolute = [20, 0], tag = $e2)
+  |> line(endAbsolute = [20, 10])
+  |> line(endAbsolute = [15, 10])
+  |> line(endAbsolute = [15, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $capEnd002)
+  |> chamfer(length = 1, tags = [e2], edgeRefs = [{ faces = [e2, capEnd002] }])

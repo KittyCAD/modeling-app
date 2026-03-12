@@ -3,13 +3,16 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecState, Program } from '@src/lang/wasm'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { refactorFilletChamferTagsToEdgeRefs } from '@src/lang/modifyAst/edges'
+import type { EdgeRefactorMeta, ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
+import { err } from '@src/lib/trap'
 import type { EditorView } from 'codemirror'
 
 export type ToolTip =
@@ -177,11 +180,15 @@ export async function lintAst({
   sourceCode,
   instance,
   rustContext,
+  edgeRefactorMetadata,
+  artifactGraph,
 }: {
   ast: Program
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
+  artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
     let discovered_findings = await kclLint(ast, instance)
@@ -321,6 +328,37 @@ export async function lintAst({
           }
         } catch (e) {
           console.warn('[lintAst] Error processing Z0005:', e)
+        }
+      } else if (
+        lint.finding.code === 'Z0006' &&
+        edgeRefactorMetadata?.length &&
+        artifactGraph
+      ) {
+        const newSourceResult = refactorFilletChamferTagsToEdgeRefs(
+          ast,
+          edgeRefactorMetadata,
+          artifactGraph,
+          instance
+        )
+        const newSource = err(newSourceResult)
+          ? null
+          : newSourceResult.trim() || null
+        if (newSource) {
+          actions = [
+            {
+              name: 'Convert to edgeRefs',
+              apply: (view: EditorView, _from: number, _to: number) => {
+                view.dispatch({
+                  changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: newSource,
+                  },
+                  annotations: [lspCodeActionEvent],
+                })
+              },
+            },
+          ]
         }
       }
 

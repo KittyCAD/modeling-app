@@ -140,6 +140,14 @@ export default class RustContext {
         path,
         JSON.stringify(settings)
       )
+      // Log raw exec outcome for inspection (e.g. edgeRefactorMetadata from deprecated edge stdlib calls).
+      if (result?.edgeRefactorMetadata?.length) {
+        console.log(
+          '[KCL exec outcome] edgeRefactorMetadata:',
+          result.edgeRefactorMetadata
+        )
+      }
+      console.log('[KCL exec outcome] full result:', result)
       // Set the default planes, safe to call after execute.
       const outcome = execStateFromRust(result)
 

@@ -17,8 +17,8 @@ use crate::{
     std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
 };
 
-/// Fetch the two face IDs for an edge via Solid3dGetAllEdgeFaces (for refactor metadata).
-#[cfg(feature = "artifact-graph")]
+/// Fetch the two face IDs for an edge via Solid3dGetAllEdgeFaces.
+/// Used for refactor metadata (artifact-graph) and for merging tags + edgeRefs in fillet/chamfer.
 pub(crate) async fn get_face_ids_for_edge(
     exec_state: &mut ExecState,
     object_id: Uuid,

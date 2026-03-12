@@ -4802,6 +4802,24 @@ mod face_api_fillet_edge_refs_variant_7 {
         super::execute(TEST_NAME, true).await
     }
 }
+mod face_api_fillet_chamfer_tags_and_edge_refs {
+    const TEST_NAME: &str = "face_api_fillet_chamfer_tags_and_edge_refs";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod sketch_on_face_index {
     const TEST_NAME: &str = "sketch_on_face_index";
 

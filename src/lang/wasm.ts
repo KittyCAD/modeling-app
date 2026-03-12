@@ -45,6 +45,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -64,6 +65,7 @@ export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
 export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
 export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
@@ -261,6 +263,8 @@ export interface ExecState {
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+  /** Populated when deprecated edge stdlib functions run (e.g. getOppositeEdge in a fillet). */
+  edgeRefactorMetadata: EdgeRefactorMeta[]
 }
 
 /**
@@ -275,11 +279,25 @@ export function emptyExecState(): ExecState {
     errors: [],
     filenames: [],
     defaultPlanes: null,
+    edgeRefactorMetadata: [],
+  }
+}
+
+function edgeRefactorMetaFromRust(raw: any): EdgeRefactorMeta {
+  return {
+    edgeId: raw.edgeId ?? raw.edge_id,
+    faceIds: raw.faceIds ?? raw.face_ids,
+    sourceRange: raw.sourceRange ?? raw.source_range,
+    stdlibFn: (raw.stdlibFn ?? raw.stdlib_fn) as EdgeRefactorMeta['stdlibFn'],
   }
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
+  const rawMeta = execOutcome.edgeRefactorMetadata
+  const edgeRefactorMetadata = isArray(rawMeta)
+    ? rawMeta.map(edgeRefactorMetaFromRust)
+    : []
 
   return {
     variables: execOutcome.variables,
@@ -288,6 +306,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
+    edgeRefactorMetadata,
   }
 }
 

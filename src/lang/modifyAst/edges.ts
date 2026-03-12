@@ -1,13 +1,13 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createArrayExpression,
-  createTagDeclarator,
   createObjectExpression,
+  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -22,11 +22,15 @@ import {
   resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { recast } from '@src/lang/wasm'
+import { isArray } from '@src/lib/utils'
 import type {
   Artifact,
   ArtifactGraph,
   CallExpressionKw,
   CodeRef,
+  EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
   Name,
@@ -286,6 +290,218 @@ export function createEdgeRefObjectExpression(
     expr: createObjectExpression(properties),
     modifiedAst: currentAst,
   }
+}
+
+const DEPRECATED_EDGE_STDLIB = [
+  'getOppositeEdge',
+  'getNextAdjacentEdge',
+  'getPreviousAdjacentEdge',
+  'getCommonEdge',
+  'edgeId',
+] as const
+
+function isFilletOrChamfer(callee: string): boolean {
+  return callee === 'fillet' || callee === 'chamfer'
+}
+
+function getTagsArrayFromCall(call: Node<CallExpressionKw>): Expr[] | null {
+  const tagsArg = call.arguments?.find(
+    (a) => (a.label as { name?: string })?.name === 'tags'
+  )
+  if (!tagsArg?.arg || tagsArg.arg.type !== 'ArrayExpression') return null
+  return tagsArg.arg.elements ?? null
+}
+
+function sourceRangeMatch(
+  meta: EdgeRefactorMeta,
+  start: number,
+  end: number,
+  moduleId: number
+): boolean {
+  const sr = meta.sourceRange
+  if (isArray(sr)) {
+    return sr[0] === start && sr[1] === end && (sr[2] ?? 0) === moduleId
+  }
+  return (
+    (sr as { start?: number }).start === start &&
+    (sr as { end?: number }).end === end &&
+    (sr as { moduleId?: number }).moduleId === moduleId
+  )
+}
+
+/** Walk program and collect (range, orderedMetas) for each fillet/chamfer call that has tags with deprecated calls and full metadata. */
+function findFilletChamferCallsToFix(
+  program: Program,
+  metadata: EdgeRefactorMeta[]
+): { range: [number, number, number]; orderedMetas: EdgeRefactorMeta[] }[] {
+  const results: {
+    range: [number, number, number]
+    orderedMetas: EdgeRefactorMeta[]
+  }[] = []
+
+  function visitExpr(expr: Expr): void {
+    if (expr.type !== 'CallExpressionKw') {
+      walkExpr(expr)
+      return
+    }
+    const call = expr as Node<CallExpressionKw>
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isFilletOrChamfer(calleeName)) {
+      walkExpr(expr)
+      return
+    }
+    const elements = getTagsArrayFromCall(call)
+    if (!elements?.length) {
+      walkExpr(expr)
+      return
+    }
+    const deprecatedRanges: { start: number; end: number; moduleId: number }[] =
+      []
+    for (const el of elements) {
+      if (el.type !== 'CallExpressionKw') continue
+      const inner = el as Node<CallExpressionKw>
+      const innerCallee = (inner.callee as { name?: { name?: string } })?.name
+        ?.name
+      if (
+        !innerCallee ||
+        !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+      )
+        continue
+      deprecatedRanges.push({
+        start: inner.start,
+        end: inner.end,
+        moduleId: (inner as { module_id?: number }).module_id ?? 0,
+      })
+    }
+    if (deprecatedRanges.length === 0) {
+      walkExpr(expr)
+      return
+    }
+    const orderedMetas: EdgeRefactorMeta[] = []
+    for (const r of deprecatedRanges) {
+      const meta = metadata.find((m) =>
+        sourceRangeMatch(m, r.start, r.end, r.moduleId)
+      )
+      if (!meta) {
+        walkExpr(expr)
+        return
+      }
+      orderedMetas.push(meta)
+    }
+    const moduleId = (call as { module_id?: number }).module_id ?? 0
+    results.push({
+      range: [call.start, call.end, moduleId],
+      orderedMetas,
+    })
+    walkExpr(expr)
+  }
+
+  function walkExpr(expr: Expr): void {
+    if (expr.type === 'PipeExpression') {
+      const body = (expr as { body?: Expr[] }).body
+      if (isArray(body)) body.forEach(visitExpr)
+      return
+    }
+    if (expr.type === 'CallExpressionKw') {
+      const c = expr as Node<CallExpressionKw>
+      if (c.unlabeled) visitExpr(c.unlabeled)
+      for (const a of c.arguments ?? []) visitExpr(a.arg)
+      return
+    }
+    if (expr.type === 'BinaryExpression') {
+      const b = expr as { left?: Expr; right?: Expr }
+      if (b.left) walkExpr(b.left)
+      if (b.right) walkExpr(b.right)
+      return
+    }
+    if (expr.type === 'ArrayExpression') {
+      for (const e of (expr as { elements?: Expr[] }).elements ?? [])
+        walkExpr(e)
+      return
+    }
+    if (expr.type === 'ObjectExpression') {
+      const props = (expr as { properties?: { value: Expr }[] }).properties
+      for (const p of isArray(props) ? props : []) walkExpr(p.value)
+      return
+    }
+    if (expr.type === 'LabelledExpression')
+      visitExpr((expr as { expr: Expr }).expr)
+    else if (expr.type === 'AscribedExpression')
+      visitExpr((expr as { expr: Expr }).expr)
+    else if (expr.type === 'UnaryExpression')
+      walkExpr((expr as { argument: Expr }).argument)
+    else if (expr.type === 'MemberExpression') {
+      walkExpr((expr as { object: Expr }).object)
+      walkExpr((expr as { property: Expr }).property)
+    }
+  }
+
+  for (const item of program.body ?? []) {
+    if (item.type === 'VariableDeclaration' && item.declaration?.init)
+      visitExpr(item.declaration.init)
+    else if (item.type === 'ExpressionStatement' && item.expression)
+      visitExpr(item.expression)
+    else if (
+      item.type === 'ReturnStatement' &&
+      (item as { argument?: Expr }).argument
+    )
+      visitExpr((item as { argument: Expr }).argument)
+  }
+  return results
+}
+
+/**
+ * Refactor fillet/chamfer `tags` that use deprecated edge stdlib to `edgeRefs` with face tags (not UUIDs).
+ * Uses artifact graph to resolve face IDs to tag names (adding tagEnd/tagStart or segment tags when missing).
+ */
+export function refactorFilletChamferTagsToEdgeRefs(
+  ast: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  if (!edgeRefactorMetadata?.length)
+    return new Error('No edge refactor metadata')
+  let modifiedAst = structuredClone(ast)
+  const toFix = findFilletChamferCallsToFix(ast, edgeRefactorMetadata)
+  for (const { range, orderedMetas } of toFix) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    let edgeRefExprs: Expr[] = []
+    for (const meta of orderedMetas) {
+      const payload = { faces: meta.faceIds }
+      const result = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst as Node<Program>,
+        artifactGraph
+      )
+      if (err(result)) {
+        console.warn(
+          '[refactorFilletChamferTagsToEdgeRefs] createEdgeRefObjectExpression failed:',
+          result
+        )
+        continue
+      }
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    if (edgeRefExprs.length === 0) continue
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const tagsIdx = callNode.arguments?.findIndex(
+      (a) => (a.label as { name?: string })?.name === 'tags'
+    )
+    if (tagsIdx === undefined || tagsIdx < 0) continue
+    callNode.arguments[tagsIdx] = createLabeledArg(
+      'edgeRefs',
+      createArrayExpression(edgeRefExprs)
+    )
+  }
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
 }
 
 /**
