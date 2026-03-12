@@ -1958,18 +1958,12 @@ export class KclManager extends File {
   clearLocalHistory() {
     // Clear history
     this.editorView.dispatch({
-      effects: [
-        historyCompartment.reconfigure([]),
-        requestSkipExecution.of(true),
-      ],
+      effects: [historyCompartment.reconfigure([])],
     })
 
     // Add history back
     this.editorView.dispatch({
-      effects: [
-        historyCompartment.reconfigure([history()]),
-        requestSkipExecution.of(true),
-      ],
+      effects: [historyCompartment.reconfigure([history()])],
     })
   }
   clearGlobalHistory() {
