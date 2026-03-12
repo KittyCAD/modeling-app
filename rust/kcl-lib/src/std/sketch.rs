@@ -419,7 +419,7 @@ pub(super) async fn straight_line(
     Ok(new_sketch)
 }
 
-fn does_segment_close_sketch(end: [f64; 2], from: [f64; 2]) -> bool {
+pub(crate) fn does_segment_close_sketch(end: [f64; 2], from: [f64; 2]) -> bool {
     let same_x = (end[0] - from[0]).abs() < EQUAL_POINTS_DIST_EPSILON;
     let same_y = (end[1] - from[1]).abs() < EQUAL_POINTS_DIST_EPSILON;
     same_x && same_y
