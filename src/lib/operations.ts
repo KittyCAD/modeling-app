@@ -2162,6 +2162,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  angle: {
+    label: 'Angle Constraint',
+    icon: 'angle',
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',

@@ -16,19 +16,19 @@ flowchart LR
     8[Solid2d]
   end
   subgraph path22 [Path]
-    22["Path<br>[1369, 1567, 0]<br>Consumed: true"]
+    22["Path<br>[1369, 1561, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    23["Segment<br>[1369, 1567, 0]"]
+    23["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    24["Segment<br>[1369, 1567, 0]"]
+    24["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    25["Segment<br>[1369, 1567, 0]"]
+    25["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    26["Segment<br>[1369, 1567, 0]"]
+    26["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    27["Segment<br>[1369, 1567, 0]"]
+    27["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    28["Segment<br>[1369, 1567, 0]"]
+    28["Segment<br>[1369, 1561, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     29[Solid2d]
   end
@@ -158,11 +158,11 @@ flowchart LR
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   19["EdgeCut Chamfer<br>[1009, 1303, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
-  20["PlaneOfFace<br>[1369, 1567, 0]"]
+  20["PlaneOfFace<br>[1369, 1561, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  21["Plane<br>[1369, 1567, 0]"]
+  21["Plane<br>[1369, 1561, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  30["Sweep RevolveAboutEdge<br>[1369, 1567, 0]<br>Consumed: true"]
+  30["Sweep RevolveAboutEdge<br>[1369, 1561, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   31[Wall]
     %% face_code_ref=Missing NodePath
@@ -170,7 +170,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   33[Wall]
     %% face_code_ref=Missing NodePath
-  34["CompositeSolid Subtract<br>[1369, 1567, 0]<br>Consumed: true"]
+  34["CompositeSolid Subtract<br>[1369, 1561, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   35["PlaneOfFace<br>[12561, 12625, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
@@ -220,7 +220,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   90[Wall]
     %% face_code_ref=Missing NodePath
-  91["CompositeSolid Subtract<br>[1636, 1950, 0]<br>Consumed: true"]
+  91["CompositeSolid Subtract<br>[1630, 1938, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   92["PlaneOfFace<br>[12561, 12625, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
@@ -246,7 +246,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   119[Wall]
     %% face_code_ref=Missing NodePath
-  120["CompositeSolid Subtract<br>[2046, 2326, 0]<br>Consumed: false"]
+  120["CompositeSolid Subtract<br>[2034, 2308, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   121["StartSketchOnPlane<br>[8207, 8310, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
