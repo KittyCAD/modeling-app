@@ -8,7 +8,7 @@ popd()  { builtin popd  "$@" > /dev/null; }
 
 # Build once before touching the file system.
 pushd rust/
-cargo build --release --bin transpile
+cargo build --release --bin transpile -p kcl-lib
 popd
 
 succeeded=0
