@@ -1639,12 +1639,12 @@ export const useToolbarConfig = () => {
               getSelectedTangentConstraintInput(state) === null,
             disabledReason: (state) =>
               getSelectedTangentConstraintInput(state) === null
-                ? 'Select exactly one line and one arc to add a tangent constraint.'
+                ? 'Select a line and an arc, or two arcs, to add a tangent constraint.'
                 : undefined,
             title: 'Tangent',
             hotkey: 'Shift+T',
             description:
-              'Constrain a selected line and arc to be tangent at their shared contact.',
+              'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
             links: [],
             isActive: (state) => false,
           },

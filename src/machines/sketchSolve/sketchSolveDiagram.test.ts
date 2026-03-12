@@ -115,7 +115,37 @@ describe('buildTangentConstraintInput', () => {
     })
   })
 
-  it('returns null unless exactly one line and one arc are selected', () => {
+  it('builds a tangent constraint for two selected arcs', () => {
+    const center1 = createPointApiObject({ id: 1, x: 5, y: 5 })
+    const arc1Start = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const arc1End = createPointApiObject({ id: 3, x: 10, y: 0 })
+    const center2 = createPointApiObject({ id: 4, x: 15, y: 5 })
+    const arc2Start = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const arc2End = createPointApiObject({ id: 6, x: 20, y: 0 })
+    const arc1 = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+    const arc2 = createArcApiObject({ id: 11, center: 4, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      center1,
+      arc1Start,
+      arc1End,
+      center2,
+      arc2Start,
+      arc2End,
+      arc1,
+      arc2,
+    ])
+
+    expect(buildTangentConstraintInput([10, 11], objects)).toEqual({
+      type: 'Tangent',
+      input: [10, 11],
+    })
+    expect(buildTangentConstraintInput([11, 10], objects)).toEqual({
+      type: 'Tangent',
+      input: [11, 10],
+    })
+  })
+
+  it('returns null unless the selection is line+arc or arc+arc', () => {
     const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
     const p2 = createPointApiObject({ id: 2, x: 10, y: 0 })
     const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })

@@ -139,22 +139,26 @@ export function buildTangentConstraintInput(
 
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
-  const arcObj = selectedObjects.find(isArcSegment)
+  const arcObjects = selectedObjects.filter(isArcSegment)
 
-  if (!lineObj || !arcObj) {
-    return null
+  if (lineObj && arcObjects.length === 1) {
+    // tangent(line, arc)
+    const arcObj = arcObjects[0]
+    return {
+      type: 'Tangent' as const,
+      input: [lineObj.id, arcObj.id] as [number, number],
+    }
   }
 
-  // The scene graph does not currently distinguish 3-point arcs from
-  // center-defined arcs, but TangentArc ctors are explicitly different.
-  if (arcObj.kind.segment.ctor.type !== 'Arc') {
-    return null
+  if (arcObjects.length === 2) {
+    // tangent(arc, arc)
+    return {
+      type: 'Tangent' as const,
+      input: [arcObjects[0].id, arcObjects[1].id] as [number, number],
+    }
   }
 
-  return {
-    type: 'Tangent' as const,
-    input: [lineObj.id, arcObj.id] as [number, number],
-  }
+  return null
 }
 type DistanceConstraintTypes =
   | 'Distance'
