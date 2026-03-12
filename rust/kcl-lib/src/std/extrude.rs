@@ -38,6 +38,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::sketch(),
                 RuntimeType::face(),
+                RuntimeType::segment(),
                 RuntimeType::tagged_face(),
             ])),
             ArrayLen::Minimum(1),
