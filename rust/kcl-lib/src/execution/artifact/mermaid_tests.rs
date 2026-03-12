@@ -83,6 +83,7 @@ impl Artifact {
                 }
                 ids
             }
+            Artifact::Region(a) => vec![a.parent_sketch_block_id],
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
@@ -137,6 +138,10 @@ impl Artifact {
                     ids.push(composite_solid_id);
                 }
                 ids
+            }
+            Artifact::Region(_) => {
+                // Note: Don't include these since they're parents: parent_sketch_block_id.
+                Vec::new()
             }
             Artifact::Segment(a) => {
                 // Note: Don't include these since they're parents: path_id.
@@ -278,6 +283,7 @@ impl ArtifactGraph {
                     groups.entry(id).or_insert_with(Vec::new).push(id);
                     true
                 }
+                Artifact::Region(_) => false,
                 Artifact::Segment(segment) => {
                     let path_id = segment.path_id;
                     groups.entry(path_id).or_insert_with(Vec::new).push(id);
@@ -381,6 +387,15 @@ impl ArtifactGraph {
                     path.consumed
                 )?;
                 node_path_display(output, prefix, None, &path.code_ref)?;
+            }
+            Artifact::Region(region) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"Region<br>{:?}<br>query={:?}\"]",
+                    code_ref_display(&region.code_ref),
+                    region.query_point
+                )?;
+                node_path_display(output, prefix, None, &region.code_ref)?;
             }
             Artifact::Segment(segment) => {
                 writeln!(
@@ -538,6 +553,9 @@ impl ArtifactGraph {
                     (Artifact::Path(_), Artifact::Sweep(_)) | (Artifact::Sweep(_), Artifact::Path(_)) => {
                         EdgeKind::PathToSweep
                     }
+                    (Artifact::Region(_), Artifact::Sweep(_)) | (Artifact::Sweep(_), Artifact::Region(_)) => {
+                        EdgeKind::PathToSweep
+                    }
                     _ => EdgeKind::Other,
                 };
                 let target_id = *stable_id_map.get(&target_id).unwrap();
@@ -682,4 +700,77 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
     assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
     assert!(!blend_sweep.consumed);
+}
+
+#[test]
+fn create_region_from_query_point_creates_region_artifact() {
+    let source_range = SourceRange::synthetic();
+    let source_code_ref = CodeRef::placeholder(source_range);
+    let origin_path_id = ArtifactId::new(Uuid::new_v4());
+    let plane_id = ArtifactId::new(Uuid::new_v4());
+    let sketch_block_id = ArtifactId::new(Uuid::new_v4());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        origin_path_id,
+        Artifact::Path(Path {
+            id: origin_path_id,
+            plane_id,
+            seg_ids: Vec::new(),
+            consumed: false,
+            sweep_id: None,
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: source_code_ref.clone(),
+            composite_solid_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+        }),
+    );
+    artifacts.insert(
+        sketch_block_id,
+        Artifact::SketchBlock(SketchBlock {
+            id: sketch_block_id,
+            plane_id: Some(plane_id),
+            code_ref: source_code_ref,
+            sketch_id: ObjectId(0),
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let query_point = [1.25, 2.5];
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::CreateRegionFromQueryPoint::builder()
+            .object_id(Uuid::from(origin_path_id))
+            .query_point(kcmc::shared::Point2d::from(query_point).map(kcmc::length_unit::LengthUnit))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Region(region) = &updated[0] else {
+        panic!("Expected CreateRegionFromQueryPoint to create a Region artifact, got: {updated:?}");
+    };
+
+    assert_eq!(region.id, ArtifactId::new(cmd_id));
+    assert_eq!(region.parent_sketch_block_id, sketch_block_id);
+    assert_eq!(region.query_point, Some(query_point));
 }
