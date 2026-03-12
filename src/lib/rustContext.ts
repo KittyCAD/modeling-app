@@ -122,6 +122,14 @@ export default class RustContext {
     return this.ctxInstance?.update_file(this.projectId, fileId, code)
   }
 
+  /** Notify the Rust module that the currently open file has changed. */
+  async sendSwitchFile(fileId: ApiFileId) {
+    if (!this.hasOpenedProject) {
+      return
+    }
+    return this.ctxInstance?.switch_file(this.projectId, fileId)
+  }
+
   async sendRemoveFile(fileId: number) {
     return this.ctxInstance?.remove_file(this.projectId, fileId)
   }
