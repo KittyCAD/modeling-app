@@ -4398,6 +4398,35 @@ y = x[0mm + 1]
 
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_region_unlabeled_arg_serializes_as_region_value() {
+        let ast = r#"s = startSketchOn(XY)
+profile = circle(s, center = [0, 0], radius = 5)
+r = region(point = [1, 1], sketch = profile)
+extrude(r, length = 1)
+"#;
+        let out = parse_execute(ast).await.unwrap();
+        let operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let extrude_op = operations
+            .iter()
+            .find(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "extrude"))
+            .unwrap();
+        let value = serde_json::to_value(extrude_op).unwrap();
+
+        assert_eq!(value["unlabeledArg"]["value"]["type"], "Region");
+        assert_eq!(
+            value["unlabeledArg"]["value"]["value"]["point2d"],
+            serde_json::json!([1.0, 1.0])
+        );
+        assert!(
+            value["unlabeledArg"]["value"]["value"]["parentSketchId"]
+                .as_str()
+                .is_some_and(|s| !s.is_empty())
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
     async fn feature_tree_annotation_on_user_defined_kcl() {
         // The call to foo() should not generate an operation,
         // because its 'feature_tree' attribute has been set to false.

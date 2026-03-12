@@ -147,9 +147,6 @@ pub struct Path {
     /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_path_id: Option<ArtifactId>,
-    /// Query point from `CreateRegionFromQueryPoint`, in millimeters.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub region_query_point: Option<[f64; 2]>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -583,7 +580,6 @@ impl Path {
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
-        self.region_query_point = new.region_query_point;
         self.consumed = new.consumed;
 
         None
@@ -1070,7 +1066,6 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
-                region_query_point: None,
                 consumed: false,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
@@ -1157,13 +1152,8 @@ fn artifacts_to_update(
             let Some(Artifact::Path(path)) = origin_path else {
                 internal_error!(
                     range,
-                "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                    "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
-            };
-            let region_query_point = if let ModelingCmd::CreateRegionFromQueryPoint(create_region) = cmd {
-                Some([create_region.query_point.x.0, create_region.query_point.y.0])
-            } else {
-                None
             };
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -1177,7 +1167,6 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
-                region_query_point,
             }));
             return Ok(return_arr);
         }
@@ -1231,7 +1220,6 @@ fn artifacts_to_update(
                         composite_solid_id: None,
                         inner_path_id: None,
                         outer_path_id: None,
-                        region_query_point: None,
                         consumed: false,
                     }
                 };

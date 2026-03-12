@@ -1,6 +1,10 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+#[cfg(feature = "artifact-graph")]
+use kittycad_modeling_cmds::ModelingCmd;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::cad_op::OpRegion;
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
@@ -125,6 +129,50 @@ impl Arg {
     pub fn source_ranges(&self) -> Vec<SourceRange> {
         vec![self.source_range]
     }
+}
+
+fn op_kcl_value_from_arg(arg: &Arg, _exec_state: &ExecState) -> OpKclValue {
+    #[cfg(feature = "artifact-graph")]
+    if let Some(region) = op_region_from_arg(arg, _exec_state) {
+        return OpKclValue::Region {
+            value: Box::new(region),
+        };
+    }
+
+    OpKclValue::from(&arg.value)
+}
+
+#[cfg(feature = "artifact-graph")]
+fn op_region_from_arg(arg: &Arg, exec_state: &ExecState) -> Option<OpRegion> {
+    let KclValue::Sketch { value: sketch } = &arg.value else {
+        return None;
+    };
+
+    let artifact_id = sketch.artifact_id;
+    find_region_from_commands(artifact_id, &exec_state.mod_local.artifacts.unprocessed_commands)
+        .or_else(|| find_region_from_commands(artifact_id, &exec_state.mod_local.artifacts.commands))
+        .or_else(|| find_region_from_commands(artifact_id, &exec_state.global.root_module_artifacts.commands))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn find_region_from_commands(
+    artifact_id: crate::execution::ArtifactId,
+    commands: &[crate::execution::ArtifactCommand],
+) -> Option<OpRegion> {
+    commands.iter().rev().find_map(|artifact_command| {
+        if crate::execution::ArtifactId::from(artifact_command.cmd_id) != artifact_id {
+            return None;
+        }
+
+        match &artifact_command.command {
+            ModelingCmd::CreateRegionFromQueryPoint(create_region) => Some(OpRegion::new(
+                artifact_id,
+                create_region.object_id.into(),
+                [create_region.query_point.x.0, create_region.query_point.y.0],
+            )),
+            _ => None,
+        }
+    })
 }
 
 impl Node<CallExpressionKw> {
@@ -311,7 +359,12 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                .map(|(k, arg)| {
+                    (
+                        k.clone(),
+                        OpArg::new(op_kcl_value_from_arg(arg, exec_state), arg.source_range),
+                    )
+                })
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -320,7 +373,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        .map(|arg| OpArg::new(op_kcl_value_from_arg(arg, exec_state), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -335,7 +388,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            .map(|arg| OpArg::new(op_kcl_value_from_arg(arg, exec_state), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),

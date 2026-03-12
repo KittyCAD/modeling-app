@@ -1357,6 +1357,34 @@ export function retrieveSelectionsFromOpArg(
   artifactGraph: ArtifactGraph
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
+  if (opArg.value.type === 'Region') {
+    const { artifactId, parentSketchId, point2d } = opArg.value.value
+    const [x, y] = point2d
+
+    const parentSketchArtifact = artifactGraph.get(parentSketchId)
+    let sketchId: string | undefined
+    if (parentSketchArtifact?.type === 'sketchBlock') {
+      sketchId = parentSketchArtifact.id
+    } else if (parentSketchArtifact?.type === 'path') {
+      sketchId = getSketchBlockFromPath(parentSketchArtifact, artifactGraph)?.id
+    }
+    if (!sketchId) {
+      return error
+    }
+
+    return {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'region',
+          id: artifactId,
+          point: { x, y },
+          sketchId,
+        },
+      ],
+    }
+  }
+
   let artifactIds: string[] = []
   if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
     artifactIds = [opArg.value.value.artifactId]

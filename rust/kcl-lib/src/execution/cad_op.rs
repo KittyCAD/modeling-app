@@ -218,6 +218,10 @@ pub enum OpKclValue {
     Sketch {
         value: Box<OpSketch>,
     },
+    #[cfg(feature = "artifact-graph")]
+    Region {
+        value: Box<OpRegion>,
+    },
     Segment {
         artifact_id: ArtifactId,
     },
@@ -244,6 +248,27 @@ pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Operation.ts")]
+#[serde(rename_all = "camelCase")]
+#[cfg(feature = "artifact-graph")]
+pub struct OpRegion {
+    artifact_id: ArtifactId,
+    parent_sketch_id: ArtifactId,
+    point2d: [f64; 2],
+}
+
+#[cfg(feature = "artifact-graph")]
+impl OpRegion {
+    pub(crate) fn new(artifact_id: ArtifactId, parent_sketch_id: ArtifactId, point2d: [f64; 2]) -> Self {
+        Self {
+            artifact_id,
+            parent_sketch_id,
+            point2d,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

@@ -1537,13 +1537,17 @@ extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
       throw new Error('Extrude operation not found')
     }
-    if (op.unlabeledArg.value.type !== 'Sketch') {
+    if (op.unlabeledArg.value.type !== 'Region') {
       throw new Error(
-        `Expected extrude unlabeled arg to be Sketch, got ${op.unlabeledArg.value.type}`
+        `Expected extrude unlabeled arg to be Region, got ${op.unlabeledArg.value.type}`
       )
     }
 
-    const regionArtifactId = op.unlabeledArg.value.value.artifactId
+    const {
+      artifactId: regionArtifactId,
+      parentSketchId,
+      point2d,
+    } = op.unlabeledArg.value.value
     const regionArtifact = artifactGraph.get(regionArtifactId)
     if (
       !regionArtifact ||
@@ -1552,6 +1556,13 @@ extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)
     ) {
       throw new Error(
         'Expected unlabeled arg to reference a path artifact with region metadata'
+      )
+    }
+
+    const parentSketchArtifact = artifactGraph.get(parentSketchId)
+    if (!parentSketchArtifact || parentSketchArtifact.type !== 'path') {
+      throw new Error(
+        'Expected Region parentSketchId to point to a path artifact'
       )
     }
 
@@ -1579,8 +1590,8 @@ extrude001 = extrude(region(point = [1, 1], sketch = s), length = 1)
     expect(regionSelection.id).toEqual(regionArtifact.id)
     expect(regionSelection.sketchId).toEqual(sketch.id)
     expect(regionSelection.point).toEqual({
-      x: regionArtifact.regionQueryPoint[0],
-      y: regionArtifact.regionQueryPoint[1],
+      x: point2d[0],
+      y: point2d[1],
     })
   })
 })
