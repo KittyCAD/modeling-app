@@ -61,8 +61,6 @@ pub enum Step {
     LabeledExpressionLabel,
     AscribedExpressionExpr,
     SketchBlock,
-    SketchBlockArg { index: usize },
-    SketchBlockBodyItem { index: usize },
     SketchVar,
 }
 
@@ -347,18 +345,7 @@ impl NodePath {
                 // TODO: sketch-api: implement arguments.
                 if node.contains_range(&range) {
                     path.push(Step::SketchBlock);
-                    for (i, arg) in node.arguments.iter().enumerate() {
-                        if arg.arg.contains_range(&range) {
-                            path.push(Step::SketchBlockArg { index: i });
-                            return Self::from_expr(&arg.arg, range, path);
-                        }
-                    }
-                    for (i, item) in node.body.items.iter().enumerate() {
-                        if item.contains_range(&range) {
-                            path.push(Step::SketchBlockBodyItem { index: i });
-                            return Self::from_body_item(item, range, path);
-                        }
-                    }
+                    // TODO: sketch-api: implement body.
                     return Some(path);
                 }
             }
@@ -483,49 +470,6 @@ import "cylinder.kcl" as cylinder
             NodePath::from_range(&programs, 0, range(27, 60)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 1 }],
-            }
-        );
-    }
-
-    #[test]
-    fn test_node_path_from_range_sketch_block_body_item() {
-        let code = r#"@settings(experimentalFeatures = allow)
-s = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  line2 = line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])
-}
-"#;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let module_infos = indexmap::IndexMap::from([(
-            ModuleId::default(),
-            crate::modules::ModuleInfo {
-                id: ModuleId::default(),
-                path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
-            },
-        )]);
-        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
-
-        let line2_start = code
-            .find("line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])")
-            .unwrap();
-        let line2_end = code[line2_start..]
-            .find('\n')
-            .map(|line_end| line2_start + line_end)
-            .unwrap_or(code.len());
-
-        assert_eq!(
-            NodePath::from_range(&programs, 0, range(line2_start, line2_end)).unwrap(),
-            NodePath {
-                steps: vec![
-                    Step::ProgramBodyItem { index: 0 },
-                    Step::VariableDeclarationDeclaration,
-                    Step::VariableDeclarationInit,
-                    Step::SketchBlock,
-                    Step::SketchBlockBodyItem { index: 1 },
-                    Step::VariableDeclarationDeclaration,
-                    Step::VariableDeclarationInit,
-                ],
             }
         );
     }
