@@ -61,6 +61,18 @@ const SAMPLE_KCL = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1)])
 `
 
+/** Single-value tags (no array): tags = getOppositeEdge(e1). Valid KCL; lint and refactor should handle it. */
+const KCL_SINGLE_TAG_GET_OPPOSITE_EDGE = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = getOppositeEdge(e1))
+`
+
 const KCL_GET_NEXT_ADJACENT_EDGE = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -325,6 +337,22 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         const n = norm(refactored)
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(radius = 1, edgeRefs = [')
+        expect(n).toContain('faces = [e1, capEnd001]')
+      }
+    )
+
+    it(
+      'refactors fillet with single-value tags (tags = getOppositeEdge(e1), no array) to edgeRefs',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_SINGLE_TAG_GET_OPPOSITE_EDGE
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
+        expect(n).toContain('fillet(')
+        expect(n).toContain('edgeRefs = [')
         expect(n).toContain('faces = [e1, capEnd001]')
       }
     )

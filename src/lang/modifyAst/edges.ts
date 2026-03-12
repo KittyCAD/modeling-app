@@ -305,12 +305,15 @@ function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
 }
 
-function getTagsArrayFromCall(call: Node<CallExpressionKw>): Expr[] | null {
+/** Tags as array elements: from tags = [a, b] or tags = singleExpr (single value is valid KCL). */
+function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
   const tagsArg = call.arguments?.find(
     (a) => (a.label as { name?: string })?.name === 'tags'
   )
-  if (!tagsArg?.arg || tagsArg.arg.type !== 'ArrayExpression') return null
-  return tagsArg.arg.elements ?? null
+  if (!tagsArg?.arg) return null
+  if (tagsArg.arg.type === 'ArrayExpression')
+    return tagsArg.arg.elements ?? null
+  return [tagsArg.arg]
 }
 
 function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
@@ -385,7 +388,7 @@ function findFilletChamferCallsToFixUnified(
       walkExpr(expr)
       return
     }
-    const elements = getTagsArrayFromCall(call)
+    const elements = getTagsElementsFromCall(call)
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedFaceIds: [string, string][] = []
     if (elements?.length) {
@@ -509,7 +512,7 @@ function findFilletChamferCallsToFix(
       walkExpr(expr)
       return
     }
-    const elements = getTagsArrayFromCall(call)
+    const elements = getTagsElementsFromCall(call)
     if (!elements?.length) {
       walkExpr(expr)
       return

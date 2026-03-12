@@ -7,7 +7,7 @@ use anyhow::Result;
 use crate::{
     SourceRange,
     lint::rule::{Discovered, Finding, FindingFamily, def_finding},
-    parsing::ast::types::{ArrayExpression, CallExpressionKw, Expr, Node as AstNode, Program},
+    parsing::ast::types::{CallExpressionKw, Expr, Node as AstNode, Program},
     walk::Node,
 };
 
@@ -40,18 +40,15 @@ fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
     DEPRECATED_EDGE_STDLIB.contains(&callee_name)
 }
 
-/// Find the "tags" labeled argument and return the array expression if present.
-fn get_tags_array(call: &CallExpressionKw) -> Option<&ArrayExpression> {
-    for arg in &call.arguments {
-        let label_name = arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("");
-        if label_name == "tags" {
-            if let Expr::ArrayExpression(arr) = &arg.arg {
-                return Some(arr);
-            }
-            return None;
-        }
-    }
-    None
+/// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
+fn get_tags_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
+    let tags_arg = call.arguments.iter().find(|arg| {
+        arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "tags"
+    })?;
+    Some(match &tags_arg.arg {
+        Expr::ArrayExpression(arr) => arr.elements.iter().collect(),
+        single => vec![single],
+    })
 }
 
 /// True if the expression is a direct tag reference (e.g. identifier `e1`), not a call.
@@ -74,22 +71,22 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         return Ok(findings);
     }
 
-    let Some(tags_array) = get_tags_array(call_node) else {
+    let Some(elements) = get_tags_elements(call_node) else {
         return Ok(findings);
     };
 
-    if tags_array.elements.is_empty() {
+    if elements.is_empty() {
         return Ok(findings);
     }
 
-    let any_deprecated = tags_array.elements.iter().any(|el| {
+    let any_deprecated = elements.iter().any(|el| {
         if let Expr::CallExpressionKw(inner) = el {
             is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
         } else {
             false
         }
     });
-    let any_direct = tags_array.elements.iter().any(is_direct_tag_ref);
+    let any_direct = elements.iter().any(|el| is_direct_tag_ref(el));
     if any_deprecated || any_direct {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(format!("{} uses 'tags'; prefer edgeRefs", callee_name), pos, None));
@@ -193,5 +190,20 @@ mod tests {
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 fires when tags uses deprecated stdlib");
+    }
+
+    #[test]
+    fn z0006_fires_when_tags_is_single_value_not_array() {
+        // tags = getOppositeEdge(e1) is valid KCL (single value, not array); lint should still fire.
+        let kcl = r#"fillet(body, radius = 1, tags = getOppositeEdge(e1))
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(
+            z0006.len(),
+            1,
+            "Z0006 fires when tags is single getOppositeEdge(e1) (not array)"
+        );
     }
 }

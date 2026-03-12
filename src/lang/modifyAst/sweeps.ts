@@ -106,40 +106,7 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
-  // V2 command bar picks (entity refs) need to be normalized into graphSelections,
-  // otherwise extrude() can be generated without its required first positional arg.
-  const normalizedV2GraphSelections = (sketches.graphSelectionsV2 || [])
-    .map((v2Selection) => {
-      if (v2Selection.codeRef) {
-        return { codeRef: v2Selection.codeRef }
-      }
-
-      const entityRef = v2Selection.entityRef
-      if (!entityRef) return null
-
-      let entityId: string | undefined
-      if (entityRef.type === 'solid2d') {
-        entityId = entityRef.solid2d_id
-      } else if (entityRef.type === 'face') {
-        entityId = entityRef.face_id
-      } else if (entityRef.type === 'plane') {
-        entityId = entityRef.plane_id
-      }
-
-      if (!entityId) return null
-      const codeRef = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
-      if (!codeRef) return null
-      return { codeRef }
-    })
-    .filter(
-      (
-        selection
-      ): selection is { codeRef: NonNullable<typeof selection>['codeRef'] } =>
-        Boolean(selection)
-    )
-
-  // Use original list only; do not concatenate with normalized to avoid duplicating each
+  // Use original list only; do not concatenate with a normalized list to avoid duplicating each
   // selection (which produced wrong multi-arg extrude calls, e.g. extrude([cap, profile], length)
   // instead of extrude(cap, length)). Resolution works from entityRef or codeRef on the original.
   const normalizedSketches: Selections = {
