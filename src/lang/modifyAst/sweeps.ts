@@ -105,7 +105,12 @@ export function addExtrude({
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
-    sketches,
+    {
+      graphSelections: sketches.graphSelections.filter(
+        (selection) => !isFaceArtifact(selection.artifact)
+      ),
+      otherSelections: [],
+    },
     artifactGraph,
     modifiedAst,
     wasmInstance,

@@ -342,7 +342,7 @@ profile002 = rectangle(
   height = 2,
 )
 extrude001 = extrude(profile002, length = 1, tagEnd = $capEnd001)
-extrude002 = extrude([capEnd001, profile001], length = 1)`)
+extrude002 = extrude([profile001, capEnd001], length = 1)`)
       await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 3)
     })
 
