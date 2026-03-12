@@ -302,8 +302,13 @@ extrude002 = extrude(profile002, length = .1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
-    it('should omit default merge and keepTools when both are false', async () => {
-      const expectedNewLine = `split001 = split(extrude001, tools = extrude002)`
+    it('should emit merge and keepTools when both are false', async () => {
+      const expectedNewLine = `split001 = split(
+  extrude001,
+  tools = extrude002,
+  merge = false,
+  keepTools = false,
+)`
       const newCode = await runAddSplitTest({
         code,
         targetIds: [0],
@@ -315,7 +320,12 @@ extrude002 = extrude(profile002, length = .1)`
     })
 
     it('should emit merge when merge is true', async () => {
-      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true)`
+      const expectedNewLine = `split001 = split(
+  extrude001,
+  tools = extrude002,
+  merge = true,
+  keepTools = false,
+)`
       const newCode = await runAddSplitTest({
         code,
         targetIds: [0],
@@ -327,7 +337,12 @@ extrude002 = extrude(profile002, length = .1)`
     })
 
     it('should emit keepTools when keepTools is true', async () => {
-      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, keepTools = true)`
+      const expectedNewLine = `split001 = split(
+  extrude001,
+  tools = extrude002,
+  merge = false,
+  keepTools = true,
+)`
       const newCode = await runAddSplitTest({
         code,
         targetIds: [0],

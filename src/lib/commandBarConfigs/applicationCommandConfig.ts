@@ -292,7 +292,6 @@ export function createApplicationCommands({
         inputType: 'path',
         skip: true,
         hidden: false,
-        defaultValue: '',
         valueSummary: (value) => {
           return (
             value.files &&

@@ -145,7 +145,14 @@ function CommandBarHeaderFooter({
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue !== undefined ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 
@@ -183,7 +190,7 @@ function CommandBarHeaderFooter({
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
-                      {argValue ? (
+                      {argValue !== undefined ? (
                         project?.executingEditor.value &&
                         (arg.inputType === 'selection' ||
                           arg.inputType === 'selectionMixed') ? (
@@ -201,6 +208,8 @@ function CommandBarHeaderFooter({
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'boolean' ? (
+                          String(argValue)
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (
