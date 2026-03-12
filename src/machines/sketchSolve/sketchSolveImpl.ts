@@ -54,7 +54,9 @@ import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
+  isArcSegment,
   isConstraint,
+  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -304,11 +306,7 @@ export function updateSegmentGroup({
   let isConstruction = false
   if (objects) {
     const segmentObj = objects[idNum]
-    if (
-      segmentObj?.kind?.type === 'Segment' &&
-      (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc')
-    ) {
+    if (isLineSegment(segmentObj) || isArcSegment(segmentObj)) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
   }

@@ -116,11 +116,7 @@ function getLineTangentDirection({
   tangentPointId: number
 }): Coords2d | null {
   const lineObj = objects[lineId]
-  if (
-    !lineObj ||
-    lineObj.kind.type !== 'Segment' ||
-    lineObj.kind.segment.type !== 'Line'
-  ) {
+  if (!isLineSegment(lineObj)) {
     return null
   }
 
@@ -666,11 +662,7 @@ export async function finalizeArcActor({
     )
 
     const arcObj = arcEditResult.sceneGraphDelta.new_graph.objects[arcId]
-    if (
-      !arcObj ||
-      arcObj.kind.type !== 'Segment' ||
-      arcObj.kind.segment.type !== 'Arc'
-    ) {
+    if (!isArcSegment(arcObj)) {
       return { error: 'Failed to find arc after final edit' }
     }
 

@@ -37,10 +37,7 @@ function getLineFromDelta(
   }
 
   const lineObj = sceneGraphDelta.new_graph.objects[lineId]
-  if (
-    lineObj?.kind.type !== 'Segment' ||
-    lineObj.kind.segment.type !== 'Line'
-  ) {
+  if (!isLineSegment(lineObj)) {
     return new Error(
       'Expected Line object in scene graph delta, but did not find one'
     )

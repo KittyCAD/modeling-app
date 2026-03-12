@@ -49,6 +49,7 @@ import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
+  isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -694,11 +695,9 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            obj.kind.segment.type === 'Line'
+            isLineSegment(obj) || isArcSegment(obj)
               ? obj.kind.segment.construction
-              : obj.kind.segment.type === 'Arc'
-                ? obj.kind.segment.construction
-                : false
+              : false
 
           // Toggle construction state
           const newConstruction = !currentConstruction
