@@ -27,7 +27,7 @@ use crate::{
     std::{
         Args,
         args::TyF64,
-        sketch::{FaceTag, PlaneData},
+        sketch::{FaceTag, PlaneData, does_segment_close_sketch},
     },
 };
 
@@ -945,7 +945,7 @@ impl Extrudable {
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Segment(_) => ProfileClosed::No,
+            Extrudable::Segment(segment) => segment.is_closed(),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
@@ -2109,11 +2109,29 @@ pub struct Segment {
 }
 
 impl Segment {
+    /// Is this considered construction geometry?
     pub fn is_construction(&self) -> bool {
         match &self.kind {
             SegmentKind::Point { .. } => true,
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
+        }
+    }
+
+    /// Does the segment form a closed profile?
+    pub fn is_closed(&self) -> ProfileClosed {
+        match &self.kind {
+            SegmentKind::Point { .. } => ProfileClosed::No,
+            SegmentKind::Line { .. } => ProfileClosed::No,
+            SegmentKind::Arc { start, end, .. } => {
+                let start = [start[0].to_mm(), start[1].to_mm()];
+                let end = [end[0].to_mm(), end[1].to_mm()];
+                if does_segment_close_sketch(start, end) {
+                    ProfileClosed::Implicitly
+                } else {
+                    ProfileClosed::No
+                }
+            }
         }
     }
 }
