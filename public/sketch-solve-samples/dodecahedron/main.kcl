@@ -1,0 +1,88 @@
+// Dodecahedron
+// A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects.
+// Categories: Maker
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define the dihedral angle for a regular dodecahedron
+dihedral = 116.565
+
+// Create a face template function that makes a large thin cube
+fn createFaceTemplate(@dither) {
+  baseSketch = startSketchOn(XY)
+    |> startProfile(at = [-1000 - dither, -1000 - dither])
+    |> line(endAbsolute = [1000 + dither, -1000 - dither])
+    |> line(endAbsolute = [1000 + dither, 1000 + dither])
+    |> line(endAbsolute = [-1000 - dither, 1000 + dither])
+    |> close()
+  extruded = extrude(baseSketch, length = 1000 + dither + 1000)
+  return extruded
+    |> translate(x = 0, y = 0, z = -260 - dither)
+}
+
+// Define the rotations array with [pitch, roll, yaw, dither] for each face
+faceRotations = [
+  [0, 0, 0, 0],
+  // face1 - reference face
+  [dihedral, 0, 0, 0.1],
+  // face2
+  [dihedral, 0, 72, 0.2],
+  // face3
+  [dihedral, 0, 144, 0.3],
+  // face4
+  [dihedral, 0, 216, 0.4],
+  // face5
+  [dihedral, 0, 288, 0.5],
+  // face6
+  [180, 0, 0, 0.6],
+  // face7
+  [180 - dihedral, 0, 36, 0.7],
+  // face8
+  [180 - dihedral, 0, 108, 0.8],
+  // face9
+  [180 - dihedral, 0, 180, 0.9],
+  // face10
+  [180 - dihedral, 0, 252, 0.11],
+  // face11
+  [180 - dihedral, 0, 324, 0.12],
+  // face12
+]
+
+// Create faces by mapping over the rotations array
+dodecFaces = map(
+  faceRotations,
+  f = fn(@rotation) {
+    return createFaceTemplate(rotation[3])
+      |> rotate(
+           pitch = rotation[0],
+           roll = rotation[1],
+           yaw = rotation[2],
+           global = true,
+         )
+  },
+)
+
+fn calculateArrayLength(@arr) {
+  return reduce(
+    arr,
+    initial = 0,
+    f = fn(@item, accum) {
+      return accum + 1
+    },
+  )
+}
+
+fn createIntersection(@solids) {
+  fn reduceIntersect(@previous, accum) {
+    return intersect([previous, accum])
+  }
+  lastIndex = calculateArrayLength(solids) - 1
+  lastSolid = solids[lastIndex]
+  remainingSolids = pop(solids)
+  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
+}
+
+// Apply intersection to all faces
+createIntersection(dodecFaces)
+
