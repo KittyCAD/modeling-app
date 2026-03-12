@@ -139,11 +139,11 @@ export function addExtrude({
         Boolean(selection)
     )
 
+  // Use original list only; do not concatenate with normalized to avoid duplicating each
+  // selection (which produced wrong multi-arg extrude calls, e.g. extrude([cap, profile], length)
+  // instead of extrude(cap, length)). Resolution works from entityRef or codeRef on the original.
   const normalizedSketches: Selections = {
-    graphSelectionsV2: [
-      ...sketches.graphSelectionsV2,
-      ...normalizedV2GraphSelections,
-    ],
+    graphSelectionsV2: sketches.graphSelectionsV2 || [],
     otherSelections: sketches.otherSelections,
   }
 
@@ -182,6 +182,25 @@ export function addExtrude({
   if (nonFaceSelections.graphSelectionsV2.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
+  }
+
+  // When only otherSelections (e.g. region) are present, graphSelectionsV2 is empty; get exprs from otherSelections
+  if (
+    vars.exprs.length === 0 &&
+    (normalizedSketches.otherSelections?.length ?? 0) > 0
+  ) {
+    const res = getVariableExprsFromSelection(
+      normalizedSketches,
       artifactGraph,
       modifiedAst,
       wasmInstance,
@@ -636,11 +655,12 @@ export function addRevolve({
         Boolean(selection)
     )
 
+  // Use normalized list only to avoid duplicating selections (same fix as addExtrude).
   const normalizedSketches: Selections = {
-    graphSelectionsV2: [
-      ...sketches.graphSelectionsV2,
-      ...normalizedV2GraphSelections,
-    ],
+    graphSelectionsV2:
+      normalizedV2GraphSelections.length > 0
+        ? normalizedV2GraphSelections
+        : sketches.graphSelectionsV2,
     otherSelections: sketches.otherSelections,
   }
 
