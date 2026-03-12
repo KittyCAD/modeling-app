@@ -243,14 +243,10 @@ impl ExecutorContext {
             PreserveMem::Always => {
                 #[cfg(feature = "artifact-graph")]
                 {
-                    use crate::id::IncIdGenerator;
                     exec_state
                         .mod_local
                         .artifacts
-                        .scene_objects
-                        .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
-                    exec_state.mod_local.artifacts.object_id_generator =
-                        IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
+                        .restore_scene_objects(&exec_state.global.root_module_artifacts.scene_objects);
                 }
             }
             PreserveMem::Normal => {
@@ -258,8 +254,7 @@ impl ExecutorContext {
                 {
                     local_state
                         .artifacts
-                        .scene_objects
-                        .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+                        .restore_scene_objects(&exec_state.mod_local.artifacts.scene_objects);
                 }
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             }
