@@ -203,7 +203,6 @@ import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
 
@@ -2999,10 +2998,6 @@ export const modelingMachine = setup({
               sketchArgs = { on: { default: 'xy' } }
             }
 
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
               0, // fileId - using 0 as placeholder
@@ -3116,10 +3111,6 @@ export const modelingMachine = setup({
           if (!project) {
             console.warn('No project available for editSketch call')
           } else {
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
             editSketchSceneGraph = await rustContext.editSketch(
               0, // projectId
               0, // fileId
