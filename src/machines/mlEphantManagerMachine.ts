@@ -98,6 +98,7 @@ export type MlEphantManagerEvents =
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
       additionalFiles?: File[]
+      sketch_solve?: boolean // allow Zookeeper to reference experimental docs
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -644,6 +645,7 @@ export const mlEphantManagerMachine = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
+        sketch_solve: event.sketch_solve ?? false,
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
