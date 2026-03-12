@@ -11,6 +11,7 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
@@ -21,7 +22,6 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
-  getRegionSelectionsAsKclExpressionsWithVariables,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -117,17 +117,14 @@ export function addExtrude({
 
   const regionSelections = sketches.otherSelections.filter(isRegionSelection)
   if (regionSelections.length > 0) {
-    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
-      sketches.otherSelections.filter(isRegionSelection),
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      regionSelections,
       modifiedAst,
       artifactGraph,
-      wasmInstance
-    )
-    if (err(regionVars)) return regionVars
-    for (const regionVar of regionVars) {
-      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
-      vars.exprs.push(regionVar.variableIdentifierAst)
-    }
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   if (sketches.graphSelections.some((s) => isFaceArtifact(s.artifact))) {
@@ -332,17 +329,14 @@ export function addSweep({
 
   const regionSelections = sketches.otherSelections.filter(isRegionSelection)
   if (regionSelections.length > 0) {
-    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
-      sketches.otherSelections.filter(isRegionSelection),
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      regionSelections,
       modifiedAst,
       artifactGraph,
-      wasmInstance
-    )
-    if (err(regionVars)) return regionVars
-    for (const regionVar of regionVars) {
-      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
-      vars.exprs.push(regionVar.variableIdentifierAst)
-    }
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Find the path declaration for the labeled argument
@@ -455,17 +449,14 @@ export function addLoft({
 
   const regionSelections = sketches.otherSelections.filter(isRegionSelection)
   if (regionSelections.length > 0) {
-    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
-      sketches.otherSelections.filter(isRegionSelection),
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      regionSelections,
       modifiedAst,
       artifactGraph,
-      wasmInstance
-    )
-    if (err(regionVars)) return regionVars
-    for (const regionVar of regionVars) {
-      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
-      vars.exprs.push(regionVar.variableIdentifierAst)
-    }
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -588,17 +579,14 @@ export function addRevolve({
   }
   const regionSelections = sketches.otherSelections.filter(isRegionSelection)
   if (regionSelections.length > 0) {
-    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
-      sketches.otherSelections.filter(isRegionSelection),
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      regionSelections,
       modifiedAst,
       artifactGraph,
-      wasmInstance
-    )
-    if (err(regionVars)) return regionVars
-    for (const regionVar of regionVars) {
-      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
-      vars.exprs.push(regionVar.variableIdentifierAst)
-    }
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Retrieve axis expression depending on mode

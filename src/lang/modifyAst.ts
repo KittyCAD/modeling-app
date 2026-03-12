@@ -20,6 +20,8 @@ import {
   findAllPreviousVariables,
   getBodyIndex,
   getNodeFromPath,
+  getSettingsAnnotation,
+  getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
@@ -30,9 +32,11 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
+  ArtifactGraph,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  NumericSuffix,
   PathToNode,
   PipeExpression,
   Program,
@@ -41,7 +45,11 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { isPathToNodeNumber, parse } from '@src/lang/wasm'
+import {
+  baseUnitToNumericSuffix,
+  isPathToNodeNumber,
+  parse,
+} from '@src/lang/wasm'
 import type {
   KclCommandValue,
   KclExpression,
@@ -54,7 +62,10 @@ import { ARG_AT } from '@src/lang/constants'
 import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
+import type {
+  ExtrudeFacePlane,
+  RegionSelection,
+} from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
   type getConstraintInfoKw as GetConstraintInfoKwFn,
@@ -1045,6 +1056,85 @@ export function insertVariableAndOffsetPathToNode(
       pathToNode[1][0]++
     }
   }
+}
+
+export function insertRegionVariablesAndOffsetPathToNode({
+  regionSelections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  regionSelections: RegionSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Expr[] {
+  if (regionSelections.length === 0) {
+    return []
+  }
+
+  const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
+    settings.defaultLengthUnit
+  )
+
+  let insertIndex = modifiedAst.body.length
+  const regionExprs: Expr[] = []
+  for (const [index, regionSelection] of regionSelections.entries()) {
+    const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+    if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+      return new Error("Couldn't retrieve sketch block artifact")
+    }
+    const sketchVarName = getVariableNameFromNodePath(
+      sketchArtifact.codeRef.pathToNode,
+      modifiedAst,
+      wasmInstance
+    )
+    if (!sketchVarName) {
+      return new Error("Couldn't retrieve sketch block variable")
+    }
+
+    const { x, y } = regionSelection.point
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return new Error('Region point coordinates are invalid')
+    }
+
+    const regionExpr = createCallExpressionStdLibKw('region', null, [
+      createLabeledArg(
+        'point',
+        createArrayExpression([
+          createLiteral(x, wasmInstance, unitSuffix),
+          createLiteral(y, wasmInstance, unitSuffix),
+        ])
+      ),
+      createLabeledArg('sketch', createLocalName(sketchVarName)),
+    ])
+
+    const variableName = findUniqueName(modifiedAst, 'region')
+    const variableIdentifierAst = createLocalName(variableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: regionExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName,
+        variableDeclarationAst: createVariableDeclaration(
+          variableName,
+          regionExpr
+        ),
+        variableIdentifierAst,
+        insertIndex: insertIndex + index,
+      },
+      modifiedAst
+    )
+
+    regionExprs.push(variableIdentifierAst)
+  }
+
+  return regionExprs
 }
 
 // Create an array expression for variables,

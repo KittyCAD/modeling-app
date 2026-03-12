@@ -3,14 +3,9 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
-  createArrayExpression,
-  createCallExpressionStdLibKw,
-  createLabeledArg,
   createLiteral,
   createLocalName,
   createPipeSubstitution,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
@@ -49,12 +44,7 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  baseUnitToNumericSuffix,
-  kclSettings,
-  recast,
-  sketchFromKclValue,
-} from '@src/lang/wasm'
+import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -63,16 +53,12 @@ import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
-import type {
-  KclCommandValue,
-  KclExpressionWithVariable,
-} from '@src/lib/commandTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type {
   Selection,
   Selections,
   EdgeCutInfo,
-  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
@@ -1161,91 +1147,6 @@ export function getVariableNameFromNodePath(
     return varName
   }
   return undefined
-}
-
-function getRegionExprFromSelection(
-  regionSelection: RegionSelection,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Expr | Error {
-  const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
-  if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
-    return new Error("Couldn't retrieve sketch block artifact")
-  }
-  const sketchVarName = getVariableNameFromNodePath(
-    sketchArtifact.codeRef.pathToNode,
-    ast,
-    wasmInstance
-  )
-  if (!sketchVarName) {
-    return new Error("Couldn't retrieve sketch block variable")
-  }
-
-  const { x, y } = regionSelection.point
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
-    return new Error('Region point coordinates are invalid')
-  }
-
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings)) {
-    return settings
-  }
-  const unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
-
-  const regionArgs = [
-    createLabeledArg(
-      'point',
-      createArrayExpression([
-        createLiteral(x, wasmInstance, unitSuffix),
-        createLiteral(y, wasmInstance, unitSuffix),
-      ])
-    ),
-    createLabeledArg('sketch', createLocalName(sketchVarName)),
-  ]
-
-  return createCallExpressionStdLibKw('region', null, regionArgs)
-}
-
-export function getRegionSelectionsAsKclExpressionsWithVariables(
-  regionSelections: RegionSelection[],
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Error | KclExpressionWithVariable[] {
-  const regionVariables: KclExpressionWithVariable[] = []
-  let namesLookup = JSON.stringify(ast)
-
-  const insertIndex = ast.body.length
-  for (const [index, regionSelection] of regionSelections.entries()) {
-    const regionExpr = getRegionExprFromSelection(
-      regionSelection,
-      ast,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(regionExpr)) {
-      return regionExpr
-    }
-
-    const variableName = findUniqueName(namesLookup, 'region')
-    namesLookup += `:"${variableName}"`
-
-    regionVariables.push({
-      valueAst: regionExpr,
-      valueText: '',
-      valueCalculated: '',
-      variableName,
-      variableDeclarationAst: createVariableDeclaration(
-        variableName,
-        regionExpr
-      ),
-      variableIdentifierAst: createLocalName(variableName),
-      insertIndex: insertIndex + index,
-    })
-  }
-
-  return regionVariables
 }
 
 type GetVariableExprsOptions = {
