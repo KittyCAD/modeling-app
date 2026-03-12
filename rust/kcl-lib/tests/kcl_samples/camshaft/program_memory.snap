@@ -752,7 +752,7 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Function",
     "value": null
   },
-  "lobeSeperation": {
+  "lobeSeparation": {
     "type": "Number",
     "value": 112.0,
     "ty": {

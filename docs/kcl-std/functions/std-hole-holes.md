@@ -50,9 +50,9 @@ hole001 = hole::holes(
   mySolid,
   face = END,
   cutsAt = [[0, 0], [0, 3], [1, 2]],
-  holeBottom =   hole::drill(pointAngle = 110deg),
-  holeBody =   hole::blind(depth = 2, diameter = 0.4),
-  holeType =   hole::counterbore(diameter = 1, depth = 0.2),
+  holeBottom = hole::drill(pointAngle = 110deg),
+  holeBody = hole::blind(depth = 2, diameter = 0.4),
+  holeType = hole::counterbore(diameter = 1, depth = 0.2),
 )
 
 ```

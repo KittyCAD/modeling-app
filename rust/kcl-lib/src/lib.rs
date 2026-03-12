@@ -81,6 +81,7 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
+mod util;
 #[cfg(test)]
 mod variant_name;
 pub mod walk;
@@ -116,10 +117,13 @@ pub use unparser::{recast_dir, walk_dir};
 pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
-    pub use crate::execution::{
-        DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
-        annotations::WarningLevel,
-        types::{NumericType, UnitType},
+    pub use crate::{
+        execution::{
+            DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
+            annotations::WarningLevel,
+            types::{NumericType, UnitType},
+        },
+        util::{RetryConfig, execute_with_retries},
     };
 }
 

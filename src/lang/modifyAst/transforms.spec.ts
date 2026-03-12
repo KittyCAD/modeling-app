@@ -161,6 +161,7 @@ translate(
   x = 4,
   y = 5,
   z = 6,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -190,7 +191,12 @@ translate(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> translate(x = 4, y = 5, z = 6)
+  |> translate(
+       x = 4,
+       y = 5,
+       z = 6,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -392,6 +398,7 @@ scale(
   x = 4,
   y = 5,
   z = 6,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -421,7 +428,12 @@ scale(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> scale(x = 4, y = 5, z = 6)
+  |> scale(
+       x = 4,
+       y = 5,
+       z = 6,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -556,6 +568,7 @@ rotate(
   roll = 40,
   pitch = 50,
   yaw = 60,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -585,7 +598,12 @@ rotate(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> rotate(roll = 40, pitch = 50, yaw = 60)
+  |> rotate(
+       roll = 40,
+       pitch = 50,
+       yaw = 60,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],

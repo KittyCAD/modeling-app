@@ -1,0 +1,63 @@
+// Walkie Talkie Case
+// The plastic case for the front of the walkie talkie
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters and Zoo logo
+import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
+import zLogo, oLogo, oLogo2 from "zoo-logo.kcl"
+
+// Sketch the profile of the screen
+screenSketch = sketch(on = XZ) {
+  line1 = line(start = [var -0.88in, var 1.25in], end = [var 0.88in, var 1.25in])
+  line2 = line(start = [var 0.88in, var 1.25in], end = [var 0.88in, var 0.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 0.25in], end = [var -0.88in, var 0.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.88in, var 0.25in], end = [var -0.88in, var 1.25in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+
+// Create transform functions for the speaker grid pattern
+fn transformX(@i) {
+  return { translate = [.125 * i, 0] }
+}
+fn transformY(@i) {
+  return { translate = [0, -.125 * i] }
+}
+
+// Sketch the square hole grid pattern
+squareHolePatternSketch = startSketchOn(XZ)
+  |> startProfile(at = [-screenWidth / 2 + .100, 0])
+  |> line(end = [squareHoleSideLength / 2, 0])
+  |> line(end = [0, -squareHoleSideLength / 2])
+  |> line(end = [-squareHoleSideLength / 2, 0])
+  |> close()
+  |> patternTransform2d(instances = 13, transform = transformX)
+  |> patternTransform2d(instances = 11, transform = transformY)
+
+// Sketch the outer profile of the case and extrude with holes using the previously made profiles
+case = sketch(on = XZ) {
+  line1 = line(start = [var -1.12in, var 1.63in], end = [var -0.88in, var 1.87in])
+  line2 = line(start = [var -0.88in, var 1.87in], end = [var 0.88in, var 1.87in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 1.87in], end = [var 1.12in, var 1.63in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.12in, var 1.63in], end = [var 1.12in, var -1.63in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.12in, var -1.63in], end = [var 0.88in, var -1.87in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.88in, var -1.87in], end = [var -0.88in, var -1.87in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -0.88in, var -1.87in], end = [var -1.12in, var -1.63in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -1.12in, var -1.63in], end = [var -1.12in, var 1.63in])
+  coincident([line7.end, line8.start])
+}
+extrude(case, length = -0.0625)
+  |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)
+
