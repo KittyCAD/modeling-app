@@ -1335,6 +1335,7 @@ export class KclManager extends File {
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
         })
       )

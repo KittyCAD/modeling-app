@@ -30,6 +30,7 @@ import type {
   ArtifactGraph,
   CallExpressionKw,
   CodeRef,
+  DirectTagFilletMeta,
   EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
@@ -312,6 +313,35 @@ function getTagsArrayFromCall(call: Node<CallExpressionKw>): Expr[] | null {
   return tagsArg.arg.elements ?? null
 }
 
+function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
+  const edgeRefsArg = call.arguments?.find(
+    (a) => (a.label as { name?: string })?.name === 'edgeRefs'
+  )
+  if (!edgeRefsArg?.arg || edgeRefsArg.arg.type !== 'ArrayExpression') return []
+  return edgeRefsArg.arg.elements ?? []
+}
+
+function callSourceRangeMatches(
+  meta: DirectTagFilletMeta,
+  start: number,
+  end: number,
+  moduleId: number
+): boolean {
+  const sr = meta.callSourceRange
+  if (isArray(sr))
+    return (
+      Number(sr[0]) === start &&
+      Number(sr[1]) === end &&
+      (Number((sr as [number, number, number])[2]) ?? 0) === moduleId
+    )
+  const s = sr as { start?: number; end?: number; moduleId?: number }
+  return (
+    Number(s.start ?? 0) === start &&
+    Number(s.end ?? 0) === end &&
+    (Number(s.moduleId) ?? 0) === moduleId
+  )
+}
+
 function sourceRangeMatch(
   meta: EdgeRefactorMeta,
   start: number,
@@ -327,6 +357,135 @@ function sourceRangeMatch(
     (sr as { end?: number }).end === end &&
     (sr as { moduleId?: number }).moduleId === moduleId
   )
+}
+
+/** One entry per fillet/chamfer call: ordered face IDs from tags (stdlib + direct). Existing edgeRefs read from call when mutating. */
+interface UnifiedCallToFix {
+  range: [number, number, number]
+  orderedFaceIds: [string, string][]
+  hasExistingEdgeRefs: boolean
+}
+
+/** Walk program and collect (range, orderedFaceIds, hasExistingEdgeRefs) for each fillet/chamfer call that has tags and/or edgeRefs. */
+function findFilletChamferCallsToFixUnified(
+  program: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[]
+): UnifiedCallToFix[] {
+  const results: UnifiedCallToFix[] = []
+
+  function visitExpr(expr: Expr): void {
+    if (expr.type !== 'CallExpressionKw') {
+      walkExpr(expr)
+      return
+    }
+    const call = expr as Node<CallExpressionKw>
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isFilletOrChamfer(calleeName)) {
+      walkExpr(expr)
+      return
+    }
+    const elements = getTagsArrayFromCall(call)
+    const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
+    const orderedFaceIds: [string, string][] = []
+    if (elements?.length) {
+      for (const el of elements) {
+        if (el.type === 'CallExpressionKw') {
+          const inner = el as Node<CallExpressionKw>
+          const innerCallee = (inner.callee as { name?: { name?: string } })
+            ?.name?.name
+          if (
+            innerCallee &&
+            (DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+          ) {
+            const meta = edgeRefactorMetadata.find((m) =>
+              sourceRangeMatch(
+                m,
+                inner.start,
+                inner.end,
+                (inner as { module_id?: number }).module_id ?? 0
+              )
+            )
+            if (meta) orderedFaceIds.push(meta.faceIds)
+          }
+        } else if (el.type === 'Name') {
+          const nameNode = el as Node<Name>
+          const tagName =
+            (nameNode as { name?: { name?: string } }).name?.name ?? ''
+          const moduleId = (call as { module_id?: number }).module_id ?? 0
+          const directMeta = directTagFilletMetadata.find((m) =>
+            callSourceRangeMatches(m, call.start, call.end, moduleId)
+          )
+          const tagEntry = directMeta?.tags?.find(
+            (t) => t.tagIdentifier === tagName
+          )
+          if (tagEntry) orderedFaceIds.push(tagEntry.faceIds)
+        }
+      }
+    }
+    if (orderedFaceIds.length > 0 || existingEdgeRefExprs.length > 0) {
+      const moduleId = (call as { module_id?: number }).module_id ?? 0
+      results.push({
+        range: [call.start, call.end, moduleId],
+        orderedFaceIds,
+        hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
+      })
+    }
+    walkExpr(expr)
+  }
+
+  function walkExpr(expr: Expr): void {
+    if (expr.type === 'PipeExpression') {
+      const body = (expr as { body?: Expr[] }).body
+      if (isArray(body)) body.forEach(visitExpr)
+      return
+    }
+    if (expr.type === 'CallExpressionKw') {
+      const c = expr as Node<CallExpressionKw>
+      if (c.unlabeled) visitExpr(c.unlabeled)
+      for (const a of c.arguments ?? []) visitExpr(a.arg)
+      return
+    }
+    if (expr.type === 'BinaryExpression') {
+      const b = expr as { left?: Expr; right?: Expr }
+      if (b.left) walkExpr(b.left)
+      if (b.right) walkExpr(b.right)
+      return
+    }
+    if (expr.type === 'ArrayExpression') {
+      for (const e of (expr as { elements?: Expr[] }).elements ?? [])
+        walkExpr(e)
+      return
+    }
+    if (expr.type === 'ObjectExpression') {
+      const props = (expr as { properties?: { value: Expr }[] }).properties
+      for (const p of isArray(props) ? props : []) walkExpr(p.value)
+      return
+    }
+    if (expr.type === 'LabelledExpression')
+      visitExpr((expr as { expr: Expr }).expr)
+    else if (expr.type === 'AscribedExpression')
+      visitExpr((expr as { expr: Expr }).expr)
+    else if (expr.type === 'UnaryExpression')
+      walkExpr((expr as { argument: Expr }).argument)
+    else if (expr.type === 'MemberExpression') {
+      walkExpr((expr as { object: Expr }).object)
+      walkExpr((expr as { property: Expr }).property)
+    }
+  }
+
+  for (const item of program.body ?? []) {
+    if (item.type === 'VariableDeclaration' && item.declaration?.init)
+      visitExpr(item.declaration.init)
+    else if (item.type === 'ExpressionStatement' && item.expression)
+      visitExpr(item.expression)
+    else if (
+      item.type === 'ReturnStatement' &&
+      (item as { argument?: Expr }).argument
+    )
+      visitExpr((item as { argument: Expr }).argument)
+  }
+  return results
 }
 
 /** Walk program and collect (range, orderedMetas) for each fillet/chamfer call that has tags with deprecated calls and full metadata. */
@@ -478,6 +637,143 @@ export function refactorFilletChamferTagsToEdgeRefs(
       if (err(result)) {
         console.warn(
           '[refactorFilletChamferTagsToEdgeRefs] createEdgeRefObjectExpression failed:',
+          result
+        )
+        continue
+      }
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    if (edgeRefExprs.length === 0) continue
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const tagsIdx = callNode.arguments?.findIndex(
+      (a) => (a.label as { name?: string })?.name === 'tags'
+    )
+    if (tagsIdx === undefined || tagsIdx < 0) continue
+    callNode.arguments[tagsIdx] = createLabeledArg(
+      'edgeRefs',
+      createArrayExpression(edgeRefExprs)
+    )
+  }
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+/**
+ * Unified refactor: convert all tags (stdlib + direct) to edgeRefs and merge with existing edgeRefs.
+ * Handles mixed tags = [e1, getOppositeEdge(e1)] and tags + edgeRefs together.
+ */
+export function refactorFilletChamferTagsToEdgeRefsUnified(
+  ast: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const toFix = findFilletChamferCallsToFixUnified(
+    ast,
+    edgeRefactorMetadata,
+    directTagFilletMetadata
+  )
+  if (toFix.length === 0)
+    return new Error('No fillet/chamfer calls with tags or edgeRefs to convert')
+  let modifiedAst = structuredClone(ast)
+  for (const { range, orderedFaceIds, hasExistingEdgeRefs } of toFix) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const faceIds of orderedFaceIds) {
+      const result = createEdgeRefObjectExpression(
+        { faces: faceIds },
+        wasmInstance,
+        modifiedAst as Node<Program>,
+        artifactGraph
+      )
+      if (err(result)) {
+        console.warn(
+          '[refactorFilletChamferTagsToEdgeRefsUnified] createEdgeRefObjectExpression failed:',
+          result
+        )
+        continue
+      }
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    if (hasExistingEdgeRefs) {
+      const existing = getExistingEdgeRefsFromCall(callNode)
+      edgeRefExprs.push(...existing)
+    }
+    if (edgeRefExprs.length === 0) continue
+    const args = callNode.arguments ?? []
+    const newArgs = args.filter(
+      (a) =>
+        (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edgeRefs'
+    )
+    newArgs.push(
+      createLabeledArg('edgeRefs', createArrayExpression(edgeRefExprs))
+    )
+    callNode.arguments = newArgs
+  }
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
+/** Normalize DirectTagFilletMeta.callSourceRange to [start, end, moduleId] for getNodePathFromSourceRange. */
+function callSourceRangeToTuple(
+  callSourceRange: DirectTagFilletMeta['callSourceRange']
+): [number, number, number] {
+  if (isArray(callSourceRange))
+    return [
+      Number(callSourceRange[0]),
+      Number(callSourceRange[1]),
+      Number((callSourceRange as [number, number, number])[2] ?? 0),
+    ]
+  const sr = callSourceRange as {
+    start?: number
+    end?: number
+    moduleId?: number
+  }
+  return [Number(sr.start ?? 0), Number(sr.end ?? 0), Number(sr.moduleId ?? 0)]
+}
+
+/**
+ * Refactor fillet/chamfer calls that use direct tags to edgeRefs using execution metadata.
+ * Used for Z0007 auto-fix when directTagFilletMetadata is present.
+ */
+export function refactorDirectTagFilletToEdgeRefs(
+  ast: Program,
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  if (!directTagFilletMetadata?.length)
+    return new Error('No direct tag fillet metadata')
+  let modifiedAst = structuredClone(ast)
+  for (const meta of directTagFilletMetadata) {
+    if (!meta.tags?.length) continue
+    const range = callSourceRangeToTuple(meta.callSourceRange)
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const tagEntry of meta.tags) {
+      const payload = { faces: tagEntry.faceIds }
+      const result = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst as Node<Program>,
+        artifactGraph
+      )
+      if (err(result)) {
+        console.warn(
+          '[refactorDirectTagFilletToEdgeRefs] createEdgeRefObjectExpression failed:',
           result
         )
         continue

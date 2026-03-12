@@ -265,6 +265,19 @@ export interface ExecState {
   defaultPlanes: DefaultPlanes | null
   /** Populated when deprecated edge stdlib functions run (e.g. getOppositeEdge in a fillet). */
   edgeRefactorMetadata: EdgeRefactorMeta[]
+  /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0007 code mod. */
+  directTagFilletMetadata: DirectTagFilletMeta[]
+}
+
+export interface DirectTagFilletTagEntry {
+  tagIdentifier: string
+  edgeId: string
+  faceIds: [string, string]
+}
+
+export interface DirectTagFilletMeta {
+  callSourceRange: SourceRange
+  tags: DirectTagFilletTagEntry[]
 }
 
 /**
@@ -280,6 +293,7 @@ export function emptyExecState(): ExecState {
     filenames: [],
     defaultPlanes: null,
     edgeRefactorMetadata: [],
+    directTagFilletMetadata: [],
   }
 }
 
@@ -292,11 +306,32 @@ function edgeRefactorMetaFromRust(raw: any): EdgeRefactorMeta {
   }
 }
 
+function directTagFilletMetaFromRust(raw: any): DirectTagFilletMeta {
+  const tags = isArray(raw.tags)
+    ? (raw.tags as any[]).map((t: any) => ({
+        tagIdentifier: t.tagIdentifier ?? t.tag_identifier ?? '',
+        edgeId: t.edgeId ?? t.edge_id ?? '',
+        faceIds: (t.faceIds ?? t.face_ids) as [string, string],
+      }))
+    : []
+  return {
+    callSourceRange:
+      raw.callSourceRange ?? raw.call_source_range ?? defaultSourceRange(),
+    tags,
+  }
+}
+
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
   const rawMeta = execOutcome.edgeRefactorMetadata
   const edgeRefactorMetadata = isArray(rawMeta)
     ? rawMeta.map(edgeRefactorMetaFromRust)
+    : []
+  const rawDirect =
+    (execOutcome as any).directTagFilletMetadata ??
+    (execOutcome as any).direct_tag_fillet_metadata
+  const directTagFilletMetadata = isArray(rawDirect)
+    ? rawDirect.map(directTagFilletMetaFromRust)
     : []
 
   return {
@@ -307,6 +342,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
     edgeRefactorMetadata,
+    directTagFilletMetadata,
   }
 }
 

@@ -29,10 +29,18 @@
  *     |> fillet(radius = 1, edgeRefs = [{ faces = [e1, capEnd001] }])
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { refactorFilletChamferTagsToEdgeRefs } from '@src/lang/modifyAst/edges'
+import {
+  refactorDirectTagFilletToEdgeRefs,
+  refactorFilletChamferTagsToEdgeRefs,
+  refactorFilletChamferTagsToEdgeRefsUnified,
+} from '@src/lang/modifyAst/edges'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { assertParse } from '@src/lang/wasm'
-import type { ArtifactGraph, EdgeRefactorMeta } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  DirectTagFilletMeta,
+  EdgeRefactorMeta,
+} from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -108,6 +116,42 @@ const KCL_MULTIPLE_IN_TAGS = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), getOppositeEdge(e2)])
 `
 
+/** Direct tag (no stdlib call): fillet(radius = 1, tags = [e1]). Should convert to edgeRefs = [{ faces = [e1, capStart001] }]. */
+const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $capStart001)
+  |> fillet(radius = 1, tags = [e1])
+`
+
+/** Tags and edgeRefs both present: auto-convert should be available and should merge into one edgeRefs. */
+const KCL_TAGS_AND_EDGE_REFS = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $capStart001)
+  |> fillet(radius = 1, tags = [e1], edgeRefs = [{ faces = [e1, capStart001] }])
+`
+
+/** Mixed direct tag + stdlib in same tags array: both should be converted to edgeRefs (two entries). */
+const KCL_MIXED_DIRECT_AND_STDLIB = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = [e1, getOppositeEdge(e1)])
+`
+
 /** Mixed: one deprecated call + one plain segment tag. TODO: should seg01 stay in same fillet or be split into two fillet calls? */
 const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -181,6 +225,57 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
       expect(typeof result).toBe('string')
       expect(result).toContain('fillet')
       expect(result).toContain('getOppositeEdge')
+    })
+  })
+
+  describe('refactorDirectTagFilletToEdgeRefs (unit)', () => {
+    it('returns Error when directTagFilletMetadata is empty', () => {
+      const code =
+        'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [e1])'
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+      const result = refactorDirectTagFilletToEdgeRefs(
+        ast,
+        [],
+        graph,
+        wasmInstance
+      )
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No direct tag fillet metadata')
+    })
+
+    it('returns recast source when metadata and graph provided (no crash)', () => {
+      const ast = assertParse(KCL_DIRECT_TAG_FILLET, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+      // Mock metadata with empty tags so createEdgeRefObjectExpression will fail (no artifact);
+      // refactor still runs and returns recast of unchanged ast.
+      const metadata: DirectTagFilletMeta[] = [
+        {
+          callSourceRange: [0, 200, 0],
+          tags: [
+            {
+              tagIdentifier: 'e1',
+              edgeId: '00000000-0000-0000-0000-000000000000',
+              faceIds: [
+                '00000000-0000-0000-0000-000000000001',
+                '00000000-0000-0000-0000-000000000002',
+              ] as [string, string],
+            },
+          ],
+        },
+      ]
+      const result = refactorDirectTagFilletToEdgeRefs(
+        ast,
+        metadata,
+        graph,
+        wasmInstance
+      )
+      expect(err(result)).toBe(false)
+      if (err(result)) return
+      expect(typeof result).toBe('string')
+      expect(result).toContain('fillet')
+      expect(result).toContain('tags = [e1]')
     })
   })
 
@@ -320,6 +415,97 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('edgeRefs = [')
         expect(n).toContain('faces = [e1, capEnd001]')
         expect(n).toContain('faces = [e2, capEnd001]')
+      }
+    )
+
+    it(
+      'refactors direct tags in fillet to edgeRefs (tags = [e1] → edgeRefs = [{ faces = [e1, capStart001] }])',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(KCL_DIRECT_TAG_FILLET, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.directTagFilletMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('extrude(length = 5, tagStart = $capStart001)')
+        expect(n).toContain('fillet(radius = 1, edgeRefs = [')
+        expect(n).toContain('faces = [e1, capStart001]')
+      }
+    )
+
+    it(
+      'fillet with both tags and edgeRefs: refactor merges tags into edgeRefs (auto-convert should be available)',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(KCL_TAGS_AND_EDGE_REFS, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.directTagFilletMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('fillet(')
+        expect(n).toContain('edgeRefs = [')
+        // Should have at least two edge refs: one from tags=[e1], one from existing edgeRefs
+        const faceCount = (refactored.match(/faces\s*=\s*\[/g) ?? []).length
+        expect(faceCount).toBeGreaterThanOrEqual(2)
+        expect(n).toContain('faces = [e1, capStart001]')
+      }
+    )
+
+    it(
+      'fillet with mixed direct tag and stdlib (tags = [e1, getOppositeEdge(e1)]): refactor converts both to edgeRefs in order',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(KCL_MIXED_DIRECT_AND_STDLIB, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.edgeRefactorMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(
+          execState.directTagFilletMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('fillet(')
+        expect(n).toContain('edgeRefs = [')
+        // Must have exactly two edge refs (one for e1, one for getOppositeEdge(e1))
+        const faceCount = (refactored.match(/faces\s*=\s*\[/g) ?? []).length
+        expect(faceCount).toBe(2)
+        expect(n).toContain('faces = [e1, capEnd001]')
       }
     )
 

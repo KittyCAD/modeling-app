@@ -100,6 +100,27 @@ pub struct EdgeRefactorMeta {
     pub stdlib_fn: EdgeRefactorStdlibFn,
 }
 
+/// One tag entry in a fillet/chamfer call that used `tags` directly (for refactor to edgeRefs).
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectTagFilletTagEntry {
+    pub tag_identifier: String,
+    pub edge_id: Uuid,
+    pub face_ids: [Uuid; 2],
+}
+
+/// Metadata for one fillet/chamfer call that used `tags` directly (no stdlib call).
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectTagFilletMeta {
+    pub call_source_range: SourceRange,
+    pub tags: Vec<DirectTagFilletTagEntry>,
+}
+
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
@@ -128,6 +149,8 @@ pub struct ModuleArtifactState {
     pub var_solutions: Vec<(SourceRange, Number)>,
     /// Metadata from deprecated edge stdlib calls (getOppositeEdge, getCommonEdge, etc.) for refactor lint/code mod.
     pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
+    /// Metadata from fillet/chamfer calls that used `tags` directly (for refactor to edgeRefs).
+    pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -303,6 +326,8 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             #[cfg(feature = "artifact-graph")]
             edge_refactor_metadata: self.global.root_module_artifacts.edge_refactor_metadata.clone(),
+            #[cfg(feature = "artifact-graph")]
+            direct_tag_fillet_metadata: self.global.root_module_artifacts.direct_tag_fillet_metadata.clone(),
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -542,10 +567,22 @@ impl ExecState {
         self.mod_local.artifacts.edge_refactor_metadata.push(meta);
     }
 
+    /// Record metadata from a fillet/chamfer call that used `tags` directly (for refactor to edgeRefs).
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
+        self.mod_local.artifacts.direct_tag_fillet_metadata.push(meta);
+    }
+
     /// Refactor metadata collected when deprecated edge stdlib functions run (for tests and lint).
     #[cfg(feature = "artifact-graph")]
     pub fn edge_refactor_metadata(&self) -> &[EdgeRefactorMeta] {
         &self.global.root_module_artifacts.edge_refactor_metadata
+    }
+
+    /// Direct-tag fillet/chamfer metadata (for Z0007 code mod).
+    #[cfg(feature = "artifact-graph")]
+    pub fn direct_tag_fillet_metadata(&self) -> &[DirectTagFilletMeta] {
+        &self.global.root_module_artifacts.direct_tag_fillet_metadata
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -617,6 +654,8 @@ impl ExecState {
             self.global.root_module_artifacts.var_solutions.clone(),
             #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.edge_refactor_metadata.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.direct_tag_fillet_metadata.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
@@ -766,6 +805,7 @@ impl ModuleArtifactState {
             self.commands.clear();
             self.operations.clear();
             self.edge_refactor_metadata.clear();
+            self.direct_tag_fillet_metadata.clear();
         }
     }
 
@@ -788,6 +828,7 @@ impl ModuleArtifactState {
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
         self.edge_refactor_metadata.extend(other.edge_refactor_metadata);
+        self.direct_tag_fillet_metadata.extend(other.direct_tag_fillet_metadata);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

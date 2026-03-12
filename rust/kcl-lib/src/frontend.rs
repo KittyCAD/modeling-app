@@ -1056,6 +1056,8 @@ impl FrontendState {
             var_solutions,
             #[cfg(feature = "artifact-graph")]
             edge_refactor_metadata,
+            #[cfg(feature = "artifact-graph")]
+            direct_tag_fillet_metadata,
             filenames,
             default_planes,
             ..
@@ -1082,6 +1084,8 @@ impl FrontendState {
             var_solutions,
             #[cfg(feature = "artifact-graph")]
             edge_refactor_metadata,
+            #[cfg(feature = "artifact-graph")]
+            direct_tag_fillet_metadata,
             errors: non_fatal,
             default_planes,
         })

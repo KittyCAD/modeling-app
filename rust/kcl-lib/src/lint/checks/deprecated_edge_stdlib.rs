@@ -13,14 +13,12 @@ use crate::{
 
 def_finding!(
     Z0006,
-    "Prefer edgeRefs over deprecated edge stdlib functions in fillet/chamfer",
+    "Prefer edgeRefs over tags in fillet/chamfer",
     "\
-Using getOppositeEdge, getNextAdjacentEdge, getPreviousAdjacentEdge, getCommonEdge, or edgeId \
-inside a fillet or chamfer 'tags' argument is deprecated. These functions require an engine call \
-to resolve the edge ID before the operation, adding latency.
-
-Prefer the 'edgeRefs' argument with { faces: [tag1, tag2] } instead, which bypasses that resolution. \
-The auto-fix (when available) will convert to edgeRefs using execution metadata.
+Using the 'tags' argument in fillet or chamfer (including direct tags like [e1] or deprecated \
+stdlib like getOppositeEdge) is deprecated. Prefer the 'edgeRefs' argument with \
+{ faces: [tag1, tag2] } so the engine can resolve edges without extra lookups. \
+The auto-fix will convert to edgeRefs and merge with any existing edgeRefs.
 ",
     FindingFamily::Simplify
 );
@@ -56,8 +54,14 @@ fn get_tags_array(call: &CallExpressionKw) -> Option<&ArrayExpression> {
     None
 }
 
-/// Lint: detect deprecated edge stdlib calls inside fillet/chamfer tags.
-/// Only reports when the call appears directly in the tags array (not via a variable).
+/// True if the expression is a direct tag reference (e.g. identifier `e1`), not a call.
+fn is_direct_tag_ref(element: &Expr) -> bool {
+    matches!(element, Expr::Name(_))
+}
+
+/// Lint: prefer edgeRefs over tags in fillet/chamfer. Fires when tags is present with at least
+/// one convertible element (deprecated stdlib call or direct tag). Reports at the call so
+/// auto-fix can convert all tags and merge with existing edgeRefs.
 pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
 
@@ -74,22 +78,21 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         return Ok(findings);
     };
 
-    for element in &tags_array.elements {
-        let Expr::CallExpressionKw(inner_node) = element else {
-            continue;
-        };
-        let inner_callee = inner_node.callee.name.name.as_str();
-        if is_deprecated_edge_stdlib(inner_callee) {
-            let pos = SourceRange::new(inner_node.start, inner_node.end, inner_node.module_id);
-            findings.push(Z0006.at(
-                format!(
-                    "deprecated edge stdlib '{}' in {} tags; prefer edgeRefs",
-                    inner_callee, callee_name
-                ),
-                pos,
-                None, // Auto-fix in Step 3
-            ));
+    if tags_array.elements.is_empty() {
+        return Ok(findings);
+    }
+
+    let any_deprecated = tags_array.elements.iter().any(|el| {
+        if let Expr::CallExpressionKw(inner) = el {
+            is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+        } else {
+            false
         }
+    });
+    let any_direct = tags_array.elements.iter().any(is_direct_tag_ref);
+    if any_deprecated || any_direct {
+        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+        findings.push(Z0006.at(format!("{} uses 'tags'; prefer edgeRefs", callee_name), pos, None));
     }
 
     Ok(findings)
@@ -120,8 +123,8 @@ mod tests {
             "expected one Z0006 finding for getOppositeEdge in fillet tags"
         );
         assert!(
-            z0006[0].description.contains("getOppositeEdge"),
-            "description should mention getOppositeEdge"
+            z0006[0].description.contains("tags") || z0006[0].description.contains("edgeRefs"),
+            "description should mention tags or edgeRefs"
         );
     }
 
@@ -140,13 +143,17 @@ mod tests {
     }
 
     #[test]
-    fn no_finding_when_fillet_has_no_deprecated_calls() {
-        let kcl = r#"fillet(body, radius = 1, tags = [myTag])
+    fn no_finding_when_tags_has_no_convertible_element() {
+        // tags = [foo()] is a call but not deprecated stdlib; not a direct tag (Name), so no Z0006.
+        let kcl = r#"fillet(body, radius = 1, tags = [foo()])
 "#;
         let prog = crate::Program::parse_no_errs(kcl).unwrap();
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
-        assert!(z0006.is_empty(), "no Z0006 when tags do not use deprecated stdlib")
+        assert!(
+            z0006.is_empty(),
+            "no Z0006 when tags has no deprecated stdlib and no direct tag (Name)"
+        );
     }
 
     #[test]
@@ -157,5 +164,34 @@ mod tests {
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert!(z0006.is_empty(), "no Z0006 when fillet has no tags argument")
+    }
+
+    #[test]
+    fn z0006_detects_direct_tags_in_fillet() {
+        let kcl = r#"body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $capStart001)
+  |> fillet(radius = 1, tags = [e1])
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "expected one Z0006 for fillet with direct tags");
+        assert!(z0006[0].description.contains("tags"), "description should mention tags");
+    }
+
+    #[test]
+    fn z0006_fires_when_tags_has_deprecated_stdlib() {
+        let kcl = r#"fillet(body, radius = 1, tags = [getOppositeEdge(e1)])
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires when tags uses deprecated stdlib");
     }
 }

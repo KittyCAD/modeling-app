@@ -4,8 +4,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { refactorFilletChamferTagsToEdgeRefs } from '@src/lang/modifyAst/edges'
-import type { EdgeRefactorMeta, ExecState, Program } from '@src/lang/wasm'
+import { refactorFilletChamferTagsToEdgeRefsUnified } from '@src/lang/modifyAst/edges'
+import type {
+  DirectTagFilletMeta,
+  EdgeRefactorMeta,
+  ExecState,
+  Program,
+} from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
@@ -181,6 +186,7 @@ export async function lintAst({
   instance,
   rustContext,
   edgeRefactorMetadata,
+  directTagFilletMetadata,
   artifactGraph,
 }: {
   ast: Program
@@ -188,6 +194,7 @@ export async function lintAst({
   instance: ModuleType
   rustContext?: RustContext
   edgeRefactorMetadata?: EdgeRefactorMeta[]
+  directTagFilletMetadata?: DirectTagFilletMeta[]
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
@@ -331,12 +338,13 @@ export async function lintAst({
         }
       } else if (
         lint.finding.code === 'Z0006' &&
-        edgeRefactorMetadata?.length &&
-        artifactGraph
+        artifactGraph &&
+        (edgeRefactorMetadata?.length || directTagFilletMetadata?.length)
       ) {
-        const newSourceResult = refactorFilletChamferTagsToEdgeRefs(
+        const newSourceResult = refactorFilletChamferTagsToEdgeRefsUnified(
           ast,
-          edgeRefactorMetadata,
+          edgeRefactorMetadata ?? [],
+          directTagFilletMetadata ?? [],
           artifactGraph,
           instance
         )
