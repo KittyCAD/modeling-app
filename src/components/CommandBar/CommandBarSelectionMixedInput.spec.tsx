@@ -19,7 +19,7 @@ vi.mock('@src/lang/wasmUtils', async () => {
 })
 
 vi.mock('@xstate/react', () => ({
-  useSelector: () => ({ graphSelections: [], otherSelections: [] }),
+  useSelector: () => ({ graphSelectionsV2: [], otherSelections: [] }),
 }))
 
 vi.mock('@src/lib/selections', () => ({

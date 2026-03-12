@@ -32,6 +32,7 @@ import type {
   Name,
   PathToNode,
   Program,
+  SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -604,7 +605,8 @@ export function addFillet({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      { includePrimitiveEdgeIndices: true }
     )
     if (err(bodyData)) return bodyData
     modifiedAst = bodyData.modifiedAst
@@ -715,7 +717,8 @@ export function addChamfer({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      { includePrimitiveEdgeIndices: true }
     )
     if (err(bodyData)) return bodyData
     modifiedAst = bodyData.modifiedAst
@@ -1055,7 +1058,7 @@ function groupSelectionsByBodyAndAddTags(
   const primitiveSelectionsByBody = new Map<
     string,
     {
-      bodySelection: Selection
+      bodySelection: ResolvedGraphSelection
       primitiveIndices: number[]
     }
   >()
@@ -1141,13 +1144,28 @@ function groupSelectionsByBodyAndAddTags(
         primitiveSelectionsByBody.get(bodyKey)?.bodySelection
     }
 
-    // Build solids expression
+    // Build solids expression: use V2 selection or, when only engine primitive edges, body from primitive
     const firstResolved = bodySelections.graphSelectionsV2[0]
       ? resolveSelectionV2(bodySelections.graphSelectionsV2[0], artifactGraph)
       : null
-    if (!firstResolved) continue
-    const sweep = getSweepArtifactFromSelection(firstResolved, artifactGraph)
-    if (err(sweep)) continue
+    let sweepResult: ReturnType<typeof getSweepArtifactFromSelection>
+    if (firstResolved) {
+      sweepResult = getSweepArtifactFromSelection(firstResolved, artifactGraph)
+    } else {
+      const primitiveBody =
+        primitiveSelectionsByBody.get(bodyKey)?.bodySelection
+      if (!primitiveBody?.artifact) continue
+      if (primitiveBody.artifact.type === 'sweep') {
+        sweepResult = primitiveBody.artifact as SweepArtifact
+      } else {
+        sweepResult = getSweepArtifactFromSelection(
+          primitiveBody,
+          artifactGraph
+        )
+      }
+    }
+    if (err(sweepResult)) continue
+    const sweep = sweepResult
     const solids: Selections = {
       graphSelectionsV2: [
         {
