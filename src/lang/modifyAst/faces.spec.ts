@@ -514,7 +514,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const wall = getWalls(artifactGraph, 1).graphSelections[0]
+      const wall = getWalls(artifactGraph, 1).graphSelectionsV2[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const innerFace: NonCodeSelection = {
         entityId: 'irrelevant-for-this-test',
@@ -524,7 +524,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         type: 'enginePrimitive',
       }
       const faces: Selections = {
-        graphSelections: [wall],
+        graphSelectionsV2: [wall],
         otherSelections: [innerFace],
       }
       const result = addDeleteFace({
