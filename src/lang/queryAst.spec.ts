@@ -17,6 +17,7 @@ import {
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
+  getRegionSelectionsAsKclExpressionsWithVariables,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
   getVariableExprsFromSelection,
@@ -33,7 +34,11 @@ import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  RegionSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
@@ -1053,7 +1058,7 @@ plane001 = offsetPlane(YZ, offset = 10)
   })
 })
 
-describe('Testing getVariableExprsFromSelection', () => {
+describe('Testing getRegionSelectionsAsKclExpressionsWithVariables', () => {
   it('should resolve region sketch variable from region.sketchId in sketch block mode', async () => {
     const code = `@settings(experimentalFeatures = allow)
 
@@ -1080,33 +1085,35 @@ t = sketch(on = XY) {
       rustContextInThisFile
     )
     const sketch = artifactGraph.values().find((a) => a.type === 'sketchBlock')
-    const selections: Selections = {
-      graphSelections: [],
-      otherSelections: [
-        {
-          type: 'region',
-          id: 'region-1',
-          point: { x: 1, y: 1 },
-          sketchId: sketch!.id,
-        },
-      ],
-    }
-    const vars = getVariableExprsFromSelection(
-      selections,
-      artifactGraph,
+    const regionSelections: RegionSelection[] = [
+      {
+        type: 'region',
+        id: 'region-1',
+        point: { x: 1, y: 1 },
+        sketchId: sketch!.id,
+      },
+    ]
+    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
+      regionSelections,
       ast,
+      artifactGraph,
       instanceInThisFile
     )
-    if (err(vars)) throw vars
+    if (err(regionVars)) throw regionVars
 
-    expect(vars.pathIfPipe).toBeUndefined()
-    expect(vars.exprs).toHaveLength(1)
-    expect(vars.exprs[0].type).toBe('CallExpressionKw')
-    if (vars.exprs[0].type !== 'CallExpressionKw') {
-      throw new Error(`Expected CallExpressionKw, got ${vars.exprs[0].type}`)
+    expect(regionVars).toHaveLength(1)
+    expect(regionVars[0].variableName).toEqual('region001')
+    expect(regionVars[0].insertIndex).toEqual(0)
+    expect(regionVars[0].variableIdentifierAst.type).toEqual('Name')
+    expect(regionVars[0].variableIdentifierAst.name.name).toEqual('region001')
+    expect(regionVars[0].valueAst.type).toBe('CallExpressionKw')
+    if (regionVars[0].valueAst.type !== 'CallExpressionKw') {
+      throw new Error(
+        `Expected CallExpressionKw, got ${regionVars[0].valueAst.type}`
+      )
     }
 
-    const sketchArg = vars.exprs[0].arguments.find(
+    const sketchArg = regionVars[0].valueAst.arguments.find(
       (arg) => arg.label?.name === 'sketch'
     )
     expect(sketchArg).toBeDefined()
@@ -1115,7 +1122,9 @@ t = sketch(on = XY) {
     }
     expect(sketchArg.arg.name.name).toEqual('s')
   })
+})
 
+describe('Testing getVariableExprsFromSelection', () => {
   it('should find the variable expr in a simple profile selection', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

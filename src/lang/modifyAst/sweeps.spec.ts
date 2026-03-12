@@ -284,7 +284,8 @@ extrude002 = extrude(seg01, length = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
+        `region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })

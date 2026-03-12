@@ -21,6 +21,7 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
+  getRegionSelectionsAsKclExpressionsWithVariables,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -31,7 +32,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
-  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -103,43 +103,43 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
-  const vars: {
-    exprs: Expr[]
-    pathIfPipe?: PathToNode
-  } = { exprs: [] }
-  const res = getFacesExprsFromSelection(
-    modifiedAst,
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const vars = getVariableExprsFromSelection(
     sketches,
     artifactGraph,
-    wasmInstance
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
   )
-  if (err(res)) return res
-  modifiedAst = res.modifiedAst
-  vars.exprs.push(...res.exprs)
-
-  const nonFaceSelections: Selections = {
-    graphSelections: sketches.graphSelections.filter(
-      (selection) => !isFaceArtifact(selection.artifact)
-    ),
-    otherSelections: sketches.otherSelections,
+  if (err(vars)) {
+    return vars
   }
-  if (
-    nonFaceSelections.graphSelections.length > 0 ||
-    nonFaceSelections.otherSelections.some((s) => isRegionSelection(s))
-  ) {
-    const res = getVariableExprsFromSelection(
-      nonFaceSelections,
-      artifactGraph,
+
+  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  if (regionSelections.length > 0) {
+    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
+      sketches.otherSelections.filter(isRegionSelection),
       modifiedAst,
-      wasmInstance,
-      mNodeToEdit
+      artifactGraph,
+      wasmInstance
     )
-    if (err(res)) {
-      return res
+    if (err(regionVars)) return regionVars
+    for (const regionVar of regionVars) {
+      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
+      vars.exprs.push(regionVar.variableIdentifierAst)
     }
-    vars.pathIfPipe = res.pathIfPipe
-    vars.exprs.push(...res.exprs)
+  }
+
+  if (sketches.graphSelections.some((s) => isFaceArtifact(s.artifact))) {
+    const facesVars = getFacesExprsFromSelection(
+      modifiedAst,
+      sketches,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(facesVars)) return facesVars
+    modifiedAst = facesVars.modifiedAst
+    vars.exprs.push(...facesVars.exprs)
   }
 
   // Extra labeled args expressions
@@ -330,6 +330,21 @@ export function addSweep({
     return vars
   }
 
+  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  if (regionSelections.length > 0) {
+    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
+      sketches.otherSelections.filter(isRegionSelection),
+      modifiedAst,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionVars)) return regionVars
+    for (const regionVar of regionVars) {
+      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
+      vars.exprs.push(regionVar.variableIdentifierAst)
+    }
+  }
+
   // Find the path declaration for the labeled argument
   // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
@@ -436,6 +451,21 @@ export function addLoft({
   )
   if (err(vars)) {
     return vars
+  }
+
+  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  if (regionSelections.length > 0) {
+    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
+      sketches.otherSelections.filter(isRegionSelection),
+      modifiedAst,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionVars)) return regionVars
+    for (const regionVar of regionVars) {
+      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
+      vars.exprs.push(regionVar.variableIdentifierAst)
+    }
   }
 
   // Extra labeled args expressions
@@ -555,6 +585,20 @@ export function addRevolve({
   )
   if (err(vars)) {
     return vars
+  }
+  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  if (regionSelections.length > 0) {
+    const regionVars = getRegionSelectionsAsKclExpressionsWithVariables(
+      sketches.otherSelections.filter(isRegionSelection),
+      modifiedAst,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionVars)) return regionVars
+    for (const regionVar of regionVars) {
+      insertVariableAndOffsetPathToNode(regionVar, modifiedAst)
+      vars.exprs.push(regionVar.variableIdentifierAst)
+    }
   }
 
   // Retrieve axis expression depending on mode

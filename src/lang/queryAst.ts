@@ -9,6 +9,8 @@ import {
   createLiteral,
   createLocalName,
   createPipeSubstitution,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
@@ -61,7 +63,10 @@ import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
-import type { KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  KclCommandValue,
+  KclExpressionWithVariable,
+} from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type {
   Selection,
@@ -70,7 +75,6 @@ import type {
   RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isRegionSelection } from '@src/lib/selections'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
@@ -1203,6 +1207,47 @@ function getRegionExprFromSelection(
   return createCallExpressionStdLibKw('region', null, regionArgs)
 }
 
+export function getRegionSelectionsAsKclExpressionsWithVariables(
+  regionSelections: RegionSelection[],
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Error | KclExpressionWithVariable[] {
+  const regionVariables: KclExpressionWithVariable[] = []
+  let namesLookup = JSON.stringify(ast)
+
+  const insertIndex = ast.body.length
+  for (const [index, regionSelection] of regionSelections.entries()) {
+    const regionExpr = getRegionExprFromSelection(
+      regionSelection,
+      ast,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(regionExpr)) {
+      return regionExpr
+    }
+
+    const variableName = findUniqueName(namesLookup, 'region')
+    namesLookup += `:"${variableName}"`
+
+    regionVariables.push({
+      valueAst: regionExpr,
+      valueText: '',
+      valueCalculated: '',
+      variableName,
+      variableDeclarationAst: createVariableDeclaration(
+        variableName,
+        regionExpr
+      ),
+      variableIdentifierAst: createLocalName(variableName),
+      insertIndex: insertIndex + index,
+    })
+  }
+
+  return regionVariables
+}
+
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
@@ -1222,7 +1267,6 @@ export function getVariableExprsFromSelection(
   const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
-  let hasRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     let variable:
@@ -1317,33 +1361,6 @@ export function getVariableExprsFromSelection(
     }
 
     console.warn('No match for selection, likely a bug (or bad selection)', s)
-  }
-
-  for (const selectionItem of selection.otherSelections) {
-    if (!isRegionSelection(selectionItem)) continue
-
-    hasRegionSelections = true
-    const regionExpr = getRegionExprFromSelection(
-      selectionItem,
-      ast,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(regionExpr)) {
-      return regionExpr
-    }
-    exprs.push(regionExpr)
-  }
-
-  if (exprs.length === 0) {
-    return new Error("Couldn't map selections to program references")
-  }
-
-  if (hasRegionSelections) {
-    // Region selections map to explicit region(...) expressions.
-    // Avoid mixing them with pipe substitutions from selection plumbing.
-    pathIfPipe = undefined
-    exprs = exprs.filter((expr) => expr.type !== 'PipeSubstitution')
   }
 
   return { exprs, pathIfPipe }
