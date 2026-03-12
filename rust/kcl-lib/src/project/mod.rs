@@ -29,10 +29,10 @@ struct File {
 }
 
 lazy_static::lazy_static! {
-        static ref PROJECT: Arc<RwLock<Option<Project>>> = Default::default();
+    static ref PROJECT: Arc<RwLock<Option<Project>>> = Default::default();
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ProjectManager;
 
 impl ProjectManager {
@@ -120,6 +120,24 @@ impl LifecycleApi for ProjectManager {
             if project.id != project_id {
                 return Err(Error::bad_project(project_id, Some(project.id)));
             }
+            project
+                .files
+                .get(&file_id)
+                .map(|file| to_front_file(file_id, file))
+                .ok_or_else(|| Error::file_id_not_found(project_id, file_id))
+        })
+        .await
+    }
+
+    async fn get_open_file(&self, project_id: ProjectId) -> Result<crate::front::File> {
+        Self::with_project(move |project| {
+            let Some(project) = project else {
+                return Err(Error::bad_project(project_id, None));
+            };
+            if project.id != project_id {
+                return Err(Error::bad_project(project_id, Some(project.id)));
+            }
+            let file_id = project.open_file;
             project
                 .files
                 .get(&file_id)

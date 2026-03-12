@@ -14,6 +14,8 @@ pub trait LifecycleApi {
     async fn get_project(&self, project: ProjectId) -> Result<Vec<File>>;
     async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
     async fn get_file(&self, project: ProjectId, file: FileId) -> Result<File>;
+    /// Get the currently open file in a project.
+    async fn get_open_file(&self, project_id: ProjectId) -> Result<File>;
     async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
@@ -232,8 +234,9 @@ pub enum Expr {
     Variable(String),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, thiserror::Error, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
+#[error("{msg}")]
 pub struct Error {
     pub msg: String,
 }

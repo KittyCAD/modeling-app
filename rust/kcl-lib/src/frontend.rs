@@ -10,12 +10,14 @@ use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
+    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program, ProjectManager,
     collections::AhashIndexSet,
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent},
+    front::{
+        Angle, ArcCtor, Distance, Freedom, LifecycleApi, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent,
+    },
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
@@ -79,6 +81,9 @@ const ARC_PROPERTY_CENTER: &str = "center";
 
 const CONSTRUCTION_PARAM: &str = "construction";
 
+// TODO: Use a real ID. This is temporary until we implement tracking.
+const PROJECT_ID: ProjectId = ProjectId(0);
+
 #[derive(Debug, Clone, Copy)]
 enum EditDeleteKind {
     Edit,
@@ -125,7 +130,9 @@ pub enum SetProgramOutcome {
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
-    program: Program,
+    project_manager: ProjectManager,
+    /// The program that was executed last.
+    last_executed_program: Option<Program>,
     scene_graph: SceneGraph,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
@@ -141,7 +148,8 @@ impl Default for FrontendState {
 impl FrontendState {
     pub fn new() -> Self {
         Self {
-            program: Program::empty(),
+            project_manager: Default::default(),
+            last_executed_program: None,
             scene_graph: SceneGraph {
                 project: ProjectId(0),
                 file: FileId(0),
@@ -159,13 +167,15 @@ impl FrontendState {
         &self.scene_graph
     }
 
-    pub fn default_length_unit(&self) -> UnitLength {
-        self.program
+    pub async fn default_length_unit(&mut self) -> api::Result<UnitLength> {
+        Ok(self
+            .parse_program()
+            .await?
             .meta_settings()
             .ok()
             .flatten()
             .map(|settings| settings.default_length_units)
-            .unwrap_or(UnitLength::Millimeters)
+            .unwrap_or(UnitLength::Millimeters))
     }
 }
 
@@ -176,7 +186,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        let mut truncated_program = self.program.clone();
+        let mut truncated_program = self.parse_program().await?;
         self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute.
@@ -186,7 +196,7 @@ impl SketchApi for FrontendState {
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
             })?;
-        let new_source = source_from_ast(&self.program.ast);
+        let new_source = source_from_ast(&truncated_program.ast);
         let src_delta = SourceDelta { text: new_source };
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
@@ -209,7 +219,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // TODO: Check version.
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         // Create updated KCL source from args.
         let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
         let sketch_ast = ast::SketchBlock {
@@ -258,7 +268,7 @@ impl SketchApi for FrontendState {
         };
 
         // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // We need to do an engine execute so that the plane object gets created
         // and is cached.
@@ -311,7 +321,7 @@ impl SketchApi for FrontendState {
         self.scene_graph.sketch_mode = Some(sketch);
 
         // Truncate after the sketch block for mock execution.
-        let mut truncated_program = self.program.clone();
+        let mut truncated_program = self.parse_program().await?;
         self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute in mock mode to ensure state is up to date. The caller will
@@ -360,7 +370,7 @@ impl SketchApi for FrontendState {
         self.scene_graph.sketch_mode = None;
 
         // Execute.
-        let outcome = ctx.run_with_caching(self.program.clone()).await.map_err(|err| {
+        let outcome = ctx.run_with_caching(self.parse_program().await?).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -382,7 +392,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
 
         // Look up existing sketch.
         let sketch_id = sketch;
@@ -428,7 +438,7 @@ impl SketchApi for FrontendState {
         segments: Vec<ExistingSegmentCtor>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
 
         // segment_ids_edited still has to be the original segments (not final_edits), otherwise the owner segments
@@ -602,7 +612,7 @@ impl SketchApi for FrontendState {
         // those to the set to be deleted.
         self.add_dependent_constraints_to_delete(sketch, &delete_ids, &mut constraint_ids_set)?;
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
 
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
@@ -631,10 +641,10 @@ impl SketchApi for FrontendState {
         // TODO: Check version.
 
         // Save the original state as a backup - we'll restore it if anything fails
-        let original_program = self.program.clone();
+        let original_program = self.parse_program().await?;
         let original_scene_graph = self.scene_graph.clone();
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = original_program.ast.clone();
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
@@ -666,7 +676,7 @@ impl SketchApi for FrontendState {
 
         // If execution failed, restore the original state to prevent corruption
         if result.is_err() {
-            self.program = original_program;
+            self.last_executed_program = None;
             self.scene_graph = original_scene_graph;
         }
 
@@ -779,7 +789,7 @@ impl SketchApi for FrontendState {
             });
         }
 
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
 
         // Parse the expression string into an AST node.
         let (parsed, errors) = Program::parse(&value_expression).map_err(|e| Error { msg: e.to_string() })?;
@@ -837,7 +847,7 @@ impl SketchApi for FrontendState {
         _new_segment_info: sketch::NewSegmentInfo,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
 
         // Step 1: Edit segments
@@ -937,7 +947,7 @@ impl SketchApi for FrontendState {
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
 
         // Step 1: Edit segments (usually a single segment for tail cut)
@@ -1002,7 +1012,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         program: Program,
     ) -> api::Result<SetProgramOutcome> {
-        self.program = program.clone();
+        self.last_executed_program = Some(program.clone());
 
         // Execute so that the objects are updated and available for the next
         // API call.
@@ -1013,6 +1023,36 @@ impl FrontendState {
         self.point_freedom_cache.clear();
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
+                let outcome = self.update_state_after_exec(outcome, true);
+                Ok(SetProgramOutcome::Success {
+                    scene_graph: Box::new(self.scene_graph.clone()),
+                    exec_outcome: Box::new(outcome),
+                })
+            }
+            Err(mut err) => {
+                // Don't return an error just because execution failed. Instead,
+                // update state as much as possible.
+                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                self.update_state_after_exec(outcome, true);
+                err.scene_graph = Some(self.scene_graph.clone());
+                Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
+            }
+        }
+    }
+
+    pub async fn execute(&mut self, ctx: &ExecutorContext, _version: Version) -> api::Result<SetProgramOutcome> {
+        let program = self.parse_program().await?;
+
+        // Execute so that the objects are updated and available for the next
+        // API call.
+        // This always uses engine execution (not mock) so that things are cached.
+        // Engine execution now runs freedom analysis automatically.
+        // Clear the freedom cache since IDs might have changed after direct editing
+        // and we're about to run freedom analysis which will repopulate it.
+        self.point_freedom_cache.clear();
+        match ctx.run_with_caching(program.clone()).await {
+            Ok(outcome) => {
+                self.last_executed_program = Some(program);
                 let outcome = self.update_state_after_exec(outcome, true);
                 Ok(SetProgramOutcome::Success {
                     scene_graph: Box::new(self.scene_graph.clone()),
@@ -1083,6 +1123,18 @@ impl FrontendState {
         })
     }
 
+    async fn parse_program(&self) -> api::Result<Program> {
+        let file = self.project_manager.get_open_file(PROJECT_ID).await?;
+        let program = Program::parse_no_errs(&file.text).map_err(|err| Error { msg: err.to_string() })?;
+        Ok(program)
+    }
+
+    async fn parse_ast(&self) -> api::Result<ast::Node<ast::Program>> {
+        let file = self.project_manager.get_open_file(PROJECT_ID).await?;
+        let program = Program::parse_no_errs(&file.text).map_err(|err| Error { msg: err.to_string() })?;
+        Ok(program.ast)
+    }
+
     async fn add_point(
         &mut self,
         ctx: &ExecutorContext,
@@ -1123,7 +1175,7 @@ impl FrontendState {
             });
         };
         // Add the point to the AST of the sketch block.
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let (sketch_block_range, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
@@ -1152,7 +1204,7 @@ impl FrontendState {
         let _ = point_source_range;
 
         // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
@@ -1260,7 +1312,7 @@ impl FrontendState {
             });
         };
         // Add the line to the AST of the sketch block.
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let (sketch_block_range, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
@@ -1288,7 +1340,7 @@ impl FrontendState {
         let _ = line_source_range;
 
         // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
@@ -1401,7 +1453,7 @@ impl FrontendState {
             });
         };
         // Add the arc to the AST of the sketch block.
-        let mut new_ast = self.program.ast.clone();
+        let mut new_ast = self.parse_ast().await?;
         let (sketch_block_range, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
@@ -1429,7 +1481,7 @@ impl FrontendState {
         let _ = arc_source_range;
 
         // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
@@ -1790,8 +1842,10 @@ impl FrontendState {
             });
         };
 
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        // Make sure to only set this if there are no errors.
+        #[cfg(feature = "artifact-graph")]
+        let last_executed_ast = new_program.ast.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // Truncate after the sketch block for mock execution.
         let is_delete = edit_kind.is_delete();
@@ -1829,7 +1883,7 @@ impl FrontendState {
             //
             // The interpreter is returning all var solutions from the sketch
             // block we're editing.
-            let mut new_ast = self.program.ast.clone();
+            let mut new_ast = last_executed_ast;
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
                 mutate_ast_node_by_source_range(
@@ -1872,7 +1926,7 @@ impl FrontendState {
         };
 
         // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        self.last_executed_program = Some(new_program.clone());
 
         // We deleted the entire sketch block. It doesn't make sense to truncate
         // and execute only the sketch block. We execute the whole program with
@@ -2774,7 +2828,7 @@ impl FrontendState {
 
         // Only now, after all operations succeeded, update self.program
         // This ensures state is only modified if everything succeeds
-        self.program = new_program;
+        self.last_executed_program = Some(new_program);
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
@@ -3818,6 +3872,33 @@ mod tests {
         pretty::NumericSuffix,
     };
 
+    async fn init_empty_project(frontend: &mut FrontendState) -> api::Result<FileId> {
+        init_project("", frontend).await
+    }
+
+    async fn init_project<S: Into<String>>(source: S, frontend: &mut FrontendState) -> api::Result<FileId> {
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+        let file = crate::front::File {
+            id: file_id,
+            path: "main.kcl".to_owned(),
+            text: source.into(),
+        };
+        frontend
+            .project_manager
+            .open_project(project_id, vec![file], file_id)
+            .await?;
+        Ok(file_id)
+    }
+
+    async fn update_project_file(file_id: FileId, new_source: String, frontend: &mut FrontendState) -> api::Result<()> {
+        let project_id = ProjectId(0);
+        frontend
+            .project_manager
+            .update_file(project_id, file_id, new_source)
+            .await
+    }
+
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
             if let ObjectKind::Sketch(_) = &object.kind {
@@ -3856,19 +3937,16 @@ sketch(on = XY) {
 
 bad = missing_name
 ";
-        let program = Program::parse(source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
+        let file_id = init_project(source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
-        let file_id = FileId(0);
 
-        let SetProgramOutcome::ExecFailure { .. } = frontend.hack_set_program(&ctx, program).await.unwrap() else {
-            panic!("Expected ExecFailure from hack_set_program due to syntax error in program");
-        };
+        frontend.execute(&ctx, version).await.unwrap();
 
         let sketch_id = frontend
             .scene_graph
@@ -3888,10 +3966,8 @@ bad = missing_name
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_point_edit_point() {
-        let program = Program::empty();
-
         let mut frontend = FrontendState::new();
-        frontend.program = program;
+        let file_id = init_empty_project(&mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -3900,7 +3976,7 @@ bad = missing_name
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
-        let (_src_delta, scene_delta, sketch_id) = frontend
+        let (src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
@@ -3920,6 +3996,10 @@ bad = missing_name
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         let point_ctor = PointCtor {
             position: Point2d {
@@ -3952,6 +4032,10 @@ sketch1 = sketch(on = XY) {
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         let point_id = *scene_delta.new_objects.last().unwrap();
 
@@ -3993,10 +4077,8 @@ sketch1 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_line_edit_line() {
-        let program = Program::empty();
-
         let mut frontend = FrontendState::new();
-        frontend.program = program;
+        let file_id = init_empty_project(&mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -4005,7 +4087,7 @@ sketch1 = sketch(on = XY) {
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
-        let (_src_delta, scene_delta, sketch_id) = frontend
+        let (src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
@@ -4025,6 +4107,10 @@ sketch1 = sketch(on = XY) {
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         let line_ctor = LineCtor {
             start: Point2d {
@@ -4068,6 +4154,10 @@ sketch1 = sketch(on = XY) {
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         // The new objects are the end points and then the line.
         let line = *scene_delta.new_objects.last().unwrap();
@@ -4121,10 +4211,8 @@ sketch1 = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_arc_edit_arc() {
-        let program = Program::empty();
-
         let mut frontend = FrontendState::new();
-        frontend.program = program;
+        let file_id = init_empty_project(&mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -4133,7 +4221,7 @@ sketch1 = sketch(on = XY) {
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
-        let (_src_delta, scene_delta, sketch_id) = frontend
+        let (src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
@@ -4153,6 +4241,10 @@ sketch1 = sketch(on = XY) {
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         let arc_ctor = ArcCtor {
             start: Point2d {
@@ -4209,6 +4301,10 @@ sketch1 = sketch(on = XY) {
             assert_eq!(scene_object.id.0, i);
         }
         assert_eq!(scene_delta.new_graph.objects.len(), 6);
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         // The new objects are the end points, the center, and then the arc.
         let arc = *scene_delta.new_objects.last().unwrap();
@@ -4277,15 +4373,14 @@ sketch1 = sketch(on = XY) {
 s = sketch(on = XY) {}
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -4335,10 +4430,8 @@ s = sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_line_delete_sketch() {
-        let program = Program::empty();
-
         let mut frontend = FrontendState::new();
-        frontend.program = program;
+        let file_id = init_empty_project(&mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -4347,8 +4440,8 @@ s = sketch(on = XY) {
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
-        let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+        let (src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(1));
@@ -4367,6 +4460,10 @@ s = sketch(on = XY) {
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         let line_ctor = LineCtor {
             start: Point2d {
@@ -4407,6 +4504,10 @@ sketch1 = sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
+
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
@@ -4426,15 +4527,14 @@ sketch1 = sketch(on = XY) {
 s = sketch(on = XY) {}
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -4460,15 +4560,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4522,15 +4621,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4593,15 +4691,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4664,15 +4761,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4713,15 +4809,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4762,15 +4857,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -4813,15 +4907,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4863,15 +4956,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4914,15 +5006,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -4965,15 +5056,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5013,15 +5103,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5069,15 +5158,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5123,10 +5211,8 @@ sketch(on = XY) {
         // Example: coincident constraint between an arc segment and a straight line segment
         // is geometrically invalid and should fail, but state should remain intact.
         // Use the programmatic approach (new_sketch + add_segment) like test_new_sketch_add_arc_edit_arc
-        let program = Program::empty();
-
         let mut frontend = FrontendState::new();
-        frontend.program = program;
+        let file_id = init_empty_project(&mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -5136,7 +5222,7 @@ sketch(on = XY) {
             on: Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, _scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
 
@@ -5174,10 +5260,15 @@ sketch(on = XY) {
             },
             construction: None,
         };
-        let (_src_delta, scene_delta) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Arc(arc_ctor), None)
             .await
             .unwrap();
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
+
         // The arc is the last object in new_objects (after the 3 points: start, end, center)
         let arc_id = *scene_delta.new_objects.last().unwrap();
 
@@ -5205,10 +5296,15 @@ sketch(on = XY) {
             },
             construction: None,
         };
-        let (_src_delta, scene_delta) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Line(line_ctor), None)
             .await
             .unwrap();
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
+
         // The line is the last object in new_objects (after the 2 points: start, end)
         let line_id = *scene_delta.new_objects.last().unwrap();
 
@@ -5280,15 +5376,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5342,15 +5437,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5403,15 +5497,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5476,15 +5569,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5541,9 +5633,9 @@ sketch(on = XY) {
   point(at = [var 1, var 2])
 }
 ";
-        let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
         let mut frontend_point = FrontendState::new();
-        frontend_point.hack_set_program(&ctx, program_point).await.unwrap();
+        init_project(initial_source_point, &mut frontend_point).await.unwrap();
+        frontend_point.execute(&ctx, version).await.unwrap();
         let sketch_object_point = find_first_sketch_object(&frontend_point.scene_graph).unwrap();
         let sketch_id_point = sketch_object_point.id;
         let sketch_point = expect_sketch(sketch_object_point);
@@ -5570,9 +5662,9 @@ sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
-        let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
         let mut frontend_line = FrontendState::new();
-        frontend_line.hack_set_program(&ctx, program_line).await.unwrap();
+        init_project(initial_source_line, &mut frontend_line).await.unwrap();
+        frontend_line.execute(&ctx, version).await.unwrap();
         let sketch_object_line = find_first_sketch_object(&frontend_line.scene_graph).unwrap();
         let sketch_id_line = sketch_object_line.id;
         let sketch_line = expect_sketch(sketch_object_line);
@@ -5605,15 +5697,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5681,9 +5772,9 @@ sketch(on = XY) {
   point(at = [var 1, var 2])
 }
 ";
-        let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
         let mut frontend_point = FrontendState::new();
-        frontend_point.hack_set_program(&ctx, program_point).await.unwrap();
+        init_project(initial_source_point, &mut frontend_point).await.unwrap();
+        frontend_point.execute(&ctx, version).await.unwrap();
         let sketch_object_point = find_first_sketch_object(&frontend_point.scene_graph).unwrap();
         let sketch_id_point = sketch_object_point.id;
         let sketch_point = expect_sketch(sketch_object_point);
@@ -5710,9 +5801,9 @@ sketch(on = XY) {
   line(start = [var 1, var 2], end = [var 3, var 4])
 }
 ";
-        let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
         let mut frontend_line = FrontendState::new();
-        frontend_line.hack_set_program(&ctx, program_line).await.unwrap();
+        init_project(initial_source_line, &mut frontend_line).await.unwrap();
+        frontend_line.execute(&ctx, version).await.unwrap();
         let sketch_object_line = find_first_sketch_object(&frontend_line.scene_graph).unwrap();
         let sketch_id_line = sketch_object_line.id;
         let sketch_line = expect_sketch(sketch_object_line);
@@ -5745,15 +5836,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5796,15 +5886,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5848,15 +5937,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5904,15 +5992,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -5960,15 +6047,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -6016,15 +6102,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -6078,15 +6163,14 @@ sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -6141,15 +6225,14 @@ cube = startSketchOn(XY)
 face = faceOf(cube, face = side)
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let face_object = find_first_face_object(&frontend.scene_graph).unwrap();
         let face_id = face_object.id;
 
@@ -6157,7 +6240,7 @@ face = faceOf(cube, face = side)
             on: Plane::Object(face_id),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(2));
@@ -6199,15 +6282,14 @@ cube = startSketchOn(XY)
 plane = planeOf(cube, face = side)
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         // Find the last plane since the first plane is the XY plane.
         let plane_object = frontend
             .scene_graph
@@ -6222,7 +6304,7 @@ plane = planeOf(cube, face = side)
             on: Plane::Object(plane_id),
         };
         let (src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
         assert_eq!(
@@ -6279,19 +6361,18 @@ sketch1 = sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
 
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Yz),
         };
         let (src_delta, _, _) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
 
@@ -6319,19 +6400,18 @@ sketch1 = sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
 
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
         let (src_delta, _, _) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
             .await
             .unwrap();
 
@@ -6361,16 +6441,14 @@ sketch(on = offsetPlane(XY, offset = width)) {
   distance([line1.start, line1.end]) == width
 }
 ";
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
-        let file_id = FileId(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let initial_object_count = frontend.scene_graph.objects.len();
         let sketch_id = find_first_sketch_object(&frontend.scene_graph)
             .expect("Expected sketch object to exist")
@@ -6432,17 +6510,15 @@ sketch2 = sketch(on = XY) {
 }
 ";
 
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
         let mut frontend = FrontendState::new();
+        let file_id = init_project(initial_source, &mut frontend).await.unwrap();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
-        let file_id = FileId(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.execute(&ctx, version).await.unwrap();
         let sketch_objects = frontend
             .scene_graph
             .objects
@@ -6537,6 +6613,10 @@ sketch2 = sketch(on = XY) {
 "
         );
 
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
+
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
         // Only the first sketch block changes.
@@ -6579,6 +6659,10 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
+
         // Exit sketch. Objects from the entire program should be present.
         //
         // - startSketchOn(XY) Plane 1
@@ -6668,6 +6752,10 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
+            .await
+            .unwrap();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();

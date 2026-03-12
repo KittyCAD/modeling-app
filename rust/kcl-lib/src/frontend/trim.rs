@@ -1995,9 +1995,6 @@ pub(crate) async fn execute_trim_flow(
     let result = async {
         let mut frontend = FrontendState::new();
 
-        // Set the program
-        frontend.program = program.clone();
-
         let exec_outcome = ctx
             .run_with_caching(program.clone())
             .await
@@ -2084,7 +2081,7 @@ pub async fn execute_trim_loop_with_context(
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
     // Trim line points are expected in millimeters and normalized to the current unit here.
-    let default_unit = frontend.default_length_unit();
+    let default_unit = frontend.default_length_unit().await.map_err(|err| err.to_string())?;
     let normalized_points = normalize_trim_points_to_unit(points, default_unit);
 
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
@@ -3534,7 +3531,7 @@ pub(crate) async fn execute_trim_operations_simple(
         sketch::{Constraint, ExistingSegmentCtor, SegmentCtor},
     };
 
-    let default_unit = frontend.default_length_unit();
+    let default_unit = frontend.default_length_unit().await.map_err(|err| err.to_string())?;
 
     let mut op_index = 0;
     let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = None;

@@ -2138,7 +2138,6 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Objec
     // Use mock context
     let mock_ctx = ExecutorContext::new_mock(None).await;
     let mut frontend = FrontendState::new();
-    frontend.program = program.clone();
 
     // Execute to get scene graph
     let exec_outcome = mock_ctx
