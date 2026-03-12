@@ -53,17 +53,19 @@ export class MachineManager implements IMachineManager {
     }
 
     clearTimeout(this.#pulseTimeout.value)
+    this.#pulseTimeout.value = undefined
     this.update()
-      .then(() => {
+      .catch(reportRejection)
+      .finally(() => {
         if (!this.started.value) {
           return
         }
+
         this.#pulseTimeout.value = setTimeout(
           this.updateLoop,
           this.pulseTimeoutDurationMS
         )
       })
-      .catch(reportRejection)
   }
 
   /** Starts an interval to refresh the network machine listings */
@@ -72,15 +74,7 @@ export class MachineManager implements IMachineManager {
       return
     }
     this.#isRunning.value = true
-    return this.update()
-      .then(() => {
-        if (!this.started.value) {
-          return
-        }
-
-        this.updateLoop()
-      })
-      .catch(reportRejection)
+    this.updateLoop()
   }
 
   stop() {
