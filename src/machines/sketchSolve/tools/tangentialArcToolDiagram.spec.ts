@@ -104,7 +104,7 @@ describe('tangentialArcTool - XState', () => {
     actor.send({
       type: 'select tangent info',
       data: {
-        lineId: 10,
+        segmentId: 10,
         tangentStart: { id: 11, point: [10, 0] },
         tangentDirection: [1, 0],
       },
@@ -147,7 +147,7 @@ describe('tangentialArcTool - XState', () => {
     actor.send({
       type: 'select tangent info',
       data: {
-        lineId: 10,
+        segmentId: 10,
         tangentStart: { id: 11, point: [10, 0] },
         tangentDirection: [1, 0],
       },

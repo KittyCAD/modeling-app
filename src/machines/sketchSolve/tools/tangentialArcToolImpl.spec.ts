@@ -72,15 +72,62 @@ describe('tangentialArcToolImpl', () => {
       })
 
       expect(tangentInfoAtStart).toEqual({
-        lineId: 3,
+        segmentId: 3,
         tangentStart: { id: 1, point: [0, 0] },
         tangentDirection: [-1, 0],
       })
       expect(tangentInfoAtEnd).toEqual({
-        lineId: 3,
+        segmentId: 3,
         tangentStart: { id: 2, point: [20, 0] },
         tangentDirection: [1, 0],
       })
+    })
+
+    it('should resolve endpoint owner arc when clicking an arc endpoint', () => {
+      const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const start = createPointApiObject({ id: 2, x: 5, y: 0 })
+      const end = createPointApiObject({ id: 3, x: 0, y: 5 })
+      const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+
+      if (isPointSegment(center)) {
+        center.kind.segment.owner = 4
+      }
+      if (isPointSegment(start)) {
+        start.kind.segment.owner = 4
+      }
+      if (isPointSegment(end)) {
+        end.kind.segment.owner = 4
+      }
+
+      const sceneGraphDelta = createSceneGraphDelta(
+        [center, start, end, arc],
+        [1, 2, 3, 4]
+      )
+
+      const tangentInfoAtStart = resolveTangentInfoFromClick({
+        clickedId: 2,
+        sceneGraphDelta,
+      })
+      const tangentInfoAtEnd = resolveTangentInfoFromClick({
+        clickedId: 3,
+        sceneGraphDelta,
+      })
+      const tangentInfoAtCenter = resolveTangentInfoFromClick({
+        clickedId: 1,
+        sceneGraphDelta,
+      })
+
+      expect(tangentInfoAtStart).toEqual({
+        segmentId: 4,
+        tangentStart: { id: 2, point: [5, 0] },
+        tangentDirection: [0, -1],
+      })
+      expect(tangentInfoAtEnd).toEqual({
+        segmentId: 4,
+        tangentStart: { id: 3, point: [0, 5] },
+        tangentDirection: [-1, 0],
+      })
+      expect(tangentInfoAtCenter).toBeNull()
     })
 
     it('should return null when the clicked segment is not a line/line endpoint', () => {

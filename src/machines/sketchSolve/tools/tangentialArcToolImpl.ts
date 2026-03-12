@@ -38,7 +38,7 @@ export const FINALIZING_ARC = `xstate.done.actor.0.${TOOL_ID}.Finalizing arc`
 const EPSILON = 1e-8
 
 export type TangentInfo = {
-  lineId: number
+  segmentId: number
   tangentStart: {
     id: number
     point: Coords2d
@@ -108,14 +108,14 @@ function getPointFromObjects(
 
 function getLineTangentDirection({
   objects,
-  lineId,
+  segmentId,
   tangentPointId,
 }: {
   objects: Array<ApiObject>
-  lineId: number
+  segmentId: number
   tangentPointId: number
 }): Coords2d | null {
-  const lineObj = objects[lineId]
+  const lineObj = objects[segmentId]
   if (!isLineSegment(lineObj)) {
     return null
   }
@@ -137,6 +137,47 @@ function getLineTangentDirection({
     return null
   }
 
+  if (isInvalidUnitVector(tangentDirection)) {
+    return null
+  }
+
+  return tangentDirection
+}
+
+function getArcTangentDirection({
+  objects,
+  segmentId,
+  tangentPointId,
+}: {
+  objects: Array<ApiObject>
+  segmentId: number
+  tangentPointId: number
+}): Coords2d | null {
+  const arcObj = objects[segmentId]
+  if (!isArcSegment(arcObj)) {
+    return null
+  }
+
+  const centerPoint = getPointFromObjects(objects, arcObj.kind.segment.center)
+  let tangentPoint: Coords2d | null = null
+  let tangentDirection: Coords2d | null = null
+
+  if (arcObj.kind.segment.start === tangentPointId) {
+    tangentPoint = getPointFromObjects(objects, arcObj.kind.segment.start)
+  } else if (arcObj.kind.segment.end === tangentPointId) {
+    tangentPoint = getPointFromObjects(objects, arcObj.kind.segment.end)
+  }
+
+  if (!centerPoint || !tangentPoint) {
+    return null
+  }
+
+  tangentDirection = perpendicular(subVec(tangentPoint, centerPoint))
+  if (arcObj.kind.segment.start === tangentPointId) {
+    tangentDirection = scaleVec(tangentDirection, -1)
+  }
+
+  tangentDirection = normalizeVec(tangentDirection)
   if (isInvalidUnitVector(tangentDirection)) {
     return null
   }
@@ -217,29 +258,34 @@ export function resolveTangentInfoFromClick({
   }
 
   const owner = objects[ownerId]
-  if (!isLineSegment(owner)) {
+  if (!isLineSegment(owner) && !isArcSegment(owner)) {
     return null
   }
 
-  if (
-    owner.kind.segment.start !== pointId &&
-    owner.kind.segment.end !== pointId
-  ) {
+  const isStartPoint = owner.kind.segment.start === pointId
+  const isEndPoint = owner.kind.segment.end === pointId
+  if (!isStartPoint && !isEndPoint) {
     return null
   }
 
   const pointCoords = getPointFromObjects(objects, pointId)
-  const tangentDirection = getLineTangentDirection({
-    objects,
-    lineId: ownerId,
-    tangentPointId: pointId,
-  })
+  const tangentDirection = isLineSegment(owner)
+    ? getLineTangentDirection({
+        objects,
+        segmentId: ownerId,
+        tangentPointId: pointId,
+      })
+    : getArcTangentDirection({
+        objects,
+        segmentId: ownerId,
+        tangentPointId: pointId,
+      })
   if (!pointCoords || !tangentDirection) {
     return null
   }
 
   return {
-    lineId: ownerId,
+    segmentId: ownerId,
     tangentStart: {
       id: pointId,
       point: pointCoords,
@@ -594,7 +640,7 @@ export async function finalizeArcActor({
     input
   const startPoint = tangentInfo.tangentStart.point
   const tangentDirection = tangentInfo.tangentDirection
-  const tangentLineId = tangentInfo.lineId
+  const tangentSegmentId = tangentInfo.segmentId
   const tangentStartId = tangentInfo.tangentStart.id
 
   const centerPoint = findTangentialArcCenter({
@@ -685,7 +731,7 @@ export async function finalizeArcActor({
       sketchId,
       {
         type: 'Tangent',
-        input: [tangentLineId, arcId],
+        input: [tangentSegmentId, arcId],
       },
       settings
     )
