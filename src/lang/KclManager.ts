@@ -1,7 +1,7 @@
 import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -43,7 +43,7 @@ import {
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
   PlaneVisibilityMap,
