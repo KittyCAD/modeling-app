@@ -38,6 +38,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::sketch(),
                 RuntimeType::face(),
+                RuntimeType::segment(),
                 RuntimeType::tagged_face(),
             ])),
             ArrayLen::Minimum(1),
@@ -170,7 +171,7 @@ async fn inner_extrude(
 
     for extrudable in &extrudables {
         let extrude_cmd_id = exec_state.next_uuid();
-        let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
+        let id_to_extrude = extrudable.id_to_extrude(exec_state, &args, false).await?;
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -183,7 +184,7 @@ async fn inner_extrude(
                 );
                 ModelingCmd::from(
                     mcmd::TwistExtrude::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(id_to_extrude.into())
                         .distance(LengthUnit(length.to_mm()))
                         .center_2d(center)
                         .total_rotation_angle(total_rotation_angle)
@@ -195,7 +196,7 @@ async fn inner_extrude(
             }
             (None, None, None, Some(length), None) => ModelingCmd::from(
                 mcmd::Extrude::builder()
-                    .target(sketch_or_face_id.into())
+                    .target(id_to_extrude.into())
                     .distance(LengthUnit(length.to_mm()))
                     .opposite(opposite.clone())
                     .extrude_method(extrude_method)
@@ -206,7 +207,7 @@ async fn inner_extrude(
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(id_to_extrude.into())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
                                 x: LengthUnit(point[0].to_mm()),
@@ -220,7 +221,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(id_to_extrude.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -257,7 +258,7 @@ async fn inner_extrude(
                     };
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(id_to_extrude.into())
                             .reference(ExtrudeReference::EntityReference { entity_id: plane_id })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
@@ -268,7 +269,7 @@ async fn inner_extrude(
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(id_to_extrude.into())
                             .reference(ExtrudeReference::EntityReference { entity_id: edge_id })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
@@ -279,7 +280,7 @@ async fn inner_extrude(
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(id_to_extrude.into())
                             .reference(ExtrudeReference::EntityReference { entity_id: face_id })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
@@ -288,7 +289,7 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(id_to_extrude.into())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: sketch_ref.id,
                         })
@@ -298,7 +299,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(id_to_extrude.into())
                         .reference(ExtrudeReference::EntityReference { entity_id: solid.id })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -309,7 +310,7 @@ async fn inner_extrude(
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(id_to_extrude.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: tagged_edge_or_face_id,
                             })
@@ -348,7 +349,7 @@ async fn inner_extrude(
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
             Extrudable::Face(face_tag) => {
-                let face_id = sketch_or_face_id;
+                let face_id = id_to_extrude;
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
                     Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
