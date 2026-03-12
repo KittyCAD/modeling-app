@@ -67,9 +67,10 @@ export function addTranslate({
   const xExpr = x ? [createLabeledArg('x', valueOrVariable(x))] : []
   const yExpr = y ? [createLabeledArg('y', valueOrVariable(y))] : []
   const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
-  const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
-    : []
+  const globalExpr =
+    global !== undefined
+      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('translate', objectsExpr, [
@@ -156,9 +157,10 @@ export function addRotate({
     ? [createLabeledArg('pitch', valueOrVariable(pitch))]
     : []
   const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
-  const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
-    : []
+  const globalExpr =
+    global !== undefined
+      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('rotate', objectsExpr, [
@@ -248,9 +250,10 @@ export function addScale({
   const factorExpr = factor
     ? [createLabeledArg('factor', valueOrVariable(factor))]
     : []
-  const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
-    : []
+  const globalExpr =
+    global !== undefined
+      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('scale', objectsExpr, [

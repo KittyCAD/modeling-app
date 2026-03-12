@@ -71,6 +71,7 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
+  hideSeams,
   bodyType,
   nodeToEdit,
 }: {
@@ -88,6 +89,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: KclPreludeExtrudeMethod
+  hideSeams?: boolean
   bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
@@ -160,9 +162,10 @@ export function addExtrude({
     modifiedAst = tagResult.modifiedAst
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -195,6 +198,10 @@ export function addExtrude({
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
+  const hideSeamsExpr =
+    hideSeams !== undefined
+      ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
+      : []
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
@@ -211,6 +218,7 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
+    ...hideSeamsExpr,
     ...bodyTypeExpr,
   ])
 
@@ -336,9 +344,10 @@ export function addSweep({
 
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
-  const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
-    : []
+  const sectionalExpr =
+    sectional !== undefined
+      ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
+      : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
@@ -433,14 +442,15 @@ export function addLoft({
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
-  const bezApproximateRationalExpr = bezApproximateRational
-    ? [
-        createLabeledArg(
-          'bezApproximateRational',
-          createLiteral(bezApproximateRational, wasmInstance)
-        ),
-      ]
-    : []
+  const bezApproximateRationalExpr =
+    bezApproximateRational !== undefined
+      ? [
+          createLabeledArg(
+            'bezApproximateRational',
+            createLiteral(bezApproximateRational, wasmInstance)
+          ),
+        ]
+      : []
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
@@ -559,9 +569,10 @@ export function addRevolve({
   }
 
   // Extra labeled args expressions
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(
