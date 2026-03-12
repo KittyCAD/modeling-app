@@ -96,6 +96,7 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       additionalFiles: attachments,
     })
 

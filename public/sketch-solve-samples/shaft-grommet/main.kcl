@@ -1,0 +1,48 @@
+// Shaft Grommet
+// Made of slippery plastic, these grommets allow shafts and bearings to spin freely in metal panels. The split construction lets you snap them around shafts you’ve already installed.
+// Categories: Manufacturing
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+id = 1 / 8
+forHoleDiameter = 11 / 64
+forMaterialThickness = 0.1
+flangeDiameterA = 3 / 16
+flangeDiameterB = 1 / 4
+flangeHeight = 1 / 32
+overallHeight = forMaterialThickness + flangeHeight * 2
+
+// Create a sketch for the grommet profile on the YZ plane
+grommetProfileSketch = startSketchOn(YZ)
+
+// Define the profile of the grommet
+grommetProfile = sketch(on = YZ) {
+  line1 = line(start = [var 0.06in, var 0in], end = [var 0.06in, var 0.16in])
+  line2 = line(start = [var 0.06in, var 0.16in], end = [var 0.13in, var 0.16in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.13in, var 0.16in], end = [var 0.13in, var 0.13in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.13in, var 0.13in], end = [var 0.09in, var 0.13in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.09in, var 0.13in], end = [var 0.09in, var 0.03in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.09in, var 0.03in], end = [var 0.09in, var 0.03in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 0.09in, var 0.03in], end = [var 0.09in, var 0in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 0.09in, var 0in], end = [var 0.06in, var 0in])
+  coincident([line7.end, line8.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+  vertical(line7)
+}
+
+// Revolve the profile to create the grommet
+grommet = revolve(grommetProfile, axis = Y, angle = 330.0)
+

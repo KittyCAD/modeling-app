@@ -255,7 +255,10 @@ export class ZDSProject {
     this.#executingPath.value = foundPathSignal[0]
   }
   findEditor(path: string) {
-    return this.editors.entries().find(([p]) => p.value === path)
+    return this.editors
+      .entries()
+      .toArray()
+      .find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
