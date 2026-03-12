@@ -2193,6 +2193,9 @@ export class KclManager extends File {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
+      if (resolvedOptions.shouldWriteToDisk) {
+        void this.writeToFile(code).catch(reportRejection)
+      }
       return
     }
 
