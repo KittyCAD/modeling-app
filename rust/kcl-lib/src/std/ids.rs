@@ -6,6 +6,10 @@ use kittycad_modeling_cmds::{
     self as kcmc, ok_response::OkModelingCmdResponse, shared::Point3d, websocket::OkWebSocketResponseData,
 };
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
+#[cfg(feature = "artifact-graph")]
+use crate::std::edge;
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
@@ -16,10 +20,6 @@ use crate::{
     parsing::ast::types::TagDeclarator,
     std::{Args, args::TyF64},
 };
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
-#[cfg(feature = "artifact-graph")]
-use crate::std::edge;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

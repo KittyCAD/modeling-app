@@ -5,6 +5,8 @@ use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, we
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
 use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
@@ -14,8 +16,6 @@ use crate::{
     },
     std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
 };
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
 
 /// Fetch the two face IDs for an edge via Solid3dGetAllEdgeFaces (for refactor metadata).
 #[cfg(feature = "artifact-graph")]
