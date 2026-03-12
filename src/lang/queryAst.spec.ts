@@ -1512,4 +1512,64 @@ appearance(extrude001, color = '#FF0000')`
     }
     expect(selection.artifact.type).toEqual('sweep')
   })
+
+  it('should reconstruct a region selection from a region artifact', async () => {
+    const code = `s = startSketchOn(XY)
+profile = circle(s, center = [0, 0], radius = 5)
+r = region(point = [1, 1], sketch = profile)
+extrude(r, length = 1)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+    if (op.unlabeledArg.value.type !== 'Sketch') {
+      throw new Error(
+        `Expected extrude unlabeled arg to be Sketch, got ${op.unlabeledArg.value.type}`
+      )
+    }
+
+    const regionArtifactId = op.unlabeledArg.value.value.artifactId
+    const regionArtifact = artifactGraph.get(regionArtifactId)
+    if (
+      !regionArtifact ||
+      regionArtifact.type !== 'region' ||
+      !regionArtifact.queryPoint
+    ) {
+      throw new Error('Expected unlabeled arg to reference a region artifact')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(0)
+    expect(selections.otherSelections).toHaveLength(1)
+
+    const regionSelection = selections.otherSelections[0]
+    if (
+      typeof regionSelection !== 'object' ||
+      regionSelection === null ||
+      !('type' in regionSelection) ||
+      regionSelection.type !== 'region'
+    ) {
+      throw new Error('Expected a region selection in otherSelections')
+    }
+
+    expect(regionSelection.id).toEqual(regionArtifact.id)
+    expect(regionSelection.sketchId).toEqual(regionArtifact.parentSketchBlockId)
+    expect(regionSelection.point).toEqual({
+      x: regionArtifact.queryPoint[0],
+      y: regionArtifact.queryPoint[1],
+    })
+  })
 })

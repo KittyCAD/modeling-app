@@ -1350,7 +1350,7 @@ export function getVariableExprsFromSelection(
 }
 
 // Go from the sketches argument in a KCL call declaration
-// to a list of graph selections, useful for edit flows.
+// to a set of selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
 export function retrieveSelectionsFromOpArg(
   opArg: OpArg,
@@ -1373,6 +1373,7 @@ export function retrieveSelectionsFromOpArg(
   }
 
   const graphSelections: Selection[] = []
+  const otherSelections: Selections['otherSelections'] = []
   for (const artifactId of artifactIds) {
     const artifact = artifactGraph.get(artifactId)
     if (!artifact) {
@@ -1395,17 +1396,28 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
+    if (artifact.type === 'region' && artifact.queryPoint) {
+      const [x, y] = artifact.queryPoint
+      otherSelections.push({
+        type: 'region',
+        id: artifact.id,
+        point: { x, y },
+        sketchId: artifact.parentSketchBlockId,
+      })
+      continue
+    }
+
     graphSelections.push({
       artifact,
       codeRef: codeRefs[0],
     })
   }
 
-  if (graphSelections.length === 0) {
+  if (graphSelections.length === 0 && otherSelections.length === 0) {
     return error
   }
 
-  return { graphSelections, otherSelections: [] } as Selections
+  return { graphSelections, otherSelections } as Selections
 }
 
 export function findOperationArtifact(
