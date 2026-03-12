@@ -3,7 +3,6 @@ import { useAppState } from '@src/AppState'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/network/utils'
 import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
-import { useEffect } from 'react'
 
 export function useReliesOnEngine(isExecuting: boolean) {
   const { editor: kclManager } = useExecutingEditor()
@@ -15,11 +14,6 @@ export function useReliesOnEngine(isExecuting: boolean) {
     kclManager.isExecutingSignal.value ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
-
-  useEffect(() => {
-    console.log('reliesOnEngine', reliesOnEngine)
-    debugger
-  }, [reliesOnEngine])
 
   return reliesOnEngine
 }
