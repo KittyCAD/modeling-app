@@ -909,6 +909,8 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Solved sketch segment.
+    Segment(Box<Segment>),
     /// Face.
     Face(FaceTag),
 }
@@ -923,6 +925,7 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Segment(segment) => Ok(segment.id),
             Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
         }
     }
@@ -930,6 +933,7 @@ impl Extrudable {
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Segment(segment) => segment.sketch.clone(),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
@@ -941,6 +945,7 @@ impl Extrudable {
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Segment(_) => ProfileClosed::No,
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid

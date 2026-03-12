@@ -359,6 +359,7 @@ async fn inner_extrude(
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }
+            Extrudable::Segment(_segment) => BeingExtruded::Sketch,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
