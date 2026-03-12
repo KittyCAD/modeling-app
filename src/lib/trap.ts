@@ -74,7 +74,12 @@ export function report(
  * Promise.prototype.catch.
  */
 export function reportRejection(reason: any): undefined {
-  report((reason ?? 'Unknown promise rejection').toString())
+  report(
+    (
+      (reason instanceof Object ? JSON.stringify(reason, null, 2) : reason) ??
+      'Unknown promise rejection'
+    ).toString()
+  )
 }
 
 /**

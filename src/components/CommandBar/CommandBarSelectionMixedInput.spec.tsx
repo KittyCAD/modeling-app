@@ -56,7 +56,7 @@ describe('CommandBarSelectionMixedInput', () => {
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-path', {
+      const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -87,7 +87,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-path', {
+      const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -115,7 +115,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-path', {
+      const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -143,7 +143,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should send clear selection command only once on mount', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-path', {
+      const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -186,7 +186,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should set hasClearedSelection state after clearing', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-path', {
+      const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
