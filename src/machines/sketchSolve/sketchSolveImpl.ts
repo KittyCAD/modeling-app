@@ -55,6 +55,7 @@ import {
   isConstraint,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { StateEffect } from '@codemirror/state'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -439,6 +440,15 @@ function initSegmentGroup({
   return new Error(`Unknown input type: ${(input as any).type}`)
 }
 
+export interface IUpdateSketchSceneGraph {
+  sceneGraphDelta: SceneGraphDelta
+  context: SketchSolveContext
+  selectedIds: Array<number>
+  duringAreaSelectIds: Array<number>
+}
+export const updateSketchSceneGraphEffect =
+  StateEffect.define<IUpdateSketchSceneGraph>()
+
 /**
  * Updates the Three.js scene graph based on a SceneGraphDelta.
  * This handles creating, updating, and invalidating segment groups.
@@ -448,12 +458,7 @@ export function updateSceneGraphFromDelta({
   context,
   selectedIds,
   duringAreaSelectIds,
-}: {
-  sceneGraphDelta: SceneGraphDelta
-  context: SketchSolveContext
-  selectedIds: Array<number>
-  duringAreaSelectIds: Array<number>
-}): void {
+}: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const factor = context.sceneInfra.getClientSceneScaleFactor(
     context.sceneEntitiesManager.axisGroup
@@ -871,11 +876,18 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   }
 
   // Update scene immediately - no delay, no flicker
-  updateSceneGraphFromDelta({
-    sceneGraphDelta: event.data.sceneGraphDelta,
-    context,
-    selectedIds: context.selectedIds,
-    duringAreaSelectIds: context.duringAreaSelectIds,
+  // This is wired through a CodeMirror StateEffect so that
+  // an extension (in @src/editor/plugins/sketch.ts) can apply its
+  // effects while undoing as well.
+  context.kclManager.dispatch({
+    effects: [
+      updateSketchSceneGraphEffect.of({
+        sceneGraphDelta: event.data.sceneGraphDelta,
+        context,
+        selectedIds: context.selectedIds,
+        duringAreaSelectIds: context.duringAreaSelectIds,
+      }),
+    ],
   })
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
