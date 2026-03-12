@@ -75,6 +75,31 @@ pub(super) struct ArtifactState {
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {}
 
+/// Which stdlib edge function produced this refactor metadata (for lint/code mod).
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum EdgeRefactorStdlibFn {
+    GetOppositeEdge,
+    GetNextAdjacentEdge,
+    GetPreviousAdjacentEdge,
+    GetCommonEdge,
+    EdgeId,
+}
+
+/// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeRefactorMeta {
+    pub edge_id: Uuid,
+    pub face_ids: [Uuid; 2],
+    pub source_range: SourceRange,
+    pub stdlib_fn: EdgeRefactorStdlibFn,
+}
+
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
@@ -101,6 +126,8 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Metadata from deprecated edge stdlib calls (getOppositeEdge, getCommonEdge, etc.) for refactor lint/code mod.
+    pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -274,6 +301,8 @@ impl ExecState {
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
+            #[cfg(feature = "artifact-graph")]
+            edge_refactor_metadata: self.global.root_module_artifacts.edge_refactor_metadata.clone(),
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -507,6 +536,18 @@ impl ExecState {
         &self.global.root_module_artifacts
     }
 
+    /// Record metadata from a deprecated edge stdlib call for refactor lint/code mod (Step 1).
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
+        self.mod_local.artifacts.edge_refactor_metadata.push(meta);
+    }
+
+    /// Refactor metadata collected when deprecated edge stdlib functions run (for tests and lint).
+    #[cfg(feature = "artifact-graph")]
+    pub fn edge_refactor_metadata(&self) -> &[EdgeRefactorMeta] {
+        &self.global.root_module_artifacts.edge_refactor_metadata
+    }
+
     pub fn current_default_units(&self) -> NumericType {
         NumericType::Default {
             len: self.length_unit(),
@@ -574,6 +615,8 @@ impl ExecState {
             self.global.root_module_artifacts.source_range_to_object.clone(),
             #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.var_solutions.clone(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.edge_refactor_metadata.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
@@ -722,6 +765,7 @@ impl ModuleArtifactState {
             self.unprocessed_commands.clear();
             self.commands.clear();
             self.operations.clear();
+            self.edge_refactor_metadata.clear();
         }
     }
 
@@ -743,6 +787,7 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        self.edge_refactor_metadata.extend(other.edge_refactor_metadata);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

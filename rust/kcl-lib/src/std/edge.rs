@@ -14,6 +14,48 @@ use crate::{
     },
     std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
 };
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
+
+/// Fetch the two face IDs for an edge via Solid3dGetAllEdgeFaces (for refactor metadata).
+#[cfg(feature = "artifact-graph")]
+pub(crate) async fn get_face_ids_for_edge(
+    exec_state: &mut ExecState,
+    object_id: Uuid,
+    edge_id: Uuid,
+    args: &Args,
+) -> Result<[Uuid; 2], KclError> {
+    let resp = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::Solid3dGetAllEdgeFaces::builder()
+                    .object_id(object_id)
+                    .edge_id(edge_id)
+                    .build(),
+            ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetAllEdgeFaces(info),
+    } = &resp
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Solid3dGetAllEdgeFaces response was not as expected: {resp:?}"),
+            vec![args.source_range],
+        )));
+    };
+    let face_ids: [Uuid; 2] = info.faces.clone().try_into().map_err(|_| {
+        KclError::new_engine(KclErrorDetails::new(
+            format!(
+                "Solid3dGetAllEdgeFaces returned {} face(s) for edge {edge_id}, expected 2",
+                info.faces.len()
+            ),
+            vec![args.source_range],
+        ))
+    })?;
+    Ok(face_ids)
+}
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -62,7 +104,19 @@ async fn inner_get_opposite_edge(
         )));
     };
 
-    Ok(opposite_edge.edge)
+    let edge_id = opposite_edge.edge;
+
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetOppositeEdge,
+        });
+    }
+
+    Ok(edge_id)
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -113,12 +167,24 @@ async fn inner_get_next_adjacent_edge(
         )));
     };
 
-    adjacent_edge.edge.ok_or_else(|| {
+    let edge_id = adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found next adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+        });
+    }
+
+    Ok(edge_id)
 }
 
 /// Get the previous adjacent edge to the edge given.
@@ -168,12 +234,24 @@ async fn inner_get_previous_adjacent_edge(
         )));
     };
 
-    adjacent_edge.edge.ok_or_else(|| {
+    let edge_id = adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found previous adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+        });
+    }
+
+    Ok(edge_id)
 }
 
 /// Get the shared edge between two faces.
@@ -270,7 +348,7 @@ async fn inner_get_common_edge(
         )));
     };
 
-    common_edge.edge.ok_or_else(|| {
+    let edge_id = common_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "No common edge was found between `{}` and `{}`",
@@ -278,7 +356,17 @@ async fn inner_get_common_edge(
             ),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    #[cfg(feature = "artifact-graph")]
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id,
+        face_ids: [first_face_id, second_face_id],
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
+    });
+
+    Ok(edge_id)
 }
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

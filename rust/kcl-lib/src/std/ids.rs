@@ -16,6 +16,10 @@ use crate::{
     parsing::ast::types::TagDeclarator,
     std::{Args, args::TyF64},
 };
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
+#[cfg(feature = "artifact-graph")]
+use crate::std::edge;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -161,7 +165,19 @@ async fn inner_edge_id(
                 vec![args.source_range],
             )));
         };
-        inner_resp.edge_id
+        let edge_id = inner_resp.edge_id;
+
+        #[cfg(feature = "artifact-graph")]
+        if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await {
+            exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+                edge_id,
+                face_ids,
+                source_range: args.source_range,
+                stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
+            });
+        }
+
+        edge_id
     };
     Ok(KclValue::Uuid {
         value: edge_id,
