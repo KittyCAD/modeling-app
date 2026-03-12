@@ -10,7 +10,7 @@ use crate::{
     errors::KclError,
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
-    test_util::execute_with_retries,
+    util::{RetryConfig, execute_with_retries},
     walk::{Node, walk},
 };
 #[cfg(feature = "artifact-graph")]
@@ -261,7 +261,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = execute_with_retries(|| {
+    let exec_res = execute_with_retries(&RetryConfig::default(), || {
         crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
     })
     .await;
