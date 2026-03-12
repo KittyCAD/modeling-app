@@ -5,8 +5,6 @@ import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 
-let initialized = false
-
 /**
  * WASM/Rust runtime can panic and the original try/catch/finally blocks will not trigger
  * on the await promise. The interface will killed. This means we need to catch the error at
@@ -14,8 +12,8 @@ let initialized = false
  * within the error branch in the typescript to cover the application state.
  */
 export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
-  if (window && !initialized) {
-    window.addEventListener('error', (event) => {
+  if (window) {
+    const handler = (event: ErrorEvent) => {
       void (async () => {
         if (
           matchImportExportErrorCrash(event.message) ||
@@ -53,12 +51,13 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           }
         }
       })().catch(reportRejection)
-    })
+    }
     // Make sure we only initialize this event listener once
-    initialized = true
+    window.addEventListener('error', handler)
+    return () => window.removeEventListener('error', handler)
   } else {
     console.error(
-      `Failed to initialize, window: ${window}, initialized:${initialized}`
+      `Failed to initialize WASM recovery handler, window does not exist`
     )
   }
 }

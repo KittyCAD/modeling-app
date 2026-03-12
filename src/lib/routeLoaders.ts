@@ -190,10 +190,19 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT
-    )
+    debugger
+
+    const shouldCloseProject = project.path !== app.project?.path
+    const shouldCloseEditor = currentFilePath !== app.project?.executingPath
+    if (app.project && shouldCloseProject) {
+      app.project.close()
+    } else if (app.project?.executingPath && shouldCloseEditor) {
+      app.project.closeEditor(app.project.executingPath)
+    }
+    const projectRef = app.project ?? (await app.openProject(project))
+    const editor =
+      app.project?.executingEditor.value ??
+      (await projectRef.openEditor(currentFilePath || PROJECT_ENTRYPOINT))
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)

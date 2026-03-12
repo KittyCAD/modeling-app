@@ -232,6 +232,7 @@ export class ZDSProject {
       this.projectIORefSignal.value.path,
       this.fileWatcherId
     )
+    this.removeWindowExceptionHandler?.()
   }
 
   /** Open a project, with the option to open an initial editor too */
@@ -312,7 +313,8 @@ export class ZDSProject {
 
     this.app.commands.actor.send({ type: 'Set kclManager', data: newEditor })
     this.registerWindowHelpersForTests(newEditor)
-    initializeWindowExceptionHandler(newEditor)
+    this.removeWindowExceptionHandler =
+      initializeWindowExceptionHandler(newEditor)
 
     this.set(signal(path), newEditor)
 
@@ -345,6 +347,7 @@ export class ZDSProject {
       return
     }
     found[1].close()
+    this.#executingPath.value = null
     this.editors.delete(found[0])
   }
 
@@ -428,6 +431,8 @@ export class ZDSProject {
   private getAllKclFiles(): Promise<ApiFile[]> {
     return Promise.all(this.files.map((f) => f.asRustApiFile()))
   }
+
+  removeWindowExceptionHandler: (() => void) | undefined
 
   registerWindowHelpersForTests(editor: KclManager) {
     if (typeof window !== 'undefined') {
