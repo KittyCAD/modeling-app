@@ -52,3 +52,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 - Bump crate versions from `rust/`: `just bump-kcl-crate-versions`.
 - Publish (after PR approval): `just publish-kcl {version}` (do not include `kcl-` prefix; the `just` task adds it).
 - Tags from publish trigger releases for `kcl-python-bindings` and `kcl-language-server`.
+
+## Style
+
+- Do not use unwrap/expect (except in tests). Use Result<T, KclError> instead.
