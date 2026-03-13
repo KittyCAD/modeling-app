@@ -109,8 +109,8 @@ Workflow run: ???
 
 <details><summary>Rollback instructions</summary><br>
 
-If anything goes wrong during the deployment of the new release and it needs to be pulled back,
-the quickest way is to locate the previous release publish job and re-run it.
+If anything goes wrong during the deployment of the new release and it needs to be yanked (or rolled back),
+the quickest way is to locate the previous release publish job and simply re-run it.
 
 1. Head to https://github.com/KittyCAD/modeling-app/actions/workflows/publish-apps.yml
 2. Click the previous `publish-apps` job, eg. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
