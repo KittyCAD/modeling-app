@@ -107,6 +107,20 @@ On success, the files will be uploaded to the public bucket as well as to the Gi
 
 Workflow run: ???
 
+<details><summary>Rollback instructions</summary><br>
+
+If anything goes wrong during the deployment of the new release and it needs to be pulled back,
+the quickest way is to locate the previous release publish job and re-run it.
+
+1. Head to https://github.com/KittyCAD/modeling-app/actions/workflows/publish-apps.yml
+2. Click the previous `publish-apps` job, eg. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
+3. Click _Re-run all jobs_ and wait for success
+4. Confirm https://zoo.dev/design-studio/download shows the previous release
+5. Post a message in Discord #release announcing the release got yanked
+6. Mark the yanked release as _Pre-release_, eg. https://github.com/KittyCAD/modeling-app/releases/tag/v1.1.13
+
+</details><br>
+
 # KCL
 
 <details><summary>Instructions</summary><br>
