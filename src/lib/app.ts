@@ -1,6 +1,6 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { type KclManager, ZDSProject } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
+import RustContext from '@src/lib/rustContext'
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
@@ -25,7 +25,7 @@ import {
   type CommandBarActorType,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
@@ -94,6 +94,8 @@ export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
   auth: AppAuthSystem
   machineManager: MachineManager
+  rustContext: RustContext
+  engineCommandManager: ConnectionManager
   commands: AppCommandSystem
   settings: AppSettingsSystem
   billing: AppBillingSystem
@@ -124,6 +126,10 @@ export class App implements AppSubsystems {
   commands: AppCommandSystem
   /** The settings system for the application */
   settings: AppSettingsSystem
+  /** The engine connection management system */
+  engineCommandManager: ConnectionManager
+  /** A reloadable wrapper library around the WASM module */
+  rustContext: RustContext
   /** The billing system for the application */
   billing: AppBillingSystem
   /** The layout system for the application */
@@ -137,6 +143,8 @@ export class App implements AppSubsystems {
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
     this.auth = subsystems.auth
+    this.engineCommandManager = subsystems.engineCommandManager
+    this.rustContext = subsystems.rustContext
     this.machineManager = subsystems.machineManager
     this.billing = subsystems.billing
     this.commands = subsystems.commands
@@ -217,6 +225,14 @@ export class App implements AppSubsystems {
           return getOnlySettingsFromContext(state.context)
         }),
     }
+    const engineCommandManager = new ConnectionManager({
+      settingsActor,
+    })
+    const rustContext = new RustContext(
+      wasmPromise,
+      engineCommandManager,
+      settingsActor
+    )
 
     const billingActor = createActor(billingMachine, {
       input: {
@@ -248,6 +264,8 @@ export class App implements AppSubsystems {
     return {
       wasmPromise,
       auth,
+      engineCommandManager,
+      rustContext,
       machineManager,
       commands,
       settings,
