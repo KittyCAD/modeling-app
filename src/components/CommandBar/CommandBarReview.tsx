@@ -81,7 +81,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         arg,
         commandBarState.context
       )
-      if (isHidden || isRequired || value) {
+      if (isHidden || isRequired || value !== undefined) {
         delete s[name]
       }
     }

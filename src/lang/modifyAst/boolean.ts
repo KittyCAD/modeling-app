@@ -289,14 +289,14 @@ export function addSplit({
     labeledArgs.push(createLabeledArg('tools', toolsExpr))
   }
 
-  if (merge) {
+  if (merge !== undefined) {
     labeledArgs.push(
-      createLabeledArg('merge', createLiteral(true, wasmInstance))
+      createLabeledArg('merge', createLiteral(merge, wasmInstance))
     )
   }
-  if (hasTools && keepTools) {
+  if (hasTools && keepTools !== undefined) {
     labeledArgs.push(
-      createLabeledArg('keepTools', createLiteral(true, wasmInstance))
+      createLabeledArg('keepTools', createLiteral(keepTools, wasmInstance))
     )
   }
 
