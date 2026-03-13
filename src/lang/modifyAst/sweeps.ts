@@ -32,6 +32,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -103,21 +104,40 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    {
-      graphSelections: sketches.graphSelections.filter(
-        (selection) => !isFaceArtifact(selection.artifact)
-      ),
-      otherSelections: [],
-    },
-    artifactGraph,
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    sketches,
+    artifactGraph,
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   const regionSelections = sketches.otherSelections.filter(isRegionSelection)
@@ -130,18 +150,6 @@ export function addExtrude({
     })
     if (err(regionExprs)) return regionExprs
     vars.exprs.push(...regionExprs)
-  }
-
-  if (sketches.graphSelections.some((s) => isFaceArtifact(s.artifact))) {
-    const facesVars = getFacesExprsFromSelection(
-      modifiedAst,
-      sketches,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(facesVars)) return facesVars
-    modifiedAst = facesVars.modifiedAst
-    vars.exprs.push(...facesVars.exprs)
   }
 
   // Extra labeled args expressions
