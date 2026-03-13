@@ -210,4 +210,251 @@ circ = {angle_start = 0, angle_end = 360, radius = 5}
         "found 'angle_start'",
         None
     );
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/10114
+    /// Renaming a function (snake_case to camelCase) must rename the definition AND all call sites.
+    #[tokio::test]
+    async fn z0001_fn_renames_all_call_sites() {
+        let kcl = r#"
+fn ZOO_O() {
+  return 1
+}
+a = ZOO_O()
+b = ZOO_O()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description.contains("ZOO_O") && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for ZOO_O with a suggestion")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        // All occurrences must be renamed to zooO
+        assert!(
+            !applied.contains("ZOO_O"),
+            "Applied suggestion should not contain ZOO_O; got:\n{applied}"
+        );
+        let count = applied.matches("zooO").count();
+        assert_eq!(
+            count, 3,
+            "Expected 3 occurrences of zooO (1 definition + 2 calls); got {count}. Applied:\n{applied}"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// Same as above but with a helper called from inside another function (like ZOO_O called from ZOO).
+    /// Regression for https://github.com/KittyCAD/modeling-app/issues/10114
+    #[tokio::test]
+    async fn z0001_fn_renames_all_call_sites_nested_calls() {
+        let kcl = r#"
+fn ZOO_O() {
+  return 1
+}
+fn ZOO() {
+  a = ZOO_O()
+  b = ZOO_O()
+  return [a, b]
+}
+result = ZOO()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description.contains("ZOO_O") && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for ZOO_O with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert!(
+            !applied.contains("ZOO_O"),
+            "Applied suggestion should not contain ZOO_O; got:\n{applied}"
+        );
+        let count = applied.matches("zooO").count();
+        assert_eq!(
+            count, 3,
+            "Expected 3 occurrences of zooO (1 definition + 2 calls in ZOO); got {count}. Applied:\n{applied}"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// When renaming globals to camelCase, (1) a function parameter with the same name (e.g.
+    /// GLOBAL_VAR_FN_PARAM) must not be renamed; (2) a local that shadows a global (e.g.
+    /// GLOBAL_AND_LOCAL_VAR) must not be renamed for the declaration or uses after it; (3) a
+    /// global used in a function before a local with the same name is declared (VAR_USED_BEFORE_IS_LOCAL)
+    /// has that first use renamed (it refers to the global); the local declaration and uses after it are not.
+    /// We apply the lint suggestion for all four globals and assert the result.
+    #[tokio::test]
+    async fn z0001_shadowing_param_not_renamed() {
+        let kcl = r#"
+GLOBAL_VAR_FN_PARAM = 1
+GLOBAL_AND_LOCAL_VAR = 2
+GLOBAL_VAR = 3
+VAR_USED_BEFORE_IS_LOCAL = 4
+fn f(GLOBAL_VAR_FN_PARAM) {
+  GLOBAL_AND_LOCAL_VAR = 5 + VAR_USED_BEFORE_IS_LOCAL
+  VAR_USED_BEFORE_IS_LOCAL = 6
+  return GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + GLOBAL_VAR + VAR_USED_BEFORE_IS_LOCAL
+}
+y = GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + GLOBAL_VAR + VAR_USED_BEFORE_IS_LOCAL
+"#;
+        let expected = r#"
+globalVarFnParam = 1
+globalAndLocalVar = 2
+globalVar = 3
+varUsedBeforeIsLocal = 4
+fn f(GLOBAL_VAR_FN_PARAM) {
+  GLOBAL_AND_LOCAL_VAR = 5 + varUsedBeforeIsLocal
+  VAR_USED_BEFORE_IS_LOCAL = 6
+  return GLOBAL_VAR_FN_PARAM + GLOBAL_AND_LOCAL_VAR + globalVar + VAR_USED_BEFORE_IS_LOCAL
+}
+y = globalVarFnParam + globalAndLocalVar + globalVar + varUsedBeforeIsLocal
+"#;
+        let names = [
+            "GLOBAL_VAR_FN_PARAM",
+            "GLOBAL_AND_LOCAL_VAR",
+            "GLOBAL_VAR",
+            "VAR_USED_BEFORE_IS_LOCAL",
+        ];
+        let mut applied = kcl.to_string();
+        for name in names {
+            let prog = crate::Program::parse_no_errs(&applied).unwrap();
+            let lints = prog.lint(lint_variables).unwrap();
+            let rename_finding = lints
+                .iter()
+                .find(|d| d.description == format!("found '{name}'") && d.suggestion.is_some());
+            let Some(discovered) = rename_finding else {
+                panic!("Expected a Z0001 finding for {name} with a suggestion; lints: {lints:?}")
+            };
+            applied = discovered.apply_suggestion(&applied).expect("suggestion should apply");
+        }
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// A local that shadows a global and is initialized from the global (same name in its own
+    /// initializer, e.g. `x = x + 1`). The RHS refers to the global and should be renamed; the
+    /// local declaration and later uses should not.
+    #[tokio::test]
+    async fn z0001_local_in_own_initializer_refers_to_global() {
+        let kcl = r#"
+X_VAL = 1
+fn foo() {
+  X_VAL = X_VAL + 1
+  return X_VAL
+}
+yo = foo()
+"#;
+        let expected = r#"
+xVal = 1
+fn foo() {
+  X_VAL = xVal + 1
+  return X_VAL
+}
+yo = foo()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'X_VAL'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for X_VAL with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// A tag in an expression (e.g. sketch line tag = $SEG_TAG) introduces a binding. When
+    /// renaming a global with the same name, the tag must not be renamed (it shadows in that scope).
+    #[tokio::test]
+    async fn z0001_tag_binding_not_renamed() {
+        let kcl = r#"
+SEG_TAG = 1
+fn foo() {
+  s = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 0], tag = $SEG_TAG)
+  return s
+}
+x = foo()
+"#;
+        let expected = r#"
+segTag = 1
+fn foo() {
+  s = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 0], tag = $SEG_TAG)
+  return s
+}
+x = foo()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'SEG_TAG'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for SEG_TAG with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// A named function expression (fn NESTED_FN() { ... }) introduces a binding. When renaming
+    /// a global with the same name, the inner function name must not be renamed.
+    #[tokio::test]
+    async fn z0001_named_function_expression_not_renamed() {
+        let kcl = r#"
+NESTED_FN = 0
+fn outer() {
+  g = fn NESTED_FN() {
+    return 1
+  }
+  return g()
+}
+y = outer()
+"#;
+        let expected = r#"
+nestedFn = 0
+fn outer() {
+  g = fn NESTED_FN() {
+    return 1
+  }
+  return g()
+}
+y = outer()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'NESTED_FN'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for NESTED_FN with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }

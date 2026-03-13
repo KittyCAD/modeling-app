@@ -58,13 +58,13 @@ impl Node<IfExpression> {
 
 impl IfExpression {
     /// Rename all identifiers that have the old name to the new given name.
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.cond.rename_identifiers(old_name, new_name);
-        self.then_val.rename_identifiers(old_name, new_name);
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.cond.rename_identifiers(old_name, new_name, excluded);
+        self.then_val.rename_identifiers(old_name, new_name, excluded);
         for else_if in &mut self.else_ifs {
-            else_if.rename_identifiers(old_name, new_name);
+            else_if.rename_identifiers(old_name, new_name, excluded);
         }
-        self.final_else.rename_identifiers(old_name, new_name);
+        self.final_else.rename_identifiers(old_name, new_name, excluded);
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -77,8 +77,8 @@ impl IfExpression {
 
 impl ElseIf {
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.cond.rename_identifiers(old_name, new_name);
-        self.then_val.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        self.cond.rename_identifiers(old_name, new_name, excluded);
+        self.then_val.rename_identifiers(old_name, new_name, excluded);
     }
 }
