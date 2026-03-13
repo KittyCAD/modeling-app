@@ -911,7 +911,7 @@ function getSolidSelectionsFromFaceSelections(
         }
 
         return {
-          artifact: solidArtifact as Artifact,
+          artifact: solidArtifact,
           codeRef: solidArtifact.codeRef,
         }
       }
@@ -1159,16 +1159,27 @@ export function retrieveFaceSelectionsFromOpArgs(
     return solids
   }
 
+  const solidIds = solids.graphSelections.flatMap((s) => {
+    if (s.artifact?.type === 'sweep' || s.artifact?.type === 'compositeSolid') {
+      return s.artifact.id
+    }
+    return []
+  })
+  if (solidIds.length === 0) {
+    return new Error('No solid artifact found in solids selection')
+  }
+  const solidIdsSet = new Set(solidIds)
+
   const sweepIds = solids.graphSelections.flatMap((s) =>
     s.artifact?.type === 'sweep' ? s.artifact.id : []
   )
-  if (sweepIds.length === 0) {
-    return new Error('No sweep artifact found in solids selection')
-  }
   const sweepIdsSet = new Set(sweepIds)
   const candidates: Map<string, Selection> = new Map()
   for (const artifact of artifactGraph.values()) {
-    if (artifact.type === 'primitiveFace') {
+    if (
+      artifact.type === 'primitiveFace' &&
+      solidIdsSet.has(artifact.solidId)
+    ) {
       candidates.set(artifact.id, {
         artifact,
         codeRef: artifact.codeRef,
