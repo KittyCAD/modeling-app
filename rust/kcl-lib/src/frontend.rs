@@ -12,6 +12,7 @@ use serde::Serialize;
 use crate::{
     ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program, ProjectManager,
     collections::AhashIndexSet,
+    errors::IsRetryable,
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
@@ -112,7 +113,6 @@ enum ChangeKind {
     Add,
     Edit,
     Delete,
-    None,
 }
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
@@ -187,7 +187,9 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         let mut truncated_program = self.parse_program().await?;
-        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        // The open project file is the source of truth now, and it may already
+        // contain solver-fed-back values that changed this block's span.
+        self.only_sketch_block(sketch, ChangeKind::Edit, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -322,7 +324,9 @@ impl SketchApi for FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = self.parse_program().await?;
-        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        // The open project file is the source of truth now, and it may already
+        // contain solver-fed-back values that changed this block's span.
+        self.only_sketch_block(sketch, ChangeKind::Edit, &mut truncated_program.ast)?;
 
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
@@ -1032,7 +1036,9 @@ impl FrontendState {
             Err(mut err) => {
                 // Don't return an error just because execution failed. Instead,
                 // update state as much as possible.
-                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                let outcome = self.exec_outcome_from_exec_error(err.clone()).map_err(|err| Error {
+                    msg: err.error.message().to_owned(),
+                })?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph.clone());
                 Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
@@ -1040,8 +1046,15 @@ impl FrontendState {
         }
     }
 
-    pub async fn execute(&mut self, ctx: &ExecutorContext, _version: Version) -> api::Result<SetProgramOutcome> {
-        let program = self.parse_program().await?;
+    pub async fn execute(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+    ) -> Result<SceneGraphDelta, KclErrorWithOutputs> {
+        let program = self
+            .parse_program_kcl_error()
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute so that the objects are updated and available for the next
         // API call.
@@ -1054,9 +1067,11 @@ impl FrontendState {
             Ok(outcome) => {
                 self.last_executed_program = Some(program);
                 let outcome = self.update_state_after_exec(outcome, true);
-                Ok(SetProgramOutcome::Success {
-                    scene_graph: Box::new(self.scene_graph.clone()),
-                    exec_outcome: Box::new(outcome),
+                Ok(SceneGraphDelta {
+                    new_graph: self.scene_graph.clone(),
+                    new_objects: Default::default(),
+                    invalidates_ids: false,
+                    exec_outcome: outcome,
                 })
             }
             Err(mut err) => {
@@ -1065,19 +1080,17 @@ impl FrontendState {
                 let outcome = self.exec_outcome_from_exec_error(err.clone())?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph.clone());
-                Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
+                Err(err)
             }
         }
     }
 
-    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> api::Result<ExecOutcome> {
-        if matches!(err.error, KclError::EngineHangup { .. }) {
+    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        if err.is_retryable() {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
             // errors that have nothing to do with the actual problem.
-            return Err(Error {
-                msg: err.error.message().to_owned(),
-            });
+            return Err(err);
         }
 
         let KclErrorWithOutputs {
@@ -1121,6 +1134,16 @@ impl FrontendState {
             errors: non_fatal,
             default_planes,
         })
+    }
+
+    async fn parse_program_kcl_error(&self) -> Result<Program, KclError> {
+        let file = self
+            .project_manager
+            .get_open_file(PROJECT_ID)
+            .await
+            .map_err(|err| KclError::internal(err.msg))?;
+        let program = Program::parse_no_errs(&file.text)?;
+        Ok(program)
     }
 
     async fn parse_program(&self) -> api::Result<Program> {
@@ -3103,8 +3126,6 @@ fn only_sketch_block(
             // For edit, we don't know whether it grew or shrank.
             ChangeKind::Edit => r1.module_id() == r2.module_id() && r1.start() == r2.start(),
             ChangeKind::Delete => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() >= r2.end(),
-            // No edit should be an exact match.
-            ChangeKind::None => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() == r2.end(),
         }
     };
     let mut found = false;
@@ -5221,8 +5242,12 @@ sketch(on = XY) {
         let sketch_args = SketchCtor {
             on: Plane::Default(PlaneName::Xy),
         };
-        let (_src_delta, _scene_delta, sketch_id) = frontend
+        let (src_delta, _scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), file_id, version, sketch_args)
+            .await
+            .unwrap();
+
+        update_project_file(file_id, src_delta.text, &mut frontend)
             .await
             .unwrap();
 

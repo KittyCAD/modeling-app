@@ -1,6 +1,9 @@
-use crate::frontend::{
-    api::ObjectId,
-    trim::{Coords2d, execute_trim_flow},
+use crate::{
+    front::{FileId, LifecycleApi, ProjectId},
+    frontend::{
+        api::ObjectId,
+        trim::{Coords2d, execute_trim_flow},
+    },
 };
 
 /// Helper function to run a trim test with the common pattern:
@@ -2125,19 +2128,27 @@ sketch(on = YZ) {
 
 // Helper function to get objects from KCL code (similar to getSceneGraphDeltaFromKcl in TypeScript)
 async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Object> {
-    use crate::{ExecutorContext, Program, execution::MockConfig, frontend::FrontendState};
-
-    // Parse KCL code
-    let parse_result = Program::parse(kcl_code).expect("Failed to parse KCL");
-    let (program_opt, errors) = parse_result;
-    if !errors.is_empty() {
-        panic!("Failed to parse KCL: {:?}", errors);
-    }
-    let program = program_opt.expect("No AST produced");
+    use crate::{ExecutorContext, execution::MockConfig, frontend::FrontendState};
 
     // Use mock context
     let mock_ctx = ExecutorContext::new_mock(None).await;
     let mut frontend = FrontendState::new();
+
+    // Tell project manager about the source.
+    let file_id = FileId(0);
+    let file = crate::front::File {
+        id: file_id,
+        path: "main.kcl".to_owned(),
+        text: kcl_code.to_owned(),
+    };
+    frontend
+        .project_manager
+        .open_project(ProjectId(0), vec![file], file_id)
+        .await
+        .expect("Failed to open project");
+
+    // Parse KCL code
+    let program = frontend.parse_program().await.expect("Failed to parse program");
 
     // Execute to get scene graph
     let exec_outcome = mock_ctx

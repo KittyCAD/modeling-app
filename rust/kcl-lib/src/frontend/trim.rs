@@ -1973,17 +1973,9 @@ pub(crate) async fn execute_trim_flow(
     sketch_id: ObjectId,
 ) -> Result<TrimFlowResult, String> {
     use crate::{
-        ExecutorContext, Program,
+        ExecutorContext,
         frontend::{FrontendState, api::Version},
     };
-
-    // Parse KCL code
-    let parse_result = Program::parse(kcl_code).map_err(|e| format!("Failed to parse KCL: {}", e))?;
-    let (program_opt, errors) = parse_result;
-    if !errors.is_empty() {
-        return Err(format!("Failed to parse KCL: {:?}", errors));
-    }
-    let program = program_opt.ok_or_else(|| "No AST produced".to_string())?;
 
     let ctx = ExecutorContext::new_with_default_client()
         .await
@@ -1993,10 +1985,27 @@ pub(crate) async fn execute_trim_flow(
 
     // Use a guard to ensure contexts are closed even on error
     let result = async {
+        use crate::front::{FileId, LifecycleApi, ProjectId};
+
         let mut frontend = FrontendState::new();
 
+        // Tell project manager about the source.
+        let file_id = FileId(0);
+        let file = crate::front::File {
+            id: file_id,
+            path: "main.kcl".to_owned(),
+            text: kcl_code.to_owned(),
+        };
+        frontend
+            .project_manager
+            .open_project(ProjectId(0), vec![file], file_id)
+            .await
+            .map_err(|err| err.to_string())?;
+
+        let program = frontend.parse_program().await.map_err(|err| err.to_string())?;
+
         let exec_outcome = ctx
-            .run_with_caching(program.clone())
+            .run_with_caching(program)
             .await
             .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
 
