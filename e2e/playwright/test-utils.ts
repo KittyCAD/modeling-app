@@ -5,7 +5,12 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  COOKIE_NAME_PREFIX,
+  LEGACY_COOKIE_NAME,
+  PLAYWRIGHT_TOKEN_QUERY_PARAM,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -85,7 +90,8 @@ export function runningOnWindows() {
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
-    timeout: 20_000,
+    // timeout: 20_000,
+    timeout: 5_000, // shorter feedback cycle for now
   })
 }
 
@@ -355,7 +361,10 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  await page.goto('/')
+  const initialPath = token
+    ? `/?${PLAYWRIGHT_TOKEN_QUERY_PARAM}=${encodeURIComponent(token)}`
+    : '/'
+  await page.goto(initialPath)
 
   await waitForPageLoad(page)
   return waitForLspPromise
@@ -966,15 +975,25 @@ export async function setup(
     }
   )
 
-  await context.addCookies([
-    {
-      name: COOKIE_NAME_PREFIX + 'dev.zoo.dev',
-      value: token,
-      path: '/',
-      domain: 'localhost',
-      secure: true,
-    },
-  ])
+  // Only add cookies when testing a remote (e.g. Vercel) origin. For localhost we rely
+  // on the init script setting TOKEN_PERSIST_KEY and the auth machine reading it.
+  if (token && process.env.VERCEL_BASE_URL) {
+    try {
+      const origin = new URL(process.env.VERCEL_BASE_URL).origin
+      const isSecure =
+        new URL(process.env.VERCEL_BASE_URL).protocol === 'https:'
+      await context.addCookies([
+        {
+          name: LEGACY_COOKIE_NAME,
+          value: token,
+          url: origin,
+          secure: isSecure,
+        },
+      ])
+    } catch {
+      // ignore invalid VERCEL_BASE_URL
+    }
+  }
 
   failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness

@@ -243,6 +243,12 @@ export type ExecutionType =
 /** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
+/** Query param for passing API token when running e2e (available before any script runs) */
+export const PLAYWRIGHT_TOKEN_QUERY_PARAM = 'playwright-token'
+
+/** sessionStorage key for token persisted by loaders before redirect (so auth still has it after navigation) */
+export const PLAYWRIGHT_TOKEN_SESSION_KEY = 'playwright-token-session'
+
 /** Should we mark all the ML features as "beta"? */
 export const IS_ML_EXPERIMENTAL = true
 export const ML_EXPERIMENTAL_MESSAGE = 'This feature is experimental.'
