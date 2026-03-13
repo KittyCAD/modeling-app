@@ -410,6 +410,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     }
   }
 
+  // hideSeams argument from a string to boolean
+  let hideSeams: boolean | undefined
+  if ('hideSeams' in operation.labeledArgs && operation.labeledArgs.hideSeams) {
+    hideSeams =
+      code.slice(
+        ...operation.labeledArgs.hideSeams.sourceRange.map(boundToUtf16)
+      ) === 'true'
+  }
+
   // bodyType argument from a string
   let bodyType: KclPreludeBodyType | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
@@ -433,6 +442,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     twistAngleStep,
     twistCenter,
     method,
+    hideSeams,
     bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

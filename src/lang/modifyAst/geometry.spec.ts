@@ -375,7 +375,12 @@ helix001 = helix(
       await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `helix001 = helix(cylinder = extrude001, revolutions = 11, angleStart = 22`
+        `helix001 = helix(
+  cylinder = extrude001,
+  revolutions = 11,
+  angleStart = 22,
+  ccw = false,
+)`
       )
     })
   })
