@@ -173,6 +173,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: prepared-files
+          path: prepared-files
 
       - name: Copy prepared files
         run: |
