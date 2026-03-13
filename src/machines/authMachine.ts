@@ -11,6 +11,9 @@ import {
   LEGACY_COOKIE_NAME,
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
+  IS_PLAYWRIGHT_KEY,
+  PLAYWRIGHT_TOKEN_QUERY_PARAM,
+  PLAYWRIGHT_TOKEN_SESSION_KEY,
 } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
@@ -57,6 +60,14 @@ console.table([
   ['api token', !!env().VITE_ZOO_API_TOKEN],
 ])
 
+/** Minimal user for e2e when we have a token but getUser failed (e.g. CORS / API unreachable from browser) */
+const E2E_PLACEHOLDER_USER: User = {
+  id: 'e2e',
+  name: 'E2E',
+  email: 'e2e@test',
+  image: '',
+}
+
 export const authMachine = setup({
   types: {} as {
     context: UserContext
@@ -69,6 +80,9 @@ export const authMachine = setup({
             token: string
           }
         }
+  },
+  guards: {
+    hasPlaywrightToken: () => !!getTokenFromEnvOrCookie(),
   },
   actors: {
     getUser: fromPromise(({ input }: { input: { token?: string } }) =>
@@ -101,6 +115,14 @@ export const authMachine = setup({
           },
         ],
         onError: [
+          {
+            guard: 'hasPlaywrightToken',
+            target: 'loggedIn',
+            actions: assign({
+              user: () => E2E_PLACEHOLDER_USER,
+              token: () => getTokenFromEnvOrCookie(),
+            }),
+          },
           {
             target: 'loggedOut',
             actions: assign({
@@ -246,6 +268,38 @@ export function getCookie(): string | null {
 }
 
 function getTokenFromEnvOrCookie(): string {
+  if (typeof window === 'undefined') return ''
+
+  // E2E: token in URL first; persist to sessionStorage so it survives redirect to /file/...
+  if (window.location?.search) {
+    const tokenFromUrl = new URLSearchParams(window.location.search).get(
+      PLAYWRIGHT_TOKEN_QUERY_PARAM
+    )
+    if (tokenFromUrl) {
+      try {
+        window.sessionStorage?.setItem(
+          PLAYWRIGHT_TOKEN_SESSION_KEY,
+          tokenFromUrl
+        )
+      } catch {
+        // ignore
+      }
+      return tokenFromUrl
+    }
+  }
+
+  // E2E: token in sessionStorage after redirect, or in localStorage (set by Playwright init script)
+  const sessionToken = window.sessionStorage?.getItem(
+    PLAYWRIGHT_TOKEN_SESSION_KEY
+  )
+  if (sessionToken) return sessionToken
+
+  // E2E: token set in localStorage by Playwright init script before app load
+  if (window.localStorage?.getItem(IS_PLAYWRIGHT_KEY) === 'true') {
+    const playwrightToken = window.localStorage.getItem(TOKEN_PERSIST_KEY)
+    if (playwrightToken) return playwrightToken
+  }
+
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
   return envToken || cookieToken || ''
@@ -296,8 +350,9 @@ async function getAndSyncStoredToken(input: {
 
   const environmentName = env().VITE_ZOO_BASE_DOMAIN
 
-  // Find possible tokens
-  const inputToken = input.token && input.token !== '' ? input.token : ''
+  // Find possible tokens (re-check Playwright sources in case persistedToken was empty due to load order)
+  let inputToken = input.token && input.token !== '' ? input.token : ''
+  if (!inputToken) inputToken = getTokenFromEnvOrCookie()
   const cookieToken = getCookie()
   const fileToken = environmentName
     ? await readEnvironmentConfigurationToken(environmentName)
