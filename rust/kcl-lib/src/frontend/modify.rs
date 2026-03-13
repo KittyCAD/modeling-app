@@ -227,6 +227,22 @@ mod tests {
 
         assert_eq!(next_free_name_using_padding("sketch", &taken, 3).unwrap(), "sketch002");
         assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line01");
+
+        for i in 2..10 {
+            taken.insert(format!("sketch00{i}").to_owned());
+        }
+        taken.insert("line01".to_owned());
+
+        assert_eq!(next_free_name_using_padding("sketch", &taken, 3).unwrap(), "sketch010");
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line02");
+
+        for i in 2..10 {
+            taken.insert(format!("line0{i}").to_owned());
+        }
+
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line10");
+        taken.insert("line10".to_owned());
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line11");
     }
 
     #[test]
