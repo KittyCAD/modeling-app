@@ -246,7 +246,7 @@ pub struct ExecOutcome {
     /// Metadata from deprecated edge stdlib calls for refactor-to-edgeRefs lint/code mod.
     #[cfg(feature = "artifact-graph")]
     pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
-    /// Metadata from fillet/chamfer calls that used `tags` directly (for Z0007 code mod).
+    /// Metadata from fillet/chamfer calls that used `tags` directly (for Z0006 code mod).
     #[cfg(feature = "artifact-graph")]
     pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
     /// Non-fatal errors and warnings.

@@ -10,7 +10,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
-import { refactorFilletChamferTagsToEdgeRefsUnified } from '@src/lang/modifyAst/edges'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -789,7 +789,7 @@ export class KclManager extends File {
     if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
-    const newSource = refactorFilletChamferTagsToEdgeRefsUnified(
+    const newSource = refactorZ0006Unified(
       this.ast as Program,
       execState.edgeRefactorMetadata ?? [],
       execState.directTagFilletMetadata ?? [],
@@ -1062,11 +1062,6 @@ export class KclManager extends File {
                 sceneGraphDelta,
               },
             })
-          } else {
-            console.debug(
-              'Error when executing after user edit:',
-              setProgramOutcome
-            )
           }
         } else {
           await this.executeCode(newCode)
@@ -1992,9 +1987,7 @@ export class KclManager extends File {
   }
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
-    // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
-
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -2389,10 +2382,7 @@ export class KclManager extends File {
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
     const result = parse(newCode, wasmInstance)
-    if (err(result)) {
-      console.log('Recast code could not be parsed:', result, ast)
-      return
-    }
+    if (err(result)) return
     this.updateCodeEditor(newCode, resolvedOptions)
   }
 }

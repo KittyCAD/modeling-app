@@ -437,8 +437,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     cmdBar,
   }) => {
-    page.on('console', console.log)
-
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -1682,6 +1680,180 @@ myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edgeRefs 
       expect(code).toContain('radius = 2')
       // Deprecated tags syntax should be removed by auto-fix
       expect(code).not.toContain('tags = [getOppositeEdge')
+    })
+  })
+
+  // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in revolve
+  test('Should automatically fix revolve axis that is incompatible with P&C upon edit', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0], tag = $seg02)
+  |> close()
+
+extrude001 = extrude(profile, length = 3, tagEnd = $capEnd001)
+sketch002 = startSketchOn(extrude001, face = capEnd001)
+profile001 = circle(sketch002, center = [-3.44, -2.23], radius = 1.64)
+revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
+`
+
+    await test.step('Initial test setup', async () => {
+      await context.addInitScript((code: string) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Edit revolve via feature tree (triggers auto-fix then edit)', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await page.waitForTimeout(300)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'revolve001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      // Auto-fix converts axis to edgeRef and re-runs; wait for cmd bar to show Revolve
+      await expect
+        .poll(
+          async () => {
+            const state = await cmdBar.getState()
+            return (
+              state.stage === 'arguments' &&
+              state.commandName === 'Revolve' &&
+              (state.currentArgKey === 'angle' ||
+                state.currentArgKey === 'sketches')
+            )
+          },
+          { timeout: 20_000 }
+        )
+        .toBe(true)
+      const cmdStateBeforeAngleEdit = await cmdBar.getState()
+      if (
+        !('currentArgKey' in cmdStateBeforeAngleEdit) ||
+        cmdStateBeforeAngleEdit.currentArgKey !== 'angle'
+      ) {
+        await cmdBar.clickHeaderArgument('angle')
+      }
+      await page.keyboard.type('180deg', { delay: 50 })
+      await cmdBar.progressCmdBar()
+      await expect
+        .poll(async () => (await cmdBar.getState()).stage === 'review', {
+          timeout: 5000,
+        })
+        .toBe(true)
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+    })
+
+    await test.step('Confirm code has edgeRef and angle updated', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      const code = await editor.getCurrentCode()
+      expect(code).toContain('edgeRef')
+      expect(code).toContain('180deg')
+      expect(code).not.toContain('axis = getOppositeEdge')
+    })
+  })
+
+  // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in helix
+  test('Should automatically fix helix axis that is incompatible with P&C upon edit', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sk = startSketchOn(XY)
+profile = startProfile(sk, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $seg01)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+ex = extrude(profile, length = 5, tagEnd = $capEnd001)
+helix001 = helix(
+  axis = getOppositeEdge(seg01),
+  revolutions = 1,
+  angleStart = 360deg,
+  radius = 5,
+)
+`
+
+    await test.step('Initial test setup', async () => {
+      await context.addInitScript((code: string) => {
+        localStorage.setItem('persistCode', code)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Edit helix via feature tree (triggers auto-fix then edit)', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await page.waitForTimeout(300)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'helix001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await expect
+        .poll(
+          async () => {
+            const state = await cmdBar.getState()
+            return (
+              state.stage === 'arguments' &&
+              state.commandName === 'Helix' &&
+              (state.currentArgKey === 'radius' ||
+                state.currentArgKey === 'revolutions' ||
+                state.currentArgKey === 'mode' ||
+                ('currentArgKey' in state &&
+                  state.currentArgKey === 'angleStart'))
+            )
+          },
+          { timeout: 20_000 }
+        )
+        .toBe(true)
+      const cmdStateBeforeRadiusEdit = await cmdBar.getState()
+      if (
+        'currentArgKey' in cmdStateBeforeRadiusEdit &&
+        cmdStateBeforeRadiusEdit.currentArgKey !== 'radius'
+      ) {
+        await cmdBar.clickHeaderArgument('radius')
+      }
+      await page.keyboard.type('2', { delay: 50 })
+      await cmdBar.progressCmdBar()
+      await expect
+        .poll(async () => (await cmdBar.getState()).stage === 'review', {
+          timeout: 5000,
+        })
+        .toBe(true)
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+    })
+
+    await test.step('Confirm code has edgeRef and radius updated', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      const code = await editor.getCurrentCode()
+      expect(code).toContain('edgeRef')
+      expect(code).toContain('radius = 2')
+      expect(code).not.toContain('axis = getOppositeEdge')
     })
   })
 

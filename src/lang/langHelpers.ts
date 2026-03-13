@@ -4,7 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { refactorFilletChamferTagsToEdgeRefsUnified } from '@src/lang/modifyAst/edges'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -341,7 +341,7 @@ export async function lintAst({
         artifactGraph &&
         (edgeRefactorMetadata?.length || directTagFilletMetadata?.length)
       ) {
-        const newSourceResult = refactorFilletChamferTagsToEdgeRefsUnified(
+        const newSourceResult = refactorZ0006Unified(
           ast,
           edgeRefactorMetadata ?? [],
           directTagFilletMetadata ?? [],
@@ -351,23 +351,31 @@ export async function lintAst({
         const newSource = err(newSourceResult)
           ? null
           : newSourceResult.trim() || null
-        if (newSource) {
+        const codeActuallyChanged =
+          newSource != null && newSource !== sourceCode.trim()
+        if (newSource && codeActuallyChanged) {
           actions = [
             {
-              name: 'Convert to edgeRefs',
+              name: 'Convert to edgeRefs/edgeRef',
               apply: (view: EditorView, _from: number, _to: number) => {
-                view.dispatch({
-                  changes: {
-                    from: 0,
-                    to: view.state.doc.length,
-                    insert: newSource,
-                  },
-                  annotations: [lspCodeActionEvent],
-                })
+                try {
+                  view.dispatch({
+                    changes: {
+                      from: 0,
+                      to: view.state.doc.length,
+                      insert: newSource,
+                    },
+                    annotations: [lspCodeActionEvent],
+                  })
+                } catch (e) {
+                  console.warn('[lintAst] Z0006 apply dispatch failed:', e)
+                }
               },
             },
           ]
         }
+      } else if (lint.finding.code === 'Z0006') {
+        // Z0006 lint shown but no code action (missing graph or metadata)
       }
 
       const diagnostic = {

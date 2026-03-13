@@ -265,7 +265,7 @@ export interface ExecState {
   defaultPlanes: DefaultPlanes | null
   /** Populated when deprecated edge stdlib functions run (e.g. getOppositeEdge in a fillet). */
   edgeRefactorMetadata: EdgeRefactorMeta[]
-  /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0007 code mod. */
+  /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0006 code mod. */
   directTagFilletMetadata: DirectTagFilletMeta[]
 }
 

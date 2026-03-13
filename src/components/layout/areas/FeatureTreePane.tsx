@@ -552,11 +552,14 @@ const OperationItem = ({
             labeledArgs?: { tags?: unknown; edgeRefs?: unknown }
             sourceRange?: unknown
           }
-          const isFilletOrChamfer =
+          const needsZ0006FixBeforeEdit =
             op.type === 'StdLibCall' &&
-            (op.name === 'fillet' || op.name === 'chamfer')
+            (op.name === 'fillet' ||
+              op.name === 'chamfer' ||
+              op.name === 'revolve' ||
+              op.name === 'helix')
           let operationToEdit: typeof item = item
-          if (isFilletOrChamfer) {
+          if (needsZ0006FixBeforeEdit) {
             const applied =
               await systemDeps.kclManager.applyZ0006FixBeforeEdit()
             if (applied) {

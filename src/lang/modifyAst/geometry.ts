@@ -6,12 +6,17 @@ import {
   createLiteral,
 } from '@src/lang/create'
 import {
+  createEdgeRefObjectExpression,
+  entityReferenceToEdgeRefPayload,
+} from '@src/lang/modifyAst/edges'
+import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
+  resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -85,17 +90,40 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const result = getAxisExpressionAndIndex(
-      axis,
-      edge,
-      modifiedAst,
-      wasmInstance,
-      artifactGraph
-    )
-    if (err(result)) {
-      return result
+    const hasV2Edge =
+      edge?.graphSelectionsV2?.length &&
+      edge.graphSelectionsV2[0]?.entityRef?.type === 'edge'
+    if (hasV2Edge && edge?.graphSelectionsV2?.[0]?.entityRef) {
+      const entityRef = edge.graphSelectionsV2[0].entityRef
+      const payload = entityReferenceToEdgeRefPayload(entityRef)
+      const originalEdgeSelection = resolveSelectionV2(
+        edge.graphSelectionsV2[0],
+        artifactGraph
+      )
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+      axisExpr.push(createLabeledArg('edgeRef', edgeRefResult.expr))
+    } else {
+      const result = getAxisExpressionAndIndex(
+        axis,
+        edge,
+        modifiedAst,
+        wasmInstance,
+        artifactGraph
+      )
+      if (err(result)) {
+        return result
+      }
+      axisExpr.push(createLabeledArg('axis', result.generatedAxis as Expr))
     }
-    axisExpr.push(createLabeledArg('axis', result.generatedAxis as Expr))
   } else {
     return new Error('Helix must have either an axis or a cylinder')
   }

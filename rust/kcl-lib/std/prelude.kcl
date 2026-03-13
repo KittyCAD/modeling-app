@@ -185,8 +185,11 @@ export fn helix(
   radius?: number(Length),
   /// Axis to use for the helix.
   /// The center of the helix's base will be at this axis's origin point.
+  /// Either `axis` or `edgeRef` must be provided when not using a cylinder.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge,
+  /// Edge reference using face ids (new API). Either `axis` or `edgeRef` must be provided when not using a cylinder, but not both.
+  edgeRef?: any,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
   @(includeInSnippet = true)
   length?: number(Length),

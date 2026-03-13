@@ -1,5 +1,5 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet or chamfer `tags` argument.
+//! when used inside fillet/chamfer `tags` or revolve/helic `axis` argument.
 //! Step 2 of refactor-to-edgeRefs: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -13,12 +13,11 @@ use crate::{
 
 def_finding!(
     Z0006,
-    "Prefer edgeRefs over tags in fillet/chamfer",
+    "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
     "\
-Using the 'tags' argument in fillet or chamfer (including direct tags like [e1] or deprecated \
-stdlib like getOppositeEdge) is deprecated. Prefer the 'edgeRefs' argument with \
-{ faces: [tag1, tag2] } so the engine can resolve edges without extra lookups. \
-The auto-fix will convert to edgeRefs and merge with any existing edgeRefs.
+Using 'tags' in fillet/chamfer or 'axis' in revolve/helic with deprecated stdlib (e.g. \
+getOppositeEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer) or \
+'edgeRef' (revolve/helic) with { faces: [tag1, tag2] }. The auto-fix will convert.
 ",
     FindingFamily::Simplify
 );
@@ -36,15 +35,29 @@ fn is_fillet_or_chamfer(callee_name: &str) -> bool {
     matches!(callee_name, "fillet" | "chamfer")
 }
 
+fn is_revolve_or_helix(callee_name: &str) -> bool {
+    matches!(callee_name, "revolve" | "helix")
+}
+
+/// Axis argument for revolve/helic: axis = getOppositeEdge(...) etc.
+fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
+    let axis_arg = call
+        .arguments
+        .iter()
+        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "axis")?;
+    Some(&axis_arg.arg)
+}
+
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
     DEPRECATED_EDGE_STDLIB.contains(&callee_name)
 }
 
 /// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
 fn get_tags_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
-    let tags_arg = call.arguments.iter().find(|arg| {
-        arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "tags"
-    })?;
+    let tags_arg = call
+        .arguments
+        .iter()
+        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "tags")?;
     Some(match &tags_arg.arg {
         Expr::ArrayExpression(arr) => arr.elements.iter().collect(),
         single => vec![single],
@@ -56,9 +69,8 @@ fn is_direct_tag_ref(element: &Expr) -> bool {
     matches!(element, Expr::Name(_))
 }
 
-/// Lint: prefer edgeRefs over tags in fillet/chamfer. Fires when tags is present with at least
-/// one convertible element (deprecated stdlib call or direct tag). Reports at the call so
-/// auto-fix can convert all tags and merge with existing edgeRefs.
+/// Lint: prefer edgeRefs/edgeRef over tags/axis. Fires for fillet/chamfer when tags has
+/// deprecated stdlib or direct tag; fires for revolve/helic when axis is a deprecated stdlib call.
 pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
 
@@ -67,29 +79,36 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
     };
 
     let callee_name = call_node.callee.name.name.as_str();
-    if !is_fillet_or_chamfer(callee_name) {
-        return Ok(findings);
-    }
 
-    let Some(elements) = get_tags_elements(call_node) else {
-        return Ok(findings);
-    };
-
-    if elements.is_empty() {
-        return Ok(findings);
-    }
-
-    let any_deprecated = elements.iter().any(|el| {
-        if let Expr::CallExpressionKw(inner) = el {
-            is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
-        } else {
-            false
+    if is_fillet_or_chamfer(callee_name) {
+        let Some(elements) = get_tags_elements(call_node) else {
+            return Ok(findings);
+        };
+        if !elements.is_empty() {
+            let any_deprecated = elements.iter().any(|el| {
+                if let Expr::CallExpressionKw(inner) = el {
+                    is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+                } else {
+                    false
+                }
+            });
+            let any_direct = elements.iter().any(|el| is_direct_tag_ref(el));
+            if any_deprecated || any_direct {
+                let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+                findings.push(Z0006.at(format!("{} uses 'tags'; prefer edgeRefs", callee_name), pos, None));
+            }
         }
-    });
-    let any_direct = elements.iter().any(|el| is_direct_tag_ref(el));
-    if any_deprecated || any_direct {
+    } else if is_revolve_or_helix(callee_name)
+        && let Some(axis_expr) = get_axis_arg(call_node)
+        && let Expr::CallExpressionKw(inner) = axis_expr
+        && is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+    {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
-        findings.push(Z0006.at(format!("{} uses 'tags'; prefer edgeRefs", callee_name), pos, None));
+        findings.push(Z0006.at(
+            format!("{} uses 'axis' with deprecated stdlib; prefer edgeRef", callee_name),
+            pos,
+            None,
+        ));
     }
 
     Ok(findings)
@@ -205,5 +224,29 @@ mod tests {
             1,
             "Z0006 fires when tags is single getOppositeEdge(e1) (not array)"
         );
+    }
+
+    #[test]
+    fn z0006_fires_for_revolve_with_deprecated_axis() {
+        let kcl = r#"revolve(profile, axis = getOppositeEdge(seg01))
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for revolve with deprecated axis");
+        assert!(
+            z0006[0].description.contains("axis") || z0006[0].description.contains("edgeRef"),
+            "description should mention axis or edgeRef"
+        );
+    }
+
+    #[test]
+    fn z0006_fires_for_helix_with_deprecated_axis() {
+        let kcl = r#"helix(profile, axis = getOppositeEdge(seg01), radius = 1)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for helix with deprecated axis");
     }
 }

@@ -306,6 +306,10 @@ function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
 }
 
+function isRevolveOrHelix(callee: string): boolean {
+  return callee === 'revolve' || callee === 'helix'
+}
+
 /** Tags as array elements: from tags = [a, b] or tags = singleExpr (single value is valid KCL). */
 function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
   const tagsArg = call.arguments?.find(
@@ -353,14 +357,21 @@ function sourceRangeMatch(
   moduleId: number
 ): boolean {
   const sr = meta.sourceRange
-  if (isArray(sr)) {
-    return sr[0] === start && sr[1] === end && (sr[2] ?? 0) === moduleId
-  }
-  return (
-    (sr as { start?: number }).start === start &&
-    (sr as { end?: number }).end === end &&
-    (sr as { moduleId?: number }).moduleId === moduleId
-  )
+  const metaStart = isArray(sr)
+    ? sr[0]
+    : ((sr as { start?: number }).start ?? 0)
+  const metaEnd = isArray(sr) ? sr[1] : ((sr as { end?: number }).end ?? 0)
+  const metaModuleId = isArray(sr)
+    ? (sr[2] ?? 0)
+    : ((sr as { moduleId?: number }).moduleId ?? 0)
+  if (metaModuleId !== moduleId) return false
+  // Exact match
+  if (metaStart === start && metaEnd === end) return true
+  // Lenient: metadata range contains node range
+  if (metaStart <= start && metaEnd >= end) return true
+  // Lenient: ranges overlap (engine and parser may use slightly different spans)
+  if (start <= metaEnd && end >= metaStart) return true
+  return false
 }
 
 /** One entry per fillet/chamfer call: ordered face IDs from tags (stdlib + direct). Existing edgeRefs read from call when mutating. */
@@ -638,13 +649,7 @@ export function refactorFilletChamferTagsToEdgeRefs(
         modifiedAst as Node<Program>,
         artifactGraph
       )
-      if (err(result)) {
-        console.warn(
-          '[refactorFilletChamferTagsToEdgeRefs] createEdgeRefObjectExpression failed:',
-          result
-        )
-        continue
-      }
+      if (err(result)) continue
       edgeRefExprs.push(result.expr)
       modifiedAst = result.modifiedAst
     }
@@ -696,13 +701,7 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
         modifiedAst as Node<Program>,
         artifactGraph
       )
-      if (err(result)) {
-        console.warn(
-          '[refactorFilletChamferTagsToEdgeRefsUnified] createEdgeRefObjectExpression failed:',
-          result
-        )
-        continue
-      }
+      if (err(result)) continue
       edgeRefExprs.push(result.expr)
       modifiedAst = result.modifiedAst
     }
@@ -731,6 +730,377 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
   return err(out) ? out : out
 }
 
+/** One entry per revolve/helic call that has axis = deprecated stdlib (e.g. getOppositeEdge). */
+interface RevolveHelixCallToFix {
+  range: [number, number, number]
+  faceIds: [string, string]
+  /** When range is 0,0 we use this path to find the call (fallback). */
+  pathToCall?: PathToNode
+}
+
+/** Get CallExpressionKw from Expr whether inline (expr.type) or Rust externally-tagged (expr.CallExpressionKw). */
+function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
+  if (!expr || typeof expr !== 'object') return null
+  const o = expr as Record<string, unknown>
+  if (o.type === 'CallExpressionKw') return o as Node<CallExpressionKw>
+  const inner = o.CallExpressionKw
+  return inner && typeof inner === 'object'
+    ? (inner as Node<CallExpressionKw>)
+    : null
+}
+
+/** Path to the concrete CallExpressionKw node for inline or externally-tagged Expr shapes. */
+function getCallPathFromExpr(
+  expr: Expr,
+  pathPrefix?: PathToNode
+): PathToNode | undefined {
+  if (!pathPrefix || pathPrefix.length === 0) return undefined
+  const o = expr as Record<string, unknown>
+  if (o?.type === 'CallExpressionKw') return [...pathPrefix]
+  if (o?.CallExpressionKw && typeof o.CallExpressionKw === 'object') {
+    return [...pathPrefix, ['CallExpressionKw', '']]
+  }
+  return undefined
+}
+
+/** Exported for tests: find revolve/helic calls with deprecated axis to fix. */
+export function findRevolveHelixCallsToFix(
+  program: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): RevolveHelixCallToFix[] {
+  const results: RevolveHelixCallToFix[] = []
+  /** Candidates: revolve/helic calls with deprecated axis, for fallback matching by order. */
+  const candidates: {
+    range: [number, number, number]
+    faceIds: [string, string]
+    metaIndex: number
+    pathToCall: PathToNode
+  }[] = []
+
+  function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    const call = getCallFromExpr(expr)
+    if (!call) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const callPath = getCallPathFromExpr(expr, pathPrefix)
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (!calleeName || !isRevolveOrHelix(calleeName)) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const axisArg = findKwArg('axis', call)
+    const inner = axisArg ? getCallFromExpr(axisArg) : null
+    if (!inner) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const innerCallee = (inner.callee as { name?: { name?: string } })?.name
+      ?.name
+    if (
+      !innerCallee ||
+      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
+    ) {
+      walkExpr(expr, pathPrefix)
+      return
+    }
+    const innerStart = Number((inner as { start?: number }).start ?? 0)
+    const innerEnd = Number((inner as { end?: number }).end ?? 0)
+    const innerModuleId = (inner as { module_id?: number }).module_id ?? 0
+    const meta = edgeRefactorMetadata.find((m) =>
+      sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
+    )
+    const moduleId = (call as { module_id?: number }).module_id ?? 0
+    const callStart = Number((call as { start?: number }).start ?? 0)
+    const callEnd = Number((call as { end?: number }).end ?? 0)
+    if (meta) {
+      results.push({
+        range: [callStart, callEnd, moduleId],
+        faceIds: [meta.faceIds[0], meta.faceIds[1]],
+        pathToCall: callPath,
+      })
+    } else {
+      // Fallback: match by order (first metadata entry with first revolve/helic call)
+      const metaIndex = edgeRefactorMetadata.findIndex((m) => {
+        const ids = isArray(m.faceIds)
+          ? m.faceIds
+          : (m as { faceIds?: unknown[] }).faceIds
+        return ids && ids.length >= 2
+      })
+      if (metaIndex >= 0 && callPath && callPath.length > 0) {
+        const m = edgeRefactorMetadata[metaIndex]
+        const faceIds = isArray(m.faceIds)
+          ? ([m.faceIds[0], m.faceIds[1]] as [string, string])
+          : ([
+              (m as { faceIds?: string[] }).faceIds?.[0],
+              (m as { faceIds?: string[] }).faceIds?.[1],
+            ].filter(Boolean) as [string, string])
+        if (faceIds.length === 2) {
+          candidates.push({
+            range: [callStart, callEnd, moduleId],
+            faceIds,
+            metaIndex,
+            pathToCall: callPath,
+          })
+        }
+      }
+    }
+    walkExpr(expr, pathPrefix)
+  }
+
+  function walkExpr(expr: Expr, pathPrefix?: PathToNode): void {
+    if (expr.type === 'PipeExpression') {
+      const body = (expr as { body?: Expr[] }).body
+      if (isArray(body)) body.forEach((e) => visitExpr(e, pathPrefix))
+      return
+    }
+    const callExpr = getCallFromExpr(expr)
+    if (callExpr) {
+      const c = callExpr
+      if (c.unlabeled) walkExpr(c.unlabeled, pathPrefix)
+      for (const a of c.arguments ?? []) walkExpr(a.arg, pathPrefix)
+      return
+    }
+    if (expr.type === 'BinaryExpression') {
+      const b = expr as { left?: Expr; right?: Expr }
+      if (b.left) walkExpr(b.left, pathPrefix)
+      if (b.right) walkExpr(b.right, pathPrefix)
+      return
+    }
+    if (expr.type === 'ArrayExpression') {
+      for (const e of (expr as { elements?: Expr[] }).elements ?? [])
+        walkExpr(e, pathPrefix)
+      return
+    }
+    if (expr.type === 'ObjectExpression') {
+      const props = (expr as { properties?: { value: Expr }[] }).properties
+      for (const p of isArray(props) ? props : []) walkExpr(p.value, pathPrefix)
+      return
+    }
+    if (expr.type === 'LabelledExpression')
+      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
+    else if (expr.type === 'AscribedExpression')
+      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
+    else if (expr.type === 'UnaryExpression')
+      walkExpr((expr as { argument: Expr }).argument, pathPrefix)
+    else if (expr.type === 'MemberExpression') {
+      walkExpr((expr as { object: Expr }).object, pathPrefix)
+      walkExpr((expr as { property: Expr }).property, pathPrefix)
+    }
+  }
+
+  const body = program.body ?? []
+  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
+    const item = body[statementIndex] as Record<string, unknown>
+    const pathPrefix: PathToNode = [
+      ['body', ''],
+      [statementIndex, 'index'],
+    ]
+    // Support both inline shape (item.type + item.declaration) and Rust externally-tagged (item.VariableDeclaration)
+    const varDecl =
+      item?.type === 'VariableDeclaration'
+        ? (item as { declaration?: { init?: Expr } }).declaration
+        : (
+            item?.VariableDeclaration as
+              | { declaration?: { init?: Expr } }
+              | undefined
+          )?.declaration
+    if (varDecl?.init) {
+      const declPath: PathToNode =
+        item?.type === 'VariableDeclaration'
+          ? [
+              ...pathPrefix,
+              ['declaration', 'VariableDeclaration'],
+              ['init', ''],
+            ]
+          : [
+              ...pathPrefix,
+              ['VariableDeclaration', ''],
+              ['declaration', 'VariableDeclaration'],
+              ['init', ''],
+            ]
+      visitExpr(varDecl.init, declPath)
+    } else {
+      const exprStmt =
+        item?.type === 'ExpressionStatement'
+          ? (item as { expression?: Expr }).expression
+          : (item?.ExpressionStatement as { expression?: Expr } | undefined)
+              ?.expression
+      if (exprStmt) {
+        const exprPath: PathToNode =
+          item?.type === 'ExpressionStatement'
+            ? [...pathPrefix, ['expression', 'ExpressionStatement']]
+            : [
+                ...pathPrefix,
+                ['ExpressionStatement', ''],
+                ['expression', 'ExpressionStatement'],
+              ]
+        visitExpr(exprStmt, exprPath)
+      } else {
+        const ret =
+          item?.type === 'ReturnStatement'
+            ? (item as { argument?: Expr }).argument
+            : (item?.ReturnStatement as { argument?: Expr } | undefined)
+                ?.argument
+        if (ret) {
+          const retPath: PathToNode =
+            item?.type === 'ReturnStatement'
+              ? [...pathPrefix, ['argument', 'ReturnStatement']]
+              : [
+                  ...pathPrefix,
+                  ['ReturnStatement', ''],
+                  ['argument', 'ReturnStatement'],
+                ]
+          visitExpr(ret, retPath)
+        }
+      }
+    }
+  }
+  // If no range-based match (e.g. executor and parser use different offsets), use first candidate with pathToCall
+  if (results.length === 0 && candidates.length > 0) {
+    const used = new Set<number>()
+    for (const c of candidates) {
+      if (used.has(c.metaIndex)) continue
+      used.add(c.metaIndex)
+      results.push({
+        range: c.range,
+        faceIds: c.faceIds,
+        pathToCall: c.pathToCall,
+      })
+      break
+    }
+  }
+  return results
+}
+
+/**
+ * Refactor revolve/helic calls that use deprecated axis (e.g. axis = getOppositeEdge(...))
+ * to edgeRef = { faces: [...] }. Mutates modifiedAst in place.
+ * @param toFix - Precomputed list from findRevolveHelixCallsToFix(ast, ...)
+ * @param pathList - Paths from getNodePathFromSourceRange(originalAst, range) so paths match the tree structure
+ */
+function refactorRevolveHelixAxisToEdgeRefInPlace(
+  modifiedAst: Node<Program>,
+  toFix: RevolveHelixCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  const resolveCallNode = (node: unknown): Node<CallExpressionKw> | null => {
+    if (!node || typeof node !== 'object') return null
+    const n = node as Record<string, unknown>
+    if (n.type === 'CallExpressionKw') return n as Node<CallExpressionKw>
+    const wrapped = n.CallExpressionKw
+    return wrapped && typeof wrapped === 'object'
+      ? (wrapped as Node<CallExpressionKw>)
+      : null
+  }
+
+  if (toFix.length === 0) return modifiedAst
+  for (let i = 0; i < toFix.length; i++) {
+    const { faceIds, pathToCall } = toFix[i]
+    const path = pathToCall && pathToCall.length > 0 ? pathToCall : pathList[i]
+    const result = createEdgeRefObjectExpression(
+      { faces: faceIds },
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+    modifiedAst = result.modifiedAst
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = resolveCallNode(nodeResult.node)
+    if (!callNode) continue
+    const args = callNode.arguments ?? []
+    const newArgs = args.filter(
+      (a) =>
+        (a.label as { name?: string })?.name !== 'axis' &&
+        (a.label as { name?: string })?.name !== 'edgeRef'
+    )
+    newArgs.push(createLabeledArg('edgeRef', result.expr))
+    callNode.arguments = newArgs
+  }
+  return modifiedAst
+}
+
+/**
+ * Unified Z0006 refactor: fillet/chamfer tags→edgeRefs and revolve/helic axis→edgeRef.
+ * Returns refactored source or Error if nothing to fix.
+ */
+export function refactorZ0006Unified(
+  ast: Program,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | Error {
+  const toFixFC = findFilletChamferCallsToFixUnified(
+    ast,
+    edgeRefactorMetadata,
+    directTagFilletMetadata
+  )
+  const toFixRH = findRevolveHelixCallsToFix(ast, edgeRefactorMetadata)
+  if (toFixFC.length === 0 && toFixRH.length === 0)
+    return new Error('No Z0006 fixes to apply')
+
+  let modifiedAst = structuredClone(ast) as Node<Program>
+
+  for (const { range, orderedFaceIds, hasExistingEdgeRefs } of toFixFC) {
+    const path = getNodePathFromSourceRange(modifiedAst, range)
+    const edgeRefExprs: Expr[] = []
+    for (const faceIds of orderedFaceIds) {
+      const result = createEdgeRefObjectExpression(
+        { faces: faceIds },
+        wasmInstance,
+        modifiedAst,
+        artifactGraph
+      )
+      if (err(result)) continue
+      edgeRefExprs.push(result.expr)
+      modifiedAst = result.modifiedAst
+    }
+    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
+      'CallExpressionKw',
+    ])
+    if (err(nodeResult)) continue
+    const callNode = nodeResult.node as Node<CallExpressionKw>
+    if (hasExistingEdgeRefs) {
+      const existing = getExistingEdgeRefsFromCall(callNode)
+      edgeRefExprs.push(...existing)
+    }
+    if (edgeRefExprs.length === 0) continue
+    const args = callNode.arguments ?? []
+    const newArgs = args.filter(
+      (a) =>
+        (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edgeRefs'
+    )
+    newArgs.push(
+      createLabeledArg('edgeRefs', createArrayExpression(edgeRefExprs))
+    )
+    callNode.arguments = newArgs
+  }
+
+  const pathListRH = toFixRH.map((t) =>
+    t.pathToCall && t.pathToCall.length > 0
+      ? t.pathToCall
+      : getNodePathFromSourceRange(ast, t.range)
+  )
+  modifiedAst = refactorRevolveHelixAxisToEdgeRefInPlace(
+    modifiedAst,
+    toFixRH,
+    pathListRH,
+    artifactGraph,
+    wasmInstance
+  )
+
+  const out = recast(modifiedAst, wasmInstance)
+  return err(out) ? out : out
+}
+
 /** Normalize DirectTagFilletMeta.callSourceRange to [start, end, moduleId] for getNodePathFromSourceRange. */
 function callSourceRangeToTuple(
   callSourceRange: DirectTagFilletMeta['callSourceRange']
@@ -751,7 +1121,7 @@ function callSourceRangeToTuple(
 
 /**
  * Refactor fillet/chamfer calls that use direct tags to edgeRefs using execution metadata.
- * Used for Z0007 auto-fix when directTagFilletMetadata is present.
+ * Used for Z0006 auto-fix when directTagFilletMetadata is present.
  */
 export function refactorDirectTagFilletToEdgeRefs(
   ast: Program,
@@ -775,13 +1145,7 @@ export function refactorDirectTagFilletToEdgeRefs(
         modifiedAst as Node<Program>,
         artifactGraph
       )
-      if (err(result)) {
-        console.warn(
-          '[refactorDirectTagFilletToEdgeRefs] createEdgeRefObjectExpression failed:',
-          result
-        )
-        continue
-      }
+      if (err(result)) continue
       edgeRefExprs.push(result.expr)
       modifiedAst = result.modifiedAst
     }
@@ -2121,6 +2485,46 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
   }
 
   return { graphSelectionsV2, otherSelections: [] }
+}
+
+/**
+ * Retrieves edge selections from a single edgeRef argument (e.g. revolve's edgeRef).
+ * Used for edit flows when the call already has edgeRef = { faces = [...] } after Z0006 refactor.
+ */
+export function retrieveEdgeSelectionsFromSingleEdgeRef(
+  edgeRefArg: OpArg,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
+    return new Error('edgeRef argument is not an object')
+  }
+  const value = edgeRefArg.value.value as Record<string, OpKclValue>
+  const facesProp = value['faces']
+  if (!facesProp || facesProp.type !== 'Array') {
+    return new Error('edgeRef has no faces array')
+  }
+  const faceValues = facesProp.value ?? []
+  const faceIds: string[] = []
+  for (const v of faceValues) {
+    const id = faceRefToArtifactId(v)
+    if (id) faceIds.push(id)
+  }
+  if (faceIds.length < 2) {
+    return new Error('edgeRef faces array needs at least 2 faces')
+  }
+  const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
+  if (!edgeArtifact) {
+    return new Error('Could not find edge from faces in artifact graph')
+  }
+  const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
+  if (!codeRefs?.length) {
+    return new Error('Edge artifact has no codeRef')
+  }
+  const entityRef: EntityReference = { type: 'edge', faces: faceIds }
+  return {
+    graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
+    otherSelections: [],
+  }
 }
 
 // Delete Edge Treatment

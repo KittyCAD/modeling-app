@@ -24,7 +24,7 @@ import {
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
@@ -44,7 +44,7 @@ import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import { stripQuotes } from '@src/lib/utils'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -120,6 +120,9 @@ async function extractKclArgument(
   return result
 }
 
+/** Face selection with artifact + codeRef before mapping to SelectionV2 (entityRef + codeRef). */
+type FaceSelectionWithArtifact = { artifact: Artifact; codeRef: CodeRef }
+
 /**
  * Extracts face selections for GDT annotations.
  *
@@ -131,11 +134,11 @@ async function extractKclArgument(
 function extractFaceSelections(
   artifactGraph: ArtifactGraph,
   facesArg: any
-): Selection[] | { error: string } {
+): FaceSelectionWithArtifact[] | { error: string } {
   const faceValues: any[] =
     facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
 
-  const graphSelections: Selection[] = []
+  const graphSelections: FaceSelectionWithArtifact[] = []
 
   for (const v of faceValues) {
     if (v.type !== 'TagIdentifier' || !v.artifact_id) {
@@ -610,9 +613,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   const buildSelectionFromArtifact = (): Selections | null => {
     if (
       !artifact ||
-      (artifact.type !== 'edgeCut' &&
-        artifact.type !== 'segment' &&
-        artifact.type !== 'sweepEdge')
+      (artifact.type !== 'edgeCut' && artifact.type !== 'segment')
     )
       return null
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
@@ -1276,7 +1277,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return { reason: 'Wrong operation type or arguments' }
+    const reason = 'Wrong operation type or arguments'
+    return { reason }
   }
 
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
@@ -1288,14 +1290,29 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   let axis: string | undefined
   let edge: Selections | undefined
   let cylinder: Selections | undefined
-  if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
+  if ('edgeRef' in operation.labeledArgs && operation.labeledArgs.edgeRef) {
+    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
+      operation.labeledArgs.edgeRef,
+      artifactGraph
+    )
+    if (err(edgeSelections)) {
+      const reason = `Couldn't retrieve edge from edgeRef: ${(edgeSelections as Error).message}`
+      return { reason }
+    }
+    mode = 'Edge'
+    edge = edgeSelections
+  } else if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
     // axis options string or selection arg
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
       operation.labeledArgs.axis,
       artifactGraph
     )
     if (err(axisEdgeSelection)) {
-      return { reason: "Couldn't retrieve axis or edge selection" }
+      const reason = "Couldn't retrieve axis or edge selection"
+      return { reason }
     }
     mode = axisEdgeSelection.axisOrEdge
     axis = axisEdgeSelection.axis
@@ -1310,15 +1327,16 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       artifactGraph
     )
     if (err(result)) {
-      return { reason: "Couldn't retrieve cylinder selection" }
+      const reason = "Couldn't retrieve cylinder selection"
+      return { reason }
     }
 
     mode = 'Cylinder'
     cylinder = result
   } else {
-    return {
-      reason: "The axis or cylinder arguments couldn't be retrieved.",
-    }
+    const reason =
+      "The axis, edgeRef, or cylinder arguments couldn't be retrieved (helix may need Z0006 refactor first)."
+    return { reason }
   }
 
   // revolutions kcl arg (required for all)
@@ -1330,7 +1348,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(revolutions) || 'errors' in revolutions) {
-    return { reason: 'Errors found in revolutions argument' }
+    const reason = 'Errors found in revolutions argument'
+    return { reason }
   }
 
   // angleStart kcl arg (required for all)
@@ -1341,7 +1360,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(angleStart) || 'errors' in angleStart) {
-    return { reason: 'Errors found in angleStart argument' }
+    const reason = 'Errors found in angleStart argument'
+    return { reason }
   }
 
   // radius and cylinder and kcl arg (only for axis or edge)
@@ -1352,7 +1372,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       rustContext
     )
     if (err(r) || 'errors' in r) {
-      return { reason: 'Error in radius argument retrieval' }
+      const reason = 'Error in radius argument retrieval'
+      return { reason }
     }
 
     radius = r
@@ -1418,7 +1439,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (!artifact || operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return { reason: 'Wrong operation type or artifact' }
+    const reason = 'Wrong operation type or artifact'
+    return { reason }
   }
 
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
@@ -1426,7 +1448,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
 
   // 1. Map the unlabeled arguments to solid2d selections
   if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
+    const reason = `Couldn't retrieve operation arguments`
+    return { reason }
   }
 
   const sketches = retrieveSelectionsFromOpArg(
@@ -1434,23 +1457,46 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     artifactGraph
   )
   if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
+    const reason = "Couldn't retrieve sketches"
+    return { reason }
   }
 
-  // 2. Prepare labeled arguments
-  // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
-    return { reason: "Couldn't find axis argument" }
-  }
+  // 2. Prepare labeled arguments: axis (legacy) or edgeRef (after Z0006 refactor)
+  let axisOrEdge: 'Axis' | 'Edge'
+  let axis: string | undefined
+  let edge: Selections | undefined
 
-  const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-    operation.labeledArgs.axis,
-    artifactGraph
-  )
-  if (err(axisEdgeSelection)) {
-    return { reason: "Couldn't retrieve axis or edge selections" }
+  if ('edgeRef' in operation.labeledArgs && operation.labeledArgs.edgeRef) {
+    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
+      operation.labeledArgs.edgeRef,
+      artifactGraph
+    )
+    if (err(edgeSelections)) {
+      const reason = `Couldn't retrieve edge from edgeRef: ${(edgeSelections as Error).message}`
+      return { reason }
+    }
+    axisOrEdge = 'Edge'
+    edge = edgeSelections
+  } else if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.axis,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection)) {
+      const reason = "Couldn't retrieve axis or edge selections"
+      return { reason }
+    }
+    axisOrEdge = axisEdgeSelection.axisOrEdge
+    axis = axisEdgeSelection.axis
+    edge = axisEdgeSelection.edge
+  } else {
+    const reason =
+      "Couldn't find axis or edgeRef argument (revolve may need Z0006 refactor first)"
+    return { reason }
   }
-  const { axisOrEdge, axis, edge } = axisEdgeSelection
 
   // angle kcl arg
   // Default to '360' if not present
@@ -1461,7 +1507,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(angle) || 'errors' in angle) {
-    return { reason: 'Error in angle argument retrieval' }
+    const reason = 'Error in angle argument retrieval'
+    return { reason }
   }
 
   // symmetric argument from a string to boolean
@@ -1488,7 +1535,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       rustContext
     )
     if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve bidirectionalAngle argument" }
+      const reason = "Couldn't retrieve bidirectionalAngle argument"
+      return { reason }
     }
 
     bidirectionalAngle = result

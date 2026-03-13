@@ -579,7 +579,7 @@ impl ExecState {
         &self.global.root_module_artifacts.edge_refactor_metadata
     }
 
-    /// Direct-tag fillet/chamfer metadata (for Z0007 code mod).
+    /// Direct-tag fillet/chamfer metadata (for Z0006 code mod).
     #[cfg(feature = "artifact-graph")]
     pub fn direct_tag_fillet_metadata(&self) -> &[DirectTagFilletMeta] {
         &self.global.root_module_artifacts.direct_tag_fillet_metadata
