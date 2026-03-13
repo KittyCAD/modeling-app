@@ -1438,7 +1438,14 @@ face001 = faceId(extrude001, index = 6)
 plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 2)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
-      const newPlane = createSelectionFromArtifacts(artifactGraph.values().filter(a => a.type === 'planeOfFace').toArray().slice(-1), artifactGraph)
+      const newPlane = createSelectionFromArtifacts(
+        artifactGraph
+          .values()
+          .filter((a) => a.type === 'planeOfFace')
+          .toArray()
+          .slice(-1),
+        artifactGraph
+      )
       const editedOffset = (await stringToKclExpression(
         '3',
         rustContextInThisFile
