@@ -165,7 +165,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install
+          npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
@@ -243,7 +243,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install
+          npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
