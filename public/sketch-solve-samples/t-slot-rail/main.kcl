@@ -12,7 +12,7 @@ fn railTslot(railHeight, length) {
   arcEnd = 0.0275
   holeDiameter = 0.262
   // Sketch one inner leg of the extruded rail
-  railProfile = startSketchOn(-XZ)
+  sketch001 = startSketchOn(-XZ)
     |> startProfile(at = [0.5, (1 - 0.356) / 2])
     |> xLine(length = -0.08)
     |> tangentialArc(angle = 45deg, radius = .09)
@@ -28,8 +28,6 @@ fn railTslot(railHeight, length) {
     |> arc(angleStart = 0, angleEnd = 180deg, radius = scoreDepth)
     |> xLine(length = -0.03)
     |> tangentialArc(endAbsolute = [arcEnd, arcEnd])
-
-    // Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch
     |> mirror2d(axis = {
          direction = [1.0, 1.0],
          origin = [0.0, 0.0]
@@ -43,14 +41,10 @@ fn railTslot(railHeight, length) {
          origin = [0.5, 0.0]
        })
     |> close()
-
-    // Sketch a dimensioned hole in the center of the profile
     |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = holeDiameter / 2))
-
-    // Scale the entire sketch by a factor of the rail height, then extrude
     |> scale(x = railHeight, y = railHeight, z = railHeight)
-    |> extrude(length)
 
+  railProfile = extrude(sketch001, length)
   return railProfile
 }
 

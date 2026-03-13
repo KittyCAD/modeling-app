@@ -10,16 +10,16 @@ import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
 // Create a function to make the washer. Must be a function since multiple washers are used.
 export fn washer() {
   // Create the base of the washer
-  washerBase = startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> circle(center = [0, 0], radius = washerOuterDia / 2)
-    |> extrude(length = washerThickness)
+
+  washerBase = extrude(sketch001, length = washerThickness)
 
   // Extrude a hole through the washer
-  washer = startSketchOn(washerBase, face = END)
+  sketch002 = startSketchOn(washerBase, face = END)
     |> circle(center = [0, 0], radius = washerInnerDia / 2)
-    |> extrude(length = -washerThickness)
+  washer = extrude(sketch002, length = -washerThickness)
     |> appearance(color = "#ee4f4f")
-
   return washer
 }
 

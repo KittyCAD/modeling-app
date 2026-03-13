@@ -2,7 +2,7 @@
 // The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 // Import Parameters
 import * from "parameters.kcl"
@@ -43,13 +43,13 @@ holePositions = [
 
 // Function to create a counterbored hole
 fn counterbore(@holePosition) {
-  cbBore = startSketchOn(plateBody, face = END)
+  sketch001 = startSketchOn(plateBody, face = END)
     |> circle(center = holePosition, radius = counterboreDiameter / 2)
-    |> extrude(length = -counterboreDepth)
-  cbBolt = startSketchOn(cbBore, face = START)
-    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
-    |> extrude(length = -stockThickness + counterboreDepth)
+  cbBore = extrude(sketch001, length = -counterboreDepth)
 
+  sketch002 = startSketchOn(cbBore, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+  cbBolt = extrude(sketch002, length = -stockThickness + counterboreDepth)
   return {  }
 }
 

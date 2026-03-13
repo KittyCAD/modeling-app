@@ -35,7 +35,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> close()
 
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-  helicalGear = startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
     |> involuteCircular(
          startDiameter = baseDiameter,
@@ -50,11 +50,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
          angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
          reverse = true,
        )
-
-    // Position the end line of the sketch at the start of the next tooth
     |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
-
-    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
          instances = nTeeth,
          center = [0, 0],
@@ -63,11 +59,14 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
        )
     |> close()
 
-    // Compute twist angle so the tooth helix matches helixAngle over the gear height
-    |> extrude(length = gearHeight, twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter), twistAngleStep = 0)
+  helicalGear = extrude(
+         sketch001,
+         length = gearHeight,
+         twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter),
+         twistAngleStep = 0,
+       )
     |> subtract(tools =     holeWithKeyway
       |> extrude(length = gearHeight))
-
   return helicalGear
 }
 

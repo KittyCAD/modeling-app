@@ -28,7 +28,7 @@ fn sprocket(@speed, nTeeth) {
     |> close()
 
   // build the sprocket
-  sprocket = startSketchOn(offsetPlane(XZ, offset = -speed * rollerWidth))
+  sketch001 = startSketchOn(offsetPlane(XZ, offset = -speed * rollerWidth))
     |> startProfile(at = [
          (pitchDiameter - rollerDiameter) / 2,
          0
@@ -40,15 +40,15 @@ fn sprocket(@speed, nTeeth) {
     |> patternCircular2d(instances = nTeeth, center = [0, 0])
     |> close()
     |> subtract2d(tool = spline)
-    |> extrude(length = rollerWidth / 2)
+
+  sprocket = extrude(sketch001, length = rollerWidth / 2)
 
   // Place a mounting spacer between each sprocket body
-  spacer = startSketchOn(sprocket, face = END)
+  sketch002 = startSketchOn(sprocket, face = END)
     |> circle(center = [0, 0], diameter = shaftDiameter * 1.3)
     |> subtract2d(tool = circle(center = [0, 0], diameter = shaftDiameter))
-    |> extrude(length = rollerWidth / 2, method = NEW)
+  spacer = extrude(sketch002, length = rollerWidth / 2, method = NEW)
     |> appearance(color = "#0f0f0f")
-
   return sprocket
 }
 

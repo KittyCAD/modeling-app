@@ -11,12 +11,12 @@ export woodRoughness = 80
 export woodMetalness = 0
 
 fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
-  return startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
+    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Position the prism so its bottom sits at minZ
+  return extrude(sketch001, length = sizeZ)
     // Start a 2D sketch on the global XY plane
-    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Draw the 2x4 cross‑section at the given corner
-    |> extrude(length = sizeZ) // Create a 3D prism by extruding the rectangle along +Z
-    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Apply a wood‑like material
-    |> translate(z = minZ) // Position the prism so its bottom sits at minZ
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Draw the 2x4 cross‑section at the given corner
+    |> translate(z = minZ) // Create a 3D prism by extruding the rectangle along +Z
 }
 
 // 2x4 along X (length in X), depth in Y, thickness in Z.
