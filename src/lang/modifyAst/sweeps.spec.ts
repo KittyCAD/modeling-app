@@ -1,4 +1,9 @@
-import { assertParse, recast, type Name } from '@src/lang/wasm'
+import {
+  assertParse,
+  recast,
+  type ArtifactGraph,
+  type Name,
+} from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -91,6 +96,18 @@ async function getAstAndSketchSelectionsEngineless(
   }
   const sketches = createSelectionFromPathArtifact(artifacts)
   return { artifactGraph, ast, sketches }
+}
+
+function getRegionPathArtifactsFromCode(
+  code: string,
+  artifactGraph: ArtifactGraph
+) {
+  return [...artifactGraph.values()].filter((artifact) => {
+    if (artifact.type !== 'path') return false
+    const [start, end] = artifact.codeRef.range
+    const source = code.slice(start, end)
+    return source.includes('region(')
+  })
 }
 
 describe('sweeps.test.ts', () => {
@@ -287,6 +304,44 @@ extrude002 = extrude(seg01, length = 3)`)
         `region001 = region(point = [1mm, 1mm], sketch = s)
 extrude001 = extrude(region001, length = 1)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should edit an extrude call from a sketch region selection', async () => {
+      const code = `${triangleRegion}
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const regionArtifacts = getRegionPathArtifactsFromCode(
+        code,
+        artifactGraph
+      )
+      expect(regionArtifacts).toHaveLength(1)
+      const sketches = createSelectionFromArtifacts(
+        regionArtifacts,
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`extrude001 = extrude(region001, length = 2)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -898,6 +953,55 @@ sweep001 = sweep(region001, path = profile001)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should edit a sweep call from a sketch region selection', async () => {
+      const code = `${triangleRegion}
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = -5)
+  |> tangentialArc(endAbsolute = [-20, 5])
+region001 = region(point = [1mm, 1mm], sketch = s)
+sweep001 = sweep(region001, path = profile001, sectional = true)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const regionArtifacts = getRegionPathArtifactsFromCode(
+        code,
+        artifactGraph
+      )
+      expect(regionArtifacts).toHaveLength(1)
+      const sketches = createSelectionFromArtifacts(
+        regionArtifacts,
+        artifactGraph
+      )
+      const pathArtifact = [...artifactGraph.values()].filter(
+        (s) => s.type === 'path'
+      )[1]
+      const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
+      expect(pathArtifact).toBeDefined()
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        sectional: false,
+        relativeTo: 'TRAJECTORY',
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sweep001 = sweep(
+  region001,
+  path = profile001,
+  sectional = false,
+  relativeTo = sweep::TRAJECTORY,
+)`)
+    })
+
     it('should add a sweep call with surface bodyType', async () => {
       const { ast, artifactGraph, sketches, path } =
         await getAstAndSketchesForSweep(
@@ -1141,6 +1245,57 @@ t = sketch(on = plane001) {
       expect(loft.isError).toBe(true)
     })
 
+    it('should edit a loft call from a sketch region selection', async () => {
+      const code = `${triangleRegion}
+
+plane001 = offsetPlane(XY, offset = 10)
+
+t = sketch(on = plane001) {
+  edge1 = line(start = [-0.05, -0.01], end = [3.88, 0.81])
+  edge2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+  coincident([edge1.end, edge2.start])
+  edge3 = line(start = [0.92, 4.67], end = [-0.05, -0.01])
+  coincident([edge2.end, edge3.start])
+  coincident([edge1.start, edge3.end])
+}
+region001 = region(point = [1mm, 1mm], sketch = s)
+region002 = region(point = [1mm, 1mm], sketch = t)
+loft001 = loft([region001, region002])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const regionArtifacts = getRegionPathArtifactsFromCode(
+        code,
+        artifactGraph
+      )
+      expect(regionArtifacts).toHaveLength(2)
+      const sketches = createSelectionFromArtifacts(
+        regionArtifacts,
+        artifactGraph
+      )
+      const vDegree = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addLoft({
+        ast,
+        artifactGraph,
+        sketches,
+        vDegree,
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `loft001 = loft([region001, region002], vDegree = 3)`
+      )
+    })
+
     it('should add a basic loft call with surface bodyType', async () => {
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
@@ -1335,6 +1490,47 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 revolve001 = revolve(region001, angle = 10, axis = X)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should edit a revolve call from a sketch region selection', async () => {
+      const code = `${triangleRegion}
+region001 = region(point = [1mm, 1mm], sketch = s)
+revolve001 = revolve(region001, angle = 10, axis = X)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const regionArtifacts = getRegionPathArtifactsFromCode(
+        code,
+        artifactGraph
+      )
+      expect(regionArtifacts).toHaveLength(1)
+      const sketches = createSelectionFromArtifacts(
+        regionArtifacts,
+        artifactGraph
+      )
+      const angle = await getKclCommandValue(
+        '20',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches,
+        angle,
+        axis: 'Y',
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `revolve001 = revolve(region001, angle = 20, axis = Y)`
+      )
     })
 
     it('should add basic revolve call with surface bodyType', async () => {
