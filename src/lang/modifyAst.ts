@@ -1059,17 +1059,17 @@ export function insertVariableAndOffsetPathToNode(
 }
 
 export function insertRegionVariablesAndOffsetPathToNode({
-  regionSelections,
+  engineRegions,
   modifiedAst,
   artifactGraph,
   wasmInstance,
 }: {
-  regionSelections: EngineRegionSelection[]
+  engineRegions: EngineRegionSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
 }): Error | Expr[] {
-  if (regionSelections.length === 0) {
+  if (engineRegions.length === 0) {
     return []
   }
 
@@ -1083,7 +1083,7 @@ export function insertRegionVariablesAndOffsetPathToNode({
 
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
-  for (const [index, regionSelection] of regionSelections.entries()) {
+  for (const [index, regionSelection] of engineRegions.entries()) {
     const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
     if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
       return new Error("Couldn't retrieve sketch block artifact")

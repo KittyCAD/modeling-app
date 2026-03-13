@@ -140,12 +140,10 @@ export function addExtrude({
     vars.exprs.push(...res.exprs)
   }
 
-  const regionSelections = sketches.otherSelections.filter(
-    isEngineRegionSelection
-  )
-  if (regionSelections.length > 0) {
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      regionSelections,
+      engineRegions,
       modifiedAst,
       artifactGraph,
       wasmInstance,
@@ -342,12 +340,10 @@ export function addSweep({
     return vars
   }
 
-  const regionSelections = sketches.otherSelections.filter(
-    isEngineRegionSelection
-  )
-  if (regionSelections.length > 0) {
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      regionSelections,
+      engineRegions,
       modifiedAst,
       artifactGraph,
       wasmInstance,
@@ -464,12 +460,10 @@ export function addLoft({
     return vars
   }
 
-  const regionSelections = sketches.otherSelections.filter(
-    isEngineRegionSelection
-  )
-  if (regionSelections.length > 0) {
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      regionSelections,
+      engineRegions,
       modifiedAst,
       artifactGraph,
       wasmInstance,
@@ -596,12 +590,10 @@ export function addRevolve({
   if (err(vars)) {
     return vars
   }
-  const regionSelections = sketches.otherSelections.filter(
-    isEngineRegionSelection
-  )
-  if (regionSelections.length > 0) {
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      regionSelections,
+      engineRegions,
       modifiedAst,
       artifactGraph,
       wasmInstance,

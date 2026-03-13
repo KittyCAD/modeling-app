@@ -1,9 +1,4 @@
-import {
-  assertParse,
-  recast,
-  type ArtifactGraph,
-  type Name,
-} from '@src/lang/wasm'
+import { assertParse, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -96,18 +91,6 @@ async function getAstAndSketchSelectionsEngineless(
   }
   const sketches = createSelectionFromPathArtifact(artifacts)
   return { artifactGraph, ast, sketches }
-}
-
-function getRegionPathArtifactsFromCode(
-  code: string,
-  artifactGraph: ArtifactGraph
-) {
-  return [...artifactGraph.values()].filter((artifact) => {
-    if (artifact.type !== 'path') return false
-    const [start, end] = artifact.codeRef.range
-    const source = code.slice(start, end)
-    return source.includes('region(')
-  })
 }
 
 describe('sweeps.test.ts', () => {
@@ -316,15 +299,10 @@ extrude001 = extrude(region001, length = 1)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const regionArtifacts = getRegionPathArtifactsFromCode(
-        code,
-        artifactGraph
+      const region = [...artifactGraph.values()].findLast(
+        (s) => s.type === 'path'
       )
-      expect(regionArtifacts).toHaveLength(1)
-      const sketches = createSelectionFromArtifacts(
-        regionArtifacts,
-        artifactGraph
-      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
       const length = await getKclCommandValue(
         '2',
         instanceInThisFile,
@@ -966,19 +944,14 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const regionArtifacts = getRegionPathArtifactsFromCode(
-        code,
-        artifactGraph
+      const region = [...artifactGraph.values()].findLast(
+        (s) => s.type === 'path'
       )
-      expect(regionArtifacts).toHaveLength(1)
-      const sketches = createSelectionFromArtifacts(
-        regionArtifacts,
-        artifactGraph
-      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
       const pathArtifact = [...artifactGraph.values()].filter(
         (s) => s.type === 'path'
       )[1]
-      const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
+      const path = createSelectionFromArtifacts([pathArtifact], artifactGraph)
       expect(pathArtifact).toBeDefined()
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
@@ -1266,15 +1239,10 @@ loft001 = loft([region001, region002])`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const regionArtifacts = getRegionPathArtifactsFromCode(
-        code,
-        artifactGraph
-      )
-      expect(regionArtifacts).toHaveLength(2)
-      const sketches = createSelectionFromArtifacts(
-        regionArtifacts,
-        artifactGraph
-      )
+      const regions = [...artifactGraph.values()]
+        .filter((s) => s.type === 'path')
+        .slice(-2)
+      const sketches = createSelectionFromArtifacts(regions, artifactGraph)
       const vDegree = await getKclCommandValue(
         '3',
         instanceInThisFile,
@@ -1501,15 +1469,10 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const regionArtifacts = getRegionPathArtifactsFromCode(
-        code,
-        artifactGraph
+      const region = [...artifactGraph.values()].findLast(
+        (s) => s.type === 'path'
       )
-      expect(regionArtifacts).toHaveLength(1)
-      const sketches = createSelectionFromArtifacts(
-        regionArtifacts,
-        artifactGraph
-      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
       const angle = await getKclCommandValue(
         '20',
         instanceInThisFile,
