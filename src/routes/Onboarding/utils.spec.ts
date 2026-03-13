@@ -1,6 +1,7 @@
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import type { OnboardingPath } from '@src/lib/onboardingPaths'
 import {
+  consumeRememberedOnboardingWorkflowPanes,
   needsToOnboard,
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
@@ -78,6 +79,13 @@ describe('Onboarding utility functions', () => {
         key: 'default',
       }
       expect(needsToOnboard(location, 'completed')).toEqual(false)
+    })
+  })
+
+  describe('workflow preference memory', () => {
+    it('returns null when no workflow was selected', () => {
+      consumeRememberedOnboardingWorkflowPanes()
+      expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
     })
   })
 })
