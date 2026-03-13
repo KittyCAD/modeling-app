@@ -535,11 +535,12 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
+face001 = faceId(extrude001, index = 6)
 surface001 = deleteFace(
   extrude001,
   faces = [
     rectangleSegmentA001,
-    faceId(extrude001, index = 6)
+    face001
   ],
 )`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1044,6 +1045,50 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
       expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+    })
+
+    it('should find face artifacts from faceId variables', async () => {
+      const code = `${cylinder}
+face001 = faceId(extrude001, index = 2)
+surface001 = deleteFace(extrude001, faces = face001)`
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'deleteFace'
+      )
+      if (
+        !op ||
+        op.type !== 'StdLibCall' ||
+        !op.unlabeledArg ||
+        !op.labeledArgs?.faces
+      ) {
+        throw new Error('deleteFace operation not found')
+      }
+
+      const selections = retrieveFaceSelectionsFromOpArgs(
+        op.unlabeledArg,
+        op.labeledArgs.faces,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.solids.graphSelections).toHaveLength(1)
+      expect(selections.solids.graphSelections[0].artifact?.type).toEqual(
+        'sweep'
+      )
+
+      expect(selections.faces.graphSelections).toHaveLength(1)
+      const faceSelection = selections.faces.graphSelections[0]
+      expect(faceSelection.artifact?.type).toEqual('face')
+      if (!faceSelection.artifact || faceSelection.artifact.type !== 'face') {
+        throw new Error('Face artifact not found in selection')
+      }
+      expect(faceSelection.artifact.solidId).toEqual(
+        selections.solids.graphSelections[0].artifact?.id
+      )
     })
   })
 

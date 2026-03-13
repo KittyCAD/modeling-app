@@ -1080,9 +1080,9 @@ export function updateSelections(
 const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'enginePrimitiveFace'],
+  face: ['wall', 'cap', 'face', 'enginePrimitiveFace'],
   profile: ['solid2d', 'region'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'edge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }

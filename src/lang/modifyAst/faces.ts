@@ -7,6 +7,8 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
@@ -146,6 +148,27 @@ export function addDeleteFace({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  const primitiveFaceSelections =
+    getEnginePrimitiveFaceSelectionsFromSelection(faces)
+  let primitiveFaceExprs: Expr[] | undefined
+  if (primitiveFaceSelections.length > 0) {
+    const insertedPrimitiveFaces = insertFaceVariablesAndOffsetPathToNode(
+      primitiveFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(insertedPrimitiveFaces)) {
+      return insertedPrimitiveFaces
+    }
+    modifiedAst = insertedPrimitiveFaces.modifiedAst
+    primitiveFaceExprs =
+      insertedPrimitiveFaces.faceExprs.length > 0
+        ? insertedPrimitiveFaces.faceExprs
+        : undefined
+  }
+
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
     faces,
@@ -158,6 +181,7 @@ export function addDeleteFace({
       lastChildLookup: false,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
       includePrimitiveFaceIndices: true,
+      primitiveFaceExprs,
     }
   )
   if (err(result)) {
@@ -765,6 +789,94 @@ export function addOffsetPlane({
 
 // Utilities
 
+function insertFaceVariablesAndOffsetPathToNode(
+  primitiveFaceSelections: EnginePrimitiveSelection[],
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
+): { modifiedAst: Node<Program>; faceExprs: Expr[] } | Error {
+  const dedupedSelections = [
+    ...new Map(
+      primitiveFaceSelections.map((selection) => [
+        `${selection.parentEntityId || ''}:${selection.primitiveIndex}`,
+        selection,
+      ])
+    ).values(),
+  ]
+
+  let modifiedAst = ast
+  const faceExprs: Expr[] = []
+  let insertIndex =
+    nodeToEdit && nodeToEdit[1] && typeof nodeToEdit[1][0] === 'number'
+      ? Number(nodeToEdit[1][0])
+      : modifiedAst.body.length
+
+  for (const selection of dedupedSelections) {
+    if (!selection.parentEntityId) {
+      continue
+    }
+
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      selection.parentEntityId,
+      artifactGraph
+    )
+    if (!bodySelection) {
+      return new Error(
+        'Delete Face could not resolve a parent solid for a selected primitive face.'
+      )
+    }
+
+    const bodyVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [bodySelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+      {
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+      }
+    )
+    if (err(bodyVars)) {
+      return bodyVars
+    }
+
+    let bodyExpr = createVariableExpressionsArray(bodyVars.exprs)
+    if (bodyExpr === null && bodyVars.exprs.length === 1) {
+      bodyExpr = bodyVars.exprs[0]
+    }
+    if (!bodyExpr) {
+      return new Error(
+        'Delete Face could not resolve selected primitive face bodies in code.'
+      )
+    }
+
+    const faceVariableName = findUniqueName(modifiedAst, 'face')
+    const faceDeclaration = createVariableDeclaration(
+      faceVariableName,
+      createCallExpressionStdLibKw('faceId', structuredClone(bodyExpr), [
+        createLabeledArg(
+          'index',
+          createLiteral(selection.primitiveIndex, wasmInstance)
+        ),
+      ])
+    )
+
+    modifiedAst.body.splice(insertIndex, 0, faceDeclaration)
+    insertIndex++
+    if (nodeToEdit && nodeToEdit[1] && typeof nodeToEdit[1][0] === 'number') {
+      nodeToEdit[1][0] = Number(nodeToEdit[1][0]) + 1
+    }
+
+    faceExprs.push(createLocalName(faceVariableName))
+  }
+
+  return { modifiedAst, faceExprs }
+}
+
 function getEnginePrimitiveFaceSelectionsFromSelection(
   faces: Selections
 ): EnginePrimitiveSelection[] {
@@ -785,6 +897,23 @@ function getSolidSelectionsFromFaceSelections(
     graphSelections: faces.graphSelections.flatMap((face) => {
       if (!face.artifact) {
         return []
+      }
+      if (face.artifact.type === 'face') {
+        const solidArtifact = getArtifactOfTypes(
+          {
+            key: face.artifact.solidId,
+            types: ['sweep', 'compositeSolid'],
+          },
+          artifactGraph
+        )
+        if (err(solidArtifact)) {
+          return []
+        }
+
+        return {
+          artifact: solidArtifact as Artifact,
+          codeRef: solidArtifact.codeRef,
+        }
       }
       const sweep = getSweepFromSuspectedSweepSurface(
         face.artifact.id,
@@ -1039,7 +1168,12 @@ export function retrieveFaceSelectionsFromOpArgs(
   const sweepIdsSet = new Set(sweepIds)
   const candidates: Map<string, Selection> = new Map()
   for (const artifact of artifactGraph.values()) {
-    if (
+    if (artifact.type === 'face') {
+      candidates.set(artifact.id, {
+        artifact,
+        codeRef: artifact.codeRef,
+      })
+    } else if (
       artifact.type === 'cap' &&
       sweepIdsSet.has(artifact.sweepId) &&
       artifact.subType
@@ -1109,8 +1243,17 @@ export function retrieveFaceSelectionsFromOpArgs(
           'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
         )
       }
+    } else if (v.type === 'Face' && candidates.has(v.artifact_id)) {
+      const result = candidates.get(v.artifact_id)
+      if (result) {
+        graphSelections.push(result)
+      } else {
+        console.warn(
+          'retrieveFaceSelectionsFromOpArgs result from Face artifact_id is missing and not a selection'
+        )
+      }
     } else {
-      console.warn('Face value is not a String or TagIdentifier', v)
+      console.warn('Face value is not a String, TagIdentifier, or Face', v)
       continue
     }
   }
@@ -1188,6 +1331,7 @@ export function buildSolidsAndFacesExprs(
     lastChildLookup?: boolean
     artifactTypeFilter?: Array<Artifact['type']>
     includePrimitiveFaceIndices?: boolean
+    primitiveFaceExprs?: Expr[]
   } = {}
 ) {
   let modifiedAst = structuredClone(ast)
@@ -1195,6 +1339,7 @@ export function buildSolidsAndFacesExprs(
     lastChildLookup = true,
     artifactTypeFilter = ['sweep'],
     includePrimitiveFaceIndices = false,
+    primitiveFaceExprs,
   } = options
   const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph)
   const primitiveFaceSelections = includePrimitiveFaceIndices
@@ -1249,9 +1394,32 @@ export function buildSolidsAndFacesExprs(
   const taggedFacesExprs = result.exprs
   modifiedAst = result.modifiedAst
 
+  const explicitFaceSelections: Selections = {
+    graphSelections: faces.graphSelections.filter(
+      (selection) => selection.artifact?.type === 'face'
+    ),
+    otherSelections: [],
+  }
+  let explicitFaceExprs: Expr[] = []
+  if (explicitFaceSelections.graphSelections.length > 0) {
+    const explicitFaceVars = getVariableExprsFromSelection(
+      explicitFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(explicitFaceVars)) {
+      return explicitFaceVars
+    }
+    explicitFaceExprs = explicitFaceVars.exprs
+  }
+
   // Primitive fallback
   let primitiveTaggedFaceExprs: Expr[] = []
-  if (primitiveFaceSelections.length > 0) {
+  if (primitiveFaceExprs) {
+    primitiveTaggedFaceExprs = primitiveFaceExprs
+  } else if (primitiveFaceSelections.length > 0) {
     const primitiveFaceExprs = getFaceIdExprsFromPrimitiveSelections(
       primitiveFaceSelections,
       artifactGraph,
@@ -1267,6 +1435,7 @@ export function buildSolidsAndFacesExprs(
 
   const facesExpr = createVariableExpressionsArray([
     ...taggedFacesExprs,
+    ...explicitFaceExprs,
     ...primitiveTaggedFaceExprs,
   ])
   if (!facesExpr) {
