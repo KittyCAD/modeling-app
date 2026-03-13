@@ -135,6 +135,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import { requestSkipWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -879,7 +880,6 @@ export class KclManager extends File {
   )
 
   static requestCameraResetAnnotation = Annotation.define<boolean>()
-  static requestSkipWriteToFile = StateEffect.define<boolean>()
   static requestSkipExecution = Annotation.define<boolean>()
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
@@ -1016,7 +1016,7 @@ export class KclManager extends File {
       })
 
     const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.effects.some((e) => e.is(KclManager.requestSkipWriteToFile) && e.value)
+      tr.effects.some((e) => e.is(requestSkipWriteToFile) && e.value)
     )
 
     const shouldWriteToFile =
@@ -2257,11 +2257,7 @@ export class KclManager extends File {
           resolvedOptions.shouldResetCamera
         ),
       ],
-      effects: [
-        KclManager.requestSkipWriteToFile.of(
-          !resolvedOptions.shouldWriteToDisk
-        ),
-      ],
+      effects: [requestSkipWriteToFile.of(!resolvedOptions.shouldWriteToDisk)],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
