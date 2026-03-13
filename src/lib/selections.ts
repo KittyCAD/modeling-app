@@ -70,7 +70,7 @@ import type {
   EnginePrimitiveSelection,
   ExtrudeFacePlane,
   OffsetPlane,
-  RegionSelection,
+  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
@@ -120,11 +120,11 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-async function getRegionSelectionFromEntity(
+async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   engineCommandManager: ConnectionManager
-): Promise<RegionSelection | null> {
+): Promise<EngineRegionSelection | null> {
   const point = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
@@ -203,9 +203,9 @@ export function isEnginePrimitiveSelection(
   )
 }
 
-export function isRegionSelection(
+export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
-): selection is RegionSelection {
+): selection is EngineRegionSelection {
   return (
     typeof selection === 'object' &&
     'type' in selection &&
@@ -265,7 +265,7 @@ export async function getEventForSelectWithPoint(
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
     // we first check if it's a region
-    const regionSelection = await getRegionSelectionFromEntity(
+    const regionSelection = await getEngineRegionSelectionFromEntity(
       data.entity_id,
       artifactGraph,
       engineCommandManager
@@ -274,7 +274,7 @@ export async function getEventForSelectWithPoint(
       return {
         type: 'Set selection',
         data: {
-          selectionType: 'regionSelection',
+          selectionType: 'engineRegionSelection',
           selection: regionSelection,
         },
       }
@@ -435,7 +435,7 @@ export function handleSelectionBatch({
       })
       return
     }
-    if (isRegionSelection(s)) {
+    if (isEngineRegionSelection(s)) {
       selectionToEngine.push({
         id: s.id,
         range: defaultSourceRange(),
@@ -715,7 +715,7 @@ export function getSelectionCountByType(
   selection.otherSelections.forEach((selection) => {
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
-    } else if (isRegionSelection(selection)) {
+    } else if (isEngineRegionSelection(selection)) {
       incrementOrInitializeSelectionType('region')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')

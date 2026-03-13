@@ -322,7 +322,9 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  app.quit()
+  if (os.platform() !== 'darwin') {
+    app.quit()
+  }
 })
 
 // This method will be called when Electron has finished
