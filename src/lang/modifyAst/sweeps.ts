@@ -55,7 +55,7 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
-import { isRegionSelection } from '@src/lib/selections'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -140,7 +140,9 @@ export function addExtrude({
     vars.exprs.push(...res.exprs)
   }
 
-  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  const regionSelections = sketches.otherSelections.filter(
+    isEngineRegionSelection
+  )
   if (regionSelections.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       regionSelections,
@@ -340,7 +342,9 @@ export function addSweep({
     return vars
   }
 
-  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  const regionSelections = sketches.otherSelections.filter(
+    isEngineRegionSelection
+  )
   if (regionSelections.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       regionSelections,
@@ -460,7 +464,9 @@ export function addLoft({
     return vars
   }
 
-  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  const regionSelections = sketches.otherSelections.filter(
+    isEngineRegionSelection
+  )
   if (regionSelections.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       regionSelections,
@@ -590,7 +596,9 @@ export function addRevolve({
   if (err(vars)) {
     return vars
   }
-  const regionSelections = sketches.otherSelections.filter(isRegionSelection)
+  const regionSelections = sketches.otherSelections.filter(
+    isEngineRegionSelection
+  )
   if (regionSelections.length > 0) {
     const regionExprs = insertRegionVariablesAndOffsetPathToNode({
       regionSelections,

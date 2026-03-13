@@ -64,7 +64,7 @@ import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type {
   ExtrudeFacePlane,
-  RegionSelection,
+  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
@@ -1064,7 +1064,7 @@ export function insertRegionVariablesAndOffsetPathToNode({
   artifactGraph,
   wasmInstance,
 }: {
-  regionSelections: RegionSelection[]
+  regionSelections: EngineRegionSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
