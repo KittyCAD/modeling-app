@@ -27,6 +27,7 @@ import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
@@ -199,6 +200,37 @@ describe('MlEphantConversation', () => {
     expect(
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
+  })
+
+  test('renders the blocked reason from the API response without extra copy', () => {
+    const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        blockedReason={blockedReason}
+      />
+    )
+
+    expect(
+      screen.getByText(/You need a payment method to keep using Zookeeper/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'account' })).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account')
+    )
+    expect(screen.queryByText(/The user/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toBeDisabled()
   })
 
   describe('file attachments', () => {

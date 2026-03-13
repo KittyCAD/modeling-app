@@ -1,7 +1,6 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -38,7 +37,7 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  userBlockedOnPayment?: boolean
+  blockedReason?: string
   defaultPrompt?: string
   initialMlCopilotMode?: MlCopilotMode // resolved from project settings
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
@@ -545,10 +544,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
-              {props.userBlockedOnPayment ? (
-                <StarterCard
-                  text={`Zookeeper is unavailable because your remaining reasoning time is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
-                />
+              {props.blockedReason ? (
+                <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
@@ -610,7 +607,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={
-                props.userBlockedOnPayment || props.disabled || props.isLoading
+                Boolean(props.blockedReason) ||
+                props.disabled ||
+                props.isLoading
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
