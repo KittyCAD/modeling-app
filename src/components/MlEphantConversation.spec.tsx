@@ -217,6 +217,10 @@ describe('MlEphantConversation', () => {
         hasPromptCompleted={true}
         contexts={[]}
         blockedReason={blockedReason}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
       />
     )
 
