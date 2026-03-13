@@ -50,7 +50,7 @@ export const baseLoader =
     }
 
     // Web, make a default project and redirect to it.
-    const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
@@ -91,7 +91,6 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -106,7 +105,7 @@ export const fileLoader =
       ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
       : undefined
 
-    const wasmInstance = await kclManager.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     let settings = await loadAndValidateSettings(
       wasmInstance,
@@ -191,16 +190,19 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined
-    )
+    debugger
+
+    const shouldCloseProject = project.path !== app.project?.path
+    const shouldCloseEditor = currentFilePath !== app.project?.executingPath
+    if (app.project && shouldCloseProject) {
+      app.project.close()
+    } else if (app.project?.executingPath && shouldCloseEditor) {
+      app.project.closeEditor(app.project.executingPath)
+    }
+    const projectRef = app.project ?? (await app.openProject(project))
+    const editor =
+      app.project?.executingEditor.value ??
+      (await projectRef.openEditor(currentFilePath || PROJECT_ENTRYPOINT))
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
@@ -238,7 +240,7 @@ export const homeLoader =
   }: {
     app: App
   }): LoaderFunction =>
-  async ({ request }): Promise<HomeLoaderData | Response> => {
+  async (): Promise<HomeLoaderData | Response> => {
     // If on web, bump out to root, which will redirect to a project.
     if (!window.electron) {
       return redirect(PATHS.INDEX)

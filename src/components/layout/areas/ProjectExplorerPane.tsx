@@ -12,7 +12,7 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import {
   useFolders,
   useProjectDirectoryPath,
@@ -26,9 +26,8 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { commands, project, systemIOActor, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const projectRef = useRef(project?.projectIORefSignal)

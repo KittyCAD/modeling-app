@@ -12,9 +12,10 @@ import type {
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import { useProject } from '@src/components/ProjectEditorProviders'
+import { useSignals } from '@preact/signals-react/runtime'
 
 const noop = () => {}
 
@@ -172,11 +173,16 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
-  const { kclManager } = useSingletons()
-  const selectionText = getSelectionTypeDisplayText(
-    kclManager.astSignal.value,
-    props.selections.data
-  )
+  const project = useProject()
+  useSignals()
+  const kclManager = project.executingEditor.value
+  const selectionText =
+    (kclManager &&
+      getSelectionTypeDisplayText(
+        kclManager.astSignal.value,
+        props.selections.data
+      )) ||
+    null
   return selectionText ? (
     <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />

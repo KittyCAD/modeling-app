@@ -4,10 +4,21 @@ import { expect, vi, describe, test } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { App } from '@src/lib/app'
 
-describe('useOnPageMounted', () => {
-  const singletons = App.fromProvided({
+describe('useOnPageMounted', async () => {
+  const app = App.fromProvided({
     wasmPromise: Promise.resolve({} as ModuleType),
-  }).singletons
+  })
+  const project = await app.openProject({
+    path: 'some-project',
+    name: 'i-should-really-change-this-api',
+    children: [],
+    default_file: 'main.kcl',
+    directory_count: 0,
+    kcl_file_count: 1,
+    metadata: null,
+    readWriteAccess: true,
+  })
+  const editor = await project.openEditor('some-path')
 
   describe('on mounted', () => {
     test('should run once', () => {
@@ -20,10 +31,14 @@ describe('useOnPageMounted', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
 
+      const ecm = editor.engineCommandManager
+
+      if (!ecm) {
+        return
+      }
+
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(ecm)
     })
     test('should reset with helper function', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -35,17 +50,22 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      const ecm = editor.engineCommandManager
+
+      if (!ecm) {
+        expect(
+          new Error(`You don't event have an engineCommandManager, you fail.`)
+        )
+        return
+      }
+
+      result.current.resetGlobalEngineCommandManager(ecm)
       rerender({ callback: callback_2 })
       unmount()
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(ecm)
     })
     test('should fail to call the callback again, did not reset', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -61,10 +81,16 @@ describe('useOnPageMounted', () => {
       unmount()
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
+      const ecm = editor.engineCommandManager
+
+      if (!ecm) {
+        expect(
+          new Error(`You don't event have an engineCommandManager, you fail.`)
+        )
+        return
+      }
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(ecm)
     })
   })
 })

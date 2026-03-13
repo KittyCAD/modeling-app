@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { btnName } from '@src/lib/cameraControls'
 import { err, reportRejection } from '@src/lib/trap'
@@ -25,14 +25,19 @@ import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnl
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
+import {
+  useExecutingEditor,
+  useProject,
+} from '@src/components/ProjectEditorProviders'
 
 const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
-  const { settings, project } = useApp()
-  const { kclManager } = useSingletons()
+  const { settings } = useApp()
+  const project = useProject()
+  const { editor: kclManager } = useExecutingEditor()
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)

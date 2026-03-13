@@ -15,7 +15,7 @@ import {
   type BillingActor,
   BillingTransition,
 } from '@src/machines/billingMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { KclManager } from '@src/lang/KclManager'
 
 export const useRequestedProjectName = () => {
   const { systemIOActor } = useApp()
@@ -117,7 +117,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
   billingActor: BillingActor,
   token: string,
-  engineCommandManager: ConnectionManager,
+  kclManager: KclManager | undefined,
   fn: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,
@@ -154,7 +154,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       })
 
       // Clear selections since new model
-      engineCommandManager.modelingSend({
+      kclManager?.modelingSend({
         type: 'Set selection',
         data: { selection: undefined, selectionType: 'singleCodeCursor' },
       })

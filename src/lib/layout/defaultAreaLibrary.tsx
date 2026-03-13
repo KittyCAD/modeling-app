@@ -1,4 +1,4 @@
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
@@ -17,6 +17,7 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -39,7 +40,7 @@ function ModelingArea() {
 export const useDefaultAreaLibrary = () => {
   useSignals()
   const { settings, layout } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const getSettings = settings.get
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {

@@ -12,7 +12,7 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
@@ -22,11 +22,12 @@ import {
   setOpenPanes,
 } from '@src/lib/layout'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges

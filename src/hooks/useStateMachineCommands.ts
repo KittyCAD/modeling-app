@@ -10,7 +10,8 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -45,7 +46,7 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commands } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const shouldDisableEngineCommands =

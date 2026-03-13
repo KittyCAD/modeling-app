@@ -1,8 +1,9 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export const useOnPageIdle = ({
   startCallback,
@@ -12,7 +13,7 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const settingsValues = settings.useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(

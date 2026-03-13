@@ -29,7 +29,8 @@ import {
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -47,7 +48,7 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { commands } = useApp()
-    const { kclManager } = useSingletons()
+    const { editor: kclManager } = useExecutingEditor()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -667,7 +668,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()

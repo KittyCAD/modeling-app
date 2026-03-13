@@ -11,7 +11,7 @@ import {
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 type ModalResolve = {
   value: string
@@ -45,7 +45,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue

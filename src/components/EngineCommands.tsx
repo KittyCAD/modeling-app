@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
 import type { CommandLog } from '@src/lang/std/commandLog'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 import { reportRejection } from '@src/lib/trap'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const engineCommandManager = kclManager.engineCommandManager
   const [engineCommands, setEngineCommands] = useState<CommandLog[]>(
     engineCommandManager.commandLogs
@@ -21,7 +21,7 @@ export function useEngineCommands(): [CommandLog[], () => void] {
 }
 
 export const EngineCommands = () => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const engineCommandManager = kclManager.engineCommandManager
   const [engineCommands, clearEngineCommands] = useEngineCommands()
   const [containsFilter, setContainsFilter] = useState('')

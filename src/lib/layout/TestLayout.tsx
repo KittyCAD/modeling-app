@@ -22,7 +22,6 @@ export function TestLayout() {
       enableContextMenus={true}
       showDebugPanel={false}
       notifications={[]}
-      artifactGraph={new Map()}
     />
   )
 }

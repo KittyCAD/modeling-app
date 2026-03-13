@@ -3,7 +3,7 @@ import type { CompletionContext } from '@codemirror/autocomplete'
 import { usePreviousVariables } from '@src/lib/usePreviousVariables'
 import type { Program, VariableMap } from '@src/lang/wasm'
 import { use } from 'react'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 /// Basically a fork of the `mentions` extension https://github.com/uiwjs/react-codemirror/blob/master/extensions/mentions/src/lib/boot.ts
 /// But it matches on any word, not just the `@` symbol
@@ -12,7 +12,7 @@ export function usePreviousVarMentions(
   ast: Program,
   variables: VariableMap
 ) {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const previousVariables = usePreviousVariables({
     code: context.view?.state.doc.toString() || '',

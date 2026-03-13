@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { useApp, useSingletons } from '@src/lib/boot'
-
+import { useApp } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
 import {
@@ -25,7 +25,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 
 export default function AxisGizmo() {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)

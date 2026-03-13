@@ -12,7 +12,7 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
@@ -32,10 +32,11 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { auth, billing, settings, systemIOActor, projectSignal } = useApp()
+  useSignals()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
@@ -82,7 +83,7 @@ export function SystemIOMachineLogicListener() {
     // Open the requested file in the requested project
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
-    kclManager.engineCommandManager.rejectAllModelingCommands(
+    projectSignal.value?.executingEditor.value?.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
     )
 
@@ -98,12 +99,13 @@ export function SystemIOMachineLogicListener() {
     if (
       filePathWithExtension &&
       requestedFilePathWithExtension &&
-      filePathWithExtension !== requestedFilePathWithExtension
+      filePathWithExtension !== requestedFilePathWithExtension &&
+      !!projectSignal.value?.executingEditor.value
     ) {
-      kclManager.switchedFiles = true
+      projectSignal.value.executingEditor.value.switchedFiles = true
+    } else if (!!projectSignal.value?.executingEditor.value) {
+      projectSignal.value.executingEditor.value.isExecuting = false
     }
-
-    kclManager.isExecuting = false
 
     const url = new URL(location.href)
     url.searchParams.delete('ask-open-desktop')
@@ -257,7 +259,7 @@ export function SystemIOMachineLogicListener() {
     mlEphantManagerActor,
     billing.actor,
     token,
-    kclManager.engineCommandManager,
+    projectSignal.value?.executingEditor.value ?? undefined,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -291,7 +293,9 @@ export function SystemIOMachineLogicListener() {
         projectNameCurrentlyOpened
       )
 
-      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+      if (!!projectSignal.value?.executingEditor.value) {
+        projectSignal.value.executingEditor.value.mlEphantManagerMachineBulkManipulatingFileSystem = true
+      }
       systemIOActor.send({
         type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
         data: {

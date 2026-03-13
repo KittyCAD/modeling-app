@@ -2,10 +2,10 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useAppState } from '@src/AppState'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/network/utils'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export function useReliesOnEngine(isExecuting: boolean) {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const reliesOnEngine =

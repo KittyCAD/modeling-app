@@ -5,18 +5,18 @@ import type { KclManager } from '@src/lang/KclManager'
 // namely, the cursor needs to still be shown when the editor is not focused
 // search for code-mirror-override in the repo to find the relevant styles
 
-export function useHotKeyListener(kclManager: KclManager) {
+export function useHotKeyListener(kclManager?: KclManager) {
   const keyName = 'Shift'
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
-      event.key === keyName && kclManager.setIsShiftDown(true)
+      event.key === keyName && kclManager?.setIsShiftDown(true)
     const handleKeyUp = (event: KeyboardEvent) =>
-      event.key === keyName && kclManager.setIsShiftDown(false)
+      event.key === keyName && kclManager?.setIsShiftDown(false)
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  })
+  }, [kclManager])
 }

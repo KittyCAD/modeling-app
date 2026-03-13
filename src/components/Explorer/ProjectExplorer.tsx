@@ -35,7 +35,8 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -183,7 +184,7 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   const { settings, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const errors = kclManager.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =

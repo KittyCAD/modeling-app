@@ -1,15 +1,8 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { type KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
-import { uuidv4 } from '@src/lib/utils'
-import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
-import type {
-  ActorRefFrom,
-  ContextFrom,
-  SnapshotFrom,
-  Subscription,
-} from 'xstate'
+import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -44,12 +37,7 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { type Signal, signal, effect } from '@preact/signals-core'
-import {
-  getAllCurrentSettings,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import type { User } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -122,7 +110,6 @@ export class App implements AppSubsystems {
   set project(newProject: ZDSProject | undefined) {
     this.projectSignal.value = newProject
   }
-  singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
    * - settings parse/unparse
@@ -153,9 +140,6 @@ export class App implements AppSubsystems {
    */
   systemIOActor: SystemIOActor
 
-  // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: SaveSettingsPayload
-
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
     this.auth = subsystems.auth
@@ -184,10 +168,7 @@ export class App implements AppSubsystems {
       },
     })
 
-    this.singletons = this.buildSingletons()
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-    )
+    this.registerWindowHelpersForTests()
   }
 
   /**
@@ -340,39 +321,16 @@ export class App implements AppSubsystems {
       }
     })
 
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
     return this.project
   }
-  private unsubscribeFromSettings: Subscription | undefined = undefined
+
   closeProject() {
-    this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
     this.project = undefined
   }
 
-  /**
-   * Build the world!
-   */
-  buildSingletons() {
-    // TODO: Remove this and make the app handle no executing editor,
-    // so we don't need to stub with empty strings
-    const kclManager = new KclManager('', '', {
-      settings: this.settings.actor,
-      wasmInstancePromise: this.wasmPromise,
-      commandBar: this.commands.actor,
-      projectPath: signal(''),
-      engineCommandManager: this.engineCommandManager,
-      rustContext: this.rustContext,
-    })
-
+  registerWindowHelpersForTests() {
     if (typeof window !== 'undefined') {
-      // Accessible for tests mostly
-      window.engineCommandManager = kclManager.engineCommandManager
-      window.kclManager = kclManager
-      window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
         document.addEventListener('mousemove', (e) =>
@@ -381,123 +339,6 @@ export class App implements AppSubsystems {
       ;(window as any).enableFillet = () => {
         ;(window as any)._enableFillet = true
       }
-      ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
     }
-
-    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
-
-    return {
-      kclManager,
-    }
-  }
-
-  /**
-   * Until we update these dependents of the settings to take settings
-   * as a dependency input, we must subscribe to updates from the outside.
-   */
-  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    if (!this.project) {
-      return // Everything in here only matters inside a project.
-    }
-    const { context } = snapshot
-
-    // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
-
-    // Update engine highlighting
-    const newHighlighting = context.modeling.highlightEdges.current
-    if (
-      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.kclManager.engineCommandManager.connection
-    ) {
-      this.singletons.kclManager.engineCommandManager
-        .setHighlightEdges(newHighlighting)
-        .catch(reportRejection)
-    }
-
-    // Update cursor blinking
-    const newBlinking = context.textEditor.blinkingCursor.current
-    document.documentElement.style.setProperty(
-      `--cursor-color`,
-      newBlinking ? 'auto' : 'transparent'
-    )
-    this.singletons.kclManager.setCursorBlinking(newBlinking)
-
-    // Update theme
-    const newTheme = context.app.theme.current
-    const newBackfaceColor = context.modeling.backfaceColor.current
-    Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
-        ? [
-            this.singletons.kclManager.engineCommandManager.setBackfaceColor(
-              newBackfaceColor
-            ),
-          ]
-        : []),
-    ]).catch(reportRejection)
-
-    // Execute AST
-    try {
-      const relevantSetting = (s: SaveSettingsPayload) => {
-        const hasScaleGrid =
-          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
-        const hasHighlightEdges =
-          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
-        const hasBackfaceColor =
-          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
-        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
-      }
-
-      const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings
-      )
-
-      // Relevant settings requiring a cleared scene and re-exec
-      if (
-        settingsIncludeNewRelevantValues &&
-        this.singletons.kclManager.engineCommandManager.connection
-      ) {
-        this.singletons.kclManager.rustContext
-          .clearSceneAndBustCache(
-            jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.path
-          )
-          .then(() => this.singletons.kclManager.executeCode())
-          .catch(reportRejection)
-      }
-    } catch (e) {
-      console.error('Error executing AST after settings change', e)
-    }
-
-    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
-      context.app.allowOrbitInSketchMode.current
-
-    const newCurrentProjection = context.modeling.cameraProjection.current
-    if (
-      this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch')
-    ) {
-      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
-        newCurrentProjection
-    }
-
-    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
-    // of the last settings to know if they've changed.
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(context)
-    )
   }
 }

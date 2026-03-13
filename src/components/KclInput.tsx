@@ -8,12 +8,13 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { use, useEffect, useRef } from 'react'
 import { editorTheme } from '@src/editor/plugins/theme'
 import { getResolvedTheme } from '@src/lib/theme'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import styles from './KclInput.module.css'
 import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 export function KclInput(props: {
   initialValue: string
@@ -23,10 +24,10 @@ export function KclInput(props: {
   onCancel: () => void
   style?: React.CSSProperties
 }) {
-  const { settings: settingsSystem } = useApp()
-  const { kclManager } = useSingletons()
+  const { settings: settingsSystem, wasmPromise } = useApp()
+  const { editor: kclManager } = useExecutingEditor()
   const settings = settingsSystem.useSettings()
-  const wasmInstance = use(kclManager.rustContext.wasmInstancePromise)
+  const wasmInstance = use(wasmPromise)
 
   const variables = kclManager.variablesSignal.value
 

@@ -8,7 +8,6 @@ import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
-import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
 import type { App } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
@@ -30,13 +29,11 @@ function launchApp(app: App) {
 
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
-  const { singletons } = app
   markOnce('code/willAuth')
-  initializeWindowExceptionHandler(singletons.kclManager)
 
   // Don't start the app machine until all these singletons
   // are initialized, and the wasm module is loaded.
-  singletons.kclManager.wasmInstancePromise
+  app.wasmPromise
     .then((wasmInstance) => {
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency

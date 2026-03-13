@@ -12,7 +12,6 @@ import {
   onUnhide,
   type HideOperation,
 } from '@src/lib/operations'
-import { useSingletons } from '@src/lib/boot'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
@@ -20,11 +19,12 @@ import { sendSelectionEvent } from '@src/lib/featureTree'
 import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
 import { toUtf16 } from '@src/lang/errors'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const bodies = kclManager.artifactGraph
     ? getBodiesFromArtifactGraph(kclManager.artifactGraph)
     : undefined
@@ -77,7 +77,7 @@ function BodyItem({
   artifact,
   hideOperation,
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const { actor: modelingActor, send: modelingSend } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)

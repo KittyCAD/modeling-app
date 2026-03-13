@@ -30,13 +30,16 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  TEST_LOCALSTORAGE_PERSIST_KEY,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
+  SaveSettingsPayload,
 } from '@src/lib/settings/settingsTypes'
 import {
+  getAllCurrentSettings,
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
@@ -75,7 +78,7 @@ import {
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { drawSelection, EditorView, keymap } from '@codemirror/view'
-import type { StateFrom } from 'xstate'
+import type { StateFrom, Subscription } from 'xstate'
 
 import {
   addLineHighlight,
@@ -130,10 +133,14 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  getOnlySettingsFromContext,
+  type SettingsActorType,
+} from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -227,6 +234,7 @@ export class ZDSProject {
       this.projectIORefSignal.value.path,
       this.fileWatcherId
     )
+    this.removeWindowExceptionHandler?.()
   }
 
   /** Open a project, with the option to open an initial editor too */
@@ -266,18 +274,7 @@ export class ZDSProject {
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
-  async openEditor(
-    path: string,
-    /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
-     * once the app can handle not having a KclManager.
-     */
-    providedEditor?: KclManager,
-    /** TODO: Remove `providedCode` once no tests rely on initializing
-     * editor state through localstorage.
-     */
-    providedCode?: string,
-    isExecuting = true
-  ) {
+  async openEditor(path: string, isExecuting = true) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
     if (found) {
@@ -294,18 +291,12 @@ export class ZDSProject {
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
-    if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
-    }
-
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
         : new File(path, this.nextFileId++),
-      systemDeps,
-      providedEditor,
-      providedCode
+      systemDeps
     )
 
     // Splice our new editor into our files array
@@ -326,6 +317,11 @@ export class ZDSProject {
         getSettingsFromActorContext(this.app.settings.actor).app.theme.current
       )
       .catch(reportRejection)
+
+    this.app.commands.actor.send({ type: 'Set kclManager', data: newEditor })
+    this.registerWindowHelpersForTests(newEditor)
+    this.removeWindowExceptionHandler =
+      initializeWindowExceptionHandler(newEditor)
 
     this.set(signal(path), newEditor)
 
@@ -352,18 +348,19 @@ export class ZDSProject {
   }
 
   closeEditor(path: string) {
-    const foundPathSignal = this.findEditor(path)
-    if (!foundPathSignal) {
+    const found = this.findEditor(path)
+    if (!found) {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    foundPathSignal[1].close()
-    this.editors.delete(foundPathSignal[0])
+    found[1].close()
+    this.#executingPath.value = null
+    this.editors.delete(found[0])
   }
 
   closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
+    for (const editor of this.editors) {
+      editor[1].close()
     }
     this.editors.clear()
   }
@@ -441,9 +438,48 @@ export class ZDSProject {
   private getAllKclFiles(): Promise<ApiFile[]> {
     return Promise.all(this.files.map((f) => f.asRustApiFile()))
   }
-}
 
-const PERSIST_CODE_KEY = 'persistCode'
+  removeWindowExceptionHandler: (() => void) | undefined
+
+  registerWindowHelpersForTests(editor: KclManager) {
+    if (typeof window !== 'undefined') {
+      // Accessible for tests mostly
+      window.engineCommandManager = editor.engineCommandManager
+      window.kclManager = editor
+      window.rustContext = editor.rustContext
+      window.engineDebugger = EngineDebugger
+      ;(window as any).enableMousePositionLogs = () =>
+        document.addEventListener('mousemove', (e) =>
+          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+        )
+      ;(window as any).enableFillet = () => {
+        ;(window as any)._enableFillet = true
+      }
+      ;(window as any).zoomToFit = () =>
+        editor.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: [], // leave empty to zoom to all objects
+            padding: 0.2, // padding around the objects
+            animated: false, // don't animate the zoom for now
+          },
+        })
+      ;(window as any).zoomToFit = () =>
+        editor.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: [], // leave empty to zoom to all objects
+            padding: 0.2, // padding around the objects
+            animated: false, // don't animate the zoom for now
+          },
+        })
+    }
+  }
+}
 
 const keymapCompartment = new Compartment()
 
@@ -1042,34 +1078,15 @@ export class KclManager extends File {
    * Upgrade a File to an Editor, reading its contents for the initial editor state.
    * TODO: Remove providedEditor once the app can handle an undefined currently-executing editor.
    */
-  static async fromFile(
-    file: File,
-    systemDeps: SystemDeps,
-    providedEditor?: KclManager,
-    providedCode?: string
-  ) {
+  static async fromFile(file: File, systemDeps: SystemDeps) {
     const initialCode = normalizeLineEndings(
-      providedCode || (await file.read())
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      (window?.electron?.process.env.NODE_ENV === 'test' &&
+        window.localStorage?.getItem(TEST_LOCALSTORAGE_PERSIST_KEY)) ||
+        (await file.read())
     )
-
-    if (!providedEditor) {
-      return new KclManager(file.path, initialCode, systemDeps, file.id)
-    }
-
-    // TODO: remove all this once the app can handle an undefined currently-executing editor
-    providedEditor.path = file.path
-    providedEditor.id = file.id
-    providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
-    return providedEditor
+    return new KclManager(file.path, initialCode, systemDeps, file.id)
   }
 
   constructor(
@@ -1106,6 +1123,14 @@ export class KclManager extends File {
     this._code.value = initialCode
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
+    // Initialize lastSettings snapshot
+    this.lastSettings = getAllCurrentSettings(
+      getSettingsFromActorContext(this.systemDeps.settings)
+    )
+    this.unsubscribeFromSettings = this.systemDeps.settings.subscribe(
+      this.onSettingsUpdate
+    )
+
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
         this._kclVersion = getKclVersion(wasmInstance)
@@ -1130,6 +1155,8 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     this.unwatch()
+    this.cancelAllExecutions()
+    this.unsubscribeFromSettings?.unsubscribe()
   }
 
   clearAst() {
@@ -1148,6 +1175,102 @@ export class KclManager extends File {
       preComments: [],
       commentStart: 0,
     }
+  }
+
+  // TODO: refactor this to not require keeping around the last settings to compare to
+  private lastSettings: SaveSettingsPayload
+  private unsubscribeFromSettings: Subscription | undefined = undefined
+
+  /**
+   * Until we update these dependents of the settings to take settings
+   * as a dependency input, we must subscribe to updates from the outside.
+   */
+  onSettingsUpdate = () => {
+    const { context } = this.systemDeps.settings.getSnapshot()
+
+    // Update line wrapping
+    this.setEditorLineWrapping(context.textEditor.textWrapping.current)
+
+    // Update engine highlighting
+    const newHighlighting = context.modeling.highlightEdges.current
+    if (
+      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
+      this.engineCommandManager.connection
+    ) {
+      this.engineCommandManager
+        .setHighlightEdges(newHighlighting)
+        .catch(reportRejection)
+    }
+
+    // Update cursor blinking
+    const newBlinking = context.textEditor.blinkingCursor.current
+    document.documentElement.style.setProperty(
+      `--cursor-color`,
+      newBlinking ? 'auto' : 'transparent'
+    )
+    this.setCursorBlinking(newBlinking)
+
+    // Update theme
+    const newTheme = context.app.theme.current
+    const newBackfaceColor = context.modeling.backfaceColor.current
+    const resolvedTheme = getResolvedTheme(newTheme)
+    const opposingTheme = getOppositeTheme(newTheme)
+    this.sceneInfra.theme = opposingTheme
+    this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+    this.setEditorTheme(resolvedTheme)
+    if (this.engineCommandManager.connection) {
+      Promise.all([
+        this.engineCommandManager.setTheme(newTheme),
+        this.engineCommandManager.setBackfaceColor(newBackfaceColor),
+      ]).catch(reportRejection)
+    }
+
+    // Execute AST
+    try {
+      const relevantSetting = (s: SaveSettingsPayload) => {
+        const hasScaleGrid =
+          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+        const hasHighlightEdges =
+          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
+        const hasBackfaceColor =
+          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
+        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
+      }
+
+      const settingsIncludeNewRelevantValues = relevantSetting(
+        this.lastSettings
+      )
+
+      // Relevant settings requiring a cleared scene and re-exec
+      if (
+        settingsIncludeNewRelevantValues &&
+        this.engineCommandManager.connection
+      ) {
+        this.rustContext
+          .clearSceneAndBustCache(
+            jsAppSettings(this.systemDeps.settings),
+            this.path || undefined
+          )
+          .then(() => this.executeCode())
+          .catch(reportRejection)
+      }
+    } catch (e) {
+      console.error('Error executing AST after settings change', e)
+    }
+
+    this.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+      context.app.allowOrbitInSketchMode.current
+
+    const newCurrentProjection = context.modeling.cameraProjection.current
+    if (this.sceneInfra.camControls && !this.modelingState?.matches('Sketch')) {
+      this.sceneInfra.camControls.engineCameraProjection = newCurrentProjection
+    }
+
+    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
+    // of the last settings to know if they've changed.
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(context)
+    )
   }
 
   // (jess) I'm not in love with this, but it ensures we clear the scene and
@@ -2140,9 +2263,6 @@ export class KclManager extends File {
       this.engineCommandManager.sendSceneCommand(event)
     })
   }
-  localStoragePersistCode(): string {
-    return safeLSGetItem(PERSIST_CODE_KEY) || ''
-  }
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
     this.editorView.dispatch({
@@ -2307,9 +2427,4 @@ export class KclManager extends File {
     }
     this.updateCodeEditor(newCode, resolvedOptions)
   }
-}
-
-function safeLSGetItem(key: string) {
-  if (typeof window === 'undefined') return
-  return localStorage?.getItem(key)
 }

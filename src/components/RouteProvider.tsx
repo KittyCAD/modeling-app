@@ -8,7 +8,7 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import { useSignals } from '@preact/signals-react/runtime'
 
@@ -16,12 +16,12 @@ export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
-  const { settings, project } = useApp()
-  const { kclManager } = useSingletons()
+  const { settings, projectSignal, wasmPromise } = useApp()
+  const kclManager = projectSignal.value?.executingEditor.value
   const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = project?.projectIORefSignal.value
-  const loadedFile = project?.executingFileEntry.value
+  const loadedProject = projectSignal.value?.projectIORefSignal.value
+  const loadedFile = projectSignal.value?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
@@ -53,7 +53,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   useFileSystemWatcher(
     async (eventType: string, path: string) => {
       // Only reload if there are changes. Ignore everything else.
-      if (eventType !== 'change') {
+      if (eventType !== 'change' || !kclManager) {
         return
       }
 
@@ -107,7 +107,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    kclManager.livePathsToWatch.value
+    kclManager?.livePathsToWatch.value || []
   )
 
   useFileSystemWatcher(
@@ -131,7 +131,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
       const data = await loadAndValidateSettings(
-        kclManager.wasmInstancePromise,
+        wasmPromise,
         loadedProject?.path
       )
       settingsActor.send({

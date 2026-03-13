@@ -31,7 +31,7 @@ import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { CameraSystem } from '@src/lib/cameraControls'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
@@ -43,6 +43,7 @@ import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
+import { useExecutingEditor } from '@src/components/ProjectEditorProviders'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -50,8 +51,8 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   const { state } = useModelingContext()
   const {
-    kclManager: { sceneInfra },
-  } = useSingletons()
+    editor: { sceneInfra },
+  } = useExecutingEditor()
 
   useEffect(() => {
     sceneInfra.camControls.setIsCamMovingCallback(
@@ -80,8 +81,8 @@ export const ClientSideScene = ({
   enableTouchControls: boolean
 }) => {
   const {
-    kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
-  } = useSingletons()
+    editor: { sceneEntitiesManager, sceneInfra, engineCommandManager },
+  } = useExecutingEditor()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -310,7 +311,7 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context, send, state } = useModelingContext()
 
@@ -447,7 +448,7 @@ const SegmentMenu = ({
   pathToNode: PathToNode
   stdLibFnName: string
 }) => {
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { send } = useModelingContext()
   const dependentSourceRanges = findUsesOfTagInPipe(
@@ -513,7 +514,7 @@ const ConstraintSymbol = ({
   verticalPosition: 'top' | 'bottom'
 }) => {
   const { commands } = useApp()
-  const { kclManager } = useSingletons()
+  const { editor: kclManager } = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
@@ -768,8 +769,8 @@ const throttled = (sceneInfra: SceneInfra) =>
 export const CamDebugSettings = () => {
   const { commands } = useApp()
   const {
-    kclManager: { sceneInfra },
-  } = useSingletons()
+    editor: { sceneInfra },
+  } = useExecutingEditor()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties
   )
