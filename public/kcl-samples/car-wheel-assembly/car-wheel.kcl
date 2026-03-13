@@ -34,7 +34,8 @@ wheelCenter = startSketchOn(XY)
   |> close()
   |> revolve(axis = Y)
   |> subtract(tools =   lugMounts
-    |> patternCircular3d(instances = lugCount, axis = [0, -1, 0], center = [0, 0, 0]))
+    |> patternCircular3d(instances = lugCount, axis = [0, -1, 0], center = [0, 0, 0]),
+    tolerance = tolerance)
 
 // Define and revolve the wheel exterior. Adjust position based on wheel parameters and offset
 rim = startSketchOn(XY)
@@ -106,7 +107,7 @@ spokes = intersect([
        spokeSide
          |> rotate(pitch = 90)
          |> revolve(axis = Y)
-     ])
+     ], tolerance = tolerance)
   |> patternCircular3d(instances = spokeCount, axis = Y, center = [0, 0, 0])
 
 wheel = appearance(

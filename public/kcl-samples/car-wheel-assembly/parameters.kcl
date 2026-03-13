@@ -3,6 +3,8 @@
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
+export tolerance = 0.000000005
+
 // Lugs
 export lugCount = 5
 export lugSpacing = 114.3mm
