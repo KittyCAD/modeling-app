@@ -266,6 +266,7 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
+        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
       }),
       /**
        * Stream resource saving behavior toggle

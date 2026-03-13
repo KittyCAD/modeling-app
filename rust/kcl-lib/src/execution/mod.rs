@@ -855,7 +855,10 @@ impl ExecutorContext {
                             .map(|sketch_block_id| sketch_block_id.0)
                             .unwrap_or(0);
                         if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state.global.root_module_artifacts.scene_objects = scene_objects.to_vec();
+                            exec_state
+                                .global
+                                .root_module_artifacts
+                                .restore_scene_objects(scene_objects);
                         } else {
                             let message = format!(
                                 "Cached scene objects length {} is less than expected length from cached object ID generator {}",
