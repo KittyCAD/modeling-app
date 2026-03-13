@@ -1132,8 +1132,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
         op.unlabeledArg!,
-        artifactGraph,
-        shellWithOffsetPlane
+        artifactGraph
       )
       if (err(selections)) throw selections
 

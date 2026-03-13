@@ -1148,8 +1148,7 @@ export function retrieveFaceSelectionsFromOpArgs(
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
-  artifactGraph: ArtifactGraph,
-  code?: string
+  artifactGraph: ArtifactGraph
 ): Selections | Error {
   if (planeArg.value.type !== 'Plane') {
     return new Error(
