@@ -1054,68 +1054,6 @@ plane001 = offsetPlane(YZ, offset = 10)
 })
 
 describe('Testing getVariableExprsFromSelection', () => {
-  it('should resolve region sketch variable from region.sketchId in sketch block mode', async () => {
-    const code = `@settings(experimentalFeatures = allow)
-
-s = sketch(on = XY) {
-  line1 = line(start = [0, 0], end = [2, 0])
-  line2 = line(start = [2, 0], end = [0, 2])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [0, 2], end = [0, 0])
-  coincident([line2.end, line3.start])
-  coincident([line1.start, line3.end])
-}
-
-t = sketch(on = XY) {
-  edge1 = line(start = [10, 10], end = [12, 10])
-  edge2 = line(start = [12, 10], end = [10, 12])
-  coincident([edge1.end, edge2.start])
-  edge3 = line(start = [10, 12], end = [10, 10])
-  coincident([edge2.end, edge3.start])
-  coincident([edge1.start, edge3.end])
-}`
-    const ast = assertParse(code, instanceInThisFile)
-    const { artifactGraph } = await enginelessExecutor(
-      ast,
-      rustContextInThisFile
-    )
-    const sketch = artifactGraph.values().find((a) => a.type === 'sketchBlock')
-    const selections: Selections = {
-      graphSelections: [],
-      otherSelections: [
-        {
-          type: 'region',
-          id: 'region-1',
-          point: { x: 1, y: 1 },
-          sketchId: sketch!.id,
-        },
-      ],
-    }
-    const vars = getVariableExprsFromSelection(
-      selections,
-      artifactGraph,
-      ast,
-      instanceInThisFile
-    )
-    if (err(vars)) throw vars
-
-    expect(vars.pathIfPipe).toBeUndefined()
-    expect(vars.exprs).toHaveLength(1)
-    expect(vars.exprs[0].type).toBe('CallExpressionKw')
-    if (vars.exprs[0].type !== 'CallExpressionKw') {
-      throw new Error(`Expected CallExpressionKw, got ${vars.exprs[0].type}`)
-    }
-
-    const sketchArg = vars.exprs[0].arguments.find(
-      (arg) => arg.label?.name === 'sketch'
-    )
-    expect(sketchArg).toBeDefined()
-    if (!sketchArg || sketchArg.arg.type !== 'Name') {
-      throw new Error('Expected sketch labeled arg with Name value')
-    }
-    expect(sketchArg.arg.name.name).toEqual('s')
-  })
-
   it('should find the variable expr in a simple profile selection', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

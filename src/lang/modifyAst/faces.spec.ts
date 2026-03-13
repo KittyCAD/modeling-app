@@ -535,13 +535,8 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-surface001 = deleteFace(
-  extrude001,
-  faces = [
-    rectangleSegmentA001,
-    faceId(extrude001, index = 6)
-  ],
-)`)
+face001 = faceId(extrude001, index = 6)
+surface001 = deleteFace(extrude001, faces = [rectangleSegmentA001, face001])`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
@@ -1439,9 +1434,11 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 2)`)
+face001 = faceId(extrude001, index = 6)
+plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 2)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
+      const newPlane = createSelectionFromArtifacts(artifactGraph.values().filter(a => a.type === 'planeOfFace').toArray().slice(-1), artifactGraph)
       const editedOffset = (await stringToKclExpression(
         '3',
         rustContextInThisFile
@@ -1451,7 +1448,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         ast: result.modifiedAst,
         artifactGraph,
         variables,
-        plane,
+        plane: newPlane,
         offset: editedOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1462,7 +1459,8 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
 
       const editedCode = recast(editResult.modifiedAst, instanceInThisFile)
       expect(editedCode).toContain(`${shell}
-plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 3)`)
+face001 = faceId(extrude001, index = 6)
+plane001 = offsetPlane(planeOf(extrude001, face = face001, offset = 3)`)
       await enginelessExecutor(editResult.modifiedAst, rustContextInThisFile)
     })
 
