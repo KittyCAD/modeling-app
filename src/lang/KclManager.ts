@@ -10,6 +10,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { refactorFilletChamferTagsToEdgeRefsUnified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -606,6 +607,12 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  private _executionGeneration = 0
+  private _executionCompletionWaiters: {
+    afterGeneration: number
+    resolve: () => void
+  }[] = []
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -764,6 +771,72 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+
+  /**
+   * If the current code has fillet/chamfer calls with deprecated tags and we have
+   * execution metadata, apply the Z0006 fix (convert to edgeRefs), update the
+   * editor, and wait for the next run to complete. Used before opening the edit
+   * flow so P&C works (artifact graph no longer has sweepEdges).
+   * @returns Promise<true> if fix was applied and we waited for run; Promise<false> otherwise.
+   */
+  async applyZ0006FixBeforeEdit(): Promise<boolean> {
+    const execState = this.execState
+    const hasMeta =
+      (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
+      (execState.directTagFilletMetadata?.length ?? 0) > 0
+    if (!hasMeta) return false
+    if (!this.artifactGraph?.size) return false
+
+    const instance = await this.wasmInstancePromise
+    const newSource = refactorFilletChamferTagsToEdgeRefsUnified(
+      this.ast as Program,
+      execState.edgeRefactorMetadata ?? [],
+      execState.directTagFilletMetadata ?? [],
+      this.artifactGraph,
+      instance
+    )
+    if (err(newSource)) return false
+    const trimmed = newSource.trim()
+    if (!trimmed) return false
+
+    const generationBeforeDispatch = this._executionGeneration
+    this._editorView.dispatch({
+      changes: {
+        from: 0,
+        to: this._editorView.state.doc.length,
+        insert: trimmed,
+      },
+    })
+    await this.waitForExecutionGenerationAfter(generationBeforeDispatch)
+    return true
+  }
+
+  /**
+   * Returns a promise that resolves when an execution has completed after the given generation.
+   * Used by applyZ0006FixBeforeEdit to wait for the re-run after dispatching refactored code.
+   */
+  private waitForExecutionGenerationAfter(
+    afterGeneration: number
+  ): Promise<void> {
+    if (this._executionGeneration > afterGeneration) return Promise.resolve()
+    return new Promise((resolve) => {
+      this._executionCompletionWaiters.push({ afterGeneration, resolve })
+    })
+  }
+
+  private notifyExecutionCompletion(): void {
+    this._executionGeneration += 1
+    const gen = this._executionGeneration
+    this._executionCompletionWaiters = this._executionCompletionWaiters.filter(
+      (w) => {
+        if (w.afterGeneration < gen) {
+          w.resolve()
+          return false
+        }
+        return true
+      }
+    )
   }
 
   // Get the kcl version from the wasm module
@@ -1354,6 +1427,8 @@ export class KclManager extends File {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion()
       return
     }
 
@@ -1406,6 +1481,7 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    this.notifyExecutionCompletion()
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
@@ -1425,6 +1501,7 @@ export class KclManager extends File {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
+    this.notifyExecutionCompletion()
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,

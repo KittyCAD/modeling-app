@@ -12,6 +12,7 @@ import {
   findOperationArtifact,
   findOperationPlaneArtifact,
   isOffsetPlane,
+  type StdLibCallOp,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
@@ -544,17 +545,74 @@ const OperationItem = ({
       }
 
       void selectOperation()
-        .then(() =>
-          prepareEditCommand({
+        .then(async () => {
+          const op = item as {
+            type: string
+            name?: string
+            labeledArgs?: { tags?: unknown; edgeRefs?: unknown }
+            sourceRange?: unknown
+          }
+          const isFilletOrChamfer =
+            op.type === 'StdLibCall' &&
+            (op.name === 'fillet' || op.name === 'chamfer')
+          let operationToEdit: typeof item = item
+          if (isFilletOrChamfer) {
+            const applied =
+              await systemDeps.kclManager.applyZ0006FixBeforeEdit()
+            if (applied) {
+              const nextOps = systemDeps.kclManager.lastSuccessfulOperations
+              const nextOp = nextOps?.find(
+                (o: Operation) =>
+                  o.type === 'StdLibCall' &&
+                  (o as { name?: string }).name === op.name
+              )
+              if (nextOp) {
+                operationToEdit = nextOp as typeof item
+              }
+            }
+          }
+          const opToEdit = operationToEdit as {
+            sourceRange?: unknown
+            type?: string
+          }
+          const artifactForEdit =
+            operationToEdit !== item
+              ? (() => {
+                  if (
+                    opToEdit.sourceRange != null &&
+                    isArray(opToEdit.sourceRange) &&
+                    opToEdit.sourceRange.length >= 2
+                  ) {
+                    const sr = opToEdit.sourceRange as number[]
+                    const range: SourceRange = [sr[0], sr[1], sr[2] ?? 0]
+                    const fromRange = getArtifactFromRange(
+                      range,
+                      systemDeps.kclManager.artifactGraph
+                    )
+                    if (fromRange) return fromRange
+                  }
+                  if (opToEdit.type === 'StdLibCall') {
+                    return (
+                      findOperationArtifact(
+                        operationToEdit as StdLibCallOp,
+                        systemDeps.kclManager.artifactGraph
+                      ) ?? undefined
+                    )
+                  }
+                  return undefined
+                })()
+              : artifact
+          return prepareEditCommand({
             artifactGraph: systemDeps.kclManager.artifactGraph,
             code: systemDeps.kclManager.code,
             commandBarActor,
-            operation: item,
+            operation: operationToEdit,
             rustContext: systemDeps.rustContext,
-            artifact: artifact ?? undefined,
+            artifact: artifactForEdit ?? undefined,
           })
-        )
+        })
         .catch((e) => {
+          console.error('[enterEditFlow] prepareEditCommand failed', e)
           const message = err(e) ? e.message : JSON.stringify(e)
           toast.error(message)
         })
@@ -564,8 +622,7 @@ const OperationItem = ({
     commandBarActor,
     systemDeps.sceneInfra,
     selectOperation,
-    systemDeps.kclManager.artifactGraph,
-    systemDeps.kclManager.code,
+    systemDeps.kclManager,
     systemDeps.rustContext,
   ])
 

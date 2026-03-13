@@ -67,6 +67,7 @@ import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrude
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import { findKwArg } from '@src/lang/util'
 
 /**
  * Converts a resolved edge selection to an EntityReference with face information.
@@ -1099,6 +1100,44 @@ export function addFillet({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  // When editing an existing fillet that already has edgeRefs, only update radius (and tag).
+  // This avoids rebuilding from selection, which can fall back to deprecated tags/getCommonEdge.
+  if (mNodeToEdit) {
+    const existingResult = getNodeFromPath(
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (!err(existingResult)) {
+      const existingCall = existingResult.node as Node<CallExpressionKw>
+      const hasEdgeRefs = findKwArg('edgeRefs', existingCall) !== undefined
+      if (hasEdgeRefs) {
+        const newArgs = (existingCall.arguments ?? []).map((a) => {
+          const name = (a.label as { name?: string })?.name
+          if (name === 'radius')
+            return createLabeledArg('radius', valueOrVariable(radius))
+          if (name === 'tag' && tag)
+            return createLabeledArg('tag', createTagDeclarator(tag))
+          return a
+        })
+        const call = createCallExpressionStdLibKw(
+          'fillet',
+          existingCall.unlabeled,
+          newArgs
+        )
+        const pathToNode = setCallInAst({
+          ast: modifiedAst,
+          call,
+          pathToEdit: mNodeToEdit,
+          wasmInstance,
+        })
+        if (err(pathToNode)) return pathToNode
+        return { modifiedAst, pathToNode: [pathToNode] }
+      }
+    }
+  }
+
   const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
     artifactGraph,
@@ -1210,6 +1249,50 @@ export function addChamfer({
   | Error {
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // When editing an existing chamfer that already has edgeRefs, only update length/secondLength/angle/tag.
+  if (mNodeToEdit) {
+    const existingResult = getNodeFromPath(
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (!err(existingResult)) {
+      const existingCall = existingResult.node as Node<CallExpressionKw>
+      const hasEdgeRefs = findKwArg('edgeRefs', existingCall) !== undefined
+      if (hasEdgeRefs) {
+        const newArgs = (existingCall.arguments ?? []).map((a) => {
+          const name = (a.label as { name?: string })?.name
+          if (name === 'length')
+            return createLabeledArg('length', valueOrVariable(length))
+          if (name === 'secondLength' && secondLength != null)
+            return createLabeledArg(
+              'secondLength',
+              valueOrVariable(secondLength)
+            )
+          if (name === 'angle' && angle != null)
+            return createLabeledArg('angle', valueOrVariable(angle))
+          if (name === 'tag' && tag)
+            return createLabeledArg('tag', createTagDeclarator(tag))
+          return a
+        })
+        const call = createCallExpressionStdLibKw(
+          'chamfer',
+          existingCall.unlabeled,
+          newArgs
+        )
+        const pathToNode = setCallInAst({
+          ast: modifiedAst,
+          call,
+          pathToEdit: mNodeToEdit,
+          wasmInstance,
+        })
+        if (err(pathToNode)) return pathToNode
+        return { modifiedAst, pathToNode: [pathToNode] }
+      }
+    }
+  }
 
   const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
@@ -1884,6 +1967,13 @@ export function retrieveEdgeSelectionsFromOpArgs(
   artifactGraph: ArtifactGraph,
   code: string
 ) {
+  if (
+    !tagsArg?.value ||
+    typeof tagsArg.value !== 'object' ||
+    !('type' in tagsArg.value)
+  ) {
+    return { graphSelectionsV2: [], otherSelections: [] }
+  }
   const tagValues: OpKclValue[] = []
   if (tagsArg.value.type === 'Array') {
     tagValues.push(...tagsArg.value.value)
@@ -1893,6 +1983,13 @@ export function retrieveEdgeSelectionsFromOpArgs(
 
   const graphSelectionsV2: SelectionV2[] = []
   for (const v of tagValues) {
+    if (v == null || typeof v !== 'object' || !('type' in v)) {
+      console.warn(
+        'retrieveEdgeSelectionsFromOpArgs: skipping invalid tag value',
+        v
+      )
+      continue
+    }
     const key =
       v.type === 'Uuid' && v.value
         ? v.value

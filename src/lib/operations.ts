@@ -641,8 +641,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   } else if (operation.labeledArgs?.tags) {
     // Fall back to tags (legacy API)
     selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.unlabeledArg,
       operation.labeledArgs.tags,
-      artifactGraph
+      artifactGraph,
+      code
     )
   } else {
     const fromArtifact = buildSelectionFromArtifact()
@@ -774,8 +776,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     )
   } else if (operation.labeledArgs?.tags) {
     selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.unlabeledArg,
       operation.labeledArgs.tags,
-      artifactGraph
+      artifactGraph,
+      code
     )
   } else {
     return {
