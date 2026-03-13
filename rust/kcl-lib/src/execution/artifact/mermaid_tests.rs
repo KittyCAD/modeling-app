@@ -85,8 +85,8 @@ impl Artifact {
             }
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
-            Artifact::Face(a) => vec![a.solid_id],
-            Artifact::Edge(a) => vec![a.solid_id],
+            Artifact::PrimitiveFace(a) => vec![a.solid_id],
+            Artifact::PrimitiveEdge(a) => vec![a.solid_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
@@ -157,11 +157,11 @@ impl Artifact {
                 // Note: Don't include these since they're parents: path_id.
                 Vec::new()
             }
-            Artifact::Face(_) => {
+            Artifact::PrimitiveFace(_) => {
                 // Note: Don't include these since they're parents: solid_id.
                 Vec::new()
             }
-            Artifact::Edge(_) => {
+            Artifact::PrimitiveEdge(_) => {
                 // Note: Don't include these since they're parents: solid_id.
                 Vec::new()
             }
@@ -298,7 +298,7 @@ impl ArtifactGraph {
                     groups.entry(path_id).or_insert_with(Vec::new).push(id);
                     true
                 }
-                Artifact::Face(_) | Artifact::Edge(_) => false,
+                Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_) => false,
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
                 | Artifact::SketchBlock { .. }
@@ -404,18 +404,18 @@ impl ArtifactGraph {
             Artifact::Solid2d(_solid2d) => {
                 writeln!(output, "{prefix}{id}[Solid2d]")?;
             }
-            Artifact::Face(face) => {
+            Artifact::PrimitiveFace(face) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Face<br>{:?}\"]",
+                    "{prefix}{id}[\"PrimitiveFace<br>{:?}\"]",
                     code_ref_display(&face.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &face.code_ref)?;
             }
-            Artifact::Edge(edge) => {
+            Artifact::PrimitiveEdge(edge) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Edge<br>{:?}\"]",
+                    "{prefix}{id}[\"PrimitiveEdge<br>{:?}\"]",
                     code_ref_display(&edge.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &edge.code_ref)?;

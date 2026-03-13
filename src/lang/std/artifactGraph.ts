@@ -290,7 +290,7 @@ export function getSweepFromSuspectedSweepSurface(
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
   const artifact = getArtifactOfTypes(
-    { key: id, types: ['wall', 'cap', 'edgeCut', 'face'] },
+    { key: id, types: ['wall', 'cap', 'edgeCut', 'primitiveFace'] },
     artifactGraph
   )
   if (err(artifact)) return artifact
@@ -300,7 +300,7 @@ export function getSweepFromSuspectedSweepSurface(
       artifactGraph
     )
   }
-  if (artifact.type === 'face') {
+  if (artifact.type === 'primitiveFace') {
     return getArtifactOfTypes(
       { key: artifact.solidId, types: ['sweep'] },
       artifactGraph
@@ -377,14 +377,14 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
-  } else if (selection.artifact?.type === 'face') {
+  } else if (selection.artifact?.type === 'primitiveFace') {
     const _artifact = getArtifactOfTypes(
       { key: selection.artifact.solidId, types: ['sweep'] },
       artifactGraph
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
-  } else if (selection.artifact?.type === 'edge') {
+  } else if (selection.artifact?.type === 'primitiveEdge') {
     const _artifact = getArtifactOfTypes(
       { key: selection.artifact.solidId, types: ['sweep'] },
       artifactGraph

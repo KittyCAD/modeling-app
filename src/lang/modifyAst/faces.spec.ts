@@ -1082,8 +1082,11 @@ surface001 = deleteFace(extrude001, faces = face001)`
 
       expect(selections.faces.graphSelections).toHaveLength(1)
       const faceSelection = selections.faces.graphSelections[0]
-      expect(faceSelection.artifact?.type).toEqual('face')
-      if (!faceSelection.artifact || faceSelection.artifact.type !== 'face') {
+      expect(faceSelection.artifact?.type).toEqual('primitiveFace')
+      if (
+        !faceSelection.artifact ||
+        faceSelection.artifact.type !== 'primitiveFace'
+      ) {
         throw new Error('Face artifact not found in selection')
       }
       expect(faceSelection.artifact.solidId).toEqual(

@@ -208,7 +208,7 @@ pub struct Solid2d {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct Face {
+pub struct PrimitiveFace {
     pub id: ArtifactId,
     pub solid_id: ArtifactId,
     pub code_ref: CodeRef,
@@ -217,7 +217,7 @@ pub struct Face {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct Edge {
+pub struct PrimitiveEdge {
     pub id: ArtifactId,
     pub solid_id: ArtifactId,
     pub code_ref: CodeRef,
@@ -454,8 +454,8 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
-    Face(Face),
-    Edge(Edge),
+    PrimitiveFace(PrimitiveFace),
+    PrimitiveEdge(PrimitiveEdge),
     PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
@@ -478,8 +478,8 @@ impl Artifact {
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
-            Artifact::Face(a) => a.id,
-            Artifact::Edge(a) => a.id,
+            Artifact::PrimitiveFace(a) => a.id,
+            Artifact::PrimitiveEdge(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::SketchBlock(a) => a.id,
@@ -504,8 +504,8 @@ impl Artifact {
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
-            Artifact::Face(a) => Some(&a.code_ref),
-            Artifact::Edge(a) => Some(&a.code_ref),
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
+            Artifact::PrimitiveEdge(a) => Some(&a.code_ref),
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::SketchBlock(a) => Some(&a.code_ref),
@@ -530,14 +530,14 @@ impl Artifact {
             | Artifact::Path(_)
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
-            | Artifact::Edge(_)
+            | Artifact::PrimitiveEdge(_)
             | Artifact::StartSketchOnFace(_)
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::SketchBlock(_)
             | Artifact::SketchBlockConstraint(_)
             | Artifact::Sweep(_) => None,
-            Artifact::Face(a) => Some(&a.code_ref),
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
             Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
@@ -553,8 +553,8 @@ impl Artifact {
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
-            Artifact::Face(_) => Some(new),
-            Artifact::Edge(_) => Some(new),
+            Artifact::PrimitiveFace(_) => Some(new),
+            Artifact::PrimitiveEdge(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::SketchBlock { .. } => Some(new),
@@ -1203,7 +1203,7 @@ fn artifacts_to_update(
                 return Ok(Vec::new());
             };
 
-            return Ok(vec![Artifact::Face(Face {
+            return Ok(vec![Artifact::PrimitiveFace(PrimitiveFace {
                 id: face_uuid.face_id.into(),
                 solid_id: (*object_id).into(),
                 code_ref,
@@ -1214,7 +1214,7 @@ fn artifacts_to_update(
                 return Ok(Vec::new());
             };
 
-            return Ok(vec![Artifact::Edge(Edge {
+            return Ok(vec![Artifact::PrimitiveEdge(PrimitiveEdge {
                 id: edge_uuid.edge_id.into(),
                 solid_id: (*object_id).into(),
                 code_ref,
@@ -1227,10 +1227,13 @@ fn artifacts_to_update(
             let Some(edge_id) = closest_edge.edge_id else {
                 return Ok(Vec::new());
             };
+            let Some(object_id) = object_id else {
+                return Ok(Vec::new());
+            };
 
-            return Ok(vec![Artifact::Edge(Edge {
+            return Ok(vec![Artifact::PrimitiveEdge(PrimitiveEdge {
                 id: edge_id.into(),
-                solid_id: (*object_id).into(),
+                solid_id: object_id.into(),
                 code_ref,
             })]);
         }

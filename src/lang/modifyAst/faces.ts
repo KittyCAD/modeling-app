@@ -898,7 +898,7 @@ function getSolidSelectionsFromFaceSelections(
       if (!face.artifact) {
         return []
       }
-      if (face.artifact.type === 'face') {
+      if (face.artifact.type === 'primitiveFace') {
         const solidArtifact = getArtifactOfTypes(
           {
             key: face.artifact.solidId,
@@ -1168,7 +1168,7 @@ export function retrieveFaceSelectionsFromOpArgs(
   const sweepIdsSet = new Set(sweepIds)
   const candidates: Map<string, Selection> = new Map()
   for (const artifact of artifactGraph.values()) {
-    if (artifact.type === 'face') {
+    if (artifact.type === 'primitiveFace') {
       candidates.set(artifact.id, {
         artifact,
         codeRef: artifact.codeRef,
@@ -1396,7 +1396,7 @@ export function buildSolidsAndFacesExprs(
 
   const explicitFaceSelections: Selections = {
     graphSelections: faces.graphSelections.filter(
-      (selection) => selection.artifact?.type === 'face'
+      (selection) => selection.artifact?.type === 'primitiveFace'
     ),
     otherSelections: [],
   }
