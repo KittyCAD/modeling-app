@@ -925,7 +925,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -964,7 +964,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: initialInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'radius',
       })
@@ -976,7 +976,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -990,7 +990,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
@@ -1001,6 +1001,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
+          CounterClockWise: 'false',
         },
         commandName: 'Helix',
       })
@@ -1014,6 +1015,7 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 5,
+          ccw = false,
         )`,
         { shouldNormalise: true }
       )
@@ -3387,7 +3389,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '', // True value shows as empty string in header
+              RotateDuplicates: 'true',
             },
           })
         })
@@ -3405,7 +3407,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
+              RotateDuplicates: 'true',
               UseOriginal: '',
             },
             highlightedHeaderArg: 'useOriginal',
@@ -3422,8 +3424,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3461,8 +3463,8 @@ solid001 = extrude(sketch001, length = 5)`
             Axis: 'Y',
             Center: '[5, 0, 0]',
             ArcDegrees: '180',
-            RotateDuplicates: '',
-            // UseOriginal with False value appears as a button in UI, not in header
+            RotateDuplicates: 'true',
+            UseOriginal: 'false',
           },
           highlightedHeaderArg: 'center',
         })
@@ -3480,8 +3482,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'center',
           })
@@ -3497,8 +3499,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]', // [5, 3+4, 0]
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3515,8 +3517,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3532,9 +3534,10 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
+            reviewValidationError: undefined,
           })
         })
 
@@ -3550,8 +3553,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'axis',
           })
@@ -3566,8 +3569,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3584,8 +3587,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'arcDegrees',
           })
@@ -3601,8 +3604,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3619,8 +3622,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '', // True and False value appears at this stage
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'rotateDuplicates',
           })
@@ -3635,8 +3638,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3653,8 +3656,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '', // True and False value appears at this stage
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3669,8 +3672,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '',
+              RotateDuplicates: 'false',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3852,7 +3855,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '', // True value shows as empty string in header
+              UseOriginal: 'true',
             },
           })
         })
@@ -3866,7 +3869,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3902,7 +3905,7 @@ solid001 = extrude(sketch001, length = 5)`
             Instances: '6',
             Distance: '8',
             Axis: 'Y',
-            UseOriginal: '',
+            UseOriginal: 'true',
           },
           highlightedHeaderArg: 'axis',
         })
@@ -3920,7 +3923,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3936,7 +3939,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3951,7 +3954,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3967,7 +3970,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'distance',
           })
@@ -3982,7 +3985,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3998,7 +4001,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -4012,7 +4015,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              // UseOriginal with False value appears as a button in UI, not in header
+              UseOriginal: 'false',
             },
           })
         })

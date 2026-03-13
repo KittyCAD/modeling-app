@@ -809,6 +809,40 @@ impl ModuleArtifactState {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
+        self.scene_objects = scene_objects.to_vec();
+        self.object_id_generator = IncIdGenerator::new(self.scene_objects.len());
+        self.source_range_to_object.clear();
+        self.artifact_id_to_scene_object.clear();
+
+        for (expected_id, object) in self.scene_objects.iter().enumerate() {
+            debug_assert_eq!(
+                object.id.0, expected_id,
+                "Restored cached scene object ID {} does not match its position {}",
+                object.id.0, expected_id
+            );
+
+            match &object.source {
+                crate::front::SourceRef::Simple { range } => {
+                    self.source_range_to_object.insert(*range, object.id);
+                }
+                crate::front::SourceRef::BackTrace { ranges } => {
+                    // Don't map the entire backtrace, only the most specific
+                    // range.
+                    if let Some(range) = ranges.first() {
+                        self.source_range_to_object.insert(*range, object.id);
+                    }
+                }
+            }
+
+            // Ignore placeholder artifacts.
+            if object.artifact_id != ArtifactId::placeholder() {
+                self.artifact_id_to_scene_object.insert(object.artifact_id, object.id);
+            }
+        }
+    }
+
     #[cfg(not(feature = "artifact-graph"))]
     pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
 
@@ -1045,5 +1079,70 @@ impl MetaSettings {
         }
 
         Ok((updated_len, updated_angle))
+    }
+}
+
+#[cfg(all(feature = "artifact-graph", test))]
+mod tests {
+    use uuid::Uuid;
+
+    use super::ModuleArtifactState;
+    use crate::{
+        SourceRange,
+        execution::ArtifactId,
+        front::{Object, ObjectId, ObjectKind, Plane, SourceRef},
+    };
+
+    #[test]
+    fn restore_scene_objects_rebuilds_lookup_maps() {
+        let plane_artifact_id = ArtifactId::new(Uuid::from_u128(1));
+        let sketch_artifact_id = ArtifactId::new(Uuid::from_u128(2));
+        let plane_range = SourceRange::from([1, 4, 0]);
+        let sketch_ranges = vec![SourceRange::from([5, 9, 0]), SourceRange::from([10, 12, 0])];
+        let cached_objects = vec![
+            Object {
+                id: ObjectId(0),
+                kind: ObjectKind::Plane(Plane::Object(ObjectId(0))),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: plane_artifact_id,
+                source: SourceRef::Simple { range: plane_range },
+            },
+            Object {
+                id: ObjectId(1),
+                kind: ObjectKind::Nil,
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: sketch_artifact_id,
+                source: SourceRef::BackTrace {
+                    ranges: sketch_ranges.clone(),
+                },
+            },
+            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0])),
+        ];
+
+        let mut artifacts = ModuleArtifactState::default();
+        artifacts.restore_scene_objects(&cached_objects);
+
+        assert_eq!(artifacts.scene_objects, cached_objects);
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&plane_artifact_id),
+            Some(&ObjectId(0))
+        );
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&sketch_artifact_id),
+            Some(&ObjectId(1))
+        );
+        assert_eq!(
+            artifacts.artifact_id_to_scene_object.get(&ArtifactId::placeholder()),
+            None
+        );
+        assert_eq!(artifacts.source_range_to_object.get(&plane_range), Some(&ObjectId(0)));
+        assert_eq!(
+            artifacts.source_range_to_object.get(&sketch_ranges[0]),
+            Some(&ObjectId(1))
+        );
+        // We don't map all the ranges in a backtrace.
+        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1]), None);
     }
 }

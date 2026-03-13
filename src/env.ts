@@ -1,12 +1,14 @@
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
 
-export function generateDomainsFromBaseDomain(baseDomain: string) {
+export function generateDomainsFromBaseDomain(baseDomain: string | undefined) {
+  const normalizedBaseDomain = baseDomain ?? ''
+
   return {
-    API_URL: `https://api.${baseDomain}`,
-    SITE_URL: `https://${baseDomain}`,
-    KITTYCAD_WEBSOCKET_URL: `wss://api.${baseDomain}/ws/modeling/commands`,
-    MLEPHANT_WEBSOCKET_URL: `wss://api.${baseDomain}/ws/ml/copilot`,
-    APP_URL: `https://app.${baseDomain}`,
+    API_URL: `https://api.${normalizedBaseDomain}`,
+    SITE_URL: `https://${normalizedBaseDomain}`,
+    KITTYCAD_WEBSOCKET_URL: `wss://api.${normalizedBaseDomain}/ws/modeling/commands`,
+    MLEPHANT_WEBSOCKET_URL: `wss://api.${normalizedBaseDomain}/ws/ml/copilot`,
+    APP_URL: `https://app.${normalizedBaseDomain}`,
   }
 }
 
@@ -66,10 +68,10 @@ export const updateEnvironmentMlephantWebSocketUrl = (
 }
 
 // Do not export the entire Environment! Use env()
-const getEnvironmentFromThisFile = (baseDomain: string) => {
+const getEnvironmentFromThisFile = (baseDomain: string | undefined) => {
   return (
     ENVIRONMENT || {
-      domain: baseDomain,
+      domain: baseDomain ?? '',
       kittycadWebSocketUrl: undefined,
       mlephantWebSocketUrl: undefined,
     }
@@ -118,6 +120,8 @@ export default (): EnvironmentVariables => {
   const windowElectronProcessEnvOnly = windowElectronProcessEnv()
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
+  const zooApiBaseUrl =
+    'VITE_ZOO_API_BASE_URL' in env ? env.VITE_ZOO_API_BASE_URL : undefined
 
   let BASE_DOMAIN = env.VITE_ZOO_BASE_DOMAIN
   let {
@@ -150,8 +154,11 @@ export default (): EnvironmentVariables => {
   }
 
   /**
-   * Allow .env.development.local to override default WebSocket URLs
+   * Allow .env.development.local to override default URLs
    */
+  if (zooApiBaseUrl && zooApiBaseUrl !== 'undefined') {
+    API_URL = zooApiBaseUrl
+  }
   if (
     env.VITE_KITTYCAD_WEBSOCKET_URL &&
     env.VITE_KITTYCAD_WEBSOCKET_URL !== 'undefined'
@@ -174,15 +181,13 @@ export default (): EnvironmentVariables => {
   }
 
   const environmentVariables: EnvironmentVariables = {
-    NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
+    NODE_ENV: env.NODE_ENV || viteOnly.MODE || undefined,
     VITE_ZOO_BASE_DOMAIN: BASE_DOMAIN || undefined,
     VITE_ZOO_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_WEBSOCKET_URL: KITTYCAD_WEBSOCKET_URL || undefined,
     VITE_MLEPHANT_WEBSOCKET_URL: MLEPHANT_WEBSOCKET_URL || undefined,
     VITE_ZOO_API_TOKEN:
-      (env.VITE_ZOO_API_TOKEN as string) ||
-      (env.VITE_KITTYCAD_API_TOKEN as string) ||
-      undefined,
+      env.VITE_ZOO_API_TOKEN || env.VITE_KITTYCAD_API_TOKEN || undefined,
     VITE_ZOO_SITE_BASE_URL: SITE_URL || undefined,
     VITE_ZOO_SITE_APP_URL: APP_URL || undefined,
   }

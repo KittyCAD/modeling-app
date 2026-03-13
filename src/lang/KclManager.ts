@@ -1,7 +1,7 @@
 import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -44,7 +44,7 @@ import {
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
   PlaneVisibilityMap,
@@ -159,6 +159,8 @@ interface SystemDeps {
   settings: SettingsActorType
   commandBar: CommandBarActorType
   projectPath: Signal<string>
+  engineCommandManager: ConnectionManager
+  rustContext: RustContext
 }
 
 export enum KclManagerEvents {
@@ -288,6 +290,8 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
+      engineCommandManager: this.app.engineCommandManager,
+      rustContext: this.app.rustContext,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -916,6 +920,9 @@ export class KclManager extends File {
 
   set executeIsStale(executeIsStale) {
     this._executeIsStale = executeIsStale
+    // Next execution will be flagged as stale or not depending on this value.
+    this.systemDeps.engineCommandManager.executionIsStale =
+      executeIsStale !== null
   }
 
   get wasmInitFailed() {
@@ -1145,15 +1152,8 @@ export class KclManager extends File {
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
-    this.engineCommandManager = new ConnectionManager({
-      kclManager: this,
-      settingsActor: this.systemDeps.settings,
-    })
-    this.rustContext = new RustContext(
-      this.wasmInstancePromise,
-      this.engineCommandManager,
-      this.systemDeps.settings
-    )
+    this.engineCommandManager = this.systemDeps.engineCommandManager
+    this.rustContext = this.systemDeps.rustContext
     this.sceneInfra = new SceneInfra(
       this.engineCommandManager,
       systemDeps.wasmInstancePromise,

@@ -1516,12 +1516,23 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelectionsV2: SelectionV2[] = []
   for (const artifactId of artifactIds) {
-    const artifact = artifactGraph.get(artifactId)
+    let artifact = artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (artifact.type === 'segment') {
+      const correspondingWall = artifactGraph
+        .values()
+        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      if (!correspondingWall) {
+        continue
+      }
+
+      artifact = correspondingWall
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }

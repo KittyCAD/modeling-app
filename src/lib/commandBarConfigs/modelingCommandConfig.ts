@@ -191,6 +191,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     // @pierremtb: I don't even think it should be in KCL
     method?: KclPreludeExtrudeMethod
+    hideSeams?: boolean
     bodyType?: KclPreludeBodyType
   }
   Sweep: {
@@ -766,6 +767,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           name: capitaliseFC(value.toLowerCase()),
           value,
         })),
+      },
+      hideSeams: {
+        inputType: 'boolean',
+        required: false,
       },
       bodyType: {
         inputType: 'options',

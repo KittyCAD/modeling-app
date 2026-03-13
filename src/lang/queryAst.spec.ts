@@ -1489,4 +1489,36 @@ appearance(extrude001, color = '#FF0000')`
     }
     expect(resolved?.artifact?.type).toEqual('sweep')
   })
+
+  it('maps a segment tag to a wall selection when a wall exists', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-4.16, -2.97])
+  |> line(end = [2.31, 8.45])
+  |> line(end = [7.53, -7.02])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+extrude002 = extrude(seg01, length = 5, hideSeams = true)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    console.log('op.unlabeledArg', op.unlabeledArg)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
+  })
 })

@@ -129,9 +129,10 @@ export function addHelix({
   }
 
   // Optional args
-  const ccwExpr = ccw
-    ? [createLabeledArg('ccw', createLiteral(ccw, wasmInstance))]
-    : []
+  const ccwExpr =
+    ccw !== undefined
+      ? [createLabeledArg('ccw', createLiteral(ccw, wasmInstance))]
+      : []
   const radiusExpr = radius
     ? [createLabeledArg('radius', valueOrVariable(radius))]
     : []
