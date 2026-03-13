@@ -29,6 +29,8 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
+import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -52,7 +54,9 @@ import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
+  isArcSegment,
   isConstraint,
+  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -78,6 +82,7 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
         | 'Horizontal'
@@ -137,6 +142,8 @@ type ToolActorRef =
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
+  | ActorRefFrom<typeof tangentialArcTool>
+  | ActorRefFrom<typeof threePointArcTool>
 
 export const equipTools = Object.freeze({
   trimTool,
@@ -148,6 +155,8 @@ export const equipTools = Object.freeze({
   pointTool,
   lineTool,
   centerArcTool,
+  tangentialArcTool,
+  threePointArcTool,
 })
 
 export type SketchSolveContext = {
@@ -297,11 +306,7 @@ export function updateSegmentGroup({
   let isConstruction = false
   if (objects) {
     const segmentObj = objects[idNum]
-    if (
-      segmentObj?.kind?.type === 'Segment' &&
-      (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc')
-    ) {
+    if (isLineSegment(segmentObj) || isArcSegment(segmentObj)) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
   }
