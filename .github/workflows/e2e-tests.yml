@@ -82,7 +82,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -220,7 +220,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -347,7 +347,7 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -388,7 +388,7 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
@@ -444,3 +444,24 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:desktop
           CI_STEP: teardown
+
+  vercel:
+    name: e2e:web (vercel)
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v6
+      - name: Wait for Vercel
+        if: github.event_name == 'pull_request'
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
+        id: wait-for-vercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 1200 # average build times are 17-18 minutes
+          check_interval: 30
+          vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      - name: Check Vercel
+        if: github.event_name == 'pull_request'
+        env:
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: .github/ci-cd-scripts/check-vercel.sh

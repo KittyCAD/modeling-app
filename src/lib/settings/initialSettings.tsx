@@ -260,12 +260,24 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      machineApi: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        hideOnPlatform: 'web',
+        description:
+          'Whether to enable Machine API discovery and printing controls on desktop',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Zookeeper reasoning mode
        */
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
+        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
       }),
       /**
        * Stream resource saving behavior toggle

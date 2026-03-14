@@ -177,13 +177,13 @@ async fn inner_extrude(
     if all_are_segments {
         // All segments should share a single sketch. We'll track all sketches here,
         // and validate this later.
-        let mut sketch_ids = Vec::new();
+        let mut sketch_ids = std::collections::HashSet::new();
         let mut sketch: Option<Sketch> = None;
         let mut segment_ids: Vec<IdPair> = Vec::new();
         for extr in extrudables {
             match extr {
                 Extrudable::Segment(seg) => {
-                    sketch_ids.push(seg.sketch_id);
+                    sketch_ids.insert(seg.sketch_id);
                     sketch = match seg.sketch {
                         Some(sketch) => Some(sketch),
                         None => {
@@ -203,6 +203,7 @@ async fn inner_extrude(
         }
 
         // Validate that the segments come from exactly 1 sketch.
+        let mut sketch_ids: Vec<_> = sketch_ids.into_iter().collect();
         if sketch_ids.len() > 1 {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You cannot currently extrude segments from multiple sketches in a single extrude, please use two different extrudes".to_owned(),
