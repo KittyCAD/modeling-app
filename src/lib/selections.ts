@@ -309,10 +309,12 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
-  const data = engineEvent?.data as {
-    reference?: any
-    entity_id?: string
-  } | undefined
+  const data = engineEvent?.data as
+    | {
+        reference?: any
+        entity_id?: string
+      }
+    | undefined
   const reference = data?.reference ?? engineEvent?.reference
   if (!reference) {
     // No reference - clear selection (clicked in empty space)
