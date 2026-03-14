@@ -110,9 +110,10 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
     |> rotate(roll = 90, yaw = 180)
   verticalHolesNeeded = ceil((height - bottomBoltOffset) / distanceBetweenBolts)
   verticalHolesSketch = offsetPlane(YZ, offset = -1)
-  verticalHoles = circle(verticalHolesSketch, center = [-ironWidth / 2, 75], radius = boltRadius + 0.5)
+  sketch001 = circle(verticalHolesSketch, center = [-ironWidth / 2, 75], radius = boltRadius + 0.5)
     |> patternLinear2d(instances = verticalHolesNeeded, distance = (height - bottomBoltOffset) / verticalHolesNeeded, axis = [0, 1])
-    |> extrude(length = ironThickness + 2)
+
+  verticalHoles = extrude(sketch001, length = ironThickness + 2)
 
   verticalWithHoles = reduce(
     verticalHoles,
@@ -121,7 +122,6 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
       return subtract(accum, tools = hole)
     },
   )
-
   horizontal = angleIron(
          length = depth,
          width = ironWidth,
@@ -132,7 +132,7 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
     |> rotate(pitch = 270, yaw = -90)
     |> translate(z = height + 1, global = true)
   horizontalHolesSketch = offsetPlane(XY, offset = height - ironThickness)
-  horizontalHoles = circle(
+  sketch002 = circle(
          horizontalHolesSketch,
          center = [
            depth - (ironWidth / 2),
@@ -140,7 +140,8 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          ],
          radius = boltRadius + 0.5,
        )
-    |> extrude(length = ironThickness + 2)
+
+  horizontalHoles = extrude(sketch002, length = ironThickness + 2)
   horizontalWithHoles = subtract(horizontal, tools = horizontalHoles)
 
   strutLength = sqrt(2 * (min([height, depth]) - ironThickness) ^ 2)
@@ -162,15 +163,14 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
        )
 
   legSketch = startSketchOn(-YZ)
-  leg = startProfile(legSketch, at = [0, 0])
+  sketch003 = startProfile(legSketch, at = [0, 0])
     |> angledLine(angle = 0deg, length = ironWidth, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = ironWidth)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> extrude(length = 100)
+  leg = extrude(sketch003, length = 100)
     |> translate(z = height - ironWidth, global = true)
-
   // Leg to insert into party wall
   return [
     verticalWithHoles,
