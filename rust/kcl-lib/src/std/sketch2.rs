@@ -40,6 +40,7 @@ pub(crate) async fn create_segments_in_engine(
             // Don't send construction segments to the engine.
             continue;
         }
+        let segment_range = segment.meta.first().map(|meta| meta.source_range).unwrap_or(range);
 
         // The start point.
         let start = match &segment.kind {
@@ -61,7 +62,7 @@ pub(crate) async fn create_segments_in_engine(
             if !exec_state.sketch_mode() {
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::with_id(exec_state, ctx, range, id),
+                        ModelingCmdMeta::with_id(exec_state, ctx, segment_range, id),
                         ModelingCmd::from(
                             mcmd::MovePathPen::builder()
                                 .path(sketch.id.into())
@@ -80,7 +81,7 @@ pub(crate) async fn create_segments_in_engine(
                 tag: None,
                 geo_meta: GeoMeta {
                     id,
-                    metadata: range.into(),
+                    metadata: segment_range.into(),
                 },
             };
             sketch.paths.push(Path::ToPoint { base });
@@ -94,7 +95,7 @@ pub(crate) async fn create_segments_in_engine(
                 !exec_state.sketch_mode(),
                 exec_state,
                 ctx,
-                range,
+                segment_range,
             )
             .await?;
             outer_sketch = Some(sketch);
@@ -114,7 +115,10 @@ pub(crate) async fn create_segments_in_engine(
                 segment.sketch_id
             );
             debug_assert!(false, "{message}");
-            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![segment_range],
+            )));
         }
 
         let tag = segment_tags.get(&segment.object_id).cloned();
@@ -131,7 +135,7 @@ pub(crate) async fn create_segments_in_engine(
                     !exec_state.sketch_mode(),
                     exec_state,
                     ctx,
-                    range,
+                    segment_range,
                 )
                 .await?;
                 outer_sketch = Some(sketch);
@@ -141,21 +145,21 @@ pub(crate) async fn create_segments_in_engine(
                 let Some(start_unit) = start_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "Start point of arc must have length units".to_owned(),
-                        vec![range],
+                        vec![segment_range],
                     )));
                 };
                 let (end, end_ty) = untype_point(end.clone());
                 let Some(end_unit) = end_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "End point of arc must have length units".to_owned(),
-                        vec![range],
+                        vec![segment_range],
                     )));
                 };
                 let (center, center_ty) = untype_point(center.clone());
                 let Some(center_unit) = center_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "Center point of arc must have length units".to_owned(),
-                        vec![range],
+                        vec![segment_range],
                     )));
                 };
                 let start_in_center_unit = untyped_point_to_unit(start, start_unit, center_unit);
@@ -179,7 +183,7 @@ pub(crate) async fn create_segments_in_engine(
                     tag,
                     !exec_state.sketch_mode(),
                     ctx,
-                    range,
+                    segment_range,
                 )
                 .await?;
                 outer_sketch = Some(sketch);

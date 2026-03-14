@@ -1,6 +1,7 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
@@ -31,7 +32,11 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode } from '@src/lang/wasm'
+import type {
+  Identifier,
+  PathToNode,
+  VariableDeclaration,
+} from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -1093,6 +1098,193 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     expect(vars.pathIfPipe).toBeUndefined()
   })
 
+  it('should return sketch block segment references as member expressions', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+s = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [2, 0])
+  line2 = line(start = [2, 0], end = [0, 2])
+  coincident([line1.end, line2.start])
+}`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const line1Segment = [...artifactGraph.values()]
+      .filter((a) => a.type === 'segment')
+      .find((artifact) => {
+        const lineLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return (
+          !err(lineLookup) &&
+          lineLookup.node.type === 'VariableDeclaration' &&
+          lineLookup.node.declaration.id.name === 'line1'
+        )
+      })
+    if (!line1Segment) {
+      throw new Error('line1 segment artifact not found')
+    }
+
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: line1Segment.codeRef,
+          artifact: line1Segment,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const vars = getVariableExprsFromSelection(
+      selections,
+      artifactGraph,
+      ast,
+      instanceInThisFile
+    )
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(1)
+    expect(vars.exprs[0].type).toBe('MemberExpression')
+    if (vars.exprs[0].type !== 'MemberExpression') {
+      throw new Error(`Expected MemberExpression, got ${vars.exprs[0].type}`)
+    }
+    expect(vars.exprs[0].computed).toBe(false)
+    expect(vars.exprs[0].object.type).toBe('Name')
+    expect(vars.exprs[0].property.type).toBe('Name')
+    if (
+      vars.exprs[0].object.type !== 'Name' ||
+      vars.exprs[0].property.type !== 'Name'
+    ) {
+      throw new Error('Expected both object and property to be Name nodes')
+    }
+    expect(vars.exprs[0].object.name.name).toBe('s')
+    expect(vars.exprs[0].property.name.name).toBe('line1')
+  })
+
+  it('should resolve sketch block segment refs when selection path points to sketch block', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+s = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [2, 0])
+  line2 = line(start = [2, 0], end = [0, 2])
+  coincident([line1.end, line2.start])
+}`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const line1Segment = [...artifactGraph.values()]
+      .filter((a) => a.type === 'segment')
+      .find((artifact) => {
+        const lineLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          artifact.codeRef.pathToNode,
+          instanceInThisFile,
+          'VariableDeclaration'
+        )
+        return (
+          !err(lineLookup) &&
+          lineLookup.node.type === 'VariableDeclaration' &&
+          lineLookup.node.declaration.id.name === 'line1'
+        )
+      })
+    const sketchArtifact = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    if (!line1Segment) {
+      throw new Error('line1 segment artifact not found')
+    }
+    if (!sketchArtifact) {
+      throw new Error('sketch block artifact not found')
+    }
+
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: {
+            ...line1Segment.codeRef,
+            pathToNode: sketchArtifact.codeRef.pathToNode,
+          },
+          artifact: line1Segment,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const vars = getVariableExprsFromSelection(
+      selections,
+      artifactGraph,
+      ast,
+      instanceInThisFile
+    )
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(1)
+    expect(vars.exprs[0].type).toBe('MemberExpression')
+    if (vars.exprs[0].type !== 'MemberExpression') {
+      throw new Error(`Expected MemberExpression, got ${vars.exprs[0].type}`)
+    }
+    expect(vars.exprs[0].object.type).toBe('Name')
+    expect(vars.exprs[0].property.type).toBe('Name')
+    if (
+      vars.exprs[0].object.type !== 'Name' ||
+      vars.exprs[0].property.type !== 'Name'
+    ) {
+      throw new Error('Expected both object and property to be Name nodes')
+    }
+    expect(vars.exprs[0].object.name.name).toBe('s')
+    expect(vars.exprs[0].property.name.name).toBe('line1')
+  })
+
+  it('should not resolve sketch block objects as variable expressions', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+s = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [2, 0])
+  line2 = line(start = [2, 0], end = [0, 2])
+  coincident([line1.end, line2.start])
+}`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const sketchArtifact = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    if (!sketchArtifact) {
+      throw new Error('sketch block artifact not found')
+    }
+
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: sketchArtifact.codeRef,
+          artifact: sketchArtifact,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const vars = getVariableExprsFromSelection(
+      selections,
+      artifactGraph,
+      ast,
+      instanceInThisFile
+    )
+
+    expect(err(vars)).toBe(true)
+    if (!err(vars)) {
+      throw new Error(
+        'Expected selection mapping to fail for sketch block object'
+      )
+    }
+    expect(vars.message).toBe("Couldn't map selections to program references")
+  })
+
   // Test for https://github.com/KittyCAD/modeling-app/issues/7669
   it('should find only one variable expr for two selections pointing to the same variable', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
@@ -1417,6 +1609,78 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     expect(selections.graphSelections[1].artifact.type).toEqual('path')
   })
 
+  it('should find the segment selection from single-segment extrude op', async () => {
+    const code = `@settings(experimentalFeatures = allow)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 2mm, var 2mm])
+  coincident([line1.end, line2.start])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+    if (op.unlabeledArg.value.type !== 'Segment') {
+      throw new Error(`Expected Segment arg, got ${op.unlabeledArg.value.type}`)
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('segment')
+    if (selection.artifact.type !== 'segment') {
+      throw new Error(
+        `Expected segment artifact, got ${selection.artifact.type}`
+      )
+    }
+
+    expect(selection.artifact.id).toEqual(op.unlabeledArg.value.artifact_id)
+    expect(selection.codeRef).toEqual(selection.artifact.codeRef)
+
+    const sketchBlockLookup = getNodeFromPath<SketchBlock>(
+      ast,
+      selection.codeRef.pathToNode,
+      instanceInThisFile,
+      'SketchBlock'
+    )
+    if (
+      err(sketchBlockLookup) ||
+      sketchBlockLookup.node.type !== 'SketchBlock'
+    ) {
+      throw new Error('Expected codeRef to resolve inside a sketch block')
+    }
+
+    const segmentVarLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      instanceInThisFile,
+      'VariableDeclaration'
+    )
+    if (
+      err(segmentVarLookup) ||
+      segmentVarLookup.node.type !== 'VariableDeclaration'
+    ) {
+      throw new Error('Expected codeRef to resolve a segment variable')
+    }
+    expect(segmentVarLookup.node.declaration.id.name).toEqual('line1')
+  })
+
   it('should find the solids selection from a variable-less transform call', async () => {
     const redExtrusion = `sketch001 = startSketchOn(XZ)
 profile001 = circle(
@@ -1449,37 +1713,5 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
-  })
-
-  it('maps a segment tag to a wall selection when a wall exists', async () => {
-    const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-4.16, -2.97])
-  |> line(end = [2.31, 8.45])
-  |> line(end = [7.53, -7.02])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
-extrude002 = extrude(seg01, length = 5, hideSeams = true)`
-    const { artifactGraph, operations } = await getAstAndArtifactGraph(
-      code,
-      instanceInThisFile,
-      kclManagerInThisFile
-    )
-    const op = operations.findLast(
-      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
-    )
-    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
-      throw new Error('Extrude operation not found')
-    }
-
-    console.log('op.unlabeledArg', op.unlabeledArg)
-    const selections = retrieveSelectionsFromOpArg(
-      op.unlabeledArg,
-      artifactGraph
-    )
-    if (err(selections)) throw selections
-
-    expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
   })
 })
