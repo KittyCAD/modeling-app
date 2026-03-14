@@ -1,6 +1,7 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
@@ -1628,6 +1629,9 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
       throw new Error('Extrude operation not found')
     }
+    if (op.unlabeledArg.value.type !== 'Segment') {
+      throw new Error(`Expected Segment arg, got ${op.unlabeledArg.value.type}`)
+    }
 
     const selections = retrieveSelectionsFromOpArg(
       op.unlabeledArg,
@@ -1640,6 +1644,41 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('segment')
+    if (selection.artifact.type !== 'segment') {
+      throw new Error(
+        `Expected segment artifact, got ${selection.artifact.type}`
+      )
+    }
+
+    expect(selection.artifact.id).toEqual(op.unlabeledArg.value.artifact_id)
+    expect(selection.codeRef).toEqual(selection.artifact.codeRef)
+
+    const sketchBlockLookup = getNodeFromPath<SketchBlock>(
+      ast,
+      selection.codeRef.pathToNode,
+      instanceInThisFile,
+      'SketchBlock'
+    )
+    if (
+      err(sketchBlockLookup) ||
+      sketchBlockLookup.node.type !== 'SketchBlock'
+    ) {
+      throw new Error('Expected codeRef to resolve inside a sketch block')
+    }
+
+    const segmentVarLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      instanceInThisFile,
+      'VariableDeclaration'
+    )
+    if (
+      err(segmentVarLookup) ||
+      segmentVarLookup.node.type !== 'VariableDeclaration'
+    ) {
+      throw new Error('Expected codeRef to resolve a segment variable')
+    }
+    expect(segmentVarLookup.node.declaration.id.name).toEqual('line1')
   })
 
   it('should find the solids selection from a variable-less transform call', async () => {
@@ -1674,37 +1713,5 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
-  })
-
-  it('maps a segment tag to a wall selection when a wall exists', async () => {
-    const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-4.16, -2.97])
-  |> line(end = [2.31, 8.45])
-  |> line(end = [7.53, -7.02])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
-extrude002 = extrude(seg01, length = 5, hideSeams = true)`
-    const { artifactGraph, operations } = await getAstAndArtifactGraph(
-      code,
-      instanceInThisFile,
-      kclManagerInThisFile
-    )
-    const op = operations.findLast(
-      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
-    )
-    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
-      throw new Error('Extrude operation not found')
-    }
-
-    console.log('op.unlabeledArg', op.unlabeledArg)
-    const selections = retrieveSelectionsFromOpArg(
-      op.unlabeledArg,
-      artifactGraph
-    )
-    if (err(selections)) throw selections
-
-    expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
   })
 })
