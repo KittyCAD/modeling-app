@@ -1018,9 +1018,15 @@ export class KclManager extends File {
     const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestSkipWriteToFile) && e.value)
     )
+    const hasNoOpWriteToFileEffect =
+      !update.docChanged &&
+      update.transactions.some((tr) =>
+        tr.effects.some((e) => e.is(requestSkipWriteToFile) && !e.value)
+      )
 
     const shouldWriteToFile =
-      update.docChanged && notIgnoredUpdate && !hasSkipWriteToFileEffect
+      hasNoOpWriteToFileEffect ||
+      (update.docChanged && notIgnoredUpdate && !hasSkipWriteToFileEffect)
 
     if (shouldWriteToFile) {
       // We don't want to block on writing to file
@@ -2209,6 +2215,12 @@ export class KclManager extends File {
       if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
+      }
+      if (resolvedOptions.shouldWriteToDisk) {
+        this.editorView.dispatch({
+          annotations: [Transaction.addToHistory.of(false)],
+          effects: [requestSkipWriteToFile.of(false)],
+        })
       }
       return
     }
