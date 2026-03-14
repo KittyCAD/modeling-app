@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useEffect, useRef } from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
@@ -68,6 +68,15 @@ export const ModelingMachineProvider = ({
       snapToGrid,
     },
   } = settingsValues
+  const machineApiEnabled = settingsValues.app.machineApi.current
+  const commandBarConfig = useMemo(() => {
+    if (machineApiEnabled) {
+      return modelingMachineCommandConfig
+    }
+
+    const { Make: _make, ...configWithoutMake } = modelingMachineCommandConfig
+    return configWithoutMake
+  }, [machineApiEnabled])
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const projects = useFolders()
   const theProject = useRef<Project | undefined>(
@@ -439,7 +448,7 @@ export const ModelingMachineProvider = ({
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
-    commandBarConfig: modelingMachineCommandConfig,
+    commandBarConfig,
     isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

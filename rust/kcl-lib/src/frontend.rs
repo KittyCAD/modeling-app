@@ -21,7 +21,7 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
             SourceDelta, SourceRef, Version,
         },
-        modify::{find_defined_names, next_free_name},
+        modify::{find_defined_names, next_free_name, next_free_name_using_padding},
         sketch::{
             Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
             SegmentCtor, SketchApi, SketchCtor, Vertical,
@@ -228,7 +228,8 @@ impl SketchApi for FrontendState {
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
         let defined_names = find_defined_names(&new_ast);
-        let sketch_name = next_free_name("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
+        let sketch_name =
+            next_free_name_using_padding("sketch", &defined_names, 3).map_err(|err| Error { msg: err.to_string() })?;
         let sketch_decl = ast::VariableDeclaration::new(
             ast::VariableDeclarator::new(
                 &sketch_name,
@@ -3950,7 +3951,7 @@ bad = missing_name
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   point(at = [1in, 2in])
 }
 "
@@ -3987,7 +3988,7 @@ sketch1 = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   point(at = [3in, 4in])
 }
 "
@@ -4066,7 +4067,7 @@ sketch1 = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -4115,7 +4116,7 @@ sketch1 = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line(start = [1mm, 2mm], end = [13mm, 14mm])
 }
 "
@@ -4204,7 +4205,7 @@ sketch1 = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
 }
 "
@@ -4266,7 +4267,7 @@ sketch1 = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
 }
 "
@@ -4408,7 +4409,7 @@ s = sketch(on = XY) {
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
 
-sketch1 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line(start = [0mm, 0mm], end = [10mm, 10mm])
 }
 "
@@ -6249,7 +6250,7 @@ cube = startSketchOn(XY)
   |> extrude(length = len)
 
 plane = planeOf(cube, face = side)
-sketch1 = sketch(on = plane) {
+sketch001 = sketch(on = plane) {
 }
 "
         );
@@ -6310,7 +6311,7 @@ sketch1 = sketch(on = XY) {
 
 sketch1 = sketch(on = XY) {
 }
-sketch2 = sketch(on = YZ) {
+sketch001 = sketch(on = YZ) {
 }
 "
         );
@@ -6350,7 +6351,7 @@ sketch1 = sketch(on = XY) {
 
 sketch1 = sketch(on = XY) {
 }
-sketch2 = sketch(on = XY) {
+sketch001 = sketch(on = XY) {
 }
 "
         );

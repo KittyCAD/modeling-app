@@ -1,6 +1,6 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { WebSocketRequest } from '@kittycad/lib'
+import type { EntityType, Point2d, WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -72,7 +72,7 @@ import type {
   ExtrudeFacePlane,
   NonCodeSelection,
   OffsetPlane,
-  RegionSelection,
+  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
@@ -88,6 +88,120 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+async function getParentEntityIdForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<string | undefined> {
+  const parentResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_parent_id',
+      entity_id: entityId,
+    },
+  })
+  if (!isModelingResponse(parentResponse)) return undefined
+  const parentIdResponse = parentResponse.resp.data.modeling_response
+  if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
+  return parentIdResponse.data.entity_id
+}
+
+async function getRegionQueryPointForRegion(
+  regionId: string,
+  engineCommandManager: ConnectionManager
+): Promise<Point2d | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_query_point',
+      region_id: regionId,
+    },
+  } as unknown as WebSocketRequest)
+  if (!isModelingResponse(response)) return null
+  const queryPointResponse = (response as any).resp.data.modeling_response
+  if (queryPointResponse?.type !== 'region_get_query_point') return null
+  return queryPointResponse.data?.query_point ?? null
+}
+
+async function getEngineRegionSelectionFromEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- EngineRegionSelection from modelingSharedTypes
+): Promise<EngineRegionSelection | null> {
+  const point = await getRegionQueryPointForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!point) return null
+
+  const parentEntityId = await getParentEntityIdForEntity(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!parentEntityId) return null
+
+  const path = artifactGraph.get(parentEntityId)
+  if (!path || path.type !== 'path') return null
+
+  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
+  const sketch = artifactGraph
+    .values()
+    .find(
+      (a) =>
+        a.type === 'sketchBlock' &&
+        JSON.stringify(a.codeRef.pathToNode) ===
+          JSON.stringify(path.codeRef.pathToNode)
+    )
+  if (!sketch) return null
+
+  return {
+    type: 'region',
+    id: regionEntityId,
+    point,
+    sketchId: sketch.id,
+  }
+}
+
+async function _getPrimitiveSelectionForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<EnginePrimitiveSelection | null> {
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_primitive_index',
+      entity_id: entityId,
+    },
+  } as unknown as WebSocketRequest)
+
+  if (!isModelingResponse(websocketResponse)) return null
+
+  const primitiveIndexResponse = (websocketResponse as any).resp.data
+    .modeling_response
+  if (primitiveIndexResponse?.type !== 'entity_get_primitive_index') return null
+
+  const entityGetPrimitiveIndex = primitiveIndexResponse.data as {
+    primitive_index: number
+    entity_type: EntityType
+  }
+
+  const parentEntityId = await getParentEntityIdForEntity(
+    entityId,
+    engineCommandManager
+  )
+
+  return {
+    type: 'enginePrimitive',
+    entityId,
+    parentEntityId,
+    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
+    primitiveType: entityGetPrimitiveIndex.entity_type,
+  }
+}
+
 export function isEnginePrimitiveSelection(
   s: NonCodeSelection
 ): s is EnginePrimitiveSelection {
@@ -99,9 +213,9 @@ export function isEnginePrimitiveSelection(
   )
 }
 
-export function isRegionSelection(
+export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
-): selection is RegionSelection {
+): selection is EngineRegionSelection {
   return (
     typeof selection === 'object' &&
     'type' in selection &&
@@ -195,7 +309,10 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
-  const data = engineEvent?.data as { reference?: any } | undefined
+  const data = engineEvent?.data as {
+    reference?: any
+    entity_id?: string
+  } | undefined
   const reference = data?.reference ?? engineEvent?.reference
   if (!reference) {
     // No reference - clear selection (clicked in empty space)
@@ -336,6 +453,26 @@ export async function getEventForQueryEntityTypeWithPoint(
           id: entityId!,
         },
       },
+    }
+  }
+
+  const _artifactByEventId = data?.entity_id
+    ? artifactGraph.get(data.entity_id)
+    : undefined
+  if (!_artifactByEventId && data?.entity_id) {
+    const regionSelection = await getEngineRegionSelectionFromEntity(
+      data.entity_id,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (regionSelection) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'engineRegionSelection',
+          selection: regionSelection,
+        },
+      }
     }
   }
 
@@ -509,6 +646,14 @@ export function handleSelectionBatch({
             id: entityId,
             range: refRange || defaultSourceRange(),
           })
+      }
+    }
+    for (const other of selections.otherSelections) {
+      if (isEngineRegionSelection(other)) {
+        selectionToEngine.push({
+          id: other.id,
+          range: defaultSourceRange(),
+        })
       }
     }
     engineEvents = resetAndSetEngineEntitySelectionCmds(
@@ -818,7 +963,7 @@ export function getSelectionCountByType(
   selection.otherSelections.forEach((sel) => {
     if (typeof sel === 'string') {
       incrementOrInitializeSelectionType('other')
-    } else if (isRegionSelection(sel)) {
+    } else if (isEngineRegionSelection(sel)) {
       incrementOrInitializeSelectionType('region')
     } else if ('name' in sel) {
       incrementOrInitializeSelectionType('plane')

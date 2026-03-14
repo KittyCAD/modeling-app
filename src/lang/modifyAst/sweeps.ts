@@ -11,6 +11,7 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
@@ -32,7 +33,6 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
-  getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
@@ -60,6 +60,7 @@ import {
 } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -180,6 +181,17 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -375,6 +387,18 @@ export function addSweep({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Find the path declaration for the labeled argument
   // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathResolved = resolveSelectionV2(
@@ -487,6 +511,18 @@ export function addLoft({
   )
   if (err(vars)) {
     return vars
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -650,6 +686,17 @@ export function addRevolve({
   )
   if (err(vars)) {
     return vars
+  }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Handle axis/edge: Check if edge has V2 selections (edgeRefs) or use tag-based approach
@@ -1023,33 +1070,10 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       otherSelections: [],
     }
   } else if (axisValue.type === 'Uuid') {
-    // sweepEdge case
-    axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      artifactGraph
+    // sweepEdge was removed from artifact graph; use edgeRef/tag-based axis instead
+    return new Error(
+      'Uuid axis (legacy sweepEdge) is no longer supported; use edgeRef or tag-based segment axis'
     )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
-    }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) {
-      return new Error("Couldn't find related edge code ref")
-    }
-
-    edge = {
-      graphSelectionsV2: [
-        {
-          entityRef: artifactToEntityRef(artifact.type, axisValue.value),
-          codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
   } else {
     return new Error('The type of the axis argument is unsupported')
   }

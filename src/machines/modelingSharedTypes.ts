@@ -32,7 +32,7 @@ export type EnginePrimitiveSelection = {
   primitiveType: EntityType
 }
 
-export interface RegionSelection {
+export interface EngineRegionSelection {
   type: 'region'
   id: string
   point: Point2d
@@ -43,7 +43,7 @@ export type NonCodeSelection =
   | Axis
   | DefaultPlaneSelection
   | EnginePrimitiveSelection
-  | RegionSelection
+  | EngineRegionSelection
 
 export type EntityReference =
   | {
@@ -116,8 +116,8 @@ export type SetSelections =
       selection: EnginePrimitiveSelection
     }
   | {
-      selectionType: 'regionSelection'
-      selection: RegionSelection
+      selectionType: 'engineRegionSelection'
+      selection: EngineRegionSelection
     }
   | {
       selectionType: 'completeSelection'
