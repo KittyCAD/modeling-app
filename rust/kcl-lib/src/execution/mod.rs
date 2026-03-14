@@ -35,6 +35,8 @@ pub use sketch_transpiler::{
     transpile_old_sketch_to_new_with_execution,
 };
 pub(crate) use state::ModuleArtifactState;
+#[cfg(feature = "artifact-graph")]
+pub use state::{DirectTagFilletMeta, DirectTagFilletTagEntry, EdgeRefactorMeta, EdgeRefactorStdlibFn};
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
@@ -241,6 +243,12 @@ pub struct ExecOutcome {
     #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Metadata from deprecated edge stdlib calls for refactor-to-edgeRefs lint/code mod.
+    #[cfg(feature = "artifact-graph")]
+    pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
+    /// Metadata from fillet/chamfer calls that used `tags` directly (for Z0006 code mod).
+    #[cfg(feature = "artifact-graph")]
+    pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order

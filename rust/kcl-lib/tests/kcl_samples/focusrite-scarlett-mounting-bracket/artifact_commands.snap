@@ -323,6 +323,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -666,6 +667,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.5,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1047,6 +1049,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.5,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

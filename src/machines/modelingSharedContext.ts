@@ -45,7 +45,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     toastId: null,
     selection: [],
     selectionRanges: {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [],
     },
     sketchDetails: null,
@@ -87,7 +87,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     toastId: null,
     selection: [],
     selectionRanges: {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [],
     },
     sketchDetails: null,

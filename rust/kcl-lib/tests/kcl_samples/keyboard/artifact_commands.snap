@@ -260,6 +260,7 @@ description: Artifact commands keyboard.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 15.239999999999998,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

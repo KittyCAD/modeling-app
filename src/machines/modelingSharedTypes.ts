@@ -1,7 +1,7 @@
 import type { EntityType, Point2d } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
+import type { ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -45,20 +45,62 @@ export type NonCodeSelection =
   | EnginePrimitiveSelection
   | EngineRegionSelection
 
-export interface Selection {
-  artifact?: Artifact
-  codeRef: CodeRef
+export type EntityReference =
+  | {
+      type: 'plane'
+      plane_id: string
+    }
+  | {
+      type: 'face'
+      face_id: string
+    }
+  | {
+      type: 'solid2d'
+      solid2d_id: string
+    }
+  | {
+      type: 'solid3d'
+      solid3d_id: string
+    }
+  | {
+      type: 'edge'
+      faces: string[]
+      disambiguators?: string[]
+      index?: number
+    }
+  | {
+      type: 'solid2d_edge'
+      edge_id: string
+    }
+  | {
+      type: 'vertex'
+      faces: string[]
+      disambiguators?: string[]
+      index?: number
+    }
+  | {
+      type: 'segment'
+      path_id: string
+      segment_id: string
+    }
+
+export interface SelectionV2 {
+  entityRef?: EntityReference
+  codeRef?: CodeRef
 }
+
+/** Alias for SelectionV2 (legacy name used in lang/lib). */
+export type Selection = SelectionV2
 
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
-  graphSelections: Array<Selection>
+  graphSelectionsV2: Array<SelectionV2>
 }
 
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
+      selection: SelectionV2
       scrollIntoView?: boolean
     }
   | {
@@ -210,6 +252,7 @@ export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
   useSketchSolveMode?: Setting<boolean>
+  useNewSketchMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 

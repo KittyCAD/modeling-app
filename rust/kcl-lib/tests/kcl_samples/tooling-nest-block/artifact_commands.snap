@@ -362,6 +362,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 14.85,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -521,6 +522,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 9.9,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -680,6 +682,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.9399999999999995,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -839,6 +842,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.9399999999999995,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -998,6 +1002,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 9.429749999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1157,6 +1162,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.286499999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1316,6 +1322,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.286499999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1475,6 +1482,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.286499999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1634,6 +1642,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 12.572999999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1793,6 +1802,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.99,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1952,6 +1962,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.98,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2111,6 +2122,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.475,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2270,6 +2282,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.9699999999999998,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2429,6 +2442,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.96,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2588,6 +2602,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 4.95,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2747,6 +2762,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 4.455,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2906,6 +2922,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.465,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -3065,6 +3082,7 @@ description: Artifact commands tooling-nest-block.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 18.859499999999997,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

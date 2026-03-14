@@ -266,6 +266,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.175,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -295,6 +296,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 6.35,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -363,6 +365,7 @@ description: Artifact commands propellant-line-brackets.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 3.175,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

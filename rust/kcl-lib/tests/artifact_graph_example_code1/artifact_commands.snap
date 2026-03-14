@@ -220,6 +220,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

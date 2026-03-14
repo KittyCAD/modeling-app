@@ -6,6 +6,10 @@ use kittycad_modeling_cmds::{
     self as kcmc, ok_response::OkModelingCmdResponse, shared::Point3d, websocket::OkWebSocketResponseData,
 };
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
+#[cfg(feature = "artifact-graph")]
+use crate::std::edge;
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
@@ -161,7 +165,19 @@ async fn inner_edge_id(
                 vec![args.source_range],
             )));
         };
-        inner_resp.edge_id
+        let edge_id = inner_resp.edge_id;
+
+        #[cfg(feature = "artifact-graph")]
+        if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await {
+            exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+                edge_id,
+                face_ids,
+                source_range: args.source_range,
+                stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
+            });
+        }
+
+        edge_id
     };
     Ok(KclValue::Uuid {
         value: edge_id,

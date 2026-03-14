@@ -1032,6 +1032,13 @@ async fn inner_start_sketch_on(
                             vec![args.source_range],
                         )));
                     }
+                    Axis2dOrEdgeReference::EdgeReference(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
                 };
                 let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
                 let plane_data = PlaneData::Plane(PlaneInfo {

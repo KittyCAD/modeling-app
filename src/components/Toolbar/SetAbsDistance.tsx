@@ -47,10 +47,10 @@ export function absDistanceInfo({
       : constraint === 'snapToYAxis'
         ? 'xAbs'
         : 'yAbs'
-  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+  const _nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      codeRef.pathToNode,
+      codeRef?.pathToNode ?? [],
       wasmInstance,
       ['CallExpressionKw']
     )
@@ -87,7 +87,7 @@ export function absDistanceInfo({
   const enabled =
     isAllTooltips &&
     transforms.every(Boolean) &&
-    selectionRanges.graphSelections.length === 1 &&
+    selectionRanges.graphSelectionsV2.length === 1 &&
     (enableX || enableY)
 
   return { enabled, transforms }

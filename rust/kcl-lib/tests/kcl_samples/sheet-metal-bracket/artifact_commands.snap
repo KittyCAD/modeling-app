@@ -507,6 +507,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 12.7,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

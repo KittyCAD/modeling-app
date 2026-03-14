@@ -876,6 +876,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1413,6 +1414,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1570,6 +1572,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2989,6 +2992,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -4669,6 +4673,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -5066,6 +5071,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -5548,6 +5554,7 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.54,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

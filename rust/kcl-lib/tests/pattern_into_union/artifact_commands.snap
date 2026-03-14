@@ -470,6 +470,7 @@ description: Artifact commands pattern_into_union.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.1,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -1277,6 +1278,7 @@ description: Artifact commands pattern_into_union.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.1,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

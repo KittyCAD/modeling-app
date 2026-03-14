@@ -2,7 +2,9 @@ mod cache;
 
 use kcl_lib::{
     BacktraceItem, ExecError, ModuleId, SourceRange,
-    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
+    test_server::{
+        execute_and_export_step, execute_and_snapshot, execute_and_snapshot_ast, execute_and_snapshot_no_auth,
+    },
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -2107,4 +2109,29 @@ async fn kcl_test_exporting_step_file() {
             std::str::from_utf8(&file.contents).unwrap(),
         );
     }
+}
+
+/// Asserts that running KCL that uses getOppositeEdge in a fillet records one entry in
+/// edge_refactor_metadata (for refactor-to-edgeRefs lint/code mod). Fails until the
+/// recording bug is fixed.
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_edge_refactor_metadata_recorded_for_get_opposite_edge() {
+    let code = r#"@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1)])
+"#;
+    let program = kcl_lib::Program::parse_no_errs(code).unwrap();
+    let (exec_state, _ctx, _env, _img, _step) = execute_and_snapshot_ast(program, None, false).await.unwrap();
+    assert_eq!(
+        exec_state.edge_refactor_metadata().len(),
+        1,
+        "expected one edge_refactor_metadata entry when getOppositeEdge is used in a fillet"
+    );
 }

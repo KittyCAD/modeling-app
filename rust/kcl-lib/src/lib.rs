@@ -73,6 +73,8 @@ mod lsp;
 mod modules;
 mod parsing;
 mod project;
+#[cfg(feature = "artifact-graph")]
+pub mod refactor_edge_stdlib;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -94,6 +96,8 @@ pub use errors::{
     BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
     ReportWithOutputs,
 };
+#[cfg(feature = "artifact-graph")]
+pub use execution::EdgeRefactorMeta;
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
     clear_mem_cache, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new, transpile_old_sketch_to_new_ast,
@@ -106,7 +110,7 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
+pub use parsing::ast::types::{FormatOptions, NodePath, Program as AstProgram, Step as NodePathStep};
 pub use project::ProjectManager;
 pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]

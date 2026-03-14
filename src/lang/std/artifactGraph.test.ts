@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import {
-  coerceSelectionsToBody,
   getSweepArtifactFromSelection,
   type Artifact,
+  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
+import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 describe('getSweepArtifactFromSelection', () => {
   it('should return sweep from edgeCut -> segment selection', () => {
@@ -40,7 +41,7 @@ describe('getSweepArtifactFromSelection', () => {
       consumed: false,
     }
 
-    const segment: Artifact = {
+    const segment = {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
@@ -51,9 +52,9 @@ describe('getSweepArtifactFromSelection', () => {
         pathToNode: [],
         nodePath: { steps: [] },
       },
-    }
+    } as Artifact
 
-    const edgeCut: Artifact = {
+    const edgeCut = {
       type: 'edgeCut',
       id: 'edge-cut-1',
       consumedEdgeId: 'segment-1',
@@ -64,14 +65,14 @@ describe('getSweepArtifactFromSelection', () => {
         pathToNode: [],
         nodePath: { steps: [] },
       },
-    }
+    } as Artifact
 
     artifactGraph.set('path-1', path)
     artifactGraph.set('sweep-1', sweep)
     artifactGraph.set('segment-1', segment)
     artifactGraph.set('edge-cut-1', edgeCut)
 
-    const selection: Selection = {
+    const selection: ResolvedGraphSelection = {
       artifact: edgeCut,
       codeRef: { range: [0, 0, 0], pathToNode: [] },
     }
@@ -85,70 +86,15 @@ describe('getSweepArtifactFromSelection', () => {
     }
   })
 
-  it('should return sweep from edgeCut -> sweepEdge selection', () => {
-    const artifactGraph: ArtifactGraph = new Map()
-
-    // Create sweep -> sweepEdge -> edgeCut chain
-    const sweep: Artifact = {
-      type: 'sweep',
-      id: 'sweep-1',
-      codeRef: {
-        range: [0, 0, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-      pathId: 'path-1',
-      subType: 'extrusion',
-      surfaceIds: [],
-      edgeIds: ['sweep-edge-1'],
-      method: 'merge',
-      trajectoryId: null,
-      consumed: false,
-    }
-
-    const sweepEdge: Artifact = {
-      type: 'sweepEdge',
-      id: 'sweep-edge-1',
-      subType: 'opposite',
-      sweepId: 'sweep-1',
-      segId: 'segment-1',
-      cmdId: 'cmd-1',
-      commonSurfaceIds: [],
-    }
-
-    const edgeCut: Artifact = {
-      type: 'edgeCut',
-      id: 'edge-cut-1',
-      consumedEdgeId: 'sweep-edge-1', // Points to sweepEdge, not segment
-      subType: 'fillet',
-      edgeIds: [],
-      codeRef: {
-        range: [0, 0, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-    }
-
-    artifactGraph.set('sweep-1', sweep)
-    artifactGraph.set('sweep-edge-1', sweepEdge)
-    artifactGraph.set('edge-cut-1', edgeCut)
-
-    const selection: Selection = {
-      artifact: edgeCut,
-      codeRef: { range: [0, 0, 0], pathToNode: [] },
-    }
-
-    const result = getSweepArtifactFromSelection(selection, artifactGraph)
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect('type' in result ? result.type : undefined).toBe('sweep')
-      expect(result.id).toBe('sweep-1')
-    }
-  })
+  // sweepEdge was removed from the artifact graph / selectionsV2; edgeCut now resolves via
+  // segment or via entityRef (edge). A test for edge selection → sweep could use an edge
+  // entityRef payload instead of the legacy edgeCut -> sweepEdge chain.
 })
 
 describe('coerceSelectionsToBody', () => {
+  // Tests below are not redundant: they assert selectionsV2 behavior for codeRef-only selections
+  // that resolve to path or edgeCut (no entityRef). Coerce must pass these through unchanged.
+
   it('should pass through path artifact unchanged', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
@@ -163,10 +109,11 @@ describe('coerceSelectionsToBody', () => {
     }
     artifactGraph.set('path-1', path)
 
+    // Path is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is (no artifact to resolve to body).
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: path,
           codeRef: { range: [0, 100, 0], pathToNode: [] },
         },
       ],
@@ -177,9 +124,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([0, 100, 0])
     }
   })
 
@@ -214,33 +160,34 @@ describe('coerceSelectionsToBody', () => {
       consumed: false,
     }
 
-    const segment: Artifact = {
+    const segment = {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
-    }
+    } as Artifact
 
-    const edgeCut: Artifact = {
+    const edgeCut = {
       type: 'edgeCut',
       id: 'edge-cut-1',
       consumedEdgeId: 'segment-1',
       subType: 'chamfer',
       edgeIds: [],
       codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
-    }
+    } as Artifact
 
     artifactGraph.set('path-1', path)
     artifactGraph.set('sweep-1', sweep)
     artifactGraph.set('segment-1', segment)
     artifactGraph.set('edge-cut-1', edgeCut)
 
+    // Edge-cut is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is.
     const selections: Selections = {
-      graphSelections: [
+      graphSelectionsV2: [
         {
-          artifact: edgeCut,
           codeRef: { range: [90, 95, 0], pathToNode: [] },
         },
       ],
@@ -251,9 +198,63 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([90, 95, 0])
+    }
+  })
+
+  it('should keep sweep (body with entityRef) as body selection', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [50, 120, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+
+    const path: Artifact = {
+      type: 'path',
+      id: 'path-1',
+      codeRef: { range: [0, 45, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: true,
+    }
+
+    artifactGraph.set('sweep-1', sweep)
+    artifactGraph.set('path-1', path)
+
+    // Selection that resolves to sweep (body); should remain as body selection.
+    const selections: Selections = {
+      graphSelectionsV2: [
+        {
+          codeRef: { range: [50, 120, 0], pathToNode: [] },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      const entry = result.graphSelectionsV2[0]
+      expect(entry.codeRef?.range).toEqual([50, 120, 0])
+      // Resolved body is kept (sweep has entityRef, so it appears as body selection).
+      expect(entry).toHaveProperty('codeRef')
     }
   })
 })

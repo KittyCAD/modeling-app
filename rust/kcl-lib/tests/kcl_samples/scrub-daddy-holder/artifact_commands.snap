@@ -526,6 +526,7 @@ description: Artifact commands scrub-daddy-holder.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 5.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -688,6 +689,7 @@ description: Artifact commands scrub-daddy-holder.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

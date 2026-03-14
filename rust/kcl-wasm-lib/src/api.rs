@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    Program,
+    AstProgram, EdgeRefactorMeta, FormatOptions, Program,
     front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
 };
 use wasm_bindgen::prelude::*;
@@ -616,6 +616,26 @@ impl Context {
         ctx.close().await;
 
         result.map(|transpiled_code| JsValue::from_str(&transpiled_code))
+    }
+
+    /// Refactor fillet/chamfer `tags` that use deprecated edge stdlib to `edgeRefs`.
+    /// Takes program AST JSON and edgeRefactorMetadata JSON from ExecState; returns new source.
+    #[wasm_bindgen]
+    pub fn refactor_fillet_chamfer_to_edge_refs(
+        &self,
+        program_ast_json: &str,
+        edge_refactor_metadata_json: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let mut program: AstProgram = serde_json::from_str(program_ast_json)
+            .map_err(|e| JsValue::from_str(&format!("Could not deserialize KCL AST: {e}")))?;
+        let metadata: Vec<EdgeRefactorMeta> = serde_json::from_str(edge_refactor_metadata_json)
+            .map_err(|e| JsValue::from_str(&format!("Could not deserialize edgeRefactorMetadata: {e}")))?;
+        kcl_lib::refactor_edge_stdlib::refactor_fillet_chamfer_tags_to_edge_refs(&mut program, &metadata)
+            .map_err(|e| JsValue::from_str(&format!("Refactor failed: {e}")))?;
+        let new_source = program.recast_top(&FormatOptions::default(), 0);
+        Ok(JsValue::from_str(&new_source))
     }
 
     /// Chain a segment to a previous segment by adding it and creating a coincident constraint.

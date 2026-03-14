@@ -757,6 +757,7 @@ description: Artifact commands rack-blanking-panel.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 0.7594599999999999,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

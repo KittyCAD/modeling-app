@@ -348,6 +348,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
             crate::lint::checks::lint_old_sketch_syntax,
+            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
         ];
 
         let mut findings = vec![];

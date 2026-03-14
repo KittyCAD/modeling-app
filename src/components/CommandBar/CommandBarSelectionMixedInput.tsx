@@ -9,7 +9,7 @@ import {
   handleSelectionBatch,
 } from '@src/lib/selections'
 import { useApp } from '@src/lib/boot'
-import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -44,8 +44,12 @@ export default function CommandBarSelectionMixedInput({
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.ast, selection)
-  }, [selection, kclManager.ast])
+    return getSelectionCountByType(
+      kclManager.ast,
+      selection,
+      kclManager.artifactGraph
+    )
+  }, [selection, kclManager.ast, kclManager.artifactGraph])
 
   // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {
@@ -55,7 +59,7 @@ export default function CommandBarSelectionMixedInput({
     // Signal that coercion phase is complete - allows second useEffect to set selection filter
     setHasCoercedSelections(true)
 
-    if (!selection || selection.graphSelections.length === 0) return
+    if (!selection || selection.graphSelectionsV2.length === 0) return
 
     // Check if this argument only accepts body types (path, sweep, compositeSolid)
     // These are the artifact types that represent 3D bodies/objects
@@ -70,7 +74,16 @@ export default function CommandBarSelectionMixedInput({
       selection,
       kclManager.artifactGraph
     )
-    if (err(coercedSelections)) return // Coercion failed, skip update
+    if (err(coercedSelections)) {
+      return // Coercion failed, skip update
+    }
+
+    // Don't replace selection with empty: e.g. Clone from feature tree has solid2d (import)
+    // which doesn't coerce to a body, so coercion yields []. Preserve original selection.
+    const coercedLen = coercedSelections.graphSelectionsV2?.length ?? 0
+    if (coercedLen === 0) {
+      return
+    }
 
     // Immediately update the modeling machine state with coerced selection
     // This needs to happen BEFORE the selection filter is applied
@@ -93,9 +106,9 @@ export default function CommandBarSelectionMixedInput({
     // Don't do additional checks if this argument is not required
     if (!isArgRequired) return true
     if (!selection) return false
-    const isNonZeroRange = selection.graphSelections.some((sel) => {
-      const range = sel.codeRef.range
-      return range[1] - range[0] !== 0 // Non-zero range is always valid
+    const isNonZeroRange = selection.graphSelectionsV2.some((sel) => {
+      const range = sel.codeRef?.range
+      return range != null && range[1] - range[0] !== 0 // Non-zero range is always valid
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
@@ -112,6 +125,7 @@ export default function CommandBarSelectionMixedInput({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
+          selection: {},
         },
       })
       setHasClearedSelection(true)
@@ -179,7 +193,7 @@ export default function CommandBarSelectionMixedInput({
       const resolvedSelection: Selections | undefined = isArgRequired
         ? selection
         : selection || {
-            graphSelections: [],
+            graphSelectionsV2: [],
             otherSelections: [],
           }
 
@@ -213,7 +227,7 @@ export default function CommandBarSelectionMixedInput({
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
       : selection || {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [],
         }
 
@@ -234,7 +248,9 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (selection.graphSelections.length || selection.otherSelections.length)
+        (selection?.graphSelectionsV2.length ||
+          selection?.otherSelections.length ||
+          selection?.graphSelectionsV2.length)
           ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
             ' selected'
           : 'Select code/objects, or skip'}

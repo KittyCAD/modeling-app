@@ -50,31 +50,62 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }]
     23[Solid2d]
   end
-  subgraph path42 [Path]
-    42["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path32 [Path]
+    32["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    43["Segment<br>[238, 276, 0]"]
+    33["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    44["Segment<br>[238, 276, 0]"]
+    34["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    45["Segment<br>[238, 276, 0]"]
+    35["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    46["Segment<br>[238, 276, 0]"]
+    36["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    47["Segment<br>[238, 276, 0]"]
+    37["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    48["Segment<br>[238, 276, 0]"]
+    38["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    49["Segment<br>[238, 276, 0]"]
+    39["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    50["Segment<br>[238, 276, 0]"]
+    40["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    51["Segment<br>[238, 276, 0]"]
+    41["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    52[Solid2d]
+    42[Solid2d]
   end
-  subgraph path81 [Path]
-    81["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path55 [Path]
+    55["Path<br>[238, 276, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
+    56["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    57["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    58["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    59["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    60["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    61["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    62["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    63["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+  end
+  subgraph path74 [Path]
+    74["Path<br>[238, 276, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
+    75["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    76[Solid2d]
+  end
+  subgraph path79 [Path]
+    79["Path<br>[238, 276, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
+    80["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    81["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
     82["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
@@ -82,147 +113,116 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }]
     84["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    85["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    86["Segment<br>[238, 276, 0]"]
+    85[Solid2d]
+  end
+  subgraph path86 [Path]
+    86["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
     87["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    88["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    89["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
+    88[Solid2d]
   end
-  subgraph path116 [Path]
-    116["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path89 [Path]
+    89["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    117["Segment<br>[238, 276, 0]"]
+    90["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    118[Solid2d]
+    91[Solid2d]
   end
-  subgraph path123 [Path]
-    123["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path92 [Path]
+    92["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    124["Segment<br>[238, 276, 0]"]
+    93["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    125["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    126["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    127["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    128["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    129[Solid2d]
+    94[Solid2d]
   end
-  subgraph path130 [Path]
-    130["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path95 [Path]
+    95["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    131["Segment<br>[238, 276, 0]"]
+    96["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    132[Solid2d]
+    97[Solid2d]
   end
-  subgraph path133 [Path]
-    133["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path98 [Path]
+    98["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    134["Segment<br>[238, 276, 0]"]
+    99["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    135[Solid2d]
+    100[Solid2d]
   end
-  subgraph path136 [Path]
-    136["Path<br>[238, 276, 0]<br>Consumed: true"]
+  subgraph path109 [Path]
+    109["Path<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    137["Segment<br>[238, 276, 0]"]
+    110["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    138[Solid2d]
+    111[Solid2d]
+  end
+  subgraph path115 [Path]
+    115["Path<br>[238, 276, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
+    116["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    117[Solid2d]
+  end
+  subgraph path122 [Path]
+    122["Path<br>[277, 304, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 1 }]
+    123["Segment<br>[277, 304, 0]"]
+      %% [ProgramBodyItem { index: 1 }]
+    124[Solid2d]
+  end
+  subgraph path131 [Path]
+    131["Path<br>[277, 304, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 1 }]
+    132["Segment<br>[277, 304, 0]"]
+      %% [ProgramBodyItem { index: 1 }]
+    133[Solid2d]
   end
   subgraph path139 [Path]
-    139["Path<br>[238, 276, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }]
-    140["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    141[Solid2d]
+    139["Path<br>[305, 328, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 2 }]
+    140["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    141["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    142["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    143["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    144["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    145["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    146["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    147["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    148["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    149["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    150["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    151["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    152["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    153[Solid2d]
   end
-  subgraph path142 [Path]
-    142["Path<br>[238, 276, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }]
-    143["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    144[Solid2d]
-  end
-  subgraph path163 [Path]
-    163["Path<br>[238, 276, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }]
-    164["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    165[Solid2d]
-  end
-  subgraph path171 [Path]
-    171["Path<br>[238, 276, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }]
-    172["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    173[Solid2d]
-  end
-  subgraph path180 [Path]
-    180["Path<br>[277, 304, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 1 }]
-    181["Segment<br>[277, 304, 0]"]
-      %% [ProgramBodyItem { index: 1 }]
-    182[Solid2d]
-  end
-  subgraph path191 [Path]
-    191["Path<br>[277, 304, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 1 }]
-    192["Segment<br>[277, 304, 0]"]
-      %% [ProgramBodyItem { index: 1 }]
-    193[Solid2d]
-  end
-  subgraph path201 [Path]
-    201["Path<br>[305, 328, 0]<br>Consumed: true"]
+  subgraph path168 [Path]
+    168["Path<br>[305, 328, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }]
-    202["Segment<br>[305, 328, 0]"]
+    169["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
-    203["Segment<br>[305, 328, 0]"]
+    170["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
-    204["Segment<br>[305, 328, 0]"]
+    171["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
-    205["Segment<br>[305, 328, 0]"]
+    172["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
-    206["Segment<br>[305, 328, 0]"]
+    173["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
-    207["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    208["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    209["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    210["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    211["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    212["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    213["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    214["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    215[Solid2d]
-  end
-  subgraph path242 [Path]
-    242["Path<br>[305, 328, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }]
-    243["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    244["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    245["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    246["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    247["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    248[Solid2d]
+    174[Solid2d]
   end
   1["Plane<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
@@ -242,247 +242,165 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   31["Cap End"]
     %% face_code_ref=[ProgramBodyItem { index: 0 }]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["SweepEdge Opposite"]
-  39["SweepEdge Adjacent"]
-  40["SweepEdge Opposite"]
-  41["SweepEdge Adjacent"]
+  43["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 0 }]
+  44[Wall]
+    %% face_code_ref=Missing NodePath
+  45[Wall]
+    %% face_code_ref=Missing NodePath
+  46[Wall]
+    %% face_code_ref=Missing NodePath
+  47[Wall]
+    %% face_code_ref=Missing NodePath
+  48[Wall]
+    %% face_code_ref=Missing NodePath
+  49[Wall]
+    %% face_code_ref=Missing NodePath
+  50[Wall]
+    %% face_code_ref=Missing NodePath
+  51[Wall]
+    %% face_code_ref=Missing NodePath
+  52["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 0 }]
   53["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  54[Wall]
-    %% face_code_ref=Missing NodePath
-  55[Wall]
-    %% face_code_ref=Missing NodePath
-  56[Wall]
-    %% face_code_ref=Missing NodePath
-  57[Wall]
-    %% face_code_ref=Missing NodePath
-  58[Wall]
-    %% face_code_ref=Missing NodePath
-  59[Wall]
-    %% face_code_ref=Missing NodePath
-  60[Wall]
-    %% face_code_ref=Missing NodePath
-  61[Wall]
-    %% face_code_ref=Missing NodePath
-  62["SweepEdge Opposite"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Opposite"]
-  65["SweepEdge Adjacent"]
-  66["SweepEdge Opposite"]
-  67["SweepEdge Adjacent"]
-  68["SweepEdge Opposite"]
-  69["SweepEdge Adjacent"]
-  70["SweepEdge Opposite"]
-  71["SweepEdge Adjacent"]
-  72["SweepEdge Opposite"]
-  73["SweepEdge Adjacent"]
-  74["SweepEdge Opposite"]
-  75["SweepEdge Adjacent"]
-  76["SweepEdge Opposite"]
-  77["SweepEdge Adjacent"]
-  78["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  54["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  79["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  64["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  80["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 0 }]
-  90["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 0 }]
-  91[Wall]
+  65[Wall]
     %% face_code_ref=Missing NodePath
-  92[Wall]
+  66[Wall]
     %% face_code_ref=Missing NodePath
-  93[Wall]
+  67[Wall]
     %% face_code_ref=Missing NodePath
-  94[Wall]
+  68[Wall]
     %% face_code_ref=Missing NodePath
-  95[Wall]
+  69[Wall]
     %% face_code_ref=Missing NodePath
-  96[Wall]
+  70[Wall]
     %% face_code_ref=Missing NodePath
-  97[Wall]
+  71[Wall]
     %% face_code_ref=Missing NodePath
-  98[Wall]
+  72[Wall]
     %% face_code_ref=Missing NodePath
-  99["Cap End"]
+  73["Cap End"]
     %% face_code_ref=[ProgramBodyItem { index: 0 }]
-  100["SweepEdge Opposite"]
-  101["SweepEdge Adjacent"]
-  102["SweepEdge Opposite"]
-  103["SweepEdge Adjacent"]
-  104["SweepEdge Opposite"]
-  105["SweepEdge Adjacent"]
-  106["SweepEdge Opposite"]
-  107["SweepEdge Adjacent"]
-  108["SweepEdge Opposite"]
-  109["SweepEdge Adjacent"]
-  110["SweepEdge Opposite"]
-  111["SweepEdge Adjacent"]
-  112["SweepEdge Opposite"]
-  113["SweepEdge Adjacent"]
-  114["SweepEdge Opposite"]
-  115["SweepEdge Adjacent"]
-  119["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  77["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  120[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  121["SweepEdge Opposite"]
-  122["SweepEdge Adjacent"]
-  145["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  101["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  146[Wall]
+  102[Wall]
     %% face_code_ref=Missing NodePath
-  147[Wall]
+  103[Wall]
     %% face_code_ref=Missing NodePath
-  148[Wall]
+  104[Wall]
     %% face_code_ref=Missing NodePath
-  149[Wall]
+  105[Wall]
     %% face_code_ref=Missing NodePath
-  150[Wall]
+  106[Wall]
     %% face_code_ref=Missing NodePath
-  151["Cap Start"]
+  107["Cap Start"]
     %% face_code_ref=Missing NodePath
-  152["Cap End"]
+  108["Cap End"]
     %% face_code_ref=Missing NodePath
-  153["SweepEdge Opposite"]
-  154["SweepEdge Adjacent"]
-  155["SweepEdge Opposite"]
-  156["SweepEdge Adjacent"]
-  157["SweepEdge Opposite"]
-  158["SweepEdge Adjacent"]
-  159["SweepEdge Opposite"]
-  160["SweepEdge Adjacent"]
-  161["SweepEdge Opposite"]
-  162["SweepEdge Adjacent"]
-  166["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  112["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  167[Wall]
+  113[Wall]
     %% face_code_ref=Missing NodePath
-  168["Cap End"]
+  114["Cap End"]
     %% face_code_ref=[ProgramBodyItem { index: 0 }]
-  169["SweepEdge Opposite"]
-  170["SweepEdge Adjacent"]
-  174["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  118["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  175[Wall]
+  119[Wall]
     %% face_code_ref=Missing NodePath
-  176["SweepEdge Opposite"]
-  177["SweepEdge Adjacent"]
-  178["EdgeCut Fillet<br>[238, 276, 0]"]
+  120["EdgeCut Fillet<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  179["Plane<br>[277, 304, 0]"]
+  121["Plane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  183["Sweep Extrusion<br>[277, 304, 0]<br>Consumed: false"]
+  125["Sweep Extrusion<br>[277, 304, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }]
-  184[Wall]
+  126[Wall]
     %% face_code_ref=Missing NodePath
-  185["Cap Start"]
+  127["Cap Start"]
     %% face_code_ref=Missing NodePath
-  186["Cap End"]
+  128["Cap End"]
     %% face_code_ref=Missing NodePath
-  187["SweepEdge Opposite"]
-  188["SweepEdge Adjacent"]
-  189["EdgeCut Fillet<br>[277, 304, 0]"]
+  129["EdgeCut Fillet<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  190["Plane<br>[277, 304, 0]"]
+  130["Plane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  194["Sweep Extrusion<br>[277, 304, 0]<br>Consumed: false"]
+  134["Sweep Extrusion<br>[277, 304, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }]
-  195[Wall]
+  135[Wall]
     %% face_code_ref=Missing NodePath
-  196["Cap Start"]
+  136["Cap Start"]
     %% face_code_ref=Missing NodePath
-  197["Cap End"]
+  137["Cap End"]
     %% face_code_ref=Missing NodePath
-  198["SweepEdge Opposite"]
-  199["SweepEdge Adjacent"]
-  200["Plane<br>[305, 328, 0]"]
+  138["Plane<br>[305, 328, 0]"]
     %% [ProgramBodyItem { index: 2 }]
-  216["Sweep Revolve<br>[305, 328, 0]<br>Consumed: false"]
+  154["Sweep Revolve<br>[305, 328, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }]
-  217[Wall]
+  155[Wall]
     %% face_code_ref=Missing NodePath
-  218[Wall]
+  156[Wall]
     %% face_code_ref=Missing NodePath
-  219[Wall]
+  157[Wall]
     %% face_code_ref=Missing NodePath
-  220[Wall]
+  158[Wall]
     %% face_code_ref=Missing NodePath
-  221[Wall]
+  159[Wall]
     %% face_code_ref=Missing NodePath
-  222[Wall]
+  160[Wall]
     %% face_code_ref=Missing NodePath
-  223[Wall]
+  161[Wall]
     %% face_code_ref=Missing NodePath
-  224[Wall]
+  162[Wall]
     %% face_code_ref=Missing NodePath
-  225[Wall]
+  163[Wall]
     %% face_code_ref=Missing NodePath
-  226[Wall]
+  164[Wall]
     %% face_code_ref=Missing NodePath
-  227[Wall]
+  165[Wall]
     %% face_code_ref=Missing NodePath
-  228[Wall]
+  166[Wall]
     %% face_code_ref=Missing NodePath
-  229["SweepEdge Adjacent"]
-  230["SweepEdge Adjacent"]
-  231["SweepEdge Adjacent"]
-  232["SweepEdge Adjacent"]
-  233["SweepEdge Adjacent"]
-  234["SweepEdge Adjacent"]
-  235["SweepEdge Adjacent"]
-  236["SweepEdge Adjacent"]
-  237["SweepEdge Adjacent"]
-  238["SweepEdge Adjacent"]
-  239["SweepEdge Adjacent"]
-  240["SweepEdge Adjacent"]
-  241["Plane<br>[305, 328, 0]"]
+  167["Plane<br>[305, 328, 0]"]
     %% [ProgramBodyItem { index: 2 }]
-  249["Sweep ExtrusionTwist<br>[305, 328, 0]<br>Consumed: false"]
+  175["Sweep ExtrusionTwist<br>[305, 328, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }]
-  250[Wall]
+  176[Wall]
     %% face_code_ref=Missing NodePath
-  251[Wall]
+  177[Wall]
     %% face_code_ref=Missing NodePath
-  252[Wall]
+  178[Wall]
     %% face_code_ref=Missing NodePath
-  253[Wall]
+  179[Wall]
     %% face_code_ref=Missing NodePath
-  254["Cap End"]
+  180["Cap End"]
     %% face_code_ref=Missing NodePath
-  255["Cap End"]
+  181["Cap End"]
     %% face_code_ref=Missing NodePath
-  256["SweepEdge Opposite"]
-  257["SweepEdge Adjacent"]
-  258["SweepEdge Opposite"]
-  259["SweepEdge Adjacent"]
-  260["SweepEdge Opposite"]
-  261["SweepEdge Adjacent"]
-  262["SweepEdge Opposite"]
-  263["SweepEdge Adjacent"]
-  264["StartSketchOnFace<br>[238, 276, 0]"]
+  182["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  265["StartSketchOnFace<br>[238, 276, 0]"]
+  183["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  266["StartSketchOnFace<br>[238, 276, 0]"]
+  184["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  267["StartSketchOnFace<br>[238, 276, 0]"]
+  185["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  268["StartSketchOnFace<br>[238, 276, 0]"]
+  186["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  269["StartSketchOnFace<br>[238, 276, 0]"]
+  187["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  270["StartSketchOnPlane<br>[277, 304, 0]"]
+  188["StartSketchOnPlane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  271["StartSketchOnPlane<br>[277, 304, 0]"]
+  189["StartSketchOnPlane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  272["StartSketchOnPlane<br>[305, 328, 0]"]
+  190["StartSketchOnPlane<br>[305, 328, 0]"]
     %% [ProgramBodyItem { index: 2 }]
   1 --- 2
   1 --- 9
@@ -504,20 +422,12 @@ flowchart LR
   2 ---- 24
   3 --- 25
   3 x--> 30
-  3 --- 32
-  3 --- 33
   4 --- 26
   4 x--> 30
-  4 --- 34
-  4 --- 35
   5 --- 27
   5 x--> 30
-  5 --- 36
-  5 --- 37
   6 --- 28
   6 x--> 30
-  6 --- 38
-  6 --- 39
   9 --- 10
   9 --- 11
   10 x--> 30
@@ -535,8 +445,6 @@ flowchart LR
   21 x---> 24
   22 --- 29
   22 x--> 30
-  22 --- 40
-  22 --- 41
   24 --- 25
   24 --- 26
   24 --- 27
@@ -544,561 +452,248 @@ flowchart LR
   24 --- 29
   24 --- 30
   24 --- 31
-  24 --- 32
-  24 --- 33
-  24 --- 34
-  24 --- 35
-  24 --- 36
-  24 --- 37
-  24 --- 38
-  24 --- 39
-  24 --- 40
-  24 --- 41
-  25 --- 32
-  25 --- 33
-  39 <--x 25
-  33 <--x 26
-  26 --- 34
-  26 --- 35
-  35 <--x 27
-  27 --- 36
-  27 --- 37
-  37 <--x 28
-  28 --- 38
-  28 --- 39
-  29 --- 40
-  29 --- 41
-  62 <--x 30
-  64 <--x 30
-  66 <--x 30
-  68 <--x 30
-  70 <--x 30
-  72 <--x 30
-  74 <--x 30
-  76 <--x 30
-  32 <--x 31
+  31 --- 32
+  33 <--x 31
   34 <--x 31
+  35 <--x 31
   36 <--x 31
+  37 <--x 31
   38 <--x 31
+  39 <--x 31
   40 <--x 31
-  31 --- 42
-  43 <--x 31
-  44 <--x 31
-  45 <--x 31
-  46 <--x 31
-  47 <--x 31
-  48 <--x 31
-  49 <--x 31
-  50 <--x 31
-  31 --- 81
-  82 <--x 31
-  83 <--x 31
-  84 <--x 31
-  85 <--x 31
-  86 <--x 31
-  87 <--x 31
-  88 <--x 31
-  89 <--x 31
-  121 <--x 31
-  31 --- 163
-  164 <--x 31
-  176 <--x 31
-  31 <--x 264
-  31 <--x 265
-  31 <--x 268
-  33 <--x 178
-  42 --- 43
-  42 --- 44
-  42 --- 45
-  42 --- 46
-  42 --- 47
-  42 --- 48
-  42 --- 49
-  42 --- 50
-  42 --- 51
-  42 --- 52
-  42 ---- 53
-  43 --- 54
-  43 --- 62
-  43 --- 63
-  44 --- 55
-  44 --- 64
-  44 --- 65
-  45 --- 56
-  45 --- 66
-  45 --- 67
-  46 --- 57
-  46 --- 68
-  46 --- 69
-  47 --- 58
-  47 --- 70
-  47 --- 71
-  48 --- 59
-  48 --- 72
-  48 --- 73
-  49 --- 60
-  49 --- 74
-  49 --- 75
-  50 --- 61
-  50 --- 76
-  50 --- 77
-  53 --- 54
-  53 --- 55
-  53 --- 56
-  53 --- 57
-  53 --- 58
-  53 --- 59
-  53 --- 60
-  53 --- 61
-  53 --- 62
-  53 --- 63
-  53 --- 64
-  53 --- 65
-  53 --- 66
-  53 --- 67
-  53 --- 68
-  53 --- 69
-  53 --- 70
-  53 --- 71
-  53 --- 72
-  53 --- 73
-  53 --- 74
-  53 --- 75
-  53 --- 76
-  53 --- 77
-  54 --- 62
-  54 --- 63
-  77 <--x 54
-  63 <--x 55
-  55 --- 64
-  55 --- 65
-  65 <--x 56
-  56 --- 66
-  56 --- 67
-  67 <--x 57
-  57 --- 68
-  57 --- 69
-  69 <--x 58
-  58 --- 70
-  58 --- 71
-  71 <--x 59
-  59 --- 72
-  59 --- 73
-  73 <--x 60
-  60 --- 74
-  60 --- 75
-  75 <--x 61
-  61 --- 76
-  61 --- 77
-  81 --- 82
-  81 --- 83
-  81 --- 84
-  81 --- 85
-  81 --- 86
-  81 --- 87
-  81 --- 88
-  81 --- 89
-  81 ---- 90
-  82 --- 91
-  82 --- 100
-  82 --- 101
-  83 --- 92
-  83 --- 102
-  83 --- 103
-  84 --- 93
-  84 --- 104
-  84 --- 105
-  85 --- 94
-  85 --- 106
-  85 --- 107
-  86 --- 95
-  86 --- 108
-  86 --- 109
-  87 --- 96
-  87 --- 110
-  87 --- 111
-  88 --- 97
-  88 --- 112
-  88 --- 113
-  89 --- 98
-  89 --- 114
-  89 --- 115
-  90 --- 91
-  90 --- 92
-  90 --- 93
-  90 --- 94
-  90 --- 95
-  90 --- 96
-  90 --- 97
-  90 --- 98
-  90 --- 99
-  90 --- 100
-  90 --- 101
-  90 --- 102
-  90 --- 103
-  90 --- 104
-  90 --- 105
-  90 --- 106
-  90 --- 107
-  90 --- 108
-  90 --- 109
-  90 --- 110
-  90 --- 111
-  90 --- 112
-  90 --- 113
-  90 --- 114
-  90 --- 115
-  91 --- 100
-  91 --- 101
-  115 <--x 91
-  101 <--x 92
-  92 --- 102
-  92 --- 103
-  103 <--x 93
-  93 --- 104
-  93 --- 105
-  105 <--x 94
-  94 --- 106
-  94 --- 107
-  107 <--x 95
-  95 --- 108
-  95 --- 109
-  109 <--x 96
-  96 --- 110
-  96 --- 111
-  111 <--x 97
-  97 --- 112
-  97 --- 113
-  113 <--x 98
-  98 --- 114
-  98 --- 115
-  100 <--x 99
-  102 <--x 99
-  104 <--x 99
-  106 <--x 99
-  108 <--x 99
-  110 <--x 99
-  112 <--x 99
-  114 <--x 99
-  99 --- 116
-  117 <--x 99
-  99 --- 123
-  99 --- 130
-  99 --- 133
-  99 --- 136
-  99 --- 139
-  99 --- 142
-  99 <--x 266
-  99 <--x 267
-  116 --- 117
-  116 --- 118
-  116 ---- 119
-  117 --- 120
-  117 --- 121
-  117 --- 122
-  119 --- 120
-  119 --- 121
-  119 --- 122
-  120 --- 121
-  120 --- 122
-  123 --- 124
-  123 --- 125
+  31 --- 55
+  56 <--x 31
+  57 <--x 31
+  58 <--x 31
+  59 <--x 31
+  60 <--x 31
+  61 <--x 31
+  62 <--x 31
+  63 <--x 31
+  31 --- 109
+  110 <--x 31
+  31 <--x 182
+  31 <--x 183
+  31 <--x 186
+  32 --- 33
+  32 --- 34
+  32 --- 35
+  32 --- 36
+  32 --- 37
+  32 --- 38
+  32 --- 39
+  32 --- 40
+  32 --- 41
+  32 --- 42
+  32 ---- 43
+  33 --- 44
+  34 --- 45
+  35 --- 46
+  36 --- 47
+  37 --- 48
+  38 --- 49
+  39 --- 50
+  40 --- 51
+  43 --- 44
+  43 --- 45
+  43 --- 46
+  43 --- 47
+  43 --- 48
+  43 --- 49
+  43 --- 50
+  43 --- 51
+  55 --- 56
+  55 --- 57
+  55 --- 58
+  55 --- 59
+  55 --- 60
+  55 --- 61
+  55 --- 62
+  55 --- 63
+  55 ---- 64
+  56 --- 65
+  57 --- 66
+  58 --- 67
+  59 --- 68
+  60 --- 69
+  61 --- 70
+  62 --- 71
+  63 --- 72
+  64 --- 65
+  64 --- 66
+  64 --- 67
+  64 --- 68
+  64 --- 69
+  64 --- 70
+  64 --- 71
+  64 --- 72
+  64 --- 73
+  73 --- 74
+  75 <--x 73
+  73 --- 79
+  73 --- 86
+  73 --- 89
+  73 --- 92
+  73 --- 95
+  73 --- 98
+  73 <--x 184
+  73 <--x 185
+  74 --- 75
+  74 --- 76
+  74 ---- 77
+  75 --- 78
+  77 --- 78
+  79 --- 80
+  79 --- 81
+  79 --- 82
+  79 --- 83
+  79 --- 84
+  79 --- 85
+  79 <--x 86
+  79 <--x 89
+  79 <--x 92
+  79 <--x 95
+  98 --- 79
+  79 ---- 101
+  80 --- 102
+  80 x--> 107
+  81 --- 103
+  81 x--> 107
+  82 --- 104
+  82 x--> 107
+  83 --- 105
+  83 x--> 107
+  86 --- 87
+  86 --- 88
+  87 x--> 107
+  89 --- 90
+  89 --- 91
+  90 x--> 107
+  92 --- 93
+  92 --- 94
+  93 x--> 107
+  95 --- 96
+  95 --- 97
+  96 x--> 107
+  98 --- 99
+  98 --- 100
+  98 x---> 101
+  99 --- 106
+  99 x--> 107
+  101 --- 102
+  101 --- 103
+  101 --- 104
+  101 --- 105
+  101 --- 106
+  101 --- 107
+  101 --- 108
+  109 --- 110
+  109 --- 111
+  109 ---- 112
+  110 --- 113
+  112 --- 113
+  112 --- 114
+  114 --- 115
+  116 <--x 114
+  114 <--x 187
+  115 --- 116
+  115 --- 117
+  115 ---- 118
+  116 --- 119
+  118 --- 119
+  121 --- 122
+  121 <--x 188
+  122 --- 123
+  122 --- 124
+  122 ---- 125
   123 --- 126
-  123 --- 127
-  123 --- 128
-  123 --- 129
-  123 <--x 130
-  123 <--x 133
-  123 <--x 136
-  123 <--x 139
-  142 --- 123
-  123 ---- 145
-  124 --- 146
-  124 x--> 151
-  124 --- 153
-  124 --- 154
-  125 --- 147
-  125 x--> 151
-  125 --- 155
-  125 --- 156
-  126 --- 148
-  126 x--> 151
-  126 --- 157
-  126 --- 158
-  127 --- 149
-  127 x--> 151
-  127 --- 159
-  127 --- 160
+  123 x--> 127
+  125 --- 126
+  125 --- 127
+  125 --- 128
   130 --- 131
-  130 --- 132
-  131 x--> 151
-  133 --- 134
-  133 --- 135
-  134 x--> 151
-  136 --- 137
-  136 --- 138
-  137 x--> 151
+  130 <--x 189
+  131 --- 132
+  131 --- 133
+  131 ---- 134
+  132 --- 135
+  132 x--> 136
+  134 --- 135
+  134 --- 136
+  134 --- 137
+  138 --- 139
   139 --- 140
   139 --- 141
-  140 x--> 151
-  142 --- 143
-  142 --- 144
-  142 x---> 145
-  143 --- 150
-  143 x--> 151
-  143 --- 161
-  143 --- 162
-  145 --- 146
-  145 --- 147
-  145 --- 148
-  145 --- 149
-  145 --- 150
-  145 --- 151
-  145 --- 152
-  145 --- 153
-  145 --- 154
-  145 --- 155
-  145 --- 156
-  145 --- 157
-  145 --- 158
-  145 --- 159
+  139 --- 142
+  139 --- 143
+  139 --- 144
+  139 --- 145
+  139 --- 146
+  139 --- 147
+  139 --- 148
+  139 --- 149
+  139 --- 150
+  139 --- 151
+  139 --- 152
+  139 --- 153
+  139 ---- 154
+  154 <--x 140
+  140 --- 155
+  154 <--x 141
+  141 --- 156
+  154 <--x 142
+  142 --- 157
+  154 <--x 143
+  143 --- 158
+  154 <--x 144
+  144 --- 159
+  154 <--x 145
   145 --- 160
-  145 --- 161
-  145 --- 162
-  146 --- 153
-  146 --- 154
-  160 <--x 146
+  154 <--x 146
+  146 --- 161
   154 <--x 147
-  147 --- 155
-  147 --- 156
-  156 <--x 148
-  148 --- 157
-  148 --- 158
-  158 <--x 149
-  149 --- 159
-  149 --- 160
-  150 --- 161
-  150 --- 162
-  153 <--x 152
-  155 <--x 152
-  157 <--x 152
-  159 <--x 152
-  161 <--x 152
-  163 --- 164
-  163 --- 165
-  163 ---- 166
-  164 --- 167
-  164 --- 169
-  164 --- 170
-  166 --- 167
-  166 --- 168
-  166 --- 169
-  166 --- 170
-  167 --- 169
-  167 --- 170
-  169 <--x 168
+  147 --- 162
+  154 <--x 148
+  148 --- 163
+  154 <--x 149
+  149 --- 164
+  154 <--x 150
+  150 --- 165
+  154 <--x 151
+  151 --- 166
+  154 --- 155
+  154 --- 156
+  154 --- 157
+  154 --- 158
+  154 --- 159
+  154 --- 160
+  154 --- 161
+  154 --- 162
+  154 --- 163
+  154 --- 164
+  154 --- 165
+  154 --- 166
+  167 --- 168
+  167 <--x 190
+  168 --- 169
+  168 --- 170
   168 --- 171
-  172 <--x 168
-  168 <--x 269
-  171 --- 172
-  171 --- 173
-  171 ---- 174
-  172 --- 175
-  172 --- 176
-  172 --- 177
-  174 --- 175
-  174 --- 176
-  174 --- 177
+  168 --- 172
+  168 --- 173
+  168 --- 174
+  168 ---- 175
+  169 --- 176
+  169 x--> 180
+  170 --- 177
+  170 x--> 180
+  171 --- 178
+  171 x--> 180
+  172 --- 179
+  172 x--> 180
   175 --- 176
   175 --- 177
-  179 --- 180
-  179 <--x 270
-  180 --- 181
-  180 --- 182
-  180 ---- 183
-  181 --- 184
-  181 x--> 185
-  181 --- 187
-  181 --- 188
-  183 --- 184
-  183 --- 185
-  183 --- 186
-  183 --- 187
-  183 --- 188
-  184 --- 187
-  184 --- 188
-  187 <--x 186
-  187 <--x 189
-  190 --- 191
-  190 <--x 271
-  191 --- 192
-  191 --- 193
-  191 ---- 194
-  192 --- 195
-  192 x--> 196
-  192 --- 198
-  192 --- 199
-  194 --- 195
-  194 --- 196
-  194 --- 197
-  194 --- 198
-  194 --- 199
-  195 --- 198
-  195 --- 199
-  198 <--x 197
-  200 --- 201
-  201 --- 202
-  201 --- 203
-  201 --- 204
-  201 --- 205
-  201 --- 206
-  201 --- 207
-  201 --- 208
-  201 --- 209
-  201 --- 210
-  201 --- 211
-  201 --- 212
-  201 --- 213
-  201 --- 214
-  201 --- 215
-  201 ---- 216
-  216 <--x 202
-  202 --- 217
-  202 --- 229
-  216 <--x 203
-  203 --- 218
-  203 --- 230
-  216 <--x 204
-  204 --- 219
-  204 --- 231
-  216 <--x 205
-  205 --- 220
-  205 --- 232
-  216 <--x 206
-  206 --- 221
-  206 --- 233
-  216 <--x 207
-  207 --- 222
-  207 --- 234
-  216 <--x 208
-  208 --- 223
-  208 --- 235
-  216 <--x 209
-  209 --- 224
-  209 --- 236
-  216 <--x 210
-  210 --- 225
-  210 --- 237
-  216 <--x 211
-  211 --- 226
-  211 --- 238
-  216 <--x 212
-  212 --- 227
-  212 --- 239
-  216 <--x 213
-  213 --- 228
-  213 --- 240
-  216 --- 217
-  216 --- 218
-  216 --- 219
-  216 --- 220
-  216 --- 221
-  216 --- 222
-  216 --- 223
-  216 --- 224
-  216 --- 225
-  216 --- 226
-  216 --- 227
-  216 --- 228
-  216 --- 229
-  216 --- 230
-  216 --- 231
-  216 --- 232
-  216 --- 233
-  216 --- 234
-  216 --- 235
-  216 --- 236
-  216 --- 237
-  216 --- 238
-  216 --- 239
-  216 --- 240
-  217 --- 229
-  240 <--x 217
-  229 <--x 218
-  218 --- 230
-  230 <--x 219
-  219 --- 231
-  231 <--x 220
-  220 --- 232
-  232 <--x 221
-  221 --- 233
-  233 <--x 222
-  222 --- 234
-  234 <--x 223
-  223 --- 235
-  235 <--x 224
-  224 --- 236
-  236 <--x 225
-  225 --- 237
-  237 <--x 226
-  226 --- 238
-  238 <--x 227
-  227 --- 239
-  239 <--x 228
-  228 --- 240
-  241 --- 242
-  241 <--x 272
-  242 --- 243
-  242 --- 244
-  242 --- 245
-  242 --- 246
-  242 --- 247
-  242 --- 248
-  242 ---- 249
-  243 --- 250
-  243 x--> 254
-  243 --- 256
-  243 --- 257
-  244 --- 251
-  244 x--> 254
-  244 --- 258
-  244 --- 259
-  245 --- 252
-  245 x--> 254
-  245 --- 260
-  245 --- 261
-  246 --- 253
-  246 x--> 254
-  246 --- 262
-  246 --- 263
-  249 --- 250
-  249 --- 251
-  249 --- 252
-  249 --- 253
-  249 --- 254
-  249 --- 255
-  249 --- 256
-  249 --- 257
-  249 --- 258
-  249 --- 259
-  249 --- 260
-  249 --- 261
-  249 --- 262
-  249 --- 263
-  250 --- 256
-  250 --- 257
-  259 <--x 250
-  251 --- 258
-  251 --- 259
-  261 <--x 251
-  252 --- 260
-  252 --- 261
-  263 <--x 252
-  257 <--x 253
-  253 --- 262
-  253 --- 263
-  256 <--x 255
-  258 <--x 255
-  260 <--x 255
-  262 <--x 255
+  175 --- 178
+  175 --- 179
+  175 --- 180
+  175 --- 181
 ```

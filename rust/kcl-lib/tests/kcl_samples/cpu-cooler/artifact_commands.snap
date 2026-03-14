@@ -2469,6 +2469,7 @@ description: Artifact commands cpu-cooler.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 7.5,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -2669,6 +2670,7 @@ description: Artifact commands cpu-cooler.kcl
         "edge_ids": [
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.5,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -6902,6 +6904,7 @@ description: Artifact commands cpu-cooler.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
@@ -8419,6 +8422,7 @@ description: Artifact commands cpu-cooler.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 2.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

@@ -1012,6 +1012,7 @@ description: Artifact commands subtract_regression10.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "edges_references": [],
         "radius": 1.875,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
