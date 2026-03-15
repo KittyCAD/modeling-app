@@ -1309,7 +1309,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       artifactGraph
     )
     if (err(edgeSelections)) {
-      const reason = `Couldn't retrieve edge from edgeRef: ${(edgeSelections as Error).message}`
+      const reason = `Couldn't retrieve edge from edgeRef: ${edgeSelections.message}`
       return { reason }
     }
     mode = 'Edge'
@@ -1485,7 +1485,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       artifactGraph
     )
     if (err(edgeSelections)) {
-      const reason = `Couldn't retrieve edge from edgeRef: ${(edgeSelections as Error).message}`
+      const reason = `Couldn't retrieve edge from edgeRef: ${edgeSelections.message}`
       return { reason }
     }
     axisOrEdge = 'Edge'

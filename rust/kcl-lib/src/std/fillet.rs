@@ -289,7 +289,7 @@ pub(super) async fn resolve_face_id(
         }
         KclValue::Uuid { value: uuid, .. } => Ok(*uuid),
         _ => Err(KclError::new_type(KclErrorDetails {
-            message: "EdgeRef faces and disambiguators must be tags or UUIDs".to_string(),
+            message: "EdgeRef faces and end_faces must be tags or UUIDs".to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         })),
@@ -390,7 +390,7 @@ async fn inner_fillet_with_engine_refs(
     Ok(solid)
 }
 
-/// Parse edgeRefs (array of KclValue objects with faces, optional disambiguators/index)
+/// Parse edgeRefs (array of KclValue objects with faces, optional end_faces/index)
 /// into engine EdgeReference structs. Shared by fillet and chamfer.
 pub(super) async fn parse_edge_refs_to_references(
     edge_refs: Vec<KclValue>,
@@ -451,20 +451,20 @@ pub(super) async fn parse_edge_refs_to_references(
             face_uuids.push(resolve_face_id(face_value, solid_id, exec_state, args).await?);
         }
 
-        let mut disambiguator_uuids = Vec::new();
-        if let Some(disambiguators_value) = edge_ref_obj.get("disambiguators") {
-            let disambiguators_array = match disambiguators_value {
+        let mut end_face_uuids = Vec::new();
+        if let Some(end_faces_value) = edge_ref_obj.get("end_faces") {
+            let end_faces_array = match end_faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef 'disambiguators' must be an array".to_string(),
+                        message: "edgeRef 'end_faces' must be an array".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));
                 }
             };
-            for disambiguator_value in disambiguators_array {
-                disambiguator_uuids.push(resolve_face_id(disambiguator_value, solid_id, exec_state, args).await?);
+            for end_face_value in end_faces_array {
+                end_face_uuids.push(resolve_face_id(end_face_value, solid_id, exec_state, args).await?);
             }
         }
 
@@ -481,9 +481,7 @@ pub(super) async fn parse_edge_refs_to_references(
         };
 
         use kcmc::shared::EdgeReference as KcmcEdgeRef;
-        let builder = KcmcEdgeRef::builder()
-            .faces(face_uuids)
-            .disambiguators(disambiguator_uuids);
+        let builder = KcmcEdgeRef::builder().faces(face_uuids).end_faces(end_face_uuids);
 
         let edge_ref = if let Some(index_val) = index {
             builder.index(index_val).build()

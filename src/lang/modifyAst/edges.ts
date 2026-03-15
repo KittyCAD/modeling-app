@@ -117,7 +117,7 @@ function edgeSelectionToEntityReference(
  */
 type FilletEdgeRefPayload = {
   faces: string[]
-  disambiguators?: string[]
+  end_faces?: string[]
   index?: number
 }
 
@@ -132,9 +132,9 @@ export function entityReferenceToEdgeRefPayload(
     faces: entityRef.faces,
   }
 
-  // Only include disambiguators if present and non-empty
-  if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
-    payload.disambiguators = entityRef.disambiguators
+  // Only include end_faces if present and non-empty
+  if (entityRef.end_faces && entityRef.end_faces.length > 0) {
+    payload.end_faces = entityRef.end_faces
   }
 
   // Only include index if explicitly provided (0 is valid, undefined means no filter)
@@ -241,8 +241,8 @@ export function createEdgeRefObjectExpression(
   }
 
   const disambiguatorTags: string[] = []
-  if (payload.disambiguators && payload.disambiguators.length > 0) {
-    for (const disambId of payload.disambiguators) {
+  if (payload.end_faces && payload.end_faces.length > 0) {
+    for (const disambId of payload.end_faces) {
       const disambArtifact = artifactGraph.get(disambId)
       if (!disambArtifact) {
         continue
@@ -275,9 +275,9 @@ export function createEdgeRefObjectExpression(
     faces: createArrayExpression(faceTags.map((tag) => createLocalName(tag))),
   }
 
-  // Only add disambiguators if present
+  // Only add end_faces if present
   if (disambiguatorTags.length > 0) {
-    properties.disambiguators = createArrayExpression(
+    properties.end_faces = createArrayExpression(
       disambiguatorTags.map((tag) => createLocalName(tag))
     )
   }

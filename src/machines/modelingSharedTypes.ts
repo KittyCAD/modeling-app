@@ -65,7 +65,7 @@ export type EntityReference =
   | {
       type: 'edge'
       faces: string[]
-      disambiguators?: string[]
+      end_faces?: string[]
       index?: number
     }
   | {
@@ -75,7 +75,6 @@ export type EntityReference =
   | {
       type: 'vertex'
       faces: string[]
-      disambiguators?: string[]
       index?: number
     }
   | {

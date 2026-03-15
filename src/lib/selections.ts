@@ -267,22 +267,19 @@ export function normalizeEntityReference(
     const faces = isArray(raw.faces)
       ? raw.faces.filter((v): v is string => typeof v === 'string')
       : []
-    const disambiguators = isArray(raw.disambiguators)
-      ? raw.disambiguators.filter((v): v is string => typeof v === 'string')
+    const end_faces = isArray(raw.end_faces)
+      ? raw.end_faces.filter((v): v is string => typeof v === 'string')
       : undefined
     const index = typeof raw.index === 'number' ? raw.index : undefined
-    return { type: 'edge', faces, disambiguators, index }
+    return { type: 'edge', faces, end_faces, index }
   }
 
   if (type === 'vertex') {
     const faces = isArray(raw.faces)
       ? raw.faces.filter((v): v is string => typeof v === 'string')
       : []
-    const disambiguators = isArray(raw.disambiguators)
-      ? raw.disambiguators.filter((v): v is string => typeof v === 'string')
-      : undefined
     const index = typeof raw.index === 'number' ? raw.index : undefined
-    return { type: 'vertex', faces, disambiguators, index }
+    return { type: 'vertex', faces, index }
   }
 
   if (type === 'segment') {
@@ -366,7 +363,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   if (
     entityRef.type === 'edge' &&
     entityRef.faces.length === 0 &&
-    (!entityRef.disambiguators || entityRef.disambiguators.length === 0)
+    (!entityRef.end_faces || entityRef.end_faces.length === 0)
   ) {
     return {
       type: 'Set selection',
@@ -2057,12 +2054,12 @@ export function getCodeRefsFromEntityReference(
     entityRef.faces &&
     entityRef.faces.length >= 1
   ) {
-    // For edges, find segments from faces and disambiguators
+    // For edges, find segments from faces and end_faces
     // Handle both Solid3D (2+ faces) and Solid2D (1 face) cases
     const faceIds = [...entityRef.faces]
-    // Also include disambiguator faces
-    if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
-      faceIds.push(...entityRef.disambiguators)
+    // Also include end faces
+    if (entityRef.end_faces && entityRef.end_faces.length > 0) {
+      faceIds.push(...entityRef.end_faces)
     }
     const seenSegments = new Set<string>()
 
@@ -2112,12 +2109,8 @@ export function getCodeRefsFromEntityReference(
     entityRef.faces &&
     entityRef.faces.length >= 3
   ) {
-    // For vertices, find segments from all faces (typically 3+) and disambiguators
+    // For vertices, find segments from all adjacent faces (typically 3+)
     const faceIds = [...entityRef.faces]
-    // Also include disambiguator faces
-    if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
-      faceIds.push(...entityRef.disambiguators)
-    }
     const seenSegments = new Set<string>()
 
     for (const faceId of faceIds) {

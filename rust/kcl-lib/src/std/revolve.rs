@@ -165,7 +165,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         use kcmc::shared::EdgeReference as ModelingEdgeReference;
         let builder = ModelingEdgeReference::builder()
             .faces(face_uuids)
-            .disambiguators(disambiguator_uuids);
+            .end_faces(disambiguator_uuids);
 
         let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
             builder.index(index_val).build()

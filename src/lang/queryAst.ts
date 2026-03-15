@@ -1144,18 +1144,15 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
       return (
         JSON.stringify([...(a.faces || [])].sort()) ===
           JSON.stringify([...(b.faces || [])].sort()) &&
-        JSON.stringify([...(a.disambiguators || [])].sort()) ===
-          JSON.stringify([...(b.disambiguators || [])].sort()) &&
+        JSON.stringify([...(a.end_faces || [])].sort()) ===
+          JSON.stringify([...(b.end_faces || [])].sort()) &&
         a.index === b.index
       )
     case 'vertex':
       if (b.type !== 'vertex') return false
       return (
         JSON.stringify([...(a.faces || [])].sort()) ===
-          JSON.stringify([...(b.faces || [])].sort()) &&
-        JSON.stringify([...(a.disambiguators || [])].sort()) ===
-          JSON.stringify([...(b.disambiguators || [])].sort()) &&
-        a.index === b.index
+          JSON.stringify([...(b.faces || [])].sort()) && a.index === b.index
       )
     case 'segment':
       return (
