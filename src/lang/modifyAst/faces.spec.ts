@@ -1110,6 +1110,50 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       expect(selections.graphSelections).toHaveLength(1)
       expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
     })
+
+    it('should map offset plane on a primitive face to an engine primitive selection', async () => {
+      const shellWithOffsetPlane = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
+plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 2)`
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
+        shellWithOffsetPlane,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+      ) as StdLibCallOp
+      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+        op.unlabeledArg!,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.graphSelections).toHaveLength(0)
+      expect(selections.otherSelections).toHaveLength(1)
+      const primitive = selections.otherSelections[0]
+      expect(primitive).toMatchObject({
+        type: 'enginePrimitive',
+        primitiveType: 'face',
+        primitiveIndex: 6,
+      })
+      if (
+        typeof primitive !== 'object' ||
+        !('type' in primitive) ||
+        primitive.type !== 'enginePrimitive'
+      ) {
+        throw new Error('Expected engine primitive selection')
+      }
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(primitive.parentEntityId).toEqual(sweep?.id)
+    })
   })
 
   describe('Testing addOffsetPlane', () => {
@@ -1341,6 +1385,89 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
       expect(newCode2).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an offset plane call on a primitive face', async () => {
+      const shell = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        shell,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 6,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const plane: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const offset = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane,
+        offset,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${shell}
+face001 = faceId(extrude001, index = 6)
+plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 2)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+
+      const newPlane = createSelectionFromArtifacts(
+        artifactGraph
+          .values()
+          .filter((a) => a.type === 'planeOfFace')
+          .toArray()
+          .slice(-1),
+        artifactGraph
+      )
+      const editedOffset = (await stringToKclExpression(
+        '3',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const editResult = addOffsetPlane({
+        ast: result.modifiedAst,
+        artifactGraph,
+        variables,
+        plane: newPlane,
+        offset: editedOffset,
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(editResult)) {
+        throw editResult
+      }
+
+      const editedCode = recast(editResult.modifiedAst, instanceInThisFile)
+      expect(editedCode).toContain(`${shell}
+face001 = faceId(extrude001, index = 6)
+plane001 = offsetPlane(planeOf(extrude001, face = face001, offset = 3)`)
+      await enginelessExecutor(editResult.modifiedAst, rustContextInThisFile)
     })
 
     it('should add an offset plane call on chamfer face and allow edits', async () => {
