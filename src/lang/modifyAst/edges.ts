@@ -11,7 +11,6 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import { toUtf16 } from '@src/lang/errors'
 import {
   createVariableExpressionsArray,
   deleteTopLevelStatement,
@@ -24,6 +23,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
+  locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
@@ -772,6 +772,16 @@ function getTagsExprsFromSelection(
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
   for (const edge of edges.graphSelections) {
+    if (edge.artifact?.type === 'primitiveEdge') {
+      const variable = locateVariableWithCallOrPipe(
+        ast,
+        edge.codeRef.pathToNode,
+        wasmInstance
+      )
+      if (err(variable)) continue
+      tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+    }
+
     const result = modifyAstWithTagsForSelection(
       modifiedAst,
       edge,
@@ -799,10 +809,8 @@ function getTagsExprsFromSelection(
 
 // Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
 export function retrieveEdgeSelectionsFromOpArgs(
-  solidArg: OpArg,
   tagsArg: OpArg,
-  artifactGraph: ArtifactGraph,
-  code: string
+  artifactGraph: ArtifactGraph
 ) {
   const tagValues: OpKclValue[] = []
   if (tagsArg.value.type === 'Array') {
@@ -820,7 +828,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     }
 
     const artifact = getArtifactOfTypes(
-      { key: v.value, types: ['segment', 'sweepEdge'] },
+      { key: v.value, types: ['segment', 'sweepEdge', 'primitiveEdge'] },
       artifactGraph
     )
     if (err(artifact)) {
@@ -844,89 +852,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     })
   }
 
-  const primitiveIndices = getPrimitiveEdgeIndicesFromTagsArg(tagsArg, code)
-  // Assumption: solidArg and edgeId's solidArg are the same
-  const parentEntityId =
-    solidArg?.value.type === 'Solid'
-      ? solidArg.value.value.artifactId
-      : undefined
-  const otherSelections: EnginePrimitiveSelection[] = []
-  if (
-    primitiveIndices.length > 0 &&
-    unmatchedEdgeEntityIds.length === primitiveIndices.length &&
-    parentEntityId
-  ) {
-    primitiveIndices.forEach((primitiveIndex, i) => {
-      otherSelections.push({
-        type: 'enginePrimitive',
-        entityId: unmatchedEdgeEntityIds[i],
-        parentEntityId,
-        primitiveIndex,
-        primitiveType: 'edge',
-      })
-    })
-  }
-
-  return { graphSelections, otherSelections }
-}
-
-function getPrimitiveEdgeIndicesFromTagsArg(
-  tagsArg: OpArg,
-  code: string
-): number[] {
-  if (tagsArg.sourceRange.length < 2) {
-    return []
-  }
-
-  const start = toUtf16(tagsArg.sourceRange[0], code)
-  const end = toUtf16(tagsArg.sourceRange[1], code)
-  if (start < 0 || end <= start || end > code.length) {
-    return []
-  }
-
-  const tagsSource = code.slice(start, end)
-  const indices = getPrimitiveEdgeIndicesFromSource(tagsSource)
-  const identifierPattern = /\b([A-Za-z_]\w*)\b/g
-  for (const identifierMatch of tagsSource.matchAll(identifierPattern)) {
-    const identifier = identifierMatch[1]
-    const index = getPrimitiveEdgeIndexFromVariableName(identifier, code)
-    if (index !== null) {
-      indices.push(index)
-    }
-  }
-  return indices
-}
-
-function getPrimitiveEdgeIndicesFromSource(source: string): number[] {
-  const edgeIdPattern = /edgeId\s*\(\s*[\s\S]*?,\s*index\s*=\s*(-?\d+)\s*\)/g
-  const indices: number[] = []
-  for (const match of source.matchAll(edgeIdPattern)) {
-    const index = Number.parseInt(match[1], 10)
-    if (!Number.isNaN(index)) {
-      indices.push(index)
-    }
-  }
-  return indices
-}
-
-function getPrimitiveEdgeIndexFromVariableName(
-  variableName: string,
-  code: string
-): number | null {
-  const escapedVariableName = variableName.replace(
-    /[.*+?^${}()|[\]\\]/g,
-    '\\$&'
-  )
-  const declarationPattern = new RegExp(
-    `\\b${escapedVariableName}\\s*=\\s*edgeId\\s*\\(\\s*[\\s\\S]*?,\\s*index\\s*=\\s*(-?\\d+)\\s*\\)`
-  )
-  const match = code.match(declarationPattern)
-  if (!match) {
-    return null
-  }
-
-  const index = Number.parseInt(match[1], 10)
-  return Number.isNaN(index) ? null : index
+  return { graphSelections, otherSelections: [] }
 }
 
 // Delete Edge Treatment
