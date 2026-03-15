@@ -30,6 +30,11 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
 
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
@@ -53,9 +58,6 @@ import type {
 } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
@@ -64,22 +66,20 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
   EnginePrimitiveSelection,
+  EngineRegionSelection,
   ExtrudeFacePlane,
   OffsetPlane,
-  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import toast from 'react-hot-toast'
-import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import isEqual from 'react-fast-compare'
+import toast from 'react-hot-toast'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -1080,9 +1080,15 @@ export function updateSelections(
 const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'enginePrimitiveFace'],
+  face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d', 'region'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge', 'enginePrimitiveEdge'],
+  edge: [
+    'segment',
+    'sweepEdge',
+    'edgeCutEdge',
+    'primitiveEdge',
+    'enginePrimitiveEdge',
+  ],
   point: [],
   plane: ['defaultPlane'],
 }

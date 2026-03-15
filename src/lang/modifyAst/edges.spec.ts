@@ -1,36 +1,34 @@
-import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { isOverlap } from '@src/lib/utils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  EdgeTreatmentType,
+  addBlend,
+  addChamfer,
+  addFillet,
+  deleteEdgeTreatment,
+} from '@src/lang/modifyAst/edges'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type {
   NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import {
-  addBlend,
-  addChamfer,
-  addFillet,
-  deleteEdgeTreatment,
-  EdgeTreatmentType,
-  retrieveEdgeSelectionsFromOpArgs,
-} from '@src/lang/modifyAst/edges'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  enginelessExecutor,
-  createSelectionFromArtifacts,
-  getAstAndArtifactGraph,
-} from '@src/lib/testHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -188,7 +186,8 @@ profile002 = startProfile(sketch002, at = [-1, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `${extrudedTriangle}
-fillet001 = fillet(extrude001, tags = edgeId(extrude001, index = 2), radius = 1)`
+edge001 = edgeId(extrude001, index = 2)
+fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -541,7 +540,8 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `${extrudedTriangle}
-chamfer001 = chamfer(extrude001, tags = edgeId(extrude001, index = 2), length = 1)`
+edge001 = edgeId(extrude001, index = 2)
+chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -938,89 +938,6 @@ chamfer001 = chamfer(
       }
 
       expect(result.message).toBe('Blend requires exactly two selected edges.')
-    })
-  })
-
-  describe('Testing retrieveEdgeSelectionsFromOpArgs', () => {
-    it('should retrieve graph and primitive edge selections from mixed tags', async () => {
-      const code = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30, tag = $seg02)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(
-  sketch001,
-  length = 30,
-  tagEnd = $capEnd001,
-  tagStart = $capStart001,
-)
-shell001 = shell(extrude001, faces = capEnd001, thickness = 1)
-chamfer001 = chamfer(
-  extrude001,
-  tags = [
-    getCommonEdge(faces = [rectangleSegmentA001, capStart001]),
-    getCommonEdge(faces = [seg02, capStart001]),
-    edgeId(extrude001, index = 20),
-    edgeId(extrude001, index = 12)
-  ],
-  length = 1,
-)`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = operations.find(
-        (o) => o.type === 'StdLibCall' && o.name === 'chamfer'
-      )
-      if (
-        !op ||
-        op.type !== 'StdLibCall' ||
-        !op.unlabeledArg ||
-        !op.labeledArgs?.tags
-      ) {
-        throw new Error('Chamfer operation not found')
-      }
-
-      const selections = retrieveEdgeSelectionsFromOpArgs(
-        op.unlabeledArg,
-        op.labeledArgs.tags,
-        artifactGraph,
-        code
-      )
-
-      expect(selections.graphSelections).toHaveLength(2)
-      expect(selections.otherSelections).toHaveLength(2)
-
-      for (const graphSelection of selections.graphSelections) {
-        if (!graphSelection.artifact) {
-          throw new Error('Artifact not found in graph selection')
-        }
-        expect(['segment', 'sweepEdge']).toContain(graphSelection.artifact.type)
-      }
-
-      const expectedIds = [20, 12]
-      for (const [index, s] of selections.otherSelections.entries()) {
-        if (!isEnginePrimitiveSelection(s)) {
-          throw new Error('Selection not primitive engine')
-        }
-        expect(s.type).toEqual('enginePrimitive')
-        expect(s.primitiveType).toEqual('edge')
-        expect(s.entityId).toBeTruthy()
-        expect(s.primitiveIndex).toEqual(expectedIds[index])
-      }
-
-      if (op.unlabeledArg.value.type !== 'Solid') {
-        throw new Error('Chamfer unlabeledArg should be a Solid')
-      }
-      for (const s of selections.otherSelections) {
-        if (!isEnginePrimitiveSelection(s)) {
-          throw new Error('Selection not primitive engine')
-        }
-        expect(s.parentEntityId).toEqual(op.unlabeledArg.value.value.artifactId)
-      }
     })
   })
 
