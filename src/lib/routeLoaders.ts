@@ -191,8 +191,19 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
+    // Must determine this before we know whether to open the project or reuse it.
+    const isNavigatingWithinProject =
+      app.project && app.project.path === project.path
+    const projectRef =
+      isNavigatingWithinProject && app.project
+        ? app.project
+        : await app.openProject(project)
+    // If we're reusing the project and we have an editor open, we should switch instead of just open
+    const openOrSwitch =
+      isNavigatingWithinProject && projectRef.executingPath
+        ? 'switchExecutingEditor'
+        : 'openEditor'
+    const editor = await projectRef[openOrSwitch](
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
       // If persistCode in localStorage is present, it'll persist that code

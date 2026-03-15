@@ -469,7 +469,7 @@ export function updateSceneGraphFromDelta({
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
-    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // hackSetProgram in `src/lang/KclManager.ts:deferredExecution`.
     // The proper way to do this is to get an invalidation signal from the rust side.
     const invalidateScene = sketchSegments?.children.some((child) => {
       const childId = Number(child.name)
