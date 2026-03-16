@@ -1236,7 +1236,7 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Equal length',
                 showTitle: false,
-                description: 'Constrain two segments to be equal length',
+                description: 'Constrain selected segments to be equal length',
                 links: [],
               },
               {

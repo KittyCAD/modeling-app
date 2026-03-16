@@ -2521,10 +2521,10 @@ impl FrontendState {
         lines_equal_length: LinesEqualLength,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[line0_id, line1_id] = lines_equal_length.lines.as_slice() else {
+        if lines_equal_length.lines.len() < 2 {
             return Err(Error {
                 msg: format!(
-                    "Lines equal length constraint must have exactly 2 lines, got {}",
+                    "Lines equal length constraint must have at least 2 lines, got {}",
                     lines_equal_length.lines.len()
                 ),
             });
@@ -2533,38 +2533,30 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
-            msg: format!("Line not found: {line0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {line0_object:?}"),
-            });
-        };
-        let Segment::Line(_) = line0_segment else {
-            return Err(Error {
-                msg: format!("Only lines can be made equal length: {line0_object:?}"),
-            });
-        };
-        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let line_asts = lines_equal_length
+            .lines
+            .iter()
+            .map(|line_id| {
+                let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
+                    msg: format!("Line not found: {line_id:?}"),
+                })?;
+                let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
+                    return Err(Error {
+                        msg: format!("Object is not a segment: {line_object:?}"),
+                    });
+                };
+                let Segment::Line(_) = line_segment else {
+                    return Err(Error {
+                        msg: format!("Only lines can be made equal length: {line_object:?}"),
+                    });
+                };
 
-        let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
-            msg: format!("Line not found: {line1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {line1_object:?}"),
-            });
-        };
-        let Segment::Line(_) = line1_segment else {
-            return Err(Error {
-                msg: format!("Only lines can be made equal length: {line1_object:?}"),
-            });
-        };
-        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
         // Create the equalLength() call using shared helper.
-        let equal_length_ast = create_equal_length_ast(line0_ast, line1_ast);
+        let equal_length_ast = create_equal_length_ast(line_asts);
 
         // Add the constraint to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -3773,11 +3765,10 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create an AST node for equalLength([line1, line2])
-pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Expr) -> ast::Expr {
-    // Create array [line1, line2]
+/// Create an AST node for equalLength([line1, line2, ...])
+pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
-        elements: vec![line1_expr, line2_expr],
+        elements: line_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
