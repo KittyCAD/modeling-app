@@ -160,7 +160,7 @@ export async function createNewProjectDirectory(
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
   const projectFile = fsZds.join(projectDir, kclFileName)
-  // Ensure parent directories exist for nested paths like "5/main.kcl"
+  // Ensure parent directories exist for nested paths like "nested/main.kcl"
   const projectFileDir = fsZds.dirname(projectFile)
   if (projectFileDir !== projectDir) {
     await fsZds.mkdir(projectFileDir, { recursive: true })
