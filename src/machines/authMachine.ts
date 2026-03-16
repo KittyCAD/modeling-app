@@ -172,28 +172,30 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  const environment =
-    (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
-  updateEnvironment(environment)
+  if (window.electron) {
+    const environment =
+      (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
+    updateEnvironment(environment)
 
-  // Update the Engine WebSocket URL override
-  const cachedKittycadWebSocketUrl =
-    await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
-  if (cachedKittycadWebSocketUrl) {
-    updateEnvironmentKittycadWebSocketUrl(
-      environment,
-      cachedKittycadWebSocketUrl
-    )
-  }
+    // Update the Engine WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
 
-  // Update the Zookeeper WebSocket URL override
-  const cachedMlephantWebSocketUrl =
-    await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
-  if (cachedMlephantWebSocketUrl) {
-    updateEnvironmentMlephantWebSocketUrl(
-      environment,
-      cachedMlephantWebSocketUrl
-    )
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
+      )
+    }
   }
 
   let token = ''
@@ -215,7 +217,7 @@ async function getUser(input: { token?: string }) {
     }
   }
 
-  if (!token) return Promise.reject(new Error('No token found'))
+  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
 
   const me = await kcCall(() => users.get_user_self({ client }))
   if (me instanceof Error) return Promise.reject(me)
@@ -299,9 +301,10 @@ async function getAndSyncStoredToken(input: {
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie()
-  const fileToken = environmentName
-    ? await readEnvironmentConfigurationToken(environmentName)
-    : ''
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
   const token = inputToken || cookieToken || fileToken
 
   // Log what tokens we found
@@ -316,11 +319,16 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    // has just logged in, update storage
-    if (environmentName)
-      await writeEnvironmentConfigurationToken(environmentName, token)
+    if (window.electron) {
+      // has just logged in, update storage
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
+    }
     return token
   }
+
+  // If you are web and you made it this far, you do not get a token
+  if (!isDesktop()) return ''
 
   if (!fileToken) return ''
   // default desktop login workflow to always read from disk, file will ensure login persists after app updates
@@ -398,6 +406,9 @@ async function logoutEnvironment(requestedDomain?: string) {
  * will not be sufficient.
  */
 async function logoutAllEnvironments() {
+  if (!window.electron) {
+    return new Error('unimplemented for web')
+  }
   const environments = await listAllEnvironments()
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
