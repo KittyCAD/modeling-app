@@ -1,8 +1,33 @@
 import { join } from 'path'
+import type { Page } from '@playwright/test'
 import fsp from 'fs/promises'
 
 import { executorInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+async function setMachineApiEnabled(page: Page, enabled: boolean) {
+  await page.evaluate((enabled) => {
+    const appWindow = window as typeof window & {
+      app: {
+        settings: {
+          send: (event: unknown) => void
+        }
+      }
+    }
+
+    appWindow.app.settings.send({
+      type: 'set.app.machineApi',
+      data: {
+        level: 'user',
+        value: enabled,
+      },
+    })
+  }, enabled)
+
+  await expect
+    .poll(() => page.evaluate(() => window.electron?.getMachineApiRunning()))
+    .toBe(enabled)
+}
 
 test(
   'When machine-api server not found butt is disabled and shows the reason',
@@ -18,6 +43,7 @@ test(
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await setMachineApiEnabled(page, true)
 
     await expect(page.getByText('bracket')).toBeVisible()
 
@@ -55,6 +81,7 @@ test(
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await setMachineApiEnabled(page, true)
 
     const notFoundText = 'Machine API server was not discovered'
 
@@ -74,5 +101,19 @@ test(
 
     await networkMachineToggle.hover()
     await expect(page.getByText(notFoundText).nth(1)).toBeVisible()
+  }
+)
+
+test(
+  'Machine API service turns on when the setting is enabled',
+  { tag: '@desktop' },
+  async ({ page }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await expect
+      .poll(() => page.evaluate(() => window.electron?.getMachineApiRunning()))
+      .toBe(false)
+
+    await setMachineApiEnabled(page, true)
   }
 )

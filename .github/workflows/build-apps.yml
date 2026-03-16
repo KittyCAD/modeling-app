@@ -170,8 +170,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
-        name: prepared-files
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-files
+          path: prepared-files
 
       - name: Copy prepared files
         run: |
@@ -270,37 +272,37 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-universal-windows
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-windows
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-universal-macos
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-macos
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-arm64-linux
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-x64-linux
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-linux
           path: out

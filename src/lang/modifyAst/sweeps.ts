@@ -11,6 +11,7 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
@@ -54,7 +55,7 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
-import { isRegionSelection } from '@src/lib/selections'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -124,10 +125,7 @@ export function addExtrude({
     ),
     otherSelections: sketches.otherSelections,
   }
-  if (
-    nonFaceSelections.graphSelections.length > 0 ||
-    nonFaceSelections.otherSelections.some((s) => isRegionSelection(s))
-  ) {
+  if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
       artifactGraph,
@@ -140,6 +138,18 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -330,6 +340,18 @@ export function addSweep({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Find the path declaration for the labeled argument
   // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
@@ -436,6 +458,18 @@ export function addLoft({
   )
   if (err(vars)) {
     return vars
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -555,6 +589,17 @@ export function addRevolve({
   )
   if (err(vars)) {
     return vars
+  }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Retrieve axis expression depending on mode
