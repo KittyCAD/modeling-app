@@ -106,7 +106,6 @@ export function addFillet({
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    modifiedAst = primitiveEdgeResult.modifiedAst
     bodies = primitiveEdgeResult.bodies
   }
   if (bodies.size === 0) {
@@ -202,7 +201,6 @@ export function addChamfer({
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    modifiedAst = primitiveEdgeResult.modifiedAst
     bodies = primitiveEdgeResult.bodies
   }
   if (bodies.size === 0) {
@@ -299,7 +297,6 @@ export function addBlend({
           wasmInstance,
         })
       if (err(primitiveEdgeResult)) return primitiveEdgeResult
-      modifiedAst = primitiveEdgeResult.modifiedAst
       const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
       if (!primitiveBody?.solidsExpr) {
         return new Error('Could not resolve the source surface for blend edge.')
@@ -537,11 +534,9 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
-}):
-  | Error
-  | { modifiedAst: Node<Program>; bodies: Map<string, BodySelectionData> } {
+}): Error | { bodies: Map<string, BodySelectionData> } {
   if (primitiveEdgeSelections.length === 0) {
-    return { modifiedAst, bodies }
+    return { bodies }
   }
 
   const primitiveSelectionsByBody = new Map<
@@ -580,7 +575,7 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   }
 
   if (primitiveSelectionsByBody.size === 0) {
-    return { modifiedAst, bodies }
+    return { bodies }
   }
 
   const updatedBodies = new Map(bodies)
@@ -663,7 +658,7 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     updatedBodies.set(bodyKey, bodyData)
   }
 
-  return { modifiedAst, bodies: updatedBodies }
+  return { bodies: updatedBodies }
 }
 
 /**
