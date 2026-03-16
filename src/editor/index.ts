@@ -42,7 +42,7 @@ import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { localHistoryTarget } from '@src/editor/HistoryView'
 import { operationsExtension } from '@src/editor/plugins/operations'
-import { writeEffectsExtension } from './plugins/write'
+import { writeEffectsExtension } from '@src/editor/plugins/write'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()

@@ -70,7 +70,6 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
-  StateEffect,
   Transaction,
   type TransactionSpec,
 } from '@codemirror/state'
