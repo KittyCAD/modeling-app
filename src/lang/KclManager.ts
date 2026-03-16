@@ -1004,7 +1004,18 @@ export class KclManager extends File {
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
     )
     const notIgnoredUpdate =
-      this.engineCommandManager.started && update.docChanged
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
 
     const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
 
