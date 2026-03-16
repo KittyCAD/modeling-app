@@ -195,7 +195,12 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<bool, Kcl
                 return Ok(false);
             };
             let sketch_pipe_body = node.body.drain(..new_start_index).collect();
-            let pipe_expr = ast::Expr::PipeExpression(Box::new(PipeExpression::new(sketch_pipe_body)));
+            let sketch_non_code_meta = node.non_code_meta.split_at(new_start_index);
+            let pipe_expr = ast::Expr::PipeExpression(Box::new(ast::Node::no_src(PipeExpression {
+                body: sketch_pipe_body,
+                non_code_meta: sketch_non_code_meta,
+                digest: None,
+            })));
             let mut var_decl = ast::Node::boxed(
                 Default::default(),
                 Default::default(),

@@ -1833,6 +1833,46 @@ impl NonCodeMeta {
         true
     }
 
+    /// Split non-code metadata at the given body index. Returns the
+    /// `NonCodeMeta` for `body[..split]` and mutates `self` in place to
+    /// become the metadata for `body[split..]`.
+    ///
+    /// The key convention is that `non_code_nodes[k]` holds comments
+    /// *after* `body[k]` (equivalently, *before* `body[k+1]`).
+    pub fn split_at(&mut self, split: usize) -> NonCodeMeta {
+        // Comments before body[0] belong to the left (extracted) side.
+        let left_start = std::mem::take(&mut self.start_nodes);
+
+        // Partition non_code_nodes by key.
+        let mut left_nodes = BTreeMap::new();
+        let mut right_start = NodeList::new();
+        let mut right_nodes = BTreeMap::new();
+
+        for (k, v) in std::mem::take(&mut self.non_code_nodes) {
+            if k < split.saturating_sub(1) {
+                // Between two elements that both move to the left side.
+                left_nodes.insert(k, v);
+            } else if split > 0 && k == split - 1 {
+                // Between the last left element and the first right element —
+                // becomes the right side's start_nodes.
+                right_start = v;
+            } else {
+                // Between elements that stay on the right side, re-keyed.
+                right_nodes.insert(k - split, v);
+            }
+        }
+
+        self.start_nodes = right_start;
+        self.non_code_nodes = right_nodes;
+        self.digest = None;
+
+        NonCodeMeta {
+            non_code_nodes: left_nodes,
+            start_nodes: left_start,
+            digest: None,
+        }
+    }
+
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
     ///
     /// Returns an empty slice if there is no non-code metadata associated with the node.
@@ -4804,5 +4844,118 @@ yoyo = 8
 angle = atan(rise / yoyo)
 "#
         );
+    }
+
+    /// Helper to create a comment NonCodeNode for tests.
+    fn comment_node(text: &str) -> Node<NonCodeNode> {
+        Node::no_src(NonCodeNode {
+            value: NonCodeValue::InlineComment {
+                value: text.to_string(),
+                style: CommentStyle::Line,
+            },
+            digest: None,
+        })
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_empty() {
+        let mut meta = NonCodeMeta::default();
+        let left = meta.split_at(0);
+        assert!(left.is_empty());
+        assert!(meta.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_start_nodes_go_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("before first")],
+            non_code_nodes: BTreeMap::new(),
+            digest: None,
+        };
+        let left = meta.split_at(1);
+        // start_nodes should move to the left side.
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "before first");
+        // Right side should have no start_nodes.
+        assert!(meta.start_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_boundary_becomes_right_start() {
+        // Simulate a pipe with 4 body elements and comments between them.
+        // non_code_nodes: { 0: "after 0", 1: "after 1", 2: "after 2" }
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([
+                (0, vec![comment_node("after 0")]),
+                (1, vec![comment_node("after 1")]),
+                (2, vec![comment_node("after 2")]),
+            ]),
+            digest: None,
+        };
+
+        // Split at index 2: left gets body[0..2], right gets body[2..].
+        let left = meta.split_at(2);
+
+        // Left side:
+        // - start_nodes = original start_nodes
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        // - non_code_nodes: only key 0 (between body[0] and body[1])
+        assert_eq!(left.non_code_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes[&0][0].value(), "after 0");
+
+        // Right side:
+        // - start_nodes = original key 1 (between body[1] and body[2],
+        //   now before the right side's body[0])
+        assert_eq!(meta.start_nodes.len(), 1);
+        assert_eq!(meta.start_nodes[0].value(), "after 1");
+        // - non_code_nodes: original key 2 re-keyed to 0
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "after 2");
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_all_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([(0, vec![comment_node("after 0")]), (1, vec![comment_node("after 1")])]),
+            digest: None,
+        };
+
+        // Split at 3 (all 3 body elements go left).
+        let left = meta.split_at(3);
+
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes.len(), 2);
+        assert!(meta.start_nodes.is_empty());
+        assert!(meta.non_code_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_one() {
+        // Split at 1: only the first body element goes left.
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([
+                (0, vec![comment_node("between 0 and 1")]),
+                (1, vec![comment_node("between 1 and 2")]),
+            ]),
+            digest: None,
+        };
+
+        let left = meta.split_at(1);
+
+        // Left: start_nodes, no non_code_nodes (only 1 element, nothing between).
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        assert!(left.non_code_nodes.is_empty());
+
+        // Right: key 0 ("between 0 and 1") becomes start_nodes,
+        //        key 1 re-keyed to 0.
+        assert_eq!(meta.start_nodes.len(), 1);
+        assert_eq!(meta.start_nodes[0].value(), "between 0 and 1");
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "between 1 and 2");
     }
 }
