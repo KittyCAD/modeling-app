@@ -264,10 +264,9 @@ export function normalizeEntityReference(
   }
 
   if (type === 'edge') {
-    const side_faces = isArray(raw.side_faces ?? raw.sideFaces)
-      ? (raw.side_faces ?? raw.sideFaces).filter(
-          (v): v is string => typeof v === 'string'
-        )
+    const sideFacesRaw = raw.side_faces ?? raw.sideFaces
+    const side_faces = isArray(sideFacesRaw)
+      ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
     const end_faces = isArray(raw.end_faces)
       ? raw.end_faces.filter((v): v is string => typeof v === 'string')
@@ -277,10 +276,9 @@ export function normalizeEntityReference(
   }
 
   if (type === 'vertex') {
-    const side_faces = isArray(raw.side_faces ?? raw.sideFaces)
-      ? (raw.side_faces ?? raw.sideFaces).filter(
-          (v): v is string => typeof v === 'string'
-        )
+    const sideFacesRaw = raw.side_faces ?? raw.sideFaces
+    const side_faces = isArray(sideFacesRaw)
+      ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
     const index = typeof raw.index === 'number' ? raw.index : undefined
     return { type: 'vertex', side_faces, index }
