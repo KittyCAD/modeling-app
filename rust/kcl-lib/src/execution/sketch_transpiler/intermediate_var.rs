@@ -68,6 +68,17 @@ fn migrate_block<B: ast::CodeBlock>(context: &mut Context, block: &mut B) -> Res
         // this item.
         let num_new_declarations = context.new_declarations.len();
         if num_new_declarations > 0 {
+            // Shift the block's non_code_meta keys to account for the
+            // inserted declarations. Keys >= i need to increase by
+            // num_new_declarations so they stay aligned with their
+            // body items.
+            let ncm = block.non_code_meta_mut();
+            let shifted: std::collections::BTreeMap<usize, _> = std::mem::take(&mut ncm.non_code_nodes)
+                .into_iter()
+                .map(|(k, v)| if k >= i { (k + num_new_declarations, v) } else { (k, v) })
+                .collect();
+            ncm.non_code_nodes = shifted;
+
             block
                 .body_mut()
                 .splice(i..i, std::mem::take(&mut context.new_declarations));
@@ -359,4 +370,44 @@ fn next_free_name(
             source_ranges,
         ))
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+    use crate::parsing::top_level_parse;
+
+    /// Parse, run the intermediate-var transpiler, and recast.
+    fn transpile_and_recast(code: &str) -> String {
+        let mut program = top_level_parse(code).unwrap();
+        transpile(&mut program).unwrap();
+        program.recast_top(&Default::default(), 0)
+    }
+
+    #[test]
+    fn test_transpile_preserves_inline_comments() {
+        let input = "\
+fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
+  return startSketchOn(XY)
+    // Start a 2D sketch on the global XY plane
+    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Draw the 2x4 cross-section at the given corner
+    |> extrude(length = sizeZ) // Create a 3D prism by extruding the rectangle along +Z
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Apply a wood-like material
+    |> translate(z = minZ) // Position the prism so its bottom sits at minZ
+}
+";
+        let expected = "\
+fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
+  sketch001 = startSketchOn(XY)
+    // Start a 2D sketch on the global XY plane
+    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Draw the 2x4 cross-section at the given corner
+  return extrude(sketch001, length = sizeZ) // Create a 3D prism by extruding the rectangle along +Z
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Apply a wood-like material
+    |> translate(z = minZ) // Position the prism so its bottom sits at minZ
+}
+";
+        assert_eq!(transpile_and_recast(input), expected);
+    }
 }
