@@ -28,10 +28,11 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
     |> close()
 
   // Create a central hub with a spline interior
-  hub = startSketchOn(XZ)
+  sketch001 = startSketchOn(XZ)
     |> circle(diameter = hubDiameter, tag = $seg01)
     |> subtract2d(tool = toothSketch)
-    |> extrude(
+  hub = extrude(
+         sketch001,
          length = hubThickness,
          symmetric = true,
          tagEnd = $capEnd001,
@@ -46,7 +47,7 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
        )
 
   // Blade design space
-  bladeRevolve = startSketchOn(XZ)
+  sketch002 = startSketchOn(XZ)
     |> startProfile(at = polar(angle = 40deg, length = hubDiameter / 2.01))
     |> arc(angleStart = 200, angleEnd = 290, radius = bladeDiameter / 50)
     |> tangentialArc(end = [
@@ -58,20 +59,20 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
     |> xLine(endAbsolute = profileStartX())
     |> yLine(endAbsolute = profileStartY())
     |> close()
-    |> revolve(axis = X)
+  bladeRevolve = revolve(sketch002, axis = X)
     |> subtract(tools =     startSketchOn(XY)
       |> circle(diameter = hubDiameter)
       |> extrude(length = hubThickness * 5, symmetric = true))
 
   // Blade section and twist
-  bladeTwist = startSketchOn(YZ)
+  sketch003 = startSketchOn(YZ)
     |> startProfile(at = [bladeDiameter / 10, 0])
     |> arc(angleStart = 0, angleEnd = 83, radius = 0.05)
     |> tangentialArc(endAbsolute = [-lastSegX(), lastSegY()])
     |> tangentialArc(angle = 83deg, radius = 0.05)
     |> mirror2d(axis = X)
     |> close()
-    |> extrude(length = bladeDiameter / 1.9, twistAngle = twistAngle)
+  bladeTwist = extrude(sketch003, length = bladeDiameter / 1.9, twistAngle = twistAngle)
 
   // Blades pattern
   blades = intersect([bladeRevolve, bladeTwist])
