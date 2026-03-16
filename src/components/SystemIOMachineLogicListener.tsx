@@ -271,18 +271,10 @@ export function SystemIOMachineLogicListener() {
       const requestedFiles: RequestedKCLFile[] = Object.entries(
         outputsRecord
       ).map(([relativePath, fileContents]) => {
-        const lastSep = relativePath.lastIndexOf(fsZds.sep)
-        let pathPart = relativePath.slice(0, lastSep)
-        let filePart = relativePath.slice(lastSep)
-        if (lastSep < 0) {
-          pathPart = ''
-          filePart = relativePath
-        }
         return {
           requestedCode: fileContents,
-          requestedFileName: filePart,
-          requestedProjectName:
-            projectNameCurrentlyOpened + fsZds.sep + pathPart,
+          requestedFileName: relativePath,
+          requestedProjectName: projectNameCurrentlyOpened,
         }
       })
 
