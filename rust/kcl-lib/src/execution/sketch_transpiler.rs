@@ -19,6 +19,8 @@ use crate::{
     parsing::ast::types as ast,
 };
 
+mod intermediate_var;
+
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
 enum SegmentConstraint {
@@ -27,7 +29,14 @@ enum SegmentConstraint {
     EqualLength { other_segment_index: usize },
 }
 
+pub fn pre_execute_transpile(program: &mut Program) -> Result<(), KclError> {
+    // First, extract pipelines before extrudes into their own variable. This
+    // must happen before executing so that execution can see the new variables.
+    intermediate_var::transpile(&mut program.ast)
+}
+
 pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &mut Program) -> Result<(), KclError> {
+    // Convert sketches in variables.
     let mut sketch_blocks = HashMap::with_capacity(exec_outcome.variables.len());
     for variable in &exec_outcome.variables {
         if let KclValue::Sketch { .. } = &variable.1 {
@@ -36,12 +45,19 @@ pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &m
             sketch_blocks.insert(variable.0.clone(), sketch_block);
         }
     }
+    // Substitute back into program.
     for item in &mut program.ast.body {
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && let Some(sketch_block) = sketch_blocks.get(&var_decl.declaration.id.name)
         {
             var_decl.declaration.init = ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block.clone())));
         }
+    }
+    if !sketch_blocks.is_empty() {
+        // If we have any sketch blocks, allow experimental features.
+        program
+            .ast
+            .set_experimental_features(Some(crate::exec::WarningLevel::Allow));
     }
     Ok(())
 }
