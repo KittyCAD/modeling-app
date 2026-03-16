@@ -1,11 +1,4 @@
-import {
-  assertEvent,
-  assign,
-  createMachine,
-  sendParent,
-  setup,
-  fromPromise,
-} from 'xstate'
+import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 import type {
   SceneGraphDelta,
   SegmentCtor,
@@ -39,10 +32,10 @@ import {
   setDraftEntities,
   clearDraftEntities,
   deleteDraftEntities,
-  deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
   onCameraScaleChange,
+  tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
@@ -200,19 +193,7 @@ export const sketchSolveMachine = setup({
     }),
   },
   actors: {
-    deleteDraftEntitiesOnExit: fromPromise(
-      async ({
-        input,
-      }: {
-        input: { context: SketchSolveContext }
-      }) => {
-        // Only delete if draft entities exist
-        if (!input.context.draftEntities) {
-          return null
-        }
-        return deleteDraftEntitiesPromise(input)
-      }
-    ),
+    tearDownSketchSolve,
     moveToolActor: createMachine({
       /* ... */
     }),
@@ -884,8 +865,8 @@ export const sketchSolveMachine = setup({
         },
       },
       invoke: {
-        id: 'deleteDraftEntitiesOnExit',
-        src: 'deleteDraftEntitiesOnExit',
+        id: 'tearDownSketchSolve',
+        src: 'tearDownSketchSolve',
         input: ({ context }: { context: SketchSolveContext }) => {
           return { context }
         },

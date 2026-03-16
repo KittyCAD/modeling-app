@@ -3,7 +3,7 @@
 // Categories: Automotive, Computer Hardware
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Define overall dimensions of the insert block
 insertLength = 400

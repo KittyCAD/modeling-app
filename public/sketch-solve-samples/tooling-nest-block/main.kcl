@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Define parameters
 sideLength = 50
@@ -37,9 +37,9 @@ cubeExtrude = extrude(cubeSketch, length = sideLength)
 
 // Write a function to create a hemispherical nest in a given cube side
 fn nest(cubeFace, xPos, yPos, nestSize) {
-  nestFn = startSketchOn(cubeExtrude, face = cubeFace)
+  sketch001 = startSketchOn(cubeExtrude, face = cubeFace)
     |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
-    |> extrude(length = -nestSize, tagStart = $capStart001)
+  nestFn = extrude(sketch001, length = -nestSize, tagStart = $capStart001)
     |> fillet(
          radius = nestSize * .99,
          tags = [
