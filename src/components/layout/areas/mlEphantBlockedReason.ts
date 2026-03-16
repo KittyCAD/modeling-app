@@ -10,6 +10,7 @@ const UNKNOWN_BLOCK_REASON_TEXT =
 const USER_BLOCK_REASON_TEXT: Record<UserBlockReason, string> = {
   missing_payment_method: `You need a payment method to keep using Zookeeper. Go to your [account](${ACCOUNT_URL}) to fix this.`,
   payment_method_failed: `Your payment method failed. Go to your [account](${ACCOUNT_URL}) to fix this.`,
+  upgrade_downgrade_abuse: `You made too many plan updates in the last 48 hours. Check the status on your [account](${ACCOUNT_URL}).`,
 }
 
 export function getUserBlockedReason(
