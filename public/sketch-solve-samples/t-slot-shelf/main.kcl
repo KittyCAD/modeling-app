@@ -55,8 +55,8 @@ fn railTslot(railHeight, length) {
 
     // Scale the entire sketch by a factor of the rail height, then extrude
     |> scale(x = railHeight, y = railHeight, z = railHeight)
-
   railProfile = extrude(sketch001, length)
+
   return railProfile
 }
 

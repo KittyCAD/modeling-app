@@ -12,8 +12,8 @@ export fn pipe() {
   // Create the pipe base
   sketch001 = startSketchOn(XZ)
     |> circle(center = [0, 0], radius = pipeOuterDiameter / 2)
-
   pipeBase = extrude(sketch001, length = pipeLength)
+
   // Extrude a hole through the length of the pipe
   sketch002 = startSketchOn(pipeBase, face = END)
     |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)

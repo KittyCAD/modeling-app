@@ -50,7 +50,6 @@ sketch001 = sketch(on = XZ) {
   vertical(line5)
   horizontal(line6)
 }
-
 bracketBody = extrude(sketch001, length = width)
 
 // Add mounting holes to mount to the shelf
@@ -64,8 +63,8 @@ sketch002 = startSketchOn(bracketBody, face = seg03)
      )
   |> patternLinear2d(instances = 2, distance = -(extBendRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
   |> patternLinear2d(instances = 2, distance = width - (shelfMountingHolePlacementOffset * 2), axis = [0, 1])
-
 shelfMountingHoles = extrude(sketch002, length = -thickness - .01)
+
 // Add mounting holes to mount to the wall
 sketch003 = startSketchOn(bracketBody, face = seg04)
   |> circle(
@@ -76,11 +75,12 @@ sketch003 = startSketchOn(bracketBody, face = seg04)
        radius = wallMountingHoleDiameter / 2,
      )
   |> patternLinear2d(instances = 2, distance = width - (wallMountingHolePlacementOffset * 2), axis = [0, 1])
-
 wallMountingHoles = extrude(sketch003, length = -thickness - 0.1)
+
 // Apply bends
 fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
 fillet(bracketBody, radius = bendRadius, tags = [getNextAdjacentEdge(seg06)])
+
 // Apply corner fillets
 fillet(
   bracketBody,

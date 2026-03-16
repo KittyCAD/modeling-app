@@ -141,7 +141,6 @@ sketch001 = sketch(on = YZ) {
   horizontal(line3)
   vertical(line4)
 }
-
 ridgeBoardSlots = extrude(sketch001, length = 5, symmetric = true)
   |> patternLinear3d(instances = rafterCount, distance = rafterSpacing, axis = [0, 1, 0])
 
@@ -152,6 +151,7 @@ ridgeBoard = twoByFourYRotated(
        lengthY = frameLength,
      )
   |> subtract(tools = ridgeBoardSlots)
+
 // Apply wooden appearance
 [
        rightRafters,

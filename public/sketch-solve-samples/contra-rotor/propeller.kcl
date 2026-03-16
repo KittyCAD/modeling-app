@@ -31,7 +31,6 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
   sketch001 = startSketchOn(XZ)
     |> circle(diameter = hubDiameter, tag = $seg01)
     |> subtract2d(tool = toothSketch)
-
   hub = extrude(
          sketch001,
          length = hubThickness,
@@ -60,7 +59,6 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
     |> xLine(endAbsolute = profileStartX())
     |> yLine(endAbsolute = profileStartY())
     |> close()
-
   bladeRevolve = revolve(sketch002, axis = X)
     |> subtract(tools =     startSketchOn(XY)
       |> circle(diameter = hubDiameter)
@@ -75,9 +73,11 @@ export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
     |> mirror2d(axis = X)
     |> close()
   bladeTwist = extrude(sketch003, length = bladeDiameter / 1.9, twistAngle = twistAngle)
+
   // Blades pattern
   blades = intersect([bladeRevolve, bladeTwist])
     |> patternCircular3d(instances = bladeCount, axis = Y, center = [0, 0, 0])
+
   // Return assembly
   return [hub, blades]
     |> appearance(color = "#e88811", metalness = 10, roughness = 80)

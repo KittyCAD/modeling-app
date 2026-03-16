@@ -42,8 +42,9 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
     |> close()
     // Subtract a 10mm diameter center hole from the gear
     |> subtract2d(tool = circle(center = [0, 0], radius = 5))
-
+    // Extrude the gear to the specified height
   gearSketch = extrude(sketch001, length = gearHeight)
+
   return gearSketch
 }
 

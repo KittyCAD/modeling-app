@@ -40,7 +40,6 @@ fn sprocket(@speed, nTeeth) {
     |> patternCircular2d(instances = nTeeth, center = [0, 0])
     |> close()
     |> subtract2d(tool = spline)
-
   sprocket = extrude(sketch001, length = rollerWidth / 2)
 
   // Place a mounting spacer between each sprocket body
@@ -49,6 +48,7 @@ fn sprocket(@speed, nTeeth) {
     |> subtract2d(tool = circle(center = [0, 0], diameter = shaftDiameter))
   spacer = extrude(sketch002, length = rollerWidth / 2, method = NEW)
     |> appearance(color = "#0f0f0f")
+
   return sprocket
 }
 

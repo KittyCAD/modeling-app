@@ -46,10 +46,10 @@ fn counterbore(@holePosition) {
   sketch001 = startSketchOn(plateBody, face = END)
     |> circle(center = holePosition, radius = counterboreDiameter / 2)
   cbBore = extrude(sketch001, length = -counterboreDepth)
-
   sketch002 = startSketchOn(cbBore, face = START)
     |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
   cbBolt = extrude(sketch002, length = -stockThickness + counterboreDepth)
+
   return {  }
 }
 

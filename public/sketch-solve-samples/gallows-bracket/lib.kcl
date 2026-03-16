@@ -112,7 +112,6 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
   verticalHolesSketch = offsetPlane(YZ, offset = -1)
   sketch001 = circle(verticalHolesSketch, center = [-ironWidth / 2, 75], radius = boltRadius + 0.5)
     |> patternLinear2d(instances = verticalHolesNeeded, distance = (height - bottomBoltOffset) / verticalHolesNeeded, axis = [0, 1])
-
   verticalHoles = extrude(sketch001, length = ironThickness + 2)
 
   verticalWithHoles = reduce(
@@ -122,6 +121,7 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
       return subtract(accum, tools = hole)
     },
   )
+
   horizontal = angleIron(
          length = depth,
          width = ironWidth,
@@ -140,7 +140,6 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          ],
          radius = boltRadius + 0.5,
        )
-
   horizontalHoles = extrude(sketch002, length = ironThickness + 2)
   horizontalWithHoles = subtract(horizontal, tools = horizontalHoles)
 
@@ -171,6 +170,7 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
     |> close()
   leg = extrude(sketch003, length = 100)
     |> translate(z = height - ironWidth, global = true)
+
   // Leg to insert into party wall
   return [
     verticalWithHoles,

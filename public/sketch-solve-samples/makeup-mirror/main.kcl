@@ -55,8 +55,8 @@ armPartB = armFn(plane = XZ, offset = armLength, altitude = hingeHeight * 2.5 + 
 fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
   armPlane = startSketchOn(offsetPlane(plane, offset = offsetY - (tiefe / 2)))
   sketch001 = circle(armPlane, center = [offsetX, altitude], radius = radius)
-
   armBody = extrude(sketch001, length = tiefe)
+
   sketch002 = startProfile(armPlane, at = [offsetX - gestellR, altitude])
     |> xLine(length = gestellD)
     |> arc(interiorAbsolute = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])

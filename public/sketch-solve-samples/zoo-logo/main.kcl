@@ -57,14 +57,14 @@ fn ZOO(surface, origin, depth, height, zoo_angle) {
     |> line(end = rot(x = scale_factor * -8.225417, y = scale_factor * -8.886255, theta_deg = zoo_angle))
     |> line(end = rot(x = scale_factor * 0, y = scale_factor * -2.171981, theta_deg = zoo_angle))
     |> close()
+  Z_SKETCH = extrude(sketch001, length = depth)
 
-  Z_SKETCH = extrude(sketch001, length = depth) // 47
-  O_ANGLE = 47.15
+  O_ANGLE = 47.15 // 47
   O_DELTA = rot(x = scale_factor * 21.5, y = scale_factor * 7.1456, theta_deg = zoo_angle)
   O_Y = O_DELTA[1] + origin[1]
   O_X = O_DELTA[0] + origin[0]
-
   O_SPACEING = rot(x = scale_factor * 16, y = 0, theta_deg = zoo_angle)
+
   O1_1 = ZOO_O(
     surface = surface,
     center = [O_X, O_Y],
