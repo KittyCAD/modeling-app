@@ -41,6 +41,7 @@ import {
   type ActorRefFrom,
   type ProvidedActor,
   assertEvent,
+  fromPromise,
 } from 'xstate'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
@@ -1047,6 +1048,27 @@ export function spawnTool(
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
 }
+
+export const tearDownSketchSolve = fromPromise(
+  async ({
+    input,
+  }: {
+    input: { context: SketchSolveContext }
+  }) => {
+    // Let the rust side know this sketch is being exited
+    await input.context.rustContext.exitSketch(
+      SKETCH_FILE_VERSION,
+      input.context.sketchId
+    )
+
+    // Only delete if draft entities exist
+    const deleteDraftEntities = !input.context.draftEntities
+      ? Promise.resolve(null)
+      : deleteDraftEntitiesPromise(input)
+
+    return await deleteDraftEntities
+  }
+)
 
 export type ToolInput = {
   sceneInfra: SceneInfra
