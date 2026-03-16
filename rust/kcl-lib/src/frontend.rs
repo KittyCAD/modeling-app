@@ -5886,6 +5886,75 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraint_multi_line_equal_length() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 9, var 10], end = [var 11, var 12])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let line3_id = *sketch.segments.get(8).unwrap();
+
+        let constraint = Constraint::LinesEqualLength(LinesEqualLength {
+            lines: vec![line1_id, line2_id, line3_id],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
+  equalLength([line1, line2, line3])
+}
+"
+        );
+        let constraints = scene_delta
+            .new_graph
+            .objects
+            .iter()
+            .filter_map(|obj| {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    return None;
+                };
+                Some(constraint)
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(constraints.len(), 1, "{:#?}", frontend.scene_graph.objects);
+        let Constraint::LinesEqualLength(lines_equal_length) = constraints[0] else {
+            panic!("expected equal length constraint, got {:?}", constraints[0]);
+        };
+        assert_eq!(lines_equal_length.lines.len(), 3);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_lines_parallel() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
