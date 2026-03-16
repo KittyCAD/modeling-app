@@ -116,7 +116,7 @@ function edgeSelectionToEntityReference(
  * Type alias for EdgeRef payload used in KCL edgeRefs array
  */
 type FilletEdgeRefPayload = {
-  faces: string[]
+  side_faces: string[]
   end_faces?: string[]
   index?: number
 }
@@ -129,7 +129,7 @@ export function entityReferenceToEdgeRefPayload(
   entityRef: Extract<EntityReference, { type: 'edge' }>
 ): FilletEdgeRefPayload {
   const payload: FilletEdgeRefPayload = {
-    faces: entityRef.faces,
+    side_faces: entityRef.side_faces,
   }
 
   // Only include end_faces if present and non-empty
@@ -163,7 +163,7 @@ export function createEdgeRefObjectExpression(
   const faceTags: string[] = []
   let currentAst = ast
 
-  for (const faceId of payload.faces) {
+  for (const faceId of payload.side_faces) {
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
       return new Error(
@@ -272,7 +272,9 @@ export function createEdgeRefObjectExpression(
   }
 
   const properties: { [key: string]: Expr } = {
-    faces: createArrayExpression(faceTags.map((tag) => createLocalName(tag))),
+    side_faces: createArrayExpression(
+      faceTags.map((tag) => createLocalName(tag))
+    ),
   }
 
   // Only add end_faces if present
@@ -1214,7 +1216,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
       // Find a wall or cap face to get the body (edge refs can list segment first)
       let faceArtifact: Artifact | undefined
-      for (const faceId of v2Sel.entityRef.faces) {
+      for (const faceId of v2Sel.entityRef.side_faces) {
         const a = artifactGraph.get(faceId)
         if (a && (a.type === 'wall' || a.type === 'cap')) {
           faceArtifact = a
@@ -1274,7 +1276,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       if (!firstV2Sel.entityRef || firstV2Sel.entityRef.type !== 'edge')
         continue
 
-      const firstFaceId = firstV2Sel.entityRef.faces[0]
+      const firstFaceId = firstV2Sel.entityRef.side_faces[0]
       const faceArtifact = artifactGraph.get(firstFaceId)
       if (
         !faceArtifact ||
@@ -2450,7 +2452,7 @@ function findEdgeArtifactFromFaceIds(
 /**
  * Retrieves edge selections from edgeRefs argument (new API).
  * Used for edit flows when reading existing fillet calls with edgeRefs.
- * Parses edgeRefs array of objects with "faces" array (UUID or TagIdentifier refs)
+ * Parses edgeRefs array of objects with "side_faces" array (UUID or TagIdentifier refs)
  * and resolves each to graphSelectionsV2 for the command bar edit flow.
  */
 export function retrieveEdgeSelectionsFromEdgeRefs(

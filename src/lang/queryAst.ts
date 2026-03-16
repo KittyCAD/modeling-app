@@ -1119,7 +1119,7 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
     case 'segment':
       return entityRef.segment_id
     case 'edge':
-      return entityRef.faces?.[0]
+      return entityRef.side_faces?.[0]
     default:
       return undefined
   }
@@ -1142,8 +1142,8 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
     case 'edge':
       if (b.type !== 'edge') return false
       return (
-        JSON.stringify([...(a.faces || [])].sort()) ===
-          JSON.stringify([...(b.faces || [])].sort()) &&
+        JSON.stringify([...(a.side_faces || [])].sort()) ===
+          JSON.stringify([...(b.side_faces || [])].sort()) &&
         JSON.stringify([...(a.end_faces || [])].sort()) ===
           JSON.stringify([...(b.end_faces || [])].sort()) &&
         a.index === b.index
@@ -1151,8 +1151,9 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
     case 'vertex':
       if (b.type !== 'vertex') return false
       return (
-        JSON.stringify([...(a.faces || [])].sort()) ===
-          JSON.stringify([...(b.faces || [])].sort()) && a.index === b.index
+        JSON.stringify([...(a.side_faces || [])].sort()) ===
+          JSON.stringify([...(b.side_faces || [])].sort()) &&
+        a.index === b.index
       )
     case 'segment':
       return (

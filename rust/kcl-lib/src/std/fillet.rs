@@ -77,7 +77,7 @@ pub(super) async fn tags_to_engine_edge_references(
     for edge_ref in tags {
         let edge_id = edge_ref.get_engine_id(exec_state, args)?;
         let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
-        let engine_ref = kcmc::shared::EdgeReference::builder().faces(face_ids.to_vec()).build();
+        let engine_ref = kcmc::shared::EdgeReference::builder().side_faces(face_ids.to_vec()).build();
         refs.push(engine_ref);
     }
     Ok(refs)
@@ -419,9 +419,9 @@ pub(super) async fn parse_edge_refs_to_references(
             }
         };
 
-        let faces_value = edge_ref_obj.get("faces").ok_or_else(|| {
+        let faces_value = edge_ref_obj.get("side_faces").or_else(|| edge_ref_obj.get("faces")).ok_or_else(|| {
             KclError::new_type(KclErrorDetails {
-                message: "edgeRef must have 'faces' field".to_string(),
+                message: "edgeRef must have 'side_faces' field".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             })
@@ -431,7 +431,7 @@ pub(super) async fn parse_edge_refs_to_references(
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'faces' must be an array".to_string(),
+                    message: "edgeRef 'side_faces' must be an array".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -440,7 +440,7 @@ pub(super) async fn parse_edge_refs_to_references(
 
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'faces' must have at least one face".to_string(),
+                message: "edgeRef 'side_faces' must have at least one face".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             }));
@@ -481,7 +481,7 @@ pub(super) async fn parse_edge_refs_to_references(
         };
 
         use kcmc::shared::EdgeReference as KcmcEdgeRef;
-        let builder = KcmcEdgeRef::builder().faces(face_uuids).end_faces(end_face_uuids);
+        let builder = KcmcEdgeRef::builder().side_faces(face_uuids).end_faces(end_face_uuids);
 
         let edge_ref = if let Some(index_val) = index {
             builder.index(index_val).build()

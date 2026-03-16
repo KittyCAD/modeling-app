@@ -264,22 +264,26 @@ export function normalizeEntityReference(
   }
 
   if (type === 'edge') {
-    const faces = isArray(raw.faces)
-      ? raw.faces.filter((v): v is string => typeof v === 'string')
+    const side_faces = isArray(raw.side_faces ?? raw.sideFaces)
+      ? (raw.side_faces ?? raw.sideFaces).filter(
+          (v): v is string => typeof v === 'string'
+        )
       : []
     const end_faces = isArray(raw.end_faces)
       ? raw.end_faces.filter((v): v is string => typeof v === 'string')
       : undefined
     const index = typeof raw.index === 'number' ? raw.index : undefined
-    return { type: 'edge', faces, end_faces, index }
+    return { type: 'edge', side_faces, end_faces, index }
   }
 
   if (type === 'vertex') {
-    const faces = isArray(raw.faces)
-      ? raw.faces.filter((v): v is string => typeof v === 'string')
+    const side_faces = isArray(raw.side_faces ?? raw.sideFaces)
+      ? (raw.side_faces ?? raw.sideFaces).filter(
+          (v): v is string => typeof v === 'string'
+        )
       : []
     const index = typeof raw.index === 'number' ? raw.index : undefined
-    return { type: 'vertex', faces, index }
+    return { type: 'vertex', side_faces, index }
   }
 
   if (type === 'segment') {
@@ -362,7 +366,7 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   if (
     entityRef.type === 'edge' &&
-    entityRef.faces.length === 0 &&
+    entityRef.side_faces.length === 0 &&
     (!entityRef.end_faces || entityRef.end_faces.length === 0)
   ) {
     return {
@@ -399,12 +403,12 @@ export async function getEventForQueryEntityTypeWithPoint(
     entityId = entityRef.edge_id
   } else if (entityRef.type === 'segment') {
     entityId = entityRef.segment_id
-  } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
+  } else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
     // Try to find an edge artifact that connects these faces
     // This is a temporary approach - ideally we'd query the engine for the edge ID
     // For now, we'll try to find it from the artifact graph
-    const faceArtifacts = entityRef.faces
+    const faceArtifacts = entityRef.side_faces
       .map((faceId: string) => artifactGraph.get(faceId))
       .filter(Boolean)
     if (faceArtifacts.length > 0) {
@@ -420,9 +424,9 @@ export async function getEventForQueryEntityTypeWithPoint(
         entityId = firstFace.id
       }
     }
-  } else if (entityRef.type === 'vertex' && entityRef.faces.length > 0) {
+  } else if (entityRef.type === 'vertex' && entityRef.side_faces.length > 0) {
     // Similar approach for vertices
-    entityId = entityRef.faces[0]
+    entityId = entityRef.side_faces[0]
   }
 
   // Handle special cases (axes, default planes)
@@ -1372,10 +1376,10 @@ export async function tryEnterSketchOnDoubleClickFromScene(
       else if (entityRef.type === 'solid3d') entityId = entityRef.solid3d_id
       else if (entityRef.type === 'solid2d_edge') entityId = entityRef.edge_id
       else if (entityRef.type === 'segment') entityId = entityRef.segment_id
-      else if (entityRef.type === 'edge' && entityRef.faces.length > 0)
-        entityId = entityRef.faces[0]
-      else if (entityRef.type === 'vertex' && entityRef.faces.length > 0)
-        entityId = entityRef.faces[0]
+      else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0)
+        entityId = entityRef.side_faces[0]
+      else if (entityRef.type === 'vertex' && entityRef.side_faces.length > 0)
+        entityId = entityRef.side_faces[0]
     }
   }
   if (!entityId) return
@@ -2051,12 +2055,12 @@ export function getCodeRefsFromEntityReference(
     }
   } else if (
     entityRef.type === 'edge' &&
-    entityRef.faces &&
-    entityRef.faces.length >= 1
+    entityRef.side_faces &&
+    entityRef.side_faces.length >= 1
   ) {
-    // For edges, find segments from faces and end_faces
+    // For edges, find segments from side_faces and end_faces
     // Handle both Solid3D (2+ faces) and Solid2D (1 face) cases
-    const faceIds = [...entityRef.faces]
+    const faceIds = [...entityRef.side_faces]
     // Also include end faces
     if (entityRef.end_faces && entityRef.end_faces.length > 0) {
       faceIds.push(...entityRef.end_faces)
@@ -2106,11 +2110,11 @@ export function getCodeRefsFromEntityReference(
     }
   } else if (
     entityRef.type === 'vertex' &&
-    entityRef.faces &&
-    entityRef.faces.length >= 3
+    entityRef.side_faces &&
+    entityRef.side_faces.length >= 3
   ) {
     // For vertices, find segments from all adjacent faces (typically 3+)
-    const faceIds = [...entityRef.faces]
+    const faceIds = [...entityRef.side_faces]
     const seenSegments = new Set<string>()
 
     for (const faceId of faceIds) {

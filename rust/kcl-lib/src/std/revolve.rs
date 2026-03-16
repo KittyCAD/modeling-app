@@ -54,10 +54,10 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
         };
 
-        // Get faces array
-        let faces_value = edge_ref_obj.get("faces").ok_or_else(|| {
+        // Get side_faces array
+        let faces_value = edge_ref_obj.get("side_faces").or_else(|| edge_ref_obj.get("faces")).ok_or_else(|| {
             KclError::new_type(KclErrorDetails {
-                message: "edgeRef must have 'faces' field".to_string(),
+                message: "edgeRef must have 'side_faces' field".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             })
@@ -67,7 +67,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'faces' must be an array".to_string(),
+                    message: "edgeRef 'side_faces' must be an array".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -76,7 +76,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'faces' must have at least one face".to_string(),
+                message: "edgeRef 'side_faces' must have at least one face".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             }));
@@ -164,7 +164,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         // Build EdgeReference from shared module
         use kcmc::shared::EdgeReference as ModelingEdgeReference;
         let builder = ModelingEdgeReference::builder()
-            .faces(face_uuids)
+            .side_faces(face_uuids)
             .end_faces(disambiguator_uuids);
 
         let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {

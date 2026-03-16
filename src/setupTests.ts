@@ -6,8 +6,8 @@ import '@testing-library/jest-dom'
 // TODO REMOVE, this is just temp to get it to connect to the right endpoint in CI before the engine changes merge
 if (typeof process !== 'undefined') {
   process.env.VITE_KITTYCAD_WEBSOCKET_URL ??=
-    // 'ws://nixos:8080/ws/modeling/commands'
-  'wss://api.dev.zoo.dev/ws/modeling/commands&pool=pr-4194'
+    'ws://nixos:8080/ws/modeling/commands'
+  // 'wss://api.dev.zoo.dev/ws/modeling/commands&pool=pr-4194'
 }
 
 import { cleanup } from '@testing-library/react'
