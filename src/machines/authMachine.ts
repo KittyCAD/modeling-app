@@ -340,49 +340,51 @@ async function logout() {
 async function logoutEnvironment(requestedDomain?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  try {
-    const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
-    let token = ''
-    if (domain) {
-      token = await readEnvironmentConfigurationToken(domain)
-    } else {
-      return new Error('Unable to logout, cannot find domain')
-    }
-
-    if (token) {
-      try {
-        const apiUrlBase = (() => {
-          try {
-            const u = new URL(domain)
-            return u.origin
-          } catch {
-            const d = generateDomainsFromBaseDomain(domain)
-            return d.API_URL
-          }
-        })()
-
-        const client = createKCClient(token, apiUrlBase)
-        await kcCall(() =>
-          oauth2.oauth2_token_revoke({
-            client,
-            body: {
-              token,
-              client_id: OAUTH2_DEVICE_CLIENT_ID,
-            },
-          })
-        )
-      } catch (e) {
-        console.error('Error revoking token:', e)
-      }
-
+  if (window.electron) {
+    try {
+      const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
+      let token = ''
       if (domain) {
-        await writeEnvironmentConfigurationToken(domain, '')
+        token = await readEnvironmentConfigurationToken(domain)
+      } else {
+        return new Error('Unable to logout, cannot find domain')
       }
-      await writeEnvironmentFile('')
-      return Promise.resolve(null)
+
+      if (token) {
+        try {
+          const apiUrlBase = (() => {
+            try {
+              const u = new URL(domain)
+              return u.origin
+            } catch {
+              const d = generateDomainsFromBaseDomain(domain)
+              return d.API_URL
+            }
+          })()
+
+          const client = createKCClient(token, apiUrlBase)
+          await kcCall(() =>
+            oauth2.oauth2_token_revoke({
+              client,
+              body: {
+                token,
+                client_id: OAUTH2_DEVICE_CLIENT_ID,
+              },
+            })
+          )
+        } catch (e) {
+          console.error('Error revoking token:', e)
+        }
+
+        if (domain) {
+          await writeEnvironmentConfigurationToken(domain, '')
+        }
+        await writeEnvironmentFile('')
+        return Promise.resolve(null)
+      }
+    } catch (e) {
+      console.error('Error reading token during logout (ignoring):', e)
     }
-  } catch (e) {
-    console.error('Error reading token during logout (ignoring):', e)
   }
 
   return fetch(withAPIBaseURL('/logout'), {
