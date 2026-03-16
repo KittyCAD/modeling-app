@@ -65,6 +65,7 @@ import {
   CONSTRAINT_TYPE,
   isPointSegment as isPointApiSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -229,11 +230,13 @@ export function createOnDragStartCallback({
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
- * Restores visual feedback for point segments after dragging ends.
+ * Restores visual feedback for point segments after dragging ends,
+ * and syncs all necessary state between the frontend and the solver.
  *
  * @param getDraggingPointElement - Getter for the currently dragging point element
  * @param setDraggingPointElement - Setter to clear the dragging point element
  * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
+ * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
   getDraggingPointElement,
@@ -247,17 +250,19 @@ export function createOnDragEndCallback({
     }
     return null
   },
+  sketchExecuteMock,
 }: {
   getDraggingPointElement: () => HTMLElement | null
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
+  sketchExecuteMock: () => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
+  return async () => {
     // Restore opacity for point segment if we were dragging one
     const element = getDraggingPointElement()
     if (element) {
@@ -270,6 +275,9 @@ export function createOnDragEndCallback({
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
     setDraggingPointElement(null)
+    // Send the last up-to-date state from the frontend to Rust. It doesn't know
+    // about this last feedback loop yet!
+    await sketchExecuteMock()
   }
 }
 
@@ -1434,6 +1442,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragEnd: createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      sketchExecuteMock: () =>
+        context.rustContext.sketchExecuteMock(
+          SKETCH_FILE_VERSION,
+          context.sketchId
+        ),
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,

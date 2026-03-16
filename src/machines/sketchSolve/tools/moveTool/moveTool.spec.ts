@@ -376,6 +376,7 @@ describe('createOnDragEndCallback', () => {
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      sketchExecuteMock: async () => {},
     })
 
     void callback({
@@ -390,6 +391,27 @@ describe('createOnDragEndCallback', () => {
     expect(setDraggingPointElement).toHaveBeenCalledWith(null)
   })
 
+  it('should call execute implementation  once', () => {
+    const sketchExecuteMock = vi.fn(async () => {})
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement: () => {
+        return null
+      },
+      setDraggingPointElement: () => {},
+      sketchExecuteMock,
+    })
+
+    void callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Should still clear the dragging state even if no element was being dragged
+    // This ensures state is always clean after drag ends
+    expect(sketchExecuteMock).toHaveBeenCalled()
+  })
   it('should clear dragging state even when no element is currently being dragged', () => {
     const setDraggingPointElement = vi.fn()
     const getDraggingPointElement = vi.fn(() => null)
@@ -397,6 +419,7 @@ describe('createOnDragEndCallback', () => {
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      sketchExecuteMock: async () => {},
     })
 
     void callback({
@@ -421,6 +444,7 @@ describe('createOnDragEndCallback', () => {
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      sketchExecuteMock: async () => {},
     })
 
     // Should not throw when inner circle is missing
@@ -454,6 +478,7 @@ describe('createOnDragEndCallback', () => {
       getDraggingPointElement,
       setDraggingPointElement,
       findInnerCircle,
+      sketchExecuteMock: async () => {},
     })
 
     void callback({
