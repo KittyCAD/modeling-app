@@ -1002,19 +1002,7 @@ export class KclManager extends File {
 
   private writeToFileListener = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
-      update.docChanged &&
-      update.transactions.some((tr) => {
-        const ignoredEvents = [
-          tr.annotation(editorCodeUpdateEvent.type),
-          tr.annotation(copilotPluginEvent.type),
-          tr.annotation(updateOutsideEditorEvent.type),
-          tr.annotation(hotkeyRegisteredAnnotation),
-        ]
-
-        return !ignoredEvents.some((v) => Boolean(v))
-      })
-
+      this.engineCommandManager.started && update.docChanged
     const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestSkipWriteToFile) && e.value)
     )
