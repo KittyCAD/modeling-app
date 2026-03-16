@@ -437,20 +437,23 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
+    let mut face_id_map: HashMap<Uuid, Option<Uuid>> = Default::default();
+    let start_cap_id: Option<Uuid>;
+    let end_cap_id: Option<Uuid>;
+
+    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
     let any_edge_id = if let Some(edge_id) = sketch.mirror {
         edge_id
     } else if let Some(id) = edge_id {
         id
     } else {
-        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-        // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::new_type(KclErrorDetails::new(
+        // Use the first edge from the sketch
+        sketch.paths.first()
+            .map(|path| path.get_base().geo_meta.id)
+            .ok_or_else(|| KclError::new_type(KclErrorDetails::new(
                 "Expected a non-empty sketch".to_owned(),
                 vec![args.source_range],
-            )));
-        };
-        any_edge_id
+            )))?
     };
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
@@ -543,26 +546,6 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         vec![]
     };
-
-    // Only do this if we need the artifact graph.
-    #[cfg(feature = "artifact-graph")]
-    {
-        // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
-        // any of these call will not just fail.
-        if !sectional {
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args(exec_state, args),
-                    ModelingCmd::from(
-                        mcmd::Solid3dGetAdjacencyInfo::builder()
-                            .object_id(sketch.id)
-                            .edge_id(any_edge_id)
-                            .build(),
-                    ),
-                )
-                .await?;
-        }
-    }
 
     let Faces {
         sides: mut face_id_map,
