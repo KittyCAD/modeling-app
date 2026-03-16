@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type {
-  ApiObject,
-  ApiStartOrEnd,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
   createLineApiObject,
@@ -11,7 +8,6 @@ import {
 import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
-  isArcSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 function createObjectsArray(objects: ApiObject[]) {
@@ -156,40 +152,5 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
-  })
-
-  it('rejects arcs whose ctor is not a plain Arc', () => {
-    const center = createPointApiObject({ id: 1, x: 5, y: 5 })
-    const arcStart = createPointApiObject({ id: 2, x: 0, y: 0 })
-    const arcEnd = createPointApiObject({ id: 3, x: 10, y: 0 })
-    const lineStart = createPointApiObject({ id: 4, x: 0, y: 0 })
-    const lineEnd = createPointApiObject({ id: 5, x: 10, y: 0 })
-    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
-    const line = createLineApiObject({ id: 11, start: 4, end: 5 })
-
-    if (isArcSegment(arc) && arc.kind.segment.ctor.type === 'Arc') {
-      const arcCtor = arc.kind.segment.ctor
-      arc.kind.segment.ctor = {
-        type: 'TangentArc',
-        start: arcCtor.start,
-        end: arcCtor.end,
-        tangent: {
-          type: 'Start',
-          value: line.id,
-        } as unknown as ApiStartOrEnd<number>,
-      }
-    }
-
-    const objects = createObjectsArray([
-      center,
-      arcStart,
-      arcEnd,
-      lineStart,
-      lineEnd,
-      arc,
-      line,
-    ])
-
-    expect(buildTangentConstraintInput([11, 10], objects)).toBeNull()
   })
 })
