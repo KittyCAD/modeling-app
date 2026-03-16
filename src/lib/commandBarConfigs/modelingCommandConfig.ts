@@ -15,50 +15,50 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
-  KCL_DEFAULT_CONSTANT_PREFIXES,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_INSTANCES,
-  KCL_DEFAULT_LENGTH,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  KCL_DEFAULT_TRANSFORM,
-  KCL_DEFAULT_ORIGIN,
-  KCL_DEFAULT_ORIGIN_2D,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_FONT_POINT_SIZE,
+  KCL_DEFAULT_FONT_SCALE,
+  KCL_DEFAULT_INSTANCES,
+  KCL_DEFAULT_LEADER_SCALE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_ORIGIN,
+  KCL_DEFAULT_ORIGIN_2D,
+  KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
-  KCL_DEFAULT_TOLERANCE,
-  KCL_DEFAULT_PRECISION,
-  KCL_DEFAULT_FONT_POINT_SIZE,
-  KCL_DEFAULT_FONT_SCALE,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  KCL_DEFAULT_SCALE,
-  KCL_DEFAULT_LEADER_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { err } from '@src/lib/trap'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-  type SweepRelativeTo,
-} from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import {
+  addIntersect,
+  addSplit,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import {
   addDeleteFace,
   addHole,
@@ -66,12 +66,23 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
-  addIntersect,
-  addSplit,
-  addSubtract,
-  addUnion,
-} from '@src/lang/modifyAst/boolean'
+  addDatumGdt,
+  addFlatnessGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
+import {
+  type SweepRelativeTo,
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
+} from '@src/lang/modifyAst/sweeps'
 import {
   addAppearance,
   addClone,
@@ -79,19 +90,8 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import {
-  addFlatnessGdt,
-  addDatumGdt,
-  getNextAvailableDatumName,
-} from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1576,7 +1576,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -1627,7 +1632,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -2452,7 +2462,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       edges: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         description: 'Note: Only straight edges are supported now.',

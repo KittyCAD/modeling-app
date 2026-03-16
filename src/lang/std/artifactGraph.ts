@@ -277,11 +277,14 @@ export function getEdgeCutConsumedCodeRef(
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const seg = getArtifactOfTypes(
-    { key: edge.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    {
+      key: edge.consumedEdgeId,
+      types: ['segment', 'sweepEdge', 'primitiveEdge'],
+    },
     artifactGraph
   )
   if (err(seg)) return seg
-  if (seg.type === 'segment') return seg.codeRef
+  if (seg.type === 'segment' || seg.type === 'primitiveEdge') return seg.codeRef
   return getSweepEdgeCodeRef(seg, artifactGraph)
 }
 
@@ -392,8 +395,14 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'primitiveEdge') {
+    console.log({ selection, artifactGraph })
+    const path = getArtifactOfTypes(
+      { key: selection.artifact.solidId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
     const _artifact = getArtifactOfTypes(
-      { key: selection.artifact.solidId, types: ['sweep'] },
+      { key: path.sweepId!, types: ['sweep'] },
       artifactGraph
     )
     if (err(_artifact)) return _artifact
@@ -447,6 +456,8 @@ export function getCodeRefsByArtifactId(
     const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
+  } else if (artifact?.type === 'primitiveEdge') {
+    return [artifact.codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
   } else if (artifact?.type === 'edgeCut') {
