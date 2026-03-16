@@ -2199,14 +2199,19 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
-    // If the code hasn't changed, skip the update to preserve cursor position
-    // However, if clearHistory is true, we still need to clear the history
+    // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
+      // However, if clearHistory is true, we still need to clear the history
       if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
+      // And we still want to honor the caller's request to write to disk.
+      this.editorView.dispatch({
+        annotations: [Transaction.addToHistory.of(false)],
+        effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
+      })
       return
     }
 
