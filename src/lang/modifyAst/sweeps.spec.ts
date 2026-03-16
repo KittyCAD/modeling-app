@@ -565,6 +565,38 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with bodyType "surface" on a sketch solve segment', async () => {
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        triangleRegion,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = createSelectionFromArtifacts(
+        [artifactGraph.values().find((a) => a.type === 'segment')!],
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: segment,
+        length,
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${triangleRegion}
+extrude001 = extrude(s.line1, length = 1, bodyType = SURFACE)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an extrude call with bodyType "solid"', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
