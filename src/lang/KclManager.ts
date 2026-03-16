@@ -664,6 +664,7 @@ export class KclManager extends File {
     ) {
       return
     }
+    debugger
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     File.ioImplementations
