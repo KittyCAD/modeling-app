@@ -28,6 +28,7 @@ import {
   type RequestedKCLFile,
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -258,44 +259,24 @@ export function SystemIOMachineLogicListener() {
     billing.actor,
     token,
     kclManager.engineCommandManager,
-    (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
-      if (
-        toolOutput.type !== 'text_to_cad' &&
-        toolOutput.type !== 'edit_kcl_code'
-      ) {
-        return
-      }
-      const outputsRecord: Record<string, string> = {
-        ...(toolOutput.outputs ?? {}),
-      }
-      const requestedFiles: RequestedKCLFile[] = Object.entries(
-        outputsRecord
-      ).map(([relativePath, fileContents]) => {
-        return {
-          requestedCode: fileContents,
-          requestedFileName: relativePath,
-          requestedProjectName: projectNameCurrentlyOpened,
-        }
-      })
+    (props) => {
+      const payload = prepareMlEphantNewFileRequest(props)
 
-      const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
-        fileFocusedOnInEditor?.path || '',
-        projectNameCurrentlyOpened
-      )
-
-      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
-      systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
-        data: {
-          files: requestedFiles,
-          override: true,
-          // Gotcha: Both are called "project name" and "file name", but one of them
-          // has to include the project-relative file path between the two.
-          requestedProjectName: projectNameCurrentlyOpened,
-          requestedFileNameWithExtension:
-            targetFilePathRelativeToProjectDir ?? '',
-        },
-      })
+      if (payload) {
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: payload.files,
+            override: true,
+            // Gotcha: Both are called "project name" and "file name", but one of them
+            // has to include the project-relative file path between the two.
+            requestedProjectName: payload.requestedProjectName,
+            requestedFileNameWithExtension:
+              payload.requestedFileNameWithExtension ?? '',
+          },
+        })
+      }
     }
   )
 
