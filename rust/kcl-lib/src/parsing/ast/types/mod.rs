@@ -220,7 +220,9 @@ pub type NodeRefMut<'a, T> = &'a mut Node<T>;
 
 /// A way to abstract over blocks of code.
 pub trait CodeBlock {
-    fn body(&self) -> &[BodyItem];
+    fn body(&self) -> &Vec<BodyItem>;
+    fn body_mut(&mut self) -> &mut Vec<BodyItem>;
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta;
     fn to_source_range(&self) -> SourceRange;
 }
 
@@ -260,8 +262,16 @@ impl From<Node<Block>> for Node<Program> {
 }
 
 impl CodeBlock for Node<Program> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.body
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.body
+    }
+
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta {
+        &mut self.non_code_meta
     }
 
     fn to_source_range(&self) -> SourceRange {
@@ -1479,8 +1489,16 @@ impl From<Program> for Block {
 }
 
 impl CodeBlock for Node<Block> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.items
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.items
+    }
+
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta {
+        &mut self.non_code_meta
     }
 
     fn to_source_range(&self) -> SourceRange {
@@ -1823,6 +1841,45 @@ impl NonCodeMeta {
             }
         }
         true
+    }
+
+    /// Split non-code metadata at the given body index. Returns the
+    /// `NonCodeMeta` for `body[..split]` and mutates `self` in place to
+    /// become the metadata for `body[split..]`.
+    ///
+    /// The key convention is that `non_code_nodes[k]` holds comments
+    /// *after* `body[k]` (equivalently, *before* `body[k+1]`).
+    ///
+    /// Keys `0..split-1` go to the left side (they sit between/after
+    /// elements that were all drained). Keys `split..` stay on the
+    /// right side, re-keyed by subtracting `split`.
+    pub fn split_at(&mut self, split: usize) -> NonCodeMeta {
+        // Comments before body[0] belong to the left (extracted) side.
+        let left_start = std::mem::take(&mut self.start_nodes);
+
+        // Partition non_code_nodes by key.
+        let mut left_nodes = BTreeMap::new();
+        let mut right_nodes = BTreeMap::new();
+
+        for (k, v) in std::mem::take(&mut self.non_code_nodes) {
+            if k < split {
+                // After an element that moved to the left side.
+                left_nodes.insert(k, v);
+            } else {
+                // After an element that stays on the right side, re-keyed.
+                right_nodes.insert(k - split, v);
+            }
+        }
+
+        self.start_nodes = Default::default();
+        self.non_code_nodes = right_nodes;
+        self.digest = None;
+
+        NonCodeMeta {
+            non_code_nodes: left_nodes,
+            start_nodes: left_start,
+            digest: None,
+        }
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
@@ -4796,5 +4853,113 @@ yoyo = 8
 angle = atan(rise / yoyo)
 "#
         );
+    }
+
+    /// Helper to create a comment NonCodeNode for tests.
+    fn comment_node(text: &str) -> Node<NonCodeNode> {
+        Node::no_src(NonCodeNode {
+            value: NonCodeValue::InlineComment {
+                value: text.to_string(),
+                style: CommentStyle::Line,
+            },
+            digest: None,
+        })
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_empty() {
+        let mut meta = NonCodeMeta::default();
+        let left = meta.split_at(0);
+        assert!(left.is_empty());
+        assert!(meta.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_start_nodes_go_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("before first")],
+            non_code_nodes: BTreeMap::new(),
+            digest: None,
+        };
+        let left = meta.split_at(1);
+        // start_nodes should move to the left side.
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "before first");
+        // Right side should have no start_nodes.
+        assert!(meta.start_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_preserves_boundary_on_left() {
+        // Simulate a pipe with 4 body elements and comments between them.
+        // non_code_nodes: { 0: "after 0", 1: "after 1", 2: "after 2" }
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([
+                (0, vec![comment_node("after 0")]),
+                (1, vec![comment_node("after 1")]),
+                (2, vec![comment_node("after 2")]),
+            ]),
+            digest: None,
+        };
+
+        // Split at index 2: left gets body[0..2], right gets body[2..].
+        let left = meta.split_at(2);
+
+        // Left side:
+        // - start_nodes = original start_nodes
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        // - non_code_nodes: keys 0 and 1 (after body[0] and after body[1])
+        assert_eq!(left.non_code_nodes.len(), 2);
+        assert_eq!(left.non_code_nodes[&0][0].value(), "after 0");
+        assert_eq!(left.non_code_nodes[&1][0].value(), "after 1");
+
+        // Right side:
+        // - no start_nodes
+        assert!(meta.start_nodes.is_empty());
+        // - non_code_nodes: original key 2 re-keyed to 0
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "after 2");
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_all_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([(0, vec![comment_node("after 0")]), (1, vec![comment_node("after 1")])]),
+            digest: None,
+        };
+
+        // Split at 3 (all 3 body elements go left).
+        let left = meta.split_at(3);
+
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes.len(), 2);
+        assert!(meta.start_nodes.is_empty());
+        assert!(meta.non_code_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_one() {
+        // Split at 1: only the first body element goes left.
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([(0, vec![comment_node("after 0")]), (1, vec![comment_node("after 1")])]),
+            digest: None,
+        };
+
+        let left = meta.split_at(1);
+
+        // Left: start_nodes + key 0 (after the single left element).
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        assert_eq!(left.non_code_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes[&0][0].value(), "after 0");
+
+        // Right: no start_nodes, key 1 re-keyed to 0.
+        assert!(meta.start_nodes.is_empty());
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "after 1");
     }
 }

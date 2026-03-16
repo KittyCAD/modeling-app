@@ -16,7 +16,7 @@ blockEdgeLength = 0.5
 flip = 0
 
 fn gauge(cutoutAngle, N, startX, startY, deltaX, deltaY) {
-  gaugeSketch = startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> startProfile(at = [
          blockEdgeLength + startX + deltaX * N,
          startY + deltaY * N
@@ -29,7 +29,7 @@ fn gauge(cutoutAngle, N, startX, startY, deltaX, deltaY) {
     |> yLine(endAbsolute = totalWidth)
     |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
     |> close()
-    |> extrude(length = 0.05)
+  gaugeSketch = extrude(sketch001, length = 0.05)
   return gaugeSketch
 }
 

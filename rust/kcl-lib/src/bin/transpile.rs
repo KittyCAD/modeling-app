@@ -6,7 +6,7 @@ use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
 use kcl_lib::{
     ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
     exec::{RetryConfig, execute_with_retries},
-    transpile_all_old_sketches_to_new,
+    pre_execute_transpile, transpile_all_old_sketches_to_new,
 };
 
 #[tokio::main]
@@ -51,6 +51,7 @@ async fn main() -> Result<ExitCode, std::io::Error> {
     };
 
     let result = async {
+        pre_execute_transpile(&mut program)?;
         // Execute.
         let exec_outcome = execute_with_retries(&RetryConfig::default(), || execute(program.clone(), settings.clone()))
             .await

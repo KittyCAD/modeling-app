@@ -21,7 +21,7 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
             SourceDelta, SourceRef, Version,
         },
-        modify::{find_defined_names, next_free_name, next_free_name_using_padding},
+        modify::{find_defined_names, next_free_name, next_free_name_with_padding},
         sketch::{
             Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
             SegmentCtor, SketchApi, SketchCtor, Vertical,
@@ -229,7 +229,7 @@ impl SketchApi for FrontendState {
         // source-range mutation on a no-src node.
         let defined_names = find_defined_names(&new_ast);
         let sketch_name =
-            next_free_name_using_padding("sketch", &defined_names, 3).map_err(|err| Error { msg: err.to_string() })?;
+            next_free_name_with_padding("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
         let sketch_decl = ast::VariableDeclaration::new(
             ast::VariableDeclarator::new(
                 &sketch_name,

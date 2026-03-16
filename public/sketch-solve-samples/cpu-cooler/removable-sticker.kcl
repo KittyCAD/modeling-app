@@ -2,17 +2,19 @@
 // Protective sticker to be removed before adhering the heat sink to the CPU
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Create a simple body to represent the removable warning sticker. Brightly color the sticker so that the user will not forget to remove it before installing the device
-removableSticker = startSketchOn(-XY)
-  |> startProfile(at = [-12, -12])
-  |> angledLine(angle = 0, length = 24, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 24, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> extrude(length = .3)
+sketch001 = sketch(on = -XY) {
+  line1 = line(start = [var -12mm, var -12mm], end = [var 12mm, var -12mm])
+  line2 = line(start = [var 12mm, var -12mm], end = [var 12mm, var 12mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 12mm, var 12mm], end = [var -12mm, var 12mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -12mm, var 12mm], end = [var -12mm, var -12mm])
+  coincident([line3.end, line4.start])
+}
+removableSticker = extrude(sketch001, length = .3)
   |> appearance(color = "#021b55")
   |> chamfer(
        length = 3,

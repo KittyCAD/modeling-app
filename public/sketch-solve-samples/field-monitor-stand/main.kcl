@@ -3,7 +3,7 @@
 // Categories: Computer Hardware
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Define parameters
 plateLength = 121
