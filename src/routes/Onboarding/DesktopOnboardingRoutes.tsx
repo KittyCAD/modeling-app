@@ -178,7 +178,7 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          month. Upgrade to a paid plan for additional usage. Pro and Team plans
           come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
