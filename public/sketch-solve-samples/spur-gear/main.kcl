@@ -50,7 +50,9 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
          angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180deg / nTeeth),
          reverse = true,
        )
+    // Position the end line of the sketch at the start of the next tooth
     |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
          instances = nTeeth,
          center = [0, 0],
@@ -58,6 +60,7 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
          rotateDuplicates = true,
        )
     |> close()
+    // Subtract the keyway sketch from the gear sketch
     |> subtract2d(tool = holeWithKeyway)
 
   gearSketch = extrude(sketch001, length = gearHeight)

@@ -50,7 +50,11 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
          angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
          reverse = true,
        )
+
+    // Position the end line of the sketch at the start of the next tooth
     |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
+
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
          instances = nTeeth,
          center = [0, 0],
