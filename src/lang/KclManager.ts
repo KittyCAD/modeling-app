@@ -2254,7 +2254,7 @@ export class KclManager extends File {
           resolvedOptions.shouldResetCamera
         ),
       ],
-      effects: [requestWriteToFile.of(!resolvedOptions.shouldWriteToDisk)],
+      effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
