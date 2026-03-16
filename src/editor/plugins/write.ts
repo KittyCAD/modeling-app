@@ -1,7 +1,7 @@
 import { invertedEffects } from '@codemirror/commands'
 import { type Extension, StateEffect } from '@codemirror/state'
 
-export const requestSkipWriteToFile = StateEffect.define<boolean>()
+export const requestWriteToFile = StateEffect.define<boolean>()
 
 /**
  * And extension that allows write-related state effects to be included
@@ -12,8 +12,8 @@ export function writeEffectsExtension(): Extension {
   const undoableWrite = invertedEffects.of((tr) => {
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
-      if (e.is(requestSkipWriteToFile)) {
-        found.push(requestSkipWriteToFile.of(e.value))
+      if (e.is(requestWriteToFile)) {
+        found.push(requestWriteToFile.of(e.value))
       }
     }
     return found

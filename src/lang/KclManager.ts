@@ -134,7 +134,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
-import { requestSkipWriteToFile } from '@src/editor/plugins/write'
+import { requestWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1000,14 +1000,13 @@ export class KclManager extends File {
   )
 
   private writeToFileListener = EditorView.updateListener.of((update) => {
+    const hasWriteToFileEffect = update.transactions.some((tr) =>
+      tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
+    )
     const notIgnoredUpdate =
       this.engineCommandManager.started && update.docChanged
-    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.effects.some((e) => e.is(requestSkipWriteToFile) && e.value)
-    )
 
-    const shouldWriteToFile =
-      update.docChanged && notIgnoredUpdate && !hasSkipWriteToFileEffect
+    const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
 
     if (shouldWriteToFile) {
       // We don't want to block on writing to file
@@ -2244,7 +2243,7 @@ export class KclManager extends File {
           resolvedOptions.shouldResetCamera
         ),
       ],
-      effects: [requestSkipWriteToFile.of(!resolvedOptions.shouldWriteToDisk)],
+      effects: [requestWriteToFile.of(!resolvedOptions.shouldWriteToDisk)],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
