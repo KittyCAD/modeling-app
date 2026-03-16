@@ -1220,23 +1220,6 @@ fn artifacts_to_update(
                 code_ref,
             })]);
         }
-        ModelingCmd::ClosestEdge(kcmc::ClosestEdge { object_id, .. }) => {
-            let Some(OkModelingCmdResponse::ClosestEdge(closest_edge)) = response else {
-                return Ok(Vec::new());
-            };
-            let Some(edge_id) = closest_edge.edge_id else {
-                return Ok(Vec::new());
-            };
-            let Some(object_id) = object_id else {
-                return Ok(Vec::new());
-            };
-
-            return Ok(vec![Artifact::PrimitiveEdge(PrimitiveEdge {
-                id: edge_id.into(),
-                solid_id: object_id.into(),
-                code_ref,
-            })]);
-        }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
         })
