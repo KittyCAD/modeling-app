@@ -55,13 +55,16 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         };
 
         // Get side_faces array
-        let faces_value = edge_ref_obj.get("side_faces").or_else(|| edge_ref_obj.get("faces")).ok_or_else(|| {
-            KclError::new_type(KclErrorDetails {
-                message: "edgeRef must have 'side_faces' field".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            })
-        })?;
+        let faces_value = edge_ref_obj
+            .get("side_faces")
+            .or_else(|| edge_ref_obj.get("faces"))
+            .ok_or_else(|| {
+                KclError::new_type(KclErrorDetails {
+                    message: "edgeRef must have 'side_faces' field".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                })
+            })?;
 
         let faces_array = match faces_value {
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
