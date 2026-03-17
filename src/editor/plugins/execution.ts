@@ -2,6 +2,11 @@ import { invertedEffects } from '@codemirror/commands'
 import { type Extension, StateEffect } from '@codemirror/state'
 
 export const requestCameraReset = StateEffect.define<boolean>()
+/**
+ * This extension is opt-out because we want typing in the editor
+ * to execute by default. In future we will add a setting that allows users
+ * to make execution opt-in.
+ */
 export const requestSkipExecution = StateEffect.define<boolean>()
 
 /**
