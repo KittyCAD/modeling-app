@@ -44,6 +44,7 @@ import { localHistoryTarget } from '@src/editor/HistoryView'
 import { operationsExtension } from '@src/editor/plugins/operations'
 import { executionEffectsExtension } from '@src/editor/plugins/execution'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
+import { writeEffectsExtension } from '@src/editor/plugins/write'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -57,6 +58,7 @@ export function baseEditorExtensions() {
     executionEffectsExtension(),
     // Toggled on while in sketch mode
     sketchSceneGraphCompartment.of([]),
+    writeEffectsExtension(),
     // These two extensions are empty to begin with, then reconfigured when the LSP becomes available
     kclLspCompartment.of([]),
     kclAutocompleteCompartment.of([]),

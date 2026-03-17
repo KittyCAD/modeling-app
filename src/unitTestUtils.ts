@@ -21,6 +21,8 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { MachineManager } from '@src/lib/MachineManager'
 import { signal } from '@preact/signals-core'
+import { ConnectionManager } from '@src/network/connectionManager'
+import RustContext from '@src/lib/rustContext'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -74,10 +76,20 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
+  const engineCommandManager = new ConnectionManager({
+    settingsActor,
+  })
+  const rustContext = new RustContext(
+    instancePromise,
+    engineCommandManager,
+    settingsActor
+  )
   const kclManager = new KclManager('some-file', '', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
+    engineCommandManager,
+    rustContext,
     projectPath: signal('some-project'),
   })
 
@@ -159,10 +171,20 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
+  const engineCommandManager = new ConnectionManager({
+    settingsActor,
+  })
+  const rustContext = new RustContext(
+    instancePromise,
+    engineCommandManager,
+    settingsActor
+  )
   const kclManager = new KclManager('some-file', '', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
+    engineCommandManager,
+    rustContext,
     projectPath: signal('some-project'),
   })
 

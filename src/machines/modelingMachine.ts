@@ -181,7 +181,7 @@ import {
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
   isEnginePrimitiveSelection,
-  isRegionSelection,
+  isEngineRegionSelection,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -1626,10 +1626,10 @@ export const modelingMachine = setup({
           }
         }
 
-        if (setSelections.selectionType === 'regionSelection') {
+        if (setSelections.selectionType === 'engineRegionSelection') {
           const shouldDeselect = selectionRanges.otherSelections.some(
             (selection) =>
-              isRegionSelection(selection) &&
+              isEngineRegionSelection(selection) &&
               selection.id === setSelections.selection.id
           )
 
@@ -1638,7 +1638,7 @@ export const modelingMachine = setup({
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
                     !(
-                      isRegionSelection(selection) &&
+                      isEngineRegionSelection(selection) &&
                       selection.id === setSelections.selection.id
                     )
                 )

@@ -1,7 +1,7 @@
 import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -43,7 +43,7 @@ import {
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
   PlaneVisibilityMap,
@@ -137,6 +137,7 @@ import {
   requestCameraReset,
   requestSkipExecution,
 } from '@src/editor/plugins/execution'
+import { requestWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -161,6 +162,8 @@ interface SystemDeps {
   settings: SettingsActorType
   commandBar: CommandBarActorType
   projectPath: Signal<string>
+  engineCommandManager: ConnectionManager
+  rustContext: RustContext
 }
 
 export enum KclManagerEvents {
@@ -290,6 +293,8 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
+      engineCommandManager: this.app.engineCommandManager,
+      rustContext: this.app.rustContext,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -842,6 +847,9 @@ export class KclManager extends File {
 
   set executeIsStale(executeIsStale) {
     this._executeIsStale = executeIsStale
+    // Next execution will be flagged as stale or not depending on this value.
+    this.systemDeps.engineCommandManager.executionIsStale =
+      executeIsStale !== null
   }
 
   get wasmInitFailed() {
@@ -876,8 +884,6 @@ export class KclManager extends File {
     }
   )
 
-  static requestSkipWriteToFile = Annotation.define<boolean>()
-
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
@@ -899,20 +905,8 @@ export class KclManager extends File {
       tr.effects.some((e) => e.is(requestCameraReset) && e.value)
     )
 
-    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestSkipWriteToFile)
-    )
-    const shouldWriteToFile = notIgnoredUpdate && !hasSkipWriteToFileEffect
-
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
-
-      // We don't want to block on writing to file
-      if (shouldWriteToFile) {
-        // Need to close over `this._currentFilePath`'s value before deferrment,
-        // otherwise the deferred write could have a changed value after rapid navigation
-        void this.writeToFile(newCode)
-      }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
         tr.effects.some((e) => e.is(requestSkipExecution) && e.value)
@@ -985,6 +979,30 @@ export class KclManager extends File {
     1000
   )
 
+  private writeToFileListener = EditorView.updateListener.of((update) => {
+    const hasWriteToFileEffect = update.transactions.some((tr) =>
+      tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
+    )
+    const notIgnoredUpdate =
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
+
+    if (shouldWriteToFile) {
+      // We don't want to block on writing to file
+      void this.writeToFile(update.state.doc.toString())
+    }
+  })
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
@@ -993,6 +1011,7 @@ export class KclManager extends File {
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
+      this.writeToFileListener,
     ]
   }
   private createEditorView(initialCode = '') {
@@ -1050,15 +1069,8 @@ export class KclManager extends File {
     this.systemDeps = systemDeps
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
-    this.engineCommandManager = new ConnectionManager({
-      kclManager: this,
-      settingsActor: this.systemDeps.settings,
-    })
-    this.rustContext = new RustContext(
-      this.wasmInstancePromise,
-      this.engineCommandManager,
-      this.systemDeps.settings
-    )
+    this.engineCommandManager = this.systemDeps.engineCommandManager
+    this.rustContext = this.systemDeps.rustContext
     this.sceneInfra = new SceneInfra(
       this.engineCommandManager,
       systemDeps.wasmInstancePromise,
@@ -2156,14 +2168,19 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
-    // If the code hasn't changed, skip the update to preserve cursor position
-    // However, if clearHistory is true, we still need to clear the history
+    // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
+      // However, if clearHistory is true, we still need to clear the history
       if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
+      // And we still want to honor the caller's request to write to disk.
+      this.editorView.dispatch({
+        annotations: [Transaction.addToHistory.of(false)],
+        effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
+      })
       return
     }
 
@@ -2203,13 +2220,11 @@ export class KclManager extends File {
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
-        KclManager.requestSkipWriteToFile.of(
-          !resolvedOptions.shouldWriteToDisk
-        ),
       ],
       effects: [
         requestSkipExecution.of(!resolvedOptions.shouldExecute),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
+        requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
       ],
     })
   }

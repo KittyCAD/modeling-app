@@ -394,6 +394,7 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
         sourceDelta: context.pendingSketchOutcome.kclSource,
         sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
         debounceEditorUpdate: true,
+        writeToDisk: true,
       },
     }
     self._parent?.send(sendData)
