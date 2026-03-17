@@ -67,7 +67,11 @@ firstShelfProfile = sketch(on = XY) {
   horizontal(line2)
   vertical(line3)
 }
-firstShelf = extrude(firstShelfProfile, length = shelfThickness)
+region001 = region(segments = [
+  firstShelfProfile.line1,
+  firstShelfProfile.line2
+])
+firstShelf = extrude(region001, length = shelfThickness)
 
 // Stack two shelf boards inside the unit (bottom and top)
 shelves = patternLinear3d(

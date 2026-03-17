@@ -958,6 +958,10 @@ fn flatten_modeling_command_responses(
 }
 
 fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifact: Artifact) {
+    fn is_primitive_artifact(artifact: &Artifact) -> bool {
+        matches!(artifact, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
+    }
+
     let id = new_artifact.id();
     let new_is_primitive = new_artifact.is_primitive();
     let Some(old_artifact) = map.get_mut(&id) else {
@@ -966,11 +970,10 @@ fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifac
         return;
     };
 
-    // Primitive face/edge IDs can collide with existing topology artifacts
-    // (for example, Segment/Wall/Cap). When this happens, preserve the
-    // existing artifact and drop the primitive one so we don't clobber graph
-    // structure.
-    if new_is_primitive && !old_artifact.is_primitive() {
+    // Primitive lookups (faceId/edgeId) may resolve to an ID that already has
+    // a richer artifact (for example Segment/Cap/Wall). Keep the existing node
+    // to avoid erasing structural graph links.
+    if is_primitive_artifact(&new_artifact) && !is_primitive_artifact(old_artifact) {
         return;
     }
 

@@ -14,7 +14,8 @@ sketch001 = sketch(on = -XY) {
   line4 = line(start = [var -12mm, var 12mm], end = [var -12mm, var -12mm])
   coincident([line3.end, line4.start])
 }
-removableSticker = extrude(sketch001, length = .3)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+removableSticker = extrude(region001, length = .3)
   |> appearance(color = "#021b55")
   |> chamfer(
        length = 3,

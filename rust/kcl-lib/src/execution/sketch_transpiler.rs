@@ -20,6 +20,7 @@ use crate::{
 };
 
 mod intermediate_var;
+mod region;
 
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
@@ -29,19 +30,37 @@ enum SegmentConstraint {
     EqualLength { other_segment_index: usize },
 }
 
+// Internal data structs for transpiler.
+// Extract information for segments relevant to transpile.
+#[derive(Debug, Clone)]
+enum TranspilerSegment {
+    Line(TranspilerLineSegment),
+}
+
+#[derive(Debug, Clone)]
+struct TranspilerLineSegment {
+    name: String,
+    start: [f64; 2],
+    end: [f64; 2],
+}
+
 pub fn pre_execute_transpile(program: &mut Program) -> Result<(), KclError> {
     // First, extract pipelines before extrudes into their own variable. This
     // must happen before executing so that execution can see the new variables.
     intermediate_var::transpile(&mut program.ast)
 }
 
-pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &mut Program) -> Result<(), KclError> {
+pub fn transpile_all_old_sketches_to_new(
+    exec_outcome: &ExecOutcome,
+    program: &mut Program,
+    fail_fast: bool,
+) -> Result<(), KclError> {
     // Convert sketches in variables.
     let mut sketch_blocks = HashMap::with_capacity(exec_outcome.variables.len());
     for variable in &exec_outcome.variables {
         if let KclValue::Sketch { .. } = &variable.1 {
             // This variable contains a sketch that needs to be transpiled
-            let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0)?;
+            let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0, fail_fast)?;
             sketch_blocks.insert(variable.0.clone(), sketch_block);
         }
     }
@@ -58,6 +77,8 @@ pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &m
         program
             .ast
             .set_experimental_features(Some(crate::exec::WarningLevel::Allow));
+        // Create regions before extruding.
+        region::insert(&mut program.ast)?;
     }
     Ok(())
 }
@@ -81,7 +102,7 @@ pub fn transpile_old_sketch_to_new(
     variable_name: &str,
 ) -> Result<String, KclError> {
     // Build the sketch block AST
-    let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable_name)?;
+    let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable_name, true)?;
 
     // Create a program with just the sketch block
     let program = ast::Program {
@@ -107,15 +128,25 @@ pub fn transpile_old_sketch_to_new_ast(
     exec_outcome: &ExecOutcome,
     program: &Program,
     variable_name: &str,
+    fail_fast: bool,
 ) -> Result<ast::SketchBlock, KclError> {
     // Get the sketch from execution outcome
     let sketch = get_sketch_from_exec_outcome(exec_outcome, variable_name)?;
 
     // Get the plane name
-    let plane_name = get_plane_name(&sketch)?;
+    let plane_name = match get_plane_name(&sketch) {
+        Ok(p) => p,
+        Err(err) => {
+            if fail_fast {
+                return Err(err);
+            } else {
+                "XY".to_owned()
+            }
+        }
+    };
 
     // Build the sketch block AST
-    build_sketch_block_ast(&sketch, &plane_name, program, variable_name)
+    build_sketch_block_ast(&sketch, &plane_name, program, variable_name, fail_fast)
 }
 
 /// Transpile an old-style sketch to new sketch block syntax by re-executing the program.
@@ -168,20 +199,8 @@ fn build_sketch_block_ast(
     plane_name: &str,
     program: &Program,
     variable_name: &str,
+    fail_fast: bool,
 ) -> Result<ast::SketchBlock, KclError> {
-    // Check that all segments are supported types (currently only ToPoint is supported)
-    for (i, path_segment) in sketch.paths.iter().enumerate() {
-        if !matches!(path_segment, Path::ToPoint { .. }) {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                format!(
-                    "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
-                    i + 1
-                ),
-                vec![],
-            )));
-        }
-    }
-
     // Find the pipe expression with startProfile
     let pipe_expr = find_start_profile_pipe(program, variable_name)?;
 
@@ -204,66 +223,42 @@ fn build_sketch_block_ast(
 
     // Build sketch block body items
     let mut body_items = Vec::new();
-    let mut line_names = Vec::new();
-
-    // Start from the start point
-    let mut current_x = sketch.start.from[0];
-    let mut current_y = sketch.start.from[1];
+    let mut transpiler_segment_names: Vec<Option<String>> = vec![None; sketch.paths.len()];
+    let mut previous_transpiler_segment_name: Option<String> = None;
 
     // Process each path segment
     for (i, path_segment) in sketch.paths.iter().enumerate() {
-        let line_num = i + 1;
-        let line_name = format!("line{}", line_num);
-        line_names.push(line_name.clone());
+        let transpiler_segment = match transpiler_build_segment(path_segment, i, fail_fast)? {
+            Some(segment) => segment,
+            None => {
+                previous_transpiler_segment_name = None;
+                continue;
+            }
+        };
+        let transpiler_segment_name = transpiler_segment_name(&transpiler_segment).to_owned();
 
-        // Get the base path
-        let base = path_segment.get_base();
-
-        // Get start and end coordinates
-        let start_x = current_x;
-        let start_y = current_y;
-        let end_x = base.to[0];
-        let end_y = base.to[1];
-
-        // Update current position for next segment
-        current_x = end_x;
-        current_y = end_y;
-
-        // Create the line AST node using the same pattern as frontend::add_line
-        let line_ast = create_line_ast_from_coords(start_x, start_y, end_x, end_y, sketch.units)?;
-
-        // Create variable declaration for the line
-        let line_var_decl = ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration {
-            kind: ast::VariableKind::Const,
-            declaration: ast::Node::no_src(ast::VariableDeclarator {
-                id: ast::Node::no_src(ast::Identifier {
-                    name: line_name.clone(),
-                    digest: None,
-                }),
-                init: line_ast,
-                digest: None,
-            }),
-            visibility: ast::ItemVisibility::Default,
-            digest: None,
-        })));
-
-        body_items.push(line_var_decl);
+        body_items.push(transpiler_create_segment_declaration(
+            &transpiler_segment,
+            sketch.units,
+        )?);
 
         // Add coincident constraint between this line and the previous one
-        if line_num > 1 {
-            let prev_line_name = &line_names[line_num - 2];
-            let coincident_ast = create_coincident_ast_from_names(prev_line_name, &line_name);
-            body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
-                ast::ExpressionStatement {
-                    expression: coincident_ast,
-                    digest: None,
-                },
-            )));
+        if let Some(prev_line_name) = previous_transpiler_segment_name.as_deref() {
+            body_items.push(transpiler_create_segment_coincident_constraint(
+                prev_line_name,
+                &transpiler_segment,
+            ));
         }
+
+        previous_transpiler_segment_name = Some(transpiler_segment_name.clone());
+        transpiler_segment_names[i] = Some(transpiler_segment_name);
     }
 
     // Add constraints from AST detection
-    for (i, line_name) in line_names.iter().enumerate() {
+    for (i, line_name) in transpiler_segment_names.iter().enumerate() {
+        let Some(line_name) = line_name.as_deref() else {
+            continue;
+        };
         if let Some(segment_constraints) = constraints.get(i) {
             for constraint in segment_constraints {
                 match constraint {
@@ -286,7 +281,12 @@ fn build_sketch_block_ast(
                         )));
                     }
                     SegmentConstraint::EqualLength { other_segment_index } => {
-                        let other_line_name = &line_names[*other_segment_index];
+                        let Some(other_line_name) = transpiler_segment_names
+                            .get(*other_segment_index)
+                            .and_then(|name| name.as_deref())
+                        else {
+                            continue;
+                        };
                         let equal_length_ast = create_equal_length_ast_from_names(line_name, other_line_name);
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
@@ -326,6 +326,106 @@ fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -
     // Round to 2 decimal places, then convert using From trait
     let rounded = (value * 100.0).round() / 100.0;
     (rounded, units).into()
+}
+
+fn transpiler_build_segment(
+    path_segment: &Path,
+    segment_index: usize,
+    fail_fast: bool,
+) -> Result<Option<TranspilerSegment>, KclError> {
+    let base = path_segment.get_base();
+    let segment_name = format!("line{}", segment_index + 1);
+
+    match path_segment {
+        Path::ToPoint { .. } => Ok(Some(TranspilerSegment::Line(TranspilerLineSegment {
+            name: segment_name,
+            start: base.from,
+            end: base.to,
+        }))),
+        Path::TangentialArcTo { .. }
+        | Path::TangentialArc { .. }
+        | Path::Circle { .. }
+        | Path::CircleThreePoint { .. }
+        | Path::ArcThreePoint { .. }
+        | Path::Horizontal { .. }
+        | Path::AngledLineTo { .. }
+        | Path::Base { .. }
+        | Path::Arc { .. }
+        | Path::Ellipse { .. }
+        | Path::Conic { .. }
+        | Path::Bezier { .. } => {
+            if fail_fast {
+                Err(transpiler_create_unsupported_segment_error(segment_index, path_segment))
+            } else {
+                std::eprintln!(
+                    "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported. path_segment={path_segment:?}",
+                    segment_index + 1
+                );
+                Ok(None)
+            }
+        }
+    }
+}
+
+fn transpiler_segment_name(segment: &TranspilerSegment) -> &str {
+    match segment {
+        TranspilerSegment::Line(segment) => &segment.name,
+    }
+}
+
+fn transpiler_create_segment_declaration(
+    segment: &TranspilerSegment,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::BodyItem, KclError> {
+    let (segment_name, segment_ast) = match segment {
+        TranspilerSegment::Line(segment) => (
+            segment.name.as_str(),
+            create_line_ast_from_coords(
+                segment.start[0],
+                segment.start[1],
+                segment.end[0],
+                segment.end[1],
+                units,
+            )?,
+        ),
+    };
+
+    Ok(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+        ast::VariableDeclaration {
+            kind: ast::VariableKind::Const,
+            declaration: ast::Node::no_src(ast::VariableDeclarator {
+                id: ast::Node::no_src(ast::Identifier {
+                    name: segment_name.to_string(),
+                    digest: None,
+                }),
+                init: segment_ast,
+                digest: None,
+            }),
+            visibility: ast::ItemVisibility::Default,
+            digest: None,
+        },
+    ))))
+}
+
+fn transpiler_create_segment_coincident_constraint(
+    previous_segment_name: &str,
+    segment: &TranspilerSegment,
+) -> ast::BodyItem {
+    let coincident_ast = create_coincident_ast_from_names(previous_segment_name, transpiler_segment_name(segment));
+    ast::BodyItem::ExpressionStatement(ast::Node::no_src(ast::ExpressionStatement {
+        expression: coincident_ast,
+        digest: None,
+    }))
+}
+
+fn transpiler_create_unsupported_segment_error(segment_index: usize, _path_segment: &Path) -> KclError {
+    KclError::new_internal(KclErrorDetails::new(
+        format!(
+            "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
+            segment_index + 1
+        ),
+        vec![],
+    ))
 }
 
 /// Create an AST node for a line call

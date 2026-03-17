@@ -18,11 +18,14 @@ import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
+import type {
+  UserResponse,
+  MlCopilotServerMessage,
+  MlCopilotMode,
+} from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
-import { getUserBlockedReason } from '@src/components/layout/areas/mlEphantBlockedReason'
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -34,7 +37,7 @@ export const MlEphantConversationPane = (props: {
   sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
-  user?: User
+  user?: UserResponse
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -267,7 +270,7 @@ export const MlEphantConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPaymentReason = getUserBlockedReason(props.user)
+  const userBlockedOnPaymentReason = props.user?.block_message
 
   return (
     <MlEphantConversation

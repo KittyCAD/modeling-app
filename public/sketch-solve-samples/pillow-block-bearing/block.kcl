@@ -21,7 +21,8 @@ plateSketch = sketch(on = XY) {
   line4 = line(start = [var -3.06in, var 2.06in], end = [var -3.06in, var -2.06in])
   coincident([line3.end, line4.start])
 }
-plateBody = extrude(plateSketch, length = stockThickness)
+region001 = region(segments = [plateSketch.line1, plateSketch.line2])
+plateBody = extrude(region001, length = stockThickness)
   |> appearance(color = "#1e62eb")
   |> fillet(
        radius = boltDiameter * 1 / 3,
