@@ -172,28 +172,30 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  const environment =
-    (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
-  updateEnvironment(environment)
+  if (window.electron) {
+    const environment =
+      (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
+    updateEnvironment(environment)
 
-  // Update the Engine WebSocket URL override
-  const cachedKittycadWebSocketUrl =
-    await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
-  if (cachedKittycadWebSocketUrl) {
-    updateEnvironmentKittycadWebSocketUrl(
-      environment,
-      cachedKittycadWebSocketUrl
-    )
-  }
+    // Update the Engine WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
 
-  // Update the Zookeeper WebSocket URL override
-  const cachedMlephantWebSocketUrl =
-    await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
-  if (cachedMlephantWebSocketUrl) {
-    updateEnvironmentMlephantWebSocketUrl(
-      environment,
-      cachedMlephantWebSocketUrl
-    )
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
+      )
+    }
   }
 
   let token = ''
@@ -299,9 +301,10 @@ async function getAndSyncStoredToken(input: {
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie()
-  const fileToken = environmentName
-    ? await readEnvironmentConfigurationToken(environmentName)
-    : ''
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
   const token = inputToken || cookieToken || fileToken
 
   // Log what tokens we found
@@ -316,9 +319,11 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    // has just logged in, update storage
-    if (environmentName)
-      await writeEnvironmentConfigurationToken(environmentName, token)
+    if (window.electron) {
+      // has just logged in, update storage
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
+    }
     return token
   }
 
@@ -343,49 +348,51 @@ async function logout() {
 async function logoutEnvironment(requestedDomain?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  try {
-    const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
-    let token = ''
-    if (domain) {
-      token = await readEnvironmentConfigurationToken(domain)
-    } else {
-      return new Error('Unable to logout, cannot find domain')
-    }
-
-    if (token) {
-      try {
-        const apiUrlBase = (() => {
-          try {
-            const u = new URL(domain)
-            return u.origin
-          } catch {
-            const d = generateDomainsFromBaseDomain(domain)
-            return d.API_URL
-          }
-        })()
-
-        const client = createKCClient(token, apiUrlBase)
-        await kcCall(() =>
-          oauth2.oauth2_token_revoke({
-            client,
-            body: {
-              token,
-              client_id: OAUTH2_DEVICE_CLIENT_ID,
-            },
-          })
-        )
-      } catch (e) {
-        console.error('Error revoking token:', e)
-      }
-
+  if (window.electron) {
+    try {
+      const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
+      let token = ''
       if (domain) {
-        await writeEnvironmentConfigurationToken(domain, '')
+        token = await readEnvironmentConfigurationToken(domain)
+      } else {
+        return new Error('Unable to logout, cannot find domain')
       }
-      await writeEnvironmentFile('')
-      return Promise.resolve(null)
+
+      if (token) {
+        try {
+          const apiUrlBase = (() => {
+            try {
+              const u = new URL(domain)
+              return u.origin
+            } catch {
+              const d = generateDomainsFromBaseDomain(domain)
+              return d.API_URL
+            }
+          })()
+
+          const client = createKCClient(token, apiUrlBase)
+          await kcCall(() =>
+            oauth2.oauth2_token_revoke({
+              client,
+              body: {
+                token,
+                client_id: OAUTH2_DEVICE_CLIENT_ID,
+              },
+            })
+          )
+        } catch (e) {
+          console.error('Error revoking token:', e)
+        }
+
+        if (domain) {
+          await writeEnvironmentConfigurationToken(domain, '')
+        }
+        await writeEnvironmentFile('')
+        return Promise.resolve(null)
+      }
+    } catch (e) {
+      console.error('Error reading token during logout (ignoring):', e)
     }
-  } catch (e) {
-    console.error('Error reading token during logout (ignoring):', e)
   }
 
   return fetch(withAPIBaseURL('/logout'), {
@@ -399,6 +406,9 @@ async function logoutEnvironment(requestedDomain?: string) {
  * will not be sufficient.
  */
 async function logoutAllEnvironments() {
+  if (!window.electron) {
+    return new Error('unimplemented for web')
+  }
   const environments = await listAllEnvironments()
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
