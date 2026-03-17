@@ -500,7 +500,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const buffer = await page.screenshot({
         fullPage: true,
       })
-      const screenshot = await PNG.sync.read(buffer)
+      const screenshot = PNG.sync.read(buffer)
       const pixMultiplier: number = await page.evaluate(
         'window.devicePixelRatio'
       )
@@ -1146,7 +1146,7 @@ export function getPixelRGBs(page: Page) {
     const buffer = await page.screenshot({
       fullPage: true,
     })
-    const screenshot = await PNG.sync.read(buffer)
+    const screenshot = PNG.sync.read(buffer)
     const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
     const allCords: [number, number][] = [[coords.x, coords.y]]
     for (let i = 1; i < radius; i++) {

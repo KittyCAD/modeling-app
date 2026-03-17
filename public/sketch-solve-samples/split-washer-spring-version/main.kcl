@@ -86,5 +86,9 @@ washerSectionProfile = sketch(on = XZ) {
 // The result is a true spring lock washer in 3D.
 
 
-splitWasherBody = sweep(washerSectionProfile, path = helixGuide)
+region001 = region(segments = [
+  washerSectionProfile.line1,
+  washerSectionProfile.line2
+])
+splitWasherBody = sweep(region001, path = helixGuide)
 

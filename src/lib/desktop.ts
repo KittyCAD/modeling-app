@@ -160,6 +160,11 @@ export async function createNewProjectDirectory(
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
   const projectFile = fsZds.join(projectDir, kclFileName)
+  // Ensure parent directories exist for nested paths like "nested/main.kcl"
+  const projectFileDir = fsZds.dirname(projectFile)
+  if (projectFileDir !== projectDir) {
+    await fsZds.mkdir(projectFileDir, { recursive: true })
+  }
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.

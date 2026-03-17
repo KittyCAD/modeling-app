@@ -50,16 +50,21 @@ gussetProfile = sketch(on = YZ) {
   horizontal(line1)
 }
 
+region001 = region(segments = [bodyProfile.line1, bodyProfile.line2])
 // Extrude the body of the mount to desired width
 body = extrude(
-  bodyProfile,
+  region001,
   length = plateWidth,
   tagStart = $capStart001,
   tagEnd = $capEnd001,
 )
 
+region002 = region(segments = [
+  gussetProfile.line1,
+  gussetProfile.line2
+])
 // Extrude the gusset to desired thickness
-gusset = extrude(gussetProfile, length = 2)
+gusset = extrude(region002, length = 2)
 
 // Model the mounting holes
 sketch003 = startSketchOn(body, face = seg01)

@@ -141,7 +141,8 @@ sketch001 = sketch(on = YZ) {
   horizontal(line3)
   vertical(line4)
 }
-ridgeBoardSlots = extrude(sketch001, length = 5, symmetric = true)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+ridgeBoardSlots = extrude(region001, length = 5, symmetric = true)
   |> patternLinear3d(instances = rafterCount, distance = rafterSpacing, axis = [0, 1, 0])
 
 ridgeBoard = twoByFourYRotated(
