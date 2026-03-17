@@ -578,7 +578,7 @@ fn create_vertical_ast_from_name(line_name: &str) -> ast::Expr {
 fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
-    create_equal_length_ast(line1_expr, line2_expr)
+    create_equal_length_ast(vec![line1_expr, line2_expr])
 }
 
 /// Get the plane name from a sketch
