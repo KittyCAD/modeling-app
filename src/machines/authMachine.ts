@@ -299,9 +299,10 @@ async function getAndSyncStoredToken(input: {
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie()
-  const fileToken = environmentName
-    ? await readEnvironmentConfigurationToken(environmentName)
-    : ''
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
   const token = inputToken || cookieToken || fileToken
 
   // Log what tokens we found
@@ -316,9 +317,11 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    // has just logged in, update storage
-    if (environmentName)
-      await writeEnvironmentConfigurationToken(environmentName, token)
+    if (window.electron) {
+      // has just logged in, update storage
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
+    }
     return token
   }
 
