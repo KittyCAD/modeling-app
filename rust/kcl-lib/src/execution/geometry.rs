@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     f64::consts::TAU,
     ops::{Add, AddAssign, Mul, Sub, SubAssign},
 };
@@ -778,6 +779,10 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
+    /// If the sketch was created from a region, the mapping from region segment
+    /// IDs to original path segment IDs.
+    #[serde(skip)]
+    pub region_mapping: HashMap<Uuid, Uuid>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,

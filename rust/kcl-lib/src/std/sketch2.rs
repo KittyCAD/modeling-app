@@ -1,6 +1,9 @@
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
+use kittycad_modeling_cmds::{
+    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse,
+    shared::Point2d as KPoint2d, websocket::OkWebSocketResponseData,
+};
 use uuid::Uuid;
 
 use crate::{
@@ -254,13 +257,13 @@ async fn inner_region(
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
 
-    let sketch_or_segment = match (point, segments) {
+    let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegionFromQueryPoint::builder()
@@ -271,7 +274,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            sketch
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (sketch, region_mapping)
         }
         (None, Some(segments)) => {
             if sketch.is_some() {
@@ -315,8 +327,8 @@ async fn inner_region(
             };
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegion::builder()
@@ -330,7 +342,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            SketchOrSegment::Segment(seg0)
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegion(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (SketchOrSegment::Segment(seg0), region_mapping)
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -390,6 +411,7 @@ async fn inner_region(
                     paths: vec![first_path],
                     inner_paths: vec![],
                     units,
+                    region_mapping: Default::default(),
                     mirror: Default::default(),
                     clone: Default::default(),
                     meta: vec![args.source_range.into()],
@@ -403,6 +425,7 @@ async fn inner_region(
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
+    sketch.region_mapping = region_mapping;
     sketch.meta.push(args.source_range.into());
     // The engine always returns a closed Solid2d for a region.
     sketch.is_closed = ProfileClosed::Explicitly;
