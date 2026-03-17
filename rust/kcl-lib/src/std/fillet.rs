@@ -457,10 +457,7 @@ pub(super) async fn parse_edge_refs_to_references(
         }
 
         let mut end_face_uuids = Vec::new();
-        if let Some(end_faces_value) = edge_ref_obj
-            .get("endFaces")
-            .or_else(|| edge_ref_obj.get("end_faces"))
-        {
+        if let Some(end_faces_value) = edge_ref_obj.get("endFaces").or_else(|| edge_ref_obj.get("end_faces")) {
             let end_faces_array = match end_faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
