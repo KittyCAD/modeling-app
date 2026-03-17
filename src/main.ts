@@ -10,6 +10,7 @@ import {
   BrowserWindow,
   Menu,
   app,
+  autoUpdater as nativeAutoUpdater,
   desktopCapturer,
   dialog,
   ipcMain,
@@ -62,6 +63,7 @@ if (
 configureWindowsSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
+let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 
@@ -324,6 +326,10 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
+  if (isInstallingUpdate) {
+    return
+  }
+
   app.quit()
 })
 
@@ -624,8 +630,62 @@ app.on('ready', () => {
     })
   })
 
+  const prepareMacUpdateInstall = () => {
+    if (process.platform !== 'darwin') {
+      return
+    }
+
+    type BeforeQuitListener = (
+      this: Electron.App,
+      event: Electron.Event
+    ) => void
+
+    const beforeQuitListeners = app.listeners(
+      'before-quit'
+    ) as BeforeQuitListener[]
+
+    app.removeAllListeners('before-quit')
+
+    for (const browserWindow of BrowserWindow.getAllWindows()) {
+      browserWindow.removeAllListeners('close')
+    }
+
+    nativeAutoUpdater.once('before-quit-for-update', () => {
+      const beforeQuitEvent = {
+        preventDefault: () => {
+          // `preventDefault` during update install causes quit+install to hang.
+        },
+      } as Electron.Event
+
+      for (const listener of beforeQuitListeners) {
+        try {
+          listener.call(app, beforeQuitEvent)
+        } catch (error) {
+          console.error(
+            'Failed to run before-quit listener during update install',
+            error
+          )
+        }
+      }
+
+      app.exit(0)
+    })
+  }
+
   ipcMain.handle('app.restart', () => {
-    autoUpdater.quitAndInstall()
+    if (isInstallingUpdate) {
+      return
+    }
+
+    isInstallingUpdate = true
+    prepareMacUpdateInstall()
+
+    try {
+      autoUpdater.quitAndInstall()
+    } catch (error) {
+      isInstallingUpdate = false
+      return Promise.reject(error)
+    }
   })
   ipcMain.handle('app.checkForUpdates', () => {
     return autoUpdater.checkForUpdates()
