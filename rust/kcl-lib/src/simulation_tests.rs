@@ -2603,6 +2603,28 @@ mod helix_simple {
     }
 }
 
+mod helix_axis_edge_ref {
+    const TEST_NAME: &str = "helix_axis_edge_ref";
+
+    /// Test parsing KCL that uses axis = { sideFaces = [...] } (edge reference object).
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that helix with axis as edge reference object executes correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
 mod import_file_not_exist_error {
     const TEST_NAME: &str = "import_file_not_exist_error";
 

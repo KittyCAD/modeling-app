@@ -640,15 +640,14 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     }
   }
 
-  // Try edgeRefs first (new API)
-  if (operation.labeledArgs?.edgeRefs) {
+  // Try edges first (new API), then edgeRefs (backward compat)
+  const edgesArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  if (edgesArg) {
     const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
       '@src/lang/modifyAst/edges'
     )
-    selection = retrieveEdgeSelectionsFromEdgeRefs(
-      operation.labeledArgs.edgeRefs,
-      artifactGraph
-    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
   } else if (operation.labeledArgs?.tags) {
     // Fall back to tags (legacy API)
     selection = retrieveEdgeSelectionsFromOpArgs(
@@ -662,7 +661,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     if (fromArtifact) selection = fromArtifact
     else {
       return {
-        reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+        reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
       }
     }
   }
@@ -671,11 +670,11 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: selection.message }
   }
 
-  // Fallback: when op has edgeRefs but tag names didn't resolve (no artifact_id), build edge
-  // selection from edgeCut so addFillet keeps edgeRefs and correct faces (e.g. seg01, capStart001)
+  // Fallback: when op has edges/edgeRefs but tag names didn't resolve (no artifact_id), build edge
+  // selection from edgeCut so addFillet keeps edges and correct faces (e.g. seg01, capStart001)
   if (
     selection.graphSelectionsV2.length === 0 &&
-    operation.labeledArgs?.edgeRefs &&
+    (operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs) &&
     artifact?.type === 'edgeCut'
   ) {
     const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
@@ -707,7 +706,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
             selection = {
               graphSelectionsV2: [
                 {
-                  entityRef: { type: 'edge', faces: faceIds },
+                  entityRef: { type: 'edge', side_faces: faceIds },
                   codeRef: codeRefResult,
                 },
               ],
@@ -719,8 +718,8 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     }
   }
 
-  // Fallback: if tags/edgeRefs gave no selection but we have the fillet's edge artifact, use it
-  if (selection.graphSelectionsV2.length === 0) {
+  // Fallback: if tags/edges gave no selection but we have the fillet's edge artifact, use it
+  if (!err(selection) && selection.graphSelectionsV2.length === 0) {
     const fromArtifact = buildSelectionFromArtifact()
     if (fromArtifact) selection = fromArtifact
   }
@@ -741,6 +740,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
+  if (err(selection)) return { reason: selection.message }
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
     selection,
     radius,
@@ -777,14 +777,13 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   }
 
   let selection: Selections | Error
-  if (operation.labeledArgs?.edgeRefs) {
+  const edgesArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  if (edgesArg) {
     const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
       '@src/lang/modifyAst/edges'
     )
-    selection = retrieveEdgeSelectionsFromEdgeRefs(
-      operation.labeledArgs.edgeRefs,
-      artifactGraph
-    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
   } else if (operation.labeledArgs?.tags) {
     selection = retrieveEdgeSelectionsFromOpArgs(
       operation.unlabeledArg,
@@ -794,7 +793,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     )
   } else {
     return {
-      reason: `Couldn't retrieve operation arguments (missing tags or edgeRefs)`,
+      reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
     }
   }
   if (err(selection)) return { reason: selection.message }
@@ -1300,24 +1299,33 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   let axis: string | undefined
   let edge: Selections | undefined
   let cylinder: Selections | undefined
-  if ('edgeRef' in operation.labeledArgs && operation.labeledArgs.edgeRef) {
+  // axis can be legacy (tag/axis) or an edge reference payload (object with sideFaces); edgeRef is legacy refactor name
+  const axisArg = operation.labeledArgs?.axis
+  const edgeRefArg =
+    'edgeRef' in operation.labeledArgs
+      ? operation.labeledArgs.edgeRef
+      : undefined
+  const axisIsEdgeRefPayload =
+    axisArg?.value?.type === 'Object' &&
+    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+  const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
+  if (edgeRefPayload) {
     const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
       '@src/lang/modifyAst/edges'
     )
     const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
-      operation.labeledArgs.edgeRef,
+      edgeRefPayload,
       artifactGraph
     )
     if (err(edgeSelections)) {
-      const reason = `Couldn't retrieve edge from edgeRef: ${edgeSelections.message}`
+      const reason = `Couldn't retrieve edge from axis/edgeRef: ${edgeSelections.message}`
       return { reason }
     }
     mode = 'Edge'
     edge = edgeSelections
-  } else if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
-    // axis options string or selection arg
+  } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-      operation.labeledArgs.axis,
+      axisArg,
       artifactGraph
     )
     if (err(axisEdgeSelection)) {
@@ -1345,7 +1353,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     cylinder = result
   } else {
     const reason =
-      "The axis, edgeRef, or cylinder arguments couldn't be retrieved (helix may need Z0006 refactor first)."
+      "The axis or cylinder arguments couldn't be retrieved (helix may need Z0006 refactor first)."
     return { reason }
   }
 
@@ -1471,28 +1479,37 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason }
   }
 
-  // 2. Prepare labeled arguments: axis (legacy) or edgeRef (after Z0006 refactor)
+  // 2. Prepare labeled arguments: axis (legacy or edge reference payload after Z0006 refactor)
   let axisOrEdge: 'Axis' | 'Edge'
   let axis: string | undefined
   let edge: Selections | undefined
 
-  if ('edgeRef' in operation.labeledArgs && operation.labeledArgs.edgeRef) {
+  const axisArg = operation.labeledArgs?.axis
+  const edgeRefArg =
+    'edgeRef' in operation.labeledArgs
+      ? operation.labeledArgs.edgeRef
+      : undefined
+  const axisIsEdgeRefPayload =
+    axisArg?.value?.type === 'Object' &&
+    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+  const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
+  if (edgeRefPayload) {
     const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
       '@src/lang/modifyAst/edges'
     )
     const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
-      operation.labeledArgs.edgeRef,
+      edgeRefPayload,
       artifactGraph
     )
     if (err(edgeSelections)) {
-      const reason = `Couldn't retrieve edge from edgeRef: ${edgeSelections.message}`
+      const reason = `Couldn't retrieve edge from axis/edgeRef: ${edgeSelections.message}`
       return { reason }
     }
     axisOrEdge = 'Edge'
     edge = edgeSelections
-  } else if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
+  } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-      operation.labeledArgs.axis,
+      axisArg,
       artifactGraph
     )
     if (err(axisEdgeSelection)) {
@@ -1504,7 +1521,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     edge = axisEdgeSelection.edge
   } else {
     const reason =
-      "Couldn't find axis or edgeRef argument (revolve may need Z0006 refactor first)"
+      "Couldn't find axis argument (revolve may need Z0006 refactor first)"
     return { reason }
   }
 

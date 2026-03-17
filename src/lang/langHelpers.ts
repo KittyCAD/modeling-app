@@ -327,7 +327,7 @@ export async function lintAst({
         if (newSource && codeActuallyChanged) {
           actions = [
             {
-              name: 'Convert to edgeRefs/edgeRef',
+              name: 'Convert to edges/axis',
               apply: (view: EditorView, _from: number, _to: number) => {
                 try {
                   view.dispatch({

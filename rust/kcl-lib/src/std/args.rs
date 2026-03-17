@@ -271,9 +271,9 @@ impl Args {
         }
         Err(KclError::new_semantic(KclErrorDetails::new(
             if let Some(ref fname) = self.fn_name {
-                format!("The `{fname}` function requires a keyword argument 'tags' or 'edgeRefs'")
+                format!("The `{fname}` function requires a keyword argument 'tags' or 'edges'")
             } else {
-                "This function requires a keyword argument 'tags' or 'edgeRefs'".to_string()
+                "This function requires a keyword argument 'tags' or 'edges'".to_string()
             },
             vec![self.source_range],
         )))
@@ -295,9 +295,9 @@ impl Args {
         }
         Err(KclError::new_semantic(KclErrorDetails::new(
             if let Some(ref fname) = self.fn_name {
-                format!("The `{fname}` function requires a keyword argument 'tags' or 'edgeRefs'")
+                format!("The `{fname}` function requires a keyword argument 'tags' or 'edges'")
             } else {
-                "This function requires a keyword argument 'tags' or 'edgeRefs'".to_string()
+                "This function requires a keyword argument 'tags' or 'edges'".to_string()
             },
             vec![self.source_range],
         )))

@@ -11,12 +11,12 @@ use kittycad_modeling_cmds::{
     shared::{BodyType, Point3d},
 };
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
+use super::{DEFAULT_TOLERANCE_MM, args::{FromKclValue, TyF64}};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{PrimitiveType, RuntimeType},
+        types::RuntimeType,
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
@@ -24,128 +24,123 @@ use crate::{
 
 extern crate nalgebra_glm as glm;
 
+/// True if the value is an object with a `sideFaces` (or `side_faces`) key, i.e. an edge reference payload.
+fn is_edge_ref_object(v: &KclValue) -> bool {
+    match v {
+        KclValue::Object { value, .. } => value
+            .get("sideFaces")
+            .or_else(|| value.get("side_faces"))
+            .is_some(),
+        _ => false,
+    }
+}
+
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
 
-    // Check if edgeRef is provided (new API)
-    let edge_ref: Option<KclValue> = args.get_kw_arg_opt("edgeRef", &RuntimeType::any(), exec_state)?;
+    // axis accepts: (1) Edge or Axis2d (legacy), or (2) an object with sideFaces (edge reference payload)
+    let axis_value: Option<KclValue> = args.get_kw_arg_opt("axis", &RuntimeType::any(), exec_state)?;
+    let axis_opt: Option<Axis2dOrEdgeReference> = axis_value
+        .as_ref()
+        .and_then(|v| if !is_edge_ref_object(v) { Axis2dOrEdgeReference::from_kcl_val(v) } else { None });
 
-    // Check if axis is provided (old API)
-    let axis_opt: Option<Axis2dOrEdgeReference> = args.get_kw_arg_opt(
-        "axis",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis2d),
-        ]),
-        exec_state,
-    )?;
-
-    let axis: Axis2dOrEdgeReference = if let Some(edge_ref_value) = edge_ref {
-        // New API: parse edgeRef and convert to EdgeReference
-        let edge_ref_obj = match edge_ref_value {
-            KclValue::Object { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must be an object with 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        // Get sideFaces array (KCL uses camelCase; accept side_faces for backward compat)
-        let faces_value = edge_ref_obj
-            .get("sideFaces")
-            .or_else(|| edge_ref_obj.get("side_faces"))
-            .ok_or_else(|| {
-                KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must have 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                })
-            })?;
-
-        let faces_array = match faces_value {
-            KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'sideFaces' must be an array".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        if faces_array.is_empty() {
-            return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'sideFaces' must have at least one face".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            }));
-        }
-
-        // Resolve faces to UUIDs - for revolve, we try to resolve tags to face IDs
-        // Similar to fillet, but we don't have a solid context
-        let mut face_uuids = Vec::new();
-        for face_value in faces_array {
-            let face_uuid = match face_value {
-                KclValue::Uuid { value, .. } => *value,
-                KclValue::TagIdentifier(tag) => {
-                    // Try to get face ID using get_adjacent_face_to_tag (for face tags)
-                    match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                        Ok(face_id) => face_id,
-                        Err(_) => {
-                            // The tag doesn't refer to a face. It might refer to an edge.
-                            // Try to get the engine info as a fallback
-                            args.get_tag_engine_info(exec_state, tag)?.id
-                        }
-                    }
-                }
+    let axis: Axis2dOrEdgeReference = if let Some(axis_val) = axis_value {
+        if is_edge_ref_object(&axis_val) {
+            // axis is an edge reference payload (object with sideFaces)
+            let edge_ref_obj = match axis_val {
+                KclValue::Object { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef faces must be UUIDs or tags".to_string(),
+                        message: "axis (edge reference) must be an object with 'sideFaces' field".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));
                 }
             };
-            face_uuids.push(face_uuid);
-        }
 
-        // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
-        let mut disambiguator_uuids = Vec::new();
-        if let Some(disambiguators_value) = edge_ref_obj
-            .get("endFaces")
-            .or_else(|| edge_ref_obj.get("end_faces"))
-            .or_else(|| edge_ref_obj.get("disambiguators"))
-        {
-            let disambiguators_array = match disambiguators_value {
+            // Get sideFaces array (KCL uses camelCase; accept side_faces for backward compat)
+            let faces_value = edge_ref_obj
+                .get("sideFaces")
+                .or_else(|| edge_ref_obj.get("side_faces"))
+                .ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) must have 'sideFaces' field".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    })
+                })?;
+
+            let faces_array = match faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef 'endFaces' must be an array".to_string(),
+                        message: "axis (edge reference) 'sideFaces' must be an array".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));
                 }
             };
-            for disambiguator_value in disambiguators_array {
-                let disamb_uuid = match disambiguator_value {
+
+            if faces_array.is_empty() {
+                return Err(KclError::new_type(KclErrorDetails {
+                    message: "axis (edge reference) 'sideFaces' must have at least one face".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                }));
+            }
+
+            // Resolve faces to UUIDs - for revolve, we try to resolve tags to face IDs
+            let mut face_uuids = Vec::new();
+            for face_value in faces_array {
+                let face_uuid = match face_value {
                     KclValue::Uuid { value, .. } => *value,
                     KclValue::TagIdentifier(tag) => {
-                        // Try to get face ID using get_adjacent_face_to_tag (for face tags)
                         match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
                             Ok(face_id) => face_id,
-                            Err(_) => {
-                                // The tag doesn't refer to a face. Try to get the engine info as a fallback
-                                args.get_tag_engine_info(exec_state, tag)?.id
-                            }
+                            Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
                         }
                     }
                     _ => {
                         return Err(KclError::new_type(KclErrorDetails {
-                            message: "edgeRef disambiguators must be UUIDs or tags".to_string(),
+                            message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                    }
+                };
+                face_uuids.push(face_uuid);
+            }
+
+            // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
+            let mut disambiguator_uuids = Vec::new();
+            if let Some(disambiguators_value) = edge_ref_obj
+                .get("endFaces")
+                .or_else(|| edge_ref_obj.get("end_faces"))
+                .or_else(|| edge_ref_obj.get("disambiguators"))
+            {
+                let disambiguators_array = match disambiguators_value {
+                    KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+                    _ => {
+                        return Err(KclError::new_type(KclErrorDetails {
+                            message: "axis (edge reference) 'endFaces' must be an array".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                    }
+                };
+                for disambiguator_value in disambiguators_array {
+                    let disamb_uuid = match disambiguator_value {
+                        KclValue::Uuid { value, .. } => *value,
+                        KclValue::TagIdentifier(tag) => {
+                            match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+                                Ok(face_id) => face_id,
+                                Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
+                            }
+                        }
+                        _ => {
+                            return Err(KclError::new_type(KclErrorDetails {
+                                message: "axis (edge reference) disambiguators must be UUIDs or tags".to_string(),
                             source_ranges: vec![args.source_range],
                             backtrace: Default::default(),
                         }));
@@ -155,39 +150,44 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
         }
 
-        // Get index (optional)
-        let index = match edge_ref_obj.get("index") {
-            Some(KclValue::Number { value, .. }) => Some(*value as u32),
-            Some(_) => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'index' must be a number".to_string(),
+            // Get index (optional)
+            let index = match edge_ref_obj.get("index") {
+                Some(KclValue::Number { value, .. }) => Some(*value as u32),
+                Some(_) => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) 'index' must be a number".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
-            }
-            None => None,
-        };
+                }
+                None => None,
+            };
 
-        // Build EdgeReference from shared module
-        use kcmc::shared::EdgeReference as ModelingEdgeReference;
-        let builder = ModelingEdgeReference::builder()
-            .side_faces(face_uuids)
-            .end_faces(disambiguator_uuids);
+            // Build EdgeReference from shared module
+            use kcmc::shared::EdgeReference as ModelingEdgeReference;
+            let builder = ModelingEdgeReference::builder()
+                .side_faces(face_uuids)
+                .end_faces(disambiguator_uuids);
 
-        let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
-            builder.index(index_val).build()
+            let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
+                builder.index(index_val).build()
+            } else {
+                builder.build()
+            };
+
+            Axis2dOrEdgeReference::EdgeReference(edge_reference)
+        } else if let Some(axis_val) = axis_opt {
+            axis_val
         } else {
-            builder.build()
-        };
-
-        Axis2dOrEdgeReference::EdgeReference(edge_reference)
-    } else if let Some(axis_val) = axis_opt {
-        // Old API: use axis (tag or axis)
-        axis_val
+            return Err(KclError::new_type(KclErrorDetails {
+                message: "axis must be an Edge, Axis2d, or an object with 'sideFaces' (edge reference)".to_string(),
+                source_ranges: vec![args.source_range],
+                backtrace: Default::default(),
+            }));
+        }
     } else {
-        // Neither edgeRef nor axis provided - error
         return Err(KclError::new_semantic(KclErrorDetails {
-            message: "The `revolve` function requires either a keyword argument `axis` or `edgeRef`".to_string(),
+            message: "The `revolve` function requires a keyword argument `axis`".to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));

@@ -344,7 +344,9 @@ function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
 
 function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
   const edgeRefsArg = call.arguments?.find(
-    (a) => (a.label as { name?: string })?.name === 'edgeRefs'
+    (a) =>
+      (a.label as { name?: string })?.name === 'edges' ||
+      (a.label as { name?: string })?.name === 'edgeRefs'
   )
   if (!edgeRefsArg?.arg || edgeRefsArg.arg.type !== 'ArrayExpression') return []
   return edgeRefsArg.arg.elements ?? []
@@ -718,7 +720,7 @@ export function refactorFilletChamferTagsToEdgeRefs(
     )
     if (tagsIdx === undefined || tagsIdx < 0) continue
     callNode.arguments[tagsIdx] = createLabeledArg(
-      'edgeRefs',
+      'edges',
       createArrayExpression(edgeRefExprs)
     )
   }
@@ -773,11 +775,10 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
     const newArgs = args.filter(
       (a) =>
         (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edges' &&
         (a.label as { name?: string })?.name !== 'edgeRefs'
     )
-    newArgs.push(
-      createLabeledArg('edgeRefs', createArrayExpression(edgeRefExprs))
-    )
+    newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
     callNode.arguments = newArgs
   }
   const out = recast(modifiedAst, wasmInstance)
@@ -1072,9 +1073,9 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     const newArgs = args.filter(
       (a) =>
         (a.label as { name?: string })?.name !== 'axis' &&
-        (a.label as { name?: string })?.name !== 'edgeRef'
+        (a.label as { name?: string })?.name !== 'axis'
     )
-    newArgs.push(createLabeledArg('edgeRef', result.expr))
+    newArgs.push(createLabeledArg('axis', result.expr))
     callNode.arguments = newArgs
   }
   return modifiedAst
@@ -1138,11 +1139,10 @@ export function refactorZ0006Unified(
     const newArgs = args.filter(
       (a) =>
         (a.label as { name?: string })?.name !== 'tags' &&
+        (a.label as { name?: string })?.name !== 'edges' &&
         (a.label as { name?: string })?.name !== 'edgeRefs'
     )
-    newArgs.push(
-      createLabeledArg('edgeRefs', createArrayExpression(edgeRefExprs))
-    )
+    newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
     callNode.arguments = newArgs
   }
 
@@ -1222,7 +1222,7 @@ export function refactorDirectTagFilletToEdgeRefs(
     )
     if (tagsIdx === undefined || tagsIdx < 0) continue
     callNode.arguments[tagsIdx] = createLabeledArg(
-      'edgeRefs',
+      'edges',
       createArrayExpression(edgeRefExprs)
     )
   }
@@ -1537,7 +1537,9 @@ export function addFillet({
     )
     if (!err(existingResult)) {
       const existingCall = existingResult.node as Node<CallExpressionKw>
-      const hasEdgeRefs = findKwArg('edgeRefs', existingCall) !== undefined
+      const hasEdgeRefs =
+        findKwArg('edges', existingCall) !== undefined ||
+        findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
         const newArgs = (existingCall.arguments ?? []).map((a) => {
           const name = (a.label as { name?: string })?.name
@@ -1604,7 +1606,7 @@ export function addFillet({
         ? [createLabeledArg('tag', createTagDeclarator(tag))]
         : []
       const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-        createLabeledArg('edgeRefs', data.edgeRefsExpr),
+        createLabeledArg('edges', data.edgeRefsExpr),
         createLabeledArg('radius', valueOrVariable(radius)),
         ...tagArgs,
       ])
@@ -1686,7 +1688,9 @@ export function addChamfer({
     )
     if (!err(existingResult)) {
       const existingCall = existingResult.node as Node<CallExpressionKw>
-      const hasEdgeRefs = findKwArg('edgeRefs', existingCall) !== undefined
+      const hasEdgeRefs =
+        findKwArg('edges', existingCall) !== undefined ||
+        findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
         const newArgs = (existingCall.arguments ?? []).map((a) => {
           const name = (a.label as { name?: string })?.name
@@ -1775,7 +1779,7 @@ export function addChamfer({
   if (useEdgeRefs && !err(edgeRefsBodyData)) {
     for (const data of edgeRefsBodyData.bodies.values()) {
       const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-        createLabeledArg('edgeRefs', data.edgeRefsExpr),
+        createLabeledArg('edges', data.edgeRefsExpr),
         createLabeledArg('length', valueOrVariable(length)),
         ...secondLengthArgs,
         ...angleArgs,

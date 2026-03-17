@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing helix_axis_edge_ref.kcl
+---
+KCL Engine error
+
+  × engine: Please send `{ headers: { Authorization: "Bearer <token>" } }`
+  │ over this websocket.
+   ╭─[1:1]
+ 1 │ // Helix with axis as edge reference object (sideFaces) instead of Axis3d or Edge.
+   · ▲
+   · ╰── main
+ 2 │ sketch001 = startSketchOn(XY)
+   ╰────

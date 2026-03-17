@@ -66,7 +66,7 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 // EdgeRef is parsed directly from KclValue, no need for a separate struct
 
 /// Convert tags (edge tag refs) to engine EdgeReference list by resolving each to edge ID then face IDs.
-/// Used when both `tags` and `edgeRefs` are provided to fillet/chamfer.
+/// Used when both `tags` and `edges` are provided to fillet/chamfer.
 pub(super) async fn tags_to_engine_edge_references(
     solid_id: uuid::Uuid,
     tags: Vec<EdgeReference>,
@@ -92,13 +92,15 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edgeRefs", &RuntimeType::any_array(), exec_state)?;
+    // Primary kwarg is "edges"; accept "edgeRefs" for backward compatibility.
+    let edge_refs: Option<Vec<KclValue>> = args
+        .get_kw_arg_opt_any_key(&["edges", "edgeRefs"], &RuntimeType::any_array(), exec_state)?;
     let tags_result = args.kw_arg_edge_array_and_source("tags");
 
     let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());
 
     if has_edge_refs && has_tags {
-        // Both provided: merge tags and edgeRefs into one list and use the edgeRefs engine path.
+        // Both provided: merge tags and edges into one list and use the edges engine path.
         let edge_refs = edge_refs.unwrap();
         let tags_with_source = tags_result.unwrap();
         validate_unique(&tags_with_source)?;
@@ -137,7 +139,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         let value = inner_fillet_with_engine_refs(solid, radius, all_refs, tolerance, tag, exec_state, args).await?;
         Ok(KclValue::Solid { value })
     } else if let Some(edge_refs) = edge_refs {
-        // Only edgeRefs
+        // Only edges
         let value = inner_fillet_with_edge_refs(solid, radius, edge_refs, tolerance, tag, exec_state, args).await?;
         Ok(KclValue::Solid { value })
     } else if let Ok(tags_with_source) = tags_result {
@@ -149,7 +151,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     } else {
         Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
-            message: "You must provide either 'tags' or 'edgeRefs' to fillet edges".to_owned(),
+            message: "You must provide either 'tags' or 'edges' to fillet edges".to_owned(),
             backtrace: Default::default(),
         }))
     }
@@ -278,7 +280,7 @@ pub(super) async fn resolve_face_id(
                     let _engine_info = args.get_tag_engine_info(exec_state, tag)?;
                     Err(KclError::new_type(KclErrorDetails {
                         message: format!(
-                            "Tag `{}` does not refer to a face. For edgeRefs, the 'faces' array must contain tags that refer to faces, not edges. \
+                            "Tag `{}` does not refer to a face. For edges, the 'sideFaces' array must contain tags that refer to faces, not edges. \
                             If you tagged a sketch segment (line/arc), that tag refers to an edge after extrusion. \
                             You need to use face tags instead. Consider using the 'start' or 'end' face, or tag a face directly.",
                             tag.value
@@ -392,7 +394,7 @@ async fn inner_fillet_with_engine_refs(
     Ok(solid)
 }
 
-/// Parse edgeRefs (array of KclValue objects with faces, optional end_faces/index)
+/// Parse edges (array of KclValue objects with sideFaces, optional endFaces/index)
 /// into engine EdgeReference structs. Shared by fillet and chamfer.
 pub(super) async fn parse_edge_refs_to_references(
     edge_refs: Vec<KclValue>,
@@ -414,7 +416,7 @@ pub(super) async fn parse_edge_refs_to_references(
             KclValue::Object { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRefs must be an array of objects with 'sideFaces' field".to_string(),
+                    message: "edges must be an array of objects with 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));

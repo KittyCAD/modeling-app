@@ -31,13 +31,18 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    let edge_refs = args.get_kw_arg_opt_any_key(&["edgeRefs", "edge_refs"], &RuntimeType::any_array(), exec_state)?;
+    // Primary kwarg is "edges"; accept "edgeRefs" and "edge_refs" for backward compatibility.
+    let edge_refs = args.get_kw_arg_opt_any_key(
+        &["edges", "edgeRefs", "edge_refs"],
+        &RuntimeType::any_array(),
+        exec_state,
+    )?;
     let tags_result = args.kw_arg_edge_array_and_source_any_key(&["tags", "Tags"]);
 
     let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());
 
     if has_edge_refs && has_tags {
-        // Both provided: merge tags and edgeRefs into one list and use the edgeRefs engine path.
+        // Both provided: merge tags and edges into one list and use the edges engine path.
         let edge_refs = edge_refs.unwrap();
         let tags_with_source = tags_result.unwrap();
         super::fillet::validate_unique(&tags_with_source)?;
@@ -108,7 +113,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 Ok(KclValue::Solid { value })
             }
             Err(_) => Err(KclError::new_semantic(KclErrorDetails::new(
-                "You must provide either 'tags' or 'edgeRefs' to chamfer edges".to_string(),
+                "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
                 vec![args.source_range],
             ))),
         }
