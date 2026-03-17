@@ -19,6 +19,9 @@ use crate::{
     parsing::ast::types as ast,
 };
 
+mod intermediate_var;
+mod region;
+
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
 enum SegmentConstraint {
@@ -27,21 +30,41 @@ enum SegmentConstraint {
     EqualLength { other_segment_index: usize },
 }
 
-pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &mut Program) -> Result<(), KclError> {
+pub fn pre_execute_transpile(program: &mut Program) -> Result<(), KclError> {
+    // First, extract pipelines before extrudes into their own variable. This
+    // must happen before executing so that execution can see the new variables.
+    intermediate_var::transpile(&mut program.ast)
+}
+
+pub fn transpile_all_old_sketches_to_new(
+    exec_outcome: &ExecOutcome,
+    program: &mut Program,
+    fail_fast: bool,
+) -> Result<(), KclError> {
+    // Convert sketches in variables.
     let mut sketch_blocks = HashMap::with_capacity(exec_outcome.variables.len());
     for variable in &exec_outcome.variables {
         if let KclValue::Sketch { .. } = &variable.1 {
             // This variable contains a sketch that needs to be transpiled
-            let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0)?;
+            let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0, fail_fast)?;
             sketch_blocks.insert(variable.0.clone(), sketch_block);
         }
     }
+    // Substitute back into program.
     for item in &mut program.ast.body {
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && let Some(sketch_block) = sketch_blocks.get(&var_decl.declaration.id.name)
         {
             var_decl.declaration.init = ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block.clone())));
         }
+    }
+    if !sketch_blocks.is_empty() {
+        // If we have any sketch blocks, allow experimental features.
+        program
+            .ast
+            .set_experimental_features(Some(crate::exec::WarningLevel::Allow));
+        // Create regions before extruding.
+        region::insert(&mut program.ast)?;
     }
     Ok(())
 }
@@ -65,7 +88,7 @@ pub fn transpile_old_sketch_to_new(
     variable_name: &str,
 ) -> Result<String, KclError> {
     // Build the sketch block AST
-    let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable_name)?;
+    let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable_name, true)?;
 
     // Create a program with just the sketch block
     let program = ast::Program {
@@ -91,15 +114,25 @@ pub fn transpile_old_sketch_to_new_ast(
     exec_outcome: &ExecOutcome,
     program: &Program,
     variable_name: &str,
+    fail_fast: bool,
 ) -> Result<ast::SketchBlock, KclError> {
     // Get the sketch from execution outcome
     let sketch = get_sketch_from_exec_outcome(exec_outcome, variable_name)?;
 
     // Get the plane name
-    let plane_name = get_plane_name(&sketch)?;
+    let plane_name = match get_plane_name(&sketch) {
+        Ok(p) => p,
+        Err(err) => {
+            if fail_fast {
+                return Err(err);
+            } else {
+                "XY".to_owned()
+            }
+        }
+    };
 
     // Build the sketch block AST
-    build_sketch_block_ast(&sketch, &plane_name, program, variable_name)
+    build_sketch_block_ast(&sketch, &plane_name, program, variable_name, fail_fast)
 }
 
 /// Transpile an old-style sketch to new sketch block syntax by re-executing the program.
@@ -152,17 +185,25 @@ fn build_sketch_block_ast(
     plane_name: &str,
     program: &Program,
     variable_name: &str,
+    fail_fast: bool,
 ) -> Result<ast::SketchBlock, KclError> {
     // Check that all segments are supported types (currently only ToPoint is supported)
     for (i, path_segment) in sketch.paths.iter().enumerate() {
         if !matches!(path_segment, Path::ToPoint { .. }) {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                format!(
-                    "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
+            if fail_fast {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    format!(
+                        "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
+                        i + 1
+                    ),
+                    vec![],
+                )));
+            } else {
+                std::eprintln!(
+                    "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported. path_segment={path_segment:?}",
                     i + 1
-                ),
-                vec![],
-            )));
+                );
+            }
         }
     }
 

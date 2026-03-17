@@ -258,6 +258,21 @@ export const machine = setup({
         onMove: () => {},
       })
     },
+    'persist current sketch outcome': ({ self }) => {
+      const sketchExecOutcome =
+        self._parent?.getSnapshot()?.context?.sketchExecOutcome
+      if (!sketchExecOutcome) {
+        return
+      }
+
+      self._parent?.send({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: sketchExecOutcome.sourceDelta,
+          sceneGraphDelta: sketchExecOutcome.sceneGraphDelta,
+        },
+      })
+    },
   },
   actors: {
     modAndSolveFirstClick: fromPromise(
@@ -362,6 +377,7 @@ export const machine = setup({
         // },
         finalize: {
           actions: [
+            'persist current sketch outcome',
             ({ self }) => {
               const sendData: SketchSolveMachineEvent = {
                 type: 'clear draft entities',
@@ -401,6 +417,7 @@ export const machine = setup({
       on: {
         finalize: {
           actions: [
+            'persist current sketch outcome',
             ({ self }) => {
               const sendData: SketchSolveMachineEvent = {
                 type: 'clear draft entities',
