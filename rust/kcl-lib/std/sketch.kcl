@@ -1361,6 +1361,8 @@ export fn sweep(
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
+  /// What version of the sweeping algorithm to use (use zero for latest/default)
+  version?: number(Count),
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
