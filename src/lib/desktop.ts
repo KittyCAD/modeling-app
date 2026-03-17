@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
@@ -160,6 +160,11 @@ export async function createNewProjectDirectory(
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
   const projectFile = fsZds.join(projectDir, kclFileName)
+  // Ensure parent directories exist for nested paths like "nested/main.kcl"
+  const projectFileDir = fsZds.dirname(projectFile)
+  if (projectFileDir !== projectDir) {
+    await fsZds.mkdir(projectFileDir, { recursive: true })
+  }
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
@@ -983,7 +988,7 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (token: string): Promise<User> => {
+export const getUser = async (token: string): Promise<UserResponse> => {
   const client = createKCClient(token)
   const res = await kcCall(() => users.get_user_self({ client }))
   if (res instanceof Error) return Promise.reject(res)

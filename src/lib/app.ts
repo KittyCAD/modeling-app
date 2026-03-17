@@ -51,7 +51,7 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import type { User } from '@kittycad/lib/dist/types/src'
+import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
@@ -71,7 +71,7 @@ export type AppAuthSystem = {
   send: ActorRefFrom<typeof authMachine>['send']
   useAuthState: () => SnapshotFrom<typeof authMachine>
   useToken: () => string
-  useUser: () => User | undefined
+  useUser: () => UserResponse | undefined
 }
 
 export type AppCommandSystem = {
