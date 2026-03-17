@@ -5,7 +5,6 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
-  getFilePathRelativeToProject,
   getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
@@ -25,7 +24,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
-  type RequestedKCLFile,
   SystemIOMachineEvents,
   SystemIOMachineStates,
   prepareMlEphantNewFileRequest,

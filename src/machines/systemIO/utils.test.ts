@@ -1,6 +1,5 @@
-import { sortCommands } from '@src/lib/commandUtils'
 import { expect, describe, it } from 'vitest'
-import { prepareMlEphantNewFileRequest } from './utils'
+import { prepareMlEphantNewFileRequest } from '@src/machines/systemIO/utils'
 
 describe('System IO Utils', () => {
   it(`Properly reconstructs paths from Zookeeper new file requests`, () => {
