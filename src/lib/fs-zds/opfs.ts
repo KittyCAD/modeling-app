@@ -376,6 +376,7 @@ const cp = async (
 
   if (handleSource instanceof FileSystemFileHandle) {
     const data = await readFile(sourcePath)
+
     if (typeof data === 'string') {
       await writeFile(targetPath, new TextEncoder().encode(data))
     } else {

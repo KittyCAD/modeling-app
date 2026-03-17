@@ -1,0 +1,123 @@
+// USB-C Connector Assembly
+// Parametric model of a USB-C style connector shell, rear housing, and swept cable.
+// Categories: Electronics, Connector, Consumer Hardware
+
+@settings(defaultLengthUnit = mm)
+
+// Outer shell dimensions and wall settings
+shellLength = 6.8
+shellWidth = 8.4
+shellHeight = 2.6
+shellCornerRadius = 1.1
+shellWall = 0.3
+rearWall = 0.9
+frontCutOvertravel = 0.2
+
+// Inner cavity dimensions derived from shell parameters
+innerWidth = shellWidth - (shellWall * 2)
+innerHeight = shellHeight - (shellWall * 2)
+innerCornerRadius = 0.55
+cavityLength = shellLength - rearWall + frontCutOvertravel
+
+// Contact tongue dimensions and front offset
+tongueLength = 5.4
+tongueWidth = 6.6
+tongueHeight = 0.8
+tongueInsetFromFront = 0.35
+tongueStartX = shellLength - tongueLength - tongueInsetFromFront
+
+// Rear housing dimensions
+housingLength = 14
+housingWidth = 12
+housingHeight = 4.6
+housingCornerRadius = 1.6
+
+// Cable geometry parameters (radius and path)
+cableRadius = 1.9
+cableLeadLength = 12
+cableBendRadius = 22
+cableTailLength = 52
+
+// Sketch the outer shell cross-section on YZ
+shellProfile = startSketchOn(YZ)
+  |> startProfile(at = [-shellWidth / 2, -shellHeight / 2])
+  |> xLine(length = shellWidth, tag = $shellEdge01)
+  |> yLine(length = shellHeight, tag = $shellEdge02)
+  |> xLine(length = -shellWidth, tag = $shellEdge03)
+  |> close(tag = $shellEdge04)
+
+// Extrude and fillet the shell body
+shellBody = extrude(shellProfile, length = shellLength)
+  |> fillet(
+       radius = shellCornerRadius,
+       tags = [
+         getNextAdjacentEdge(shellEdge01),
+         getNextAdjacentEdge(shellEdge02),
+         getNextAdjacentEdge(shellEdge03),
+         getNextAdjacentEdge(shellEdge04)
+       ],
+     )
+
+// Sketch the inner cavity profile on an offset plane
+cavityProfile = startSketchOn(offsetPlane(YZ, offset = rearWall))
+  |> startProfile(at = [-innerWidth / 2, -innerHeight / 2])
+  |> xLine(length = innerWidth, tag = $cavityEdge01)
+  |> yLine(length = innerHeight, tag = $cavityEdge02)
+  |> xLine(length = -innerWidth, tag = $cavityEdge03)
+  |> close(tag = $cavityEdge04)
+
+// Extrude and fillet the cavity cutter
+cavityBody = extrude(cavityProfile, length = cavityLength)
+  |> fillet(
+       radius = innerCornerRadius,
+       tags = [
+         getNextAdjacentEdge(cavityEdge01),
+         getNextAdjacentEdge(cavityEdge02),
+         getNextAdjacentEdge(cavityEdge03),
+         getNextAdjacentEdge(cavityEdge04)
+       ],
+     )
+
+// Subtract cavity from shell and set shell appearance
+shell = subtract(shellBody, tools = cavityBody)
+  |> appearance(color = "#d0d5de", metalness = 88, roughness = 20)
+
+// Create the internal tongue block
+tongue = startSketchOn(offsetPlane(YZ, offset = tongueStartX))
+  |> rectangle(center = [0, 0], width = tongueWidth, height = tongueHeight)
+  |> extrude(length = tongueLength)
+  |> appearance(color = "#f2f2f2", metalness = 0, roughness = 70)
+
+// Sketch the rear housing cross-section on YZ
+housingProfile = startSketchOn(YZ)
+  |> startProfile(at = [-housingWidth / 2, -housingHeight / 2])
+  |> xLine(length = housingWidth, tag = $housingEdge01)
+  |> yLine(length = housingHeight, tag = $housingEdge02)
+  |> xLine(length = -housingWidth, tag = $housingEdge03)
+  |> close(tag = $housingEdge04)
+
+// Extrude and fillet rear housing, then set appearance
+housing = extrude(housingProfile, length = -housingLength)
+  |> fillet(
+       radius = housingCornerRadius,
+       tags = [
+         getNextAdjacentEdge(housingEdge01),
+         getNextAdjacentEdge(housingEdge02),
+         getNextAdjacentEdge(housingEdge03),
+         getNextAdjacentEdge(housingEdge04)
+       ],
+     )
+  |> appearance(color = "#1b1b1b", metalness = 4, roughness = 72)
+
+// Sketch the cable centerline path on XZ
+cablePath = startSketchOn(XZ)
+  |> startProfile(at = [-housingLength, 0])
+  |> line(end = [-cableLeadLength, 0])
+  |> tangentialArc(radius = cableBendRadius, angle = -55deg, tag = $cableBend)
+  |> angledLine(angle = tangentToEnd(cableBend), length = cableTailLength)
+
+// Sweep cable profile along the path and set appearance
+cable = startSketchOn(offsetPlane(YZ, offset = -housingLength))
+  |> circle(center = [0, 0], radius = cableRadius)
+  |> sweep(path = cablePath)
+  |> appearance(color = "#101010", metalness = 0, roughness = 80)

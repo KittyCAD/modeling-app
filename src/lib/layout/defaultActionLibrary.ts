@@ -3,6 +3,7 @@ import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { isMobile } from '@src/lib/isMobile'
 
 /**
  * For now we have strict action types but in future
@@ -11,6 +12,7 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 export const useDefaultActionLibrary = () => {
   const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
+  const machineApiEnabled = settings.useSettings().app.machineApi.current
 
   return Object.freeze({
     export: {
@@ -38,6 +40,26 @@ export const useDefaultActionLibrary = () => {
           commands.actor
         ),
     },
+    share: {
+      useHidden: () => !isMobile(),
+      useDisabled: () => undefined,
+      shortcut: 'Mod + Alt + S',
+      execute: () =>
+        commands.actor.send({
+          type: 'Find and select command',
+          data: {
+            name: 'share-file-link',
+            groupId: 'code',
+            isRestrictedToOrg: false,
+          },
+        }),
+    },
+    openCommandBar: {
+      useHidden: () => !isMobile(),
+      useDisabled: () => undefined,
+      shortcut: 'Mod + K',
+      execute: () => commands.actor.send({ type: 'Open' }),
+    },
     make: {
       useDisabled: () => {
         const { machineManager } = useApp()
@@ -49,7 +71,7 @@ export const useDefaultActionLibrary = () => {
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         }),
-      useHidden: () => !isDesktop(),
+      useHidden: () => !isDesktop() || !machineApiEnabled,
     },
   } satisfies Record<ActionType, ActionTypeDefinition>)
 }

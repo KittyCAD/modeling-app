@@ -1078,6 +1078,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1121,6 +1122,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1152,6 +1154,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1197,6 +1200,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1243,6 +1247,7 @@ profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1296,11 +1301,13 @@ extrude001 = extrude(profile001, length = 1)
     const lastChildLookup = true // we want to look up the child of the profile variable
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile,
       nodeToEdit,
-      lastChildLookup,
-      artifactGraph
+      {
+        lastChildLookup,
+      }
     )
     if (err(vars)) throw vars
 
@@ -1442,5 +1449,37 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
+  })
+
+  it('maps a segment tag to a wall selection when a wall exists', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-4.16, -2.97])
+  |> line(end = [2.31, 8.45])
+  |> line(end = [7.53, -7.02])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+extrude002 = extrude(seg01, length = 5, hideSeams = true)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    console.log('op.unlabeledArg', op.unlabeledArg)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
   })
 })

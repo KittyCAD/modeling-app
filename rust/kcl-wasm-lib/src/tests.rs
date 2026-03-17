@@ -3,8 +3,8 @@
 use std::env;
 
 use kcl_lib::{
-    wasm_engine::{EngineCommandManager, FileSystemManager},
     Program,
+    wasm_engine::{EngineCommandManager, FileSystemManager},
 };
 use pretty_assertions::assert_eq;
 use wasm_bindgen::prelude::*;

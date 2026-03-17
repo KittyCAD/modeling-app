@@ -2,9 +2,11 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/app'
 import { useEffect, useState, useRef } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -20,6 +22,7 @@ import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
+import { getUserBlockedReason } from '@src/components/layout/areas/mlEphantBlockedReason'
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -32,6 +35,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -70,27 +74,6 @@ export const MlEphantConversationPane = (props: {
 
     let project: Project = props.theProject
 
-    if (!window.electron) {
-      // If there is no project, we'll create a fake one. Expectation is for
-      // this to only happen on web.
-      project = {
-        metadata: null,
-        kcl_file_count: 1,
-        directory_count: 0,
-        default_file: '/main.kcl',
-        path: '/' + props.settings.meta.id.current,
-        name: props.settings.meta.id.current,
-        children: [
-          {
-            name: 'main.kcl',
-            path: `/main.kcl`,
-            children: null,
-          },
-        ],
-        readWriteAccess: true,
-      }
-    }
-
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
@@ -113,6 +96,7 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       additionalFiles: attachments,
     })
 
@@ -283,20 +267,7 @@ export const MlEphantConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPayment: () => boolean = () => {
-    if (!props.user || !props.user.block) {
-      return false
-    }
-
-    switch (props.user.block) {
-      case 'missing_payment_method':
-      case 'payment_method_failed':
-        return true
-      default:
-        props.user.block satisfies never // exhaustiveness check
-        return false
-    }
-  }
+  const userBlockedOnPaymentReason = getUserBlockedReason(props.user)
 
   return (
     <MlEphantConversation
@@ -319,8 +290,10 @@ export const MlEphantConversationPane = (props: {
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
-      userBlockedOnPayment={userBlockedOnPayment()}
+      blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
+      initialMlCopilotMode={props.settings.app.zookeeperMode.current}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
     />
   )
 }

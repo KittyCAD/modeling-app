@@ -41,6 +41,7 @@ import {
   type ActorRefFrom,
   type ProvidedActor,
   assertEvent,
+  fromPromise,
 } from 'xstate'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
@@ -97,21 +98,7 @@ export type SketchSolveMachineEvent =
       data: { hoveredId: number | null }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
-  | {
-      type: 'update sketch outcome'
-      data: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        /**
-         * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
-         */
-        debounceEditorUpdate?: boolean
-        /**
-         * If false, skip persisting to disk (useful for high-frequency drag updates)
-         */
-        writeToDisk?: boolean
-      }
-    }
+  | UpdateSketchOutcomeEvent
   | { type: 'delete selected' }
   | {
       type: 'set draft entities'
@@ -127,6 +114,22 @@ export type SketchSolveMachineEvent =
       data: { constraintId: number }
     }
   | { type: 'stop editing constraint' }
+
+export type UpdateSketchOutcomeEvent = {
+  type: 'update sketch outcome'
+  data: {
+    sourceDelta: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    /**
+     * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
+     */
+    debounceEditorUpdate?: boolean
+    /**
+     * If false, skip persisting to disk (useful for high-frequency drag updates)
+     */
+    writeToDisk?: boolean
+  }
+}
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
@@ -939,7 +942,7 @@ export async function deleteDraftEntities({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     if (result) {
@@ -949,6 +952,8 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
+          // Without this draft segments remain written on the file until another write comes.
+          writeToDisk: true,
         },
       })
     }
@@ -989,7 +994,7 @@ export async function deleteDraftEntitiesPromise({
       context.sketchId,
       constraintIds,
       segmentIds,
-      await jsAppSettings(context.rustContext.settingsActor)
+      jsAppSettings(context.rustContext.settingsActor)
     )
 
     //
@@ -1043,6 +1048,27 @@ export function spawnTool(
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
 }
+
+export const tearDownSketchSolve = fromPromise(
+  async ({
+    input,
+  }: {
+    input: { context: SketchSolveContext }
+  }) => {
+    // Let the rust side know this sketch is being exited
+    await input.context.rustContext.exitSketch(
+      SKETCH_FILE_VERSION,
+      input.context.sketchId
+    )
+
+    // Only delete if draft entities exist
+    const deleteDraftEntities = !input.context.draftEntities
+      ? Promise.resolve(null)
+      : deleteDraftEntitiesPromise(input)
+
+    return await deleteDraftEntities
+  }
+)
 
 export type ToolInput = {
   sceneInfra: SceneInfra

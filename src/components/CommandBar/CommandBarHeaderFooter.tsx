@@ -13,7 +13,7 @@ import type {
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -27,8 +27,7 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
+  const { commands, project } = useApp()
   const commandBarState = commands.useState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -146,7 +145,14 @@ function CommandBarHeaderFooter({
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue !== undefined ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 
@@ -184,11 +190,12 @@ function CommandBarHeaderFooter({
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
-                      {argValue ? (
-                        arg.inputType === 'selection' ||
-                        arg.inputType === 'selectionMixed' ? (
+                      {argValue !== undefined ? (
+                        project?.executingEditor.value &&
+                        (arg.inputType === 'selection' ||
+                          arg.inputType === 'selectionMixed') ? (
                           getSelectionTypeDisplayText(
-                            kclManager.astSignal.value,
+                            project.executingEditor.value.astSignal.value,
                             argValue as Selections
                           )
                         ) : arg.inputType === 'kcl' &&
@@ -201,6 +208,8 @@ function CommandBarHeaderFooter({
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'boolean' ? (
+                          String(argValue)
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

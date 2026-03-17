@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import { changeDefaultUnits } from '@src/lang/wasm'
@@ -25,4 +26,9 @@ export function newKclFile(
   }
 
   return changeDefaultUnits('', defaultLengthUnit, wasmInstance)
+}
+
+export async function projectSkeletonCreate(targetPath: string) {
+  await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+  await fsZds.writeFile(targetPath, new Uint8Array())
 }

@@ -44,7 +44,7 @@ fn function001(@originStart) {
     zAxis = [0.0, 0.0, 1.0]
   }
 
-  // Create a pillar with a fasterner hole at the center
+  // Create a pillar with a fastener hole at the center
   sketch002 = startSketchOn(plane001)
     |> circle(center = [originStart[0], originStart[1]], radius = holeDia + wallThickness)
     |> subtract2d(tool = circle(center = [originStart[0], originStart[1]], radius = holeDia))

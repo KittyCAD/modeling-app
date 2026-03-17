@@ -13,7 +13,7 @@ supportBearingWidth = 0.45
 
 // Define cam lobe parameters
 baseCircle = 1.34
-lobeSeperation = 112
+lobeSeparation = 112
 intakeCenterline = 108
 intakeLift = 0.235
 exhaustLift = 0.235
@@ -57,14 +57,14 @@ fn lobe(duration, lift) {
 intake = lobe(duration = intakeDuration, lift = intakeLift)
 exhaust = lobe(duration = exhaustDuration, lift = exhaustLift)
   |> translate(z = camHeight + camSpacing)
-  |> rotate(yaw = lobeSeperation)
+  |> rotate(yaw = lobeSeparation)
 
 // Pattern the cam pair to represent the number of valves. Round odd number valves to the next highest even number
 fn valveCount(@i) {
   return {
     translate = [0, 0, i * (camHeight + camSpacing) * 2],
     rotation = {
-      angle = lobeSeperation + 30 * i,
+      angle = lobeSeparation + 30 * i,
       // Rotate around the overall scene's origin.
       origin = 'global'
     }

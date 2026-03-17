@@ -1,5 +1,7 @@
 //! Transpiler for converting old sketch syntax to new sketch block syntax.
 
+use std::collections::HashMap;
+
 use crate::{
     Program,
     errors::{KclError, KclErrorDetails},
@@ -17,12 +19,50 @@ use crate::{
     parsing::ast::types as ast,
 };
 
+mod intermediate_var;
+mod region;
+
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
 enum SegmentConstraint {
     Horizontal,
     Vertical,
     EqualLength { other_segment_index: usize },
+}
+
+pub fn pre_execute_transpile(program: &mut Program) -> Result<(), KclError> {
+    // First, extract pipelines before extrudes into their own variable. This
+    // must happen before executing so that execution can see the new variables.
+    intermediate_var::transpile(&mut program.ast)
+}
+
+pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &mut Program) -> Result<(), KclError> {
+    // Convert sketches in variables.
+    let mut sketch_blocks = HashMap::with_capacity(exec_outcome.variables.len());
+    for variable in &exec_outcome.variables {
+        if let KclValue::Sketch { .. } = &variable.1 {
+            // This variable contains a sketch that needs to be transpiled
+            let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0)?;
+            sketch_blocks.insert(variable.0.clone(), sketch_block);
+        }
+    }
+    // Substitute back into program.
+    for item in &mut program.ast.body {
+        if let ast::BodyItem::VariableDeclaration(var_decl) = item
+            && let Some(sketch_block) = sketch_blocks.get(&var_decl.declaration.id.name)
+        {
+            var_decl.declaration.init = ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block.clone())));
+        }
+    }
+    if !sketch_blocks.is_empty() {
+        // If we have any sketch blocks, allow experimental features.
+        program
+            .ast
+            .set_experimental_features(Some(crate::exec::WarningLevel::Allow));
+        // Create regions before extruding.
+        region::insert(&mut program.ast)?;
+    }
+    Ok(())
 }
 
 /// Transpile an old-style sketch to new sketch block syntax.
@@ -43,6 +83,34 @@ pub fn transpile_old_sketch_to_new(
     program: &Program,
     variable_name: &str,
 ) -> Result<String, KclError> {
+    // Build the sketch block AST
+    let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable_name)?;
+
+    // Create a program with just the sketch block
+    let program = ast::Program {
+        body: vec![ast::BodyItem::ExpressionStatement(ast::Node::no_src(
+            ast::ExpressionStatement {
+                expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block))),
+                digest: None,
+            },
+        ))],
+        shebang: None,
+        non_code_meta: Default::default(),
+        inner_attrs: Default::default(),
+        digest: None,
+    };
+
+    let program_node = ast::Node::no_src(program);
+
+    // Convert AST to string
+    Ok(program_node.recast_top(&Default::default(), 0))
+}
+
+pub fn transpile_old_sketch_to_new_ast(
+    exec_outcome: &ExecOutcome,
+    program: &Program,
+    variable_name: &str,
+) -> Result<ast::SketchBlock, KclError> {
     // Get the sketch from execution outcome
     let sketch = get_sketch_from_exec_outcome(exec_outcome, variable_name)?;
 
@@ -50,11 +118,7 @@ pub fn transpile_old_sketch_to_new(
     let plane_name = get_plane_name(&sketch)?;
 
     // Build the sketch block AST
-    let sketch_block = build_sketch_block_ast(&sketch, &plane_name, program, variable_name)?;
-
-    // Convert AST to string
-    let output = sketch_block.recast_top(&Default::default(), 0);
-    Ok(output)
+    build_sketch_block_ast(&sketch, &plane_name, program, variable_name)
 }
 
 /// Transpile an old-style sketch to new sketch block syntax by re-executing the program.
@@ -107,7 +171,7 @@ fn build_sketch_block_ast(
     plane_name: &str,
     program: &Program,
     variable_name: &str,
-) -> Result<ast::Node<ast::Program>, KclError> {
+) -> Result<ast::SketchBlock, KclError> {
     // Check that all segments are supported types (currently only ToPoint is supported)
     for (i, path_segment) in sketch.paths.iter().enumerate() {
         if !matches!(path_segment, Path::ToPoint { .. }) {
@@ -248,7 +312,7 @@ fn build_sketch_block_ast(
     };
 
     // Create the sketch block
-    let sketch_block = ast::SketchBlock {
+    Ok(ast::SketchBlock {
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
             arg: plane_expr,
@@ -257,23 +321,7 @@ fn build_sketch_block_ast(
         is_being_edited: false,
         non_code_meta: Default::default(),
         digest: None,
-    };
-
-    // Create a program with just the sketch block
-    let program = ast::Program {
-        body: vec![ast::BodyItem::ExpressionStatement(ast::Node::no_src(
-            ast::ExpressionStatement {
-                expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block))),
-                digest: None,
-            },
-        ))],
-        shebang: None,
-        non_code_meta: Default::default(),
-        inner_attrs: Default::default(),
-        digest: None,
-    };
-
-    Ok(ast::Node::no_src(program))
+    })
 }
 
 /// Convert f64 + UnitLength to Number (rounding to 2 decimal places)
@@ -283,7 +331,7 @@ fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -
     (rounded, units).into()
 }
 
-/// Create an AST node for a line call (sketch2::line)
+/// Create an AST node for a line call
 /// Uses shared helper from frontend.rs
 fn create_line_ast_from_coords(
     start_x: f64,
@@ -325,7 +373,7 @@ fn create_line_ast_from_coords(
 // Helper functions below use shared AST creation functions from frontend.rs
 // to ensure consistency between transpiler and frontend code generation.
 
-/// Create an AST node for sketch2::coincident([line1.end, line2.start])
+/// Create an AST node for coincident([line1.end, line2.start])
 fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
@@ -334,19 +382,19 @@ fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::
     create_coincident_ast(line1_end, line2_start)
 }
 
-/// Create an AST node for sketch2::horizontal(line)
+/// Create an AST node for horizontal(line)
 fn create_horizontal_ast_from_name(line_name: &str) -> ast::Expr {
     let line_expr = ast_name_expr(line_name.to_string());
     create_horizontal_ast(line_expr)
 }
 
-/// Create an AST node for sketch2::vertical(line)
+/// Create an AST node for vertical(line)
 fn create_vertical_ast_from_name(line_name: &str) -> ast::Expr {
     let line_expr = ast_name_expr(line_name.to_string());
     create_vertical_ast(line_expr)
 }
 
-/// Create an AST node for sketch2::equalLength([line1, line2])
+/// Create an AST node for equalLength([line1, line2])
 fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());

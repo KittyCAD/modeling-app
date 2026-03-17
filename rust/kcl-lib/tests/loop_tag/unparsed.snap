@@ -32,7 +32,7 @@ finalSketch = reduce(
   [1 .. numSides - 1],
   initial = initialSketch,
   f = fn(@index, accum) {
-    return line(accum, end =     calculatePoint(index), tag = $problematicTag)
+    return line(accum, end = calculatePoint(index), tag = $problematicTag)
   },
 )
 

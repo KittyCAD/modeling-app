@@ -26,13 +26,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = useSingletons()
+  const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -66,7 +60,7 @@ export function useViewControlMenuItems() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            sceneInfra.camControls
+            kclManager.sceneInfra.camControls
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
@@ -79,8 +73,8 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           resetCameraPosition({
-            sceneInfra,
-            engineCommandManager,
+            sceneInfra: kclManager.sceneInfra,
+            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -149,20 +143,15 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           if (planeOrFaceId) {
-            sceneInfra.modelingSend({
+            kclManager.sceneInfra.modelingSend({
               type: 'Enter sketch',
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current,
-              {
-                kclManager,
-                rustContext,
-                sceneEntitiesManager,
-                sceneInfra,
-              }
+              modelingState.context.store.useSketchSolveMode?.current,
+              kclManager
             )
           }
         }}
@@ -196,16 +185,12 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useNewSketchMode,
+      modelingState.context.store.useSketchSolveMode,
       sketching,
       snapToGrid,
       gizmoType,
-      engineCommandManager,
       layout.signal.value,
       kclManager,
-      rustContext,
-      sceneEntitiesManager,
-      sceneInfra,
       settings,
     ]
   )

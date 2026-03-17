@@ -20,9 +20,11 @@ use crate::{
     front::{Number, Object, ObjectId},
 };
 
-mod details;
-
-pub use details::KclErrorDetails;
+pub trait IsRetryable {
+    /// Returns true if the error is transient and the operation that caused it
+    /// should be retried.
+    fn is_retryable(&self) -> bool;
+}
 
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
@@ -45,7 +47,8 @@ impl From<KclErrorWithOutputs> for ExecError {
 
 /// How did the KCL execution fail, with extra state.
 #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
+#[error("{error}")]
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: Option<crate::execution::ExecState>,
@@ -61,12 +64,24 @@ impl ExecErrorWithState {
     }
 }
 
+impl IsRetryable for ExecErrorWithState {
+    fn is_retryable(&self) -> bool {
+        self.error.is_retryable()
+    }
+}
+
 impl ExecError {
     pub fn as_kcl_error(&self) -> Option<&crate::KclError> {
         let ExecError::Kcl(k) = &self else {
             return None;
         };
         Some(&k.error)
+    }
+}
+
+impl IsRetryable for ExecError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, ExecError::Kcl(kcl_error) if kcl_error.is_retryable())
     }
 }
 
@@ -132,6 +147,8 @@ pub enum KclError {
     Engine { details: KclErrorDetails },
     #[error("engine hangup: {details:?}")]
     EngineHangup { details: KclErrorDetails },
+    #[error("engine internal: {details:?}")]
+    EngineInternal { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
     Internal { details: KclErrorDetails },
 }
@@ -139,6 +156,12 @@ pub enum KclError {
 impl From<KclErrorWithOutputs> for KclError {
     fn from(error: KclErrorWithOutputs) -> Self {
         error.error
+    }
+}
+
+impl IsRetryable for KclError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, KclError::EngineHangup { .. } | KclError::EngineInternal { .. })
     }
 }
 
@@ -284,6 +307,15 @@ impl KclErrorWithOutputs {
     }
 }
 
+impl IsRetryable for KclErrorWithOutputs {
+    fn is_retryable(&self) -> bool {
+        matches!(
+            self.error,
+            KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+        )
+    }
+}
+
 impl IntoDiagnostic for KclErrorWithOutputs {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.error.get_message();
@@ -364,6 +396,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
             KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -416,6 +449,7 @@ impl miette::Diagnostic for Report {
             KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
             KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -435,6 +469,18 @@ impl miette::Diagnostic for Report {
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
+#[error("{message}")]
+#[ts(export)]
+pub struct KclErrorDetails {
+    #[label(collection, "Errors")]
+    pub source_ranges: Vec<SourceRange>,
+    pub backtrace: Vec<super::BacktraceItem>,
+    #[serde(rename = "msg")]
+    pub message: String,
 }
 
 impl KclErrorDetails {
@@ -498,7 +544,11 @@ impl KclError {
     }
 
     pub fn new_engine(details: KclErrorDetails) -> KclError {
-        KclError::Engine { details }
+        if details.message.eq_ignore_ascii_case("internal error") {
+            KclError::EngineInternal { details }
+        } else {
+            KclError::Engine { details }
+        }
     }
 
     pub fn new_engine_hangup(details: KclErrorDetails) -> KclError {
@@ -538,6 +588,7 @@ impl KclError {
             KclError::MaxCallStack { .. } => "max call stack",
             KclError::Engine { .. } => "engine",
             KclError::EngineHangup { .. } => "engine hangup",
+            KclError::EngineInternal { .. } => "engine internal",
             KclError::Internal { .. } => "internal",
         }
     }
@@ -558,6 +609,7 @@ impl KclError {
             KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
             KclError::EngineHangup { details: e } => e.source_ranges.clone(),
+            KclError::EngineInternal { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
     }
@@ -579,6 +631,7 @@ impl KclError {
             KclError::MaxCallStack { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
             KclError::EngineHangup { details: e } => &e.message,
+            KclError::EngineInternal { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
     }
@@ -599,6 +652,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
     }
@@ -620,6 +674,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
                     .iter()
@@ -652,6 +707,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {
                     item.fn_name = last_fn_name;

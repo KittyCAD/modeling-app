@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs,
-    MockConfig, Program, ProjectManager,
+    EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, MockConfig, Program, ProjectManager,
+    front::FrontendState, wasm_engine::FileManager,
 };
 use wasm_bindgen::prelude::*;
 

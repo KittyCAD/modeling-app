@@ -25,9 +25,6 @@ extern "C" {
     #[wasm_bindgen(constructor)]
     pub fn new() -> EngineCommandManager;
 
-    #[wasm_bindgen(method, js_name = startFromWasm, catch)]
-    pub async fn start_from_wasm(this: &EngineCommandManager, token: &str) -> Result<JsValue, js_sys::Error>;
-
     #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
     fn fire_modeling_cmd_from_wasm(
         this: &EngineCommandManager,

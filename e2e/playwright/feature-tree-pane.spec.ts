@@ -85,15 +85,15 @@ hidden001 = hide([cylinder, extrude001])
 
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   test('User can go to definition and go to function definition', async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
     page,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(
@@ -182,15 +182,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test('Set appearance menu works on function-created bodies', async ({
-    context,
     homePage,
     scene,
     toolbar,
     cmdBar,
     page,
     editor,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sampleDir = join(dir, 'test-sample')
       await fsp.mkdir(sampleDir, { recursive: true })
       await fsp.writeFile(
@@ -275,14 +275,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
     page,
+    fs,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sampleDir = join(dir, 'test-sample')
-      await fsp.mkdir(sampleDir, { recursive: true })
-      await fsp.writeFile(
+      await fs.mkdir(sampleDir, { recursive: true })
+      await fs.writeFile(
         join(sampleDir, 'main.kcl'),
-        FEATURE_TREE_VISIBILITY_CODE,
-        'utf-8'
+        new TextEncoder().encode(FEATURE_TREE_VISIBILITY_CODE)
       )
     })
 
@@ -425,13 +426,13 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
   test(`User can edit an extrude operation from the feature tree`, async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
     page,
+    folderSetupFn,
   }) => {
     const initialInput = '23'
     const initialCode = `sketch001 = startSketchOn(XZ)
@@ -444,7 +445,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
             renamedExtrude = extrude(sketch001, length = ${newParameterName})`
     const editedParameterValue = '23 * 2'
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
@@ -560,12 +561,12 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
     const testCode = (value: string) =>
       `p1 = offsetPlane(XY, offset = ${value})`
@@ -573,7 +574,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
     const expectedCode = testCode(newInput)
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
@@ -635,13 +636,13 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
   })
 
   test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
-    context,
     page,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
     const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
@@ -650,7 +651,7 @@ profile002 = startProfile(sketch001, at = [0, 7.25])
   |> xLine(length = 13.3)
 profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProject = join(dir, 'test-sample')
       await fsp.mkdir(testProject, { recursive: true })
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')

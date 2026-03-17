@@ -14,7 +14,7 @@ lowerCamber = 18
 foilThickness = 8
 nSections = 5
 sparSpan = 700
-sparStockThicknes = 2.102
+sparStockThickness = 2.102
 sparBendRadius = 2.102
 
 // Sketch an airfoil using the chord length, spar positions, and camber heights
@@ -35,7 +35,7 @@ ribSketch = startSketchOn(offsetPlane(-XZ, offset = -foilThickness))
   |> subtract2d(tool = circle(center = [228, 5], radius = 11))
   |> subtract2d(tool = circle(center = [260, 3.5], radius = 6.5))
 
-  // Extrude the airfoil to material thicknes, then pattern along the length of the wing spars
+  // Extrude the airfoil to material thickness, then pattern along the length of the wing spars
   |> extrude(length = -foilThickness)
   |> patternLinear3d(instances = nSections, distance = (sparSpan - (3 * foilThickness)) / (nSections - 1), axis = [0, -1, 0])
 
@@ -44,13 +44,13 @@ sparSketch = startSketchOn(-XZ)
 // Sketch the sheet metal profile for the front spar, then extrude
 frontSparProfile = startProfile(sparSketch, at = [frontSpar, -lowerCamber * 0.85])
   |> yLine(endAbsolute = upperCamber, tag = $seg01)
-  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThickness)
   |> xLine(length = 4, tag = $seg02)
-  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThickness)
   |> yLine(length = -4, tag = $seg03)
-  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = -90deg, radius = sparBendRadius + sparStockThickness)
   |> xLine(length = -3, tag = $seg04)
-  |> yLine(length = sparStockThicknes)
+  |> yLine(length = sparStockThickness)
   |> xLine(length = segLen(seg04))
   |> tangentialArc(angle = 90deg, radius = sparBendRadius)
   |> yLine(length = segLen(seg03))
@@ -65,13 +65,13 @@ frontSparProfile = startProfile(sparSketch, at = [frontSpar, -lowerCamber * 0.85
 // Sketch the sheet metal profile for the rear spar, then extrude
 rearSparProfile = startProfile(sparSketch, at = [rearSpar, -lowerCamber * 0.7])
   |> yLine(endAbsolute = upperCamber * 0.7, tag = $seg05)
-  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThickness)
   |> xLine(length = -4, tag = $seg06)
-  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThickness)
   |> yLine(length = -4, tag = $seg07)
-  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThicknes)
+  |> tangentialArc(angle = 90deg, radius = sparBendRadius + sparStockThickness)
   |> xLine(length = 3, tag = $seg08)
-  |> yLine(length = sparStockThicknes)
+  |> yLine(length = sparStockThickness)
   |> xLine(length = -segLen(seg08))
   |> tangentialArc(angle = -90deg, radius = sparBendRadius)
   |> yLine(length = segLen(seg07))

@@ -10,6 +10,7 @@ use crate::{
     errors::KclError,
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
+    util::{RetryConfig, execute_with_retries},
     walk::{Node, walk},
 };
 #[cfg(feature = "artifact-graph")]
@@ -260,7 +261,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
+    let exec_res = execute_with_retries(&RetryConfig::default(), || {
+        crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+    })
+    .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
@@ -4147,6 +4151,27 @@ mod sketch_block_failed_unit_conversion {
         super::execute(TEST_NAME, false).await
     }
 }
+mod sketch_block_vars_equal {
+    const TEST_NAME: &str = "sketch_block_vars_equal";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod sketch_block_coincident_constraint {
     const TEST_NAME: &str = "sketch_block_coincident_constraint";
 
@@ -4420,6 +4445,48 @@ mod sketch_block_region_triangle {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_region_from_point_in_triangle {
+    const TEST_NAME: &str = "sketch_block_region_from_point_in_triangle";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_block_region_from_point2d_in_triangle {
+    const TEST_NAME: &str = "sketch_block_region_from_point2d_in_triangle";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod sketch_block_on_negative_plane {
     const TEST_NAME: &str = "sketch_block_on_negative_plane";
 
@@ -4670,5 +4737,131 @@ mod delete_face_by_id {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_block_angle_constraint {
+    const TEST_NAME: &str = "sketch_block_angle_constraint";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod tangent_line_arc {
+    const TEST_NAME: &str = "tangent_line_arc";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod tangent_arc_arc {
+    const TEST_NAME: &str = "tangent_arc_arc";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod tangent_line_line_error {
+    const TEST_NAME: &str = "tangent_line_line_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod tangent_circle_circle {
+    const TEST_NAME: &str = "tangent_circle_circle";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod tangent_arc_arc_math_only {
+    const TEST_NAME: &str = "tangent_arc_arc_math_only";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

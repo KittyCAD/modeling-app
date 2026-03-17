@@ -164,7 +164,7 @@ pub struct Segment {
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
-/// A sweep is a more generic term for extrude, revolve, loft, and sweep.
+/// A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -176,7 +176,8 @@ pub struct Sweep {
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     /// ID of trajectory path for sweep, if any
-    /// Only applicable to SweepSubType::Sweep, which can use a trajectory path
+    /// Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which
+    /// can use a second path-like input
     pub trajectory_id: Option<ArtifactId>,
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
     /// Whether this artifact has been used in a subsequent operation
@@ -192,6 +193,7 @@ pub enum SweepSubType {
     Revolve,
     RevolveAboutEdge,
     Loft,
+    Blend,
     Sweep,
 }
 
@@ -247,6 +249,7 @@ pub struct SketchBlock {
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SketchBlockConstraintType {
+    Angle,
     Coincident,
     Distance,
     Diameter,
@@ -257,6 +260,7 @@ pub enum SketchBlockConstraintType {
     Parallel,
     Perpendicular,
     Radius,
+    Tangent,
     Vertical,
 }
 
@@ -273,7 +277,9 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
             Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
             Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Tangent { .. } => SketchBlockConstraintType::Tangent,
             Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
+            Constraint::Angle(..) => SketchBlockConstraintType::Angle,
         }
     }
 }
@@ -1133,6 +1139,37 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::CreateRegion(kcmc::CreateRegion {
+            object_id: origin_path_id,
+            ..
+        })
+        | ModelingCmd::CreateRegionFromQueryPoint(kcmc::CreateRegionFromQueryPoint {
+            object_id: origin_path_id,
+            ..
+        }) => {
+            let mut return_arr = Vec::new();
+            let origin_path = artifacts.get(&ArtifactId::new(*origin_path_id));
+            let Some(Artifact::Path(path)) = origin_path else {
+                internal_error!(
+                    range,
+                    "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                );
+            };
+            return_arr.push(Artifact::Path(Path {
+                id,
+                plane_id: path.plane_id,
+                seg_ids: Vec::new(),
+                consumed: false,
+                sweep_id: None,
+                trajectory_sweep_id: None,
+                solid2d_id: None,
+                code_ref,
+                composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
+            }));
+            return Ok(return_arr);
+        }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
         })
@@ -1313,6 +1350,46 @@ fn artifacts_to_update(
                     _ => {}
                 }
             };
+            return Ok(return_arr);
+        }
+        ModelingCmd::SurfaceBlend(surface_blend_cmd) => {
+            let surface_id_to_path_id = |surface_id: ArtifactId| -> Option<ArtifactId> {
+                match artifacts.get(&surface_id) {
+                    Some(Artifact::Path(path)) => Some(path.id),
+                    Some(Artifact::Segment(segment)) => Some(segment.path_id),
+                    Some(Artifact::Sweep(sweep)) => Some(sweep.path_id),
+                    Some(Artifact::Wall(wall)) => artifacts.get(&wall.sweep_id).and_then(|artifact| match artifact {
+                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        _ => None,
+                    }),
+                    Some(Artifact::Cap(cap)) => artifacts.get(&cap.sweep_id).and_then(|artifact| match artifact {
+                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        _ => None,
+                    }),
+                    _ => None,
+                }
+            };
+            let Some(first_surface_ref) = surface_blend_cmd.surfaces.first() else {
+                internal_error!(range, "SurfaceBlend command has no surfaces: id={id:?}, cmd={cmd:?}");
+            };
+            let first_surface_id = ArtifactId::new(first_surface_ref.object_id);
+            let path_id = surface_id_to_path_id(first_surface_id).unwrap_or(first_surface_id);
+            let trajectory_id = surface_blend_cmd
+                .surfaces
+                .get(1)
+                .map(|surface| ArtifactId::new(surface.object_id))
+                .and_then(surface_id_to_path_id);
+            let return_arr = vec![Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Blend,
+                path_id,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                trajectory_id,
+                method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                consumed: false,
+            })];
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {

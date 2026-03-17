@@ -1,7 +1,7 @@
 //! Bumps versions in Cargo.toml.
 use anyhow::{Context, Result};
 use clap::Parser;
-use toml_edit::{value, DocumentMut, Item, Value};
+use toml_edit::{DocumentMut, Item, Value, value};
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -36,15 +36,15 @@ fn run_on_manifest(manifest_path: std::path::PathBuf, args: &Args) -> Result<()>
         .context("Invalid TOML in Cargo.toml")?;
     let next_version = update_semver(args.bump, &mut doc).context("Could not bump semver")?;
 
-    if crate_name == "kcl-lib" {
-        if let Some(next_version) = next_version.as_ref() {
-            update_kcl_lib_dependency_versions(&mut doc, next_version);
-        }
+    if crate_name == "kcl-lib"
+        && let Some(next_version) = next_version.as_ref()
+    {
+        update_kcl_lib_dependency_versions(&mut doc, next_version);
     }
-    if crate_name == "kcl-test-server" {
-        if let Some(next_version) = next_version.as_ref() {
-            update_kcl_test_server_dependency_versions(&mut doc, next_version);
-        }
+    if crate_name == "kcl-test-server"
+        && let Some(next_version) = next_version.as_ref()
+    {
+        update_kcl_test_server_dependency_versions(&mut doc, next_version);
     }
 
     std::fs::write(manifest_path, doc.to_string()).context("Could not write updated Cargo.toml")?;

@@ -1,0 +1,324 @@
+import fsZds from '@src/lib/fs-zds'
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import {
+  PATHS,
+  getFilePathRelativeToProject,
+  getProjectDirectoryFromKCLFilePath,
+  joinOSPaths,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+  webSafePathSplit,
+} from '@src/lib/paths'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
+import {
+  useHasListedProjects,
+  useLastOperation,
+  useProjectDirectoryPath,
+  useProjectIdToConversationId,
+  useRequestedFileName,
+  useRequestedProjectName,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import {
+  NO_PROJECT_DIRECTORY,
+  type RequestedKCLFile,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+
+export function SystemIOMachineLogicListener() {
+  const { auth, billing, settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
+  // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
+  const requestedProjectName = useRequestedProjectName()
+  const requestedFileName = useRequestedFileName()
+  const projectDirectoryPath = useProjectDirectoryPath()
+  const hasListedProjects = useHasListedProjects()
+  const lastOperation = useLastOperation()
+
+  const navigate = useNavigate()
+  const settingsValues = settings.useSettings()
+  const token = auth.useToken()
+  const { onFileOpen, onFileClose } = useLspContext()
+  const { pathname } = useLocation()
+
+  function safestNavigateToFile({
+    requestedPath,
+    requestedFilePathWithExtension,
+    requestedProjectDirectory,
+  }: {
+    requestedPath: string
+    requestedFilePathWithExtension: string | null
+    requestedProjectDirectory: string | null
+  }) {
+    let filePathWithExtension = null
+    let projectDirectory = null
+    // assumes /file/<encodedURIComponent>
+    // e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
+    const [iAmABlankString, file, encodedURI] = webSafePathSplit(pathname)
+    if (
+      iAmABlankString === '' &&
+      file === makeUrlPathRelative(PATHS.FILE) &&
+      encodedURI
+    ) {
+      filePathWithExtension = decodeURIComponent(encodedURI)
+      const applicationProjectDirectory =
+        settingsValues.app.projectDirectory.current
+      projectDirectory = getProjectDirectoryFromKCLFilePath(
+        filePathWithExtension,
+        applicationProjectDirectory
+      )
+    }
+
+    // Close current file in current project if it exists
+    onFileClose(filePathWithExtension, projectDirectory)
+    // Open the requested file in the requested project
+    onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
+
+    kclManager.engineCommandManager.rejectAllModelingCommands(
+      EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+    )
+
+    /**
+     * Check that both paths are truthy strings and if they do not match
+     * then mark it is switchedFiles.
+     * If they do not match but the origin is falsey we do not want to mark as
+     * switchedFiles because checkIfSwitchedFilesShouldClear will trigger
+     * clearSceneAndBustCache if there is a parse error!
+     *
+     * i.e. Only do switchedFiles check against two file paths, not null and a file path
+     */
+    if (
+      filePathWithExtension &&
+      requestedFilePathWithExtension &&
+      filePathWithExtension !== requestedFilePathWithExtension
+    ) {
+      kclManager.switchedFiles = true
+    }
+
+    kclManager.isExecuting = false
+
+    const url = new URL(location.href)
+    url.searchParams.delete('ask-open-desktop')
+    void navigate(requestedPath + '?' + url.searchParams.toString())
+  }
+
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   * e.g. context.projectName if this was a string we would not be able to
+   * navigate to CoolProject N times in a row. If we wrap this in an object
+   * the object is watched not the string value
+   */
+  const useGlobalProjectNavigation = () => {
+    useEffect(() => {
+      if (!requestedProjectName.name) {
+        return
+      }
+
+      const isCreating = [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        SystemIOMachineStates.importFileFromURL,
+      ].includes(lastOperation)
+      const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
+      if (isHomeAndNotCreating) {
+        // Don't navigate
+        return
+      }
+
+      const projectPathWithoutSpecificKCLFile = joinOSPaths(
+        projectDirectoryPath,
+        requestedProjectName.name
+      )
+      const requestedPath = joinRouterPaths(
+        PATHS.FILE,
+        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
+        requestedProjectName.subRoute || ''
+      )
+      safestNavigateToFile({
+        requestedPath,
+        requestedFilePathWithExtension: null,
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    }, [requestedProjectName, lastOperation])
+  }
+
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   * e.g. context.projectName if this was a string we would not be able to
+   * navigate to coolFile.kcl N times in a row. If we wrap this in an object
+   * the object is watched not the string value
+   */
+  const useGlobalFileNavigation = () => {
+    useEffect(() => {
+      if (!requestedFileName.file || !requestedFileName.project) {
+        return
+      }
+      const filePath = joinOSPaths(
+        projectDirectoryPath,
+        requestedFileName.project,
+        requestedFileName.file
+      )
+      const projectPathWithoutSpecificKCLFile = joinOSPaths(
+        projectDirectoryPath,
+        requestedProjectName.name
+      )
+      const requestedPath = joinRouterPaths(
+        PATHS.FILE,
+        safeEncodeForRouterPaths(filePath),
+        requestedFileName.subRoute || ''
+      )
+      safestNavigateToFile({
+        requestedPath,
+        requestedFilePathWithExtension: filePath,
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    }, [requestedFileName])
+  }
+
+  const useApplicationProjectDirectory = () => {
+    useEffect(() => {
+      if (pathname === PATHS.HOME) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.setProjectDirectoryPath,
+          data: {
+            requestedProjectDirectoryPath:
+              settingsValues.app.projectDirectory.current || '',
+          },
+        })
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    }, [settingsValues.app.projectDirectory.current, pathname])
+  }
+
+  const useDefaultProjectName = () => {
+    useEffect(() => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.setDefaultProjectFolderName,
+        data: {
+          requestedDefaultProjectFolderName:
+            settingsValues.projects.defaultProjectName.current || '',
+        },
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    }, [settingsValues.projects.defaultProjectName.current])
+  }
+
+  const useWatchingApplicationProjectDirectory = () => {
+    useFileSystemWatcher(
+      async (eventType, targetPath) => {
+        // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+        // This means while the application initialize and Chokidar initializes you cannot tell if
+        // a directory or file is actually created or they are buggy signals. This means you must
+        // ignore all signals during initialization because it is ambiguous. Once those signals settle
+        // you can actually start listening to real signals.
+        // If someone creates folders or files during initialization we ignore those events!
+        if (!hasListedProjects) {
+          return
+        }
+
+        const folderName =
+          systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
+        const folderPath = `${projectDirectoryPath}${fsZds.sep}${folderName}`
+        if (
+          folderName !== NO_PROJECT_DIRECTORY &&
+          (eventType === 'unlinkDir' || eventType === 'unlink') &&
+          targetPath.includes(folderPath)
+        ) {
+          // NO OP: The systemIOMachine will be triggering the read in the state transition, don't spam it again
+          // once this event is processed after the deletion.
+        } else {
+          // Prevents spamming reading from disk twice on deletion due to files and folders being deleted async
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        }
+      },
+      settingsValues.app.projectDirectory.current
+        ? [settingsValues.app.projectDirectory.current]
+        : []
+    )
+  }
+
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    billing.actor,
+    token,
+    kclManager.engineCommandManager,
+    (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
+      if (
+        toolOutput.type !== 'text_to_cad' &&
+        toolOutput.type !== 'edit_kcl_code'
+      ) {
+        return
+      }
+      const outputsRecord: Record<string, string> = {
+        ...(toolOutput.outputs ?? {}),
+      }
+      const requestedFiles: RequestedKCLFile[] = Object.entries(
+        outputsRecord
+      ).map(([relativePath, fileContents]) => {
+        const lastSep = relativePath.lastIndexOf(fsZds.sep)
+        let pathPart = relativePath.slice(0, lastSep)
+        let filePart = relativePath.slice(lastSep)
+        if (lastSep < 0) {
+          pathPart = ''
+          filePart = relativePath
+        }
+        return {
+          requestedCode: fileContents,
+          requestedFileName: filePart,
+          requestedProjectName:
+            projectNameCurrentlyOpened + fsZds.sep + pathPart,
+        }
+      })
+
+      const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+        fileFocusedOnInEditor?.path || '',
+        projectNameCurrentlyOpened
+      )
+
+      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+      systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+        data: {
+          files: requestedFiles,
+          override: true,
+          // Gotcha: Both are called "project name" and "file name", but one of them
+          // has to include the project-relative file path between the two.
+          requestedProjectName: projectNameCurrentlyOpened,
+          requestedFileNameWithExtension:
+            targetFilePathRelativeToProjectDir ?? '',
+        },
+      })
+    }
+  )
+
+  // Save the conversation id for the project id if necessary.
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    systemIOActor,
+    settingsValues
+  )
+
+  useGlobalProjectNavigation()
+  useGlobalFileNavigation()
+  useApplicationProjectDirectory()
+  useDefaultProjectName()
+  useWatchingApplicationProjectDirectory()
+
+  return null
+}

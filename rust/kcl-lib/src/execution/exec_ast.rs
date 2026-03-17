@@ -1,27 +1,31 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use ezpz::{Constraint, NonLinearSystemError};
 use indexmap::IndexMap;
-use kcl_ezpz::{Constraint, NonLinearSystemError};
+use kittycad_modeling_cmds as kcmc;
 
 #[cfg(feature = "artifact-graph")]
 use crate::front::{Object, ObjectKind};
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
+    exec::Sketch,
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EarlyReturn, EnvironmentRef, ExecState, ExecutorContext, KclValue,
         KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem,
-        SKETCH_BLOCK_PARAM_ON, Segment, SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind,
-        TagIdentifier, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        SKETCH_BLOCK_PARAM_ON, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SegmentRepr,
+        SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr, UnsolvedSegment,
+        UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue, early_return,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory::{self, SKETCH_PREFIX},
         sketch_solve::{
-            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
-            substitute_sketch_var_in_segment, substitute_sketch_vars,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_angle_unit,
+            normalize_to_solver_distance_unit, solver_numeric_type, substitute_sketch_var_in_segment,
+            substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -239,14 +243,10 @@ impl ExecutorContext {
             PreserveMem::Always => {
                 #[cfg(feature = "artifact-graph")]
                 {
-                    use crate::id::IncIdGenerator;
                     exec_state
                         .mod_local
                         .artifacts
-                        .scene_objects
-                        .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
-                    exec_state.mod_local.artifacts.object_id_generator =
-                        IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
+                        .restore_scene_objects(&exec_state.global.root_module_artifacts.scene_objects);
                 }
             }
             PreserveMem::Normal => {
@@ -254,8 +254,7 @@ impl ExecutorContext {
                 {
                     local_state
                         .artifacts
-                        .scene_objects
-                        .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+                        .restore_scene_objects(&exec_state.mod_local.artifacts.scene_objects);
                 }
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             }
@@ -918,18 +917,26 @@ impl ExecutorContext {
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
         result.map_err(|(err, _, _)| {
-            if let KclError::ImportCycle { .. } = err {
-                // It was an import cycle.  Keep the original message.
-                err.override_source_ranges(vec![source_range])
-            } else {
-                // TODO would be great to have line/column for the underlying error here
-                KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Error loading imported file ({path}). Open it to view more details.\n  {}",
-                        err.message()
-                    ),
-                    vec![source_range],
-                ))
+            match err {
+                KclError::ImportCycle { .. } => {
+                    // It was an import cycle.  Keep the original message.
+                    err.override_source_ranges(vec![source_range])
+                }
+                KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
+                    // Propagate this type of error. It's likely a transient
+                    // error that just needs to be retried.
+                    err.override_source_ranges(vec![source_range])
+                }
+                _ => {
+                    // TODO would be great to have line/column for the underlying error here
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Error loading imported file ({path}). Open it to view more details.\n  {}",
+                            err.message()
+                        ),
+                        vec![source_range],
+                    ))
+                }
             }
         })
     }
@@ -1293,14 +1300,14 @@ impl Node<SketchBlock> {
             .solver_constraints
             .iter()
             .cloned()
-            .map(kcl_ezpz::ConstraintRequest::highest_priority)
+            .map(ezpz::ConstraintRequest::highest_priority)
             .chain(
                 // Optional constraints have a lower priority.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|c| kcl_ezpz::ConstraintRequest::new(c, 1)),
+                    .map(|c| ezpz::ConstraintRequest::new(c, 1)),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
@@ -1317,8 +1324,12 @@ impl Node<SketchBlock> {
                     ty: sketch_var.ty,
                     meta: sketch_var.meta.clone(),
                 };
-                let initial_guess_value =
-                    normalize_to_solver_unit(&number_value, v.into(), exec_state, "sketch variable initial value")?;
+                let initial_guess_value = normalize_to_solver_distance_unit(
+                    &number_value,
+                    v.into(),
+                    exec_state,
+                    "sketch variable initial value",
+                )?;
                 let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
                     n.n
                 } else {
@@ -1333,18 +1344,18 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config::default().with_max_iterations(50);
+        let config = ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
+            ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
                 (outcome.outcome, Some(freedom_analysis))
             })
         } else {
-            kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+            ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         // Build a combined list of all constraints (regular + optional) for conflict detection
         let num_required_constraints = sketch_block_state.solver_constraints.len();
-        let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
+        let all_constraints: Vec<ezpz::Constraint> = sketch_block_state
             .solver_constraints
             .iter()
             .cloned()
@@ -1466,7 +1477,7 @@ impl Node<SketchBlock> {
             variables,
             &sketch_surface,
             sketch_engine_id,
-            sketch,
+            sketch.as_ref(),
             &solve_outcome,
             solution_ty,
             solve_analysis.as_ref(),
@@ -1514,11 +1525,12 @@ impl Node<SketchBlock> {
             });
         }
 
+        let properties = self.sketch_properties(sketch, variables);
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
         let return_value = KclValue::Object {
-            value: variables,
+            value: properties,
             constrainable: Default::default(),
             meta: vec![metadata],
         };
@@ -1690,6 +1702,40 @@ impl Node<SketchBlock> {
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
+    }
+
+    /// Augment the variables in the sketch block with properties that should be
+    /// accessible on the returned sketch object. This includes metadata like
+    /// the sketch so that the engine ID and surface can be accessed.
+    pub(crate) fn sketch_properties(
+        &self,
+        sketch: Option<Sketch>,
+        variables: HashMap<String, KclValue>,
+    ) -> HashMap<String, KclValue> {
+        let Some(sketch) = sketch else {
+            // The sketch block did not produce a Sketch, so we cannot provide
+            // it.
+            return variables;
+        };
+
+        let mut properties = variables;
+
+        let sketch_value = KclValue::Sketch {
+            value: Box::new(sketch),
+        };
+        let mut meta_map = HashMap::with_capacity(1);
+        meta_map.insert(SKETCH_OBJECT_META_SKETCH.to_owned(), sketch_value);
+        let meta_value = KclValue::Object {
+            value: meta_map,
+            constrainable: false,
+            meta: vec![Metadata {
+                source_range: SourceRange::from(self),
+            }],
+        };
+
+        properties.insert(SKETCH_OBJECT_META.to_owned(), meta_value);
+
+        properties
     }
 }
 
@@ -2650,18 +2696,23 @@ impl Node<BinaryExpression> {
                     return Ok(KclValue::Bool { value: true, meta });
                 }
                 // Different sketch variables.
-                (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
-                    // TODO: sketch-api: Collapse the two sketch variables into
-                    // one constraint variable.
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "TODO: Different sketch variables".to_owned(),
-                        vec![self.into()],
-                    )));
+                (KclValue::SketchVar { value: var0 }, KclValue::SketchVar { value: var1, .. }) => {
+                    let constraint = Constraint::ScalarEqual(
+                        var0.id.to_constraint_id(self.as_source_range())?,
+                        var1.id.to_constraint_id(self.as_source_range())?,
+                    );
+                    let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                        let message = "Being inside a sketch block should have already been checked above".to_owned();
+                        debug_assert!(false, "{}", &message);
+                        return Err(internal_err(message, self));
+                    };
+                    sketch_block_state.solver_constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
                 }
                 // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
-                    let number_value = normalize_to_solver_unit(
+                    let number_value = normalize_to_solver_distance_unit(
                         input_number,
                         input_number.into(),
                         exec_state,
@@ -2687,12 +2738,26 @@ impl Node<BinaryExpression> {
                 // One sketch constraint, one number.
                 (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
-                    let number_value = normalize_to_solver_unit(
-                        input_number,
-                        input_number.into(),
-                        exec_state,
-                        "fixed constraint value",
-                    )?;
+                    let number_value = match constraint.kind {
+                        // These constraint kinds expect the RHS to be an angle.
+                        SketchConstraintKind::Angle { .. } => normalize_to_solver_angle_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                        // These constraint kinds expect the RHS to be a distance.
+                        SketchConstraintKind::Distance { .. }
+                        | SketchConstraintKind::Radius { .. }
+                        | SketchConstraintKind::Diameter { .. }
+                        | SketchConstraintKind::HorizontalDistance { .. }
+                        | SketchConstraintKind::VerticalDistance { .. } => normalize_to_solver_distance_unit(
+                            input_number,
+                            input_number.into(),
+                            exec_state,
+                            "fixed constraint value",
+                        )?,
+                    };
                     let Some(n) = number_value.as_ty_f64() else {
                         let message = format!(
                             "Expected number after coercion, but found {}",
@@ -2720,15 +2785,114 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
+                        SketchConstraintKind::Angle { line0, line1 } => {
+                            let range = self.as_source_range();
+                            // Line 0 is points A and B.
+                            // Line 1 is points C and D.
+                            let ax = line0.vars[0].x.to_constraint_id(range)?;
+                            let ay = line0.vars[0].y.to_constraint_id(range)?;
+                            let bx = line0.vars[1].x.to_constraint_id(range)?;
+                            let by = line0.vars[1].y.to_constraint_id(range)?;
+                            let cx = line1.vars[0].x.to_constraint_id(range)?;
+                            let cy = line1.vars[0].y.to_constraint_id(range)?;
+                            let dx = line1.vars[1].x.to_constraint_id(range)?;
+                            let dy = line1.vars[1].y.to_constraint_id(range)?;
+                            let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
+                            );
+                            let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
+                                ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
+                            );
+                            let desired_angle = match n.ty {
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Degrees,
+                                } => ezpz::datatypes::Angle::from_degrees(n.n),
+                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
+                                | NumericType::Default {
+                                    len: _,
+                                    angle: kcmc::units::UnitAngle::Radians,
+                                } => ezpz::datatypes::Angle::from_radians(n.n),
+                                NumericType::Known(crate::exec::UnitType::Count)
+                                | NumericType::Known(crate::exec::UnitType::GenericLength)
+                                | NumericType::Known(crate::exec::UnitType::GenericAngle)
+                                | NumericType::Known(crate::exec::UnitType::Length(_))
+                                | NumericType::Unknown
+                                | NumericType::Any => {
+                                    let message = format!("Expected angle but found {:?}", n);
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(internal_err(message, self));
+                                }
+                            };
+                            let solver_constraint = Constraint::LinesAtAngle(
+                                solver_line0,
+                                solver_line1,
+                                ezpz::datatypes::AngleKind::Other(desired_angle),
+                            );
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Angle,
+                                };
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Angle(Angle {
+                                    lines: vec![line0.object_id, line1.object_id],
+                                    angle: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert angle units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
                         SketchConstraintKind::Distance { points } => {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
@@ -2832,16 +2996,16 @@ impl Node<BinaryExpression> {
                                     ));
                                 }
                             };
-                            let solver_arc = kcl_ezpz::datatypes::inputs::DatumCircularArc {
-                                center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
+                                center: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     center.vars.x.to_constraint_id(range)?,
                                     center.vars.y.to_constraint_id(range)?,
                                 ),
-                                start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                start: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     start.vars.x.to_constraint_id(range)?,
                                     start.vars.y.to_constraint_id(range)?,
                                 ),
-                                end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                end: ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     end_x_var.to_constraint_id(range)?,
                                     end_y_var.to_constraint_id(range)?,
                                 ),
@@ -2938,19 +3102,18 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
                             // Horizontal distance: p1.x - p0.x = n
                             // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
                             // So we swap the points to get p1.x - p0.x = n
-                            let solver_constraint =
-                                kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
+                            let solver_constraint = ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
@@ -3006,18 +3169,18 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
                             // Vertical distance: p1.y - p0.y = n
                             // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
                             // So we swap the points to get p1.y - p0.y = n
-                            let solver_constraint = kcl_ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
+                            let solver_constraint = ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();

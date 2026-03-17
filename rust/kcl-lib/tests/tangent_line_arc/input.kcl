@@ -1,0 +1,7 @@
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  l = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
+  a = arc(start = [var -5mm, var 5mm], end = [var 5mm, var 5mm], center = [var 0mm, var 5mm])
+  tangent([l, a])
+}

@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
@@ -19,7 +18,6 @@ import {
   SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
@@ -85,6 +83,10 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.done_renameProject
+          output: { redirect: boolean; newName: string }
+        }
+      | {
           type: SystemIOMachineEvents.deleteProject
           data: { requestedProjectName: string }
         }
@@ -137,12 +139,28 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
+          output: { projectName: string; fileName: string }
+        }
+      | {
+          type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
+          output: { projectName: string; fileName: string }
+        }
+      | {
           type: SystemIOMachineEvents.importFileFromURL
           data: {
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedCode: string
             requestedSubRoute?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.done_importFileFromURL
+          output: {
+            projectName: string
+            fileName: string
+            subRoute?: string
           }
         }
       | {
@@ -190,6 +208,13 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.done_renameFileAndNavigateToFile
+          output: {
+            projectName: string
+            filePathWithExtensionRelativeToProject: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.deleteFileOrFolder
           data: {
             requestedPath: string
@@ -218,11 +243,22 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.done_renameFolderAndNavigateToFile
+          output: {
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate
           data: {
             requestedPath: string
             requestedProjectName: string
           }
+        }
+      | {
+          type: SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
+          output: { requestedProjectName: string }
         }
       | {
           type: SystemIOMachineEvents.copyRecursive
@@ -247,6 +283,10 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             successMessage?: string
           }
+        }
+      | {
+          type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
+          output: { requestedProjectName: string }
         }
       | {
           type: SystemIOMachineEvents.getMlEphantConversations
@@ -379,8 +419,7 @@ export const systemIOMachine = setup({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        const folders: Project[] = []
-        return folders
+        return [] as Project[]
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -431,8 +470,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           requestedCode: string
           requestedSubRoute?: string
-          kclManager: KclManager
-          engineCommandManager: ConnectionManager
+          app: App
         }
       }): Promise<{
         message: string
@@ -701,7 +739,7 @@ export const systemIOMachine = setup({
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
   context: ({ input }) => ({
     ...input,
-    folders: [],
+    folders: undefined,
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
@@ -721,6 +759,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -876,8 +915,11 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.creatingProject,
               requestedProjectName: ({ event }) => {
-                return { name: event.output.name }
+                return {
+                  name: (event as { output: { name: string } }).output.name,
+                }
               },
             }),
             SystemIOMachineActions.toastSuccess,
@@ -908,12 +950,23 @@ export const systemIOMachine = setup({
             assign({
               pendingRenamedProjectName: ({ event }) => {
                 // Redirect back to the project if renamed from the current project
-                const redirect = (event.output as { redirect: boolean })
-                  .redirect
-                return redirect ? event.output.newName : undefined
+                const output = (
+                  event as { output: { redirect: boolean; newName: string } }
+                ).output
+                return output.redirect ? output.newName : undefined
               },
             }),
             SystemIOMachineActions.toastSuccess,
+            assign({
+              lastOperation: SystemIOMachineStates.renamingProject,
+              requestedProjectName: ({ event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_renameProject)
+                return {
+                  name: (event as { output: { newName: string } }).output
+                    .newName,
+                }
+              },
+            }),
           ],
         },
         onError: {
@@ -936,6 +989,9 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.deletingProject,
+            }),
             SystemIOMachineActions.toastSuccess,
             SystemIOMachineActions.setLastProjectDeleteRequest,
           ],
@@ -958,8 +1014,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
@@ -984,8 +1039,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
+            app: context.app,
           }
         },
         onDone: {
@@ -993,22 +1047,39 @@ export const systemIOMachine = setup({
           // Clear on web? not desktop
           actions: [
             assign({
+              lastOperation: SystemIOMachineStates.importFileFromURL,
               requestedProjectName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
-                return {
-                  name: event.output.projectName,
-                }
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
+                return { name: output.projectName }
               },
               requestedFileName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
                 // Gotcha: file could have an ending of .kcl...
-                const file = event.output.fileName.endsWith('.kcl')
-                  ? event.output.fileName
-                  : event.output.fileName + '.kcl'
+                const file = output.fileName.endsWith('.kcl')
+                  ? output.fileName
+                  : output.fileName + '.kcl'
                 return {
-                  project: event.output.projectName,
+                  project: output.projectName,
                   file,
-                  subRoute: event.output.subRoute,
+                  subRoute: output.subRoute,
                 }
               },
             }),
@@ -1107,6 +1178,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,
@@ -1151,14 +1224,14 @@ export const systemIOMachine = setup({
                   event,
                   SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
                 )
+                const output = (
+                  event as { output: { projectName: string; fileName: string } }
+                ).output
                 // Gotcha: file could have an ending of .kcl...
-                const file = event.output.fileName.endsWith('.kcl')
-                  ? event.output.fileName
-                  : event.output.fileName + '.kcl'
-                return {
-                  project: event.output.projectName,
-                  file,
-                }
+                const file = output.fileName.endsWith('.kcl')
+                  ? output.fileName
+                  : output.fileName + '.kcl'
+                return { project: output.projectName, file }
               },
             }),
             SystemIOMachineActions.toastSuccess,
@@ -1198,14 +1271,14 @@ export const systemIOMachine = setup({
                   event,
                   SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
                 )
+                const output = (
+                  event as { output: { projectName: string; fileName: string } }
+                ).output
                 // Gotcha: file could have an ending of .kcl...
-                const file = event.output.fileName.endsWith('.kcl')
-                  ? event.output.fileName
-                  : event.output.fileName + '.kcl'
-                return {
-                  project: event.output.projectName,
-                  file,
-                }
+                const file = output.fileName.endsWith('.kcl')
+                  ? output.fileName
+                  : output.fileName + '.kcl'
+                return { project: output.projectName, file }
               },
             }),
             SystemIOMachineActions.toastSuccess,
@@ -1356,18 +1429,20 @@ export const systemIOMachine = setup({
                   event,
                   SystemIOMachineEvents.done_renameFileAndNavigateToFile
                 )
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      filePathWithExtensionRelativeToProject: string
+                    }
+                  }
+                ).output
                 // Gotcha: file could have an ending of .kcl...
                 const file =
-                  event.output.filePathWithExtensionRelativeToProject.endsWith(
-                    '.kcl'
-                  )
-                    ? event.output.filePathWithExtensionRelativeToProject
-                    : event.output.filePathWithExtensionRelativeToProject +
-                      '.kcl'
-                return {
-                  project: event.output.projectName,
-                  file,
-                }
+                  output.filePathWithExtensionRelativeToProject.endsWith('.kcl')
+                    ? output.filePathWithExtensionRelativeToProject
+                    : output.filePathWithExtensionRelativeToProject + '.kcl'
+                return { project: output.projectName, file }
               },
             }),
             SystemIOMachineActions.toastSuccess,
@@ -1404,20 +1479,28 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.renamingFolderAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_renameFolderAndNavigateToFile
                 )
+                const output = (
+                  event as {
+                    output: {
+                      requestedProjectName: string
+                      requestedFileNameWithExtension: string
+                    }
+                  }
+                ).output
                 // Gotcha: file could have an ending of .kcl...
-                const file =
-                  event.output.requestedFileNameWithExtension.endsWith('.kcl')
-                    ? event.output.requestedFileNameWithExtension
-                    : event.output.requestedFileNameWithExtension + '.kcl'
-                return {
-                  project: event.output.requestedProjectName,
-                  file,
-                }
+                const file = output.requestedFileNameWithExtension.endsWith(
+                  '.kcl'
+                )
+                  ? output.requestedFileNameWithExtension
+                  : output.requestedFileNameWithExtension + '.kcl'
+                return { project: output.requestedProjectName, file }
               },
             }),
             SystemIOMachineActions.toastSuccess,
@@ -1448,13 +1531,16 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.deletingFileOrFolderAndNavigate,
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
                 )
                 return {
-                  name: event.output.requestedProjectName,
+                  name: (event as { output: { requestedProjectName: string } })
+                    .output.requestedProjectName,
                 }
               },
             }),
@@ -1536,7 +1622,8 @@ export const systemIOMachine = setup({
                   SystemIOMachineEvents.done_moveRecursiveAndNavigate
                 )
                 return {
-                  name: event.output.requestedProjectName,
+                  name: (event as { output: { requestedProjectName: string } })
+                    .output.requestedProjectName,
                 }
               },
             }),
