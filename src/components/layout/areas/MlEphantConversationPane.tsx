@@ -21,14 +21,15 @@ import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import type {
-  UserResponse,
-  MlCopilotServerMessage,
-  MlCopilotMode,
-} from '@kittycad/lib'
+import type { MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
+
+type MlEphantConversationPaneUser = {
+  block_message?: string
+  image?: string
+}
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -40,7 +41,7 @@ export const MlEphantConversationPane = (props: {
   sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
-  user?: UserResponse
+  user?: MlEphantConversationPaneUser
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -58,6 +59,10 @@ export const MlEphantConversationPane = (props: {
 
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
+  })
+
+  const isPromptRunning = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.awaitingResponse
   })
 
   if (
@@ -112,15 +117,6 @@ export const MlEphantConversationPane = (props: {
     props.sendBillingUpdate()
   }
 
-  const lastExchange = conversation?.exchanges.slice(-1) ?? []
-
-  const isProcessing = lastExchange[0]
-    ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) =>
-          'end_of_stream' in x || 'error' in x || 'info' in x
-      ) === false
-    : false
-
   const needsReconnect = abruptlyClosed
 
   const onReconnect = () => {
@@ -144,7 +140,7 @@ export const MlEphantConversationPane = (props: {
     mode: MlCopilotMode,
     attachments: File[]
   ) => {
-    if (isProcessing) {
+    if (isPromptRunning || isSubmittingFromQueue.current) {
       setQueue((prev) => [
         ...prev,
         {
@@ -173,9 +169,8 @@ export const MlEphantConversationPane = (props: {
       // The queue will be updated when Zookeeper finishes the current message
       // and the auto-submit effect picks up the steered message.
       steeredId.current = id
-      // Interrupt the current prompt; when end_of_stream arrives,
-      // isProcessing goes false and the auto-submit effect sends the
-      // steered message.
+      // Interrupt the current prompt; when the response completes,
+      // the auto-submit effect sends the steered message.
       sendBillingUpdate()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.Interrupt,
@@ -187,7 +182,11 @@ export const MlEphantConversationPane = (props: {
   // Auto-submit the next queued message when current processing completes.
   // If a message was steered, it takes priority over the default FIFO order.
   useEffect(() => {
-    if (!isProcessing && queue.length > 0 && !isSubmittingFromQueue.current) {
+    if (
+      !isPromptRunning &&
+      queue.length > 0 &&
+      !isSubmittingFromQueue.current
+    ) {
       isSubmittingFromQueue.current = true
       let next: QueuedMessage
       if (steeredId.current !== null) {
@@ -213,7 +212,7 @@ export const MlEphantConversationPane = (props: {
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProcessing, queue])
+  }, [isPromptRunning, queue])
 
   if (needsReconnect && timeoutReconnect.current === undefined) {
     timeoutReconnect.current = setTimeout(() => {
@@ -375,8 +374,8 @@ export const MlEphantConversationPane = (props: {
       onCancel={onCancel}
       disabled={needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={!isProcessing}
-      isProcessing={isProcessing}
+      hasPromptCompleted={!isPromptRunning}
+      isProcessing={isPromptRunning}
       queue={queue}
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
