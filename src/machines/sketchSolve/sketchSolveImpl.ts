@@ -125,7 +125,8 @@ export type UpdateSketchOutcomeEvent = {
      */
     debounceEditorUpdate?: boolean
     /**
-     * If false, skip persisting to disk (useful for high-frequency drag updates)
+     * Defaults to true. Set to false to skip persisting to disk, which is useful
+     * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
   }
@@ -854,8 +855,18 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
 // We store the latest kclManager reference so the debounced function can access it
 const debouncedEditorUpdate = deferredCallback(
-  ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
-    kclManager.updateCodeEditor(text),
+  ({
+    text,
+    kclManager,
+    shouldWriteToDisk,
+  }: {
+    text: string
+    kclManager: KclManager
+    shouldWriteToDisk: boolean
+  }) =>
+    kclManager.updateCodeEditor(text, {
+      shouldWriteToDisk,
+    }),
   200
 )
 
@@ -891,13 +902,15 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
+      shouldWriteToDisk: event.data.writeToDisk !== false,
     })
   } else {
+    const shouldWriteToDisk = event.data.writeToDisk !== false
+
     // Update editor immediately - no debounce for frequent updates like onMove
     context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
       shouldExecute: false,
-      // Persist changes to disk unless explicitly disabled
-      shouldWriteToDisk: event.data.writeToDisk || false,
+      shouldWriteToDisk,
     })
   }
 
@@ -952,8 +965,6 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
-          // Without this draft segments remain written on the file until another write comes.
-          writeToDisk: true,
         },
       })
     }
