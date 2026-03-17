@@ -73,6 +73,7 @@ export default defineConfig([
       'no-array-constructor': 'off',
       '@typescript-eslint/no-array-constructor': 'error',
       '@typescript-eslint/no-array-delete': 'error',
+      '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-duplicate-enum-values': 'error',
       '@typescript-eslint/no-duplicate-type-constituents': 'error',
       '@typescript-eslint/no-empty-object-type': 'error',

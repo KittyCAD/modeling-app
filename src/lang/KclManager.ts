@@ -1337,7 +1337,7 @@ export class KclManager extends File {
         })
       )
       if (this.sceneEntitiesManager) {
-        await setSelectionFilterToDefault({
+        setSelectionFilterToDefault({
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this.sceneEntitiesManager,
