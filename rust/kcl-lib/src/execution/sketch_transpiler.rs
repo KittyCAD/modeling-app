@@ -358,7 +358,7 @@ fn transpiler_build_segment(
                     "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported. path_segment={path_segment:?}",
                     segment_index + 1
                 );
-                return Ok(None);
+                Ok(None)
             }
         }
     }
@@ -416,13 +416,13 @@ fn transpiler_create_segment_coincident_constraint(
 }
 
 fn transpiler_create_unsupported_segment_error(segment_index: usize, _path_segment: &Path) -> KclError {
-    return KclError::new_internal(KclErrorDetails::new(
+    KclError::new_internal(KclErrorDetails::new(
         format!(
             "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
             segment_index + 1
         ),
         vec![],
-    ));
+    ))
 }
 
 /// Create an AST node for a line call
