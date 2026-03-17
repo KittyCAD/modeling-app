@@ -1301,8 +1301,8 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edgeRefs=[{faces=[seg01,capStart001]}], radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,capEnd001]}], radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[seg01,capStart001]}], radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1604,8 +1604,8 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     toolbar,
     cmdBar,
   }) => {
-    // Initial KCL has mixed deprecated tags and edgeRefs. Auto-fix merges to edgeRefs only;
-    // edit-only path must preserve all edgeRefs when updating radius.
+    // Initial KCL has mixed deprecated tags and edges. Auto-fix merges to edges only;
+    // edit-only path must preserve all edges when updating radius.
     const initialCode = `sketchPlane = startSketchOn(XY)
 profile = startProfile(sketchPlane, at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -1614,7 +1614,7 @@ profile = startProfile(sketchPlane, at = [0, 0])
   |> line(endAbsolute = [0, 0])
   |> close()
 myExtrude = extrude(profile, length = 5, tagStart = $capStart001)
-myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edgeRefs = [{ faces = [e1, capStart001]}])
+myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edges = [{ sideFaces = [e1, capStart001]}])
 `
 
     await test.step('Initial test setup', async () => {
@@ -1672,13 +1672,13 @@ myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edgeRefs 
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
 
-    await test.step('Confirm code has edgeRefs preserved and radius updated', async () => {
+    await test.step('Confirm code has edges preserved and radius updated', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       const code = await editor.getCurrentCode()
-      expect(code).toContain('edgeRefs')
-      // The existing edgeRef (faces = [e1, capStart001]) must be preserved by auto-fix and edit-only path
-      expect(code).toContain('faces = [e1, capStart001]')
+      expect(code).toContain('edges')
+      // The existing edge ref (sideFaces = [e1, capStart001]) must be preserved by auto-fix and edit-only path
+      expect(code).toContain('sideFaces = [e1, capStart001]')
       expect(code).toContain('radius = 2')
       // Deprecated tags syntax should be removed by auto-fix
       expect(code).not.toContain('tags = [getOppositeEdge')
@@ -2001,7 +2001,7 @@ extrude001 = extrude(profile001, length = 5)
     // Tags are assigned in profile order: first segment seg01, second seg02
     const taggedSegment1 = `yLine(length = -1, tag = $seg02)`
     const taggedSegment2 = `xLine(length = -10, tag = $seg01)`
-    const filletExpression = `fillet001 = fillet(extrude001, edgeRefs = [{ faces = [seg01, seg02] }], radius = 1000)`
+    const filletExpression = `fillet001 = fillet(extrude001, edges = [{ sideFaces = [seg01, seg02] }], radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -2097,8 +2097,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edgeRefs=[{faces=[seg01,capEnd001]}], length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edgeRefs=[{faces=[seg01,capStart001]}], length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[seg01,capEnd001]}], length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[seg01,capStart001]}], length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
