@@ -325,9 +325,6 @@ async function getAndSyncStoredToken(input: {
     return token
   }
 
-  // If you are web and you made it this far, you do not get a token
-  if (!isDesktop()) return ''
-
   if (!fileToken) return ''
   // default desktop login workflow to always read from disk, file will ensure login persists after app updates
   return fileToken
