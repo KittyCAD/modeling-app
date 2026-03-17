@@ -126,6 +126,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             return
           }
         } catch (e) {
+          console.warn(e)
           void navigate(PATHS.HOME)
           return
         }
