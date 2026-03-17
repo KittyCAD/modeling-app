@@ -408,8 +408,7 @@ describe('createOnDragEndCallback', () => {
       intersects: [],
     })
 
-    // Should still clear the dragging state even if no element was being dragged
-    // This ensures state is always clean after drag ends
+    // Should still mock execute to have the latest state in the Rust side.
     expect(sketchExecuteMock).toHaveBeenCalled()
   })
   it('should clear dragging state even when no element is currently being dragged', () => {
