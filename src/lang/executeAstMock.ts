@@ -10,6 +10,7 @@ import type { ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
+import { isArray } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 
@@ -31,11 +32,11 @@ function isObjectWithMessage(obj: unknown): obj is { message: unknown } {
 /** Extract first error message from array-shaped error payloads using type guards only. */
 function getFirstErrorMessage(value: unknown): string | undefined {
   if (value === null || typeof value !== 'object') return undefined
-  if (!Array.isArray(value) || value.length === 0) return undefined
+  if (!isArray(value) || value.length === 0) return undefined
   const first = value[0]
   if (!isObjectWithErrors(first)) return undefined
   const errors = first.errors
-  if (!Array.isArray(errors) || errors.length === 0) return undefined
+  if (!isArray(errors) || errors.length === 0) return undefined
   const err0 = errors[0]
   if (!isObjectWithMessage(err0)) return undefined
   const message = err0.message

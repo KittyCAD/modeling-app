@@ -33,8 +33,6 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
-  createTagDeclarator,
-  findUniqueName,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
@@ -43,10 +41,7 @@ import {
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'
-import {
-  addTagKw,
-  addTagForSketchOnFace,
-} from '@src/lang/std/sketchTaggingHelpers'
+import { addTagKw } from '@src/lang/std/sketchTaggingHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -95,7 +90,6 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import type { Coords2d } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
