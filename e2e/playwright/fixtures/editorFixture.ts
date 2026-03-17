@@ -114,7 +114,7 @@ export class EditorFixture {
     await this.scrollToBottom()
     try {
       // Use expect.poll to implement retry logic
-      await expect
+      expect
         .poll(
           async () => {
             const code = await this.codeContent.textContent()

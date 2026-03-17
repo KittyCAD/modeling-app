@@ -1466,133 +1466,81 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
 }
 
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    #[derive(Clone, Copy)]
+    struct ConstrainableLine {
+        solver_line: DatumLineSegment,
+        #[cfg(feature = "artifact-graph")]
+        object_id: ObjectId,
+    }
+
     let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "lines",
-        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(2),
+        ),
         exec_state,
     )?;
-    let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            "must have two input lines".to_owned(),
-            vec![args.source_range],
-        ))
-    })?;
-
-    let KclValue::Segment { value: segment0 } = &line0 else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let SegmentRepr::Unsolved { segment: unsolved0 } = &segment0.repr else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            "line must be an unsolved Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedSegmentKind::Line {
-        start: start0,
-        end: end0,
-        ..
-    } = &unsolved0.kind
-    else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a line, no other type of Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line0_p0_x) = &start0[0] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's start x coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line0_p0_y) = &start0[1] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's start y coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line0_p1_x) = &end0[0] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's end x coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line0_p1_y) = &end0[1] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's end y coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let KclValue::Segment { value: segment1 } = &line1 else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let SegmentRepr::Unsolved { segment: unsolved1 } = &segment1.repr else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            "line must be an unsolved Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedSegmentKind::Line {
-        start: start1,
-        end: end1,
-        ..
-    } = &unsolved1.kind
-    else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line argument must be a line, no other type of Segment".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line1_p0_x) = &start1[0] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's start x coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line1_p0_y) = &start1[1] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's start y coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line1_p1_x) = &end1[0] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's end x coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let UnsolvedExpr::Unknown(line1_p1_y) = &end1[1] else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line's end y coordinate must be a var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-
     let range = args.source_range;
-    let solver_line0_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-        line0_p0_x.to_constraint_id(range)?,
-        line0_p0_y.to_constraint_id(range)?,
-    );
-    let solver_line0_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-        line0_p1_x.to_constraint_id(range)?,
-        line0_p1_y.to_constraint_id(range)?,
-    );
-    let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
-    let solver_line1_p0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-        line1_p0_x.to_constraint_id(range)?,
-        line1_p0_y.to_constraint_id(range)?,
-    );
-    let solver_line1_p1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-        line1_p1_x.to_constraint_id(range)?,
-        line1_p1_y.to_constraint_id(range)?,
-    );
-    let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
-    let constraint = SolverConstraint::LinesEqualLength(solver_line0, solver_line1);
+    let constrainable_lines: Vec<ConstrainableLine> = lines
+        .iter()
+        .map(|line| {
+            let KclValue::Segment { value: segment } = line else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line argument must be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "line must be an unsolved Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line argument must be a line, no other type of Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p0_x) = &start[0] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's start x coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p0_y) = &start[1] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's start y coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p1_x) = &end[0] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's end x coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let UnsolvedExpr::Unknown(line_p1_y) = &end[1] else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line's end y coordinate must be a var".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let solver_line_p0 =
+                DatumPoint::new_xy(line_p0_x.to_constraint_id(range)?, line_p0_y.to_constraint_id(range)?);
+            let solver_line_p1 =
+                DatumPoint::new_xy(line_p1_x.to_constraint_id(range)?, line_p1_y.to_constraint_id(range)?);
+
+            Ok(ConstrainableLine {
+                solver_line: DatumLineSegment::new(solver_line_p0, solver_line_p1),
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            })
+        })
+        .collect::<Result<_, _>>()?;
+
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
     // Save the constraint to be used for solving.
@@ -1602,11 +1550,17 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
             vec![args.source_range],
         )));
     };
-    sketch_state.solver_constraints.push(constraint);
+    let first_line = constrainable_lines[0];
+    for line in constrainable_lines.iter().skip(1) {
+        sketch_state.solver_constraints.push(SolverConstraint::LinesEqualLength(
+            first_line.solver_line,
+            line.solver_line,
+        ));
+    }
     #[cfg(feature = "artifact-graph")]
     {
         let constraint = crate::front::Constraint::LinesEqualLength(LinesEqualLength {
-            lines: vec![unsolved0.object_id, unsolved1.object_id],
+            lines: constrainable_lines.iter().map(|line| line.object_id).collect(),
         });
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);
