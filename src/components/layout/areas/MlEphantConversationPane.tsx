@@ -47,6 +47,7 @@ export const MlEphantConversationPane = (props: {
   )
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
+  const steeredId = useRef<string | null>(null)
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -156,22 +157,22 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onRemoveFromQueue = useCallback((id: string) => {
+    if (steeredId.current === id) {
+      steeredId.current = null
+    }
     setQueue((prev) => prev.filter((msg) => msg.id !== id))
   }, [])
 
   const { sendBillingUpdate, mlEphantManagerActor } = props
   const onSteer = useCallback(
     (id: string) => {
-      // Move the steered message to the front of the queue
-      setQueue((prev) => {
-        const index = prev.findIndex((msg) => msg.id === id)
-        if (index === -1) return prev
-        const steered = prev[index]
-        return [steered, ...prev.filter((_, i) => i !== index)]
-      })
+      // Mark the message to be processed next without reordering the queue.
+      // The queue will be updated when Zookeeper finishes the current message
+      // and the auto-submit effect picks up the steered message.
+      steeredId.current = id
       // Interrupt the current prompt; when end_of_stream arrives,
       // isProcessing goes false and the auto-submit effect sends the
-      // front-of-queue message.
+      // steered message.
       sendBillingUpdate()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.Interrupt,
@@ -180,12 +181,28 @@ export const MlEphantConversationPane = (props: {
     [mlEphantManagerActor, sendBillingUpdate]
   )
 
-  // Auto-submit the next queued message when current processing completes
+  // Auto-submit the next queued message when current processing completes.
+  // If a message was steered, it takes priority over the default FIFO order.
   useEffect(() => {
     if (!isProcessing && queue.length > 0 && !isSubmittingFromQueue.current) {
       isSubmittingFromQueue.current = true
-      const next = queue[0]
-      setQueue((prev) => prev.slice(1))
+      let next: QueuedMessage
+      if (steeredId.current !== null) {
+        const id = steeredId.current
+        steeredId.current = null
+        const index = queue.findIndex((msg) => msg.id === id)
+        if (index !== -1) {
+          next = queue[index]
+          setQueue((prev) => prev.filter((msg) => msg.id !== id))
+        } else {
+          // Steered message was removed from queue; fall back to FIFO
+          next = queue[0]
+          setQueue((prev) => prev.slice(1))
+        }
+      } else {
+        next = queue[0]
+        setQueue((prev) => prev.slice(1))
+      }
       onProcess(next.text, next.mode, next.attachments)
         .catch(reportRejection)
         .finally(() => {
@@ -203,6 +220,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
+    steeredId.current = null
     setQueue([])
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
