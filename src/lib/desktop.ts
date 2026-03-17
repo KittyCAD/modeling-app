@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
@@ -983,7 +983,7 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (token: string): Promise<User> => {
+export const getUser = async (token: string): Promise<UserResponse> => {
   const client = createKCClient(token)
   const res = await kcCall(() => users.get_user_self({ client }))
   if (res instanceof Error) return Promise.reject(res)
