@@ -379,7 +379,10 @@ export class ZDSProject {
     // We ignore all currently-opened editors. The project watcher is meant
     // only to notify about the rest of the project's updates, and pass them
     // into the currently-executing editor.
-    if (foundEditorKey) {
+    if (foundEditorKey && eventType === 'unlink') {
+      this.executingEditor.value?.close()
+      return
+    } else if (foundEditorKey) {
       return
     }
 
@@ -949,6 +952,10 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
     }: { newCode: string; shouldResetCamera: boolean }) => {
+      // We've closed the editor and/or project, tear down.
+      if (this.isClosingSignal.value) {
+        return
+      }
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
@@ -1144,7 +1151,11 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     this.unwatch()
+    this.isClosingSignal.value = true
   }
+
+  /** A signal to cancel pending writes, executions, etc */
+  isClosingSignal = signal<boolean>(false)
 
   clearAst() {
     this.ast = {
@@ -2273,7 +2284,11 @@ export class KclManager extends File {
         this.timeoutWriter = setTimeout(() => {
           if (!this.path) {
             return reject(new Error('currentFilePath not set'))
+          } else if (this.isClosingSignal) {
+            // We've closed the editor and/or project, tear down.
+            return
           }
+
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true

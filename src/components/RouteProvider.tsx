@@ -111,18 +111,20 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   )
 
   useFileSystemWatcher(
-    async (eventType: string) => {
+    async (eventType: string, path: string) => {
       // If there is a projectPath but it no longer exists it means
       // it was externally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in
       // loadAndValidateSettings trying to recreate files. I do not
       // wish to change the behavior in case anything else uses it.
       // Go home.
-      if (loadedProject?.path) {
-        if (!(await fsZds.stat(loadedProject.path))) {
-          void navigate(PATHS.HOME)
-          return
-        }
+      // TODO: move this into the file watching callback within the ZDSProject class
+      // once the App class can navigate
+      const isDeletingCurrentProject =
+        eventType === 'unlinkDir' && path === loadedProject?.path
+      if (isDeletingCurrentProject) {
+        void navigate(PATHS.HOME)
+        return
       }
 
       // Only reload if there are changes. Ignore everything else.
