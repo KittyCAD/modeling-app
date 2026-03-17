@@ -90,7 +90,7 @@ describe('EditorManager Class', () => {
   })
 
   describe('updateCodeEditor', () => {
-    it('should still write to file when the code is unchanged', () => {
+    it('should write to file when the code is unchanged and shouldWriteToDisk is true', () => {
       const writeToFileSpy = vi
         .spyOn(singletons.kclManager, 'writeToFile')
         .mockResolvedValue(undefined)
@@ -101,6 +101,21 @@ describe('EditorManager Class', () => {
       })
 
       expect(writeToFileSpy).toHaveBeenCalledWith(currentCode)
+
+      writeToFileSpy.mockRestore()
+    })
+
+    it('should not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
+      const writeToFileSpy = vi
+        .spyOn(singletons.kclManager, 'writeToFile')
+        .mockResolvedValue(undefined)
+
+      const currentCode = singletons.kclManager.code
+      singletons.kclManager.updateCodeEditor(currentCode, {
+        shouldWriteToDisk: false,
+      })
+
+      expect(writeToFileSpy).not.toHaveBeenCalled()
       writeToFileSpy.mockRestore()
     })
   })
