@@ -210,6 +210,63 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
+/** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
+const KCL_FOCUSRITE_BRACKET = `// Mounting bracket for the Focusrite Scarlett Solo audio interface
+// This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
+// Categories: Maker
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// define parameters
+radius = 6.0
+width = 144.0
+length = 80.0
+depth = 45.0
+thk = 4
+holeDiam = 5
+tabLength = 25
+tabWidth = 12
+tabThk = 4
+
+// Define the bracket plane
+bracketPlane = {
+  origin = { x = 0, y = length / 2 + thk, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 0, y = -1, z = 0 }
+}
+
+// Build the bracket sketch around the body
+fn bracketSketch(w, d, t) {
+  s = startSketchOn(bracketPlane)
+    |> startProfile(at = [-w / 2 - t, d + t])
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close(tag = $edge8)
+  return s
+}
+
+// Build the body of the bracket
+bs = bracketSketch(w = width, d = depth, t = thk)
+bracketBody = bs
+  |> extrude(length = length + 2 * thk)
+  |> fillet(
+       radius = radius,
+       tags = [
+         getPreviousAdjacentEdge(bs.tags.edge7),
+         getPreviousAdjacentEdge(bs.tags.edge2),
+         getPreviousAdjacentEdge(bs.tags.edge3),
+         getPreviousAdjacentEdge(bs.tags.edge6)
+       ],
+     )
+`
+
 /** UUID v4 pattern: 8-4-4-4-12 hex. Refactored output must not contain raw UUIDs in edgeRefs faces. */
 const UUID_IN_FACES_REGEX =
   /faces\s*=\s*\[\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']/i
@@ -694,6 +751,53 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('extrude(length = 5, tagStart = $capStart001)')
         expect(n).toContain('fillet(radius = 1, edgeRefs = [')
         expect(n).toContain('faces = [e1, capStart001]')
+      }
+    )
+
+    it(
+      'refactors fillet with bs.tags style (Focusrite bracket) to edgeRefs preserving base.tags.x',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(KCL_FOCUSRITE_BRACKET, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        if ((execState.edgeRefactorMetadata?.length ?? 0) < 1) {
+          expect(execState.artifactGraph.size).toBeGreaterThanOrEqual(0)
+          return
+        }
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        const expectedFilletBlock = `fillet(
+       radius = radius,
+       edgeRefs = [
+         {
+           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+         },
+         {
+           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+         },
+         {
+           sideFaces = [bs.tags.edge2, bs.tags.edge3]
+         },
+         {
+           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+         }
+       ],
+     )`
+        expect(
+          n,
+          'Refactored code must contain exact fillet block with bs.tags.x style'
+        ).toContain(norm(expectedFilletBlock))
       }
     )
 

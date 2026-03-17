@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createObjectExpression,
   createTagDeclarator,
 } from '@src/lang/create'
@@ -151,6 +152,7 @@ export function entityReferenceToEdgeRefPayload(
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
  * @param originalEdgeSelection - Optional original edge selection (segment/sweepEdge) for Solid2D edge handling
  * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for V2-only selections)
+ * @param tagsBaseExpr - When original tags were referenced as base.tags.x (e.g. bs.tags.edge7), pass the base expr so we emit sideFaces = [base.tags.edge6, base.tags.edge7]
  */
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
@@ -158,7 +160,8 @@ export function createEdgeRefObjectExpression(
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   originalEdgeSelection?: ResolvedGraphSelection,
-  fallbackCodeRef?: CodeRef
+  fallbackCodeRef?: CodeRef,
+  tagsBaseExpr?: Expr | null
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   // Resolve face UUIDs to tags
   const faceTags: string[] = []
@@ -273,16 +276,31 @@ export function createEdgeRefObjectExpression(
   }
 
   // KCL uses camelCase for object keys (sideFaces, endFaces)
+  const sideFacesExprs =
+    tagsBaseExpr != null
+      ? faceTags.map((tag) =>
+          createMemberExpression(
+            createMemberExpression(tagsBaseExpr, 'tags'),
+            tag
+          )
+        )
+      : faceTags.map((tag) => createLocalName(tag))
+
   const properties: { [key: string]: Expr } = {
-    sideFaces: createArrayExpression(
-      faceTags.map((tag) => createLocalName(tag))
-    ),
+    sideFaces: createArrayExpression(sideFacesExprs),
   }
 
   if (disambiguatorTags.length > 0) {
-    properties.endFaces = createArrayExpression(
-      disambiguatorTags.map((tag) => createLocalName(tag))
-    )
+    const endFacesExprs =
+      tagsBaseExpr != null
+        ? disambiguatorTags.map((tag) =>
+            createMemberExpression(
+              createMemberExpression(tagsBaseExpr, 'tags'),
+              tag
+            )
+          )
+        : disambiguatorTags.map((tag) => createLocalName(tag))
+    properties.endFaces = createArrayExpression(endFacesExprs)
   }
 
   // Only add index if explicitly provided
@@ -330,6 +348,31 @@ function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
   )
   if (!edgeRefsArg?.arg || edgeRefsArg.arg.type !== 'ArrayExpression') return []
   return edgeRefsArg.arg.elements ?? []
+}
+
+/**
+ * If the tag element is a deprecated stdlib call whose first argument is base.tags.tagName
+ * (e.g. getPreviousAdjacentEdge(bs.tags.edge7)), returns the base expression (e.g. bs).
+ * Used so Z0006 refactor can emit edgeRefs with the same style: sideFaces = [bs.tags.edge6, bs.tags.edge7].
+ */
+function getTagsBaseFromTagElement(el: Expr): Expr | null {
+  if (el.type !== 'CallExpressionKw') return null
+  const inner = el as Node<CallExpressionKw>
+  const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
+  if (
+    !calleeName ||
+    !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
+  )
+    return null
+  const firstArg = inner.unlabeled ?? null
+  if (!firstArg || firstArg.type !== 'MemberExpression') return null
+  const outerMem = firstArg as { object: Expr; property: Expr }
+  if (outerMem.object.type !== 'MemberExpression') return null
+  const innerMem = outerMem.object as { object: Expr; property: Expr }
+  const propName = (innerMem.property as { name?: { name?: string } })?.name
+    ?.name
+  if (propName !== 'tags') return null
+  return innerMem.object
 }
 
 function callSourceRangeMatches(
@@ -382,6 +425,8 @@ interface UnifiedCallToFix {
   range: [number, number, number]
   orderedFaceIds: [string, string][]
   hasExistingEdgeRefs: boolean
+  /** When tags were referenced as base.tags.x (e.g. bs.tags.edge7), the base expr so we emit the same style. */
+  tagsBaseExpr?: Expr | null
 }
 
 /** Walk program and collect (range, orderedFaceIds, hasExistingEdgeRefs) for each fillet/chamfer call that has tags and/or edgeRefs. */
@@ -406,8 +451,13 @@ function findFilletChamferCallsToFixUnified(
     const elements = getTagsElementsFromCall(call)
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedFaceIds: [string, string][] = []
+    let tagsBaseExpr: Expr | null = null
     if (elements?.length) {
       for (const el of elements) {
+        if (tagsBaseExpr === null) {
+          const base = getTagsBaseFromTagElement(el)
+          if (base !== null) tagsBaseExpr = base
+        }
         if (el.type === 'CallExpressionKw') {
           const inner = el as Node<CallExpressionKw>
           const innerCallee = (inner.callee as { name?: { name?: string } })
@@ -447,6 +497,7 @@ function findFilletChamferCallsToFixUnified(
         range: [call.start, call.end, moduleId],
         orderedFaceIds,
         hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
+        tagsBaseExpr: tagsBaseExpr ?? undefined,
       })
     }
     walkExpr(expr)
@@ -1051,7 +1102,12 @@ export function refactorZ0006Unified(
 
   let modifiedAst = structuredClone(ast) as Node<Program>
 
-  for (const { range, orderedFaceIds, hasExistingEdgeRefs } of toFixFC) {
+  for (const {
+    range,
+    orderedFaceIds,
+    hasExistingEdgeRefs,
+    tagsBaseExpr,
+  } of toFixFC) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
     const edgeRefExprs: Expr[] = []
     for (const faceIds of orderedFaceIds) {
@@ -1059,7 +1115,10 @@ export function refactorZ0006Unified(
         { side_faces: faceIds },
         wasmInstance,
         modifiedAst,
-        artifactGraph
+        artifactGraph,
+        undefined,
+        undefined,
+        tagsBaseExpr
       )
       if (err(result)) continue
       edgeRefExprs.push(result.expr)
