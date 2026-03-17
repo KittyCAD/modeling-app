@@ -544,6 +544,10 @@ impl Artifact {
         }
     }
 
+    fn is_primitive(&self) -> bool {
+        matches!(self, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
+    }
+
     /// Merge the new artifact into self.  If it can't because it's a different
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
@@ -955,11 +959,20 @@ fn flatten_modeling_command_responses(
 
 fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifact: Artifact) {
     let id = new_artifact.id();
+    let new_is_primitive = new_artifact.is_primitive();
     let Some(old_artifact) = map.get_mut(&id) else {
         // No old artifact exists.  Insert the new one.
         map.insert(id, new_artifact);
         return;
     };
+
+    // Primitive face/edge IDs can collide with existing topology artifacts
+    // (for example, Segment/Wall/Cap). When this happens, preserve the
+    // existing artifact and drop the primitive one so we don't clobber graph
+    // structure.
+    if new_is_primitive && !old_artifact.is_primitive() {
+        return;
+    }
 
     if let Some(replacement) = old_artifact.merge(new_artifact) {
         *old_artifact = replacement;
