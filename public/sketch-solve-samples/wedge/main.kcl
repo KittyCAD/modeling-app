@@ -23,7 +23,12 @@ profile = sketch(on = XY) {
   horizontal(line2)
 }
 
+<<<<<<< HEAD
 region001 = region(segments = [profile.line1, profile.line2])
 // extrude the profile to create the wedge
 wedge = extrude(region001, length = width)
+=======
+// extrude the profile to create the wedge
+wedge = extrude(profile, length = width)
+>>>>>>> 0a6af979a ((refactor): migration script effectsi part 2)
 
