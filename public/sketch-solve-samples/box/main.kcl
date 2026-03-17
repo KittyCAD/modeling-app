@@ -26,6 +26,7 @@ profile = sketch(on = XY) {
   horizontal(line3)
 }
 
+region001 = region(segments = [profile.line1, profile.line2])
 // extrude the profile to create the box
-box = extrude(profile, length = height)
+box = extrude(region001, length = height)
 

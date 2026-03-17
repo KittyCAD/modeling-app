@@ -50,7 +50,8 @@ sketch001 = sketch(on = XZ) {
   vertical(line5)
   horizontal(line6)
 }
-bracketBody = extrude(sketch001, length = width)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+bracketBody = extrude(region001, length = width)
 
 // Add mounting holes to mount to the shelf
 sketch002 = startSketchOn(bracketBody, face = seg03)
