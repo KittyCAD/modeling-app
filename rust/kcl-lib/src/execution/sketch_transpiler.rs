@@ -20,6 +20,7 @@ use crate::{
 };
 
 mod intermediate_var;
+mod region;
 
 /// Constraint types that can be applied to segments
 #[derive(Debug, Clone)]
@@ -58,6 +59,8 @@ pub fn transpile_all_old_sketches_to_new(exec_outcome: &ExecOutcome, program: &m
         program
             .ast
             .set_experimental_features(Some(crate::exec::WarningLevel::Allow));
+        // Create regions before extruding.
+        region::insert(&mut program.ast)?;
     }
     Ok(())
 }

@@ -47,6 +47,27 @@ import {
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
+function sendToolbarConstraintOutcome(
+  self: SolveActionArgs['self'],
+  result:
+    | Awaited<ReturnType<SketchSolveContext['rustContext']['addConstraint']>>
+    | undefined
+) {
+  if (result) {
+    self.send({
+      type: 'update selected ids',
+      data: { selectedIds: [], duringAreaSelectIds: [] },
+    })
+    self.send({
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+      },
+    })
+  }
+}
+
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
@@ -111,15 +132,7 @@ async function addAxisDistanceConstraint(
     },
     jsAppSettings(context.kclManager.systemDeps.settings)
   )
-  if (result) {
-    self.send({
-      type: 'update sketch outcome',
-      data: {
-        sourceDelta: result.kclSource,
-        sceneGraphDelta: result.sceneGraphDelta,
-      },
-    })
-  }
+  sendToolbarConstraintOutcome(self, result)
 }
 
 export const sketchSolveMachine = setup({
@@ -271,15 +284,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Dimension: {
@@ -310,17 +315,9 @@ export const sketchSolveMachine = setup({
                 0,
                 context.sketchId,
                 angleConstraint,
-                await jsAppSettings(context.rustContext.settingsActor)
+                jsAppSettings(context.kclManager.systemDeps.settings)
               )
-              if (result) {
-                self.send({
-                  type: 'update sketch outcome',
-                  data: {
-                    sourceDelta: result.kclSource,
-                    sceneGraphDelta: result.sceneGraphDelta,
-                  },
-                })
-              }
+              sendToolbarConstraintOutcome(self, result)
               return
             }
           }
@@ -394,15 +391,7 @@ export const sketchSolveMachine = setup({
               },
               jsAppSettings(context.kclManager.systemDeps.settings)
             )
-            if (result) {
-              self.send({
-                type: 'update sketch outcome',
-                data: {
-                  sourceDelta: result.kclSource,
-                  sceneGraphDelta: result.sceneGraphDelta,
-                },
-              })
-            }
+            sendToolbarConstraintOutcome(self, result)
             return
           } else if (isLineSegment(first)) {
             // Calculate distance for line segment from its endpoints
@@ -456,15 +445,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     HorizontalDistance: {
@@ -499,15 +480,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Perpendicular: {
@@ -522,15 +495,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     LinesEqualLength: {
@@ -545,15 +510,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Vertical: {
@@ -571,15 +528,7 @@ export const sketchSolveMachine = setup({
             jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Horizontal: {
@@ -597,15 +546,7 @@ export const sketchSolveMachine = setup({
             jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     construction: {

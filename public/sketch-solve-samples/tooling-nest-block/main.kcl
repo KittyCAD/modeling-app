@@ -33,7 +33,8 @@ cubeSketch = sketch(on = XY) {
   line4 = line(start = [var 0mm, var 50mm], end = [var 0mm, var 0mm])
   coincident([line3.end, line4.start])
 }
-cubeExtrude = extrude(cubeSketch, length = sideLength)
+region001 = region(segments = [cubeSketch.line1, cubeSketch.line2])
+cubeExtrude = extrude(region001, length = sideLength)
 
 // Write a function to create a hemispherical nest in a given cube side
 fn nest(cubeFace, xPos, yPos, nestSize) {
