@@ -4,6 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import type {
   DirectTagFilletMeta,
@@ -97,37 +98,7 @@ export async function executeAst({
   }
 }
 
-export async function executeAstMock({
-  ast,
-  rustContext,
-  path,
-  usePrevMemory,
-}: {
-  ast: Node<Program>
-  rustContext: RustContext
-  path?: string
-  usePrevMemory?: boolean
-}): Promise<ExecutionResult> {
-  try {
-    const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.executeMock(
-      ast,
-      settings,
-      path,
-      usePrevMemory
-    )
-
-    await rustContext.waitForAllEngineCommands()
-    return {
-      logs: [],
-      errors: [],
-      execState,
-      isInterrupted: false,
-    }
-  } catch (e: any) {
-    return handleExecuteError(e)
-  }
-}
+export const executeAstMock = executeAstMockImpl
 
 function handleExecuteError(e: any): ExecutionResult {
   let isInterrupted = false

@@ -35,8 +35,8 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
-  sketchLineHelperMapKw,
-} from '@src/lang/std/sketch'
+  isTaggableSketchSegment,
+} from '@src/lang/std/sketchTaggingHelpers'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -306,7 +306,7 @@ function modifyAstWithTagsForEdgeSelection(
         cause: segmentNode,
       })
     }
-    if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
+    if (!isTaggableSketchSegment(segmentNode.node.callee.name.name)) {
       return new Error('Selection is not a sketch segment')
     }
 
@@ -538,7 +538,7 @@ function modifyAstWithTagForSketchSegment(
 
   // Check whether selection is a valid sketch segment
   if (
-    !(segmentNode.node.callee.name.name in sketchLineHelperMapKw) &&
+    !isTaggableSketchSegment(segmentNode.node.callee.name.name) &&
     segmentNode.node.callee.name.name !== 'close'
   ) {
     return new Error('Selection is not a sketch segment')
@@ -594,7 +594,7 @@ export function mutateAstWithTagForSketchSegment(
   if (
     !segmentNode.node.callee ||
     !(
-      segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
+      isTaggableSketchSegment(segmentNode.node.callee.name.name) ||
       segmentNode.node.callee.name.name === 'chamfer' ||
       segmentNode.node.callee.name.name === 'fillet'
     )
