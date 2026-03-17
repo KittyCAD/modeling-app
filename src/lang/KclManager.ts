@@ -134,6 +134,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import { requestWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -885,7 +886,6 @@ export class KclManager extends File {
   )
 
   static requestCameraResetAnnotation = Annotation.define<boolean>()
-  static requestSkipWriteToFile = Annotation.define<boolean>()
   static requestSkipExecution = Annotation.define<boolean>()
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
@@ -932,21 +932,8 @@ export class KclManager extends File {
       tr.annotation(KclManager.requestCameraResetAnnotation)
     )
 
-    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestSkipWriteToFile)
-    )
-    const shouldWriteToFile =
-      !this.isBufferMode && notIgnoredUpdate && !hasSkipWriteToFileEffect
-
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
-
-      // We don't want to block on writing to file
-      if (shouldWriteToFile) {
-        // Need to close over `this._currentFilePath`'s value before deferrment,
-        // otherwise the deferred write could have a changed value after rapid navigation
-        void this.writeToFile(newCode)
-      }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
         tr.annotation(KclManager.requestSkipExecution)
@@ -1019,6 +1006,32 @@ export class KclManager extends File {
     1000
   )
 
+  private writeToFileListener = EditorView.updateListener.of((update) => {
+    const hasWriteToFileEffect = update.transactions.some((tr) =>
+      tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
+    )
+    const notIgnoredUpdate =
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
+
+    if (shouldWriteToFile) {
+      // We don't want to block on writing to file
+      void this.writeToFile(update.state.doc.toString())
+    }
+  })
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
@@ -1027,6 +1040,7 @@ export class KclManager extends File {
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
+      this.writeToFileListener,
     ]
   }
   private createEditorView(initialCode = '') {
@@ -2185,14 +2199,19 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
-    // If the code hasn't changed, skip the update to preserve cursor position
-    // However, if clearHistory is true, we still need to clear the history
+    // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
+      // However, if clearHistory is true, we still need to clear the history
       if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
+      // And we still want to honor the caller's request to write to disk.
+      this.editorView.dispatch({
+        annotations: [Transaction.addToHistory.of(false)],
+        effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
+      })
       return
     }
 
@@ -2236,13 +2255,11 @@ export class KclManager extends File {
           ? // Separate annotation for only skipping execution, so that we can write without executing
             KclManager.requestSkipExecution.of(true)
           : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
-        KclManager.requestSkipWriteToFile.of(
-          !resolvedOptions.shouldWriteToDisk
-        ),
         KclManager.requestCameraResetAnnotation.of(
           resolvedOptions.shouldResetCamera
         ),
       ],
+      effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {

@@ -388,6 +388,7 @@ export function sendResultToParent({
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
       },
     }
     self._parent?.send(sendData)

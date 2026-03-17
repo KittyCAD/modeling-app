@@ -391,7 +391,7 @@ impl Node<Program> {
                 if let Some(len) = length_units {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
-                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                        Expr::Name(Box::new(Name::new(len.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -407,7 +407,7 @@ impl Node<Program> {
             if let Some(len) = length_units {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
-                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    Expr::Name(Box::new(Name::new(len.to_string()))),
                 );
             }
 
@@ -2718,9 +2718,9 @@ impl Node<Identifier> {
 }
 
 impl Identifier {
-    pub fn new(name: &str) -> Node<Self> {
+    pub fn new<S: Into<String>>(name: S) -> Node<Self> {
         Node::no_src(Self {
-            name: name.to_string(),
+            name: name.into(),
             digest: None,
         })
     }
@@ -2767,10 +2767,10 @@ impl Node<Name> {
 }
 
 impl Name {
-    pub fn new(name: &str) -> Node<Self> {
+    pub fn new<S: Into<String>>(name: S) -> Node<Self> {
         Node::no_src(Name {
             name: Node::no_src(Identifier {
-                name: name.to_string(),
+                name: name.into(),
                 digest: None,
             }),
             path: Vec::new(),
