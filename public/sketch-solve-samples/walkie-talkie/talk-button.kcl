@@ -1,7 +1,7 @@
 // Walkie talkie talk button
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import parameters
 import width, thickness, talkButtonSideLength, talkButtonHeight from "parameters.kcl"
@@ -20,8 +20,12 @@ talkButtonSketch = sketch(on = YZ) {
   horizontal(line4)
 }
 
+region001 = region(segments = [
+  talkButtonSketch.line1,
+  talkButtonSketch.line2
+])
 // create the talk button and apply fillets
-extrude(talkButtonSketch, length = talkButtonHeight)
+extrude(region001, length = talkButtonHeight)
   |> fillet(
        radius = 0.050,
        tags = [

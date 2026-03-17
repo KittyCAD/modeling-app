@@ -12,7 +12,7 @@ diameter = 0.3125
 
 // Define a function for the hex nut
 fn hexNut(start, thk, innerDia) {
-  hexNutSketch = startSketchOn(-XZ)
+  sketch001 = startSketchOn(-XZ)
     |> startProfile(at = [start[0] + innerDia, start[1]])
     |> angledLine(angle = 240, length = innerDia)
     |> angledLine(angle = 180, length = innerDia)
@@ -21,7 +21,7 @@ fn hexNut(start, thk, innerDia) {
     |> angledLine(angle = 0, length = innerDia * .90)
     |> close()
     |> subtract2d(tool = circle(center = [start[0], start[1]], radius = innerDia / 2))
-    |> extrude(length = thk)
+  hexNutSketch = extrude(sketch001, length = thk)
   return hexNutSketch
 }
 
