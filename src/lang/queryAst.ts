@@ -3,9 +3,6 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
-  createArrayExpression,
-  createCallExpressionStdLibKw,
-  createLabeledArg,
   createLiteral,
   createLocalName,
   createPipeSubstitution,
@@ -47,12 +44,7 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  baseUnitToNumericSuffix,
-  kclSettings,
-  recast,
-  sketchFromKclValue,
-} from '@src/lang/wasm'
+import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -67,10 +59,8 @@ import type {
   Selection,
   Selections,
   EdgeCutInfo,
-  RegionSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isRegionSelection } from '@src/lib/selections'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
@@ -1159,50 +1149,6 @@ export function getVariableNameFromNodePath(
   return undefined
 }
 
-function getRegionExprFromSelection(
-  regionSelection: RegionSelection,
-  ast: Node<Program>,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Expr | Error {
-  const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
-  if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
-    return new Error("Couldn't retrieve sketch block artifact")
-  }
-  const sketchVarName = getVariableNameFromNodePath(
-    sketchArtifact.codeRef.pathToNode,
-    ast,
-    wasmInstance
-  )
-  if (!sketchVarName) {
-    return new Error("Couldn't retrieve sketch block variable")
-  }
-
-  const { x, y } = regionSelection.point
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
-    return new Error('Region point coordinates are invalid')
-  }
-
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  if (err(settings)) {
-    return settings
-  }
-  const unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
-
-  const regionArgs = [
-    createLabeledArg(
-      'point',
-      createArrayExpression([
-        createLiteral(x, wasmInstance, unitSuffix),
-        createLiteral(y, wasmInstance, unitSuffix),
-      ])
-    ),
-    createLabeledArg('sketch', createLocalName(sketchVarName)),
-  ]
-
-  return createCallExpressionStdLibKw('region', null, regionArgs)
-}
-
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
@@ -1222,7 +1168,6 @@ export function getVariableExprsFromSelection(
   const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
-  let hasRegionSelections = false
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     let variable:
@@ -1319,33 +1264,6 @@ export function getVariableExprsFromSelection(
     console.warn('No match for selection, likely a bug (or bad selection)', s)
   }
 
-  for (const selectionItem of selection.otherSelections) {
-    if (!isRegionSelection(selectionItem)) continue
-
-    hasRegionSelections = true
-    const regionExpr = getRegionExprFromSelection(
-      selectionItem,
-      ast,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(regionExpr)) {
-      return regionExpr
-    }
-    exprs.push(regionExpr)
-  }
-
-  if (exprs.length === 0) {
-    return new Error("Couldn't map selections to program references")
-  }
-
-  if (hasRegionSelections) {
-    // Region selections map to explicit region(...) expressions.
-    // Avoid mixing them with pipe substitutions from selection plumbing.
-    pathIfPipe = undefined
-    exprs = exprs.filter((expr) => expr.type !== 'PipeSubstitution')
-  }
-
   return { exprs, pathIfPipe }
 }
 
@@ -1374,12 +1292,23 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
-    const artifact = artifactGraph.get(artifactId)
+    let artifact = artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (artifact.type === 'segment') {
+      const correspondingWall = artifactGraph
+        .values()
+        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      if (!correspondingWall) {
+        continue
+      }
+
+      artifact = correspondingWall
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }

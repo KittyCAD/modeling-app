@@ -22,6 +22,7 @@ import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
+import { getUserBlockedReason } from '@src/components/layout/areas/mlEphantBlockedReason'
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -266,20 +267,7 @@ export const MlEphantConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPayment: () => boolean = () => {
-    if (!props.user || !props.user.block) {
-      return false
-    }
-
-    switch (props.user.block) {
-      case 'missing_payment_method':
-      case 'payment_method_failed':
-        return true
-      default:
-        props.user.block satisfies never // exhaustiveness check
-        return false
-    }
-  }
+  const userBlockedOnPaymentReason = getUserBlockedReason(props.user)
 
   return (
     <MlEphantConversation
@@ -302,7 +290,7 @@ export const MlEphantConversationPane = (props: {
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
-      userBlockedOnPayment={userBlockedOnPayment()}
+      blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={props.settings.app.zookeeperMode.current}
       onMlCopilotModeChange={props.onMlCopilotModeChange}

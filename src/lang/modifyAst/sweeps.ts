@@ -11,6 +11,7 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
@@ -54,7 +55,7 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
-import { isRegionSelection } from '@src/lib/selections'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -71,6 +72,7 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
+  hideSeams,
   bodyType,
   nodeToEdit,
 }: {
@@ -88,6 +90,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: KclPreludeExtrudeMethod
+  hideSeams?: boolean
   bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
@@ -122,10 +125,7 @@ export function addExtrude({
     ),
     otherSelections: sketches.otherSelections,
   }
-  if (
-    nonFaceSelections.graphSelections.length > 0 ||
-    nonFaceSelections.otherSelections.some((s) => isRegionSelection(s))
-  ) {
+  if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
       artifactGraph,
@@ -138,6 +138,18 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -160,9 +172,10 @@ export function addExtrude({
     modifiedAst = tagResult.modifiedAst
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -195,6 +208,10 @@ export function addExtrude({
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
+  const hideSeamsExpr =
+    hideSeams !== undefined
+      ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
+      : []
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
@@ -211,6 +228,7 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
+    ...hideSeamsExpr,
     ...bodyTypeExpr,
   ])
 
@@ -322,6 +340,18 @@ export function addSweep({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Find the path declaration for the labeled argument
   // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
@@ -336,9 +366,10 @@ export function addSweep({
 
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
-  const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
-    : []
+  const sectionalExpr =
+    sectional !== undefined
+      ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
+      : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
@@ -429,18 +460,31 @@ export function addLoft({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Extra labeled args expressions
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
-  const bezApproximateRationalExpr = bezApproximateRational
-    ? [
-        createLabeledArg(
-          'bezApproximateRational',
-          createLiteral(bezApproximateRational, wasmInstance)
-        ),
-      ]
-    : []
+  const bezApproximateRationalExpr =
+    bezApproximateRational !== undefined
+      ? [
+          createLabeledArg(
+            'bezApproximateRational',
+            createLiteral(bezApproximateRational, wasmInstance)
+          ),
+        ]
+      : []
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
@@ -546,6 +590,17 @@ export function addRevolve({
   if (err(vars)) {
     return vars
   }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
 
   // Retrieve axis expression depending on mode
   const getAxisResult = getAxisExpressionAndIndex(
@@ -559,9 +614,10 @@ export function addRevolve({
   }
 
   // Extra labeled args expressions
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(

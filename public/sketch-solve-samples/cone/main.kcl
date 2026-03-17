@@ -2,7 +2,7 @@
 // A cone is defined by it's diameter and height.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Define parameters
 diameter = 10
@@ -22,6 +22,7 @@ profile = sketch(on = XY) {
   horizontal(line2)
 }
 
+region001 = region(segments = [profile.line1, profile.line2])
 // revolve the profile to create the cone
-cone = revolve(profile, axis = Y, angle = 360.0)
+cone = revolve(region001, axis = Y, angle = 360.0)
 
