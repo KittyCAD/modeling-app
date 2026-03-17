@@ -135,7 +135,7 @@ import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
 import {
   requestCameraReset,
-  requestExecution,
+  requestSkipExecution,
 } from '@src/editor/plugins/execution'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 
@@ -898,7 +898,8 @@ export class KclManager extends File {
    * then fires (and forgets) an execution with a debounce.
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
-    const notIgnoredUpdate = this.engineCommandManager.connection?.connected
+    const notIgnoredUpdate =
+      this.engineCommandManager.connection?.connected && update.docChanged
 
     const shouldResetCamera = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestCameraReset) && e.value)
@@ -907,10 +908,10 @@ export class KclManager extends File {
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
 
-      const hasExecutionEffect = update.transactions.some((tr) =>
-        tr.effects.some((e) => e.is(requestExecution) && e.value)
+      const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
+        tr.effects.some((e) => e.is(requestSkipExecution) && e.value)
       )
-      if (hasExecutionEffect) {
+      if (!hasSkipExecutionAnnotation) {
         this.deferredExecution({ newCode, shouldResetCamera })
       }
     }
@@ -2221,7 +2222,7 @@ export class KclManager extends File {
         ),
       ],
       effects: [
-        requestExecution.of(resolvedOptions.shouldExecute),
+        requestSkipExecution.of(!resolvedOptions.shouldExecute),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
       ],

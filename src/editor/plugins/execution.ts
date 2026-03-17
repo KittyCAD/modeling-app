@@ -2,7 +2,7 @@ import { invertedEffects } from '@codemirror/commands'
 import { type Extension, StateEffect } from '@codemirror/state'
 
 export const requestCameraReset = StateEffect.define<boolean>()
-export const requestExecution = StateEffect.define<boolean>()
+export const requestSkipExecution = StateEffect.define<boolean>()
 
 /**
  * And extension that allows execution-related state effects to be included
@@ -15,8 +15,8 @@ export function executionEffectsExtension(): Extension {
     for (const e of tr.effects) {
       if (e.is(requestCameraReset)) {
         found.push(requestCameraReset.of(e.value))
-      } else if (e.is(requestExecution)) {
-        found.push(requestExecution.of(e.value))
+      } else if (e.is(requestSkipExecution)) {
+        found.push(requestSkipExecution.of(e.value))
       }
     }
     return found
