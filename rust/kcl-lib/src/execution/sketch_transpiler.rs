@@ -230,7 +230,10 @@ fn build_sketch_block_ast(
     for (i, path_segment) in sketch.paths.iter().enumerate() {
         let transpiler_segment = match transpiler_build_segment(path_segment, i, fail_fast)? {
             Some(segment) => segment,
-            None => continue,
+            None => {
+                previous_transpiler_segment_name = None;
+                continue;
+            }
         };
         let transpiler_segment_name = transpiler_segment_name(&transpiler_segment).to_owned();
 
