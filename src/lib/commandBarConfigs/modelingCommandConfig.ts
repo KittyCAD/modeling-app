@@ -1445,11 +1445,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const wasmInstance = await context.wasmInstancePromise
       const modRes = addHelix({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(

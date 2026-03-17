@@ -1269,14 +1269,43 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
   if (hasV2Selections) {
     // V2-only path: Group V2 selections by body using face IDs
-    const bodyToV2Selections = new Map<string, typeof v2Selections>()
+    const bodyToV2Selections = new Map<
+      string,
+      {
+        sweepArtifact: SweepArtifact
+        edgeEntityRefs: Array<Extract<EntityReference, { type: 'edge' }>>
+      }
+    >()
 
     for (const v2Sel of v2Selections) {
-      if (!v2Sel.entityRef || v2Sel.entityRef.type !== 'edge') continue
+      const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+      if (!resolved?.artifact) continue
 
-      // Find a wall or cap face to get the body (edge refs can list segment first)
+      // Convert segment/edgeCut selections into the V2 `edge` entityRef shape
+      // expected by edgeRef payload creation.
+      const edgeEntityRef:
+        | Extract<EntityReference, { type: 'edge' }>
+        | undefined =
+        v2Sel.entityRef?.type === 'edge'
+          ? v2Sel.entityRef
+          : (() => {
+              const er = edgeSelectionToEntityReference(
+                {
+                  ...(resolved as ResolvedGraphSelection),
+                  artifact: resolved.artifact,
+                },
+                artifactGraph
+              )
+              return err(er)
+                ? undefined
+                : (er as Extract<EntityReference, { type: 'edge' }>)
+            })()
+
+      if (!edgeEntityRef) continue
+
+      // Find a wall or cap face to get the body.
       let faceArtifact: Artifact | undefined
-      for (const faceId of v2Sel.entityRef.side_faces) {
+      for (const faceId of edgeEntityRef.side_faces) {
         const a = artifactGraph.get(faceId)
         if (a && (a.type === 'wall' || a.type === 'cap')) {
           faceArtifact = a
@@ -1285,82 +1314,56 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       }
       if (!faceArtifact) continue
 
-      // Get the sweep artifact
       const faceCodeRef =
-        v2Sel.codeRef ??
         getFaceCodeRef(faceArtifact) ??
         getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
       if (!faceCodeRef) continue
+
       const sweepArtifact = getSweepArtifactFromSelection(
         { artifact: faceArtifact, codeRef: faceCodeRef },
         artifactGraph
       )
-      if (err(sweepArtifact)) {
-        continue
-      }
+      if (err(sweepArtifact)) continue
 
       const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
       if (!bodyToV2Selections.has(bodyKey)) {
-        bodyToV2Selections.set(bodyKey, [])
+        bodyToV2Selections.set(bodyKey, {
+          sweepArtifact,
+          edgeEntityRefs: [],
+        })
       }
-      bodyToV2Selections.get(bodyKey)!.push(v2Sel)
+      bodyToV2Selections.get(bodyKey)!.edgeEntityRefs.push(edgeEntityRef)
     }
 
     // Process each body
-    for (const [bodyKey, bodyV2Selections] of bodyToV2Selections.entries()) {
+    for (const [bodyKey, bodyData] of bodyToV2Selections.entries()) {
       const bodyEdgeRefs: Expr[] = []
 
       // Create edgeRefs from V2 selections
-      for (const v2Sel of bodyV2Selections) {
-        if (v2Sel.entityRef?.type === 'edge') {
-          const payload = entityReferenceToEdgeRefPayload(v2Sel.entityRef)
-          const result = createEdgeRefObjectExpression(
-            payload,
-            wasmInstance,
-            modifiedAst,
-            artifactGraph
-          )
-          if (err(result)) {
-            console.warn('Failed to create edgeRef expression:', result)
-            continue
-          }
-          bodyEdgeRefs.push(result.expr)
-          modifiedAst = result.modifiedAst
+      for (const edgeEntityRef of bodyData.edgeEntityRefs) {
+        const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
+        const result = createEdgeRefObjectExpression(
+          payload,
+          wasmInstance,
+          modifiedAst,
+          artifactGraph
+        )
+        if (err(result)) {
+          console.warn('Failed to create edgeRef expression:', result)
+          continue
         }
+        bodyEdgeRefs.push(result.expr)
+        modifiedAst = result.modifiedAst
       }
 
       if (bodyEdgeRefs.length === 0) continue
-
-      // Get the sweep artifact for this body (use first selection's face)
-      const firstV2Sel = bodyV2Selections[0]
-      if (!firstV2Sel.entityRef || firstV2Sel.entityRef.type !== 'edge')
-        continue
-
-      const firstFaceId = firstV2Sel.entityRef.side_faces[0]
-      const faceArtifact = artifactGraph.get(firstFaceId)
-      if (
-        !faceArtifact ||
-        (faceArtifact.type !== 'wall' && faceArtifact.type !== 'cap')
-      )
-        continue
-
-      const firstFaceCodeRef =
-        firstV2Sel.codeRef ??
-        getFaceCodeRef(faceArtifact) ??
-        getCodeRefsByArtifactId(firstFaceId, artifactGraph)?.[0]
-      if (!firstFaceCodeRef) continue
-      const sweepArtifact = getSweepArtifactFromSelection(
-        { artifact: faceArtifact, codeRef: firstFaceCodeRef },
-        artifactGraph
-      )
-      if (err(sweepArtifact)) continue
 
       // Build solids expression
       const solids: Selections = {
         graphSelectionsV2: [
           {
-            entityRef: artifactToEntityRef('sweep', sweepArtifact.id),
-            codeRef: sweepArtifact.codeRef,
+            entityRef: artifactToEntityRef('sweep', bodyData.sweepArtifact.id),
+            codeRef: bodyData.sweepArtifact.codeRef,
           },
         ],
         otherSelections: [],

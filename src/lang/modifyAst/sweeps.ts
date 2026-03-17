@@ -909,29 +909,18 @@ export function getAxisExpressionAndIndex(
       edge.graphSelectionsV2[0],
       artifactGraph
     )
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      ast,
-      edgeResolved?.codeRef?.range ?? [0, 0, 0]
-    )
-    const tagResult = mutateAstWithTagForSketchSegment(
-      ast,
-      pathToAxisSelection,
-      wasmInstance
-    )
-
-    // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) {
-      return tagResult
-    }
-
-    const { tag } = tagResult
     let axisSelection =
       edge?.graphSelectionsV2[0] != null
         ? resolveSelectionV2(edge.graphSelectionsV2[0], artifactGraph)?.artifact
         : undefined
     // Fallback: resolveSelectionV2 returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
     // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
-    if (!axisSelection && edge?.graphSelectionsV2[0] != null && artifactGraph) {
+    const axisSelectionAny = axisSelection as any
+    if (
+      (!axisSelectionAny || !axisSelectionAny.codeRef) &&
+      edge?.graphSelectionsV2[0] != null &&
+      artifactGraph
+    ) {
       const resolved = resolveSelectionV2(
         edge.graphSelectionsV2[0],
         artifactGraph
@@ -972,30 +961,53 @@ export function getAxisExpressionAndIndex(
         }
       }
     }
-    if (!axisSelection) {
+    if (!axisSelectionAny) {
       return new Error('Generated axis selection is missing.')
     }
 
-    const generatedAxis = getEdgeTagCall(tag, axisSelection)
+    let pathToAxisSelection: PathToNode
+    const axisCodeRef =
+      axisSelectionAny.codeRef ?? (edgeResolved as any)?.codeRef
+    if (axisCodeRef?.pathToNode && axisCodeRef.pathToNode.length > 0) {
+      pathToAxisSelection = axisCodeRef.pathToNode
+    } else {
+      pathToAxisSelection = getNodePathFromSourceRange(
+        ast,
+        axisCodeRef?.range ?? edgeResolved?.codeRef?.range ?? [0, 0, 0]
+      )
+    }
+
+    const tagResult = mutateAstWithTagForSketchSegment(
+      ast,
+      pathToAxisSelection,
+      wasmInstance
+    )
+
+    // Have the tag whether it is already created or a new one is generated
+    if (err(tagResult)) {
+      return tagResult
+    }
+
+    const { tag } = tagResult
+    const generatedAxis = getEdgeTagCall(tag, axisSelectionAny)
     if (
-      axisSelection.type === 'segment' ||
-      axisSelection.type === 'path' ||
-      axisSelection.type === 'edgeCut'
+      axisSelectionAny.type === 'segment' ||
+      axisSelectionAny.type === 'path' ||
+      axisSelectionAny.type === 'edgeCut'
     ) {
-      const axisDeclaration = axisSelection.codeRef.pathToNode
-      if (!axisDeclaration) {
-        return new Error('Expected to find axis declaration')
+      const axisDeclaration = axisSelectionAny.codeRef?.pathToNode
+      if (axisDeclaration) {
+        const axisIndexInPathToNode =
+          axisDeclaration.findIndex((a: any) => a[0] === 'body') + 1
+        const value = axisDeclaration[axisIndexInPathToNode][0]
+        if (typeof value !== 'number') {
+          return new Error('expected axis index value to be a number')
+        }
+        const axisIndexIfAxis = value
+        return { generatedAxis, axisIndexIfAxis }
       }
-
-      const axisIndexInPathToNode =
-        axisDeclaration.findIndex((a) => a[0] === 'body') + 1
-      const value = axisDeclaration[axisIndexInPathToNode][0]
-      if (typeof value !== 'number') {
-        return new Error('expected axis index value to be a number')
-      }
-
-      const axisIndexIfAxis = value
-      return { generatedAxis, axisIndexIfAxis }
+      // If we can't find axisDeclaration, we can still return a tagged axis.
+      return { generatedAxis }
     } else {
       return { generatedAxis }
     }

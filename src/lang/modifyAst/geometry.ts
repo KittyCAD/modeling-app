@@ -65,7 +65,7 @@ export function addHelix({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare labeled arguments
@@ -93,8 +93,14 @@ export function addHelix({
     const hasV2Edge =
       edge?.graphSelectionsV2?.length &&
       edge.graphSelectionsV2[0]?.entityRef?.type === 'edge'
-    if (hasV2Edge && edge?.graphSelectionsV2?.[0]?.entityRef) {
-      const entityRef = edge.graphSelectionsV2[0].entityRef
+    const shouldUseEdgeRef =
+      hasV2Edge && Boolean(edge?.graphSelectionsV2?.[0]?.entityRef)
+
+    if (shouldUseEdgeRef) {
+      const entityRef = edge.graphSelectionsV2[0].entityRef!
+      if (entityRef.type !== 'edge') {
+        return new Error('Expected helix axis edgeRef to be an edge entityRef')
+      }
       const payload = entityReferenceToEdgeRefPayload(entityRef)
       const originalEdgeSelection = resolveSelectionV2(
         edge.graphSelectionsV2[0],
@@ -110,7 +116,11 @@ export function addHelix({
       if (err(edgeRefResult)) {
         return edgeRefResult
       }
-      axisExpr.push(createLabeledArg('edgeRef', edgeRefResult.expr))
+      // createEdgeRefObjectExpression may mutate AST (e.g. to add tag declarations).
+      // Preserve those mutations by using returned modifiedAst.
+      modifiedAst = edgeRefResult.modifiedAst
+      // `helix` overloads `axis` to accept an edgeRef payload object.
+      axisExpr.push(createLabeledArg('axis', edgeRefResult.expr))
     } else {
       const result = getAxisExpressionAndIndex(
         axis,
