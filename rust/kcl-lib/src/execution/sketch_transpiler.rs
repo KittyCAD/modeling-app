@@ -30,6 +30,8 @@ enum SegmentConstraint {
     EqualLength { other_segment_index: usize },
 }
 
+// Internal data structs for transpiler.
+// Extract information for segments relevant to transpile.
 #[derive(Debug, Clone)]
 enum TranspilerSegment {
     Line(TranspilerLineSegment),
