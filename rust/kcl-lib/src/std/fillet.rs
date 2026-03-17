@@ -414,7 +414,7 @@ pub(super) async fn parse_edge_refs_to_references(
             KclValue::Object { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRefs must be an array of objects with 'faces' field".to_string(),
+                    message: "edgeRefs must be an array of objects with 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -422,11 +422,11 @@ pub(super) async fn parse_edge_refs_to_references(
         };
 
         let faces_value = edge_ref_obj
-            .get("side_faces")
-            .or_else(|| edge_ref_obj.get("faces"))
+            .get("sideFaces")
+            .or_else(|| edge_ref_obj.get("side_faces"))
             .ok_or_else(|| {
                 KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must have 'side_faces' field".to_string(),
+                    message: "edgeRef must have 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 })
@@ -436,7 +436,7 @@ pub(super) async fn parse_edge_refs_to_references(
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'side_faces' must be an array".to_string(),
+                    message: "edgeRef 'sideFaces' must be an array".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -445,7 +445,7 @@ pub(super) async fn parse_edge_refs_to_references(
 
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'side_faces' must have at least one face".to_string(),
+                message: "edgeRef 'sideFaces' must have at least one face".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             }));
@@ -457,12 +457,15 @@ pub(super) async fn parse_edge_refs_to_references(
         }
 
         let mut end_face_uuids = Vec::new();
-        if let Some(end_faces_value) = edge_ref_obj.get("end_faces") {
+        if let Some(end_faces_value) = edge_ref_obj
+            .get("endFaces")
+            .or_else(|| edge_ref_obj.get("end_faces"))
+        {
             let end_faces_array = match end_faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef 'end_faces' must be an array".to_string(),
+                        message: "edgeRef 'endFaces' must be an array".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));

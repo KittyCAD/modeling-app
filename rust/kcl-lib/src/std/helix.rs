@@ -40,20 +40,20 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             KclValue::Object { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must be an object with 'faces' field".to_string(),
+                    message: "edgeRef must be an object with 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
             }
         };
 
-        // Get side_faces array
+        // Get sideFaces array (KCL uses camelCase; accept side_faces for backward compat)
         let faces_value = edge_ref_obj
-            .get("side_faces")
-            .or_else(|| edge_ref_obj.get("faces"))
+            .get("sideFaces")
+            .or_else(|| edge_ref_obj.get("side_faces"))
             .ok_or_else(|| {
                 KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must have 'side_faces' field".to_string(),
+                    message: "edgeRef must have 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 })
@@ -63,7 +63,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'side_faces' must be an array".to_string(),
+                    message: "edgeRef 'sideFaces' must be an array".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -72,7 +72,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'side_faces' must have at least one face".to_string(),
+                message: "edgeRef 'sideFaces' must have at least one face".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             }));
@@ -105,14 +105,18 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             face_uuids.push(face_uuid);
         }
 
-        // Get disambiguators (optional)
+        // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
         let mut disambiguator_uuids = Vec::new();
-        if let Some(disambiguators_value) = edge_ref_obj.get("disambiguators") {
+        if let Some(disambiguators_value) = edge_ref_obj
+            .get("endFaces")
+            .or_else(|| edge_ref_obj.get("end_faces"))
+            .or_else(|| edge_ref_obj.get("disambiguators"))
+        {
             let disambiguators_array = match disambiguators_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef 'disambiguators' must be an array".to_string(),
+                        message: "edgeRef 'endFaces' must be an array".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));

@@ -44,10 +44,11 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type {
+  EdgeRefFromOpArgs,
+  EntityReference,
   Selections,
   Selection,
   SelectionV2,
-  EntityReference,
   EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
@@ -108,7 +109,7 @@ function edgeSelectionToEntityReference(
 
   return {
     type: 'edge',
-    faces: faceIds,
+    side_faces: faceIds,
   }
 }
 
@@ -271,15 +272,15 @@ export function createEdgeRefObjectExpression(
     }
   }
 
+  // KCL uses camelCase for object keys (sideFaces, endFaces)
   const properties: { [key: string]: Expr } = {
-    side_faces: createArrayExpression(
+    sideFaces: createArrayExpression(
       faceTags.map((tag) => createLocalName(tag))
     ),
   }
 
-  // Only add end_faces if present
   if (disambiguatorTags.length > 0) {
-    properties.end_faces = createArrayExpression(
+    properties.endFaces = createArrayExpression(
       disambiguatorTags.map((tag) => createLocalName(tag))
     )
   }
@@ -644,7 +645,7 @@ export function refactorFilletChamferTagsToEdgeRefs(
     const path = getNodePathFromSourceRange(modifiedAst, range)
     let edgeRefExprs: Expr[] = []
     for (const meta of orderedMetas) {
-      const payload = { faces: meta.faceIds }
+      const payload = { side_faces: meta.faceIds }
       const result = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
@@ -698,7 +699,7 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
     const edgeRefExprs: Expr[] = []
     for (const faceIds of orderedFaceIds) {
       const result = createEdgeRefObjectExpression(
-        { faces: faceIds },
+        { side_faces: faceIds },
         wasmInstance,
         modifiedAst as Node<Program>,
         artifactGraph
@@ -1003,7 +1004,7 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     const { faceIds, pathToCall } = toFix[i]
     const path = pathToCall && pathToCall.length > 0 ? pathToCall : pathList[i]
     const result = createEdgeRefObjectExpression(
-      { faces: faceIds },
+      { side_faces: faceIds },
       wasmInstance,
       modifiedAst,
       artifactGraph
@@ -1055,7 +1056,7 @@ export function refactorZ0006Unified(
     const edgeRefExprs: Expr[] = []
     for (const faceIds of orderedFaceIds) {
       const result = createEdgeRefObjectExpression(
-        { faces: faceIds },
+        { side_faces: faceIds },
         wasmInstance,
         modifiedAst,
         artifactGraph
@@ -1140,7 +1141,7 @@ export function refactorDirectTagFilletToEdgeRefs(
     const path = getNodePathFromSourceRange(modifiedAst, range)
     const edgeRefExprs: Expr[] = []
     for (const tagEntry of meta.tags) {
-      const payload = { faces: tagEntry.faceIds }
+      const payload = { side_faces: tagEntry.faceIds }
       const result = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
@@ -2452,7 +2453,7 @@ function findEdgeArtifactFromFaceIds(
 /**
  * Retrieves edge selections from edgeRefs argument (new API).
  * Used for edit flows when reading existing fillet calls with edgeRefs.
- * Parses edgeRefs array of objects with "side_faces" array (UUID or TagIdentifier refs)
+ * Parses edgeRefs array of objects with "sideFaces" array (UUID or TagIdentifier refs)
  * and resolves each to graphSelectionsV2 for the command bar edit flow.
  */
 export function retrieveEdgeSelectionsFromEdgeRefs(
@@ -2467,8 +2468,10 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
 
   for (const item of edgeRefItems) {
     if (item.type !== 'Object' || !item.value) continue
-    const value = item.value as Record<string, OpKclValue>
-    const facesProp = value['faces']
+    const value = item.value as EdgeRefFromOpArgs
+    const facesProp = (value.sideFaces ?? value.side_faces) as
+      | OpKclValue
+      | undefined
     if (!facesProp || facesProp.type !== 'Array') continue
     const faceValues = facesProp.value ?? []
     const faceIds: string[] = []
@@ -2481,8 +2484,7 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
     if (!edgeArtifact) continue
     const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
     if (!codeRefs?.length) continue
-    // Use type 'edge' with faces so addFillet emits edgeRefs (not tags)
-    const entityRef: EntityReference = { type: 'edge', faces: faceIds }
+    const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
     graphSelectionsV2.push({ entityRef, codeRef: codeRefs[0] })
   }
 
@@ -2491,7 +2493,7 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
 
 /**
  * Retrieves edge selections from a single edgeRef argument (e.g. revolve's edgeRef).
- * Used for edit flows when the call already has edgeRef = { faces = [...] } after Z0006 refactor.
+ * Used for edit flows when the call already has edgeRef = { sideFaces = [...] } after Z0006 refactor.
  */
 export function retrieveEdgeSelectionsFromSingleEdgeRef(
   edgeRefArg: OpArg,
@@ -2500,10 +2502,12 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
     return new Error('edgeRef argument is not an object')
   }
-  const value = edgeRefArg.value.value as Record<string, OpKclValue>
-  const facesProp = value['faces']
+  const value = edgeRefArg.value.value as EdgeRefFromOpArgs
+  const facesProp = (value.sideFaces ?? value.side_faces) as
+    | OpKclValue
+    | undefined
   if (!facesProp || facesProp.type !== 'Array') {
-    return new Error('edgeRef has no faces array')
+    return new Error('edgeRef has no sideFaces array')
   }
   const faceValues = facesProp.value ?? []
   const faceIds: string[] = []
@@ -2512,7 +2516,7 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
     if (id) faceIds.push(id)
   }
   if (faceIds.length < 2) {
-    return new Error('edgeRef faces array needs at least 2 faces')
+    return new Error('edgeRef sideFaces array needs at least 2 faces')
   }
   const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
   if (!edgeArtifact) {
@@ -2522,7 +2526,7 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (!codeRefs?.length) {
     return new Error('Edge artifact has no codeRef')
   }
-  const entityRef: EntityReference = { type: 'edge', faces: faceIds }
+  const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
   return {
     graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
     otherSelections: [],

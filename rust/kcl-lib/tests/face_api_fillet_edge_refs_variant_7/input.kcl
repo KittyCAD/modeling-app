@@ -20,4 +20,4 @@ profile001 = startProfile(sketch001, at = [-3.29, 4.75])
 extrude001 = extrude(profile001, length = 5)
 solid001 = subtract(myExtrude, tools = extrude001)
 
-fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], index = 1 }])
+fillet(solid001, radius = 0.1, edgeRefs = [{ sideFaces = [hi, yoyo], index = 1 }])

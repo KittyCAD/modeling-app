@@ -83,6 +83,41 @@ export type EntityReference =
       segment_id: string
     }
 
+/**
+ * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);
+ * op args may also contain snake_case from API. Use when reading so TS enforces
+ * valid keys (not faces/disambiguators).
+ */
+export type EdgeRefFromOpArgs = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  end_faces?: unknown
+  endFaces?: unknown
+  index?: unknown
+}
+
+/**
+ * Shape of edge ref when parsed from API (may be camelCase). Use when reading
+ * so TS enforces side_faces/end_faces (not faces/disambiguators).
+ */
+export type RawEdgeRefFromAPI = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  end_faces?: unknown
+  endFaces?: unknown
+  index?: unknown
+}
+
+/**
+ * Shape of vertex ref when parsed from API (may be camelCase). Use when
+ * reading so TS enforces side_faces (not faces/disambiguators).
+ */
+export type RawVertexRefFromAPI = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  index?: unknown
+}
+
 export interface SelectionV2 {
   entityRef?: EntityReference
   codeRef?: CodeRef

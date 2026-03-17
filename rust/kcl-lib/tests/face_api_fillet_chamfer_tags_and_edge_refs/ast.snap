@@ -689,7 +689,7 @@ description: Result of parsing face_api_fillet_chamfer_tags_and_edge_refs.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "faces",
+                                "name": "sideFaces",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -1417,7 +1417,7 @@ description: Result of parsing face_api_fillet_chamfer_tags_and_edge_refs.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "faces",
+                                "name": "sideFaces",
                                 "start": 0,
                                 "type": "Identifier"
                               },

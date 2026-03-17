@@ -45,7 +45,11 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import type { EntityReference } from '@src/machines/modelingSharedTypes'
+import type {
+  EntityReference,
+  RawEdgeRefFromAPI,
+  RawVertexRefFromAPI,
+} from '@src/machines/modelingSharedTypes'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type {
   CommandArgument,
@@ -264,23 +268,26 @@ export function normalizeEntityReference(
   }
 
   if (type === 'edge') {
-    const sideFacesRaw = raw.side_faces ?? raw.sideFaces
+    const r = raw as RawEdgeRefFromAPI
+    const sideFacesRaw = r.side_faces ?? r.sideFaces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
-    const end_faces = isArray(raw.end_faces)
-      ? raw.end_faces.filter((v): v is string => typeof v === 'string')
+    const endFacesRaw = r.end_faces ?? r.endFaces
+    const end_faces = isArray(endFacesRaw)
+      ? endFacesRaw.filter((v): v is string => typeof v === 'string')
       : undefined
-    const index = typeof raw.index === 'number' ? raw.index : undefined
+    const index = typeof r.index === 'number' ? r.index : undefined
     return { type: 'edge', side_faces, end_faces, index }
   }
 
   if (type === 'vertex') {
-    const sideFacesRaw = raw.side_faces ?? raw.sideFaces
+    const r = raw as RawVertexRefFromAPI
+    const sideFacesRaw = r.side_faces ?? r.sideFaces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
-    const index = typeof raw.index === 'number' ? raw.index : undefined
+    const index = typeof r.index === 'number' ? r.index : undefined
     return { type: 'vertex', side_faces, index }
   }
 

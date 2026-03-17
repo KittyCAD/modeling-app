@@ -34,8 +34,8 @@ fillet(
   radius = 0.1,
   edgeRefs = [
     {
-      faces = [hi, yoyo],
-      disambiguators = [startCap]
+      sideFaces = [hi, yoyo],
+      endFaces = [startCap]
     }
   ],
 )

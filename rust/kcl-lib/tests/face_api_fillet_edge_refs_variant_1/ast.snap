@@ -1589,7 +1589,7 @@ description: Result of parsing face_api_fillet_edge_refs_variant_1.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "faces",
+                          "name": "sideFaces",
                           "start": 0,
                           "type": "Identifier"
                         },

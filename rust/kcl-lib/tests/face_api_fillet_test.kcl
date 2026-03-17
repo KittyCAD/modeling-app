@@ -7,6 +7,6 @@ sk = startProfile(plane, at = [startX, 0])
   |> close()
 myExtrude = extrude(sk, length = 5, tagEnd = $yo)
 yodawg = getCommonEdge(faces = [hi, yoyo])
-fillet(myExtrude, radius = 0.5, edgeRefs = [{ faces = [hi, yoyo] }])
+fillet(myExtrude, radius = 0.5, edgeRefs = [{ sideFaces = [hi, yoyo] }])
 
 

@@ -92,7 +92,7 @@ fn try_replace_fillet_chamfer(call: &mut CallExpressionKw, metadata: &[EdgeRefac
             None => return, // can't resolve all, skip this call
         }
     }
-    // Build edgeRefs array: [ { faces: [uuid0, uuid1] }, ... ]
+    // Build edgeRefs array: [ { sideFaces: [uuid0, uuid1] }, ... ] (KCL uses camelCase)
     let edge_refs_elements: Vec<Expr> = ordered_metas
         .into_iter()
         .map(|meta| {
@@ -104,7 +104,7 @@ fn try_replace_fillet_chamfer(call: &mut CallExpressionKw, metadata: &[EdgeRefac
                     meta.face_ids[1].to_string(),
                 )))),
             ])));
-            let prop = ObjectProperty::new(Identifier::new("faces"), faces_arr);
+            let prop = ObjectProperty::new(Identifier::new("sideFaces"), faces_arr);
             Expr::ObjectExpression(Box::new(ObjectExpression::new(vec![prop])))
         })
         .collect();
