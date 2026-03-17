@@ -1,0 +1,32 @@
+Unsupported sketch segment encountered during transpilation: Arc {
+    base: BasePath {
+        from: [
+            12.011811023622048,
+            2.5098425196850394,
+        ],
+        to: [
+            12.011811023622048,
+            2.7460629921259843,
+        ],
+        units: Inches,
+        tag: None,
+        geo_meta: GeoMeta {
+            id: 8a662fcd-9569-5482-8c42-aafff7b3f8d4,
+            metadata: Metadata {
+                source_range: SourceRange(
+                    [
+                        482,
+                        539,
+                        0,
+                    ],
+                ),
+            },
+        },
+    },
+    center: [
+        12.011811023622048,
+        2.627952755905512,
+    ],
+    radius: 0.11811023622047245,
+    ccw: false,
+}

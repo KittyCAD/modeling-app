@@ -1,0 +1,32 @@
+Unsupported sketch segment encountered during transpilation: Circle {
+    base: BasePath {
+        from: [
+            20.0,
+            0.0,
+        ],
+        to: [
+            20.0,
+            0.0,
+        ],
+        units: Millimeters,
+        tag: None,
+        geo_meta: GeoMeta {
+            id: 523b9fc1-d681-5ef3-b407-128525533bfe,
+            metadata: Metadata {
+                source_range: SourceRange(
+                    [
+                        476,
+                        542,
+                        0,
+                    ],
+                ),
+            },
+        },
+    },
+    center: [
+        15.0,
+        0.0,
+    ],
+    radius: 5.0,
+    ccw: true,
+}

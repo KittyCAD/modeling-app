@@ -1,0 +1,31 @@
+Unsupported sketch segment encountered during transpilation: TangentialArcTo {
+    base: BasePath {
+        from: [
+            0.0,
+            -17.13777608090537,
+        ],
+        to: [
+            4.104241719908028,
+            -11.2763114494309,
+        ],
+        units: Millimeters,
+        tag: None,
+        geo_meta: GeoMeta {
+            id: 8a662fcd-9569-5482-8c42-aafff7b3f8d4,
+            metadata: Metadata {
+                source_range: SourceRange(
+                    [
+                        1405,
+                        1495,
+                        0,
+                    ],
+                ),
+            },
+        },
+    },
+    center: [
+        6.237640374968841,
+        -17.13777608090537,
+    ],
+    ccw: false,
+}

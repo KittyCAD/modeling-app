@@ -1,0 +1,38 @@
+Unsupported sketch segment encountered during transpilation: ArcThreePoint {
+    base: BasePath {
+        from: [
+            -3.31,
+            3.6,
+        ],
+        to: [
+            -6.06,
+            1.13,
+        ],
+        units: Inches,
+        tag: None,
+        geo_meta: GeoMeta {
+            id: 8a662fcd-9569-5482-8c42-aafff7b3f8d4,
+            metadata: Metadata {
+                source_range: SourceRange(
+                    [
+                        895,
+                        968,
+                        0,
+                    ],
+                ),
+            },
+        },
+    },
+    p1: [
+        -3.31,
+        3.6,
+    ],
+    p2: [
+        -4.95,
+        5.08,
+    ],
+    p3: [
+        -6.06,
+        1.13,
+    ],
+}
