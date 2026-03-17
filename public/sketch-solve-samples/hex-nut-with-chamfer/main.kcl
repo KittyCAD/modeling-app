@@ -62,9 +62,10 @@ region001 = region(segments = [hexProfile.line1, hexProfile.line2])
 // Hex nut main body created from the hex profile
 nutSolid = extrude(region001, length = nutThickness)
 
+region002 = region(segments = [chamferCircleSketch.circle1])
 // Circular auxiliary solid; its start/end faces provide the circular edges for chamfering
 chamferSourceSolid = extrude(
-  chamferCircleSketch,
+  region002,
   length = nutThickness,
   tagStart = $chamferStartFace,
   tagEnd = $chamferEndFace,
@@ -82,8 +83,9 @@ chamferedCircularSolid = chamfer(
   length = chamferLength,
 )
 
+region003 = region(segments = [holeSketch.circle1])
 // Through-hole solid created from the center circle (used as subtraction tool)
-holeSolid = extrude(holeSketch, length = nutThickness)
+holeSolid = extrude(region003, length = nutThickness)
 
 // ──────────────────────────────
 // BOOLEAN COMPOSITION OF FEATURES

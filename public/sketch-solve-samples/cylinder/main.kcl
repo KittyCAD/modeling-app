@@ -16,6 +16,7 @@ profile = sketch(on = XY) {
   circle1 = arc(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm], end = [var 5mm, var 0mm])
 }
 
+region001 = region(segments = [profile.circle1])
 // extrude the profile to create the box
-cylinder = extrude(profile, length = length)
+cylinder = extrude(region001, length = length)
 
