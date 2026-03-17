@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
@@ -29,7 +29,7 @@ import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface UserContext {
-  user?: User
+  user?: UserResponse
   token: string
 }
 
@@ -65,7 +65,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: User
+            user: UserResponse
             token: string
           }
         }
