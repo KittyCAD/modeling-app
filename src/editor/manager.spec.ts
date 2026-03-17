@@ -1,6 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { expect, describe, it } from 'vitest'
+import { expect, describe, it, vi } from 'vitest'
 import { App } from '@src/lib/app'
 
 describe('EditorManager Class', () => {
@@ -86,6 +86,37 @@ describe('EditorManager Class', () => {
         duplicatedDiagnostics
       )
       expect(actual).toStrictEqual(expected)
+    })
+  })
+
+  describe('updateCodeEditor', () => {
+    it('should write to file when the code is unchanged and shouldWriteToDisk is true', () => {
+      const writeToFileSpy = vi
+        .spyOn(singletons.kclManager, 'writeToFile')
+        .mockResolvedValue(undefined)
+
+      const currentCode = singletons.kclManager.code
+      singletons.kclManager.updateCodeEditor(currentCode, {
+        shouldWriteToDisk: true,
+      })
+
+      expect(writeToFileSpy).toHaveBeenCalledWith(currentCode)
+
+      writeToFileSpy.mockRestore()
+    })
+
+    it('should not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
+      const writeToFileSpy = vi
+        .spyOn(singletons.kclManager, 'writeToFile')
+        .mockResolvedValue(undefined)
+
+      const currentCode = singletons.kclManager.code
+      singletons.kclManager.updateCodeEditor(currentCode, {
+        shouldWriteToDisk: false,
+      })
+
+      expect(writeToFileSpy).not.toHaveBeenCalled()
+      writeToFileSpy.mockRestore()
     })
   })
 })

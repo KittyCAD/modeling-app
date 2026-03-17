@@ -35,6 +35,7 @@ teeProfile = sketch(on = YZ) {
   vertical(line2)
 }
 
+region001 = region(segments = [teeProfile.line1, teeProfile.line2])
 // --- Solid Revolve ---
-golfTee = revolve(teeProfile, axis = Y, angle = 360)
+golfTee = revolve(region001, axis = Y, angle = 360)
 
