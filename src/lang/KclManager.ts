@@ -2284,7 +2284,7 @@ export class KclManager extends File {
         this.timeoutWriter = setTimeout(() => {
           if (!this.path) {
             return reject(new Error('currentFilePath not set'))
-          } else if (this.isClosingSignal) {
+          } else if (this.isClosingSignal.value) {
             // We've closed the editor and/or project, tear down.
             return
           }
