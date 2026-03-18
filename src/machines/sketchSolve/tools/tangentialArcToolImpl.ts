@@ -364,7 +364,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       try {
         isEditInProgress = true
         if (!cachedSettings) {
-          cachedSettings = await jsAppSettings(
+          cachedSettings = jsAppSettings(
             context.rustContext.settingsActor
           )
         }
@@ -598,7 +598,7 @@ export async function createArcActor({
       sketchId,
       segmentCtor,
       'arc-segment',
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
   } catch (error) {
     console.error('Failed to create tangential arc:', error)
@@ -664,7 +664,7 @@ export async function finalizeArcActor({
   )
 
   try {
-    const settings = await jsAppSettings(rustContext.settingsActor)
+    const settings = jsAppSettings(rustContext.settingsActor)
     const arcEditResult = await rustContext.editSegments(
       0,
       sketchId,

@@ -291,7 +291,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       try {
         isEditInProgress = true
         if (!cachedSettings) {
-          cachedSettings = await jsAppSettings(
+          cachedSettings = jsAppSettings(
             context.rustContext.settingsActor
           )
         }
@@ -444,7 +444,7 @@ export async function addDraftPointActor({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   const result = await rustContext.addSegment(
     0,
@@ -498,7 +498,7 @@ export async function createArcActor({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   const midpoint = scaleVec(addVec(startPoint, throughPoint), 0.5)
   const segmentCtor: SegmentCtor = {
@@ -580,7 +580,7 @@ export async function finalizeArcActor({
     sketchId,
   } = input
 
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
   const editResult = await editArcWithThreePoints({
     arcId,
     startPoint,
