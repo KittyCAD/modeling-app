@@ -291,9 +291,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       try {
         isEditInProgress = true
         if (!cachedSettings) {
-          cachedSettings = jsAppSettings(
-            context.rustContext.settingsActor
-          )
+          cachedSettings = jsAppSettings(context.rustContext.settingsActor)
         }
 
         const result = await editArcWithThreePoints({
