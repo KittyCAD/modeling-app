@@ -461,6 +461,12 @@ impl From<Metadata> for Vec<SourceRange> {
     }
 }
 
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
+    }
+}
+
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
         Self { source_range }

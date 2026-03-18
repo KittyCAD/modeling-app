@@ -50,6 +50,8 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   24["CompositeSolid Subtract<br>[467, 499, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  25["PrimitiveFace<br>[543, 570, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, ArrayElement { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -83,4 +85,5 @@ flowchart LR
   17 --- 21
   17 --- 22
   17 --- 23
+  24 <--x 25
 ```

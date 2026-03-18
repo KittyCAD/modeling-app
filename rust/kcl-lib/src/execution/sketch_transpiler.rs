@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use kcl_error::SourceRange;
+
 use crate::{
     Program,
     errors::{KclError, KclErrorDetails},
@@ -11,8 +13,8 @@ use crate::{
     },
     frontend::{
         api::{Expr, Number},
-        ast_name_expr, create_coincident_ast, create_equal_length_ast, create_horizontal_ast, create_line_ast,
-        create_member_expression, create_vertical_ast,
+        ast_name_expr, create_arc_ast, create_coincident_ast, create_equal_length_ast, create_horizontal_ast,
+        create_line_ast, create_member_expression, create_vertical_ast,
         sketch::Point2d,
         to_ast_point2d,
     },
@@ -35,6 +37,11 @@ enum SegmentConstraint {
 #[derive(Debug, Clone)]
 enum TranspilerSegment {
     Line(TranspilerLineSegment),
+    Circle {
+        name: String,
+        center: [f64; 2],
+        radius: f64,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -235,7 +242,7 @@ fn build_sketch_block_ast(
                 continue;
             }
         };
-        let transpiler_segment_name = transpiler_segment_name(&transpiler_segment).to_owned();
+        let transpiler_segment_name = transpiler_segment_name(&transpiler_segment);
 
         body_items.push(transpiler_create_segment_declaration(
             &transpiler_segment,
@@ -250,8 +257,8 @@ fn build_sketch_block_ast(
             ));
         }
 
-        previous_transpiler_segment_name = Some(transpiler_segment_name.clone());
-        transpiler_segment_names[i] = Some(transpiler_segment_name);
+        previous_transpiler_segment_name = Some(transpiler_segment_name.to_owned());
+        transpiler_segment_names[i] = Some(transpiler_segment_name.to_owned());
     }
 
     // Add constraints from AST detection
@@ -333,18 +340,28 @@ fn transpiler_build_segment(
     segment_index: usize,
     fail_fast: bool,
 ) -> Result<Option<TranspilerSegment>, KclError> {
-    let base = path_segment.get_base();
-    let segment_name = format!("line{}", segment_index + 1);
-
     match path_segment {
-        Path::ToPoint { .. } => Ok(Some(TranspilerSegment::Line(TranspilerLineSegment {
-            name: segment_name,
-            start: base.from,
-            end: base.to,
-        }))),
+        Path::ToPoint { .. } => {
+            let base = path_segment.get_base();
+            let segment_name = format!("line{}", segment_index + 1);
+
+            Ok(Some(TranspilerSegment::Line(TranspilerLineSegment {
+                name: segment_name,
+                start: base.from,
+                end: base.to,
+            })))
+        }
+        Path::Circle { center, radius, .. } => {
+            let segment_name = format!("circle{}", segment_index + 1);
+
+            Ok(Some(TranspilerSegment::Circle {
+                name: segment_name,
+                center: *center,
+                radius: *radius,
+            }))
+        }
         Path::TangentialArcTo { .. }
         | Path::TangentialArc { .. }
-        | Path::Circle { .. }
         | Path::CircleThreePoint { .. }
         | Path::ArcThreePoint { .. }
         | Path::Horizontal { .. }
@@ -370,6 +387,7 @@ fn transpiler_build_segment(
 fn transpiler_segment_name(segment: &TranspilerSegment) -> &str {
     match segment {
         TranspilerSegment::Line(segment) => &segment.name,
+        TranspilerSegment::Circle { name, .. } => name,
     }
 }
 
@@ -385,6 +403,18 @@ fn transpiler_create_segment_declaration(
                 segment.start[1],
                 segment.end[0],
                 segment.end[1],
+                units,
+            )?,
+        ),
+        TranspilerSegment::Circle { name, center, radius } => (
+            name.as_str(),
+            create_arc_ast_from_coords(
+                center[0],
+                center[1],
+                center[0] + radius,
+                center[1],
+                center[0] + radius,
+                center[1],
                 units,
             )?,
         ),
@@ -467,13 +497,66 @@ fn create_line_ast_from_coords(
     Ok(create_line_ast(start_ast, end_ast))
 }
 
+/// Create an AST node for an arc call
+/// Uses shared helper from frontend.rs
+fn create_arc_ast_from_coords(
+    center_x: f64,
+    center_y: f64,
+    start_x: f64,
+    start_y: f64,
+    end_x: f64,
+    end_y: f64,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::Expr, KclError> {
+    // Create Point2d<Expr> with var expressions for points.
+    let center_point = Point2d {
+        x: Expr::Var(f64_to_number(center_x, units)),
+        y: Expr::Var(f64_to_number(center_y, units)),
+    };
+
+    let start_point = Point2d {
+        x: Expr::Var(f64_to_number(start_x, units)),
+        y: Expr::Var(f64_to_number(start_y, units)),
+    };
+
+    let end_point = Point2d {
+        x: Expr::Var(f64_to_number(end_x, units)),
+        y: Expr::Var(f64_to_number(end_y, units)),
+    };
+
+    // Convert to AST.
+    let center_ast = to_ast_point2d(&center_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert center point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    let start_ast = to_ast_point2d(&start_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert start point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    let end_ast = to_ast_point2d(&end_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert end point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    // Use shared helper to create the line AST.
+    Ok(create_arc_ast(center_ast, start_ast, end_ast))
+}
+
 // Helper functions below use shared AST creation functions from frontend.rs
 // to ensure consistency between transpiler and frontend code generation.
 
 /// Create an AST node for coincident([line1.end, line2.start])
-fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
-    let line1_expr = ast_name_expr(line1_name.to_string());
-    let line2_expr = ast_name_expr(line2_name.to_string());
+fn create_coincident_ast_from_names<S1: Into<String>, S2: Into<String>>(line1_name: S1, line2_name: S2) -> ast::Expr {
+    let line1_expr = ast_name_expr(line1_name.into());
+    let line2_expr = ast_name_expr(line2_name.into());
     let line1_end = create_member_expression(line1_expr, "end");
     let line2_start = create_member_expression(line2_expr, "start");
     create_coincident_ast(line1_end, line2_start)
@@ -495,7 +578,7 @@ fn create_vertical_ast_from_name(line_name: &str) -> ast::Expr {
 fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
-    create_equal_length_ast(line1_expr, line2_expr)
+    create_equal_length_ast(vec![line1_expr, line2_expr])
 }
 
 /// Get the plane name from a sketch
@@ -567,19 +650,26 @@ fn get_sketch_from_exec_outcome(exec_outcome: &ExecOutcome, variable_name: &str)
 
 /// Find the pipe expression containing startProfile for the given variable
 /// Uses the same detection logic as the lint (lint_old_sketch_syntax) to ensure consistency
-fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::PipeExpression, KclError> {
+fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::Expr, KclError> {
     use crate::lint::checks::contains_start_profile;
 
     // Find the variable declaration
     for item in &program.ast.body {
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && var_decl.declaration.id.name == variable_name
-            && let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
-            && contains_start_profile(&pipe.inner)
         {
-            // Use the lint's detection logic as the source of truth
-            // This ensures the transpiler only processes what the lint detects
-            return Ok(&pipe.inner);
+            if let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
+                && contains_start_profile(&pipe.inner)
+            {
+                // Use the lint's detection logic as the source of truth
+                // This ensures the transpiler only processes what the lint detects
+                return Ok(&var_decl.declaration.init);
+            }
+            if let ast::Expr::CallExpressionKw(call) = &var_decl.declaration.init
+                && is_str_profile_function(&call.callee.name.name)
+            {
+                return Ok(&var_decl.declaration.init);
+            }
         }
     }
 
@@ -589,39 +679,53 @@ fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Res
     )))
 }
 
+fn is_str_profile_function(name: &str) -> bool {
+    // Conics are omitted since we don't support migrating them.
+    matches!(name, "startProfile" | "circle" | "rectangle" | "polygon")
+}
+
 /// Map segments to their AST calls using source ranges
 /// Returns a vector of (segment_index, AST call expression)
 fn map_segments_to_ast_calls<'a>(
     sketch: &Sketch,
-    pipe_expr: &'a ast::PipeExpression,
+    pipe_expr: &'a ast::Expr,
 ) -> Result<Vec<(usize, &'a ast::CallExpressionKw)>, KclError> {
-    let mut result = Vec::new();
+    match pipe_expr {
+        ast::Expr::CallExpressionKw(call) => Ok(vec![(0, &call.inner)]),
+        ast::Expr::PipeExpression(pipe_expr) => {
+            let mut result = Vec::new();
 
-    // Get source ranges from segments (skip startProfile, start from first segment)
-    // The pipe body should have: [startProfile, line1, line2, ...]
-    // So segments start at index 1 in the pipe body (skip startProfile)
-    let pipe_segment_calls: Vec<&ast::CallExpressionKw> = pipe_expr
-        .body
-        .iter()
-        .skip(1) // Skip startProfile
-        .filter_map(|expr| {
-            if let ast::Expr::CallExpressionKw(call) = expr {
-                Some(&call.inner)
-            } else {
-                None
+            // Get source ranges from segments (skip startProfile, start from first segment)
+            // The pipe body should have: [startProfile, line1, line2, ...]
+            // So segments start at index 1 in the pipe body (skip startProfile)
+            let pipe_segment_calls: Vec<&ast::CallExpressionKw> = pipe_expr
+                .body
+                .iter()
+                .skip(1) // Skip startProfile
+                .filter_map(|expr| {
+                    if let ast::Expr::CallExpressionKw(call) = expr {
+                        Some(&call.inner)
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+
+            // Match segments to pipe calls by index (they should be in the same order)
+            // Only match if we have the same number of segments and calls
+            for i in 0..sketch.paths.len().min(pipe_segment_calls.len()) {
+                if let Some(call) = pipe_segment_calls.get(i) {
+                    result.push((i, *call));
+                }
             }
-        })
-        .collect();
 
-    // Match segments to pipe calls by index (they should be in the same order)
-    // Only match if we have the same number of segments and calls
-    for i in 0..sketch.paths.len().min(pipe_segment_calls.len()) {
-        if let Some(call) = pipe_segment_calls.get(i) {
-            result.push((i, *call));
+            Ok(result)
         }
+        _ => Err(KclError::new_internal(KclErrorDetails::new(
+            "Could not map unknown expression type to pipe segment calls".to_owned(),
+            sketch.meta.iter().map(SourceRange::from).collect(),
+        ))),
     }
-
-    Ok(result)
 }
 
 /// Detect constraints from AST calls
