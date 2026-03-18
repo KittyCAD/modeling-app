@@ -158,19 +158,21 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
-function getPointHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
+function getSegmentHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
   if (!(segmentGroup instanceof Group)) {
     return null
   }
 
-  const pointMesh = segmentGroup.children.find(
+  const segmentMesh = segmentGroup.children.find(
     (child) =>
       child instanceof Mesh &&
-      (child.userData?.type === POINT_SEGMENT_HIT_AREA ||
+      (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
+        child.userData?.type === ARC_SEGMENT_BODY ||
+        child.userData?.type === POINT_SEGMENT_HIT_AREA ||
         child.userData?.type === POINT_SEGMENT_BODY)
   )
 
-  return pointMesh instanceof Mesh ? pointMesh : null
+  return segmentMesh instanceof Mesh ? segmentMesh : null
 }
 
 /**
@@ -1436,7 +1438,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         snapshot,
         context.sceneInfra
       )
-      const hoveredPoint = closestObjects[0] ?? null
+      const hoveredSegment = closestObjects[0] ?? null
 
       const allSelectedIds = Array.from(
         new Set([
@@ -1451,13 +1453,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const lastHoveredMesh =
         lastHoveredId === null
           ? null
-          : getPointHoverMesh(
+          : getSegmentHoverMesh(
               context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
             )
 
       const scale =
         context.sceneInfra.getClientSceneScaleFactor(sketchSceneObject)
-      if (!hoveredPoint || hoveredPoint.distance > 12 * scale) {
+      if (!hoveredSegment || hoveredSegment.distance > 12 * scale) {
         if (lastHoveredMesh) {
           updateSegmentHover(
             lastHoveredMesh,
@@ -1472,9 +1474,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      const hoveredMesh = getPointHoverMesh(
+      const hoveredMesh = getSegmentHoverMesh(
         context.sceneInfra.scene.getObjectByName(
-          String(hoveredPoint.apiObject.id)
+          String(hoveredSegment.apiObject.id)
         )
       )
       if (!hoveredMesh) {
@@ -1492,7 +1494,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      if (lastHoveredId === hoveredPoint.apiObject.id && lastHoveredMesh) {
+      if (lastHoveredId === hoveredSegment.apiObject.id && lastHoveredMesh) {
         return
       }
 
@@ -1508,7 +1510,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSegmentHover(hoveredMesh, true, allSelectedIds, draftEntityIds)
       self.send({
         type: 'update hovered id',
-        data: { hoveredId: hoveredPoint.apiObject.id },
+        data: { hoveredId: hoveredSegment.apiObject.id },
       })
     },
     // onMouseEnter: createOnMouseEnterCallback({
