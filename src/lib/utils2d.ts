@@ -81,6 +81,11 @@ export function cross2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[1] - a[1] * b[0]
 }
 
+// Takes a vector given by 2 coords and rotates it 90deg CCW.
+export function perpendicular(v: Coords2d): Coords2d {
+  return [-v[1], v[0]]
+}
+
 export function dot2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[0] + a[1] * b[1]
 }
