@@ -2288,11 +2288,16 @@ export class KclManager extends File {
             })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-              console.error('error saving file', err)
+              console.warn('error saving file', err)
               toast.error('Error saving file, please check file permissions')
               reject(err)
             })
         }, 1000)
+      }).catch((err: Error) => {
+        if (err.cause === 'ENOENT') {
+          return
+        }
+        return err
       })
     }
   }
