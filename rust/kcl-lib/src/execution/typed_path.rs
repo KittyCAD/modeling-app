@@ -194,24 +194,24 @@ impl ts_rs::TS for TypedPath {
     type WithoutGenerics = Self;
     type OptionInnerType = Self;
 
-    fn name() -> String {
+    fn name(_cfg: &ts_rs::Config) -> String {
         "string".to_string()
     }
 
-    fn decl() -> String {
-        std::path::PathBuf::decl()
+    fn decl(cfg: &ts_rs::Config) -> String {
+        std::path::PathBuf::decl(cfg)
     }
 
-    fn decl_concrete() -> String {
-        std::path::PathBuf::decl_concrete()
+    fn decl_concrete(cfg: &ts_rs::Config) -> String {
+        std::path::PathBuf::decl_concrete(cfg)
     }
 
-    fn inline() -> String {
-        std::path::PathBuf::inline()
+    fn inline(cfg: &ts_rs::Config) -> String {
+        std::path::PathBuf::inline(cfg)
     }
 
-    fn inline_flattened() -> String {
-        std::path::PathBuf::inline_flattened()
+    fn inline_flattened(cfg: &ts_rs::Config) -> String {
+        std::path::PathBuf::inline_flattened(cfg)
     }
 
     fn output_path() -> Option<std::path::PathBuf> {

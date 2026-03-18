@@ -350,7 +350,7 @@ async fn inner_revolve(
                     .batch_modeling_cmd(
                         ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
                         ModelingCmd::from(
-                            mcmd::RevolveAboutEdgeReference::builder()
+                            mcmd::RevolveAboutEdge::builder()
                                 .angle(angle)
                                 .target(sketch.id.into())
                                 .edge_reference(edge_ref.clone())

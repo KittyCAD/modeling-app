@@ -535,7 +535,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1018,7 +1018,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2123,7 +2123,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2460,7 +2460,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.179"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#a702398d3b36f859872c5fba9162bcfb1dd56fea"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#9098018e9705d4fa6f4b49242ada6a5676f4d294"
 dependencies = [
  "anyhow",
  "bon",
@@ -2488,7 +2488,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#a702398d3b36f859872c5fba9162bcfb1dd56fea"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#9098018e9705d4fa6f4b49242ada6a5676f4d294"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2499,7 +2499,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#a702398d3b36f859872c5fba9162bcfb1dd56fea"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#9098018e9705d4fa6f4b49242ada6a5676f4d294"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4010,7 +4010,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4023,7 +4023,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4677,7 +4677,7 @@ dependencies = [
  "getrandom 0.4.2",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5182,9 +5182,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "11.1.0"
+version = "12.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4994acea2522cd2b3b85c1d9529a55991e3ad5e25cdcd3de9d505972c4379424"
+checksum = "756050066659291d47a554a9f558125db17428b073c5ffce1daf5dcb0f7231d8"
 dependencies = [
  "chrono",
  "indexmap 2.13.0",
@@ -5197,9 +5197,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "11.1.0"
+version = "12.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee6ff59666c9cbaec3533964505d39154dc4e0a56151fdea30a09ed0301f62e2"
+checksum = "38d90eea51bc7988ef9e674bf80a85ba6804739e535e9cab48e4bb34a8b652aa"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5664,7 +5664,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
