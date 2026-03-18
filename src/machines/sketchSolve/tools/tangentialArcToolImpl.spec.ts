@@ -1,16 +1,19 @@
 import {
+  createMockSceneInfra,
   createArcApiObject,
   createLineApiObject,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
+  addFirstPointListener,
   findTangentialArcCenter,
   resolveTangentInfoFromClick,
   resolveTangentialArcEndpoints,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { Group, Mesh } from 'three'
 
 describe('tangentialArcToolImpl', () => {
   describe('findTangentialArcCenter', () => {
@@ -36,6 +39,63 @@ describe('tangentialArcToolImpl', () => {
   })
 
   describe('resolveTangentInfoFromClick', () => {
+    it('should resolve point clicks from the selected mesh parent group id', () => {
+      const sceneInfra = createMockSceneInfra()
+      const send = vi.fn()
+      const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
+      if (isPointSegment(p1)) {
+        p1.kind.segment.owner = 3
+      }
+      if (isPointSegment(p2)) {
+        p2.kind.segment.owner = 3
+      }
+      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+      const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
+
+      addFirstPointListener({
+        self: {
+          send,
+          _parent: {
+            getSnapshot: () => ({
+              context: {
+                sketchExecOutcome: {
+                  sceneGraphDelta,
+                },
+              },
+            }),
+          },
+        } as any,
+        context: {
+          sceneInfra,
+        } as any,
+      } as any)
+
+      const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+      const pointBody = new Mesh()
+      const pointGroup = new Group()
+      pointGroup.name = '1'
+      pointBody.name = 'POINT_SEGMENT_HIT_AREA'
+      pointGroup.add(pointBody)
+
+      callbacks.onClick({
+        mouseEvent: { which: 1 },
+        intersectionPoint: {
+          twoD: { x: 0, y: 0 },
+        },
+        selected: pointBody,
+      })
+
+      expect(send).toHaveBeenCalledWith({
+        type: 'select tangent info',
+        data: {
+          segmentId: 3,
+          tangentStart: { id: 1, point: [0, 0] },
+          tangentDirection: [-1, 0],
+        },
+      })
+    })
+
     it('should return null when clicking a line segment directly', () => {
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })

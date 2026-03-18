@@ -307,7 +307,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         self._parent?.getSnapshot()?.context?.sketchExecOutcome?.sceneGraphDelta
       if (!sceneGraphDelta?.new_graph?.objects) return
 
-      const clickedId = Number(args.selected?.name)
+      const clickedId = Number(args.selected?.parent?.name)
       if (Number.isNaN(clickedId)) return
 
       const tangentInfo = resolveTangentInfoFromClick({
