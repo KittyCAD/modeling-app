@@ -9,10 +9,11 @@ use crate::{
         ExecOutcome, ExecutorContext, KclValue, SKETCH_BLOCK_PARAM_ON,
         geometry::{Path, Sketch, SketchSurface},
     },
+    fmt::format_number_literal,
     frontend::{
         api::{Expr, Number},
-        ast_name_expr, create_coincident_ast, create_equal_length_ast, create_horizontal_ast, create_line_ast,
-        create_member_expression, create_vertical_ast,
+        ast_name_expr, create_arc_ast, create_coincident_ast, create_equal_length_ast, create_horizontal_ast,
+        create_line_ast, create_member_expression, create_tangent_ast, create_vertical_ast,
         sketch::Point2d,
         to_ast_point2d,
     },
@@ -28,6 +29,27 @@ enum SegmentConstraint {
     Horizontal,
     Vertical,
     EqualLength { other_segment_index: usize },
+    Tangent { other_segment_index: usize },
+    Radius { r: Number },
+    Diameter { d: Number },
+}
+
+#[derive(Debug, Clone, Copy)]
+enum SegmentEndpoint {
+    Start,
+    End,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum SegmentConnectionSide {
+    Entry,
+    Exit,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ArcSizeKind {
+    Radius,
+    Diameter,
 }
 
 // Internal data structs for transpiler.
@@ -35,6 +57,7 @@ enum SegmentConstraint {
 #[derive(Debug, Clone)]
 enum TranspilerSegment {
     Line(TranspilerLineSegment),
+    Arc(TranspilerArcSegment),
 }
 
 #[derive(Debug, Clone)]
@@ -42,6 +65,16 @@ struct TranspilerLineSegment {
     name: String,
     start: [f64; 2],
     end: [f64; 2],
+}
+
+#[derive(Debug, Clone)]
+struct TranspilerArcSegment {
+    name: String,
+    start: [f64; 2],
+    end: [f64; 2],
+    center: [f64; 2],
+    entry_endpoint: SegmentEndpoint,
+    exit_endpoint: SegmentEndpoint,
 }
 
 pub fn pre_execute_transpile(program: &mut Program) -> Result<(), KclError> {
@@ -224,14 +257,15 @@ fn build_sketch_block_ast(
     // Build sketch block body items
     let mut body_items = Vec::new();
     let mut transpiler_segment_names: Vec<Option<String>> = vec![None; sketch.paths.len()];
-    let mut previous_transpiler_segment_name: Option<String> = None;
+    let mut transpiler_segments: Vec<Option<TranspilerSegment>> = vec![None; sketch.paths.len()];
+    let mut previous_transpiler_segment_index: Option<usize> = None;
 
     // Process each path segment
     for (i, path_segment) in sketch.paths.iter().enumerate() {
         let transpiler_segment = match transpiler_build_segment(path_segment, i, fail_fast)? {
             Some(segment) => segment,
             None => {
-                previous_transpiler_segment_name = None;
+                previous_transpiler_segment_index = None;
                 continue;
             }
         };
@@ -242,28 +276,33 @@ fn build_sketch_block_ast(
             sketch.units,
         )?);
 
-        // Add coincident constraint between this line and the previous one
-        if let Some(prev_line_name) = previous_transpiler_segment_name.as_deref() {
+        // Add coincident constraint between this segment and the previous one.
+        if let Some(previous_segment_index) = previous_transpiler_segment_index
+            && let Some(previous_segment) = transpiler_segments
+                .get(previous_segment_index)
+                .and_then(|segment| segment.as_ref())
+        {
             body_items.push(transpiler_create_segment_coincident_constraint(
-                prev_line_name,
+                previous_segment,
                 &transpiler_segment,
             ));
         }
 
-        previous_transpiler_segment_name = Some(transpiler_segment_name.clone());
+        previous_transpiler_segment_index = Some(i);
         transpiler_segment_names[i] = Some(transpiler_segment_name);
+        transpiler_segments[i] = Some(transpiler_segment);
     }
 
     // Add constraints from AST detection
-    for (i, line_name) in transpiler_segment_names.iter().enumerate() {
-        let Some(line_name) = line_name.as_deref() else {
+    for (i, segment_name) in transpiler_segment_names.iter().enumerate() {
+        let Some(segment_name) = segment_name.as_deref() else {
             continue;
         };
         if let Some(segment_constraints) = constraints.get(i) {
             for constraint in segment_constraints {
                 match constraint {
                     SegmentConstraint::Horizontal => {
-                        let horizontal_ast = create_horizontal_ast_from_name(line_name);
+                        let horizontal_ast = create_horizontal_ast_from_name(segment_name);
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: horizontal_ast,
@@ -272,7 +311,7 @@ fn build_sketch_block_ast(
                         )));
                     }
                     SegmentConstraint::Vertical => {
-                        let vertical_ast = create_vertical_ast_from_name(line_name);
+                        let vertical_ast = create_vertical_ast_from_name(segment_name);
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: vertical_ast,
@@ -287,10 +326,44 @@ fn build_sketch_block_ast(
                         else {
                             continue;
                         };
-                        let equal_length_ast = create_equal_length_ast_from_names(line_name, other_line_name);
+                        let equal_length_ast = create_equal_length_ast_from_names(segment_name, other_line_name);
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: equal_length_ast,
+                                digest: None,
+                            },
+                        )));
+                    }
+                    SegmentConstraint::Tangent { other_segment_index } => {
+                        let Some(other_segment_name) = transpiler_segment_names
+                            .get(*other_segment_index)
+                            .and_then(|name| name.as_deref())
+                        else {
+                            continue;
+                        };
+                        let tangent_ast = create_tangent_ast_from_names(other_segment_name, segment_name);
+                        body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
+                            ast::ExpressionStatement {
+                                expression: tangent_ast,
+                                digest: None,
+                            },
+                        )));
+                    }
+                    SegmentConstraint::Radius { r } => {
+                        let radius_ast = create_arc_size_constraint_ast_from_name("radius", segment_name, r.clone())?;
+                        body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
+                            ast::ExpressionStatement {
+                                expression: radius_ast,
+                                digest: None,
+                            },
+                        )));
+                    }
+                    SegmentConstraint::Diameter { d } => {
+                        let diameter_ast =
+                            create_arc_size_constraint_ast_from_name("diameter", segment_name, d.clone())?;
+                        body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
+                            ast::ExpressionStatement {
+                                expression: diameter_ast,
                                 digest: None,
                             },
                         )));
@@ -334,17 +407,30 @@ fn transpiler_build_segment(
     fail_fast: bool,
 ) -> Result<Option<TranspilerSegment>, KclError> {
     let base = path_segment.get_base();
-    let segment_name = format!("line{}", segment_index + 1);
 
     match path_segment {
         Path::ToPoint { .. } => Ok(Some(TranspilerSegment::Line(TranspilerLineSegment {
-            name: segment_name,
+            name: transpiler_segment_name_for_path(path_segment, segment_index),
             start: base.from,
             end: base.to,
         }))),
-        Path::TangentialArcTo { .. }
-        | Path::TangentialArc { .. }
-        | Path::Circle { .. }
+        Path::TangentialArcTo { center, ccw, .. } | Path::TangentialArc { center, ccw, .. } => {
+            let (start, end, entry_endpoint, exit_endpoint) = if *ccw {
+                (base.from, base.to, SegmentEndpoint::Start, SegmentEndpoint::End)
+            } else {
+                (base.to, base.from, SegmentEndpoint::End, SegmentEndpoint::Start)
+            };
+
+            Ok(Some(TranspilerSegment::Arc(TranspilerArcSegment {
+                name: transpiler_segment_name_for_path(path_segment, segment_index),
+                start,
+                end,
+                center: *center,
+                entry_endpoint,
+                exit_endpoint,
+            })))
+        }
+        Path::Circle { .. }
         | Path::CircleThreePoint { .. }
         | Path::ArcThreePoint { .. }
         | Path::Horizontal { .. }
@@ -367,9 +453,18 @@ fn transpiler_build_segment(
     }
 }
 
+fn transpiler_segment_name_for_path(path_segment: &Path, segment_index: usize) -> String {
+    match path_segment {
+        Path::ToPoint { .. } => format!("line{}", segment_index + 1),
+        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } => format!("arc{}", segment_index + 1),
+        _ => format!("segment{}", segment_index + 1),
+    }
+}
+
 fn transpiler_segment_name(segment: &TranspilerSegment) -> &str {
     match segment {
         TranspilerSegment::Line(segment) => &segment.name,
+        TranspilerSegment::Arc(segment) => &segment.name,
     }
 }
 
@@ -385,6 +480,18 @@ fn transpiler_create_segment_declaration(
                 segment.start[1],
                 segment.end[0],
                 segment.end[1],
+                units,
+            )?,
+        ),
+        TranspilerSegment::Arc(segment) => (
+            segment.name.as_str(),
+            create_arc_ast_from_coords(
+                segment.start[0],
+                segment.start[1],
+                segment.end[0],
+                segment.end[1],
+                segment.center[0],
+                segment.center[1],
                 units,
             )?,
         ),
@@ -408,10 +515,10 @@ fn transpiler_create_segment_declaration(
 }
 
 fn transpiler_create_segment_coincident_constraint(
-    previous_segment_name: &str,
+    previous_segment: &TranspilerSegment,
     segment: &TranspilerSegment,
 ) -> ast::BodyItem {
-    let coincident_ast = create_coincident_ast_from_names(previous_segment_name, transpiler_segment_name(segment));
+    let coincident_ast = create_coincident_ast_from_segments(previous_segment, segment);
     ast::BodyItem::ExpressionStatement(ast::Node::no_src(ast::ExpressionStatement {
         expression: coincident_ast,
         digest: None,
@@ -467,16 +574,59 @@ fn create_line_ast_from_coords(
     Ok(create_line_ast(start_ast, end_ast))
 }
 
+/// Create an AST node for an arc call.
+fn create_arc_ast_from_coords(
+    start_x: f64,
+    start_y: f64,
+    end_x: f64,
+    end_y: f64,
+    center_x: f64,
+    center_y: f64,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::Expr, KclError> {
+    let start_point = Point2d {
+        x: Expr::Var(f64_to_number(start_x, units)),
+        y: Expr::Var(f64_to_number(start_y, units)),
+    };
+    let end_point = Point2d {
+        x: Expr::Var(f64_to_number(end_x, units)),
+        y: Expr::Var(f64_to_number(end_y, units)),
+    };
+    let center_point = Point2d {
+        x: Expr::Var(f64_to_number(center_x, units)),
+        y: Expr::Var(f64_to_number(center_y, units)),
+    };
+
+    let start_ast = to_ast_point2d(&start_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert arc start point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+    let end_ast = to_ast_point2d(&end_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert arc end point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+    let center_ast = to_ast_point2d(&center_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert arc center point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    Ok(create_arc_ast(start_ast, end_ast, center_ast))
+}
+
 // Helper functions below use shared AST creation functions from frontend.rs
 // to ensure consistency between transpiler and frontend code generation.
 
-/// Create an AST node for coincident([line1.end, line2.start])
-fn create_coincident_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
-    let line1_expr = ast_name_expr(line1_name.to_string());
-    let line2_expr = ast_name_expr(line2_name.to_string());
-    let line1_end = create_member_expression(line1_expr, "end");
-    let line2_start = create_member_expression(line2_expr, "start");
-    create_coincident_ast(line1_end, line2_start)
+/// Create an AST node for coincident([prev.exit, current.entry]).
+fn create_coincident_ast_from_segments(previous_segment: &TranspilerSegment, segment: &TranspilerSegment) -> ast::Expr {
+    let previous_exit = transpiler_segment_connection_expr(previous_segment, SegmentConnectionSide::Exit);
+    let current_entry = transpiler_segment_connection_expr(segment, SegmentConnectionSide::Entry);
+    create_coincident_ast(previous_exit, current_entry)
 }
 
 /// Create an AST node for horizontal(line)
@@ -496,6 +646,75 @@ fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
     create_equal_length_ast(line1_expr, line2_expr)
+}
+
+fn create_tangent_ast_from_names(segment1_name: &str, segment2_name: &str) -> ast::Expr {
+    let segment1_expr = ast_name_expr(segment1_name.to_string());
+    let segment2_expr = ast_name_expr(segment2_name.to_string());
+    create_tangent_ast(segment1_expr, segment2_expr)
+}
+
+fn create_arc_size_constraint_ast_from_name(
+    function_name: &str,
+    segment_name: &str,
+    num: Number,
+) -> Result<ast::Expr, KclError> {
+    let segment_expr = ast_name_expr(segment_name.to_string());
+    let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast::Name {
+            name: ast::Node::no_src(ast::Identifier {
+                name: function_name.to_owned(),
+                digest: None,
+            }),
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        }),
+        unlabeled: Some(segment_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+    let raw = format_number_literal(num.value, num.units).map_err(|err| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to format numeric constraint literal: {err}"),
+            vec![],
+        ))
+    })?;
+
+    Ok(ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(
+        ast::BinaryExpression {
+            left: call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: num.value,
+                    suffix: num.units,
+                },
+                raw,
+                digest: None,
+            }))),
+            digest: None,
+        },
+    ))))
+}
+
+fn transpiler_segment_connection_expr(segment: &TranspilerSegment, side: SegmentConnectionSide) -> ast::Expr {
+    let segment_expr = ast_name_expr(transpiler_segment_name(segment).to_string());
+    let endpoint = match (segment, side) {
+        (TranspilerSegment::Line(_), SegmentConnectionSide::Entry) => SegmentEndpoint::Start,
+        (TranspilerSegment::Line(_), SegmentConnectionSide::Exit) => SegmentEndpoint::End,
+        (TranspilerSegment::Arc(segment), SegmentConnectionSide::Entry) => segment.entry_endpoint,
+        (TranspilerSegment::Arc(segment), SegmentConnectionSide::Exit) => segment.exit_endpoint,
+    };
+
+    create_member_expression(
+        segment_expr,
+        match endpoint {
+            SegmentEndpoint::Start => "start",
+            SegmentEndpoint::End => "end",
+        },
+    )
 }
 
 /// Get the plane name from a sketch
@@ -653,10 +872,64 @@ fn detect_constraints_from_ast(
                     });
                 }
             }
+        } else if function_name == "tangentialArc" {
+            if *segment_index > 0 && path_supports_tangent_constraint_at_entry(&sketch.paths[*segment_index]) {
+                constraints[*segment_index].push(SegmentConstraint::Tangent {
+                    other_segment_index: segment_index - 1,
+                });
+            }
+
+            if call_has_labeled_arg(call, "radius")
+                && let Some(r) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Radius)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Radius { r });
+            }
+
+            if call_has_labeled_arg(call, "diameter")
+                && let Some(d) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Diameter)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Diameter { d });
+            }
         }
     }
 
     Ok(constraints)
+}
+
+fn call_has_labeled_arg(call: &ast::CallExpressionKw, label_name: &str) -> bool {
+    call.arguments
+        .iter()
+        .any(|arg| arg.label.as_ref().is_some_and(|label| label.name == label_name))
+}
+
+fn path_supports_tangent_constraint_at_entry(path_segment: &Path) -> bool {
+    match path_segment {
+        Path::TangentialArc { ccw, .. } | Path::TangentialArcTo { ccw, .. } => *ccw,
+        _ => false,
+    }
+}
+
+fn get_arc_size_constraint_value(
+    path_segment: &Path,
+    units: kittycad_modeling_cmds::units::UnitLength,
+    kind: ArcSizeKind,
+) -> Option<Number> {
+    let (center, from) = match path_segment {
+        Path::TangentialArc { center, base, .. } | Path::TangentialArcTo { center, base, .. } => (*center, base.from),
+        _ => return None,
+    };
+
+    let dx = center[0] - from[0];
+    let dy = center[1] - from[1];
+    let radius = (dx * dx + dy * dy).sqrt();
+    let value = match kind {
+        ArcSizeKind::Radius => radius,
+        ArcSizeKind::Diameter => radius * 2.0,
+    };
+
+    Some(f64_to_number(value, units))
 }
 
 /// Find segLen() reference in an expression and return the segment index it refers to
@@ -732,6 +1005,71 @@ mod tests {
         test_server::{execute_and_snapshot_ast, new_context},
     };
 
+    async fn transpile_test_sketch(code: &str, variable_name: &str) -> Result<String, KclError> {
+        let program = Program::parse_no_errs(code).unwrap();
+
+        let _ctx = new_context(true, None).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let exec_state = snapshot.0;
+        let ctx = snapshot.1;
+        let env_ref = snapshot.2;
+
+        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let transpiled = transpile_old_sketch_to_new(&exec_outcome, &program, variable_name);
+
+        ctx.close().await;
+        transpiled
+    }
+
+    async fn assert_transpiled_matches(code: &str, variable_name: &str, expected_output: &str) {
+        let transpiled = transpile_test_sketch(code, variable_name)
+            .await
+            .expect("Transpiler should succeed");
+
+        let normalized_transpiled = normalize_transpiled_sketch_output(&transpiled);
+        let normalized_expected = normalize_transpiled_sketch_output(expected_output);
+
+        assert_eq!(
+            normalized_transpiled,
+            normalized_expected,
+            "Transpiled output does not match expected output\n\nGot:\n{}\n\nExpected:\n{}",
+            transpiled.trim().replace("\r\n", "\n"),
+            expected_output.trim().replace("\r\n", "\n")
+        );
+    }
+
+    fn normalize_transpiled_sketch_output(output: &str) -> String {
+        let normalized = output.trim().replace("\r\n", "\n");
+        let mut lines = normalized.lines();
+
+        let Some(header) = lines.next() else {
+            return normalized;
+        };
+        let Some(footer) = normalized.lines().last() else {
+            return normalized;
+        };
+
+        let mut declarations = Vec::new();
+        let mut constraints = Vec::new();
+
+        for line in normalized.lines().skip(1).take_while(|line| *line != footer) {
+            if line.contains(" = line(") || line.contains(" = arc(") {
+                declarations.push(line.to_string());
+            } else {
+                constraints.push(line.to_string());
+            }
+        }
+
+        constraints.sort();
+
+        let mut rebuilt = Vec::with_capacity(2 + declarations.len() + constraints.len());
+        rebuilt.push(header.to_string());
+        rebuilt.extend(declarations);
+        rebuilt.extend(constraints);
+        rebuilt.push(footer.to_string());
+        rebuilt.join("\n")
+    }
+
     #[tokio::test]
     async fn test_transpile_simple_sketch() {
         // This test will fail until the transpiler is implemented
@@ -789,6 +1127,143 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
 
         // Clean up
         ctx.close().await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_arc_only_end_absolute_to_arc_segment() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> tangentialArc(endAbsolute = [10, 10])
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  arc1 = arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_tangential_arc_end_absolute_adds_coincident_endpoint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(endAbsolute = [20, 10])
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
+  coincident([line1.end, arc2.start])
+  tangent([line1, arc2])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_tangential_arc_end_relative_adds_coincident_endpoint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(end = [10, 10])
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
+  coincident([line1.end, arc2.start])
+  tangent([line1, arc2])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_tangential_arc_radius_angle_adds_tangent_and_radius() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(radius = 5, angle = 90deg)
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
+  coincident([line1.end, arc2.start])
+  tangent([line1, arc2])
+  radius(arc2) == 5mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_tangential_arc_diameter_angle_adds_tangent_and_diameter() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(diameter = 10, angle = 90deg)
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
+  coincident([line1.end, arc2.start])
+  tangent([line1, arc2])
+  diameter(arc2) == 10mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_clockwise_tangential_arc_preserves_connectivity_without_tangent_constraint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(radius = 5, angle = -90deg)
+  |> line(end = [0, -10])
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 15mm, var -5mm], end = [var 10mm, var 0mm], center = [var 10mm, var -5mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 15mm, var -5mm], end = [var 15mm, var -15mm])
+  coincident([arc2.start, line3.start])
+  radius(arc2) == 5mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_arc_line_adds_coincident_on_both_sides() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(endAbsolute = [20, 10])
+  |> line(end = [0, 10])
+"#;
+
+        let expected_output = r#"sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 10mm, var 10mm])
+  coincident([line1.end, arc2.start])
+  tangent([line1, arc2])
+  line3 = line(start = [var 20mm, var 10mm], end = [var 20mm, var 20mm])
+  coincident([arc2.end, line3.start])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
     }
 
     #[tokio::test]

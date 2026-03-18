@@ -1,0 +1,34 @@
+// I-beam
+// A structural metal beam with an I shaped cross section. Often used in construction and architecture
+// Categories: Construction
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+beamLength = 6ft
+beamHeight = 4
+flangeWidth = 2.663
+flangeThickness = 0.293
+webThickness = 0.193
+rootRadius = 0.457
+
+// Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
+sketch001 = sketch(on = -XZ) {
+  line1 = line(start = [var 0in, var 2in], end = [var 1.33in, var 2in])
+  line2 = line(start = [var 1.33in, var 2in], end = [var 1.33in, var 1.71in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.33in, var 1.71in], end = [var 0.55in, var 1.71in])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var 0.55in, var 1.71in], end = [var 0.1in, var 1.25in], center = [var 0.55in, var 1.25in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 0.1in, var 1.25in], end = [var 0.1in, var 0in])
+  coincident([arc4.end, line5.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(arc4)
+  tangent([arc4, line5])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+iBeam = extrude(region001, length = beamLength)
+

@@ -3733,6 +3733,30 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
     })))
 }
 
+/// Create an AST node for arc(start = [...], end = [...], center = [...])
+pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
+        unlabeled: None,
+        arguments: vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                arg: end_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
