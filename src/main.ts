@@ -630,6 +630,7 @@ app.on('ready', () => {
     })
   })
 
+  // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
   const prepareMacUpdateInstall = () => {
     const beforeQuitListeners = app.listeners('before-quit')
     app.removeAllListeners('before-quit')
@@ -638,6 +639,7 @@ app.on('ready', () => {
     }
 
     autoUpdater.once('before-quit-for-update', () => {
+      // Do any before-quit cleanup here
       for (const listener of beforeQuitListeners) {
         try {
           listener.call(app, {
@@ -653,7 +655,8 @@ app.on('ready', () => {
         }
       }
 
-      app.exit(0)
+      // Force app to exit
+      app.exit()
     })
   }
 
