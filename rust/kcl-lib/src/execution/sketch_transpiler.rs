@@ -368,8 +368,7 @@ fn build_sketch_block_ast(
                         )));
                     }
                     SegmentConstraint::Diameter { d } => {
-                        let diameter_ast =
-                            create_arc_size_constraint_ast_from_name("diameter", segment_name, *d)?;
+                        let diameter_ast = create_arc_size_constraint_ast_from_name("diameter", segment_name, *d)?;
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: diameter_ast,
