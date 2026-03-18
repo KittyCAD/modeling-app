@@ -1705,7 +1705,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             id: tx,
             initial_value: 0.0,
             ty: sketch_var_ty,
-            meta: vec![args.source_range.into()],
+            meta: vec![],
         }),
     });
     let ty = sketch_state.next_sketch_var_id();
@@ -1714,7 +1714,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             id: ty,
             initial_value: 0.0,
             ty: sketch_var_ty,
-            meta: vec![args.source_range.into()],
+            meta: vec![],
         }),
     });
 
