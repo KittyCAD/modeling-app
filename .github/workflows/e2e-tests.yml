@@ -105,8 +105,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -243,8 +242,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -273,7 +271,7 @@ jobs:
           CI_SUITE: e2e:web
           TARGET: web
 
-      - name: Upload playwright report
+      - name: Upload Playwright report
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
@@ -371,8 +369,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -414,7 +411,7 @@ jobs:
           CI_SUITE: e2e:desktop
           TARGET: desktop
 
-      - name: Upload test report
+      - name: Upload test results
         uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -424,7 +421,7 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - name: Upload playwright report
+      - name: Upload Playwright report
         uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -447,16 +444,30 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
+    if: github.event_name == 'pull_request'
+
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download browser cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install browsers
+        run: npm run playwright install --with-deps
 
       - name: Wait for Vercel
-        if: github.event_name == 'pull_request'
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel
         with:
@@ -466,26 +477,29 @@ jobs:
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
-        if: github.event_name == 'pull_request'
         run: .github/ci-cd-scripts/check-vercel.sh
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
-      - name: Test Vercel
-        if: github.event_name == 'pull_request'
-        run: |
-          npm install
-          npm run playwright install --with-deps
-          npm run test:e2e:web -- --grep="demo project"
+      - run: npm run test:e2e:web -- --grep=demo --retries=3
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          # TODO: Enable TAB with https://github.com/KittyCAD/modeling-app/issues/10375
-          # TAB_API_URL: ${{ vars.TAB_API_URL }}
-          # TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          # CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          # CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          # CI_SUITE: e2e:web
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
           TARGET: web
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && (success() || failure()) }}
+        with:
+          name: playwright-report-vercel-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
