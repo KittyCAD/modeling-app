@@ -570,7 +570,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               {props.queue.map((msg, index) => (
                 <div
                   key={msg.id}
-                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-0.5 text-xs"
                 >
                   <span className="text-3 shrink-0">{index + 1}.</span>
                   <span className="truncate min-w-0 flex-1">{msg.text}</span>
@@ -586,15 +586,19 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                   <button
                     type="button"
                     onClick={() => props.onSteer(msg.id)}
-                    className="shrink-0 px-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
+                    className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
                     aria-label={`Send queued message ${index + 1} now`}
                   >
+                    <CustomIcon name="arrowShortUp" className="w-4 h-4" />
                     Steer
+                    <Tooltip position="top" hoverOnly={true}>
+                      <span>Interrupt and send this prompt</span>
+                    </Tooltip>
                   </button>
                   <button
                     type="button"
                     onClick={() => props.onRemoveFromQueue(msg.id)}
-                    className="shrink-0 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-0 m-0 border-none bg-transparent"
+                    className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
                     aria-label={`Remove queued message ${index + 1}`}
                   >
                     <CustomIcon name="close" className="w-4 h-4" />
