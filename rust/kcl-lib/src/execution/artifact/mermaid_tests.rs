@@ -85,6 +85,8 @@ impl Artifact {
             }
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
+            Artifact::PrimitiveFace(a) => vec![a.solid_id],
+            Artifact::PrimitiveEdge(a) => vec![a.solid_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
@@ -153,6 +155,14 @@ impl Artifact {
             }
             Artifact::Solid2d(_) => {
                 // Note: Don't include these since they're parents: path_id.
+                Vec::new()
+            }
+            Artifact::PrimitiveFace(_) => {
+                // Note: Don't include these since they're parents: solid_id.
+                Vec::new()
+            }
+            Artifact::PrimitiveEdge(_) => {
+                // Note: Don't include these since they're parents: solid_id.
                 Vec::new()
             }
             Artifact::StartSketchOnFace { .. } => {
@@ -288,6 +298,7 @@ impl ArtifactGraph {
                     groups.entry(path_id).or_insert_with(Vec::new).push(id);
                     true
                 }
+                Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_) => false,
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
                 | Artifact::SketchBlock { .. }
@@ -392,6 +403,22 @@ impl ArtifactGraph {
             }
             Artifact::Solid2d(_solid2d) => {
                 writeln!(output, "{prefix}{id}[Solid2d]")?;
+            }
+            Artifact::PrimitiveFace(face) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PrimitiveFace<br>{:?}\"]",
+                    code_ref_display(&face.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &face.code_ref)?;
+            }
+            Artifact::PrimitiveEdge(edge) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PrimitiveEdge<br>{:?}\"]",
+                    code_ref_display(&edge.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &edge.code_ref)?;
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
@@ -682,4 +709,68 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
     assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
     assert!(!blend_sweep.consumed);
+}
+
+#[test]
+fn primitive_edge_does_not_replace_existing_segment_artifact() {
+    let shared_id = ArtifactId::new(Uuid::new_v4());
+    let path_id = ArtifactId::new(Uuid::new_v4());
+    let solid_id = ArtifactId::new(Uuid::new_v4());
+
+    let mut map = IndexMap::new();
+    map.insert(
+        shared_id,
+        Artifact::Segment(Segment {
+            id: shared_id,
+            path_id,
+            surface_id: None,
+            edge_ids: Vec::new(),
+            edge_cut_id: None,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            common_surface_ids: Vec::new(),
+        }),
+    );
+
+    merge_artifact_into_map(
+        &mut map,
+        Artifact::PrimitiveEdge(PrimitiveEdge {
+            id: shared_id,
+            solid_id,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+        }),
+    );
+
+    assert!(matches!(map.get(&shared_id), Some(Artifact::Segment(_))));
+}
+
+#[test]
+fn primitive_face_does_not_replace_existing_cap_artifact() {
+    let shared_id = ArtifactId::new(Uuid::new_v4());
+    let sweep_id = ArtifactId::new(Uuid::new_v4());
+    let solid_id = ArtifactId::new(Uuid::new_v4());
+
+    let mut map = IndexMap::new();
+    map.insert(
+        shared_id,
+        Artifact::Cap(Cap {
+            id: shared_id,
+            sub_type: CapSubType::End,
+            edge_cut_edge_ids: Vec::new(),
+            sweep_id,
+            path_ids: Vec::new(),
+            face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+
+    merge_artifact_into_map(
+        &mut map,
+        Artifact::PrimitiveFace(PrimitiveFace {
+            id: shared_id,
+            solid_id,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+        }),
+    );
+
+    assert!(matches!(map.get(&shared_id), Some(Artifact::Cap(_))));
 }

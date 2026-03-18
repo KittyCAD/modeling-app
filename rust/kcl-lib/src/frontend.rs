@@ -581,7 +581,7 @@ impl SketchApi for FrontendState {
 
         // If a point is owned by a Line/Arc, we want to delete the owner, which will
         // also delete the point, as well as other points that are owned by the owner.
-        let mut delete_ids = AhashIndexSet::default();
+        let mut resolved_segment_ids_to_delete = AhashIndexSet::default();
 
         for segment_id in segment_ids_set.iter().copied() {
             if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
@@ -593,22 +593,57 @@ impl SketchApi for FrontendState {
                 && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_))
             {
                 // segment is owned -> delete the owner
-                delete_ids.insert(owner_id);
+                resolved_segment_ids_to_delete.insert(owner_id);
             } else {
                 // segment is not owned by anything -> can be deleted
-                delete_ids.insert(segment_id);
+                resolved_segment_ids_to_delete.insert(segment_id);
             }
         }
-        // Find constraints that reference the segments to be deleted, and add
-        // those to the set to be deleted.
-        self.add_dependent_constraints_to_delete(sketch, &delete_ids, &mut constraint_ids_set)?;
+        let referenced_constraint_ids = self.find_referenced_constraints(sketch, &resolved_segment_ids_to_delete)?;
 
         let mut new_ast = self.program.ast.clone();
+
+        for constraint_id in referenced_constraint_ids {
+            if constraint_ids_set.contains(&constraint_id) {
+                continue;
+            }
+
+            let constraint_object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
+                msg: format!("Constraint not found: {constraint_id:?}"),
+            })?;
+            let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a constraint: {constraint_object:?}"),
+                });
+            };
+
+            match constraint {
+                Constraint::LinesEqualLength(lines_equal_length) => {
+                    let remaining_lines = lines_equal_length
+                        .lines
+                        .iter()
+                        .copied()
+                        .filter(|line_id| !resolved_segment_ids_to_delete.contains(line_id))
+                        .collect::<Vec<_>>();
+
+                    // Equal length constraint is only valid with at least 2 lines
+                    if remaining_lines.len() >= 2 {
+                        self.edit_equal_length_constraint(&mut new_ast, constraint_id, remaining_lines)?;
+                    } else {
+                        constraint_ids_set.insert(constraint_id);
+                    }
+                }
+                _ => {
+                    // All other constraint types: if referenced by a segment -> delete the constraint
+                    constraint_ids_set.insert(constraint_id);
+                }
+            }
+        }
 
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
-        for segment_id in delete_ids {
+        for segment_id in resolved_segment_ids_to_delete {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
 
@@ -903,10 +938,7 @@ impl SketchApi for FrontendState {
         }
 
         // Step 3: Delete constraints (must be last since deletes can invalidate IDs)
-        let mut constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
-        let segment_ids_set = AhashIndexSet::default();
-        // Find constraints that reference segments to be deleted, and add those to the set to be deleted.
-        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+        let constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
 
         let has_constraint_deletions = !constraint_ids_set.is_empty();
         for constraint_id in constraint_ids_set {
@@ -971,9 +1003,7 @@ impl SketchApi for FrontendState {
         }
 
         // Step 3: Delete constraints (if any)
-        let mut constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
-        let segment_ids_set = AhashIndexSet::default();
-        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+        let constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
 
         let has_constraint_deletions = !constraint_ids_set.is_empty();
         for constraint_id in constraint_ids_set {
@@ -1768,6 +1798,57 @@ impl FrontendState {
         Ok(())
     }
 
+    /// updates the equalLength constraint with the given lines
+    fn edit_equal_length_constraint(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        constraint_id: ObjectId,
+        lines: Vec<ObjectId>,
+    ) -> api::Result<()> {
+        if lines.len() < 2 {
+            return Err(Error {
+                msg: format!(
+                    "Lines equal length constraint must have at least 2 lines, got {}",
+                    lines.len()
+                ),
+            });
+        }
+
+        let line_asts = lines
+            .iter()
+            .map(|line_id| {
+                let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
+                    msg: format!("Line not found: {line_id:?}"),
+                })?;
+                let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
+                    return Err(Error {
+                        msg: format!("Object is not a segment: {line_object:?}"),
+                    });
+                };
+                let Segment::Line(_) = line_segment else {
+                    return Err(Error {
+                        msg: format!("Only lines can be made equal length: {line_object:?}"),
+                    });
+                };
+
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: line_asts,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        self.mutate_ast(
+            new_ast,
+            constraint_id,
+            AstMutateCommand::EditCallUnlabeled { arg: array_expr },
+        )?;
+        Ok(())
+    }
+
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
@@ -2521,10 +2602,10 @@ impl FrontendState {
         lines_equal_length: LinesEqualLength,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[line0_id, line1_id] = lines_equal_length.lines.as_slice() else {
+        if lines_equal_length.lines.len() < 2 {
             return Err(Error {
                 msg: format!(
-                    "Lines equal length constraint must have exactly 2 lines, got {}",
+                    "Lines equal length constraint must have at least 2 lines, got {}",
                     lines_equal_length.lines.len()
                 ),
             });
@@ -2533,38 +2614,30 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
-            msg: format!("Line not found: {line0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {line0_object:?}"),
-            });
-        };
-        let Segment::Line(_) = line0_segment else {
-            return Err(Error {
-                msg: format!("Only lines can be made equal length: {line0_object:?}"),
-            });
-        };
-        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let line_asts = lines_equal_length
+            .lines
+            .iter()
+            .map(|line_id| {
+                let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
+                    msg: format!("Line not found: {line_id:?}"),
+                })?;
+                let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
+                    return Err(Error {
+                        msg: format!("Object is not a segment: {line_object:?}"),
+                    });
+                };
+                let Segment::Line(_) = line_segment else {
+                    return Err(Error {
+                        msg: format!("Only lines can be made equal length: {line_object:?}"),
+                    });
+                };
 
-        let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
-            msg: format!("Line not found: {line1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {line1_object:?}"),
-            });
-        };
-        let Segment::Line(_) = line1_segment else {
-            return Err(Error {
-                msg: format!("Only lines can be made equal length: {line1_object:?}"),
-            });
-        };
-        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
         // Create the equalLength() call using shared helper.
-        let equal_length_ast = create_equal_length_ast(line0_ast, line1_ast);
+        let equal_length_ast = create_equal_length_ast(line_asts);
 
         // Add the constraint to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -2790,14 +2863,12 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    // Find constraints that reference the given segments to be deleted, and add
-    // those to the constraint set to be deleted for cascading delete.
-    fn add_dependent_constraints_to_delete(
+    // Find constraints that reference the given segments.
+    fn find_referenced_constraints(
         &self,
         sketch_id: ObjectId,
         segment_ids_set: &AhashIndexSet<ObjectId>,
-        constraint_ids_set: &mut AhashIndexSet<ObjectId>,
-    ) -> api::Result<()> {
+    ) -> api::Result<AhashIndexSet<ObjectId>> {
         // Look up the sketch.
         let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch_id:?}"),
@@ -2807,6 +2878,7 @@ impl FrontendState {
                 msg: format!("Object is not a sketch: {sketch_object:?}"),
             });
         };
+        let mut constraint_ids_set = AhashIndexSet::default();
         for constraint_id in &sketch.constraints {
             let constraint_object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
                 msg: format!("Constraint not found: {constraint_id:?}"),
@@ -2891,7 +2963,7 @@ impl FrontendState {
                 constraint_ids_set.insert(*constraint_id);
             }
         }
-        Ok(())
+        Ok(constraint_ids_set)
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
@@ -3217,6 +3289,9 @@ enum AstMutateCommand {
     EditConstraintValue {
         value: ast::BinaryPart,
     },
+    EditCallUnlabeled {
+        arg: ast::Expr,
+    },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
         value: Number,
@@ -3491,6 +3566,12 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditCallUnlabeled { arg } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                call.unlabeled = Some(arg.clone());
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         #[cfg(feature = "artifact-graph")]
         AstMutateCommand::EditVarInitialValue { value } => {
             if let NodeMut::NumericLiteral(numeric_literal) = node {
@@ -3733,6 +3814,30 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
     })))
 }
 
+/// Create an AST node for arc.
+pub(crate) fn create_arc_ast(center_ast: ast::Expr, start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
+        unlabeled: None,
+        arguments: vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                arg: center_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                arg: end_ast,
+            },
+        ],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3773,11 +3878,10 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create an AST node for equalLength([line1, line2])
-pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Expr) -> ast::Expr {
-    // Create array [line1, line2]
+/// Create an AST node for equalLength([line1, line2, ...])
+pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
-        elements: vec![line1_expr, line2_expr],
+        elements: line_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
@@ -4955,6 +5059,118 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_line_preserves_multiline_equal_length_constraint() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
+  equalLength([line1, line2, line3])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line3_id = *sketch.segments.get(8).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line3_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  equalLength([line1, line2])
+}
+"
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.constraints.len(), 1);
+
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::LinesEqualLength(lines_equal_length) = constraint else {
+            panic!("Expected lines equal length constraint");
+        };
+        assert_eq!(lines_equal_length.lines.len(), 2);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_lines_removes_multiline_equal_length_constraint_below_minimum() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
+  equalLength([line1, line2, line3])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let line3_id = *sketch.segments.get(8).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line2_id, line3_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert!(sketch.constraints.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_line_line_coincident_constraint() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
@@ -5889,6 +6105,75 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraint_multi_line_equal_length() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+  line(start = [var 5, var 6], end = [var 7, var 8])
+  line(start = [var 9, var 10], end = [var 11, var 12])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let line3_id = *sketch.segments.get(8).unwrap();
+
+        let constraint = Constraint::LinesEqualLength(LinesEqualLength {
+            lines: vec![line1_id, line2_id, line3_id],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
+  equalLength([line1, line2, line3])
+}
+"
+        );
+        let constraints = scene_delta
+            .new_graph
+            .objects
+            .iter()
+            .filter_map(|obj| {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    return None;
+                };
+                Some(constraint)
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(constraints.len(), 1, "{:#?}", frontend.scene_graph.objects);
+        let Constraint::LinesEqualLength(lines_equal_length) = constraints[0] else {
+            panic!("expected equal length constraint, got {:?}", constraints[0]);
+        };
+        assert_eq!(lines_equal_length.lines.len(), 3);
 
         ctx.close().await;
         mock_ctx.close().await;
