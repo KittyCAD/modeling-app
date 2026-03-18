@@ -25,11 +25,17 @@ import type { MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
+import type { SnapshotFrom } from 'xstate'
 
 type MlEphantConversationPaneUser = {
   block_message?: string
   image?: string
 }
+
+// Defined outside of React o prevent rerenders
+const awaitingResponseSelector = (
+  snapshot: SnapshotFrom<MlEphantManagerActor>
+) => snapshot.context.awaitingResponse
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -61,9 +67,10 @@ export const MlEphantConversationPane = (props: {
     return actor.context.abruptlyClosed
   })
 
-  const isPromptRunning = useSelector(props.mlEphantManagerActor, (actor) => {
-    return actor.context.awaitingResponse
-  })
+  const isPromptRunning = useSelector(
+    props.mlEphantManagerActor,
+    awaitingResponseSelector
+  )
 
   if (
     props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
