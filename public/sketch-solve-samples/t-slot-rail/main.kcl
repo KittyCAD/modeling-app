@@ -12,7 +12,7 @@ fn railTslot(railHeight, length) {
   arcEnd = 0.0275
   holeDiameter = 0.262
   // Sketch one inner leg of the extruded rail
-  railProfile = startSketchOn(-XZ)
+  sketch001 = startSketchOn(-XZ)
     |> startProfile(at = [0.5, (1 - 0.356) / 2])
     |> xLine(length = -0.08)
     |> tangentialArc(angle = 45deg, radius = .09)
@@ -49,7 +49,7 @@ fn railTslot(railHeight, length) {
 
     // Scale the entire sketch by a factor of the rail height, then extrude
     |> scale(x = railHeight, y = railHeight, z = railHeight)
-    |> extrude(length)
+  railProfile = extrude(sketch001, length)
 
   return railProfile
 }

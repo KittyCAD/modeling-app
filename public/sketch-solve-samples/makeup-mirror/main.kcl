@@ -24,9 +24,9 @@ archRadius = mirrorRadius + archToMirrorGap
 // Geometry
 // Add a function to create the hinge
 fn hingeFn(x, y, z) {
-  hingeBody = startSketchOn(offsetPlane(XY, offset = z))
+  sketch001 = startSketchOn(offsetPlane(XY, offset = z))
     |> circle(center = [x, y], radius = hingeRadius)
-    |> extrude(length = hingeHeight)
+  hingeBody = extrude(sketch001, length = hingeHeight)
   return hingeBody
 }
 
@@ -42,9 +42,9 @@ hingePartC3 = hingeFn(x = armLength, y = -armLength, z = hingeHeight * 3 + hinge
 
 // Add a function to create the arm
 fn armFn(plane, offset, altitude) {
-  armBody = startSketchOn(plane)
+  sketch001 = startSketchOn(plane)
     |> circle(center = [offset, altitude], radius = armRadius)
-    |> extrude(length = armLength)
+  armBody = extrude(sketch001, length = armLength)
   return armBody
 }
 
@@ -54,10 +54,10 @@ armPartB = armFn(plane = XZ, offset = armLength, altitude = hingeHeight * 2.5 + 
 // Add a function to create the mirror
 fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
   armPlane = startSketchOn(offsetPlane(plane, offset = offsetY - (tiefe / 2)))
-  armBody = circle(armPlane, center = [offsetX, altitude], radius = radius)
-    |> extrude(length = tiefe)
+  sketch001 = circle(armPlane, center = [offsetX, altitude], radius = radius)
+  armBody = extrude(sketch001, length = tiefe)
 
-  archBody = startProfile(armPlane, at = [offsetX - gestellR, altitude])
+  sketch002 = startProfile(armPlane, at = [offsetX - gestellR, altitude])
     |> xLine(length = gestellD)
     |> arc(interiorAbsolute = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])
     |> xLine(length = gestellD)
@@ -69,7 +69,7 @@ fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD
          endAbsolute = [profileStartX(%), profileStartY(%)],
        )
     |> close()
-    |> extrude(length = tiefe)
+  archBody = extrude(sketch002, length = tiefe)
   return armBody
 }
 

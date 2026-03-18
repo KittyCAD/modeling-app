@@ -1603,13 +1603,9 @@ test(
       const element = u.locatorFile('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
 
-      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
-        true
-      )
+      expect(await isOutOfViewInScrollContainer(element, container)).toBe(true)
       await element.scrollIntoViewIfNeeded()
-      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
-        false
-      )
+      expect(await isOutOfViewInScrollContainer(element, container)).toBe(false)
     })
   }
 )
