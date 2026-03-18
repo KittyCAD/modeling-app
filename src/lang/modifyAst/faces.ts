@@ -818,127 +818,6 @@ export function addOffsetPlane({
 
 // Utilities
 
-function getEnginePrimitiveFaceSelectionsFromSelection(
-  faces: Selections
-): EnginePrimitiveSelection[] {
-  return faces.otherSelections.filter(
-    (selection): selection is EnginePrimitiveSelection =>
-      isEnginePrimitiveSelection(selection) &&
-      selection.primitiveType === 'face'
-  )
-}
-
-function insertFacePrimitiveVariablesAndOffsetPathToNode({
-  enginePrimitives,
-  modifiedAst,
-  artifactGraph,
-  wasmInstance,
-}: {
-  enginePrimitives: EnginePrimitiveSelection[]
-  modifiedAst: Node<Program>
-  artifactGraph: ArtifactGraph
-  wasmInstance: ModuleType
-}): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
-  if (enginePrimitives.length === 0) {
-    return { solidsExprs: [], faceExprs: [] }
-  }
-
-  const dedupedSelections = [
-    ...new Map(
-      enginePrimitives
-        .filter((selection) => selection.primitiveType === 'face')
-        .map((selection) => [
-          `${selection.parentEntityId || ''}:${selection.primitiveIndex}`,
-          selection,
-        ])
-    ).values(),
-  ]
-
-  let insertIndex = modifiedAst.body.length
-  const solidExprs: Expr[] = []
-  const faceExprs: Expr[] = []
-  for (const primitiveSelection of dedupedSelections) {
-    if (!primitiveSelection.parentEntityId) {
-      continue
-    }
-
-    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-      primitiveSelection.parentEntityId,
-      artifactGraph
-    )
-    if (!bodySelection) {
-      return new Error(
-        'Delete Face could not resolve a parent solid for a selected primitive face.'
-      )
-    }
-
-    const bodyVars = getVariableExprsFromSelection(
-      {
-        graphSelections: [bodySelection],
-        otherSelections: [],
-      },
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        artifactTypeFilter: ['sweep', 'compositeSolid'],
-      }
-    )
-    if (err(bodyVars)) {
-      return bodyVars
-    }
-
-    let solidExpr = createVariableExpressionsArray(bodyVars.exprs)
-    if (solidExpr === null && bodyVars.exprs.length === 1) {
-      solidExpr = bodyVars.exprs[0]
-    }
-    if (!solidExpr) {
-      return new Error(
-        'Delete Face could not resolve selected primitive face bodies in code.'
-      )
-    }
-    if (solidExprs.length === 0) {
-      solidExprs.push(solidExpr)
-    }
-
-    const faceExpr = createCallExpressionStdLibKw(
-      'faceId',
-      structuredClone(solidExpr),
-      [
-        createLabeledArg(
-          'index',
-          createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
-        ),
-      ]
-    )
-    const faceVariableName = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.FACE
-    )
-    const variableIdentifierAst = createLocalName(faceVariableName)
-    insertVariableAndOffsetPathToNode(
-      {
-        valueAst: faceExpr,
-        valueText: '',
-        valueCalculated: '',
-        variableName: faceVariableName,
-        variableDeclarationAst: createVariableDeclaration(
-          faceVariableName,
-          faceExpr
-        ),
-        variableIdentifierAst,
-        insertIndex,
-      },
-      modifiedAst
-    )
-    insertIndex++
-    faceExprs.push(variableIdentifierAst)
-  }
-
-  return { solidsExprs: solidExprs, faceExprs }
-}
-
 function getSolidSelectionsFromFaceSelections(
   faces: Selections,
   artifactGraph: ArtifactGraph
@@ -1270,4 +1149,121 @@ export function buildSolidsAndFacesExprs(
     pathIfPipe,
     modifiedAst,
   }
+}
+
+// Adds all the faceId calls needed in the AST so we can refer to them,
+// keeps track of their names as faces,
+// and gathers the corresponding solid expressions.
+function insertFacePrimitiveVariablesAndOffsetPathToNode({
+  enginePrimitives,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  enginePrimitives: EnginePrimitiveSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
+  if (enginePrimitives.length === 0) {
+    return { solidsExprs: [], faceExprs: [] }
+  }
+
+  const dedupedSelections = [
+    ...new Map(
+      enginePrimitives
+        .filter((selection) => selection.primitiveType === 'face')
+        .map((selection) => [
+          `${selection.parentEntityId || ''}:${selection.primitiveIndex}`,
+          selection,
+        ])
+    ).values(),
+  ]
+
+  let insertIndex = modifiedAst.body.length
+  const solidExprs: Expr[] = []
+  const faceExprs: Expr[] = []
+
+  for (const primitiveSelection of dedupedSelections) {
+    if (!primitiveSelection.parentEntityId) {
+      continue
+    }
+
+    // Step 1. Retrieve the body
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      primitiveSelection.parentEntityId,
+      artifactGraph
+    )
+    if (!bodySelection) {
+      return new Error(
+        'Delete Face could not resolve a parent solid for a selected primitive face.'
+      )
+    }
+
+    const bodyVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [bodySelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+      }
+    )
+    if (err(bodyVars)) {
+      return bodyVars
+    }
+
+    let solidExpr = createVariableExpressionsArray(bodyVars.exprs)
+    if (solidExpr === null && bodyVars.exprs.length === 1) {
+      solidExpr = bodyVars.exprs[0]
+    }
+    if (!solidExpr) {
+      return new Error(
+        'Could not resolve selected primitive face bodies in code.'
+      )
+    }
+    if (solidExprs.length === 0) {
+      solidExprs.push(solidExpr)
+    }
+
+    // Step 2. Create the faceId call and keep track of the new variable name
+    const faceExpr = createCallExpressionStdLibKw(
+      'faceId',
+      structuredClone(solidExpr),
+      [
+        createLabeledArg(
+          'index',
+          createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+        ),
+      ]
+    )
+    const faceVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.FACE
+    )
+    const variableIdentifierAst = createLocalName(faceVariableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: faceExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName: faceVariableName,
+        variableDeclarationAst: createVariableDeclaration(
+          faceVariableName,
+          faceExpr
+        ),
+        variableIdentifierAst,
+        insertIndex,
+      },
+      modifiedAst
+    )
+    insertIndex++
+    faceExprs.push(variableIdentifierAst)
+  }
+
+  return { solidsExprs: solidExprs, faceExprs }
 }
