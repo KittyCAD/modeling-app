@@ -13,7 +13,7 @@ fn ZOO_O(surface, center, phi_deg, depth, height) {
   phi = units::toRadians(phi_deg)
   theta_r = asin(t / 2 / r)
   theta_R = asin(t / 2 / R)
-  O_SKETCH = surface
+  sketch001 = surface
     |> startProfile(at = [
          center[0] + r * cos(theta_r + phi),
          center[1] + r * sin(theta_r + phi)
@@ -23,7 +23,7 @@ fn ZOO_O(surface, center, phi_deg, depth, height) {
     |> angledLine(angle = units::toDegrees(phi), length = R * cos(theta_R) - (r * cos(theta_r)), tag = $flat2)
     |> arc(angleStart = 180 + units::toDegrees(phi - theta_r), angleEnd = units::toDegrees(phi + theta_r), radius = r)
     |> close()
-    |> extrude(length = depth)
+  O_SKETCH = extrude(sketch001, length = depth)
   return O_SKETCH
 }
 
@@ -38,7 +38,7 @@ fn rot(x, y, theta_deg) {
 fn ZOO(surface, origin, depth, height, zoo_angle) {
   scale_factor = height / 14.291
 
-  Z_SKETCH = surface
+  sketch001 = surface
     |> startProfile(at = [origin[0], origin[1]])
     |> line(end = rot(x = scale_factor * 2.172096, y = scale_factor * 0.0700, theta_deg = zoo_angle))
     |> line(end = rot(x = scale_factor * 2.057187, y = scale_factor * 2.222436, theta_deg = zoo_angle))
@@ -57,7 +57,7 @@ fn ZOO(surface, origin, depth, height, zoo_angle) {
     |> line(end = rot(x = scale_factor * -8.225417, y = scale_factor * -8.886255, theta_deg = zoo_angle))
     |> line(end = rot(x = scale_factor * 0, y = scale_factor * -2.171981, theta_deg = zoo_angle))
     |> close()
-    |> extrude(length = depth)
+  Z_SKETCH = extrude(sketch001, length = depth)
 
   O_ANGLE = 47.15 // 47
   O_DELTA = rot(x = scale_factor * 21.5, y = scale_factor * 7.1456, theta_deg = zoo_angle)

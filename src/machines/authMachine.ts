@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
@@ -32,7 +32,7 @@ import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface UserContext {
-  user?: User
+  user?: UserResponse
   token: string
 }
 
@@ -66,7 +66,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: User
+            user: UserResponse
             token: string
           }
         }
@@ -316,9 +316,10 @@ async function getAndSyncStoredToken(input: {
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie()
-  const fileToken = environmentName
-    ? await readEnvironmentConfigurationToken(environmentName)
-    : ''
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
   const token = inputToken || cookieToken || fileToken
 
   // Log what tokens we found
@@ -333,9 +334,11 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    // has just logged in, update storage
-    if (environmentName)
-      await writeEnvironmentConfigurationToken(environmentName, token)
+    if (window.electron) {
+      // has just logged in, update storage
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
+    }
     return token
   }
 
