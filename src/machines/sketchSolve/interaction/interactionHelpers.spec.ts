@@ -97,10 +97,7 @@ describe('findClosestApiObjects', () => {
     )
 
     expect(result[0]?.apiObject.id).toBe(4)
-    expect(result[0]?.distance).toBeCloseTo(
-      Math.abs(Math.sqrt(882) - 30),
-      5
-    )
+    expect(result[0]?.distance).toBeCloseTo(Math.abs(Math.sqrt(882) - 30), 5)
   })
 
   it('sorts lines and arcs by distance within the same priority bucket', () => {

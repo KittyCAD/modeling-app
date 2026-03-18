@@ -42,10 +42,7 @@ function distanceToLineSegment(
   return distance2d(point, closestPoint)
 }
 
-function distanceToArcSegment(
-  point: Coords2d,
-  arc: ArcPoints
-): number {
+function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
   const { center, start, end } = arc
   const radius = distance2d(center, start)
   if (radius === 0) {
