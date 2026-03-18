@@ -671,7 +671,7 @@ app.on('ready', () => {
     }
 
     try {
-      autoUpdater.quitAndInstall()
+      appUpdater.quitAndInstall()
     } catch (error) {
       isInstallingUpdate = false
       return Promise.reject(error)
@@ -679,7 +679,7 @@ app.on('ready', () => {
   })
 
   ipcMain.handle('app.checkForUpdates', () => {
-    return autoUpdater.checkForUpdates()
+    return appUpdater.checkForUpdates()
   })
 })
 
