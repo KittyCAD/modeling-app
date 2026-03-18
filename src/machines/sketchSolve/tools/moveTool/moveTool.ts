@@ -205,7 +205,6 @@ export function findEntityUnderCursorId(
   }
 
   // Check if selected is already a Group with a numeric name (segment group)
-  // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
   if (selected instanceof Group) {
     const groupId = Number(selected.name)
     if (!Number.isNaN(groupId)) {
@@ -432,9 +431,7 @@ export function createOnClickCallback({
       return
     }
 
-    // No segment found - clicked on blank space, clear selection
-    // sceneInfra should have detected CSS2DObjects in onMouseDown, so if we get here
-    // with no group, it means we clicked on nothing
+    // No segment found, so clear selection.
     onUpdateSelectedIds({
       selectedIds: [],
       duringAreaSelectIds: [],
