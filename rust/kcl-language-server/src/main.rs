@@ -2,11 +2,11 @@
 
 #![deny(missing_docs)]
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use clap::Parser;
 use slog::Drain;
 use tower_lsp::{LspService, Server as LspServer};
-use tracing_subscriber::{prelude::*, Layer};
+use tracing_subscriber::{Layer, prelude::*};
 
 lazy_static::lazy_static! {
 /// Initialize the logger.

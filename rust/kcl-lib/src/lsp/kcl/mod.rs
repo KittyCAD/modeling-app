@@ -1747,7 +1747,13 @@ pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, 
 
     for d in kcl_std.all_docs() {
         if let Some(ci) = d.to_completion_item() {
-            completions.insert(d.name().to_owned(), ci);
+            let name = d.name();
+            // When there are multiple items with the same name (e.g. line in
+            // both sketch and sketch2), prefer the stable one.
+            if d.is_experimental() && completions.contains_key(name) {
+                continue;
+            }
+            completions.insert(name.to_owned(), ci);
         }
     }
 
@@ -1765,7 +1771,13 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
 
     for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
-            signatures.insert(d.name().to_owned(), sig);
+            let name = d.name();
+            // When there are multiple items with the same name, prefer the
+            // stable one.
+            if d.is_experimental() && signatures.contains_key(name) {
+                continue;
+            }
+            signatures.insert(name.to_owned(), sig);
         }
     }
 
@@ -1836,6 +1848,11 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
             })
             .collect();
         if !arg_map.is_empty() {
+            // When there are multiple items with the same name, prefer the
+            // stable one.
+            if d.is_experimental() && result.contains_key(&f.name) {
+                continue;
+            }
             result.insert(f.name.clone(), arg_map);
         }
     }

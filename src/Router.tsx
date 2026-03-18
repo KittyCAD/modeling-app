@@ -31,6 +31,7 @@ import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
+import { MachineApiController } from '@src/components/MachineApiController'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -40,8 +41,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  */
 export const Router = () => {
   const app = useApp()
-  const { engineCommandManager } = useSingletons()
-  const networkStatus = useNetworkStatus(engineCommandManager)
+  const { kclManager } = useSingletons()
+  const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
   const router = useMemo(
     () =>
       createRouter([
@@ -157,6 +158,7 @@ export const Router = () => {
 
   return (
     <NetworkContext.Provider value={networkStatus}>
+      <MachineApiController />
       <RouterProvider router={router} />
     </NetworkContext.Provider>
   )
@@ -164,11 +166,10 @@ export const Router = () => {
 
 function CoreDump() {
   const { auth } = useApp()
-  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const token = auth.useToken()
   const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
+    () => new CoreDumpManager(kclManager, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )

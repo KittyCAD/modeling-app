@@ -283,7 +283,7 @@ async fn inner_get_common_edge(
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let face = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    let edge = args.get_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
+    let edge = args.get_kw_arg("edge", &RuntimeType::edge(), exec_state)?;
     let lower_bound = args.get_kw_arg_opt("lowerBound", &RuntimeType::num_any(), exec_state)?;
     let upper_bound = args.get_kw_arg_opt("upperBound", &RuntimeType::num_any(), exec_state)?;
 

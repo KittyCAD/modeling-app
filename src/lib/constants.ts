@@ -54,6 +54,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  BLEND: 'blend',
   SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
@@ -239,8 +240,12 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
 
-/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+/** localStorage key to determine if the runtime is Playwright */
 export const IS_PLAYWRIGHT_KEY = 'playwright'
+/** localStorage key to store the token for Playwright */
+export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
+/** A query parameter for Playwright to authenticate with a Vercel deployment */
+export const VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM = 'vercel-playwright-token'
 
 /** Should we mark all the ML features as "beta"? */
 export const IS_ML_EXPERIMENTAL = true
@@ -323,11 +328,11 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
 
-// Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
+// Zookeeper input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
-export const DEFAULT_BACKFACE_COLOR = '#F20D0D'
+export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

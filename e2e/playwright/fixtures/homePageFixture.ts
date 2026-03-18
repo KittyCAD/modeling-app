@@ -74,12 +74,12 @@ export class HomePageFixture {
     const projectCardStates: Array<ProjectCardState> = []
     for (const projectCard of projectCards) {
       const [title, fileCount] = await Promise.all([
-        (await projectCard.locator(this.projectCardTitle).textContent()) || '',
-        Number(await projectCard.locator(this.projectCardFile).textContent()),
+        projectCard.locator(this.projectCardTitle).textContent(),
+        projectCard.locator(this.projectCardFile).textContent(),
       ])
       projectCardStates.push({
-        title: title,
-        fileCount,
+        title: title || '',
+        fileCount: Number(fileCount),
       })
     }
     return projectCardStates

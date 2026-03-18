@@ -3,9 +3,7 @@ import type { LoaderFunction } from 'react-router-dom'
 import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { normalizeLineEndings } from '@src/lib/codeEditor'
 import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
 import {
@@ -23,6 +21,8 @@ import type {
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSkeletonCreate } from '@src/lang/project'
+
+export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -51,27 +51,26 @@ export const baseLoader =
 
     // Web, make a default project and redirect to it.
     const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
-    const defaultProjectName = 'demo-project'
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
     const requestedProjectName = fsZds.resolve(
       settings.settings.app.projectDirectory.current,
-      defaultProjectName
+      DEFAULT_WEB_PROJECT_NAME
     )
 
     // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectName)
-      app.singletons.systemIOActor.send({
+      app.systemIOActor.send({
         type: SystemIOMachineEvents.navigateToProject,
         data: { requestedProjectName },
       })
     } catch {
       await projectSkeletonCreate(
-        await fsZds.resolve(
+        fsZds.resolve(
           await getInitialDefaultDir(),
-          defaultProjectName,
+          DEFAULT_WEB_PROJECT_NAME,
           'main.kcl'
         )
       )
@@ -92,7 +91,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager, rustContext, systemIOActor } = app.singletons
+    const { kclManager } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -120,7 +119,6 @@ export const fileLoader =
       params.id,
       settings.configuration
     )
-    let code = ''
 
     if (!projectPathData) {
       return Promise.reject(
@@ -163,29 +161,6 @@ export const fileLoader =
           `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${new URL(routerData.request.url).search || ''}`
         )
       }
-
-      code = await fsZds.readFile(currentFilePath, {
-        encoding: 'utf-8',
-      })
-      code = normalizeLineEndings(code)
-
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      if (window.electron?.process.env.NODE_ENV === 'test') {
-        code = kclManager.localStoragePersistCode() || code
-      }
-
-      // Update both the state and the editor's code.
-      kclManager.updateCurrentFilePath(currentFilePath)
-      kclManager.updateCodeEditor(code, {
-        shouldExecute: true,
-        // This way undo and redo are not super weird when opening new files.
-        shouldClearHistory: true,
-        shouldResetCamera: true,
-        // We explicitly do not write to the file here since we are loading from
-        // the file system and not the editor.
-        shouldWriteToDisk: false,
-      })
     }
 
     // Set the file system manager to the project path
@@ -216,20 +191,22 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    // This starts subscribing to settingsActor updates
-    // TODO: Make settings not an XState actor, this is too convoluted.
-    app.openProject(
-      project,
+    const projectRef = await app.openProject(project)
+    const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager
+      app.singletons.kclManager,
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      window.electron?.process.env.NODE_ENV === 'test'
+        ? kclManager.localStoragePersistCode()
+        : undefined
     )
-    await rustContext.sendOpenProject(project, currentFilePath)
 
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
       ? appProjectDir
       : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
-    systemIOActor.send({
+    app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
         requestedProjectDirectoryPath,
@@ -237,7 +214,7 @@ export const fileLoader =
     })
 
     const projectData: IndexLoaderData = {
-      code,
+      code: editor.code,
       project,
       file: {
         name: currentFileName || '',
@@ -267,7 +244,7 @@ export const homeLoader =
       return redirect(PATHS.INDEX)
     }
 
-    app.singletons.systemIOActor.send({
+    app.systemIOActor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
     app.closeProject()

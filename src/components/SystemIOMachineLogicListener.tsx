@@ -5,7 +5,6 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
-  getFilePathRelativeToProject,
   getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
@@ -25,17 +24,17 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
-  type RequestedKCLFile,
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings } = useApp()
-  const { engineCommandManager, kclManager, systemIOActor } = useSingletons()
+  const { auth, billing, settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
@@ -82,7 +81,7 @@ export function SystemIOMachineLogicListener() {
     // Open the requested file in the requested project
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
-    engineCommandManager.rejectAllModelingCommands(
+    kclManager.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
     )
 
@@ -257,53 +256,25 @@ export function SystemIOMachineLogicListener() {
     mlEphantManagerActor,
     billing.actor,
     token,
-    engineCommandManager,
-    (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
-      if (
-        toolOutput.type !== 'text_to_cad' &&
-        toolOutput.type !== 'edit_kcl_code'
-      ) {
-        return
-      }
-      const outputsRecord: Record<string, string> = {
-        ...(toolOutput.outputs ?? {}),
-      }
-      const requestedFiles: RequestedKCLFile[] = Object.entries(
-        outputsRecord
-      ).map(([relativePath, fileContents]) => {
-        const lastSep = relativePath.lastIndexOf(fsZds.sep)
-        let pathPart = relativePath.slice(0, lastSep)
-        let filePart = relativePath.slice(lastSep)
-        if (lastSep < 0) {
-          pathPart = ''
-          filePart = relativePath
-        }
-        return {
-          requestedCode: fileContents,
-          requestedFileName: filePart,
-          requestedProjectName:
-            projectNameCurrentlyOpened + fsZds.sep + pathPart,
-        }
-      })
+    kclManager.engineCommandManager,
+    (props) => {
+      const payload = prepareMlEphantNewFileRequest(props)
 
-      const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
-        fileFocusedOnInEditor?.path || '',
-        projectNameCurrentlyOpened
-      )
-
-      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
-      systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
-        data: {
-          files: requestedFiles,
-          override: true,
-          // Gotcha: Both are called "project name" and "file name", but one of them
-          // has to include the project-relative file path between the two.
-          requestedProjectName: projectNameCurrentlyOpened,
-          requestedFileNameWithExtension:
-            targetFilePathRelativeToProjectDir ?? '',
-        },
-      })
+      if (payload) {
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: payload.files,
+            override: true,
+            // Gotcha: Both are called "project name" and "file name", but one of them
+            // has to include the project-relative file path between the two.
+            requestedProjectName: payload.requestedProjectName,
+            requestedFileNameWithExtension:
+              payload.requestedFileNameWithExtension ?? '',
+          },
+        })
+      }
     }
   )
 

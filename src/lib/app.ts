@@ -1,6 +1,6 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
+import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
@@ -32,7 +32,7 @@ import {
   type CommandBarActorType,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
@@ -43,18 +43,17 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import type { User } from '@kittycad/lib/dist/types/src'
+import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -67,14 +66,12 @@ declare global {
   }
 }
 
-export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
-
 export type AppAuthSystem = {
   actor: ActorRefFrom<typeof authMachine>
   send: ActorRefFrom<typeof authMachine>['send']
   useAuthState: () => SnapshotFrom<typeof authMachine>
   useToken: () => string
-  useUser: () => User | undefined
+  useUser: () => UserResponse | undefined
 }
 
 export type AppCommandSystem = {
@@ -109,6 +106,8 @@ export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
   auth: AppAuthSystem
   machineManager: MachineManager
+  rustContext: RustContext
+  engineCommandManager: ConnectionManager
   commands: AppCommandSystem
   settings: AppSettingsSystem
   billing: AppBillingSystem
@@ -116,7 +115,13 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  project?: ZDSProject
+  public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  get project() {
+    return this.projectSignal.value
+  }
+  set project(newProject: ZDSProject | undefined) {
+    this.projectSignal.value = newProject
+  }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -134,10 +139,19 @@ export class App implements AppSubsystems {
   commands: AppCommandSystem
   /** The settings system for the application */
   settings: AppSettingsSystem
+  /** The engine connection management system */
+  engineCommandManager: ConnectionManager
+  /** A reloadable wrapper library around the WASM module */
+  rustContext: RustContext
   /** The billing system for the application */
   billing: AppBillingSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
+  /**
+   * The interface to reading/writing to IO.
+   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
+   */
+  systemIOActor: SystemIOActor
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
@@ -145,11 +159,30 @@ export class App implements AppSubsystems {
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
     this.auth = subsystems.auth
+    this.engineCommandManager = subsystems.engineCommandManager
+    this.rustContext = subsystems.rustContext
     this.machineManager = subsystems.machineManager
     this.billing = subsystems.billing
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
+    this.systemIOActor = createActor(systemIOMachineImpl, {
+      input: {
+        wasmInstancePromise: this.wasmPromise,
+        app: this,
+      },
+    }).start()
+
+    // Initialize global commands
+    this.commands.actor.send({
+      type: 'Add commands',
+      data: {
+        commands: [
+          ...createAuthCommands({ authActor: this.auth.actor }),
+          ...createProjectCommands({ systemIOActor: this.systemIOActor }),
+        ],
+      },
+    })
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -211,6 +244,14 @@ export class App implements AppSubsystems {
           return getOnlySettingsFromContext(state.context)
         }),
     }
+    const engineCommandManager = new ConnectionManager({
+      settingsActor,
+    })
+    const rustContext = new RustContext(
+      wasmPromise,
+      engineCommandManager,
+      settingsActor
+    )
 
     const billingActor = createActor(billingMachine, {
       input: {
@@ -242,6 +283,8 @@ export class App implements AppSubsystems {
     return {
       wasmPromise,
       auth,
+      engineCommandManager,
+      rustContext,
       machineManager,
       commands,
       settings,
@@ -270,25 +313,23 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  // TODO: Remove providedEditor once the app can handle not always having a KclManager
-  openProject(
-    projectIORef: Project,
-    initialOpenFile?: string,
-    providedEditor?: KclManager
-  ) {
+  async openProject(projectIORef: Project) {
     const projectIORefSignal = signal(projectIORef)
-    this.project = ZDSProject.open(
-      projectIORefSignal,
-      this,
-      initialOpenFile,
-      providedEditor
-    )
+    this.project = await ZDSProject.open(projectIORefSignal, this)
 
-    this.project.executingPath
+    // This extension makes it possible to mark FS operations as un/redoable
+    effect(() => {
+      if (!!this.project?.executingEditor.value) {
+        buildFSHistoryExtension(
+          this.systemIOActor,
+          this.project.executingEditor.value
+        )
+      }
+    })
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.singletons.systemIOActor.subscribe(({ context }) => {
+    this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -302,11 +343,13 @@ export class App implements AppSubsystems {
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
+
+    return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
-    this.project?.closeAllEditors()
+    this.project?.close()
     this.project = undefined
   }
 
@@ -314,10 +357,15 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    const kclManager = new KclManager({
+    // TODO: Remove this and make the app handle no executing editor,
+    // so we don't need to stub with empty strings
+    const kclManager = new KclManager('', '', {
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
+      projectPath: signal(''),
+      engineCommandManager: this.engineCommandManager,
+      rustContext: this.rustContext,
     })
 
     if (typeof window !== 'undefined') {
@@ -346,38 +394,10 @@ export class App implements AppSubsystems {
         })
     }
 
-    const systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        kclManager,
-        engineCommandManager: kclManager.engineCommandManager,
-        app: this,
-      },
-    }).start()
-
-    // This extension makes it possible to mark FS operations as un/redoable
-    buildFSHistoryExtension(systemIOActor, kclManager)
-
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
-    // Initialize global commands
-    this.commands.actor.send({
-      type: 'Add commands',
-      data: {
-        commands: [
-          ...createAuthCommands({ authActor: this.auth.actor }),
-          ...createProjectCommands({ systemIOActor }),
-        ],
-      },
-    })
-
     return {
-      engineCommandManager: kclManager.engineCommandManager,
-      rustContext: kclManager.rustContext,
-      sceneInfra: kclManager.sceneInfra,
       kclManager,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      systemIOActor,
     }
   }
 
@@ -400,9 +420,9 @@ export class App implements AppSubsystems {
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.engineCommandManager.connection
+      this.singletons.kclManager.engineCommandManager.connection
     ) {
-      this.singletons.engineCommandManager
+      this.singletons.kclManager.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -418,19 +438,16 @@ export class App implements AppSubsystems {
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
-    const resolvedTheme = getResolvedTheme(newTheme)
-    const opposingTheme = getOppositeTheme(newTheme)
-    this.singletons.kclManager.sceneInfra.theme = opposingTheme
-    this.singletons.kclManager.sceneEntitiesManager.updateSegmentBaseColor(
-      opposingTheme
-    )
-    this.singletons.kclManager.setEditorTheme(resolvedTheme)
-    if (this.singletons.engineCommandManager.connection) {
-      Promise.all([
-        this.singletons.engineCommandManager.setTheme(newTheme),
-        this.singletons.engineCommandManager.setBackfaceColor(newBackfaceColor),
-      ]).catch(reportRejection)
-    }
+    Promise.all([
+      this.singletons.kclManager.updateTheme(newTheme),
+      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
+        ? [
+            this.singletons.kclManager.engineCommandManager.setBackfaceColor(
+              newBackfaceColor
+            ),
+          ]
+        : []),
+    ]).catch(reportRejection)
 
     // Execute AST
     try {
@@ -451,12 +468,12 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.engineCommandManager.connection
+        this.singletons.kclManager.engineCommandManager.connection
       ) {
-        this.singletons.rustContext
+        this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.currentFilePath || undefined
+            this.singletons.kclManager.path
           )
           .then(() => this.singletons.kclManager.executeCode())
           .catch(reportRejection)

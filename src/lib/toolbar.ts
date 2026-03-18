@@ -444,6 +444,26 @@ export const useToolbarConfig = () => {
             id: 'surface',
             array: [
               {
+                id: 'blend-surface',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Blend', groupId: 'modeling' },
+                  }),
+                icon: 'blend',
+                status: 'experimental',
+                title: 'Blend',
+                description: 'Blend two selected surface edges.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-blend'
+                    ),
+                  },
+                ],
+              },
+              {
                 id: 'flip-surface',
                 onClick: () =>
                   commands.send({
@@ -1216,7 +1236,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Equal length',
                 showTitle: false,
-                description: 'Constrain two segments to be equal length',
+                description:
+                  'Constrain two or more segments to have equal length',
                 links: [],
               },
               {

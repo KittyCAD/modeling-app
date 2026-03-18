@@ -9,15 +9,15 @@ myParam = 4
 s = sketch(on = XY) {
   x = var 0
   y = var +10
-x == 1 + 2
-y == max([5 * myParam, 0])
+  x == 1 + 2
+  y == max([5 * myParam, 0])
 
   len = var 1in
-len == 5mm
+  len == 5mm
 
   p1 = [var, var]
-p1[0] == 30
-p1[1] == 40in
+  p1[0] == 30
+  p1[1] == 40in
 }
 
 assert(s.x, isEqualTo = 3)

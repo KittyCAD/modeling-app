@@ -196,9 +196,9 @@ mount4 = circle(
      )
   |> extrude(length = -plateThickness)
 
-// Draw one half of the cooling sketchs
+// Draw one half of the cooling sketch
 coolings = map([0 .. numberOfCoolingsPerSide - 1], f = drawCoolingSketch)
-// Draw the other mirrored half of cooling sketchs
+// Draw the other mirrored half of cooling sketch
 coolingsFlipped = map([0 .. numberOfCoolingsPerSide - 1], f = drawCoolingSketchFlipped)
 // Draw the cooling sketch that connects both halves
 headOfTableCooling = coolingSketchNoArms(plane = basePlateEndFace, startPoint = [0, 0])

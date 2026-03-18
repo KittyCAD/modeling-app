@@ -27,6 +27,7 @@ import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
@@ -69,6 +70,10 @@ describe('MlEphantConversation', () => {
           contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
+          isProcessing={!hasPromptCompleted}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
         />
       )
     }
@@ -180,6 +185,10 @@ describe('MlEphantConversation', () => {
         disabled={false}
         hasPromptCompleted={true}
         contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
       />
     )
 
@@ -191,6 +200,41 @@ describe('MlEphantConversation', () => {
     expect(
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
+  })
+
+  test('renders the blocked reason from the API response without extra copy', () => {
+    const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        blockedReason={blockedReason}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText(/You need a payment method to keep using Zookeeper/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'account' })).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account')
+    )
+    expect(screen.queryByText(/The user/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toBeDisabled()
   })
 
   describe('file attachments', () => {
@@ -216,6 +260,10 @@ describe('MlEphantConversation', () => {
           disabled={disabled}
           hasPromptCompleted={true}
           contexts={[]}
+          isProcessing={false}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
         />
       )
     }

@@ -1,0 +1,41 @@
+// Golf Tee
+// A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// --- Main Dimensions ---
+teeHeight = 70 // total height of the tee
+tipHeight = 10 // height of the pointed section inserted into the ground
+cupHeight = 14.6 // height of the flared cup section
+shaftHeight = teeHeight - tipHeight - cupHeight // derived height of the cylindrical shaft
+cupDepth = 2 // depth of the inner cup (how far the ball sits in)
+
+
+shaftDiameter = 4.5 // diameter of the shaft
+cupDiameter = 14.6 // outer diameter of the cup (typically wider than the shaft)
+
+
+shaftRadius = shaftDiameter / 2
+cupRadius = cupDiameter / 2
+
+// --- Tee Profile ---
+teeSketch = startSketchOn(YZ)
+
+teeProfile = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 2.25mm, var 10mm])
+  line2 = line(start = [var 2.25mm, var 10mm], end = [var 2.25mm, var 55.4mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.25mm, var 55.4mm], end = [var 9.55mm, var 70mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 9.55mm, var 70mm], end = [var 0mm, var 68mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0mm, var 68mm], end = [var 0mm, var 0mm])
+  coincident([line4.end, line5.start])
+  vertical(line2)
+}
+
+region001 = region(segments = [teeProfile.line1, teeProfile.line2])
+// --- Solid Revolve ---
+golfTee = revolve(region001, axis = Y, angle = 360)
+

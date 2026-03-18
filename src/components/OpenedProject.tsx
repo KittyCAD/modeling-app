@@ -74,9 +74,8 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project } = useApp()
-  const { systemIOActor, engineCommandManager, sceneInfra, kclManager } =
-    useSingletons()
+  const { auth, billing, settings, layout, project, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -137,20 +136,14 @@ export function OpenedProject() {
       .executeCode()
       .then(async () => {
         await resetCameraPosition({
-          sceneInfra,
-          engineCommandManager,
+          sceneInfra: kclManager.sceneInfra,
+          engineCommandManager: kclManager.engineCommandManager,
           settingsActor,
         })
       })
       .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [
-    systemIOState,
-    kclManager,
-    sceneInfra,
-    engineCommandManager,
-    settingsActor,
-  ])
+  }, [systemIOState, kclManager, settingsActor])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -171,6 +164,7 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
   const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
@@ -397,7 +391,7 @@ export function OpenedProject() {
         <StatusBar
           globalItems={[
             networkHealthStatus,
-            ...(isDesktop() ? [networkMachineStatus] : []),
+            ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({ location, filePath }),
           ]}
           localItems={[

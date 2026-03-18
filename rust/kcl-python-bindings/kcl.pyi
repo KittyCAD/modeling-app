@@ -18,8 +18,21 @@ class Base64Data:
     """
     ...
 
+class BoundingBoxResponse:
+    r"""
+    Resulting bounding-box data from a `BoundingBox` modeling command.
+    """
+    def get_center(self) -> Point3d: ...
+    def get_dimensions(self) -> Point3d: ...
+
 class CameraLookAt:
     def __new__(cls, vantage:Point3d, center:Point3d, up:Point3d) -> CameraLookAt: ...
+
+class DefaultUnits:
+    @property
+    def length(self) -> UnitLength: ...
+    @property
+    def angle(self) -> UnitAngle: ...
 
 class Discovered:
     r"""
@@ -242,6 +255,10 @@ class PhysicalPropertiesRequest:
         r"""
         Requests the density of the model.
         """
+    def set_bounding_box(self, output_unit:UnitLength) -> None:
+        r"""
+        Requests the bounding box of the model.
+        """
 
 class PhysicalPropertiesResponse:
     r"""
@@ -254,6 +271,7 @@ class PhysicalPropertiesResponse:
     def get_surface_area(self) -> builtins.float: ...
     def get_surface_area_unit(self) -> UnitArea: ...
     def get_density(self) -> builtins.float: ...
+    def get_bounding_box(self) -> BoundingBoxResponse: ...
     def get_density_unit(self) -> UnitDensity: ...
     def get_mass(self) -> builtins.float: ...
     def get_mass_unit(self) -> UnitMass: ...
@@ -735,9 +753,19 @@ class UnitVolume(Enum):
     Milliliters (ml) <https://en.wikipedia.org/wiki/Litre>
     """
 
+async def default_units(path:builtins.str) -> DefaultUnits:
+    r"""
+    Get the default length and angle units from a kcl file.
+    """
+
 async def execute(path:builtins.str) -> None:
     r"""
     Execute the kcl code from a file path.
+    """
+
+async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
+    r"""
+    Execute a kcl file and return the model's bounding box.
     """
 
 async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
@@ -760,6 +788,11 @@ async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat
 async def execute_code(code:builtins.str) -> None:
     r"""
     Execute the kcl code.
+    """
+
+async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
+    r"""
+    Execute the kcl code and return the model's bounding box.
     """
 
 async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:

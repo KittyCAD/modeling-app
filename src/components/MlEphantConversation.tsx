@@ -1,7 +1,6 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -19,6 +18,13 @@ import { isExternalFileDrag } from '@src/components/Explorer/utils'
 
 const noop = () => {}
 
+export interface QueuedMessage {
+  id: string
+  text: string
+  mode: MlCopilotMode
+  attachments: File[]
+}
+
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
@@ -31,19 +37,27 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  userBlockedOnPayment?: boolean
+  blockedReason?: string
   defaultPrompt?: string
+  initialMlCopilotMode?: MlCopilotMode // resolved from project settings
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
+  onSteer: (id: string) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
   fast: {
     pretty: 'Fast',
+    description: 'Lighter reasoning. Best for quick edits and simple tasks.',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
   thoughtful: {
     pretty: 'Thoughtful',
+    description: 'More thorough reasoning. Best for complex designs.',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
     ),
@@ -73,10 +87,9 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
 
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
-              {' '}
               {ML_COPILOT_MODE.map((mode) => (
                 <div
                   tabIndex={0}
@@ -86,11 +99,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode)
                   }}
-                  className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode}`}
                 >
-                  {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
-                  {ML_COPILOT_MODE_META[mode].pretty}
+                  {ML_COPILOT_MODE_META[mode].icon({
+                    className: 'w-5 h-5 shrink-0 mt-0.5',
+                  })}
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-medium">
+                      {ML_COPILOT_MODE_META[mode].pretty}
+                    </span>
+                    <span className="text-chalkboard-70 text-[11px] leading-tight">
+                      {ML_COPILOT_MODE_META[mode].description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </>
@@ -184,6 +206,11 @@ interface MlEphantConversationInputProps {
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
+  initialMlCopilotMode?: MlCopilotMode
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
 }
 
 export const MlEphantConversationInput = (
@@ -192,12 +219,19 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
-  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [mode, setMode] = useState<MlCopilotMode>(
+    props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+  )
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  useEffect(() => {
+    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+    setMode(next)
+  }, [props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -334,9 +368,11 @@ export const MlEphantConversationInput = (
           value={value}
           ref={refDiv}
           placeholder={
-            props.hasAlreadySentPrompts
-              ? ''
-              : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
+            props.isProcessing
+              ? 'Type a follow-up to queue...'
+              : props.hasAlreadySentPrompts
+                ? ''
+                : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
           }
           onKeyDown={(e) => {
             const isOnlyEnter =
@@ -377,7 +413,10 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             mode={mode}
-            onSetMode={setMode}
+            onSetMode={(m) => {
+              setMode(m)
+              props.onMlCopilotModeChange?.(m)
+            }}
             onAttachFiles={onAttachFiles}
             attachmentsDisabled={props.disabled}
           />
@@ -391,21 +430,9 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            {props.hasPromptCompleted ? (
+            {props.isProcessing && (
               <button
-                data-testid="ml-ephant-conversation-input-button"
-                disabled={props.disabled}
-                onClick={onClick}
-                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
-              >
-                <CustomIcon name="arrowShortUp" className="w-5 h-5" />
-                <Tooltip position="top" hoverOnly={true}>
-                  <span>Send</span>
-                </Tooltip>
-              </button>
-            ) : (
-              <button
-                data-testid="ml-ephant-conversation-input-button"
+                data-testid="ml-ephant-conversation-cancel-button"
                 onClick={props.onCancel}
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
@@ -415,6 +442,17 @@ export const MlEphantConversationInput = (
                 </Tooltip>
               </button>
             )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
+            >
+              <CustomIcon name="arrowShortUp" className="w-5 h-5" />
+              <Tooltip position="top" hoverOnly={true}>
+                <span>{props.isProcessing ? 'Queue' : 'Send'}</span>
+              </Tooltip>
+            </button>
           </div>
         </div>
       </div>
@@ -506,10 +544,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
-              {props.userBlockedOnPayment ? (
-                <StarterCard
-                  text={`Zookeeper is unavailable because your remaining reasoning time is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
-                />
+              {props.blockedReason ? (
+                <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
@@ -528,21 +564,71 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               )}
             </div>
           </div>
+          {props.queue.length > 0 && (
+            <div className="border-t b-4 px-4 py-2 flex flex-col gap-1">
+              <span className="text-xs text-3">Queued</span>
+              {props.queue.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-0.5 text-xs"
+                >
+                  <span className="text-3 shrink-0">{index + 1}.</span>
+                  <span className="truncate min-w-0 flex-1">{msg.text}</span>
+                  {msg.attachments.length > 0 && (
+                    <span className="text-3 shrink-0 flex items-center gap-0.5">
+                      <CustomIcon name="paperclip" className="w-3 h-3" />
+                      {msg.attachments.length}
+                    </span>
+                  )}
+                  <span className="text-3 shrink-0">
+                    {ML_COPILOT_MODE_META[msg.mode].pretty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => props.onSteer(msg.id)}
+                    className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
+                    aria-label={`Send queued message ${index + 1} now`}
+                  >
+                    <CustomIcon name="arrowShortUp" className="w-4 h-4" />
+                    Steer
+                    <Tooltip position="top" hoverOnly={true}>
+                      <span>Interrupt and send this prompt</span>
+                    </Tooltip>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => props.onRemoveFromQueue(msg.id)}
+                    className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
+                    aria-label={`Remove queued message ${index + 1}`}
+                  >
+                    <CustomIcon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={
-                props.userBlockedOnPayment || props.disabled || props.isLoading
+                Boolean(props.blockedReason) ||
+                props.disabled ||
+                props.isLoading
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
+              initialMlCopilotMode={props.initialMlCopilotMode}
+              onMlCopilotModeChange={props.onMlCopilotModeChange}
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
               }
+              isProcessing={props.isProcessing}
+              queue={props.queue}
+              onRemoveFromQueue={props.onRemoveFromQueue}
             />
           </div>
         </div>

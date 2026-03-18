@@ -805,9 +805,18 @@ async fn test_arg_label_completions() {
         .map(|cmp| cmp.label)
         .collect();
 
-    assert!(twist_completions.contains("twistAngle"));
-    assert!(twist_completions.contains("twistAngleStep"));
-    assert!(twist_completions.contains("twistCenter"));
+    assert!(
+        twist_completions.contains("twistAngle"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistAngleStep"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistCenter"),
+        "actual: {twist_completions:?}"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1017,9 +1026,12 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("startSketchOn"));
-            assert!(value.contains(": Plane | Face"));
-            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+            assert!(value.contains("startSketchOn"), "actual: {value:?}");
+            assert!(value.contains(": Plane | Face"), "actual: {value:?}");
+            assert!(
+                value.contains("Start a new 2-dimensional sketch on a specific"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -1040,7 +1052,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1061,7 +1073,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1082,7 +1094,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1106,8 +1118,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -3993,7 +4008,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4014,7 +4029,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4035,7 +4050,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4059,8 +4074,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }

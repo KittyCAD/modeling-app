@@ -29,10 +29,10 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
+pub(crate) use sketch_solve::{normalize_to_solver_distance_unit, solver_numeric_type};
 pub use sketch_transpiler::{
-    transpile_all_old_sketches_to_new, transpile_old_sketch_to_new, transpile_old_sketch_to_new_ast,
-    transpile_old_sketch_to_new_with_execution,
+    pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
+    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution,
 };
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
@@ -79,6 +79,8 @@ pub mod typed_path;
 pub(crate) mod types;
 
 pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+pub(crate) const SKETCH_OBJECT_META: &str = "meta";
+pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
 
 /// Convenience macro for handling [`KclValueControlFlow`] in execution by
 /// returning early if it is some kind of early return or stripping off the
@@ -448,6 +450,12 @@ pub struct Metadata {
 impl From<Metadata> for Vec<SourceRange> {
     fn from(meta: Metadata) -> Self {
         vec![meta.source_range]
+    }
+}
+
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
     }
 }
 
@@ -853,7 +861,10 @@ impl ExecutorContext {
                             .map(|sketch_block_id| sketch_block_id.0)
                             .unwrap_or(0);
                         if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state.global.root_module_artifacts.scene_objects = scene_objects.to_vec();
+                            exec_state
+                                .global
+                                .root_module_artifacts
+                                .restore_scene_objects(scene_objects);
                         } else {
                             let message = format!(
                                 "Cached scene objects length {} is less than expected length from cached object ID generator {}",

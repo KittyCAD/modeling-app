@@ -90,6 +90,9 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// Whether to enable Machine API discovery and printing controls on desktop.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub machine_api: bool,
 }
 
 /// Default to true.
@@ -262,7 +265,7 @@ fn default_length_unit_millimeters() -> UnitLength {
 
 // Also defined at src/lib/constants.ts#L333-L335
 fn default_backface_color() -> String {
-    "#F20D0D".to_string()
+    "#00D5FF".to_string()
 }
 
 fn is_default_backface_color(color: &String) -> bool {

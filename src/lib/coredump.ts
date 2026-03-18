@@ -5,12 +5,8 @@ import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 import type { KclManager } from '@src/lang/KclManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { isDesktop } from '@src/lib/isDesktop'
-import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-import type { ConnectionManager } from '@src/network/connectionManager'
-
 import { APP_VERSION } from '@src/routes/utils'
 import type { ILog } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -34,21 +30,12 @@ import { EngineDebugger } from '@src/lib/debugger'
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 // TODO: Throw more
 export class CoreDumpManager {
-  engineCommandManager: ConnectionManager
   kclManager: KclManager
-  rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
-  constructor(
-    engineCommandManager: ConnectionManager,
-    kclManager: KclManager,
-    rustContext: RustContext,
-    token: string | undefined
-  ) {
-    this.engineCommandManager = engineCommandManager
+  constructor(kclManager: KclManager, token: string | undefined) {
     this.kclManager = kclManager
-    this.rustContext = rustContext
     this.token = token
   }
 
@@ -114,17 +101,17 @@ export class CoreDumpManager {
   }
 
   getWebrtcStats(): Promise<string> {
-    if (!this.engineCommandManager.connection) {
+    if (!this.kclManager.engineCommandManager.connection) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    if (!this.engineCommandManager.connection.webrtcStatsCollector) {
+    if (!this.kclManager.engineCommandManager.connection.webrtcStatsCollector) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    return this.engineCommandManager.connection
+    return this.kclManager.engineCommandManager.connection
       .webrtcStatsCollector()
       .catch((error: any) => {
         throw new Error(`Error getting webrtc stats: ${error}`)
@@ -203,50 +190,53 @@ export class CoreDumpManager {
       // Singletons
 
       // engine_command_manager
-      debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
+      debugLog(
+        'CoreDump: engineCommandManager',
+        this.kclManager.engineCommandManager
+      )
 
       // command logs - this.engineCommandManager.commandLogs
-      if (this.engineCommandManager?.commandLogs) {
+      if (this.kclManager.engineCommandManager?.commandLogs) {
         debugLog(
           'CoreDump: Engine Command Manager command logs',
-          this.engineCommandManager.commandLogs
+          this.kclManager.engineCommandManager.commandLogs
         )
         clientState.engine_command_manager.command_logs = structuredClone(
-          this.engineCommandManager.commandLogs
+          this.kclManager.engineCommandManager.commandLogs
         )
       }
 
       // default planes - this.rustContext.defaultPlanes
-      if (this.rustContext.defaultPlanes) {
+      if (this.kclManager.rustContext.defaultPlanes) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.rustContext.defaultPlanes
+          this.kclManager.rustContext.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.rustContext.defaultPlanes
+          this.kclManager.rustContext.defaultPlanes
         )
       }
 
       clientState.engine_command_manager.connection_logs = EngineDebugger.logs
 
       // in sequence - this.engineCommandManager.inSequence
-      if (this.engineCommandManager?.inSequence) {
+      if (this.kclManager.engineCommandManager?.inSequence) {
         debugLog(
           'CoreDump: Engine Command Manager in sequence',
-          this.engineCommandManager.inSequence
+          this.kclManager.engineCommandManager.inSequence
         )
         ;(clientState.engine_command_manager as any).in_sequence =
-          this.engineCommandManager.inSequence
+          this.kclManager.engineCommandManager.inSequence
       }
 
       // out sequence - this.engineCommandManager.outSequence
-      if (this.engineCommandManager?.outSequence) {
+      if (this.kclManager.engineCommandManager?.outSequence) {
         debugLog(
           'CoreDump: Engine Command Manager out sequence',
-          this.engineCommandManager.outSequence
+          this.kclManager.engineCommandManager.outSequence
         )
         ;(clientState.engine_command_manager as any).out_sequence =
-          this.engineCommandManager.outSequence
+          this.kclManager.engineCommandManager.outSequence
       }
 
       // KCL Manager - globalThis?.window?.kclManager

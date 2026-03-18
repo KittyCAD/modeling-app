@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
-const UserSidebarMenu = ({ user }: { user?: User }) => {
+const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
   const { auth } = useApp()
   const platform = usePlatform()
   const location = useLocation()
@@ -201,7 +201,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   // 2. user.first_name + ' ' + user.last_name
   // 3. user.first_name
   // 4. user.email
-  function getDisplayName(user?: User) {
+  function getDisplayName(user?: UserResponse) {
     if (!user) return null
     if (user.name) return user.name
     if (user.first_name) {

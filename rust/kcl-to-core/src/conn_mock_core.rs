@@ -3,8 +3,8 @@ use std::{collections::HashMap, sync::Arc};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{DefaultPlanes, IdGenerator},
     AsyncTasks, EngineStats, KclError,
+    exec::{DefaultPlanes, IdGenerator},
 };
 use kittycad_modeling_cmds::{
     self as kcmc,

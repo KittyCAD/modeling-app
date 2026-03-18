@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
@@ -11,6 +11,9 @@ import {
   LEGACY_COOKIE_NAME,
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
@@ -29,7 +32,7 @@ import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface UserContext {
-  user?: User
+  user?: UserResponse
   token: string
 }
 
@@ -44,8 +47,6 @@ export type Events =
       type: 'Log in'
       token?: string
     }
-
-export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 
 /**
  * Determine which token do we have persisted to initialize the auth machine
@@ -65,7 +66,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: User
+            user: UserResponse
             token: string
           }
         }
@@ -246,9 +247,21 @@ export function getCookie(): string | null {
 }
 
 function getTokenFromEnvOrCookie(): string {
+  if (typeof window === 'undefined') return ''
+
+  // Store the token passed to the Vercel environment
+  const queryParams = new URLSearchParams(window.location?.search ?? '')
+  const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
+  if (queryToken) {
+    window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
+    window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
+    return queryToken
+  }
+
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
-  return envToken || cookieToken || ''
+  const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+  return envToken || cookieToken || storedToken || ''
 }
 
 async function getTokenFromFile(): Promise<string> {
@@ -299,9 +312,10 @@ async function getAndSyncStoredToken(input: {
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie()
-  const fileToken = environmentName
-    ? await readEnvironmentConfigurationToken(environmentName)
-    : ''
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
   const token = inputToken || cookieToken || fileToken
 
   // Log what tokens we found
@@ -316,9 +330,11 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    // has just logged in, update storage
-    if (environmentName)
-      await writeEnvironmentConfigurationToken(environmentName, token)
+    if (window.electron) {
+      // has just logged in, update storage
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
+    }
     return token
   }
 

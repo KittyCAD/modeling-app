@@ -1,19 +1,20 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { joinOSPaths } from '@src/lib/paths'
+import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 import fsZds from '@src/lib/fs-zds'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
+
+export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -153,9 +154,6 @@ export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
-  // TODO: Remove these once SystemIOWeb goes away with web FS support
-  kclManager: KclManager
-  engineCommandManager: ConnectionManager
   app: App
 }
 
@@ -204,7 +202,7 @@ export type RequestedKCLFile = {
 export const waitForIdleState = async ({
   systemIOActor,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: SystemIOActor
 }) => {
   // Check if already idle before setting up subscription
   if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
@@ -370,4 +368,40 @@ export const mlConversationsToJson = (
   convos: SystemIOContext['mlEphantConversations']
 ): string => {
   return JSON.stringify(Object.fromEntries(convos ?? new Map<string, string>()))
+}
+
+export const prepareMlEphantNewFileRequest = ({
+  toolOutput,
+  projectNameCurrentlyOpened,
+  fileFocusedOnInEditor,
+}: MlEphantNewFileRequestProps) => {
+  if (
+    toolOutput.type !== 'text_to_cad' &&
+    toolOutput.type !== 'edit_kcl_code'
+  ) {
+    return
+  }
+  const outputsRecord: Record<string, string> = {
+    ...(toolOutput.outputs ?? {}),
+  }
+  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord).map(
+    ([relativePath, fileContents]) => {
+      return {
+        requestedCode: fileContents,
+        requestedFileName: relativePath,
+        requestedProjectName: projectNameCurrentlyOpened,
+      }
+    }
+  )
+
+  const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+    fileFocusedOnInEditor?.path || '',
+    projectNameCurrentlyOpened
+  )
+
+  return {
+    files: requestedFiles,
+    requestedProjectName: projectNameCurrentlyOpened,
+    requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
+  }
 }
