@@ -92,4 +92,35 @@ const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
 
+// Set up Vercel protection bypass header for preview deployments
+test.beforeEach(async ({ page }) => {
+  await page.route('**/*', async (route, request) => {
+    const url = request.url()
+
+    /*
+    if (url.includes("lh3.googleusercontent.com")) {
+      const headers = {
+        ...request.headers(),
+        'x-vercel-protection-bypass': "process.env.VERCEL_BYPASS_TOKEN huhu"
+      }
+
+      await route.continue({ headers })
+      return;
+    }
+    */
+
+    // Only apply to Vercel preview domain (HTML requests)
+    if (url.includes('vercel.app') && process.env.VERCEL_BYPASS_TOKEN) {
+      const headers = {
+        ...request.headers(),
+        'x-vercel-protection-bypass': process.env.VERCEL_BYPASS_TOKEN,
+      }
+
+      await route.continue({ headers })
+    } else {
+      await route.continue()
+    }
+  })
+})
+
 export { test }
