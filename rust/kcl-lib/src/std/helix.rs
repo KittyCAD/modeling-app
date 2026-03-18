@@ -169,8 +169,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             None => None,
         };
 
-        // Build EdgeReference from shared module
-        use kcmc::shared::EdgeReference as ModelingEdgeReference;
+        // Build EdgeSpecifier from shared module
+        use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
         let builder = ModelingEdgeReference::builder()
             .side_faces(face_uuids)
             .end_faces(disambiguator_uuids);

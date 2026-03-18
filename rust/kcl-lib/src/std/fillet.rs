@@ -72,12 +72,12 @@ pub(super) async fn tags_to_engine_edge_references(
     tags: Vec<EdgeReference>,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<kcmc::shared::EdgeReference>, KclError> {
+) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
     let mut refs = Vec::with_capacity(tags.len());
     for edge_ref in tags {
         let edge_id = edge_ref.get_engine_id(exec_state, args)?;
         let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
-        let engine_ref = kcmc::shared::EdgeReference::builder()
+        let engine_ref = kcmc::shared::EdgeSpecifier::builder()
             .side_faces(face_ids.to_vec())
             .build();
         refs.push(engine_ref);
@@ -332,7 +332,7 @@ async fn inner_fillet_with_edge_refs(
 async fn inner_fillet_with_engine_refs(
     solid: Box<Solid>,
     radius: TyF64,
-    edge_references: Vec<kcmc::shared::EdgeReference>,
+    edge_references: Vec<kcmc::shared::EdgeSpecifier>,
     tolerance: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -401,7 +401,7 @@ pub(super) async fn parse_edge_refs_to_references(
     solid_id: uuid::Uuid,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<kcmc::shared::EdgeReference>, KclError> {
+) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
     if edge_refs.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
             message: "You must provide at least one edgeRef".to_owned(),
@@ -487,7 +487,7 @@ pub(super) async fn parse_edge_refs_to_references(
             None => None,
         };
 
-        use kcmc::shared::EdgeReference as KcmcEdgeRef;
+        use kcmc::shared::EdgeSpecifier as KcmcEdgeRef;
         let builder = KcmcEdgeRef::builder().side_faces(face_uuids).end_faces(end_face_uuids);
 
         let edge_ref = if let Some(index_val) = index {

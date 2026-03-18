@@ -309,7 +309,7 @@ async fn inner_chamfer_with_edge_refs(
 async fn inner_chamfer_with_engine_refs(
     solid: Box<Solid>,
     length: TyF64,
-    edge_references: Vec<kcmc::shared::EdgeReference>,
+    edge_references: Vec<kcmc::shared::EdgeSpecifier>,
     second_length: Option<TyF64>,
     angle: Option<TyF64>,
     tag: Option<TagNode>,

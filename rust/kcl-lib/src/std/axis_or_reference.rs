@@ -1,6 +1,6 @@
 //! Types for referencing an axis or edge.
 
-use kittycad_modeling_cmds::shared::EdgeReference as ModelingEdgeReference;
+use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeReference;
 
 use super::args::TyF64;
 use crate::{
