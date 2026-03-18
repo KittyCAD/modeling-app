@@ -82,6 +82,16 @@ export function consumeRememberedOnboardingWorkflowPanes():
   return [...preferredOpenPanes]
 }
 
+export function shouldApplyRememberedOnboardingWorkflow(
+  pathname: string,
+  onboardingStatus: OnboardingStatus
+) {
+  return (
+    !pathname.includes(String(PATHS.ONBOARDING)) &&
+    (onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
+  )
+}
+
 export const OnboardingCard = ({
   className,
   children,
@@ -624,24 +634,31 @@ export function useOnboardingPanes(
   }, [onMount, onUnmount, layout])
 }
 
-export function useApplyRememberedOnboardingWorkflowOnExit() {
+export function useApplyRememberedOnboardingWorkflow(
+  pathname: string,
+  onboardingStatus: OnboardingStatus
+) {
   const { layout } = useApp()
 
   useEffect(() => {
-    return () => {
-      const preferredOpenPanes = consumeRememberedOnboardingWorkflowPanes()
-      if (!preferredOpenPanes) {
-        return
-      }
-
-      layout.set(
-        setOpenPanes(
-          structuredClone(layout.get() || defaultLayout),
-          preferredOpenPanes
-        )
-      )
+    if (!shouldApplyRememberedOnboardingWorkflow(pathname, onboardingStatus)) {
+      return
     }
-  }, [layout])
+
+    const preferredOpenPanes = consumeRememberedOnboardingWorkflowPanes()
+    if (!preferredOpenPanes) {
+      return
+    }
+
+    // Apply after onboarding is fully closed so step unmount cleanups cannot
+    // overwrite the remembered workflow layout.
+    layout.set(
+      setOpenPanes(
+        structuredClone(layout.get() || defaultLayout),
+        preferredOpenPanes
+      )
+    )
+  }, [layout, onboardingStatus, pathname])
 }
 
 export function isModelingCmdGroupReady(

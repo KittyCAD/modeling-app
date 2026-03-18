@@ -41,6 +41,7 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   TutorialRequestToast,
+  useApplyRememberedOnboardingWorkflow,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
@@ -171,6 +172,11 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
+  const onboardingStatus =
+    settingsValues.app.onboardingStatus.current ||
+    settingsValues.app.onboardingStatus.default
+
+  useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -231,9 +237,6 @@ export function OpenedProject() {
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
-    const onboardingStatus =
-      settingsValues.app.onboardingStatus.current ||
-      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !window.electron &&
       authToken && // we're logged in,

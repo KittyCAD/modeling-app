@@ -1,9 +1,6 @@
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { desktopOnboardingRoutes } from '@src/routes/Onboarding/DesktopOnboardingRoutes'
-import {
-  useApplyRememberedOnboardingWorkflowOnExit,
-  useDismiss,
-} from '@src/routes/Onboarding/utils'
+import { useDismiss } from '@src/routes/Onboarding/utils'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet } from 'react-router-dom'
 
@@ -20,7 +17,6 @@ export const onboardingRoutes = [...desktopOnboardingRoutes].map(
 
 export const OnboardingRootRoute = () => {
   const dismiss = useDismiss()
-  useApplyRememberedOnboardingWorkflowOnExit()
   useHotkeys('esc', () => dismiss())
 
   return (
