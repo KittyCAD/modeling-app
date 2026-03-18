@@ -260,6 +260,15 @@ impl DocData {
         }
     }
 
+    pub fn is_experimental(&self) -> bool {
+        match self {
+            DocData::Fn(f) => f.properties.experimental,
+            DocData::Const(c) => c.properties.experimental,
+            DocData::Ty(t) => t.properties.experimental,
+            DocData::Mod(_) => false,
+        }
+    }
+
     pub fn to_completion_item(&self) -> Option<CompletionItem> {
         match self {
             DocData::Fn(f) => Some(f.to_completion_item()),
