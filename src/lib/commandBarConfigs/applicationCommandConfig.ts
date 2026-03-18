@@ -142,7 +142,7 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
-    onSubmit(data) {
+    async onSubmit(data) {
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
@@ -170,9 +170,10 @@ export function createApplicationCommands({
               isProjectNew,
             })
           }
-        } else if (data.source === 'local' && data.files) {
+        } else if (data.source === 'local' && data.files[0]) {
+          console.log('data.files', data.files)
           const fileNameWithExtension = getStringAfterLastSeparator(
-            data.files[0].name
+            data.files[0]
           )
           const fr = new FileReader()
           fr.addEventListener('load', () => {
@@ -188,7 +189,9 @@ export function createApplicationCommands({
               },
             })
           })
-          fr.readAsText(data.files[0])
+          const content = await fsZds.readFile(data.files[0])
+          const blob = new Blob([new Uint8Array(content)])
+          fr.readAsText(blob)
         } else {
           toast.error("The command couldn't be submitted, check the arguments.")
         }
