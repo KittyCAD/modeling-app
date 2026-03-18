@@ -36,8 +36,8 @@
         -0
       ],
       "max": [
-        0.017604723572731018,
-        0.01477211620658636,
+        0.01760471984744072,
+        0.01477211993187666,
         0.009999999776482582
       ]
     },
@@ -55,13 +55,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.017604723572731018,
-        0.004772116430103779,
+        0.01760471984744072,
+        0.004772120155394077,
         -0
       ],
       "max": [
-        0.025604723021388057,
-        0.01477211620658636,
+        0.025604719296097755,
+        0.01477211993187666,
         0.009999999776482582
       ]
     },
@@ -79,13 +79,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.025604723021388057,
-        0.004772116430103779,
+        0.025604719296097755,
+        0.004772120155394077,
         -0
       ],
       "max": [
-        0.035604722797870636,
-        0.004772116430103779,
+        0.03560471907258034,
+        0.004772120155394077,
         0.009999999776482582
       ]
     },
@@ -103,13 +103,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.020604722201824188,
-        0.004772116430103779,
+        0.02060472033917904,
+        0.004772120155394077,
         -0
       ],
       "max": [
-        0.035604722797870636,
-        0.03075287863612175,
+        0.03560471907258034,
+        0.0307528804987669,
         0.009999999776482582
       ]
     },
@@ -127,13 +127,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.005604722537100315,
-        0.03075287863612175,
+        0.0056047202087938786,
+        0.0307528804987669,
         -0
       ],
       "max": [
-        0.020604722201824188,
-        0.03075287863612175,
+        0.02060472033917904,
+        0.0307528804987669,
         0.009999999776482582
       ]
     },
@@ -156,8 +156,8 @@
         -0
       ],
       "max": [
-        0.005604722537100315,
-        0.03075287863612175,
+        0.0056047202087938786,
+        0.0307528804987669,
         0.009999999776482582
       ]
     },
@@ -180,8 +180,8 @@
         0
       ],
       "max": [
-        0.035604722797870636,
-        0.03075287863612175,
+        0.03560471907258034,
+        0.0307528804987669,
         0
       ]
     },
@@ -204,8 +204,8 @@
         0.009999999776482582
       ],
       "max": [
-        0.035604722797870636,
-        0.03075287863612175,
+        0.03560471907258034,
+        0.0307528804987669,
         0.009999999776482582
       ]
     },
@@ -224,7 +224,7 @@
   "buffers": [
     {
       "byteLength": 2016,
-      "uri": "data:application/octet-stream;base64,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"
+      "uri": "data:application/octet-stream;base64,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"
     }
   ],
   "bufferViews": [
@@ -727,7 +727,7 @@
           "end": 4,
           "t": [
             0,
-            0.014999999999999998
+            0.01500000318575966
           ]
         },
         {
@@ -751,7 +751,7 @@
           "end": 5,
           "t": [
             0,
-            0.014999999999999998
+            0.01500000318575966
           ]
         },
         {
@@ -835,7 +835,7 @@
           "end": 10,
           "t": [
             0,
-            0.029999999999999995
+            0.029999998169626608
           ]
         },
         {
@@ -859,7 +859,7 @@
           "end": 11,
           "t": [
             0,
-            0.029999999999999995
+            0.029999998169626608
           ]
         },
         {
@@ -907,7 +907,7 @@
           "end": 0,
           "t": [
             0,
-            0.03125943772003739
+            0.031259438807707346
           ]
         },
         {
@@ -919,7 +919,7 @@
           "end": 3,
           "t": [
             0,
-            0.03125943772003739
+            0.031259438807707346
           ]
         }
       ],
@@ -945,53 +945,53 @@
           0.01
         ],
         [
-          0.017604722665003954,
-          0.01477211629518312,
+          0.01760472,
+          0.01477212,
           -0
         ],
         [
-          0.017604722665003954,
-          0.01477211629518312,
+          0.01760472,
+          0.01477212,
           0.01
         ],
         [
-          0.025604722665003955,
-          0.004772116295183119,
+          0.02560472,
+          0.00477212,
           -0
         ],
         [
-          0.025604722665003955,
-          0.004772116295183119,
+          0.02560472,
+          0.00477212,
           0.01
         ],
         [
-          0.03560472266500395,
-          0.004772116295183119,
+          0.03560472,
+          0.00477212,
           -0
         ],
         [
-          0.03560472266500395,
-          0.004772116295183119,
+          0.03560472,
+          0.00477212,
           0.01
         ],
         [
-          0.02060472266500396,
-          0.030752878408716277,
+          0.02060472,
+          0.03075288,
           -0
         ],
         [
-          0.02060472266500396,
-          0.030752878408716277,
+          0.02060472,
+          0.03075288,
           0.01
         ],
         [
-          0.005604722665003962,
-          0.030752878408716277,
+          0.00560472,
+          0.03075288,
           -0
         ],
         [
-          0.005604722665003962,
-          0.030752878408716277,
+          0.00560472,
+          0.03075288,
           0.01
         ]
       ],
@@ -1020,8 +1020,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.1736481776669303,
-              0.984807753012208,
+              0.1736481804447673,
+              0.9848077525224004,
               0
             ],
             "yAxis": [
@@ -1030,8 +1030,8 @@
               1
             ],
             "origin": [
-              0.01630236133250198,
-              0.007386058147591561,
+              0.01630236,
+              0.00738606,
               0.005
             ]
           }
@@ -1040,8 +1040,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.6246950475544244,
-              -0.7808688094430303,
+              0.6246950487739364,
+              -0.7808688084674206,
               0
             ],
             "yAxis": [
@@ -1050,8 +1050,8 @@
               1
             ],
             "origin": [
-              0.02160472266500395,
-              0.009772116295183117,
+              0.02160472,
+              0.00977212,
               0.005
             ]
           }
@@ -1070,8 +1070,8 @@
               1
             ],
             "origin": [
-              0.030604722665003956,
-              0.004772116295183119,
+              0.03060472,
+              0.00477212,
               0.005
             ]
           }
@@ -1080,8 +1080,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.4999999999999999,
-              -0.8660254037844387,
+              0.5000000016387101,
+              -0.8660254028383291,
               0
             ],
             "yAxis": [
@@ -1090,8 +1090,8 @@
               -1
             ],
             "origin": [
-              0.028104722665003957,
-              0.017762497351949697,
+              0.02810472,
+              0.0177625,
               0.005
             ]
           }
@@ -1110,8 +1110,8 @@
               -1
             ],
             "origin": [
-              0.013104722665003964,
-              0.030752878408716277,
+              0.01310472,
+              0.03075288,
               0.005
             ]
           }
@@ -1120,8 +1120,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.1792969763308096,
-              0.9837949960630158,
+              0.17929697918759463,
+              0.9837949955423656,
               0
             ],
             "yAxis": [
@@ -1130,8 +1130,8 @@
               -1
             ],
             "origin": [
-              0.002802361332501981,
-              0.015376439204358138,
+              0.00280236,
+              0.01537644,
               0.005
             ]
           }
@@ -1247,8 +1247,8 @@
               -0
             ],
             "direction": [
-              0.17364817766693036,
-              0.984807753012208,
+              0.173647963119955,
+              0.9848077908426044,
               0
             ]
           }
@@ -1257,8 +1257,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.017604722665003954,
-              0.01477211629518312,
+              0.01760472,
+              0.01477212,
               -0
             ],
             "direction": [
@@ -1277,8 +1277,8 @@
               0.01
             ],
             "direction": [
-              0.17364817766693036,
-              0.984807753012208,
+              0.173647963119955,
+              0.9848077908426044,
               0
             ]
           }
@@ -1287,8 +1287,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.017604722665003954,
-              0.01477211629518312,
+              0.01760472,
+              0.01477212,
               -0
             ],
             "direction": [
@@ -1302,8 +1302,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.025604722665003955,
-              0.004772116295183119,
+              0.02560472,
+              0.00477212,
               -0
             ],
             "direction": [
@@ -1317,8 +1317,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.017604722665003954,
-              0.01477211629518312,
+              0.01760472,
+              0.01477212,
               0.01
             ],
             "direction": [
@@ -1332,8 +1332,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.025604722665003955,
-              0.004772116295183119,
+              0.02560472,
+              0.00477212,
               -0
             ],
             "direction": [
@@ -1347,8 +1347,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03560472266500395,
-              0.004772116295183119,
+              0.03560472,
+              0.00477212,
               -0
             ],
             "direction": [
@@ -1362,8 +1362,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.025604722665003955,
-              0.004772116295183119,
+              0.02560472,
+              0.00477212,
               0.01
             ],
             "direction": [
@@ -1377,13 +1377,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03560472266500395,
-              0.004772116295183119,
+              0.03560472,
+              0.00477212,
               -0
             ],
             "direction": [
-              -0.49999999999999983,
-              0.8660254037844388,
+              -0.500000030506225,
+              0.8660253861716607,
               0
             ]
           }
@@ -1392,53 +1392,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.02060472266500396,
-              0.030752878408716277,
-              -0
-            ],
-            "direction": [
-              0,
-              0,
-              1
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.03560472266500395,
-              0.004772116295183119,
-              0.01
-            ],
-            "direction": [
-              -0.49999999999999983,
-              0.8660254037844388,
-              0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.02060472266500396,
-              0.030752878408716277,
-              -0
-            ],
-            "direction": [
-              -1,
-              0,
-              0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.005604722665003962,
-              0.030752878408716277,
+              0.02060472,
+              0.03075288,
               -0
             ],
             "direction": [
@@ -1452,8 +1407,53 @@
           "type": "line",
           "line": {
             "origin": [
-              0.02060472266500396,
-              0.030752878408716277,
+              0.03560472,
+              0.00477212,
+              0.01
+            ],
+            "direction": [
+              -0.500000030506225,
+              0.8660253861716607,
+              0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.02060472,
+              0.03075288,
+              -0
+            ],
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.00560472,
+              0.03075288,
+              -0
+            ],
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.02060472,
+              0.03075288,
               0.01
             ],
             "direction": [
@@ -1467,13 +1467,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.005604722665003962,
-              0.030752878408716277,
+              0.00560472,
+              0.03075288,
               -0
             ],
             "direction": [
-              -0.17929697633080963,
-              -0.9837949960630158,
+              -0.17929688483780767,
+              -0.9837950127376424,
               0
             ]
           }
@@ -1482,13 +1482,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.005604722665003962,
-              0.030752878408716277,
+              0.00560472,
+              0.03075288,
               0.01
             ],
             "direction": [
-              -0.17929697633080963,
-              -0.9837949960630158,
+              -0.17929688483780767,
+              -0.9837950127376424,
               0
             ]
           }
