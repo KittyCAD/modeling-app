@@ -888,7 +888,10 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
         ),
       ]
     )
-    const faceVariableName = findUniqueName(modifiedAst, 'face')
+    const faceVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.FACE
+    )
     const variableIdentifierAst = createLocalName(faceVariableName)
     insertVariableAndOffsetPathToNode(
       {

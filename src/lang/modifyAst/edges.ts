@@ -654,7 +654,10 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         structuredClone(solidsExpr),
         [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
       )
-      const edgeVariableName = findUniqueName(modifiedAst, 'edge')
+      const edgeVariableName = findUniqueName(
+        modifiedAst,
+        KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+      )
       const variableIdentifierAst = createLocalName(edgeVariableName)
       insertVariableAndOffsetPathToNode(
         {
