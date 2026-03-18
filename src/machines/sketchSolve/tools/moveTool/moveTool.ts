@@ -156,123 +156,36 @@ function buildSegmentCtorWithDrag({
 }
 
 /**
- * Default implementation of findPointSegmentElement that queries the DOM.
- * This can be overridden in tests for better testability.
- */
-function defaultFindPointSegmentElement(segmentId: number): HTMLElement | null {
-  // Find the element with the matching segment_id
-  const allElements = document.querySelectorAll('[data-segment_id]')
-  for (const el of allElements) {
-    if (
-      el instanceof HTMLElement &&
-      el.dataset.segment_id === String(segmentId)
-    ) {
-      return el
-    }
-  }
-  return null
-}
-
-/**
  * Creates the onDragStart callback for sketch solve drag operations.
- * Handles initialization of drag state and point segment visual feedback.
+ * Handles initialization of drag state.
  *
  * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
- * @param setDraggingPointElement - Setter for the currently dragging point element
- * @param getDraggingPointElement - Getter for the currently dragging point element
- * @param findPointSegmentElement - Function to find a point segment element by ID (defaults to DOM query)
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
-  setDraggingPointElement,
-  getDraggingPointElement,
-  findPointSegmentElement = defaultFindPointSegmentElement,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  setDraggingPointElement: (element: HTMLElement | null) => void
-  getDraggingPointElement: () => HTMLElement | null
-  findPointSegmentElement?: (segmentId: number) => HTMLElement | null
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return ({ intersectionPoint, selected }) => {
-    // reset on drag start
+  return ({ intersectionPoint }) => {
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
-
-    // Check if we're starting a drag on a point segment (CSS2DObject)
-    // sceneInfra now sets selected to the parent Group for CSS2DObjects
-    if (selected instanceof Group) {
-      const segmentId = Number(selected.name)
-      if (!Number.isNaN(segmentId)) {
-        // Check if this is a point segment by looking for the CSS2DObject
-        const hasCSS2DObject = selected.children.some(
-          (child) => child.userData?.type === 'handle'
-        )
-        if (hasCSS2DObject) {
-          setDraggingPointElement(findPointSegmentElement(segmentId))
-          // Set opacity to indicate dragging
-          const element = getDraggingPointElement()
-          if (element) {
-            const innerCircle = element.querySelector('div')
-            if (innerCircle) {
-              innerCircle.style.opacity = '0.7'
-            }
-          }
-          return
-        }
-      }
-    }
-    setDraggingPointElement(null)
   }
 }
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
- * Restores visual feedback for point segments after dragging ends.
- *
- * @param getDraggingPointElement - Getter for the currently dragging point element
- * @param setDraggingPointElement - Setter to clear the dragging point element
- * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
  */
-export function createOnDragEndCallback({
-  getDraggingPointElement,
-  setDraggingPointElement,
-  findInnerCircle = (element: HTMLElement): HTMLElement | null => {
-    const found = element.querySelector('[data-point-inner-circle="true"]')
-    // querySelector returns Element | null, but we know it's an HTMLElement (a div)
-    // Use type guard to narrow to HTMLElement
-    if (found instanceof HTMLElement) {
-      return found
-    }
-    return null
-  },
-}: {
-  getDraggingPointElement: () => HTMLElement | null
-  setDraggingPointElement: (element: HTMLElement | null) => void
-  findInnerCircle?: (element: HTMLElement) => HTMLElement | null
-}): (arg: {
+export function createOnDragEndCallback(): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
-    // Restore opacity for point segment if we were dragging one
-    const element = getDraggingPointElement()
-    if (element) {
-      const innerCircle = findInnerCircle(element)
-      if (innerCircle) {
-        // Restore full opacity to indicate dragging has ended
-        innerCircle.style.opacity = '1'
-      }
-    }
-    // Always clear the dragging state, even if no element was being dragged
-    // This ensures state is always clean after drag ends
-    setDraggingPointElement(null)
-  }
+  return () => {}
 }
 
 /**
@@ -717,8 +630,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   )
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
-  const [getDraggingPointElement, setDraggingPointElement] =
-    createGetSet<HTMLElement | null>(null)
 
   // Selection box visual element
   const [getSelectionBoxObject, setSelectionBoxObject] =
@@ -1437,13 +1348,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
     }),
-    onDragEnd: createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-    }),
+    onDragEnd: createOnDragEndCallback(),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
       setIsSolveInProgress,
