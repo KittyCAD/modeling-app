@@ -544,10 +544,6 @@ impl Artifact {
         }
     }
 
-    fn is_primitive(&self) -> bool {
-        matches!(self, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
-    }
-
     /// Merge the new artifact into self.  If it can't because it's a different
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
@@ -963,7 +959,6 @@ fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifac
     }
 
     let id = new_artifact.id();
-    let new_is_primitive = new_artifact.is_primitive();
     let Some(old_artifact) = map.get_mut(&id) else {
         // No old artifact exists.  Insert the new one.
         map.insert(id, new_artifact);
