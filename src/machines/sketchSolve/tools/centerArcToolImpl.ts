@@ -182,9 +182,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           isEditInProgress = true
           // Cache settings to avoid fetching on every mouse move
           if (!cachedSettings) {
-            cachedSettings = await jsAppSettings(
-              context.rustContext.settingsActor
-            )
+            cachedSettings = jsAppSettings(context.rustContext.settingsActor)
           }
           const settings = cachedSettings
 
@@ -390,6 +388,7 @@ export function sendResultToParent({
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
       },
     }
     self._parent?.send(sendData)
@@ -565,7 +564,7 @@ export async function createArcActor({
       sketchId,
       segmentCtor,
       'arc-segment',
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result
@@ -745,7 +744,7 @@ export async function finalizeArcActor({
           ctor: segmentCtor,
         },
       ],
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result

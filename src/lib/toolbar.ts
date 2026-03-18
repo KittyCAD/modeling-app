@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -13,6 +14,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -135,7 +137,7 @@ export const useToolbarConfig = () => {
             },
             showTitle: true,
             hotkey: 'S',
-            description: 'Start drawing a 2D sketch',
+            description: 'Start drawing a 2D sketch.',
             links: [
               {
                 label: 'KCL docs',
@@ -145,6 +147,35 @@ export const useToolbarConfig = () => {
               },
             ],
           },
+          // This is temporary staging-only button to reduce friction on trying
+          // out the sketch solve mode. Once we reach basic engine parity, this
+          // can be made the primary button in staging.
+          ...((IS_STAGING_OR_DEBUG && !isPlaywright()
+            ? [
+                {
+                  id: 'sketch-solve',
+                  onClick: ({ modelingSend }) => {
+                    modelingSend({
+                      type: 'Enter sketch',
+                      data: {
+                        forceNewSketch: true,
+                        forceSketchSolveMode: true,
+                      },
+                    })
+                  },
+                  icon: 'sketch',
+                  iconColor: '#dc2626',
+                  status: 'experimental',
+                  title: 'Ѕtart Sketch', // Cyrillic 'S' prevents Playwright matching
+                  showTitle: false,
+                  description:
+                    'Staging Only: Start drawing a 2D sketch, using the new solver-based sketch mode.',
+                  links: [
+                    // TODO: Add link once merged: https://github.com/KittyCAD/modeling-app/pull/10212
+                  ],
+                },
+              ]
+            : []) as ToolbarItem[]),
           'break',
           {
             id: 'extrude',
@@ -413,6 +444,26 @@ export const useToolbarConfig = () => {
             id: 'surface',
             array: [
               {
+                id: 'blend-surface',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Blend', groupId: 'modeling' },
+                  }),
+                icon: 'blend',
+                status: 'experimental',
+                title: 'Blend',
+                description: 'Blend two selected surface edges.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-blend'
+                    ),
+                  },
+                ],
+              },
+              {
                 id: 'flip-surface',
                 onClick: () =>
                   commands.send({
@@ -444,13 +495,24 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'delete-face',
-                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
-                onClick: () => {},
-                status: 'unavailable',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Delete Face', groupId: 'modeling' },
+                  }),
+                icon: 'deleteFace',
+                status: 'experimental',
                 title: 'Delete Face',
                 description:
-                  'Deletes a face from a body, leaving an open surface.',
-                links: [],
+                  'Delete a face from a body (a solid, or a polysurface).',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-deleteFace'
+                    ),
+                  },
+                ],
               },
             ],
           },
@@ -1174,7 +1236,8 @@ export const useToolbarConfig = () => {
                 status: 'available',
                 title: 'Equal length',
                 showTitle: false,
-                description: 'Constrain two segments to be equal length',
+                description:
+                  'Constrain two or more segments to have equal length',
                 links: [],
               },
               {

@@ -123,7 +123,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues: Record<string, UnitLength> = {
         default: 'mm',
@@ -142,7 +142,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([
@@ -208,7 +208,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues = {
         default: 'mm',
@@ -227,7 +227,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([
@@ -334,10 +334,8 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: ['@macos', '@windows'] },
-      async ({ context, page, toolbar }) => {
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
-        )
+      async ({ page, toolbar, folderSetupFn }) => {
+        const { dir: projectDirName } = await folderSetupFn(async () => {})
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -373,6 +371,7 @@ test.describe(
         }
 
         await test.step('Check the body theme is first starting as we expect', async () => {
+          await changeShowDebugPanelFs(false)
           await expect(toolbar.debugPaneBtn).not.toBeAttached()
         })
 
@@ -386,8 +385,8 @@ test.describe(
     test(
       `Closing settings modal should go back to the original file being viewed`,
       { tag: ['@macos', '@windows'] },
-      async ({ context, page }, testInfo) => {
-        await context.folderSetupFn(async (dir) => {
+      async ({ page, folderSetupFn }, testInfo) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
@@ -735,10 +734,93 @@ test.describe(
       }
     )
 
+    test('Changing backface color setting sends updated backface command to engine', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      type BackfaceColor = { r: number; g: number; b: number; a: number }
+      const expectedBackfaceColor: BackfaceColor = {
+        r: 0,
+        g: 0,
+        b: 1,
+        a: 1,
+      }
+
+      const clearEngineCommandLogs = async () => {
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+      }
+
+      const getLastSentBackfaceColor =
+        async (): Promise<BackfaceColor | null> =>
+          page.evaluate(() => {
+            type CommandLogLike = {
+              type: string
+              data?: {
+                type?: string
+                cmd?: {
+                  type?: string
+                  backface_color?: BackfaceColor
+                }
+              }
+            }
+            // @ts-expect-error engineCommandManager is attached to window at runtime.
+            const logs: CommandLogLike[] =
+              window.engineCommandManager?.commandLogs ?? []
+
+            const matchingLog = [...logs]
+              .reverse()
+              .find(
+                (log) =>
+                  (log.type === 'send-scene' || log.type === 'send-modeling') &&
+                  log.data?.type === 'modeling_cmd_req' &&
+                  log.data?.cmd?.type === 'set_default_system_properties' &&
+                  Boolean(log.data.cmd.backface_color)
+              )
+
+            return matchingLog?.data?.cmd?.backface_color ?? null
+          })
+
+      const setBackfaceColor = async (hex: string) => {
+        const hexUppercase = hex.toUpperCase()
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · backface color')
+        await cmdBar.currentArgumentInput.fill(hex)
+        await cmdBar.progressCmdBar()
+
+        const toastMessage = page.getByText(
+          `Set backface color to "${hexUppercase}" as a user default`
+        )
+        await expect(toastMessage).toBeVisible()
+        await expect(toastMessage).not.toBeVisible()
+        await scene.settled(cmdBar)
+      }
+
+      await test.step('Load modeling view', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Set backface color to blue', async () => {
+        await clearEngineCommandLogs()
+        await setBackfaceColor('#0000ff')
+      })
+
+      await test.step('Verify set_default_system_properties includes backface_color', async () => {
+        await expect
+          .poll(() => getLastSentBackfaceColor(), { timeout: 15_000 })
+          .toEqual(expectedBackfaceColor)
+      })
+    })
+
     test(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, context, editor }) => {
+      async ({ page, homePage, editor, folderSetupFn }) => {
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -747,7 +829,7 @@ test.describe(
         const unitsChangeButton = (name: string) =>
           page.getByRole('button', { name, exact: true })
 
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(

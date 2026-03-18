@@ -55,7 +55,7 @@ jobs:
           tool: wasm-pack
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: npm run test:unit
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
@@ -86,7 +86,7 @@ jobs:
           tool: wasm-pack
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Copy prepared wasm
         run: |

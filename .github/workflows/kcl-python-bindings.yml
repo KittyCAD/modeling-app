@@ -48,7 +48,7 @@ jobs:
           before-script-linux: |
             yum install openssl-devel -y
       - name: Upload wheels
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-linux-x86_64
           path: rust/kcl-python-bindings/dist
@@ -74,7 +74,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
       - name: Upload wheels
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-windows-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
@@ -105,7 +105,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
       - name: Upload wheels
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-macos-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
@@ -159,7 +159,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
-      - name: Install codespell
+      - name: Create venv
         run: |
           uv venv .venv
           echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
@@ -172,7 +172,7 @@ jobs:
           command: sdist
           args: --out dist
       - name: Upload sdist
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-sdist
           path: rust/kcl-python-bindings/dist
@@ -185,7 +185,7 @@ jobs:
     needs: [linux-x86_64, windows, macos, sdist]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv

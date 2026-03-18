@@ -48,6 +48,13 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+export type CommandSelectionType =
+  | Artifact['type']
+  | 'primitiveFace'
+  | 'primitiveEdge'
+  | 'enginePrimitiveFace'
+  | 'enginePrimitiveEdge'
+  | 'region'
 export type FileFilter = {
   name: string
   extensions: string[]
@@ -174,7 +181,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -186,7 +193,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selectionMixed'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean
@@ -362,7 +369,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -374,7 +381,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selectionMixed'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean

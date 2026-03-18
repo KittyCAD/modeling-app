@@ -1,0 +1,14 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  a = [var 0mm, var 4mm]
+  b = [var 2mm, var 2mm]
+  c = [var 4mm, var 0mm]
+  o = [var 0.1mm, var 0.1mm]
+  ao = line(start=a, end=o)
+  bo = line(start=b, end=o)
+  co = line(start=c, end=o)
+  angle([ao, bo]) == 60deg
+  angle([bo, co]) == 30deg
+}
+

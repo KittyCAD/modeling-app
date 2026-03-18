@@ -1,0 +1,11 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  x = var 0
+  y = var 0
+  x == y
+  x == 1
+}
+
+assert(s.x, isEqualTo = 1, tolerance = 0.00000001)
+assert(s.y, isEqualTo = 1, tolerance = 0.00000001)

@@ -6,7 +6,6 @@ import jsxA11Y from 'eslint-plugin-jsx-a11y'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
-import testingLibrary from 'eslint-plugin-testing-library'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import path from 'node:path'
@@ -51,7 +50,6 @@ export default defineConfig([
       react,
       'react-hooks': fixupPluginRules(reactHooks),
       'suggest-no-throw': suggestNoThrow,
-      'testing-library': testingLibrary,
       '@typescript-eslint': typescriptEslint,
     },
 
@@ -75,6 +73,7 @@ export default defineConfig([
       'no-array-constructor': 'off',
       '@typescript-eslint/no-array-constructor': 'error',
       '@typescript-eslint/no-array-delete': 'error',
+      '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-duplicate-enum-values': 'error',
       '@typescript-eslint/no-duplicate-type-constituents': 'error',
       '@typescript-eslint/no-empty-object-type': 'error',

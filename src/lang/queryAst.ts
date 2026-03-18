@@ -61,6 +61,7 @@ import type {
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1088,20 +1089,85 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
+  wasmInstance: ModuleType
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+
+  const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
+    program,
+    pathToNode,
+    wasmInstance,
+    ['CallExpressionKw', 'SketchBlock']
+  )
+  if (
+    err(call) ||
+    !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
+  ) {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    wasmInstance,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
+}
+
+type GetVariableExprsOptions = {
+  lastChildLookup?: boolean
+  artifactTypeFilter?: Array<Artifact['type']>
+}
+
 // Go from a selection to a list of KCL expressions that
 // can be used to create function calls in codemods.
 // lastChildLookup will look for the last child of the selection in the artifact graph
 export function getVariableExprsFromSelection(
   selection: Selections,
+  artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
-  lastChildLookup = false,
-  artifactGraph?: ArtifactGraph,
-  artifactTypeFilter?: Array<Artifact['type']>
+  options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  const { lastChildLookup = false, artifactTypeFilter } = options
   let pathIfPipe: PathToNode | undefined
-  const exprs: Expr[] = []
+  let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     let variable:
@@ -1111,7 +1177,7 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (lastChildLookup && s.artifact && artifactGraph) {
+    if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
@@ -1198,10 +1264,6 @@ export function getVariableExprsFromSelection(
     console.warn('No match for selection, likely a bug (or bad selection)', s)
   }
 
-  if (exprs.length === 0) {
-    return new Error("Couldn't map selections to program references")
-  }
-
   return { exprs, pathIfPipe }
 }
 
@@ -1230,12 +1292,23 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
-    const artifact = artifactGraph.get(artifactId)
+    let artifact = artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (artifact.type === 'segment') {
+      const correspondingWall = artifactGraph
+        .values()
+        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      if (!correspondingWall) {
+        continue
+      }
+
+      artifact = correspondingWall
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }

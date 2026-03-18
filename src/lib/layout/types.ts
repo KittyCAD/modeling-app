@@ -44,6 +44,8 @@ export enum ActionType {
   Export = 'export',
   AddFile = 'addFileToProject',
   Make = 'make',
+  CommandBar = 'openCommandBar',
+  Share = 'share',
 }
 
 export type ActionTypeDefinition = {

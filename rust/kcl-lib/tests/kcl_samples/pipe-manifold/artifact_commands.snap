@@ -594,6 +594,7 @@ description: Artifact commands pipe-manifold.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1559,6 +1560,7 @@ description: Artifact commands pipe-manifold.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2048,6 +2050,7 @@ description: Artifact commands pipe-manifold.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }

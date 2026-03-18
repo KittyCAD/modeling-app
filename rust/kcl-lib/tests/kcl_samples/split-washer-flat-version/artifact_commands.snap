@@ -501,6 +501,7 @@ description: Artifact commands split-washer-flat-version.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }

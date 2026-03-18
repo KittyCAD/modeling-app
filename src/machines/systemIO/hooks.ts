@@ -1,10 +1,10 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/app'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
+  type SystemIOActor,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -18,45 +18,50 @@ import {
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.requestedProjectName
   )
 }
 export const useRequestedFileName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.requestedFileName)
 }
 export const useProjectDirectoryPath = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.projectDirectoryPath
   )
 }
 export const useFolders = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.folders)
 }
 export const useState = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state)
 }
 export const useCanReadWriteProjectDirectory = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
 }
 export const useHasListedProjects = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
 }
 
+export const useLastOperation = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.lastOperation)
+}
+
 export const useClearURLParams = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.clearURLParams)
 }
 
@@ -107,17 +112,19 @@ export const useProjectIdToConversationId = (
   }, [settings2.meta.id.current])
 }
 
+export interface MlEphantNewFileRequestProps {
+  toolOutput: MlToolResult
+  projectNameCurrentlyOpened: string
+  fileFocusedOnInEditor?: FileEntry
+}
+
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
   billingActor: BillingActor,
   token: string,
   engineCommandManager: ConnectionManager,
-  fn: (
-    toolOutputTextToCad: MlToolResult,
-    projectNameCurrentlyOpened: string,
-    fileFocusedOnInEditor?: FileEntry
-  ) => void
+  fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
@@ -136,11 +143,11 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn(
-        lastResponse.tool_output.result,
-        next.context.projectNameCurrentlyOpened,
-        next.context.fileFocusedOnInEditor
-      )
+      fn({
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
+        fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+      })
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor
       billingActor.send({

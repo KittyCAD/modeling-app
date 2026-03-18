@@ -51,6 +51,22 @@ async function getMidpointBetweenSegments(
   }
 }
 
+/**
+ * Click a segment by using its DOM element's position
+ * The CSS2DObjects have been made invisible but they are kept for these tests.
+ * Clicking on the DOM element directly was flaky.
+ */
+async function clickSegmentById(
+  page: Page,
+  scene: SceneFixture,
+  segmentId: string
+) {
+  const box = await scene.getBoundingBoxOrThrow(
+    `[data-segment_id="${segmentId}"]`
+  )
+  await page.mouse.click(box.x, box.y) // box size is 1x1 px so we can ignore width, height
+}
+
 const TEST_CODE = `@settings(experimentalFeatures = allow)
 
 mySketch = startSketchOn(XZ)
@@ -171,14 +187,14 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
-    await test.step('Set up the app with initial code and enable new sketch mode', async () => {
-      // Set useNewSketchMode in user settings (it's stored at user level even though hideOnLevel is 'project')
+    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+      // Set useSketchSolveMode in user settings (it's stored at user level even though hideOnLevel is 'project')
       // This ensures it's available immediately when the app loads, regardless of IS_STAGING_OR_DEBUG
       if (tronApp) {
         // Electron: settings via file system using cleanProjectDir
         await tronApp.cleanProjectDir({
           modeling: {
-            use_new_sketch_mode: true,
+            use_sketch_solve_mode: true,
           },
         })
       }
@@ -187,7 +203,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           ...TEST_SETTINGS,
           modeling: {
             ...TEST_SETTINGS.modeling,
-            use_new_sketch_mode: true,
+            use_sketch_solve_mode: true,
           },
         },
       })
@@ -195,7 +211,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await context.addInitScript(
         async ({ code, settingsKey, settingsToml }) => {
           localStorage.setItem('persistCode', code)
-          // Set useNewSketchMode in user settings
+          // Set useSketchSolveMode in user settings
           if (settingsToml) {
             localStorage.setItem(settingsKey, settingsToml)
           }
@@ -303,9 +319,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
-      await page.locator('[data-segment_id="2"]').click()
+      await clickSegmentById(page, scene, '2')
       // await page.waitForTimeout(100)
-      await page.locator('[data-segment_id="9"]').click()
+      await clickSegmentById(page, scene, '9')
       // await page.waitForTimeout(100)
 
       // Click the coincident tool

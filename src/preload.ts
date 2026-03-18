@@ -54,6 +54,10 @@ const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
+const getMachineApiRunning = (): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.get-state')
+const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.set-state', signal)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -79,7 +83,7 @@ const watchFileOn = (
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1 })
+  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
@@ -341,6 +345,8 @@ contextBridge.exposeInMainWorld('electron', {
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  getMachineApiRunning,
+  setMachineApiState,
   createHomePageMenu,
   createModelingPageMenu,
   createFallbackMenu,

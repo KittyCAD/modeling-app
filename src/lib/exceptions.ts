@@ -4,7 +4,6 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
 
 let initialized = false
 
@@ -14,10 +13,7 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = (
-  kclManager: KclManager,
-  rustContext: RustContext
-) => {
+export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -47,8 +43,8 @@ export const initializeWindowExceptionHandler = (
              * }
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
-            await rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(rustContext.settingsActor),
+            await kclManager.rustContext?.clearSceneAndBustCache(
+              jsAppSettings(kclManager.rustContext.settingsActor),
               undefined
             )
           } catch (e) {

@@ -1046,21 +1046,6 @@
     ]
   },
   {
-    "file": "1120t74-pipe.step",
-    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/mcmaster-parts/1120t74-pipe.step",
-    "multipleFiles": true,
-    "title": "ISO-10303-21;",
-    "description": "HEADER;",
-    "files": [
-      "1120t74-pipe.step",
-      "68095k348-flange.step",
-      "91251a404-bolt.step",
-      "9472k188-gasket.step",
-      "95479a127-hex-nut.step",
-      "98017a257-washer.step"
-    ]
-  },
-  {
     "file": "main.kcl",
     "categories": [
       "Maker"
@@ -1449,7 +1434,7 @@
     "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
     "multipleFiles": false,
     "title": "Scrub Daddy Sponge Holder",
-    "description": "A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit mangets with a diameter of 6mm and thickness of 3 mm.",
+    "description": "A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit magnets with a diameter of 6mm and thickness of 3 mm.",
     "files": [
       "main.kcl"
     ]
@@ -1923,7 +1908,7 @@
     "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Tube manifold",
-    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters",
     "files": [
       "main.kcl"
     ]
@@ -1937,6 +1922,21 @@
     "multipleFiles": false,
     "title": "Twisted wires",
     "description": "Strange sculpture inspired by hot wire cutting.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Electronics",
+      "Connector",
+      "Consumer Hardware"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "usb-c/main.kcl",
+    "multipleFiles": false,
+    "title": "USB-C Connector Assembly",
+    "description": "Parametric model of a USB-C style connector shell, rear housing, and swept cable.",
     "files": [
       "main.kcl"
     ]

@@ -54,23 +54,8 @@ export const ModelingMachineProvider = ({
 }) => {
   useSignals()
   const { machineManager, commands, settings, layout, project } = useApp()
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = useSingletons()
+  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  const systemDeps = useMemo(
-    () => ({
-      sceneInfra,
-      rustContext,
-      sceneEntitiesManager,
-      commandBarActor: commands.actor,
-    }),
-    [sceneInfra, rustContext, sceneEntitiesManager, commands.actor]
-  )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
@@ -79,10 +64,19 @@ export const ModelingMachineProvider = ({
       defaultUnit,
       cameraProjection,
       cameraOrbit,
-      useNewSketchMode,
+      useSketchSolveMode,
       snapToGrid,
     },
   } = settingsValues
+  const machineApiEnabled = settingsValues.app.machineApi.current
+  const commandBarConfig = useMemo(() => {
+    if (machineApiEnabled) {
+      return modelingMachineCommandConfig
+    }
+
+    const { Make: _make, ...configWithoutMake } = modelingMachineCommandConfig
+    return configWithoutMake
+  }, [machineApiEnabled])
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const projects = useFolders()
   const theProject = useRef<Project | undefined>(
@@ -92,7 +86,7 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!project || !file || !projects) {
       return
     }
 
@@ -128,18 +122,16 @@ export const ModelingMachineProvider = ({
     {
       input: {
         machineManager,
-        engineCommandManager,
+        engineCommandManager: kclManager.engineCommandManager,
         kclManager,
-        sceneInfra,
-        rustContext,
-        sceneEntitiesManager,
+        rustContext: kclManager.rustContext,
         commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
         // React Suspense will await this
         wasmInstance,
         store: {
-          useNewSketchMode,
+          useSketchSolveMode,
           cameraProjection,
           defaultUnit,
         },
@@ -271,7 +263,7 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    engineCommandManager.connection?.deferredPeerConnection?.promise
+    kclManager.engineCommandManager.connection?.deferredPeerConnection?.promise
       .then(() => {
         if (
           previousCameraOrbit.current === null ||
@@ -284,7 +276,9 @@ export const ModelingMachineProvider = ({
         }
         previousCameraOrbit.current = cameraOrbit.current
         // Gotcha: This will absolutely brick E2E tests if called incorrectly.
-        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+        kclManager.sceneInfra.camControls
+          .resetCameraPosition()
+          .catch(reportRejection)
       })
       .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -296,18 +290,18 @@ export const ModelingMachineProvider = ({
         modelingSend({ type: 'Cancel' })
       }
     }
-    engineCommandManager.connection?.addEventListener(
+    kclManager.engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      engineCommandManager.connection?.removeEventListener(
+      kclManager.engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager.connection, modelingSend])
+  }, [kclManager.engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')
@@ -316,7 +310,10 @@ export const ModelingMachineProvider = ({
     if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
-        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+        letEngineAnimateAndSyncCamAfter(
+          kclManager.engineCommandManager,
+          targetId
+        )
           .then(() => {})
           .catch((e) => {
             console.error(
@@ -330,7 +327,8 @@ export const ModelingMachineProvider = ({
     // While you are in sketch mode you should be able to control the enable rotate
     // Once you exit it goes back to normal
     if (inSketchMode) {
-      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+      kclManager.sceneInfra.camControls.enableRotate =
+        allowOrbitInSketchMode.current
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
@@ -381,8 +379,8 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition({
-      sceneInfra,
-      engineCommandManager,
+      sceneInfra: kclManager.sceneInfra,
+      engineCommandManager: kclManager.engineCommandManager,
       settingsActor,
     }).catch(reportRejection)
   })
@@ -408,7 +406,7 @@ export const ModelingMachineProvider = ({
       e.preventDefault()
       const selection = selectAllInCurrentSketch(
         kclManager.artifactGraph,
-        systemDeps
+        kclManager.sceneEntitiesManager
       )
       modelingSend({
         type: 'Set selection',
@@ -446,7 +444,7 @@ export const ModelingMachineProvider = ({
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
-    commandBarConfig: modelingMachineCommandConfig,
+    commandBarConfig,
     isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

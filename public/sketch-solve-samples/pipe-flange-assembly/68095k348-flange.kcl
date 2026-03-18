@@ -1,0 +1,44 @@
+// Flange
+// Flange used for mating two pipes together in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "parameters.kcl"
+
+// Create a function to create the flange. We must create a function since we are using multiple flanges.
+export fn flange() {
+  // Sketch the mounting hole pattern
+  mountingHoles = startSketchOn(XY)
+    |> circle(center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
+    |> patternCircular2d(
+         instances = 4,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = false,
+       )
+
+  // Create the flange base
+  sketch001 = startSketchOn(XY)
+    |> circle(center = [0, 0], radius = flangeDiameter / 2)
+    |> subtract2d(tool = mountingHoles)
+  flangeBase = extrude(sketch001, length = flangeBaseThickness)
+
+  // Create both the raised portions on the front and back of the flange base
+  sketch002 = startSketchOn(flangeBase, face = START)
+    |> circle(center = [0, 0], radius = flangeBackDiameter / 2)
+  flangeBack = extrude(sketch002, length = flangeBackHeight)
+  sketch003 = startSketchOn(flangeBase, face = END)
+    |> circle(center = [0, 0], radius = flangeFrontDiameter / 2)
+  flangeFront = extrude(sketch003, length = flangeFrontHeight)
+
+  // Create the circular cut in the center for the pipe
+  sketch004 = startSketchOn(flangeFront, face = END)
+    |> circle(center = [0, 0], radius = pipeDiameter / 2)
+  pipeCut = extrude(sketch004, length = -flangeTotalThickness)
+    |> appearance(color = "#bab0b0")
+
+  return pipeCut
+}
+

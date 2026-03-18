@@ -1,31 +1,36 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[45, 550, 0]<br>Consumed: false"]
+    2["Path<br>[45, 478, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    3["Segment<br>[45, 550, 0]"]
+    3["Segment<br>[45, 478, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    4["Segment<br>[45, 550, 0]"]
+    4["Segment<br>[45, 478, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    5["Segment<br>[45, 550, 0]"]
+    5["Segment<br>[45, 478, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   end
-  1["Plane<br>[45, 550, 0]"]
+  subgraph path6 [Path]
+    6["Path<br>[484, 521, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
+  1["Plane<br>[45, 478, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  6["SketchBlock<br>[45, 550, 0]"]
+  7["SketchBlock<br>[45, 478, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  7["SketchBlockConstraint Coincident<br>[247, 292, 0]"]
+  8["SketchBlockConstraint Coincident<br>[229, 265, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  8["SketchBlockConstraint Coincident<br>[387, 432, 0]"]
+  9["SketchBlockConstraint Coincident<br>[351, 387, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  9["SketchBlockConstraint Coincident<br>[435, 480, 0]"]
+  10["SketchBlockConstraint Coincident<br>[390, 426, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  10["SketchBlockConstraint Horizontal<br>[483, 509, 0]"]
+  11["SketchBlockConstraint Horizontal<br>[429, 446, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  11["SketchBlockConstraint LinesEqualLength<br>[512, 548, 0]"]
+  12["SketchBlockConstraint LinesEqualLength<br>[449, 476, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 6
+  1 <--x 7
   2 --- 3
   2 --- 4
   2 --- 5

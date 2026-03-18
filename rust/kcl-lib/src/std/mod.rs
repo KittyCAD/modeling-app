@@ -550,6 +550,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),
         ),
+        ("sketch2", "angle") => (
+            |e, a| Box::pin(crate::std::constraints::angle(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::angle"),
+        ),
+        ("sketch2", "tangent") => (
+            |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::tangent"),
+        ),
         ("sketch2", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::horizontal"),

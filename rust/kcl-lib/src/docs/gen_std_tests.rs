@@ -5,7 +5,11 @@ use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::ExecutorContext;
+use crate::{
+    ConnectionError, ExecutorContext,
+    errors::ExecErrorWithState,
+    util::{RetryConfig, execute_with_retries},
+};
 
 mod type_formatter;
 
@@ -571,7 +575,7 @@ async fn test_code_in_topics() {
             }
 
             let f = path.display().to_string();
-            join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
+            join_set.spawn(async move { (format!("{f}, example {i}"), run_example_with_retries(&eg).await) });
         }
     }
     let results: Vec<_> = join_set
@@ -612,13 +616,26 @@ fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     result
 }
 
-async fn run_example(text: &str) -> Result<()> {
+/// Execute the example code, with retries if we get a transient error from the
+/// engine.
+async fn run_example_with_retries(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client().await?;
-    let mut exec_state = crate::execution::ExecState::new(&ctx);
-    ctx.run(&program, &mut exec_state).await?;
-    ctx.close().await;
+    execute_with_retries(&RetryConfig::default(), || run_example(&program)).await?;
     Ok(())
+}
+
+async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
+    let ctx = ExecutorContext::new_with_default_client()
+        .await
+        .map_err(ConnectionError::CouldNotMakeClient)?;
+    let mut exec_state = crate::execution::ExecState::new(&ctx);
+    let result = ctx
+        .run(program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state));
+    // Always close, even when there's an error.
+    ctx.close().await;
+    result.map(|_| ())
 }
 
 #[cfg(test)]

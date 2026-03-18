@@ -22,7 +22,7 @@ describe('useOnPageMounted', () => {
 
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
     test('should reset with helper function', async () => {
@@ -36,7 +36,7 @@ describe('useOnPageMounted', () => {
         { initialProps: { callback: callback_1 } }
       )
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
       rerender({ callback: callback_2 })
       unmount()
@@ -44,7 +44,7 @@ describe('useOnPageMounted', () => {
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
     test('should fail to call the callback again, did not reset', async () => {
@@ -63,7 +63,7 @@ describe('useOnPageMounted', () => {
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
   })
