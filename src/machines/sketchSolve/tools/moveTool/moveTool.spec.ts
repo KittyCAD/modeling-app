@@ -8,7 +8,10 @@ import {
   createOnMouseLeaveCallback,
   findEntityUnderCursorId,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import {
+  SEGMENT_TYPE_POINT,
+  segmentUtilsMap,
+} from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'
 import type {
@@ -928,7 +931,7 @@ describe('findEntityUnderCursorId', () => {
   it('should return segment ID when selected is a Group with numeric name and point segment type', () => {
     const group = new Group()
     group.name = '13'
-    group.userData = { type: 'point' }
+    group.userData = { type: SEGMENT_TYPE_POINT }
     const getParentGroup = vi.fn()
 
     const result = findEntityUnderCursorId(group, getParentGroup)
@@ -948,7 +951,7 @@ describe('findEntityUnderCursorId', () => {
   it('should return null when Group name is not numeric', () => {
     const group = new Group()
     group.name = 'not-a-number'
-    group.userData = { type: 'point' }
+    group.userData = { type: SEGMENT_TYPE_POINT }
     const getParentGroup = vi.fn()
 
     const result = findEntityUnderCursorId(group, getParentGroup)

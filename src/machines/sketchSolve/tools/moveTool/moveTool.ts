@@ -65,8 +65,11 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
-  isPointSegment as isPointApiSegment,
+  isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
+import type { Coords2d } from '@src/lang/util'
+import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -155,6 +158,21 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
+function getPointHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
+  if (!(segmentGroup instanceof Group)) {
+    return null
+  }
+
+  const pointMesh = segmentGroup.children.find(
+    (child) =>
+      child instanceof Mesh &&
+      (child.userData?.type === POINT_SEGMENT_HIT_AREA ||
+        child.userData?.type === POINT_SEGMENT_BODY)
+  )
+
+  return pointMesh instanceof Mesh ? pointMesh : null
+}
+
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
  * Handles initialization of drag state.
@@ -208,10 +226,8 @@ export function findEntityUnderCursorId(
   if (selected instanceof Group) {
     const groupId = Number(selected.name)
     if (!Number.isNaN(groupId)) {
-      // Check if it's a point or line segment by userData.type or by checking children
-      const isPointSegment =
-        selected.userData?.type === 'point' ||
-        selected.children.some((child) => child.userData?.type === 'handle')
+      // Check if it's a point, line, or arc segment by userData.type or child mesh type.
+      const isPointSegment = selected.userData?.type === SEGMENT_TYPE_POINT
       const isLineSegment =
         selected.userData?.type === SEGMENT_TYPE_LINE ||
         selected.children.some(
@@ -622,9 +638,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   // Closure-scoped mutex to prevent concurrent async editSegment operations.
   // Not in XState context since it's purely an implementation detail for race condition prevention.
   const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
-  const [getLastHoveredMesh, setLastHoveredMesh] = createGetSet<Mesh | null>(
-    null
-  )
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
 
@@ -1017,7 +1030,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   ): number | null {
     // Handle point segment - check if it has an owner (line endpoint)
     const obj = objects[segmentId]
-    if (isPointApiSegment(obj)) {
+    if (isPointSegment(obj)) {
       // Skip if point has an owner (it's a line endpoint)
       // Maybe we can enable these selection with a key modifier in the future
       if (
@@ -1401,53 +1414,150 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       },
     }),
-    onMouseEnter: createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds: () => {
-        const snapshot = self.getSnapshot()
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        return Array.from(
-          new Set([
-            ...snapshot.context.selectedIds,
-            ...snapshot.context.duringAreaSelectIds,
-          ])
+    onMove: ({ intersectionPoint }: OnMoveCallbackArgs) => {
+      if (context.sceneInfra.isAreaSelectActive) {
+        return
+      }
+
+      const sketchSceneObject =
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (!(sketchSceneObject instanceof Group)) {
+        return
+      }
+
+      const snapshot = self.getSnapshot()
+      const mousePosition = [
+        intersectionPoint.twoD.x,
+        intersectionPoint.twoD.y,
+      ] as Coords2d
+
+      const closestObjects = findClosestApiObjects(
+        mousePosition,
+        snapshot,
+        context.sceneInfra
+      )
+      const hoveredPoint = closestObjects[0] ?? null
+
+      const allSelectedIds = Array.from(
+        new Set([
+          ...snapshot.context.selectedIds,
+          ...snapshot.context.duringAreaSelectIds,
+        ])
+      )
+      const draftEntityIds = snapshot.context.draftEntities
+        ? [...snapshot.context.draftEntities.segmentIds]
+        : undefined
+      const lastHoveredId = snapshot.context.hoveredId
+      const lastHoveredMesh =
+        lastHoveredId === null
+          ? null
+          : getPointHoverMesh(
+              context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
+            )
+
+      const scale =
+        context.sceneInfra.getClientSceneScaleFactor(sketchSceneObject)
+      if (!hoveredPoint || hoveredPoint.distance > 12 * scale) {
+        if (lastHoveredMesh) {
+          updateSegmentHover(
+            lastHoveredMesh,
+            false,
+            allSelectedIds,
+            draftEntityIds
+          )
+        }
+        if (lastHoveredId !== null) {
+          self.send({ type: 'update hovered id', data: { hoveredId: null } })
+        }
+        return
+      }
+
+      const hoveredMesh = getPointHoverMesh(
+        context.sceneInfra.scene.getObjectByName(
+          String(hoveredPoint.apiObject.id)
         )
-      },
-      setLastHoveredMesh,
-      getDraftEntityIds: () => {
-        const snapshot = self.getSnapshot()
-        return snapshot.context.draftEntities
-          ? [...snapshot.context.draftEntities.segmentIds]
-          : undefined
-      },
-      onUpdateHoveredId: (hoveredId: number | null) => {
-        self.send({ type: 'update hovered id', data: { hoveredId } })
-      },
-    }),
-    onMouseLeave: createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds: () => {
-        const snapshot = self.getSnapshot()
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        return Array.from(
-          new Set([
-            ...snapshot.context.selectedIds,
-            ...snapshot.context.duringAreaSelectIds,
-          ])
+      )
+      if (!hoveredMesh) {
+        if (lastHoveredMesh) {
+          updateSegmentHover(
+            lastHoveredMesh,
+            false,
+            allSelectedIds,
+            draftEntityIds
+          )
+        }
+        if (lastHoveredId !== null) {
+          self.send({ type: 'update hovered id', data: { hoveredId: null } })
+        }
+        return
+      }
+
+      if (lastHoveredId === hoveredPoint.apiObject.id && lastHoveredMesh) {
+        return
+      }
+
+      if (lastHoveredMesh) {
+        updateSegmentHover(
+          lastHoveredMesh,
+          false,
+          allSelectedIds,
+          draftEntityIds
         )
-      },
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      getDraftEntityIds: () => {
-        const snapshot = self.getSnapshot()
-        return snapshot.context.draftEntities
-          ? [...snapshot.context.draftEntities.segmentIds]
-          : undefined
-      },
-      onUpdateHoveredId: (hoveredId: number | null) => {
-        self.send({ type: 'update hovered id', data: { hoveredId } })
-      },
-    }),
+      }
+
+      updateSegmentHover(hoveredMesh, true, allSelectedIds, draftEntityIds)
+      self.send({
+        type: 'update hovered id',
+        data: { hoveredId: hoveredPoint.apiObject.id },
+      })
+    },
+    // onMouseEnter: createOnMouseEnterCallback({
+    //   updateSegmentHover,
+    //   getSelectedIds: () => {
+    //     const snapshot = self.getSnapshot()
+    //     // Combine selectedIds and duringAreaSelectIds for highlighting
+    //     return Array.from(
+    //       new Set([
+    //         ...snapshot.context.selectedIds,
+    //         ...snapshot.context.duringAreaSelectIds,
+    //       ])
+    //     )
+    //   },
+    //   setLastHoveredMesh,
+    //   getDraftEntityIds: () => {
+    //     const snapshot = self.getSnapshot()
+    //     return snapshot.context.draftEntities
+    //       ? [...snapshot.context.draftEntities.segmentIds]
+    //       : undefined
+    //   },
+    //   onUpdateHoveredId: (hoveredId: number | null) => {
+    //     self.send({ type: 'update hovered id', data: { hoveredId } })
+    //   },
+    // }),
+    // onMouseLeave: createOnMouseLeaveCallback({
+    //   updateSegmentHover,
+    //   getSelectedIds: () => {
+    //     const snapshot = self.getSnapshot()
+    //     // Combine selectedIds and duringAreaSelectIds for highlighting
+    //     return Array.from(
+    //       new Set([
+    //         ...snapshot.context.selectedIds,
+    //         ...snapshot.context.duringAreaSelectIds,
+    //       ])
+    //     )
+    //   },
+    //   getLastHoveredMesh,
+    //   setLastHoveredMesh,
+    //   getDraftEntityIds: () => {
+    //     const snapshot = self.getSnapshot()
+    //     return snapshot.context.draftEntities
+    //       ? [...snapshot.context.draftEntities.segmentIds]
+    //       : undefined
+    //   },
+    //   onUpdateHoveredId: (hoveredId: number | null) => {
+    //     self.send({ type: 'update hovered id', data: { hoveredId } })
+    //   },
+    // }),
     onAreaSelectStart: ({ startPoint }) => {
       const scaledStartPoint = startPoint.threeD
         .clone()
