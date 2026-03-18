@@ -250,22 +250,18 @@ function getTokenFromEnvOrCookie(): string {
   if (typeof window === 'undefined') return ''
 
   // Store the token passed to the Vercel environment
-  const params = new URLSearchParams(window.location?.search ?? '')
-  const token = params.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
-  if (token) {
-    window.localStorage?.setItem(TOKEN_PERSIST_KEY, token)
+  const queryParams = new URLSearchParams(window.location?.search ?? '')
+  const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
+  if (queryToken) {
+    window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
     window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
-    return token
-  }
-  // Retrieve the token from localStorage if it exists
-  if (window.localStorage?.getItem(IS_PLAYWRIGHT_KEY) === 'true') {
-    const token = window.localStorage.getItem(TOKEN_PERSIST_KEY)
-    if (token) return token
+    return queryToken
   }
 
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
-  return envToken || cookieToken || ''
+  const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+  return envToken || cookieToken || storedToken || ''
 }
 
 async function getTokenFromFile(): Promise<string> {
