@@ -37,7 +37,7 @@ const walk = async (
   }
 
   while (looped && currentChanged) {
-    let entries = await current.entries()
+    let entries = current.entries()
     looped = false
     currentChanged = false
     for await (let [name, handle] of entries) {
@@ -94,7 +94,7 @@ const scan = async (
     AsyncIterableIterator<
       [string, FileSystemDirectoryHandle | FileSystemFileHandle]
     >,
-  ][] = [[targetPath, await startingPoint.entries()]]
+  ][] = [[targetPath, startingPoint.entries()]]
 
   while (asyncIters.length > 0) {
     const asyncIter = asyncIters.pop()
@@ -104,10 +104,7 @@ const scan = async (
       await onVisit?.(cwd, current)
       visited.push([cwd, current[0]])
       if (current[1] instanceof FileSystemDirectoryHandle) {
-        asyncIters.push([
-          path.resolve(cwd, current[0]),
-          await current[1].entries(),
-        ])
+        asyncIters.push([path.resolve(cwd, current[0]), current[1].entries()])
       }
     }
   }
@@ -309,7 +306,7 @@ const writeFile = async (
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
-  const handleFile = (await handle).getFileHandle(parts.slice(-1)[0], {
+  const handleFile = handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
   })
   const writer = await (await handleFile).createWritable()

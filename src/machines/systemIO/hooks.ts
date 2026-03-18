@@ -112,17 +112,19 @@ export const useProjectIdToConversationId = (
   }, [settings2.meta.id.current])
 }
 
+export interface MlEphantNewFileRequestProps {
+  toolOutput: MlToolResult
+  projectNameCurrentlyOpened: string
+  fileFocusedOnInEditor?: FileEntry
+}
+
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
   billingActor: BillingActor,
   token: string,
   engineCommandManager: ConnectionManager,
-  fn: (
-    toolOutputTextToCad: MlToolResult,
-    projectNameCurrentlyOpened: string,
-    fileFocusedOnInEditor?: FileEntry
-  ) => void
+  fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
@@ -141,11 +143,11 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn(
-        lastResponse.tool_output.result,
-        next.context.projectNameCurrentlyOpened,
-        next.context.fileFocusedOnInEditor
-      )
+      fn({
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
+        fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+      })
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor
       billingActor.send({

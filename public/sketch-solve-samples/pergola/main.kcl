@@ -2,7 +2,7 @@
 // A parametric modern pergola with vertical posts, surrounding beams, and evenly spaced roof slats. Designed for garden, patio, or backyard use. Ideal for architectural visualization and parametric prototyping.
 // Categories: Construction
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Overall dimensions
 pergolaLength = 4000 // length along the main axis
@@ -37,7 +37,8 @@ postProfile = sketch(on = XY) {
   vertical(line2)
   horizontal(line3)
 }
-post = extrude(postProfile, length = postLength)
+region001 = region(segments = [postProfile.line1, postProfile.line2])
+post = extrude(region001, length = postLength)
   |> appearance(%, color = "#a0825c")
 
 // Corner posts
@@ -69,7 +70,11 @@ longBeamProfile = sketch(on = XY) {
   vertical(line2)
   horizontal(line3)
 }
-longBeam = extrude(longBeamProfile, length = beamHeight)
+region002 = region(segments = [
+  longBeamProfile.line1,
+  longBeamProfile.line2
+])
+longBeam = extrude(region002, length = beamHeight)
   |> translate(z = postLength)
   |> appearance(%, color = "#a0825c")
 
@@ -95,7 +100,11 @@ sideBeamProfile = sketch(on = XY) {
   vertical(line2)
   horizontal(line3)
 }
-sideBeam = extrude(sideBeamProfile, length = beamHeight)
+region003 = region(segments = [
+  sideBeamProfile.line1,
+  sideBeamProfile.line2
+])
+sideBeam = extrude(region003, length = beamHeight)
   |> translate(z = postLength)
   |> appearance(%, color = "#a0825c")
 
@@ -121,7 +130,8 @@ slatProfile = sketch(on = XY) {
   vertical(line2)
   horizontal(line3)
 }
-slat = extrude(slatProfile, length = slatHeight)
+region004 = region(segments = [slatProfile.line1, slatProfile.line2])
+slat = extrude(region004, length = slatHeight)
   |> translate(z = postLength)
   |> appearance(%, color = "#a0825c")
 
