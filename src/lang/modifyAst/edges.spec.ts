@@ -1,34 +1,34 @@
-import type { KclManager } from '@src/lang/KclManager'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import {
-  EdgeTreatmentType,
-  addBlend,
-  addChamfer,
-  addFillet,
-  deleteEdgeTreatment,
-} from '@src/lang/modifyAst/edges'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { topLevelRange } from '@src/lang/util'
-import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
-import {
-  createSelectionFromArtifacts,
-  enginelessExecutor,
-  getAstAndArtifactGraph,
-} from '@src/lib/testHelpers'
+import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import type {
   NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import {
+  addBlend,
+  addChamfer,
+  addFillet,
+  deleteEdgeTreatment,
+  EdgeTreatmentType,
+} from '@src/lang/modifyAst/edges'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import {
+  enginelessExecutor,
+  createSelectionFromArtifacts,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

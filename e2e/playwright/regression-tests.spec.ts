@@ -491,7 +491,7 @@ extrude002 = extrude(profile002, length = 150)`
       const successToastMessage = page.getByText(`Exported successfully`)
       await page.waitForTimeout(1_000)
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(1)
+      expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -569,7 +569,7 @@ extrude002 = extrude(profile002, length = 150)`
       ])
 
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(2)
+      expect(count).toBeGreaterThanOrEqual(2)
     })
   })
 

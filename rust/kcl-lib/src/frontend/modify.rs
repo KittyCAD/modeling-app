@@ -163,6 +163,10 @@ pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> any
     next_free_name_using_padding(prefix, taken_names, 0)
 }
 
+pub(crate) fn next_free_name_with_padding(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
+    next_free_name_using_max_and_padding(prefix, taken_names, 999, 3)
+}
+
 pub(super) fn next_free_name_using_padding(
     prefix: &str,
     taken_names: &HashSet<String>,

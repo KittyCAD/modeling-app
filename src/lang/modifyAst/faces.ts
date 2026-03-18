@@ -98,8 +98,12 @@ export function addShell({
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
   modifiedAst = result.modifiedAst
+  if (!facesExpr) {
+    return new Error("Couldn't retrieve face from selection")
+  }
+
   const call = createCallExpressionStdLibKw('shell', solidsExpr, [
-    createLabeledArg('faces', facesExpr!),
+    createLabeledArg('faces', facesExpr),
     createLabeledArg('thickness', valueOrVariable(thickness)),
   ])
 
@@ -186,8 +190,12 @@ export function addDeleteFace({
 
   const solidsExpr = createVariableExpressionsArray(solidsExprs)
   const facesExpr = createVariableExpressionsArray(facesExprs)
+  if (!facesExpr) {
+    return new Error("Couldn't retrieve face from selection")
+  }
+
   const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
-    createLabeledArg('faces', facesExpr!),
+    createLabeledArg('faces', facesExpr),
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -277,6 +285,9 @@ export function addHole({
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
   modifiedAst = result.modifiedAst
+  if (!facesExpr) {
+    return new Error("Couldn't retrieve face from selection")
+  }
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
   const nonCodeMeta = undefined
@@ -370,7 +381,7 @@ export function addHole({
     'hole',
     solidsExpr,
     [
-      createLabeledArg('face', facesExpr!),
+      createLabeledArg('face', facesExpr),
       createLabeledArg('cutAt', cutAtExpr),
       createLabeledArg('holeBottom', holeBottomNode),
       createLabeledArg('holeBody', holeBodyNode),
@@ -762,8 +773,12 @@ export function addOffsetPlane({
 
     const solidsExpr = createVariableExpressionsArray(solidsExprs)
     const facesExpr = createVariableExpressionsArray(facesExprs)
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection")
+    }
+
     planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-      createLabeledArg('face', facesExpr!),
+      createLabeledArg('face', facesExpr),
     ])
   } else {
     planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
@@ -897,7 +912,10 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
         ),
       ]
     )
-    const faceVariableName = findUniqueName(modifiedAst, 'face')
+    const faceVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.FACE
+    )
     const variableIdentifierAst = createLocalName(faceVariableName)
     insertVariableAndOffsetPathToNode(
       {

@@ -130,7 +130,7 @@ test(
     // Following this guidance: https://github.com/microsoft/playwright/issues/8114
     await codeEditorText.focus()
     await page.keyboard.press('ControlOrMeta+KeyV')
-    await expect(
+    expect(
       await page.evaluate(
         () => document.querySelector('.cm-content')?.textContent
       )

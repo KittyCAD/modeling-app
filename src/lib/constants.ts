@@ -56,6 +56,8 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   FILLET: 'fillet',
   BLEND: 'blend',
   SURFACE: 'surface',
+  EDGE: 'edge',
+  FACE: 'face',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`

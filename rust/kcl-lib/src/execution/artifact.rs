@@ -954,12 +954,23 @@ fn flatten_modeling_command_responses(
 }
 
 fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifact: Artifact) {
+    fn is_primitive_artifact(artifact: &Artifact) -> bool {
+        matches!(artifact, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
+    }
+
     let id = new_artifact.id();
     let Some(old_artifact) = map.get_mut(&id) else {
         // No old artifact exists.  Insert the new one.
         map.insert(id, new_artifact);
         return;
     };
+
+    // Primitive lookups (faceId/edgeId) may resolve to an ID that already has
+    // a richer artifact (for example Segment/Cap/Wall). Keep the existing node
+    // to avoid erasing structural graph links.
+    if is_primitive_artifact(&new_artifact) && !is_primitive_artifact(old_artifact) {
+        return;
+    }
 
     if let Some(replacement) = old_artifact.merge(new_artifact) {
         *old_artifact = replacement;

@@ -1,12 +1,11 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
-  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createArrayExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -17,20 +16,12 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import {
-  getArtifactOfTypes,
-  getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -44,14 +35,23 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
-  Selection,
   Selections,
+  Selection,
 } from '@src/machines/modelingSharedTypes'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 export function addFillet({
   ast,
@@ -281,109 +281,15 @@ export function addBlend({
   // 3. Build two edges and use them in blend([edge1, edge2])
   const edgeExprs: Expr[] = []
   for (const edgeSelection of selectedEdges) {
-    if ('entityId' in edgeSelection) {
-      if (!edgeSelection.parentEntityId) {
-        return new Error(
-          'Blend primitive edge selections must include a parent entity.'
-        )
-      }
-
-      const primitiveEdgeResult =
-        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-          primitiveEdgeSelections: [edgeSelection],
-          bodies: new Map(),
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-      if (err(primitiveEdgeResult)) return primitiveEdgeResult
-      const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
-      if (!primitiveBody?.solidsExpr) {
-        return new Error('Could not resolve the source surface for blend edge.')
-      }
-
-      const sourceSurfaceExpr = structuredClone(primitiveBody.solidsExpr)
-      const primitiveEdgeIdExpr =
-        primitiveBody.tagsExpr.type === 'ArrayExpression'
-          ? primitiveBody.tagsExpr.elements[0]
-          : primitiveBody.tagsExpr
-      if (!primitiveEdgeIdExpr) {
-        return new Error(
-          'Blend primitive edge selections could not generate an edge identifier.'
-        )
-      }
-
-      edgeExprs.push(
-        createCallExpressionStdLibKw('getBoundedEdge', sourceSurfaceExpr, [
-          createLabeledArg('edge', primitiveEdgeIdExpr),
-        ])
-      )
-      continue
-    }
-
-    const edgeArtifact = edgeSelection.artifact
-    if (
-      !edgeArtifact ||
-      (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
-    ) {
-      return new Error('Blend only supports segment and sweepEdge selections.')
-    }
-
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
+    const edgeResult = buildEdgeExpr(
       edgeSelection,
-      artifactGraph,
-      wasmInstance,
-      ['oppositeAndAdjacentEdges']
-    )
-    if (err(tagResult)) return tagResult
-    if (tagResult.tags.length !== 1) {
-      return new Error('Expected exactly one tag for each blend edge.')
-    }
-
-    const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
-    if (edgeExpr.type === 'Name') {
-      modifiedAst = tagResult.modifiedAst
-      edgeExprs.push(edgeExpr)
-      continue
-    }
-
-    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-      edgeSelection,
-      artifactGraph
-    )
-    if (err(sourceSurfaceArtifact)) {
-      return sourceSurfaceArtifact
-    }
-
-    const sourceSurfaceVars = getVariableExprsFromSelection(
-      {
-        graphSelections: [
-          {
-            artifact: sourceSurfaceArtifact as Artifact,
-            codeRef: sourceSurfaceArtifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      },
-      artifactGraph,
       modifiedAst,
+      artifactGraph,
       wasmInstance
     )
-    if (err(sourceSurfaceVars)) return sourceSurfaceVars
-    if (sourceSurfaceVars.exprs.length !== 1) {
-      return new Error(
-        'Expected exactly one source surface for each blend edge.'
-      )
-    }
-
-    const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
-    modifiedAst = tagResult.modifiedAst
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getBoundedEdge', sourceSurfaceExpr, [
-        createLabeledArg('edge', edgeExpr),
-      ])
-    )
+    if (err(edgeResult)) return edgeResult
+    modifiedAst = edgeResult.modifiedAst
+    edgeExprs.push(edgeResult.edgeExpr)
   }
 
   const call = createCallExpressionStdLibKw(
@@ -417,6 +323,130 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
+}
+
+function buildEdgeExpr(
+  edgeSelection: EdgeSelectionForExpr,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
+  if (
+    typeof edgeSelection === 'object' &&
+    'type' in edgeSelection &&
+    edgeSelection.type === 'enginePrimitive'
+  ) {
+    if (!edgeSelection.parentEntityId) {
+      return new Error(
+        'Blend primitive edge selections must include a parent entity.'
+      )
+    }
+
+    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
+      {
+        primitiveEdgeSelections: [edgeSelection],
+        bodies: new Map(),
+        modifiedAst: ast,
+        artifactGraph,
+        wasmInstance,
+      }
+    )
+    if (err(primitiveEdgeResult)) return primitiveEdgeResult
+
+    const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
+    if (!primitiveBody?.solidsExpr) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+
+    const sourceSurfaceExpr = structuredClone(primitiveBody.solidsExpr)
+    const primitiveEdgeIdExpr =
+      primitiveBody.tagsExpr.type === 'ArrayExpression'
+        ? primitiveBody.tagsExpr.elements[0]
+        : primitiveBody.tagsExpr
+    if (!primitiveEdgeIdExpr) {
+      return new Error(
+        'Blend primitive edge selections could not generate an edge identifier.'
+      )
+    }
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        sourceSurfaceExpr,
+        [createLabeledArg('edge', primitiveEdgeIdExpr)]
+      ),
+    }
+  }
+
+  const graphEdgeSelection = edgeSelection as Selection
+  const edgeArtifact = graphEdgeSelection.artifact
+  if (
+    !edgeArtifact ||
+    (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+  ) {
+    return new Error(
+      'Blend only supports segment, sweepEdge, and enginePrimitiveEdge selections.'
+    )
+  }
+
+  const tagResult = modifyAstWithTagsForSelection(
+    ast,
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  if (err(tagResult)) return tagResult
+  if (tagResult.tags.length !== 1) {
+    return new Error('Expected exactly one tag for each blend edge.')
+  }
+
+  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  if (edgeExpr.type === 'Name') {
+    return {
+      modifiedAst: tagResult.modifiedAst,
+      edgeExpr,
+    }
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    graphEdgeSelection,
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return sourceSurfaceArtifact
+  }
+
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sourceSurfaceArtifact as Artifact,
+          codeRef: sourceSurfaceArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars)) return sourceSurfaceVars
+  if (sourceSurfaceVars.exprs.length !== 1) {
+    return new Error('Expected exactly one source surface for each blend edge.')
+  }
+
+  const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
+
+  return {
+    modifiedAst: tagResult.modifiedAst,
+    edgeExpr: createCallExpressionStdLibKw(
+      'getBoundedEdge',
+      sourceSurfaceExpr,
+      [createLabeledArg('edge', edgeExpr)]
+    ),
+  }
 }
 
 function getPrimitiveEdgeSelections(
@@ -624,7 +654,10 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         structuredClone(solidsExpr),
         [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
       )
-      const edgeVariableName = findUniqueName(modifiedAst, 'edge')
+      const edgeVariableName = findUniqueName(
+        modifiedAst,
+        KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+      )
       const variableIdentifierAst = createLocalName(edgeVariableName)
       insertVariableAndOffsetPathToNode(
         {
