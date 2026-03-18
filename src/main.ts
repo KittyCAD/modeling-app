@@ -10,6 +10,7 @@ import {
   BrowserWindow,
   Menu,
   app,
+  autoUpdater,
   desktopCapturer,
   dialog,
   ipcMain,
@@ -18,6 +19,7 @@ import {
   shell,
   systemPreferences,
 } from 'electron'
+import { autoUpdater as appUpdater } from 'electron-updater'
 import { Issuer } from 'openid-client'
 
 import fs from 'fs'
@@ -42,7 +44,6 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
-import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificates'
 
@@ -62,6 +63,7 @@ if (
 configureWindowsSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
+let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 
@@ -324,9 +326,11 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  if (os.platform() !== 'darwin') {
-    app.quit()
+  if (isInstallingUpdate) {
+    return
   }
+
+  app.quit()
 })
 
 // This method will be called when Electron has finished
@@ -559,16 +563,16 @@ app.on('ready', () => {
     return
   }
 
-  const autoUpdater = getAutoUpdater()
-  // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
-  // so at the moment this isn't worth enabling
-  autoUpdater.disableDifferentialDownload = true
+  // TODO: check if we can enable this someday https://github.com/KittyCAD/modeling-app/issues/4120
+  appUpdater.disableDifferentialDownload = true
+  // Needed for the rollback process at .github/ISSUE_TEMPLATE/release.md
+  appUpdater.allowDowngrade = true
 
   // Check for updates in the background at startup and then every 15 minutes
   let backgroundCheckingForUpdates = false
   const checkForUpdatesBackground = () => {
     backgroundCheckingForUpdates = true
-    autoUpdater
+    appUpdater
       .checkForUpdates()
       .catch(reportRejection)
       .finally(() => {
@@ -580,30 +584,30 @@ app.on('ready', () => {
   setTimeout(checkForUpdatesBackground, oneSecond)
   setInterval(checkForUpdatesBackground, fifteenMinutes)
 
-  autoUpdater.on('checking-for-update', () => {
+  appUpdater.on('checking-for-update', () => {
     console.log('checking-for-update')
     if (!backgroundCheckingForUpdates) {
       mainWindow?.webContents.send('update-checking')
     }
   })
 
-  autoUpdater.on('update-not-available', (info) => {
+  appUpdater.on('update-not-available', (info) => {
     console.log('update-not-available', info)
     if (!backgroundCheckingForUpdates) {
       mainWindow?.webContents.send('update-not-available')
     }
   })
 
-  autoUpdater.on('error', (error) => {
+  appUpdater.on('error', (error) => {
     console.error('update-error', error)
     mainWindow?.webContents.send('update-error', error)
   })
 
-  autoUpdater.on('update-available', (info) => {
+  appUpdater.on('update-available', (info) => {
     console.log('update-available', info)
   })
 
-  autoUpdater.prependOnceListener('download-progress', (progress) => {
+  appUpdater.prependOnceListener('download-progress', (progress) => {
     // For now, we'll send nothing and just start a loading spinner.
     // See below for a TODO to send progress data to the renderer.
     console.log('update-download-start', {
@@ -612,13 +616,13 @@ app.on('ready', () => {
     mainWindow?.webContents.send('update-download-start', progress)
   })
 
-  autoUpdater.on('download-progress', (progress) => {
+  appUpdater.on('download-progress', (progress) => {
     // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
     // send this data to mainWindow to show a progress bar for the download.
     console.log('download-progress', progress)
   })
 
-  autoUpdater.on('update-downloaded', (info) => {
+  appUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
     mainWindow?.webContents.send('update-downloaded', {
       version: info.version,
@@ -626,11 +630,56 @@ app.on('ready', () => {
     })
   })
 
+  // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
+  const prepareMacUpdateInstall = () => {
+    const beforeQuitListeners = app.listeners('before-quit')
+    app.removeAllListeners('before-quit')
+    for (const browserWindow of BrowserWindow.getAllWindows()) {
+      browserWindow.removeAllListeners('close')
+    }
+
+    autoUpdater.once('before-quit-for-update', () => {
+      // Do any before-quit cleanup here
+      for (const listener of beforeQuitListeners) {
+        try {
+          listener.call(app, {
+            preventDefault: () => {
+              // `preventDefault` during update install causes quit+install to hang.
+            },
+          })
+        } catch (error) {
+          console.error(
+            'Failed to run before-quit listener during update install',
+            error
+          )
+        }
+      }
+
+      // Force app to exit
+      app.exit()
+    })
+  }
+
   ipcMain.handle('app.restart', () => {
-    autoUpdater.quitAndInstall()
+    if (isInstallingUpdate) {
+      return
+    }
+
+    isInstallingUpdate = true
+    if (process.platform === 'darwin') {
+      prepareMacUpdateInstall()
+    }
+
+    try {
+      appUpdater.quitAndInstall()
+    } catch (error) {
+      isInstallingUpdate = false
+      return Promise.reject(error)
+    }
   })
+
   ipcMain.handle('app.checkForUpdates', () => {
-    return autoUpdater.checkForUpdates()
+    return appUpdater.checkForUpdates()
   })
 })
 

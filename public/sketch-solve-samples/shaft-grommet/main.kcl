@@ -3,7 +3,7 @@
 // Categories: Manufacturing
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 // Define parameters
 id = 1 / 8
@@ -43,6 +43,10 @@ grommetProfile = sketch(on = YZ) {
   vertical(line7)
 }
 
+region001 = region(segments = [
+  grommetProfile.line1,
+  grommetProfile.line2
+])
 // Revolve the profile to create the grommet
-grommet = revolve(grommetProfile, axis = Y, angle = 330.0)
+grommet = revolve(region001, axis = Y, angle = 330.0)
 

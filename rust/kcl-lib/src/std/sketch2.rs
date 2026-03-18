@@ -209,7 +209,7 @@ pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     )?;
     let segments = args.get_kw_arg_opt(
         "segments",
-        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Known(2)),
+        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
     let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
@@ -281,12 +281,14 @@ async fn inner_region(
                 )));
             }
             let segments_len = segments.len();
-            let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
-                KclError::new_argument(KclErrorDetails::new(
-                    format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
+            let mut segments = segments.into_iter();
+            let Some(seg0_value) = segments.next() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Expected at least 1 segment to create a region, but got {segments_len}"),
                     vec![args.source_range],
-                ))
-            })?;
+                )));
+            };
+            let seg1_value = segments.next().unwrap_or_else(|| seg0_value.clone());
             let Some(seg0) = seg0_value.into_segment() else {
                 return Err(KclError::new_argument(KclErrorDetails::new(
                     "Expected first segment to be a Segment".to_owned(),

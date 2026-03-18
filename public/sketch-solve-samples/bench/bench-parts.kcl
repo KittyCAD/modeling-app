@@ -34,10 +34,10 @@ fn dividerSketch(@plane) {
 }
 
 export fn divider(@plane) {
-  right = dividerSketch(plane)
-    |> extrude(length = dividerThickness / 2)
-  left = dividerSketch(plane)
-    |> extrude(length = -dividerThickness / 2)
+  sketch001 = dividerSketch(plane)
+  right = extrude(sketch001, length = dividerThickness / 2)
+  sketch002 = dividerSketch(plane)
+  left = extrude(sketch002, length = -dividerThickness / 2)
   shell(right, thickness = 1.5, faces = [END])
   shell(left, thickness = 1.5, faces = [START])
   return 0
@@ -56,10 +56,10 @@ fn connectorSketch(@plane, start) {
 }
 
 export fn connector(@plane, length) {
-  connectorSketch(plane, start = [-12, 8])
-    |> extrude(length)
-  connectorSketch(plane, start = [16, 8])
-    |> extrude(length)
+  sketch001 = connectorSketch(plane, start = [-12, 8])
+  extrude(sketch001, length)
+  sketch002 = connectorSketch(plane, start = [16, 8])
+  extrude(sketch002, length)
   return 0
 }
 
@@ -78,8 +78,8 @@ fn seatSlatSketch(@plane) {
 }
 
 export fn seatSlats(@plane, length) {
-  seatSlatSketch(plane)
-    |> extrude(length)
+  sketch001 = seatSlatSketch(plane)
+  extrude(sketch001, length)
   return 0
 }
 
@@ -98,8 +98,8 @@ fn backSlatsSketch(@plane) {
 }
 
 export fn backSlats(@plane, length) {
-  b = backSlatsSketch(plane)
-    |> extrude(length)
+  sketch001 = backSlatsSketch(plane)
+  b = extrude(sketch001, length)
   return b
 }
 
