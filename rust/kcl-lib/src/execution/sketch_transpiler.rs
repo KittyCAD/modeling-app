@@ -359,7 +359,7 @@ fn build_sketch_block_ast(
                         )));
                     }
                     SegmentConstraint::Radius { r } => {
-                        let radius_ast = create_arc_size_constraint_ast_from_name("radius", segment_name, r.clone())?;
+                        let radius_ast = create_arc_size_constraint_ast_from_name("radius", segment_name, *r)?;
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: radius_ast,
@@ -369,7 +369,7 @@ fn build_sketch_block_ast(
                     }
                     SegmentConstraint::Diameter { d } => {
                         let diameter_ast =
-                            create_arc_size_constraint_ast_from_name("diameter", segment_name, d.clone())?;
+                            create_arc_size_constraint_ast_from_name("diameter", segment_name, *d)?;
                         body_items.push(ast::BodyItem::ExpressionStatement(ast::Node::no_src(
                             ast::ExpressionStatement {
                                 expression: diameter_ast,
