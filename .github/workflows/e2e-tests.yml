@@ -450,6 +450,11 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
       - name: Wait for Vercel
         if: github.event_name == 'pull_request'
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
@@ -459,9 +464,28 @@ jobs:
           max_timeout: 1200 # average build times are 17-18 minutes
           check_interval: 30
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
       - name: Check Vercel
         if: github.event_name == 'pull_request'
+        run: .github/ci-cd-scripts/check-vercel.sh
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-        run: .github/ci-cd-scripts/check-vercel.sh
+
+      - name: Test Vercel
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install
+          npm run playwright install --with-deps
+          npm run test:e2e:web -- --grep="demo project"
+        env:
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          # TODO: Enable TAB with https://github.com/KittyCAD/modeling-app/issues/10375
+          # TAB_API_URL: ${{ vars.TAB_API_URL }}
+          # TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          # CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          # CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          # CI_SUITE: e2e:web
+          TARGET: web
