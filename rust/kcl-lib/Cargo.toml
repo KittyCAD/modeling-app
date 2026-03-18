@@ -52,7 +52,7 @@ clap = { version = "4.5.60", default-features = false, optional = true, features
   "derive",
 ] }
 convert_case = "0.11.0"
-csscolorparser = "0.8.2"
+csscolorparser = "0.8.3"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -61,7 +61,7 @@ futures = { version = "0.3.32" }
 git_rev = "0.1.0"
 gltf-json = "1.4.1"
 http = { workspace = true }
-image = { version = "0.25.9", default-features = false, features = ["png"] }
+image = { version = "0.25.10", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
 kcl-derive-docs = { version = "0.2.133", path = "../kcl-derive-docs" }
@@ -100,7 +100,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.26"
 thiserror = "2.0.18"
-toml = "1.0.3"
+toml = "1.0.6"
 ts-rs = { version = "12.0.1", features = [
   "uuid-impl",
   "url-impl",
@@ -144,12 +144,12 @@ base64 = "0.22.1"
 criterion = { version = "0.8.2", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.0"
-image = { version = "0.25.9", default-features = false, features = ["png"] }
+image = { version = "0.25.10", default-features = false, features = ["png"] }
 insta = { version = "1.46.3", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.3"
 
 [lints]

@@ -54,7 +54,6 @@ sketch002 = sketch(on = XY) {
   coincident([arc2.end, line3.start])
   line4 = line(start = [var -50mm, var 10.88mm], end = [var -50mm, var 11.85mm])
   coincident([line3.end, line4.start])
-  tangent([arc2, line3])
 }
 region002 = region(segments = [sketch002.line1, sketch002.arc2])
 endCapTooth = extrude(region002, length = width)
@@ -68,7 +67,6 @@ sketch003 = sketch(on = XY) {
   coincident([arc2.start, line3.start])
   line4 = line(start = [var 50mm, var 10.88mm], end = [var 50mm, var 11.85mm])
   coincident([line3.end, line4.start])
-  tangent([arc2, line3])
 }
 region003 = region(segments = [sketch003.line1, sketch003.arc2])
 endCapTooth2 = extrude(region003, length = width)

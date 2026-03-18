@@ -37,9 +37,6 @@ sketch001 = sketch(on = XY) {
   coincident([arc6.start, line7.start])
   arc8 = arc(start = [var 0.61in, var 1.55in], end = [var -0.61in, var 1.55in], center = [var -0in, var -0in])
   coincident([line7.end, arc8.end])
-  tangent([arc2, line3])
-  tangent([arc4, line5])
-  tangent([arc6, line7])
 }
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
 plateBody = extrude(region001, length = plateThickness)

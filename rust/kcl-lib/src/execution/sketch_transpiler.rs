@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use kcl_error::SourceRange;
+
 use crate::{
     Program,
     errors::{KclError, KclErrorDetails},
@@ -58,6 +60,11 @@ enum ArcSizeKind {
 enum TranspilerSegment {
     Line(TranspilerLineSegment),
     Arc(TranspilerArcSegment),
+    Circle {
+        name: String,
+        center: [f64; 2],
+        radius: f64,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -281,6 +288,8 @@ fn build_sketch_block_ast(
             && let Some(previous_segment) = transpiler_segments
                 .get(previous_segment_index)
                 .and_then(|segment| segment.as_ref())
+            && transpiler_segment_supports_auto_connection(previous_segment)
+            && transpiler_segment_supports_auto_connection(&transpiler_segment)
         {
             body_items.push(transpiler_create_segment_coincident_constraint(
                 previous_segment,
@@ -430,8 +439,12 @@ fn transpiler_build_segment(
                 exit_endpoint,
             })))
         }
-        Path::Circle { .. }
-        | Path::CircleThreePoint { .. }
+        Path::Circle { center, radius, .. } => Ok(Some(TranspilerSegment::Circle {
+            name: transpiler_segment_name_for_path(path_segment, segment_index),
+            center: *center,
+            radius: *radius,
+        })),
+        Path::CircleThreePoint { .. }
         | Path::ArcThreePoint { .. }
         | Path::Horizontal { .. }
         | Path::AngledLineTo { .. }
@@ -444,8 +457,9 @@ fn transpiler_build_segment(
                 Err(transpiler_create_unsupported_segment_error(segment_index, path_segment))
             } else {
                 std::eprintln!(
-                    "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported. path_segment={path_segment:?}",
-                    segment_index + 1
+                    "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+                    segment_index + 1,
+                    transpiler_path_type_name(path_segment),
                 );
                 Ok(None)
             }
@@ -453,10 +467,29 @@ fn transpiler_build_segment(
     }
 }
 
+fn transpiler_path_type_name(path_segment: &Path) -> &'static str {
+    match path_segment {
+        Path::ToPoint { .. } => "ToPoint",
+        Path::TangentialArcTo { .. } => "TangentialArcTo",
+        Path::TangentialArc { .. } => "TangentialArc",
+        Path::Circle { .. } => "Circle",
+        Path::CircleThreePoint { .. } => "CircleThreePoint",
+        Path::ArcThreePoint { .. } => "ArcThreePoint",
+        Path::Horizontal { .. } => "Horizontal",
+        Path::AngledLineTo { .. } => "AngledLineTo",
+        Path::Base { .. } => "Base",
+        Path::Arc { .. } => "Arc",
+        Path::Ellipse { .. } => "Ellipse",
+        Path::Conic { .. } => "Conic",
+        Path::Bezier { .. } => "Bezier",
+    }
+}
+
 fn transpiler_segment_name_for_path(path_segment: &Path, segment_index: usize) -> String {
     match path_segment {
         Path::ToPoint { .. } => format!("line{}", segment_index + 1),
         Path::TangentialArcTo { .. } | Path::TangentialArc { .. } => format!("arc{}", segment_index + 1),
+        Path::Circle { .. } => format!("circle{}", segment_index + 1),
         _ => format!("segment{}", segment_index + 1),
     }
 }
@@ -465,6 +498,7 @@ fn transpiler_segment_name(segment: &TranspilerSegment) -> &str {
     match segment {
         TranspilerSegment::Line(segment) => &segment.name,
         TranspilerSegment::Arc(segment) => &segment.name,
+        TranspilerSegment::Circle { name, .. } => name,
     }
 }
 
@@ -492,6 +526,18 @@ fn transpiler_create_segment_declaration(
                 segment.end[1],
                 segment.center[0],
                 segment.center[1],
+                units,
+            )?,
+        ),
+        TranspilerSegment::Circle { name, center, radius } => (
+            name.as_str(),
+            create_arc_ast_from_coords(
+                center[0] + radius,
+                center[1],
+                center[0] + radius,
+                center[1],
+                center[0],
+                center[1],
                 units,
             )?,
         ),
@@ -528,8 +574,9 @@ fn transpiler_create_segment_coincident_constraint(
 fn transpiler_create_unsupported_segment_error(segment_index: usize, _path_segment: &Path) -> KclError {
     KclError::new_internal(KclErrorDetails::new(
         format!(
-            "Transpilation not supported: segment {} is not a line segment (ToPoint). Only line segments are currently supported.",
-            segment_index + 1
+            "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+            segment_index + 1,
+            transpiler_path_type_name(_path_segment),
         ),
         vec![],
     ))
@@ -645,7 +692,7 @@ fn create_vertical_ast_from_name(line_name: &str) -> ast::Expr {
 fn create_equal_length_ast_from_names(line1_name: &str, line2_name: &str) -> ast::Expr {
     let line1_expr = ast_name_expr(line1_name.to_string());
     let line2_expr = ast_name_expr(line2_name.to_string());
-    create_equal_length_ast(line1_expr, line2_expr)
+    create_equal_length_ast(vec![line1_expr, line2_expr])
 }
 
 fn create_tangent_ast_from_names(segment1_name: &str, segment2_name: &str) -> ast::Expr {
@@ -699,6 +746,11 @@ fn create_arc_size_constraint_ast_from_name(
     ))))
 }
 
+// Exclude circles for now.
+fn transpiler_segment_supports_auto_connection(segment: &TranspilerSegment) -> bool {
+    !matches!(segment, TranspilerSegment::Circle { .. })
+}
+
 fn transpiler_segment_connection_expr(segment: &TranspilerSegment, side: SegmentConnectionSide) -> ast::Expr {
     let segment_expr = ast_name_expr(transpiler_segment_name(segment).to_string());
     let endpoint = match (segment, side) {
@@ -706,6 +758,10 @@ fn transpiler_segment_connection_expr(segment: &TranspilerSegment, side: Segment
         (TranspilerSegment::Line(_), SegmentConnectionSide::Exit) => SegmentEndpoint::End,
         (TranspilerSegment::Arc(segment), SegmentConnectionSide::Entry) => segment.entry_endpoint,
         (TranspilerSegment::Arc(segment), SegmentConnectionSide::Exit) => segment.exit_endpoint,
+        (TranspilerSegment::Circle { .. }, _) => {
+            // Exclude circles for now
+            unreachable!("Circle segments do not participate in auto-generated coincident constraints")
+        }
     };
 
     create_member_expression(
@@ -786,19 +842,26 @@ fn get_sketch_from_exec_outcome(exec_outcome: &ExecOutcome, variable_name: &str)
 
 /// Find the pipe expression containing startProfile for the given variable
 /// Uses the same detection logic as the lint (lint_old_sketch_syntax) to ensure consistency
-fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::PipeExpression, KclError> {
+fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Result<&'a ast::Expr, KclError> {
     use crate::lint::checks::contains_start_profile;
 
     // Find the variable declaration
     for item in &program.ast.body {
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && var_decl.declaration.id.name == variable_name
-            && let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
-            && contains_start_profile(&pipe.inner)
         {
-            // Use the lint's detection logic as the source of truth
-            // This ensures the transpiler only processes what the lint detects
-            return Ok(&pipe.inner);
+            if let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
+                && contains_start_profile(&pipe.inner)
+            {
+                // Use the lint's detection logic as the source of truth
+                // This ensures the transpiler only processes what the lint detects
+                return Ok(&var_decl.declaration.init);
+            }
+            if let ast::Expr::CallExpressionKw(call) = &var_decl.declaration.init
+                && is_str_profile_function(&call.callee.name.name)
+            {
+                return Ok(&var_decl.declaration.init);
+            }
         }
     }
 
@@ -808,39 +871,53 @@ fn find_start_profile_pipe<'a>(program: &'a Program, variable_name: &str) -> Res
     )))
 }
 
+fn is_str_profile_function(name: &str) -> bool {
+    // Conics are omitted since we don't support migrating them.
+    matches!(name, "startProfile" | "circle" | "rectangle" | "polygon")
+}
+
 /// Map segments to their AST calls using source ranges
 /// Returns a vector of (segment_index, AST call expression)
 fn map_segments_to_ast_calls<'a>(
     sketch: &Sketch,
-    pipe_expr: &'a ast::PipeExpression,
+    pipe_expr: &'a ast::Expr,
 ) -> Result<Vec<(usize, &'a ast::CallExpressionKw)>, KclError> {
-    let mut result = Vec::new();
+    match pipe_expr {
+        ast::Expr::CallExpressionKw(call) => Ok(vec![(0, &call.inner)]),
+        ast::Expr::PipeExpression(pipe_expr) => {
+            let mut result = Vec::new();
 
-    // Get source ranges from segments (skip startProfile, start from first segment)
-    // The pipe body should have: [startProfile, line1, line2, ...]
-    // So segments start at index 1 in the pipe body (skip startProfile)
-    let pipe_segment_calls: Vec<&ast::CallExpressionKw> = pipe_expr
-        .body
-        .iter()
-        .skip(1) // Skip startProfile
-        .filter_map(|expr| {
-            if let ast::Expr::CallExpressionKw(call) = expr {
-                Some(&call.inner)
-            } else {
-                None
+            // Get source ranges from segments (skip startProfile, start from first segment)
+            // The pipe body should have: [startProfile, line1, line2, ...]
+            // So segments start at index 1 in the pipe body (skip startProfile)
+            let pipe_segment_calls: Vec<&ast::CallExpressionKw> = pipe_expr
+                .body
+                .iter()
+                .skip(1) // Skip startProfile
+                .filter_map(|expr| {
+                    if let ast::Expr::CallExpressionKw(call) = expr {
+                        Some(&call.inner)
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+
+            // Match segments to pipe calls by index (they should be in the same order)
+            // Only match if we have the same number of segments and calls
+            for i in 0..sketch.paths.len().min(pipe_segment_calls.len()) {
+                if let Some(call) = pipe_segment_calls.get(i) {
+                    result.push((i, *call));
+                }
             }
-        })
-        .collect();
 
-    // Match segments to pipe calls by index (they should be in the same order)
-    // Only match if we have the same number of segments and calls
-    for i in 0..sketch.paths.len().min(pipe_segment_calls.len()) {
-        if let Some(call) = pipe_segment_calls.get(i) {
-            result.push((i, *call));
+            Ok(result)
         }
+        _ => Err(KclError::new_internal(KclErrorDetails::new(
+            "Could not map unknown expression type to pipe segment calls".to_owned(),
+            sketch.meta.iter().map(SourceRange::from).collect(),
+        ))),
     }
-
-    Ok(result)
 }
 
 /// Detect constraints from AST calls

@@ -27,7 +27,6 @@ sketch001 = sketch(on = -XZ) {
   horizontal(line2)
   vertical(line3)
   horizontal(arc4)
-  tangent([arc4, line5])
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 iBeam = extrude(region001, length = beamLength)

@@ -108,23 +108,18 @@ sketch001 = sketch(on = XY) {
   horizontal(arc2)
   tangent([arc2, arc3])
   radius(arc3) == 0.9in
-  tangent([arc3, arc4])
   radius(arc4) == 0.3in
-  tangent([arc4, line5])
   horizontal(line6)
   vertical(line7)
   horizontal(arc8)
   tangent([arc8, arc9])
   radius(arc9) == 1.5in
-  tangent([arc9, arc10])
   radius(arc10) == 0.3in
-  tangent([arc10, line11])
   horizontal(line12)
   vertical(line13)
   horizontal(arc14)
   tangent([arc14, arc15])
   radius(arc15) == 0.9in
-  tangent([arc15, arc16])
   radius(arc16) == 0.3in
 }
 region001 = region(segments = [sketch001.line1, sketch001.arc2])

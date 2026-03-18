@@ -91,8 +91,6 @@ slotProfile = sketch(on = XY) {
   arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var -0mm])
   coincident([line3.end, arc4.end])
   horizontal(line1)
-  tangent([line1, arc2])
-  tangent([line3, arc4])
 }
 
 region002 = region(segments = [slotProfile.line1, slotProfile.arc2])
