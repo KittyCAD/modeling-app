@@ -25,11 +25,18 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
+import { Mesh } from 'three'
 import {
   isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  POINT_SEGMENT_BODY,
+  POINT_SEGMENT_HIT_AREA,
+  updateSegmentHover,
+} from '@src/machines/sketchSolve/segments'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
 export const TOOL_ID = 'Tangential arc tool'
 export const CREATING_ARC = `xstate.done.actor.0.${TOOL_ID}.Creating arc`
@@ -104,6 +111,77 @@ function getPointFromObjects(
     point.kind.segment.position.x.value,
     point.kind.segment.position.y.value,
   ]
+}
+
+function getHoverState(self: ToolActionArgs['self']): {
+  sceneGraphDelta?: SceneGraphDelta
+  selectedIds: Array<number>
+  draftEntityIds?: Array<number>
+} {
+  const snapshot = self._parent?.getSnapshot()
+  const selectedIds = Array.from(
+    new Set([
+      ...(snapshot?.context?.selectedIds ?? []),
+      ...(snapshot?.context?.duringAreaSelectIds ?? []),
+    ])
+  )
+
+  return {
+    sceneGraphDelta: snapshot?.context?.sketchExecOutcome?.sceneGraphDelta,
+    selectedIds,
+    draftEntityIds: snapshot?.context?.draftEntities
+      ? [...snapshot.context.draftEntities.segmentIds]
+      : undefined,
+  }
+}
+
+function isHoverableTangentStartMesh(
+  mesh: Mesh,
+  sceneGraphDelta: SceneGraphDelta
+): boolean {
+  if (
+    mesh.userData?.type !== POINT_SEGMENT_BODY &&
+    mesh.userData?.type !== POINT_SEGMENT_HIT_AREA
+  ) {
+    return false
+  }
+
+  const clickedId = Number(mesh.parent?.name)
+  if (Number.isNaN(clickedId)) {
+    return false
+  }
+
+  return (
+    resolveTangentInfoFromClick({
+      clickedId,
+      sceneGraphDelta,
+    }) !== null
+  )
+}
+
+function clearHoveredTangentStartPoints({
+  self,
+  context,
+}: Pick<ToolActionArgs, 'self' | 'context'>) {
+  const { selectedIds, draftEntityIds } = getHoverState(self)
+  const sketchSegments =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ??
+    context.sceneInfra.scene
+
+  if (!sketchSegments || typeof sketchSegments.traverse !== 'function') {
+    return
+  }
+
+  sketchSegments.traverse((child) => {
+    if (
+      child instanceof Mesh &&
+      (child.userData?.type === POINT_SEGMENT_BODY ||
+        child.userData?.type === POINT_SEGMENT_HIT_AREA) &&
+      child.userData.isHovered === true
+    ) {
+      updateSegmentHover(child, false, selectedIds, draftEntityIds)
+    }
+  })
 }
 
 function getLineTangentDirection({
@@ -295,16 +373,15 @@ export function resolveTangentInfoFromClick({
 }
 
 export function addFirstPointListener({ self, context }: ToolActionArgs) {
+  let lastHoveredMesh: Mesh | null = null
+
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
       if (!args) return
       if (args.mouseEvent.which !== 1) return
 
-      const twoD = args.intersectionPoint?.twoD
-      if (!twoD) return
-
-      const sceneGraphDelta =
-        self._parent?.getSnapshot()?.context?.sketchExecOutcome?.sceneGraphDelta
+      const { sceneGraphDelta, selectedIds, draftEntityIds } =
+        getHoverState(self)
       if (!sceneGraphDelta?.new_graph?.objects) return
 
       const clickedId = Number(args.selected?.parent?.name)
@@ -316,12 +393,46 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       })
       if (!tangentInfo) return
 
+      if (lastHoveredMesh) {
+        updateSegmentHover(lastHoveredMesh, false, selectedIds, draftEntityIds)
+        lastHoveredMesh = null
+      }
+
+      const twoD = args.intersectionPoint?.twoD
+      if (!twoD) return
+
       self.send({
         type: 'select tangent info',
         data: tangentInfo,
       })
     },
     onMove: () => {},
+    onMouseEnter: ({ selected }) => {
+      const { sceneGraphDelta, selectedIds, draftEntityIds } =
+        getHoverState(self)
+      if (!sceneGraphDelta?.new_graph?.objects) return
+      if (!(selected instanceof Mesh)) return
+      if (!isHoverableTangentStartMesh(selected, sceneGraphDelta)) return
+
+      updateSegmentHover(selected, true, selectedIds, draftEntityIds)
+      lastHoveredMesh = selected
+    },
+    onMouseLeave: ({ selected }) => {
+      const { selectedIds, draftEntityIds } = getHoverState(self)
+      if (lastHoveredMesh) {
+        updateSegmentHover(lastHoveredMesh, false, selectedIds, draftEntityIds)
+        lastHoveredMesh = null
+        return
+      }
+      if (!(selected instanceof Mesh)) return
+      if (
+        selected.userData?.type !== POINT_SEGMENT_BODY &&
+        selected.userData?.type !== POINT_SEGMENT_HIT_AREA
+      ) {
+        return
+      }
+      updateSegmentHover(selected, false, selectedIds, draftEntityIds)
+    },
   })
 }
 
@@ -329,6 +440,9 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
   if (!context.arcId || !context.tangentInfo) {
     return
   }
+
+  console.log('animate arc ')
+  clearHoveredTangentStartPoints({ self, context })
 
   let isEditInProgress = false
   let cachedSettings: Awaited<ReturnType<typeof jsAppSettings>> | null = null
@@ -438,14 +552,19 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         clickNumber: 2,
       })
     },
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function removePointListener({ self, context }: ToolActionArgs) {
+  clearHoveredTangentStartPoints({ self, context })
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
   })
 }
 
