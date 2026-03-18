@@ -12,6 +12,7 @@ Functions for sketch mode 2.0 (constraints version)
 
 ## Functions and constants
 
+* [`sketch2::angle`](/docs/kcl-std/functions/std-sketch2-angle)
 * [`sketch2::arc`](/docs/kcl-std/functions/std-sketch2-arc)
 * [`sketch2::coincident`](/docs/kcl-std/functions/std-sketch2-coincident)
 * [`sketch2::diameter`](/docs/kcl-std/functions/std-sketch2-diameter)
@@ -25,6 +26,7 @@ Functions for sketch mode 2.0 (constraints version)
 * [`sketch2::point`](/docs/kcl-std/functions/std-sketch2-point)
 * [`sketch2::radius`](/docs/kcl-std/functions/std-sketch2-radius)
 * [`sketch2::region`](/docs/kcl-std/functions/std-sketch2-region)
+* [`sketch2::tangent`](/docs/kcl-std/functions/std-sketch2-tangent)
 * [`sketch2::vertical`](/docs/kcl-std/functions/std-sketch2-vertical)
 * [`sketch2::verticalDistance`](/docs/kcl-std/functions/std-sketch2-verticalDistance)
 
