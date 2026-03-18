@@ -3,8 +3,11 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { distance2d, dot2d, subVec } from '@src/lib/utils2d'
 import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getAngleDiff } from '@src/lib/utils'
 import {
+  getArcPoints,
   getLinePoints,
+  isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -12,6 +15,7 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group } from 'three'
 
 type SketchSolveSnapshot = ReturnType<SolveActionArgs['self']['getSnapshot']>
+type ArcPoints = NonNullable<ReturnType<typeof getArcPoints>>
 const HOVER_DISTANCE_PX = 12
 
 function distanceToLineSegment(
@@ -36,6 +40,31 @@ function distanceToLineSegment(
   ]
 
   return distance2d(point, closestPoint)
+}
+
+function distanceToArcSegment(
+  point: Coords2d,
+  arc: ArcPoints
+): number {
+  const { center, start, end } = arc
+  const radius = distance2d(center, start)
+  if (radius === 0) {
+    return distance2d(point, center)
+  }
+
+  const pointAngle = Math.atan2(point[1] - center[1], point[0] - center[0])
+  const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+
+  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const pointSweepAngle = getAngleDiff(startAngle, pointAngle, true)
+  const isWithinArcSweep = pointSweepAngle <= sweepAngle
+
+  if (isWithinArcSweep) {
+    return Math.abs(distance2d(point, center) - radius)
+  }
+
+  return Math.min(distance2d(point, start), distance2d(point, end))
 }
 
 export type ClosestApiObject = {
@@ -83,6 +112,20 @@ export function findClosestApiObjects(
       const linePoints = getLinePoints(apiObject, objects)
       if (linePoints) {
         const distance = distanceToLineSegment(mousePosition, linePoints)
+        if (distance <= hoverDistance) {
+          candidates.push({
+            distance,
+            apiObject,
+          })
+        }
+      }
+      return
+    }
+
+    if (isArcSegment(apiObject)) {
+      const arcPoints = getArcPoints(apiObject, objects)
+      if (arcPoints) {
+        const distance = distanceToArcSegment(mousePosition, arcPoints)
         if (distance <= hoverDistance) {
           candidates.push({
             distance,

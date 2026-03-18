@@ -3,6 +3,7 @@ import type { Coords2d } from '@src/lang/util'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  createArcApiObject,
   createLineApiObject,
   createMockSceneInfra,
   createPointApiObject,
@@ -81,5 +82,51 @@ describe('findClosestApiObjects', () => {
     )
 
     expect(result).toEqual([])
+  })
+
+  it('includes arcs when the mouse is within the arc stroke threshold', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const start = createPointApiObject({ id: 2, x: 30, y: 0 })
+    const end = createPointApiObject({ id: 3, x: 0, y: 30 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+
+    const result = findClosestApiObjects(
+      [21, 21],
+      createSnapshot([center, start, end, arc]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(4)
+    expect(result[0]?.distance).toBeCloseTo(
+      Math.abs(Math.sqrt(882) - 30),
+      5
+    )
+  })
+
+  it('sorts lines and arcs by distance within the same priority bucket', () => {
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 16 })
+    const lineEnd = createPointApiObject({ id: 2, x: 40, y: 16 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const arcCenter = createPointApiObject({ id: 4, x: 0, y: 0 })
+    const arcStart = createPointApiObject({ id: 5, x: 30, y: 0 })
+    const arcEnd = createPointApiObject({ id: 6, x: 0, y: 30 })
+    const arc = createArcApiObject({ id: 7, center: 4, start: 5, end: 6 })
+
+    const result = findClosestApiObjects(
+      [21, 21],
+      createSnapshot([
+        lineStart,
+        lineEnd,
+        line,
+        arcCenter,
+        arcStart,
+        arcEnd,
+        arc,
+      ]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(7)
+    expect(result[1]?.apiObject.id).toBe(3)
   })
 })

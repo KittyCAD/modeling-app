@@ -68,6 +68,42 @@ export function getLinePoints(
   ] as const
 }
 
+export function isArcSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+}
+
+export type ArcSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Arc' } }
+}
+
+export function getArcPoints(
+  arcObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+) {
+  if (!isArcSegment(arcObj)) {
+    return null
+  }
+
+  const centerObj = objects[arcObj.kind.segment.center]
+  const startObj = objects[arcObj.kind.segment.start]
+  const endObj = objects[arcObj.kind.segment.end]
+  if (
+    !isPointSegment(centerObj) ||
+    !isPointSegment(startObj) ||
+    !isPointSegment(endObj)
+  ) {
+    return null
+  }
+
+  return {
+    center: pointToCoords2d(centerObj),
+    start: pointToCoords2d(startObj),
+    end: pointToCoords2d(endObj),
+  }
+}
+
 // Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
 function calculateCurrentAngleBetweenLines(
   line1: ApiObject,
