@@ -631,36 +631,20 @@ app.on('ready', () => {
   })
 
   const prepareMacUpdateInstall = () => {
-    if (process.platform !== 'darwin') {
-      return
-    }
-
-    type BeforeQuitListener = (
-      this: Electron.App,
-      event: Electron.Event
-    ) => void
-
-    const beforeQuitListeners = app.listeners(
-      'before-quit'
-    ) as BeforeQuitListener[]
-
+    const beforeQuitListeners = app.listeners('before-quit')
     app.removeAllListeners('before-quit')
-
     for (const browserWindow of BrowserWindow.getAllWindows()) {
       browserWindow.removeAllListeners('close')
     }
 
     autoUpdater.once('before-quit-for-update', () => {
-      const beforeQuitEvent: Electron.Event = {
-        preventDefault: () => {
-          // `preventDefault` during update install causes quit+install to hang.
-        },
-        defaultPrevented: true,
-      }
-
       for (const listener of beforeQuitListeners) {
         try {
-          listener.call(app, beforeQuitEvent)
+          listener.call(app, {
+            preventDefault: () => {
+              // `preventDefault` during update install causes quit+install to hang.
+            },
+          })
         } catch (error) {
           console.error(
             'Failed to run before-quit listener during update install',
@@ -679,7 +663,9 @@ app.on('ready', () => {
     }
 
     isInstallingUpdate = true
-    prepareMacUpdateInstall()
+    if (process.platform === 'darwin') {
+      prepareMacUpdateInstall()
+    }
 
     try {
       autoUpdater.quitAndInstall()
@@ -688,6 +674,7 @@ app.on('ready', () => {
       return Promise.reject(error)
     }
   })
+
   ipcMain.handle('app.checkForUpdates', () => {
     return autoUpdater.checkForUpdates()
   })
