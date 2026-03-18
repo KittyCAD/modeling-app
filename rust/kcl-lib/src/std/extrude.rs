@@ -239,17 +239,39 @@ async fn inner_extrude(
             &args,
         )
         .await?;
-        let extrude_cmd_id = exec_state.next_uuid();
-        let cmds = sketch.build_sketch_mode_cmds(
-            exec_state,
-            ModelingCmdReq {
-                cmd_id: extrude_cmd_id.into(),
-                cmd,
-            },
+
+        // Before we extrude, we need to enable the sketch mode.
+        // We do this here in case extrude is called out of order.
+        let enable_sm = ModelingCmd::from(
+            mcmd::EnableSketchMode::builder()
+                .animated(false)
+                .ortho(false)
+                .entity_id(sketch.on.id())
+                .adjust_camera(false)
+                .maybe_planar_normal(if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                    Some(normal.into())
+                } else {
+                    None
+                })
+                .build(),
         );
+        let disable_sm = ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build());
         exec_state
-            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), &cmds)
+            .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), enable_sm)
             .await?;
+        let extrude_cmd_id = exec_state.id_generator().next_uuid();
+        exec_state
+            .send_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
+            .await?;
+        let extrude_resp = exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, &args), false)
+            .await?;
+        exec_state
+            .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), disable_sm)
+            .await?;
+        dbg!(&extrude_resp);
         let being_extruded = BeingExtruded::Segments(segment_ids);
         // do_post_extrude(
         //     sketch,
