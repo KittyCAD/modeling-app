@@ -1273,8 +1273,9 @@ fn artifacts_to_update(
                     kittycad_modeling_cmds::shared::ExtrudeMethod::Merge
                 }
                 // Revolve variants behave like New bodies in std layer
-                ModelingCmd::Revolve(_)
-                | ModelingCmd::RevolveAboutEdge(_) => kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) => {
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::New
+                }
                 _ => kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             };
             let sub_type = match cmd {

@@ -7,20 +7,14 @@ use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 use super::args::{FromKclValue, TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, Helix as HelixValue, KclValue, ModelingCmdMeta, Solid,
-        types::RuntimeType,
-    },
+    execution::{ExecState, Helix as HelixValue, KclValue, ModelingCmdMeta, Solid, types::RuntimeType},
     std::{Args, axis_or_reference::Axis3dOrEdgeReference},
 };
 
 /// True if the value is an object with a `sideFaces` (or `side_faces`) key, i.e. an edge reference payload.
 fn is_edge_ref_object(v: &KclValue) -> bool {
     match v {
-        KclValue::Object { value, .. } => value
-            .get("sideFaces")
-            .or_else(|| value.get("side_faces"))
-            .is_some(),
+        KclValue::Object { value, .. } => value.get("sideFaces").or_else(|| value.get("side_faces")).is_some(),
         _ => false,
     }
 }
@@ -87,99 +81,99 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                 }));
             }
 
-        // Resolve faces to UUIDs - for helix, we try to resolve tags to face IDs
-        let mut face_uuids = Vec::new();
-        for face_value in faces_array {
-            let face_uuid = match face_value {
-                KclValue::Uuid { value, .. } => *value,
-                KclValue::TagIdentifier(tag) => {
-                    // Try to get face ID using get_adjacent_face_to_tag (for face tags)
-                    match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                        Ok(face_id) => face_id,
-                        Err(_) => {
-                            // The tag doesn't refer to a face. It might refer to an edge.
-                            // Try to get the engine info as a fallback
-                            args.get_tag_engine_info(exec_state, tag)?.id
-                        }
-                    }
-                }
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-            face_uuids.push(face_uuid);
-        }
-
-        // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
-        let mut disambiguator_uuids = Vec::new();
-        if let Some(disambiguators_value) = edge_ref_obj
-            .get("endFaces")
-            .or_else(|| edge_ref_obj.get("end_faces"))
-            .or_else(|| edge_ref_obj.get("disambiguators"))
-        {
-            let disambiguators_array = match disambiguators_value {
-                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) 'endFaces' must be an array".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-            for disambiguator_value in disambiguators_array {
-                let disamb_uuid = match disambiguator_value {
+            // Resolve faces to UUIDs - for helix, we try to resolve tags to face IDs
+            let mut face_uuids = Vec::new();
+            for face_value in faces_array {
+                let face_uuid = match face_value {
                     KclValue::Uuid { value, .. } => *value,
                     KclValue::TagIdentifier(tag) => {
                         // Try to get face ID using get_adjacent_face_to_tag (for face tags)
                         match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
                             Ok(face_id) => face_id,
                             Err(_) => {
-                                // The tag doesn't refer to a face. Try to get the engine info as a fallback
+                                // The tag doesn't refer to a face. It might refer to an edge.
+                                // Try to get the engine info as a fallback
                                 args.get_tag_engine_info(exec_state, tag)?.id
                             }
                         }
                     }
                     _ => {
                         return Err(KclError::new_type(KclErrorDetails {
-                            message: "axis (edge reference) disambiguators must be UUIDs or tags".to_string(),
+                            message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
                             source_ranges: vec![args.source_range],
                             backtrace: Default::default(),
                         }));
                     }
                 };
-                disambiguator_uuids.push(disamb_uuid);
+                face_uuids.push(face_uuid);
             }
-        }
 
-        // Get index (optional)
-        let index = match edge_ref_obj.get("index") {
-            Some(KclValue::Number { value, .. }) => Some(*value as u32),
-            Some(_) => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) 'index' must be a number".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
+            // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
+            let mut disambiguator_uuids = Vec::new();
+            if let Some(disambiguators_value) = edge_ref_obj
+                .get("endFaces")
+                .or_else(|| edge_ref_obj.get("end_faces"))
+                .or_else(|| edge_ref_obj.get("disambiguators"))
+            {
+                let disambiguators_array = match disambiguators_value {
+                    KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+                    _ => {
+                        return Err(KclError::new_type(KclErrorDetails {
+                            message: "axis (edge reference) 'endFaces' must be an array".to_string(),
+                            source_ranges: vec![args.source_range],
+                            backtrace: Default::default(),
+                        }));
+                    }
+                };
+                for disambiguator_value in disambiguators_array {
+                    let disamb_uuid = match disambiguator_value {
+                        KclValue::Uuid { value, .. } => *value,
+                        KclValue::TagIdentifier(tag) => {
+                            // Try to get face ID using get_adjacent_face_to_tag (for face tags)
+                            match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+                                Ok(face_id) => face_id,
+                                Err(_) => {
+                                    // The tag doesn't refer to a face. Try to get the engine info as a fallback
+                                    args.get_tag_engine_info(exec_state, tag)?.id
+                                }
+                            }
+                        }
+                        _ => {
+                            return Err(KclError::new_type(KclErrorDetails {
+                                message: "axis (edge reference) disambiguators must be UUIDs or tags".to_string(),
+                                source_ranges: vec![args.source_range],
+                                backtrace: Default::default(),
+                            }));
+                        }
+                    };
+                    disambiguator_uuids.push(disamb_uuid);
+                }
             }
-            None => None,
-        };
 
-        // Build EdgeSpecifier from shared module
-        use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
-        let builder = ModelingEdgeReference::builder()
-            .side_faces(face_uuids)
-            .end_faces(disambiguator_uuids);
+            // Get index (optional)
+            let index = match edge_ref_obj.get("index") {
+                Some(KclValue::Number { value, .. }) => Some(*value as u32),
+                Some(_) => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) 'index' must be a number".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+                None => None,
+            };
 
-        let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
-            builder.index(index_val).build()
-        } else {
-            builder.build()
-        };
+            // Build EdgeSpecifier from shared module
+            use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
+            let builder = ModelingEdgeReference::builder()
+                .side_faces(face_uuids)
+                .end_faces(disambiguator_uuids);
+
+            let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
+                builder.index(index_val).build()
+            } else {
+                builder.build()
+            };
 
             Some(Axis3dOrEdgeReference::EdgeReference(edge_reference))
         } else {
