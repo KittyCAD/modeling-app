@@ -22,20 +22,21 @@ function createSnapshot(objects: Parameters<typeof createSceneGraphDelta>[0]) {
 }
 
 describe('findClosestApiObjects', () => {
-  it('includes line segments and sorts by perpendicular distance', () => {
+  it('includes line segments when they are within the 12px threshold', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
-    const end = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
     const farPoint = createPointApiObject({ id: 4, x: 20, y: 20 })
 
     const result = findClosestApiObjects(
-      [5, 3],
+      [20, 3],
       createSnapshot([start, end, line, farPoint]),
       createMockSceneInfra()
     )
 
     expect(result[0]?.apiObject.id).toBe(3)
     expect(result[0]?.distance).toBeCloseTo(3)
+    expect(result).toHaveLength(1)
   })
 
   it('clamps line distance to the nearest endpoint', () => {
@@ -53,12 +54,12 @@ describe('findClosestApiObjects', () => {
     expect(lineResult?.distance).toBeCloseTo(Math.sqrt(20))
   })
 
-  it('sorts points and lines together in one distance-ordered list', () => {
+  it('sorts points ahead of lines when both are within the threshold', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
-    const end = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
-    const point = createPointApiObject({ id: 4, x: 5, y: 1 })
-    const mousePosition: Coords2d = [5, 1.25]
+    const point = createPointApiObject({ id: 4, x: 20, y: 10 })
+    const mousePosition: Coords2d = [20, 4]
 
     const result = findClosestApiObjects(
       mousePosition,
@@ -68,5 +69,17 @@ describe('findClosestApiObjects', () => {
 
     expect(result[0]?.apiObject.id).toBe(4)
     expect(result[1]?.apiObject.id).toBe(3)
+  })
+
+  it('filters out candidates that are beyond the threshold', () => {
+    const point = createPointApiObject({ id: 1, x: 30, y: 30 })
+
+    const result = findClosestApiObjects(
+      [0, 0],
+      createSnapshot([point]),
+      createMockSceneInfra()
+    )
+
+    expect(result).toEqual([])
   })
 })

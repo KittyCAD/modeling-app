@@ -1457,9 +1457,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
             )
 
-      const scale =
-        context.sceneInfra.getClientSceneScaleFactor(sketchSceneObject)
-      if (!hoveredSegment || hoveredSegment.distance > 12 * scale) {
+      if (!hoveredSegment) {
         if (lastHoveredMesh) {
           updateSegmentHover(
             lastHoveredMesh,
