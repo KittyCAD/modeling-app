@@ -8,8 +8,8 @@ use crate::{
     errors::KclErrorDetails,
     exec::{KclValue, NumericType, Sketch},
     execution::{
-        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH,
-        Segment, SegmentKind, SketchSurface,
+        BasePath, GeoMeta, Metadata, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META,
+        SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SketchSurface,
         types::{ArrayLen, RuntimeType},
     },
     front::ObjectId,
@@ -99,6 +99,11 @@ pub(crate) async fn create_segments_in_engine(
             .await?;
             outer_sketch = Some(sketch);
         };
+
+        // Get the source range of the segment from its metadata, falling back to the sketch block's
+        let default_meta = Metadata { source_range: range };
+        let meta = segment.meta.first().unwrap_or(&default_meta);
+        let range = meta.source_range;
 
         let Some(sketch) = &outer_sketch else {
             return Err(KclError::new_internal(KclErrorDetails::new(
