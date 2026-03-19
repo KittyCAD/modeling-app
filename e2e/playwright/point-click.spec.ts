@@ -2965,13 +2965,13 @@ profile002 = startProfile(sketch002, at = [-1, 0])
 
     await test.step('Select two edges through the command bar flow', async () => {
       await selectEdgesFromBothSurfaces()
-      await expect(toolbar.selectionStatus).toContainText(/2 segments?/)
+      await expect(toolbar.selectionStatus).toContainText(/2 (?:segments?|edges)/)
 
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Edges: '2 segments',
+          Edges: '2 edges',
         },
         commandName: 'Blend',
       })
