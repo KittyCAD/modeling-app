@@ -79,7 +79,6 @@ export type SpawnToolActor = <K extends EquipTool>(
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
-  | { type: 'camera scale change' }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
@@ -465,7 +464,7 @@ export function updateSceneGraphFromDelta({
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
   const factor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.axisGroup
+    context.sceneEntitiesManager.sketchSolveGroup
   )
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
@@ -690,6 +689,7 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
 }
 
 export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
+  sceneInfra.setOnBeforeRender(null)
   const sketchSegments = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSegments || !(sketchSegments instanceof Group)) {
     // no segments to clean
@@ -743,7 +743,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
   const factor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.axisGroup
+    context.sceneEntitiesManager.sketchSolveGroup
   )
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
@@ -829,7 +829,7 @@ export function initializeInitialSceneGraph({
   return {}
 }
 
-export function onCameraScaleChange({ context }: SolveActionArgs): void {
+export function refreshSketchSolveScale(context: SketchSolveContext): void {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
@@ -838,11 +838,9 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
   const scaleFactor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.axisGroup
+    context.sceneEntitiesManager.sketchSolveGroup
   )
 
-  // Point segments use group scale for constant-screen-size rendering, so they
-  // must be refreshed when the camera scale factor changes.
   const allSelectedIds = Array.from(
     new Set([...context.selectedIds, ...context.duringAreaSelectIds])
   )

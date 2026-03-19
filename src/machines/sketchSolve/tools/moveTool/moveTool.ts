@@ -1354,9 +1354,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     return intersectingIds
   }
 
-  context.sceneInfra.scaleFactor.subscribe(() => {
-    self.send({ type: 'camera scale change' })
-  })
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,

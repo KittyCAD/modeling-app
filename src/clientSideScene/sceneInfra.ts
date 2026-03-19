@@ -42,7 +42,6 @@ import type {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { signal } from '@preact/signals-core'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -106,10 +105,11 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
+  private cameraDirty = false // used for onBeforeRender
+  private onBeforeRender: (() => void) | null = null // Used by sketch solve currently to update segments to keep their size fixed in screen space
   lastMouseState: MouseState = { type: 'idle' }
 
   public readonly baseUnitChange = new Signal()
-  public readonly scaleFactor = signal<number>(1)
 
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
@@ -401,10 +401,16 @@ export class SceneInfra {
     ]
     this.renderer.setSize(canvasResolution[0], canvasResolution[1], false)
     this.labelRenderer.setSize(cssSize[0], cssSize[1])
+    this.cameraDirty = true
   }
 
   onCameraChange = () => {
-    this.scaleFactor.value = this.getClientSceneScaleFactor()
+    this.cameraDirty = true
+  }
+
+  setOnBeforeRender(callback: (() => void) | null) {
+    this.onBeforeRender = callback
+    this.cameraDirty = callback !== null
   }
 
   animate = () => {
@@ -418,15 +424,27 @@ export class SceneInfra {
         const currentTime = performance.now()
         if (currentTime - this.lastFrameTime > 1000 / 30) {
           // Limit to 30fps while paused
-          this.renderer.render(this.scene, this.camControls.camera)
-          this.labelRenderer.render(this.scene, this.camControls.camera)
+          this.renderFrame()
           this.lastFrameTime = currentTime
         }
       } else {
-        this.renderer.render(this.scene, this.camControls.camera)
-        this.labelRenderer.render(this.scene, this.camControls.camera)
+        this.renderFrame()
       }
     }
+  }
+
+  private renderFrame() {
+    this.runOnBeforeRenderIfNeeded()
+    this.renderer.render(this.scene, this.camControls.camera)
+    this.labelRenderer.render(this.scene, this.camControls.camera)
+  }
+
+  private runOnBeforeRenderIfNeeded() {
+    if (!this.cameraDirty || !this.onBeforeRender) {
+      return
+    }
+    this.cameraDirty = false
+    this.onBeforeRender()
   }
 
   stop = () => {
