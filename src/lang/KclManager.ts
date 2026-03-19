@@ -480,7 +480,7 @@ export class File extends EventTarget {
       this.unwatch()
     }
 
-    // Set pathSignal before calling this.watch()!
+    // Set pathSignal before calling this.watch() as it uses the path!
     this.pathSignal.value = newPath
 
     // Don't watch empty file paths, that's the whole file system!
