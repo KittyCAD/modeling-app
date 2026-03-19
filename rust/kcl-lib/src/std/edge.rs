@@ -433,12 +433,23 @@ fn array_from_kcl(v: &KclValue) -> Option<&[KclValue]> {
 }
 
 /// Parse a KCL object `{ sideFaces, endFaces?, index? }` into UnresolvedEdgeSpecifier. Used by getBoundedEdge and blend.
-pub(crate) fn parse_edge_specifier_object(obj: &crate::execution::KclObjectFields, args: &Args) -> Result<UnresolvedEdgeSpecifier, KclError> {
-    let side_faces_val = obj
-        .get("sideFaces")
-        .ok_or_else(|| KclError::new_type(KclErrorDetails::new("edge specifier object must have sideFaces".to_owned(), vec![args.source_range])))?;
+pub(crate) fn parse_edge_specifier_object(
+    obj: &crate::execution::KclObjectFields,
+    args: &Args,
+) -> Result<UnresolvedEdgeSpecifier, KclError> {
+    let side_faces_val = obj.get("sideFaces").ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            "edge specifier object must have sideFaces".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
     let side_faces = array_from_kcl(side_faces_val)
-        .ok_or_else(|| KclError::new_type(KclErrorDetails::new("sideFaces must be an array".to_owned(), vec![args.source_range])))?
+        .ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                "sideFaces must be an array".to_owned(),
+                vec![args.source_range],
+            ))
+        })?
         .iter()
         .map(|v| match v {
             KclValue::Uuid { value, .. } => Ok(TagOrUuid::Uuid(*value)),
@@ -466,9 +477,7 @@ pub(crate) fn parse_edge_specifier_object(obj: &crate::execution::KclObjectField
         })
         .transpose()?
         .unwrap_or_default();
-    let index = obj
-        .get("index")
-        .and_then(|v| v.as_ty_f64().map(|t| t.n as u32));
+    let index = obj.get("index").and_then(|v| v.as_ty_f64().map(|t| t.n as u32));
     Ok(UnresolvedEdgeSpecifier {
         side_faces,
         end_faces,
@@ -482,10 +491,12 @@ pub(crate) fn face_id_from_first_side_face(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Uuid, KclError> {
-    let first = spec
-        .side_faces
-        .first()
-        .ok_or_else(|| KclError::new_type(KclErrorDetails::new("edge specifier must have at least one sideFace".to_owned(), vec![args.source_range])))?;
+    let first = spec.side_faces.first().ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            "edge specifier must have at least one sideFace".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
     match first {
         TagOrUuid::Uuid(u) => Ok(*u),
         TagOrUuid::Tag(t) => {
@@ -581,7 +592,10 @@ pub async fn resolve_unresolved_edge_specifier(
         match v {
             TagOrUuid::Uuid(u) => side_faces.push(*u),
             TagOrUuid::Tag(t) => {
-                let edge_id = { let info = args.get_tag_engine_info(exec_state, t)?; info.id };
+                let edge_id = {
+                    let info = args.get_tag_engine_info(exec_state, t)?;
+                    info.id
+                };
                 let face_ids = get_face_ids_for_edge(exec_state, object_id, edge_id, args).await?;
                 side_faces.extend(face_ids);
             }
@@ -592,7 +606,10 @@ pub async fn resolve_unresolved_edge_specifier(
         match v {
             TagOrUuid::Uuid(u) => end_faces.push(*u),
             TagOrUuid::Tag(t) => {
-                let edge_id = { let info = args.get_tag_engine_info(exec_state, t)?; info.id };
+                let edge_id = {
+                    let info = args.get_tag_engine_info(exec_state, t)?;
+                    info.id
+                };
                 let face_ids = get_face_ids_for_edge(exec_state, object_id, edge_id, args).await?;
                 end_faces.extend(face_ids);
             }

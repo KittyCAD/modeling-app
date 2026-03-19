@@ -77,9 +77,7 @@ pub(super) async fn tags_to_engine_edge_references(
     for edge_ref in tags {
         let edge_id = edge_ref.get_engine_id(exec_state, args)?;
         let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
-        let engine_ref = kcmc::shared::EdgeSpecifier::builder()
-            .side_faces(face_ids)
-            .build();
+        let engine_ref = kcmc::shared::EdgeSpecifier::builder().side_faces(face_ids).build();
         refs.push(engine_ref);
     }
     Ok(refs)

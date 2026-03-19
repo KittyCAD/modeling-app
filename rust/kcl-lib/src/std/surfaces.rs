@@ -18,7 +18,7 @@ use crate::{
         BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid, SolidCreator,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
-    std::{args::TyF64, edge, Args, sketch::FaceTag},
+    std::{Args, args::TyF64, edge, sketch::FaceTag},
 };
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
