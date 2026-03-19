@@ -35,7 +35,7 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
     |> close()
 
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-  gearSketch = startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
     |> involuteCircular(
          startRadius = baseDiameter / 2,
@@ -63,7 +63,7 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
     // Subtract the keyway sketch from the gear sketch
     |> subtract2d(tool = holeWithKeyway)
     // Extrude the gear to the specified height
-    |> extrude(length = gearHeight)
+  gearSketch = extrude(sketch001, length = gearHeight)
 
   return gearSketch
 }

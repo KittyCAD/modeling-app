@@ -7,14 +7,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00000000000000000011102230773579206,
-        -0.0000000000000000002220446154715841,
+        -0,
+        -0,
         -0.0010000000474974513
       ],
       "max": [
-        0.003828427055850625,
-        -0.0000000000000000002220446154715841,
-        0.0028284271247684956
+        0.003828430082648993,
+        -0,
+        0.0028284299187362194
       ]
     },
     {
@@ -32,13 +32,13 @@
       "type": "VEC3",
       "min": [
         0.0010000000474974513,
-        -0.0000000000000000002220446154715841,
+        -0,
         -0.0010000000474974513
       ],
       "max": [
-        0.003828427055850625,
+        0.003828430082648993,
         0.0010000000474974513,
-        0.0018284270772710445
+        0.00182842998765409
       ]
     },
     {
@@ -55,14 +55,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00000000000000000011102230773579206,
+        -0,
         0.0010000000474974513,
         -0.0010000000474974513
       ],
       "max": [
-        0.003828427055850625,
+        0.003828430082648993,
         0.0010000000474974513,
-        0.0028284271247684956
+        0.0028284299187362194
       ]
     },
     {
@@ -79,14 +79,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00000000000000000011102230773579206,
-        -0.0000000000000000002220446154715841,
-        0.00000000000000000011102230773579206
+        -0,
+        -0,
+        0
       ],
       "max": [
-        0.0028284271247684956,
+        0.0028284299187362194,
         0.0010000000474974513,
-        0.0028284271247684956
+        0.0028284299187362194
       ]
     },
     {
@@ -103,14 +103,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00000000000000000011102230773579206,
-        -0.0000000000000000002220446154715841,
+        -0,
+        -0,
         -0.0010000000474974513
       ],
       "max": [
         0.0010000000474974513,
         0.0010000000474974513,
-        0.00000000000000000011102230773579206
+        0
       ]
     },
     {
@@ -127,14 +127,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0028284271247684956,
-        -0.0000000000000000002220446154715841,
-        0.0018284270772710445
+        0.0028284299187362194,
+        -0,
+        0.00182842998765409
       ],
       "max": [
-        0.003828427055850625,
+        0.003828430082648993,
         0.0010000000474974513,
-        0.0028284271247684956
+        0.0028284299187362194
       ]
     },
     {
@@ -272,7 +272,7 @@
   "buffers": [
     {
       "byteLength": 1440,
-      "uri": "data:application/octet-stream;base64,bxIDoG8Sg6BvEgMgAAAAAAAAgL8AAAAAbxKDOm8Sg6BvEoO6AAAAAAAAgL8AAAAAWeZ6O28Sg6DVp+86AAAAAAAAgL8AAAAAWeZ6O28Sg6DVp+86AAAAAAAAgL8AAAAAIl05O28Sg6AiXTk7AAAAAAAAgL8AAAAAbxIDoG8Sg6BvEgMgAAAAAAAAgL8AAAAAWeZ6O28Sg6DVp+868wQ1PwAAAADzBDW/bxKDOm8Sg6BvEoO68wQ1PwAAAADzBDW/WeZ6O28SgzrVp+868wQ1PwAAAADzBDW/WeZ6O28SgzrVp+868wQ1PwAAAADzBDW/bxKDOm8Sg6BvEoO68wQ1PwAAAADzBDW/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDW/bxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAAIl05O28SgzoiXTk7AAAAAAAAgD8AAAAAWeZ6O28SgzrVp+86AAAAAAAAgD8AAAAAbxIDoG8SgzpvEgMgAAAAAAAAgD8AAAAAIl05O28SgzoiXTk7AAAAAAAAgD8AAAAAbxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAAIl05O28SgzoiXTk78wQ1vwAAAADzBDU/bxIDoG8SgzpvEgMg8wQ1vwAAAADzBDU/Il05O28Sg6AiXTk78wQ1vwAAAADzBDU/Il05O28Sg6AiXTk78wQ1vwAAAADzBDU/bxIDoG8SgzpvEgMg8wQ1vwAAAADzBDU/bxIDoG8Sg6BvEgMg8wQ1vwAAAADzBDU/bxIDoG8SgzpvEgMg8wQ1vwAAAIDzBDW/bxKDOm8SgzpvEoO68wQ1vwAAAIDzBDW/bxIDoG8Sg6BvEgMg8wQ1vwAAAIDzBDW/bxKDOm8SgzpvEoO68wQ1vwAAAIDzBDW/bxKDOm8Sg6BvEoO68wQ1vwAAAIDzBDW/bxIDoG8Sg6BvEgMg8wQ1vwAAAIDzBDW/Il05O28SgzoiXTk78wQ1PwAAAADzBDU/Il05O28Sg6AiXTk78wQ1PwAAAADzBDU/WeZ6O28SgzrVp+868wQ1PwAAAADzBDU/WeZ6O28SgzrVp+868wQ1PwAAAADzBDU/Il05O28Sg6AiXTk78wQ1PwAAAADzBDU/WeZ6O28Sg6DVp+868wQ1PwAAAADzBDU/AAAAAG8SgzoAAACA8wQ1PwAAAADzBDU/AAAAAAAAAAAAAACA8wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDU/AAAAAAAAAAAAAACA8wQ1PwAAAADzBDU/bxKDOgAAAABvEoO68wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO6AAAAAAAAAAAAAIC/bxKDOgAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AAAAAAAAAAAAAIC/bxKDOgAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAAAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AACAvwAAAAAAAAAAAAAAAG8SgzoAAACAAACAvwAAAAAAAAAAAAAAAG8SgzoAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AAAAgAAAgL8AAACAbxKDOgAAAABvEoO6AAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAG8SgzpvEoO6AAAAAAAAgD8AAAAAAAAAAG8SgzoAAACAAAAAAAAAgD8AAAAAbxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAA"
+      "uri": "data:application/octet-stream;base64,AAAAgAAAAIAAAAAAAAAAAAAAgL8AAAAAbxKDOgAAAIBvEoO6AAAAAAAAgL8AAAAAZuZ6OwAAAIDup+86AAAAAAAAgL8AAAAAZuZ6OwAAAIDup+86AAAAAAAAgL8AAAAALl05OwAAAIAuXTk7AAAAAAAAgL8AAAAAAAAAgAAAAIAAAAAAAAAAAAAAgL8AAAAAZuZ6OwAAAIDup+868wQ1PwAAAADzBDW/bxKDOgAAAIBvEoO68wQ1PwAAAADzBDW/ZuZ6O28Sgzrup+868wQ1PwAAAADzBDW/ZuZ6O28Sgzrup+868wQ1PwAAAADzBDW/bxKDOgAAAIBvEoO68wQ1PwAAAADzBDW/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDW/bxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAALl05O28SgzouXTk7AAAAAAAAgD8AAAAAZuZ6O28Sgzrup+86AAAAAAAAgD8AAAAAAAAAgG8SgzoAAAAAAAAAAAAAgD8AAAAALl05O28SgzouXTk7AAAAAAAAgD8AAAAAbxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAALl05O28SgzouXTk78wQ1vwAAAADzBDU/AAAAgG8SgzoAAAAA8wQ1vwAAAADzBDU/Ll05OwAAAIAuXTk78wQ1vwAAAADzBDU/Ll05OwAAAIAuXTk78wQ1vwAAAADzBDU/AAAAgG8SgzoAAAAA8wQ1vwAAAADzBDU/AAAAgAAAAIAAAAAA8wQ1vwAAAADzBDU/AAAAgG8SgzoAAAAA8wQ1vwAAAIDzBDW/bxKDOm8SgzpvEoO68wQ1vwAAAIDzBDW/AAAAgAAAAIAAAAAA8wQ1vwAAAIDzBDW/bxKDOm8SgzpvEoO68wQ1vwAAAIDzBDW/bxKDOgAAAIBvEoO68wQ1vwAAAIDzBDW/AAAAgAAAAIAAAAAA8wQ1vwAAAIDzBDW/Ll05O28SgzouXTk78wQ1PwAAAADzBDU/Ll05OwAAAIAuXTk78wQ1PwAAAADzBDU/ZuZ6O28Sgzrup+868wQ1PwAAAADzBDU/ZuZ6O28Sgzrup+868wQ1PwAAAADzBDU/Ll05OwAAAIAuXTk78wQ1PwAAAADzBDU/ZuZ6OwAAAIDup+868wQ1PwAAAADzBDU/AAAAAG8SgzoAAACA8wQ1PwAAAADzBDU/AAAAAAAAAAAAAACA8wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO68wQ1PwAAAADzBDU/AAAAAAAAAAAAAACA8wQ1PwAAAADzBDU/bxKDOgAAAABvEoO68wQ1PwAAAADzBDU/bxKDOm8SgzpvEoO6AAAAAAAAAAAAAIC/bxKDOgAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AAAAAAAAAAAAAIC/bxKDOgAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAAAAAABvEoO6AAAAAAAAAAAAAIC/AAAAAG8SgzpvEoO6AACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AACAvwAAAAAAAAAAAAAAAG8SgzoAAACAAACAvwAAAAAAAAAAAAAAAG8SgzoAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO6AAAAgAAAgL8AAACAbxKDOgAAAABvEoO6AAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAG8SgzpvEoO6AAAAAAAAgD8AAAAAAAAAAG8SgzoAAACAAAAAAAAAgD8AAAAAbxKDOm8SgzpvEoO6AAAAAAAAgD8AAAAA"
     }
   ],
   "bufferViews": [
@@ -799,7 +799,7 @@
           "end": 1,
           "t": [
             0,
-            0.0014142135623730952
+            0.001414213562373095
           ]
         },
         {
@@ -811,7 +811,7 @@
           "end": 2,
           "t": [
             0,
-            0.003999999999999999
+            0.004000004066222932
           ]
         },
         {
@@ -835,7 +835,7 @@
           "end": 3,
           "t": [
             0,
-            0.003999999999999999
+            0.004000004066222932
           ]
         },
         {
@@ -847,7 +847,7 @@
           "end": 4,
           "t": [
             0,
-            0.0010000000000000005
+            0.001
           ]
         },
         {
@@ -859,7 +859,7 @@
           "end": 5,
           "t": [
             0,
-            0.003999999999999999
+            0.004000004066222932
           ]
         },
         {
@@ -871,7 +871,7 @@
           "end": 5,
           "t": [
             0,
-            0.0010000000000000005
+            0.001
           ]
         },
         {
@@ -883,7 +883,7 @@
           "end": 6,
           "t": [
             0,
-            0.0014142135623730952
+            0.001414213562373095
           ]
         },
         {
@@ -895,7 +895,7 @@
           "end": 7,
           "t": [
             0,
-            0.003999999999999999
+            0.004000004066222932
           ]
         },
         {
@@ -919,7 +919,7 @@
           "end": 0,
           "t": [
             0,
-            0.0010000000000000005
+            0.001
           ]
         },
         {
@@ -931,7 +931,7 @@
           "end": 3,
           "t": [
             0,
-            0.0010000000000000005
+            0.001
           ]
         },
         {
@@ -1045,44 +1045,44 @@
       ],
       "vertices": [
         [
-          -0.00000000000000000011102230246251566,
-          -0.0000000000000000002220446049250313,
-          0.00000000000000000011102230246251566
+          -0,
+          -0,
+          0
         ],
         [
           0.001,
-          -0.0000000000000000002220446049250313,
+          -0,
           -0.001
         ],
         [
-          0.0038284271247461896,
-          -0.0000000000000000002220446049250313,
-          0.0018284271247461896
+          0.00382843,
+          -0,
+          0.00182843
         ],
         [
-          0.00282842712474619,
-          -0.0000000000000000002220446049250313,
-          0.00282842712474619
+          0.00282843,
+          -0,
+          0.00282843
         ],
         [
           0.001,
-          0.0010000000000000002,
+          0.001,
           -0.001
         ],
         [
-          0.0038284271247461896,
-          0.0010000000000000002,
-          0.0018284271247461896
+          0.00382843,
+          0.001,
+          0.00182843
         ],
         [
-          -0.00000000000000000011102230246251566,
-          0.0010000000000000002,
-          0.00000000000000000011102230246251566
+          -0,
+          0.001,
+          0
         ],
         [
-          0.00282842712474619,
-          0.0010000000000000002,
-          0.00282842712474619
+          0.00282843,
+          0.001,
+          0.00282843
         ],
         [
           0,
@@ -1130,9 +1130,9 @@
               1
             ],
             "origin": [
-              0.0019142135623730948,
-              -0.0000000000000000002220446049250313,
-              0.0009142135623730948
+              0.00191421,
+              -0,
+              0.00091421
             ]
           }
         },
@@ -1150,9 +1150,9 @@
               0
             ],
             "origin": [
-              0.002414213562373095,
-              0.0005000000000000001,
-              0.0004142135623730949
+              0.00241421,
+              0.0005,
+              0.00041421
             ]
           }
         },
@@ -1170,9 +1170,9 @@
               -1
             ],
             "origin": [
-              0.0019142135623730948,
-              0.0010000000000000002,
-              0.0009142135623730948
+              0.00191421,
+              0.001,
+              0.00091421
             ]
           }
         },
@@ -1190,9 +1190,9 @@
               0
             ],
             "origin": [
-              0.001414213562373095,
-              0.0004999999999999999,
-              0.001414213562373095
+              0.00141421,
+              0.0005,
+              0.00141421
             ]
           }
         },
@@ -1230,9 +1230,9 @@
               0
             ],
             "origin": [
-              0.00332842712474619,
+              0.00332843,
               0.0005,
-              0.00232842712474619
+              0.00232843
             ]
           }
         },
@@ -1342,9 +1342,9 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.00000000000000000011102230246251566,
-              -0.0000000000000000002220446049250313,
-              0.00000000000000000011102230246251566
+              -0,
+              -0,
+              0
             ],
             "direction": [
               0.7071067811865476,
@@ -1358,7 +1358,7 @@
           "line": {
             "origin": [
               0.001,
-              -0.0000000000000000002220446049250313,
+              -0,
               -0.001
             ],
             "direction": [
@@ -1372,14 +1372,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.00282842712474619,
-              -0.0000000000000000002220446049250313,
-              0.00282842712474619
+              0.00282843,
+              -0,
+              0.00282843
             ],
             "direction": [
-              0.7071067811865474,
+              0.7071067811865477,
               0,
-              -0.7071067811865478
+              -0.7071067811865475
             ]
           }
         },
@@ -1387,9 +1387,9 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.00000000000000000011102230246251566,
-              -0.0000000000000000002220446049250313,
-              0.00000000000000000011102230246251566
+              -0,
+              -0,
+              0
             ],
             "direction": [
               0.7071067811865476,
@@ -1403,7 +1403,7 @@
           "line": {
             "origin": [
               0.001,
-              -0.0000000000000000002220446049250313,
+              -0,
               -0.001
             ],
             "direction": [
@@ -1418,7 +1418,7 @@
           "line": {
             "origin": [
               0.001,
-              0.0010000000000000002,
+              0.001,
               -0.001
             ],
             "direction": [
@@ -1432,9 +1432,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0038284271247461896,
-              -0.0000000000000000002220446049250313,
-              0.0018284271247461896
+              0.00382843,
+              -0,
+              0.00182843
             ],
             "direction": [
               0,
@@ -1448,7 +1448,7 @@
           "line": {
             "origin": [
               0.001,
-              0.0010000000000000002,
+              0.001,
               -0.001
             ],
             "direction": [
@@ -1462,9 +1462,9 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.00000000000000000011102230246251566,
-              0.0010000000000000002,
-              0.00000000000000000011102230246251566
+              -0,
+              0.001,
+              0
             ],
             "direction": [
               0.7071067811865476,
@@ -1477,14 +1477,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0038284271247461896,
-              0.0010000000000000002,
-              0.0018284271247461896
+              0.00382843,
+              0.001,
+              0.00182843
             ],
             "direction": [
-              -0.7071067811865474,
+              -0.7071067811865477,
               0,
-              0.7071067811865478
+              0.7071067811865475
             ]
           }
         },
@@ -1492,9 +1492,9 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.00000000000000000011102230246251566,
-              0.0010000000000000002,
-              0.00000000000000000011102230246251566
+              -0,
+              0.001,
+              0
             ],
             "direction": [
               0,
@@ -1507,9 +1507,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.00282842712474619,
-              0.0010000000000000002,
-              0.00282842712474619
+              0.00282843,
+              0.001,
+              0.00282843
             ],
             "direction": [
               0,

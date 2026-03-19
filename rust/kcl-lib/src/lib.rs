@@ -96,8 +96,8 @@ pub use errors::{
 };
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
-    clear_mem_cache, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new, transpile_old_sketch_to_new_ast,
-    transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
+    clear_mem_cache, pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
+    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
@@ -170,8 +170,7 @@ pub mod front {
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent, TangentArcCtor,
-            Vertical,
+            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
         },
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,

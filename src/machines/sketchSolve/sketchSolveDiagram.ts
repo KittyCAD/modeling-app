@@ -1,11 +1,4 @@
-import {
-  assertEvent,
-  assign,
-  createMachine,
-  sendParent,
-  setup,
-  fromPromise,
-} from 'xstate'
+import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 import type {
   SceneGraphDelta,
   SegmentCtor,
@@ -39,20 +32,43 @@ import {
   setDraftEntities,
   clearDraftEntities,
   deleteDraftEntities,
-  deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
   onCameraScaleChange,
+  tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
+  buildTangentConstraintInput,
+  isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
+
+function sendToolbarConstraintOutcome(
+  self: SolveActionArgs['self'],
+  result:
+    | Awaited<ReturnType<SketchSolveContext['rustContext']['addConstraint']>>
+    | undefined
+) {
+  if (result) {
+    self.send({
+      type: 'update selected ids',
+      data: { selectedIds: [], duringAreaSelectIds: [] },
+    })
+    self.send({
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+      },
+    })
+  }
+}
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
@@ -118,15 +134,7 @@ async function addAxisDistanceConstraint(
     },
     jsAppSettings(context.kclManager.systemDeps.settings)
   )
-  if (result) {
-    self.send({
-      type: 'update sketch outcome',
-      data: {
-        sourceDelta: result.kclSource,
-        sceneGraphDelta: result.sceneGraphDelta,
-      },
-    })
-  }
+  sendToolbarConstraintOutcome(self, result)
 }
 
 export const sketchSolveMachine = setup({
@@ -200,19 +208,7 @@ export const sketchSolveMachine = setup({
     }),
   },
   actors: {
-    deleteDraftEntitiesOnExit: fromPromise(
-      async ({
-        input,
-      }: {
-        input: { context: SketchSolveContext }
-      }) => {
-        // Only delete if draft entities exist
-        if (!input.context.draftEntities) {
-          return null
-        }
-        return deleteDraftEntitiesPromise(input)
-      }
-    ),
+    tearDownSketchSolve,
     moveToolActor: createMachine({
       /* ... */
     }),
@@ -290,6 +286,27 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
+        sendToolbarConstraintOutcome(self, result)
+      },
+    },
+    Tangent: {
+      actions: async ({ self, context }) => {
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const tangentConstraint = buildTangentConstraintInput(
+          context.selectedIds,
+          objects
+        )
+        if (!tangentConstraint) {
+          return
+        }
+
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          tangentConstraint,
+          jsAppSettings(context.kclManager.systemDeps.settings)
+        )
         if (result) {
           self.send({
             type: 'update sketch outcome',
@@ -329,17 +346,9 @@ export const sketchSolveMachine = setup({
                 0,
                 context.sketchId,
                 angleConstraint,
-                await jsAppSettings(context.rustContext.settingsActor)
+                jsAppSettings(context.kclManager.systemDeps.settings)
               )
-              if (result) {
-                self.send({
-                  type: 'update sketch outcome',
-                  data: {
-                    sourceDelta: result.kclSource,
-                    sceneGraphDelta: result.sceneGraphDelta,
-                  },
-                })
-              }
+              sendToolbarConstraintOutcome(self, result)
               return
             }
           }
@@ -413,15 +422,7 @@ export const sketchSolveMachine = setup({
               },
               jsAppSettings(context.kclManager.systemDeps.settings)
             )
-            if (result) {
-              self.send({
-                type: 'update sketch outcome',
-                data: {
-                  sourceDelta: result.kclSource,
-                  sceneGraphDelta: result.sceneGraphDelta,
-                },
-              })
-            }
+            sendToolbarConstraintOutcome(self, result)
             return
           } else if (isLineSegment(first)) {
             // Calculate distance for line segment from its endpoints
@@ -475,15 +476,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     HorizontalDistance: {
@@ -518,15 +511,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Perpendicular: {
@@ -541,15 +526,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     LinesEqualLength: {
@@ -564,15 +541,7 @@ export const sketchSolveMachine = setup({
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Vertical: {
@@ -590,15 +559,7 @@ export const sketchSolveMachine = setup({
             jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     Horizontal: {
@@ -616,15 +577,7 @@ export const sketchSolveMachine = setup({
             jsAppSettings(context.kclManager.systemDeps.settings)
           )
         }
-        if (result) {
-          self.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+        sendToolbarConstraintOutcome(self, result)
       },
     },
     construction: {
@@ -664,11 +617,9 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            obj.kind.segment.type === 'Line'
+            isLineSegment(obj) || isArcSegment(obj)
               ? obj.kind.segment.construction
-              : obj.kind.segment.type === 'Arc'
-                ? obj.kind.segment.construction
-                : false
+              : false
 
           // Toggle construction state
           const newConstruction = !currentConstruction
@@ -884,8 +835,8 @@ export const sketchSolveMachine = setup({
         },
       },
       invoke: {
-        id: 'deleteDraftEntitiesOnExit',
-        src: 'deleteDraftEntitiesOnExit',
+        id: 'tearDownSketchSolve',
+        src: 'tearDownSketchSolve',
         input: ({ context }: { context: SketchSolveContext }) => {
           return { context }
         },

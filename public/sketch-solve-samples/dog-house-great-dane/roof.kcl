@@ -129,17 +129,20 @@ collarTies = patternLinear3d(
 )
 
 // Model a ridgeboard to hold it all together
-ridgeBoardSlots = startSketchOn(YZ)
-  |> startProfile(at = [
-       rafterStartY - 0.025,
-       ridgeBoardZ + 3.75
-     ])
-  |> yLine(length = -3.16)
-  |> xLine(length = 3.55)
-  |> yLine(length = 3.18)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = 5, symmetric = true)
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 3.48in, var 45.75in], end = [var 3.48in, var 42.59in])
+  line2 = line(start = [var 3.48in, var 42.59in], end = [var 7.03in, var 42.59in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 7.03in, var 42.59in], end = [var 7.03in, var 45.77in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 7.03in, var 45.77in], end = [var 3.48in, var 45.75in])
+  coincident([line3.end, line4.start])
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+ridgeBoardSlots = extrude(region001, length = 5, symmetric = true)
   |> patternLinear3d(instances = rafterCount, distance = rafterSpacing, axis = [0, 1, 0])
 
 ridgeBoard = twoByFourYRotated(

@@ -13,14 +13,17 @@ outletSpacing = 25
 mountingHoleDiameter = 4.5
 
 // Create the manifold body. Chamfer all edges
-body = startSketchOn(YZ)
-  |> startProfile(at = [-bodyWidth / 2, -bodyWidth / 2])
-  |> angledLine(angle = 0deg, length = bodyWidth, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = bodyWidth, tag = $seg03)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
-  |> close()
-  |> extrude(length = outletSpacing * 4, symmetric = true)
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -17.5mm, var -17.5mm], end = [var 17.5mm, var -17.5mm])
+  line2 = line(start = [var 17.5mm, var -17.5mm], end = [var 17.5mm, var 17.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 17.5mm, var 17.5mm], end = [var -17.5mm, var 17.5mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -17.5mm, var 17.5mm], end = [var -17.5mm, var -17.5mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+body = extrude(region001, length = outletSpacing * 4, symmetric = true)
   |> chamfer(
        tags = [
          getCommonEdge(faces = [seg01, seg02]),

@@ -11,6 +11,21 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { DoneActorEvent } from 'xstate'
 
+type FinalizingArcEvent = {
+  type: 'xstate.done.actor.0.Center arc tool.Finalizing arc'
+  output: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
+}
+type CreatingArcEvent = {
+  type: 'xstate.done.actor.0.Center arc tool.Creating arc'
+  output: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
+}
+
 // Helper to create a minimal valid SceneGraphDelta for testing
 function createSceneGraphDelta(
   objects: Array<ApiObject>,
@@ -306,7 +321,7 @@ describe('centerArcToolImpl', () => {
   })
 
   describe('sendResultToParent', () => {
-    it('should extract IDs from scene graph and return context updates', () => {
+    it('should extract IDs from scene graph and persist finalized arcs', () => {
       const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
       const startPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
       const endPoint = createPointApiObject({ id: 3, x: 0, y: 0 })
@@ -328,16 +343,13 @@ describe('centerArcToolImpl', () => {
         },
       }
 
-      const event = {
+      const event: FinalizingArcEvent = {
+        type: 'xstate.done.actor.0.Center arc tool.Finalizing arc',
         output: {
           kclSource: { text: 'test' } as SourceDelta,
           sceneGraphDelta,
         },
-      } as DoneActorEvent<{
-        kclSource?: SourceDelta
-        sceneGraphDelta?: SceneGraphDelta
-        error?: string
-      }>
+      }
 
       const context = {
         sceneGraphDelta: {} as SceneGraphDelta,
@@ -361,6 +373,52 @@ describe('centerArcToolImpl', () => {
       expect(result.arcId).toBe(4)
       expect(result.arcEndPointId).toBe(3)
       expect(result.sceneGraphDelta).toBe(sceneGraphDelta)
+    })
+
+    it('should keep created draft arcs in-memory until finalized', () => {
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 0, y: 0 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+
+      const sceneGraphDelta = createSceneGraphDelta(
+        [centerPoint, startPoint, endPoint, arcObj],
+        [1, 2, 3, 4]
+      )
+
+      const mockSelf = {
+        _parent: {
+          send: vi.fn(),
+        },
+      }
+
+      const event: CreatingArcEvent = {
+        type: 'xstate.done.actor.0.Center arc tool.Creating arc',
+        output: {
+          kclSource: { text: 'test' } as SourceDelta,
+          sceneGraphDelta,
+        },
+      }
+
+      sendResultToParent({
+        event,
+        self: mockSelf as any,
+        context: { sceneGraphDelta: {} as SceneGraphDelta } as any,
+      } as any)
+
+      expect(mockSelf._parent.send).toHaveBeenCalledWith({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'test' },
+          sceneGraphDelta,
+          writeToDisk: false,
+        },
+      })
     })
 
     it('should return empty object if output has error', () => {

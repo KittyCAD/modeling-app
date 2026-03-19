@@ -1,0 +1,103 @@
+// Hex Nut with Chamfered Ends and Through-Hole
+// This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole
+// Categories: Fasteners
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// ──────────
+// PARAMETERS
+// ──────────
+// Primary nut dimensions
+nutAcrossCorners = 20 // Across-corners distance of the hex
+nutThickness = 10 // Overall thickness of the nut (extrusion length)
+hexCircumscribedRadius = nutAcrossCorners / 2 // Radius to hex vertices for a regular 6-sided polygon
+
+
+// Chamfer control
+chamferCircleRadius = hexCircumscribedRadius * 1.1 // Radius of the auxiliary circular solid used to define chamfer edges
+chamferLength = 3.5 // Chamfer setback distance along the end edges
+
+
+// Hole control
+holeRadius = 4 // Radius of the central through-hole
+
+
+// ───────────────────────
+// 2D PROFILES ON XY PLANE
+// ───────────────────────
+
+
+baseSketch = startSketchOn(XY)
+
+// Auxiliary circle used to produce circular end edges for chamfering
+chamferCircleSketch = sketch(on = XY) {
+  circle1 = arc(center = [var 0mm, var 0mm], start = [var 11mm, var 0mm], end = [var 11mm, var 0mm])
+}
+
+// Hex nut exterior profile (regular hexagon, circumscribed about hexCircumscribedRadius)
+hexProfile = sketch(on = XY) {
+  line1 = line(start = [var 10mm, var 0mm], end = [var 5mm, var 8.66mm])
+  line2 = line(start = [var 5mm, var 8.66mm], end = [var -5mm, var 8.66mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -5mm, var 8.66mm], end = [var -10mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -10mm, var 0mm], end = [var -5mm, var -8.66mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -5mm, var -8.66mm], end = [var 5mm, var -8.66mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 5mm, var -8.66mm], end = [var 10mm, var 0mm])
+  coincident([line5.end, line6.start])
+}
+
+// Central hole sketch (axis-aligned with the nut center)
+holeSketch = sketch(on = XY) {
+  circle1 = arc(center = [var 0mm, var 0mm], start = [var 4mm, var 0mm], end = [var 4mm, var 0mm])
+}
+
+region001 = region(segments = [hexProfile.line1, hexProfile.line2])
+// ─────────
+// 3D SOLIDS
+// ─────────
+
+// Hex nut main body created from the hex profile
+nutSolid = extrude(region001, length = nutThickness)
+
+region002 = region(segments = [chamferCircleSketch.circle1])
+// Circular auxiliary solid; its start/end faces provide the circular edges for chamfering
+chamferSourceSolid = extrude(
+  region002,
+  length = nutThickness,
+  tagStart = $chamferStartFace,
+  tagEnd = $chamferEndFace,
+)
+
+// Apply chamfers to both circular end edges of the auxiliary solid
+chamferedCircularSolid = chamfer(
+  chamferSourceSolid,
+  tags = [
+    getCommonEdge(faces = [chamferCircleTag, chamferStartFace]),
+    // Edge at start face perimeter
+    getCommonEdge(faces = [chamferCircleTag, chamferEndFace]),
+    // Edge at end face perimeter
+  ],
+  length = chamferLength,
+)
+
+region003 = region(segments = [holeSketch.circle1])
+// Through-hole solid created from the center circle (used as subtraction tool)
+holeSolid = extrude(region003, length = nutThickness)
+
+// ──────────────────────────────
+// BOOLEAN COMPOSITION OF FEATURES
+// ──────────────────────────────
+
+// Keep only the overlapping volume of the hex body and the chamfered circular solid
+// This imprints the circular chamfers into the hex nut geometry
+nutWithChamfer = intersect([nutSolid, chamferedCircularSolid])
+
+// Subtract the central cylindrical hole from the nut
+finishedNut = subtract(nutWithChamfer, tools = holeSolid)
+
+// Apply a visual appearance to the finished nut
+appearance(finishedNut, color = "#0040ff")
+
