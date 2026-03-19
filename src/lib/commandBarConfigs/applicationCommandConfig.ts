@@ -16,7 +16,7 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
-import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
@@ -170,11 +170,20 @@ export function createApplicationCommands({
               isProjectNew,
             })
           }
-        } else if (data.source === 'local' && data.files[0]) {
-          console.log('data.files', data.files)
-          const fileNameWithExtension = getStringAfterLastSeparator(
-            data.files[0]
-          )
+        } else if (data.source === 'local') {
+          const selectedFilePath = isArray(data.files)
+            ? data.files[0]
+            : data.files
+
+          if (!selectedFilePath) {
+            toast.error(
+              "The command couldn't be submitted, check the arguments."
+            )
+            return
+          }
+
+          const fileNameWithExtension =
+            getStringAfterLastSeparator(selectedFilePath)
           const fr = new FileReader()
           fr.addEventListener('load', () => {
             app.systemIOActor.send({
@@ -189,7 +198,7 @@ export function createApplicationCommands({
               },
             })
           })
-          const content = await fsZds.readFile(data.files[0])
+          const content = await fsZds.readFile(selectedFilePath)
           const blob = new Blob([new Uint8Array(content)])
           fr.readAsText(blob)
         } else {
@@ -296,11 +305,11 @@ export function createApplicationCommands({
         skip: true,
         hidden: false,
         valueSummary: (value) => {
-          return (
-            value.files &&
-            value.files.length > 0 &&
-            fsZds.basename(value.files[0].name)
-          )
+          if (typeof value === 'string') return fsZds.basename(value)
+          if (isArray(value) && typeof value[0] === 'string') {
+            return fsZds.basename(value[0])
+          }
+          return value
         },
         required: (commandContext) =>
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
