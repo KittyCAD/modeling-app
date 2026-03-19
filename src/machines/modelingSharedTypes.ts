@@ -98,7 +98,7 @@ export type EdgeRefFromOpArgs = {
 
 /**
  * Shape of edge ref when parsed from API (may be camelCase). Use when reading
- * so TS enforces side_faces/end_faces (not faces/disambiguators).
+ * so TS enforces side_faces/end_faces.
  */
 export type RawEdgeRefFromAPI = {
   side_faces?: unknown

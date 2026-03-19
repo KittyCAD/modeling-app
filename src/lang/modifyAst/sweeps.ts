@@ -843,8 +843,9 @@ export function addRevolve({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
+  // std revolve(..., axis = ...) — axis may be X/Y or an edge-ref object (sideFaces); not edgeRef=
   const axisArgs = edgeRefExpr
-    ? [createLabeledArg('edgeRef', edgeRefExpr)]
+    ? [createLabeledArg('axis', edgeRefExpr)]
     : axisExpr
       ? [createLabeledArg('axis', axisExpr)]
       : []

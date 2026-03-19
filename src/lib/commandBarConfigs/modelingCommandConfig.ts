@@ -1571,7 +1571,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -1627,7 +1632,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -2415,7 +2425,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'enginePrimitiveFace'],
+        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
       },
@@ -2452,7 +2462,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       edges: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'sweepEdge',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         description: 'Note: Only straight edges are supported now.',

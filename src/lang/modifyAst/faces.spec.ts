@@ -539,13 +539,8 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${shell}
-surface001 = deleteFace(
-  extrude001,
-  faces = [
-    rectangleSegmentA001,
-    faceId(extrude001, index = 6)
-  ],
-)`)
+face001 = faceId(extrude001, index = 6)
+surface001 = deleteFace(extrude001, faces = [rectangleSegmentA001, face001])`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })

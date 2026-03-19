@@ -269,6 +269,7 @@ export function normalizeEntityReference(
 
   if (type === 'edge') {
     const r = raw as RawEdgeRefFromAPI
+    // CMS / engine may send side_faces, sideFaces, or faces (OpenAPI EntityReference uses "faces")
     const sideFacesRaw = r.side_faces ?? r.sideFaces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
@@ -283,7 +284,7 @@ export function normalizeEntityReference(
 
   if (type === 'vertex') {
     const r = raw as RawVertexRefFromAPI
-    const sideFacesRaw = r.side_faces ?? r.sideFaces
+    const sideFacesRaw = r.side_faces ?? r.sideFaces ?? r.faces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
@@ -1500,13 +1501,7 @@ const semanticEntityNames: {
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d', 'region'],
-  edge: [
-    'segment',
-    'sweepEdge',
-    'edgeCutEdge',
-    'primitiveEdge',
-    'enginePrimitiveEdge',
-  ],
+  edge: ['segment', 'edgeCut', 'primitiveEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }

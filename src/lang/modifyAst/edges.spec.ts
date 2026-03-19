@@ -167,7 +167,8 @@ profile002 = startProfile(sketch002, at = [-1, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `${extrudedTriangle}
-fillet001 = fillet(extrude001, tags = edgeId(extrude001, index = 2), radius = 1)`
+edge001 = edgeId(extrude001, index = 2)
+fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -200,7 +201,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
           {
             entityRef: {
               type: 'edge',
-              faces: commonFaces.slice(0, 2).map((f) => f.id),
+              side_faces: commonFaces.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs![0],
           },
@@ -254,7 +255,7 @@ extrude001 = extrude(profile001, length = 5)`
           {
             entityRef: {
               type: 'edge',
-              faces: commonFaces.slice(0, 2).map((f) => f.id),
+              side_faces: commonFaces.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs![0],
           },
@@ -329,14 +330,14 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
           {
             entityRef: {
               type: 'edge',
-              faces: common1.slice(0, 2).map((f) => f.id),
+              side_faces: common1.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs1![0],
           },
           {
             entityRef: {
               type: 'edge',
-              faces: common2.slice(0, 2).map((f) => f.id),
+              side_faces: common2.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs2![0],
           },
@@ -403,7 +404,8 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `${extrudedTriangle}
-chamfer001 = chamfer(extrude001, tags = edgeId(extrude001, index = 2), length = 1)`
+edge001 = edgeId(extrude001, index = 2)
+chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -436,7 +438,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
           {
             entityRef: {
               type: 'edge',
-              faces: commonFaces.slice(0, 2).map((f) => f.id),
+              side_faces: commonFaces.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs![0],
           },
@@ -490,7 +492,7 @@ extrude001 = extrude(profile001, length = 5)`
           {
             entityRef: {
               type: 'edge',
-              faces: commonFaces.slice(0, 2).map((f) => f.id),
+              side_faces: commonFaces.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs![0],
           },
@@ -565,14 +567,14 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
           {
             entityRef: {
               type: 'edge',
-              faces: common1.slice(0, 2).map((f) => f.id),
+              side_faces: common1.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs1![0],
           },
           {
             entityRef: {
               type: 'edge',
-              faces: common2.slice(0, 2).map((f) => f.id),
+              side_faces: common2.slice(0, 2).map((f) => f.id),
             },
             codeRef: codeRefs2![0],
           },

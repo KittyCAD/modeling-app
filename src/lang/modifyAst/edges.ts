@@ -9,6 +9,8 @@ import {
   createMemberExpression,
   createObjectExpression,
   createTagDeclarator,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -1257,7 +1259,7 @@ export function findExtrudeToCallsToFix(
 
 /**
  * Refactor revolve/helic calls that use deprecated axis (e.g. axis = getOppositeEdge(...))
- * to edgeRef = { faces: [...] }. Mutates modifiedAst in place.
+ * to axis = { sideFaces = [...] } (edge reference payload). Mutates modifiedAst in place.
  * @param toFix - Precomputed list from findRevolveHelixCallsToFix(ast, ...)
  * @param pathList - Paths from getNodePathFromSourceRange(originalAst, range) so paths match the tree structure
  */
@@ -1864,8 +1866,7 @@ export function addFillet({
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    { includePrimitiveEdgeIndices: true }
+    mNodeToEdit
   )
 
   let useEdgeRefs = false
@@ -2022,8 +2023,7 @@ export function addChamfer({
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    { includePrimitiveEdgeIndices: true }
+    mNodeToEdit
   )
 
   let useEdgeRefs = false
@@ -2173,6 +2173,11 @@ export function addBlend({
 }
 
 type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
+type BodySelectionData = {
+  solidsExpr: Expr | null
+  tagsExpr: Expr
+  pathIfPipe?: PathToNode
+}
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [
@@ -2202,57 +2207,32 @@ function buildEdgeExpr(
       )
     }
 
-    const sourceSurfaceSelection = getBodySelectionFromPrimitiveParentEntityId(
-      edgeSelection.parentEntityId,
-      artifactGraph
+    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
+      {
+        primitiveEdgeSelections: [edgeSelection],
+        bodies: new Map(),
+        modifiedAst: ast,
+        artifactGraph,
+        wasmInstance,
+      }
     )
-    if (!sourceSurfaceSelection) {
+    if (err(primitiveEdgeResult)) return primitiveEdgeResult
+
+    const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
+    if (!primitiveBody?.solidsExpr) {
       return new Error('Could not resolve the source surface for blend edge.')
     }
 
-    const sourceSurfaceVars = getVariableExprsFromSelection(
-      {
-        graphSelectionsV2: [
-          sourceSurfaceSelection.artifact
-            ? {
-                entityRef: artifactToEntityRef(
-                  sourceSurfaceSelection.artifact.type,
-                  sourceSurfaceSelection.artifact.id,
-                  sourceSurfaceSelection.artifact.type === 'segment'
-                    ? (sourceSurfaceSelection.artifact as { pathId: string })
-                        .pathId
-                    : undefined
-                ),
-                codeRef: sourceSurfaceSelection.codeRef,
-              }
-            : { codeRef: sourceSurfaceSelection.codeRef },
-        ],
-        otherSelections: [],
-      },
-      artifactGraph,
-      ast,
-      wasmInstance,
-      undefined,
-      { lastChildLookup: false }
-    )
-    if (err(sourceSurfaceVars)) return sourceSurfaceVars
-    if (sourceSurfaceVars.exprs.length !== 1) {
+    const sourceSurfaceExpr = structuredClone(primitiveBody.solidsExpr)
+    const primitiveEdgeIdExpr =
+      primitiveBody.tagsExpr.type === 'ArrayExpression'
+        ? primitiveBody.tagsExpr.elements[0]
+        : primitiveBody.tagsExpr
+    if (!primitiveEdgeIdExpr) {
       return new Error(
-        'Expected exactly one source surface for each blend edge.'
+        'Blend primitive edge selections could not generate an edge identifier.'
       )
     }
-
-    const sourceSurfaceExpr = structuredClone(sourceSurfaceVars.exprs[0])
-    const primitiveEdgeIdExpr = createCallExpressionStdLibKw(
-      'edgeId',
-      structuredClone(sourceSurfaceExpr),
-      [
-        createLabeledArg(
-          'index',
-          createLiteral(edgeSelection.primitiveIndex, wasmInstance)
-        ),
-      ]
-    )
 
     return {
       modifiedAst: ast,
@@ -2356,23 +2336,15 @@ function groupSelectionsByBodyAndAddTags(
   ast: Node<Program>,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
-  options: {
-    includePrimitiveEdgeIndices?: boolean
-  } = {}
+  options?: { includePrimitiveEdgeIndices?: boolean }
 ):
   | {
       modifiedAst: Node<Program>
-      bodies: Map<
-        string,
-        {
-          solidsExpr: Expr | null
-          tagsExpr: Expr
-          pathIfPipe?: PathToNode
-        }
-      >
+      bodies: Map<string, BodySelectionData>
     }
   | Error {
-  const { includePrimitiveEdgeIndices = false } = options
+  const includePrimitiveEdgeIndices =
+    options?.includePrimitiveEdgeIndices ?? false
   const selectionsByBody = groupSelectionsByBody(selections, artifactGraph)
   if (err(selectionsByBody)) return selectionsByBody
 
@@ -2424,14 +2396,7 @@ function groupSelectionsByBodyAndAddTags(
   }
 
   let modifiedAst = ast
-  const bodies = new Map<
-    string,
-    {
-      solidsExpr: Expr | null
-      tagsExpr: Expr
-      pathIfPipe?: PathToNode
-    }
-  >()
+  const bodies = new Map<string, BodySelectionData>()
 
   for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
     // Add tags for graph selections in this body
@@ -2510,24 +2475,6 @@ function groupSelectionsByBodyAndAddTags(
     if (err(vars)) return vars
 
     const solidsExpr = createVariableExpressionsArray(vars.exprs)
-    const primitiveIndices = includePrimitiveEdgeIndices
-      ? (primitiveSelectionsByBody.get(bodyKey)?.primitiveIndices ?? [])
-      : []
-    for (const primitiveIndex of primitiveIndices) {
-      if (!solidsExpr) {
-        return new Error(
-          'Could not resolve selected primitive edge bodies in code.'
-        )
-      }
-      tagsExprs.push(
-        createCallExpressionStdLibKw('edgeId', structuredClone(solidsExpr), [
-          createLabeledArg(
-            'index',
-            createLiteral(primitiveIndex, wasmInstance)
-          ),
-        ])
-      )
-    }
 
     if (tagsExprs.length === 0) {
       return new Error('No edges found in the selection')
@@ -2685,10 +2632,10 @@ function getTagsExprsFromSelection(
 
 // Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
 export function retrieveEdgeSelectionsFromOpArgs(
-  solidArg: OpArg,
+  _unlabeledArg: unknown,
   tagsArg: OpArg,
   artifactGraph: ArtifactGraph,
-  code: string
+  _code?: string
 ) {
   if (
     !tagsArg?.value ||
@@ -2848,8 +2795,8 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
 }
 
 /**
- * Retrieves edge selections from a single edgeRef argument (e.g. revolve's edgeRef).
- * Used for edit flows when the call already has edgeRef = { sideFaces = [...] } after Z0006 refactor.
+ * Retrieves edge selections from a single edge-ref-shaped kw arg (legacy `edgeRef` or `axis` object).
+ * Used for edit flows when the call has axis = { sideFaces = [...] } (or legacy edgeRef = ...).
  */
 export function retrieveEdgeSelectionsFromSingleEdgeRef(
   edgeRefArg: OpArg,
@@ -2973,4 +2920,167 @@ export function getEdgeTagCall(
 ): Node<Name | CallExpressionKw> {
   // selectionsV2: edge artifacts are segment or edgeCut (sweepEdge removed); use tag directly
   return createLocalName(tag)
+}
+
+// Adds all the edgeId calls needed in the AST so we can refer to them,
+// keeps track of their names as "tags",
+// and gathers the corresponding solid expressions.
+function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+  primitiveEdgeSelections,
+  bodies,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  primitiveEdgeSelections: EnginePrimitiveSelection[]
+  bodies: Map<string, BodySelectionData>
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { bodies: Map<string, BodySelectionData> } {
+  if (primitiveEdgeSelections.length === 0) {
+    return { bodies }
+  }
+
+  const primitiveSelectionsByBody = new Map<
+    string,
+    {
+      bodySelection: ResolvedGraphSelection
+      primitiveIndices: number[]
+    }
+  >()
+
+  // Step 1. Gather all the indices by body
+  for (const selection of primitiveEdgeSelections) {
+    if (!selection.parentEntityId) {
+      continue
+    }
+
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      selection.parentEntityId,
+      artifactGraph
+    )
+    if (!bodySelection?.artifact) {
+      continue
+    }
+
+    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
+    const byBody = primitiveSelectionsByBody.get(bodyKey)
+    if (byBody) {
+      if (!byBody.primitiveIndices.includes(selection.primitiveIndex)) {
+        byBody.primitiveIndices.push(selection.primitiveIndex)
+      }
+    } else {
+      primitiveSelectionsByBody.set(bodyKey, {
+        bodySelection,
+        primitiveIndices: [selection.primitiveIndex],
+      })
+    }
+  }
+
+  if (primitiveSelectionsByBody.size === 0) {
+    return { bodies }
+  }
+
+  // Step 2. Create an array of variable references to bodies
+  const updatedBodies = new Map(bodies)
+  let insertIndex = modifiedAst.body.length
+  for (const [bodyKey, primitiveData] of primitiveSelectionsByBody.entries()) {
+    let bodyData = updatedBodies.get(bodyKey)
+    let tagsExprs: Expr[] = []
+    let solidsExpr: Expr | null = null
+    let pathIfPipe: PathToNode | undefined
+
+    if (bodyData) {
+      tagsExprs =
+        bodyData.tagsExpr.type === 'ArrayExpression'
+          ? [...bodyData.tagsExpr.elements]
+          : [bodyData.tagsExpr]
+      solidsExpr = bodyData.solidsExpr
+      pathIfPipe = bodyData.pathIfPipe
+    } else {
+      const art = primitiveData.bodySelection.artifact
+      const pathId =
+        art?.type === 'segment'
+          ? (art as { pathId?: string }).pathId
+          : undefined
+      const entityRef = artifactToEntityRef(
+        art?.type ?? 'sweep',
+        art?.id ?? '',
+        pathId
+      )
+      if (!entityRef) continue
+      const vars = getVariableExprsFromSelection(
+        {
+          graphSelectionsV2: [
+            { entityRef, codeRef: primitiveData.bodySelection.codeRef },
+          ],
+          otherSelections: [],
+        },
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        nodeToEdit,
+        {
+          lastChildLookup: true,
+        }
+      )
+      if (err(vars)) return vars
+      solidsExpr = createVariableExpressionsArray(vars.exprs)
+      pathIfPipe = vars.pathIfPipe
+    }
+
+    if (!solidsExpr) {
+      return new Error(
+        'Could not resolve selected primitive edge bodies in code.'
+      )
+    }
+
+    // Step 3. Insert variable declarations for edgeId calls
+    for (const primitiveIndex of primitiveData.primitiveIndices) {
+      const edgeIdExpr = createCallExpressionStdLibKw(
+        'edgeId',
+        structuredClone(solidsExpr),
+        [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
+      )
+      const edgeVariableName = findUniqueName(
+        modifiedAst,
+        KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+      )
+      const variableIdentifierAst = createLocalName(edgeVariableName)
+      insertVariableAndOffsetPathToNode(
+        {
+          valueAst: edgeIdExpr,
+          valueText: '',
+          valueCalculated: '',
+          variableName: edgeVariableName,
+          variableDeclarationAst: createVariableDeclaration(
+            edgeVariableName,
+            edgeIdExpr
+          ),
+          variableIdentifierAst,
+          insertIndex,
+        },
+        modifiedAst
+      )
+      insertIndex++
+      tagsExprs.push(variableIdentifierAst)
+    }
+
+    const tagsExpr = createVariableExpressionsArray(tagsExprs)
+    if (!tagsExpr) {
+      return new Error('No edges found in the selection')
+    }
+
+    bodyData = {
+      solidsExpr,
+      tagsExpr,
+      pathIfPipe,
+    }
+    updatedBodies.set(bodyKey, bodyData)
+  }
+
+  return { bodies: updatedBodies }
 }

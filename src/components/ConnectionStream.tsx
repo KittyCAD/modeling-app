@@ -158,14 +158,14 @@ export const ConnectionStream = (props: {
                   entityId = entityRef.segment_id
                 else if (
                   entityRef.type === 'edge' &&
-                  entityRef.faces.length > 0
+                  entityRef.side_faces.length > 0
                 ) {
-                  entityId = entityRef.faces[0]
+                  entityId = entityRef.side_faces[0]
                 } else if (
                   entityRef.type === 'vertex' &&
-                  entityRef.faces.length > 0
+                  entityRef.side_faces.length > 0
                 ) {
-                  entityId = entityRef.faces[0]
+                  entityId = entityRef.side_faces[0]
                 }
               }
               // Fallback: engine may return path or segment with different shape; use raw ref for artifact lookup

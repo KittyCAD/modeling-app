@@ -501,6 +501,26 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'primitiveFace') {
+    const _artifact = getArtifactOfTypes(
+      { key: selection.artifact.solidId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'primitiveEdge') {
+    console.log({ selection, artifactGraph })
+    const path = getArtifactOfTypes(
+      { key: selection.artifact.solidId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
+    const _artifact = getArtifactOfTypes(
+      { key: path.sweepId!, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
     // Handle edgeCut by getting its consumed edge (segment; sweepEdge removed from artifact graph / selectionsV2)
     const consumedEdgeId = getEdgeCutConsumedEdgeId(selection.artifact)
