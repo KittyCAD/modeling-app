@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{
@@ -426,6 +428,55 @@ async fn inner_region(
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
     sketch.region_mapping = region_mapping;
+
+    // Early expansion: replace paths and update tags to use region segment IDs.
+    if !sketch.region_mapping.is_empty() {
+        // Build reverse map: original_seg_id -> Vec<region_seg_id>
+        let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+        for (region_id, original_id) in &sketch.region_mapping {
+            reverse.entry(*original_id).or_default().push(*region_id);
+        }
+
+        // Replace paths with region-segment paths.
+        let mut new_paths = Vec::new();
+        for path in &sketch.paths {
+            let original_id = path.get_base().geo_meta.id;
+            if let Some(region_ids) = reverse.get(&original_id) {
+                for region_id in region_ids {
+                    let mut new_path = path.clone();
+                    new_path.get_base_mut().geo_meta.id = *region_id;
+                    new_paths.push(new_path);
+                }
+            }
+            // Paths not in region_mapping are dropped (not part of region).
+        }
+        sketch.paths = new_paths;
+
+        // Update tag engine infos to use region segment IDs.
+        for (_tag_name, tag) in &mut sketch.tags {
+            let Some(info) = tag.get_cur_info().cloned() else {
+                continue;
+            };
+            let original_id = info.id;
+            if let Some(region_ids) = reverse.get(&original_id) {
+                let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
+                // First entry: update existing info's ID.
+                // Additional entries: clone and push with new IDs.
+                for (i, region_id) in region_ids.iter().enumerate() {
+                    if i == 0 {
+                        if let Some((_, existing)) = tag.info.last_mut() {
+                            existing.id = *region_id;
+                        }
+                    } else {
+                        let mut new_info = info.clone();
+                        new_info.id = *region_id;
+                        tag.info.push((epoch, new_info));
+                    }
+                }
+            }
+        }
+    }
+
     sketch.meta.push(args.source_range.into());
     // The engine always returns a closed Solid2d for a region.
     sketch.is_closed = ProfileClosed::Explicitly;

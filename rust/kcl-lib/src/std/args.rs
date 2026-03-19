@@ -425,6 +425,19 @@ impl Args {
             )));
         }
 
+        // Check for ambiguous region-mapped tags (1:N).
+        let all_infos = tag.get_all_cur_info();
+        if all_infos.len() > 1 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Tag `{}` is ambiguous: it maps to {} edges in the region. Use a more specific reference.",
+                    tag.value,
+                    all_infos.len()
+                ),
+                vec![self.source_range],
+            )));
+        }
+
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {

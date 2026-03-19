@@ -355,6 +355,20 @@ impl TagIdentifier {
         self.info.last().map(|i| &i.1)
     }
 
+    /// Get all tag info entries at the most recent epoch.
+    /// For region-mapped tags, this returns multiple entries (one per region segment).
+    pub fn get_all_cur_info(&self) -> Vec<&TagEngineInfo> {
+        let Some(cur_epoch) = self.info.last().map(|(e, _)| *e) else {
+            return vec![];
+        };
+        self.info
+            .iter()
+            .rev()
+            .take_while(|(e, _)| *e == cur_epoch)
+            .map(|(_, info)| info)
+            .collect()
+    }
+
     /// Add info from a different instance of this tag.
     pub fn merge_info(&mut self, other: &TagIdentifier) {
         assert_eq!(&self.value, &other.value);

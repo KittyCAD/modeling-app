@@ -510,6 +510,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         };
 
                         let mut info = info.clone();
+                        info.id = v.get_id();
                         info.surface = Some(v.clone());
                         info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
