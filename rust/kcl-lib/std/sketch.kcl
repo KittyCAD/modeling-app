@@ -1343,6 +1343,19 @@ export fn polygon(
 /// sweep(segment, path, bodyType = SURFACE)
 /// ```
 ///
+/// ```kcl
+/// // Sweep a segment along a path
+/// segment = startSketchOn(YZ)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [100, 0])
+/// 
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [100, 0])
+///   |> tangentialArc(end = [117, 34.5])
+/// 
+/// sweep(segment, path, bodyType = SURFACE, version = 2)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
@@ -1362,6 +1375,8 @@ export fn sweep(
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
+  /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
+  version?: number(Count),
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.

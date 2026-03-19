@@ -26,6 +26,7 @@ import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { isLineSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -202,10 +203,7 @@ export const machine = setup({
             const newLine = chainResult.sceneGraphDelta.new_objects.find(
               (objId) => {
                 const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
-                return (
-                  obj?.kind.type === 'Segment' &&
-                  obj.kind.segment.type === 'Line'
-                )
+                return isLineSegment(obj)
               }
             )
 
@@ -214,10 +212,7 @@ export const machine = setup({
             if (newLine !== undefined) {
               const lineObj =
                 chainResult.sceneGraphDelta.new_graph.objects[newLine]
-              if (
-                lineObj?.kind.type === 'Segment' &&
-                lineObj.kind.segment.type === 'Line'
-              ) {
+              if (isLineSegment(lineObj)) {
                 // The start and end point IDs are stored in the Line segment
                 // newLineStartPointId = lineObj.kind.segment.start
                 newLineEndPointId = lineObj.kind.segment.end
