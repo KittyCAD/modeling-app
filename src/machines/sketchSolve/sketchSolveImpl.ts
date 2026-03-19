@@ -463,9 +463,7 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds: Array<number>
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
-  const factor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.sketchSolveGroup
-  )
+  const factor = getSketchSolveScaleFactor(context)
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
   )
@@ -742,9 +740,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
-  const factor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.sketchSolveGroup
-  )
+  const factor = getSketchSolveScaleFactor(context)
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
@@ -837,9 +833,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   }
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
-  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor(
-    context.sceneEntitiesManager.sketchSolveGroup
-  )
+  const scaleFactor = getSketchSolveScaleFactor(context)
 
   const allSelectedIds = Array.from(
     new Set([...context.selectedIds, ...context.duringAreaSelectIds])
@@ -892,6 +886,12 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       )
     }
   })
+}
+
+function getSketchSolveScaleFactor(context: SketchSolveContext): number {
+  return context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.sketchSolveGroup
+  )
 }
 
 // Debounced editor update function - persists across calls
