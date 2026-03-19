@@ -258,10 +258,15 @@ function getTokenFromEnvOrCookie(): string {
     return queryToken
   }
 
+  // Retrieve the token from storage for Playwright
+  if (window.localStorage?.getItem(IS_PLAYWRIGHT_KEY) === 'true') {
+    const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+    if (storedToken) return storedToken
+  }
+
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
-  const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
-  return envToken || cookieToken || storedToken || ''
+  return envToken || cookieToken || ''
 }
 
 async function getTokenFromFile(): Promise<string> {
