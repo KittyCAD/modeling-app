@@ -851,7 +851,7 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
     : undefined
 
   objects.forEach((obj) => {
-    if (!(obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point')) {
+    if (!isPointSegment(obj)) {
       return
     }
 
