@@ -5,6 +5,10 @@
 
 import Point2d, Segment from "std::types"
 
+/// The origin point in a sketch.
+@(experimental = true)
+export ORIGIN = [0mm, 0mm]: Point2d
+
 @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn point(
   at: Point2d,
