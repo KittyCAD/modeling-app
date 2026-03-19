@@ -448,6 +448,8 @@ jobs:
   vercel:
     name: e2e:web (vercel)
     runs-on: namespace-profile-ubuntu-2-cores
+    if: github.event_name == 'pull_request'
+
     steps:
       - uses: actions/checkout@v6
 
@@ -456,7 +458,6 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Wait for Vercel
-        if: github.event_name == 'pull_request'
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel
         with:
@@ -466,14 +467,12 @@ jobs:
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
-        if: github.event_name == 'pull_request'
         run: .github/ci-cd-scripts/check-vercel.sh
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Test Vercel
-        if: github.event_name == 'pull_request'
         run: |
           npm install
           npm run playwright install --with-deps
