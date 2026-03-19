@@ -142,7 +142,7 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
-    async onSubmit(data) {
+    onSubmit(data) {
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
@@ -150,6 +150,7 @@ export function createApplicationCommands({
          * inside the systemIOMachine. We can have a fancy model machine that loads
          * KCL samples
          */
+        const error = "The command couldn't be submitted, check the arguments."
         const folders = app.systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
@@ -176,9 +177,7 @@ export function createApplicationCommands({
             : data.files
 
           if (!selectedFilePath) {
-            toast.error(
-              "The command couldn't be submitted, check the arguments."
-            )
+            toast.error(error)
             return
           }
 
@@ -198,11 +197,15 @@ export function createApplicationCommands({
               },
             })
           })
-          const content = await fsZds.readFile(selectedFilePath)
-          const blob = new Blob([new Uint8Array(content)])
-          fr.readAsText(blob)
+          fsZds
+            .readFile(selectedFilePath)
+            .then((content) => {
+              const blob = new Blob([new Uint8Array(content)])
+              fr.readAsText(blob)
+            })
+            .catch(() => toast.error(error))
         } else {
-          toast.error("The command couldn't be submitted, check the arguments.")
+          toast.error(error)
         }
       }
     },
