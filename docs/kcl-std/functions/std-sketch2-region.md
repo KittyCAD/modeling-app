@@ -43,4 +43,104 @@ segment.
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
 
+### Examples
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+triangle = sketch(on = XY) {
+  line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
+  line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.92mm, var 4.67mm], end = [var -0.03mm, var -0.04mm])
+  coincident([line2.end, line3.start])
+  coincident([line1.start, line3.end])
+  horizontal(line1)
+  equalLength([line2, line3])
+}
+
+r = region(point = [0.5mm, 0.5mm], sketch = triangle)
+// extrude(r, length = 5)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sketch2::region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region0_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+trapezoid = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
+  line3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
+  line4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line2)
+  horizontal(line3)
+  parallel([line1, line3])
+}
+
+r = region(point = [1mm, 1mm], sketch = trapezoid)
+// extrude(r, length = 3)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sketch2::region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 6mm])
+  coincident([line1.end, arc1.start])
+  coincident([line1.start, arc1.end])
+}
+
+r = region(point = s.arc1.center)
+// extrude(r, length = 2)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sketch2::region function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-region2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-region2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
