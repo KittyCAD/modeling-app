@@ -61,8 +61,6 @@ pub enum Step {
     LabeledExpressionLabel,
     AscribedExpressionExpr,
     SketchBlock,
-    SketchBlockArg { index: usize },
-    SketchBlockBodyItem { index: usize },
     SketchVar,
 }
 
@@ -344,31 +342,10 @@ impl NodePath {
                 // TODO: Check the type annotation.
             }
             Expr::SketchBlock(node) => {
+                // TODO: sketch-api: implement arguments.
                 if node.contains_range(&range) {
                     path.push(Step::SketchBlock);
-
-                    for (i, arg) in node.arguments.iter().enumerate() {
-                        if let Some(label) = &arg.label
-                            && label.contains_range(&range)
-                        {
-                            path.push(Step::SketchBlockArg { index: i });
-                            return Some(path);
-                        }
-                        if arg.arg.contains_range(&range) {
-                            path.push(Step::SketchBlockArg { index: i });
-                            return Self::from_expr(&arg.arg, range, path);
-                        }
-                    }
-
-                    if node.body.contains_range(&range) {
-                        for (i, item) in node.body.items.iter().enumerate() {
-                            if item.contains_range(&range) {
-                                path.push(Step::SketchBlockBodyItem { index: i });
-                                return Self::from_body_item(item, range, path);
-                            }
-                        }
-                    }
-
+                    // TODO: sketch-api: implement body.
                     return Some(path);
                 }
             }
@@ -493,56 +470,6 @@ import "cylinder.kcl" as cylinder
             NodePath::from_range(&programs, 0, range(27, 60)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 1 }],
-            }
-        );
-    }
-
-    #[test]
-    fn test_node_path_from_range_sketch_block() {
-        let code = r#"@settings(experimentalFeatures = allow)
-s = sketch(on = XY) {
-  l1 = line(start = [0, 0], end = [1, 0])
-}
-"#;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let module_infos = indexmap::IndexMap::from([(
-            ModuleId::default(),
-            crate::modules::ModuleInfo {
-                id: ModuleId::default(),
-                path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
-            },
-        )]);
-        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
-
-        let arg_start = code.find("XY").unwrap();
-        assert_eq!(
-            NodePath::from_range(&programs, 0, range(arg_start, arg_start + "XY".len())).unwrap(),
-            NodePath {
-                steps: vec![
-                    Step::ProgramBodyItem { index: 0 },
-                    Step::VariableDeclarationDeclaration,
-                    Step::VariableDeclarationInit,
-                    Step::SketchBlock,
-                    Step::SketchBlockArg { index: 0 },
-                ],
-            }
-        );
-
-        let line_call = "line(start = [0, 0], end = [1, 0])";
-        let line_start = code.find(line_call).unwrap();
-        assert_eq!(
-            NodePath::from_range(&programs, 0, range(line_start, line_start + line_call.len())).unwrap(),
-            NodePath {
-                steps: vec![
-                    Step::ProgramBodyItem { index: 0 },
-                    Step::VariableDeclarationDeclaration,
-                    Step::VariableDeclarationInit,
-                    Step::SketchBlock,
-                    Step::SketchBlockBodyItem { index: 0 },
-                    Step::VariableDeclarationDeclaration,
-                    Step::VariableDeclarationInit,
-                ],
             }
         );
     }
