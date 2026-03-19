@@ -174,7 +174,11 @@ export function addDeleteFace({
   let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
 
-  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(faces)
+  const enginePrimitives = faces.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
   if (enginePrimitives.length > 0) {
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives,

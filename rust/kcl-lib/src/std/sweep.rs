@@ -37,6 +37,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let version: Option<TyF64> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
 
     let value = inner_sweep(
         sketches,
@@ -47,6 +48,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         tag_start,
         tag_end,
         body_type,
+        version,
         exec_state,
         args,
     )
@@ -64,6 +66,7 @@ async fn inner_sweep(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     body_type: Option<BodyType>,
+    version: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -106,6 +109,7 @@ async fn inner_sweep(
                         ))
                         .relative_to(relative_to)
                         .body_type(body_type)
+                        .maybe_version(version.as_ref().map(|t| t.n as u8))
                         .build(),
                 ),
             )

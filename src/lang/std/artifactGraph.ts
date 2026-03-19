@@ -304,15 +304,8 @@ export function getSweepFromSuspectedSweepSurface(
     )
   }
   if (artifact.type === 'primitiveFace') {
-    // TODO: I don't believe we should be getting a path here, but rather a sweep directly
-    const path = getArtifactOfTypes(
-      { key: artifact.solidId, types: ['path'] },
-      artifactGraph
-    )
-    if (err(path)) return path
-    if (!path.sweepId) return new Error('Path does not have a sweepId')
     return getArtifactOfTypes(
-      { key: path.sweepId, types: ['sweep'] },
+      { key: artifact.solidId, types: ['sweep'] },
       artifactGraph
     )
   }

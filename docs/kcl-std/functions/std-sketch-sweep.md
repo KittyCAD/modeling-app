@@ -17,6 +17,7 @@ sweep(
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
   bodyType?: string,
+  version?: number(_),
 ): [Solid; 1+]
 ```
 
@@ -41,6 +42,7 @@ swept along the same path.
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm). | No |
 
 ### Returns
 
@@ -242,6 +244,40 @@ sweep(segment, path, bodyType = SURFACE)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Sweep a segment along a path
+segment = startSketchOn(YZ)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [100, 0])
+
+path = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [100, 0])
+  |> tangentialArc(end = [117, 34.5])
+
+sweep(
+  segment,
+  path,
+  bodyType = SURFACE,
+  version = 2,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep6_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep6.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
