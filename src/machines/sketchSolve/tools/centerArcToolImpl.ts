@@ -17,7 +17,10 @@ import {
   calculateArcSwapState,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isArcSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -364,17 +367,14 @@ export function sendResultToParent({
     const arcObjId = output.sceneGraphDelta.new_objects.find(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+        return isArcSegment(obj)
       }
     )
 
     if (arcObjId !== undefined) {
       arcId = arcObjId
       const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
-      if (
-        arcObj?.kind.type === 'Segment' &&
-        arcObj.kind.segment.type === 'Arc'
-      ) {
+      if (isArcSegment(arcObj)) {
         // The end point ID is stored in the Arc segment
         arcEndPointId = arcObj.kind.segment.end
       }
@@ -426,7 +426,7 @@ export function storeCreatedArcResult({
   // Extract arc ID and end point ID
   const arcObjId = output.sceneGraphDelta.new_objects.find((objId: number) => {
     const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+    return isArcSegment(obj)
   })
 
   let arcId: number | undefined
@@ -434,7 +434,7 @@ export function storeCreatedArcResult({
   if (arcObjId !== undefined) {
     arcId = arcObjId
     const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
-    if (arcObj?.kind.type === 'Segment' && arcObj.kind.segment.type === 'Arc') {
+    if (isArcSegment(arcObj)) {
       arcEndPointId = arcObj.kind.segment.end
     }
   }
@@ -444,8 +444,7 @@ export function storeCreatedArcResult({
   if (arcObjId !== undefined) {
     const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc'
     ) {
@@ -629,10 +628,10 @@ export async function finalizeArcActor({
     let startPoint: [number, number] = centerPoint
 
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       'value' in arcObj.kind.segment.ctor.start.x &&
       'value' in arcObj.kind.segment.ctor.start.y
     ) {
@@ -649,8 +648,7 @@ export async function finalizeArcActor({
 
     let previousEnd: [number, number] | undefined
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc'
     ) {

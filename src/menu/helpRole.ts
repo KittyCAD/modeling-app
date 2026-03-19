@@ -5,7 +5,7 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { getAutoUpdater } from '@src/updater'
+import { autoUpdater as appUpdater } from 'electron-updater'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -100,7 +100,7 @@ export const helpRole = (
       {
         label: 'Check for Updates',
         click: () => {
-          getAutoUpdater().checkForUpdates().catch(reportRejection)
+          appUpdater.checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },
