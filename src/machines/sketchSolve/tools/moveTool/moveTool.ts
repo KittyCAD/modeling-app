@@ -65,6 +65,7 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
+  isConstraint,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
@@ -1435,7 +1436,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         snapshot,
         context.sceneInfra
       )
-      const hoveredSegment = closestObjects[0] ?? null
+      const hoveredObject = closestObjects[0] ?? null
 
       const allSelectedIds = Array.from(
         new Set([
@@ -1454,7 +1455,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
             )
 
-      if (!hoveredSegment) {
+      if (!hoveredObject) {
         if (lastHoveredMesh) {
           updateSegmentHover(
             lastHoveredMesh,
@@ -1469,9 +1470,30 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
+      if (isConstraint(hoveredObject.apiObject)) {
+        if (lastHoveredMesh) {
+          updateSegmentHover(
+            lastHoveredMesh,
+            false,
+            allSelectedIds,
+            draftEntityIds
+          )
+        }
+
+        if (lastHoveredId === hoveredObject.apiObject.id) {
+          return
+        }
+
+        self.send({
+          type: 'update hovered id',
+          data: { hoveredId: hoveredObject.apiObject.id },
+        })
+        return
+      }
+
       const hoveredMesh = getSegmentHoverMesh(
         context.sceneInfra.scene.getObjectByName(
-          String(hoveredSegment.apiObject.id)
+          String(hoveredObject.apiObject.id)
         )
       )
       if (!hoveredMesh) {
@@ -1489,7 +1511,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      if (lastHoveredId === hoveredSegment.apiObject.id && lastHoveredMesh) {
+      if (lastHoveredId === hoveredObject.apiObject.id && lastHoveredMesh) {
         return
       }
 
@@ -1505,7 +1527,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSegmentHover(hoveredMesh, true, allSelectedIds, draftEntityIds)
       self.send({
         type: 'update hovered id',
-        data: { hoveredId: hoveredSegment.apiObject.id },
+        data: { hoveredId: hoveredObject.apiObject.id },
       })
     },
     // onMouseEnter: createOnMouseEnterCallback({

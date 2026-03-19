@@ -3,19 +3,27 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { distance2d, dot2d, subVec } from '@src/lib/utils2d'
 import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getAngleDiff } from '@src/lib/utils'
+import { getAngleDiff, isArray } from '@src/lib/utils'
 import {
   getArcPoints,
   getLinePoints,
+  isConstraint,
   isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
 
 type SketchSolveSnapshot = ReturnType<SolveActionArgs['self']['getSnapshot']>
 type ArcPoints = NonNullable<ReturnType<typeof getArcPoints>>
+type LinePoints = {
+  type: 'line'
+  line: [Coords2d, Coords2d]
+}
+type HitObject = ({ type: 'arc' } & ArcPoints) | LinePoints
+type ConstraintHitObjects = HitObject[] | 'auto'
 const HOVER_DISTANCE_PX = 12
 
 function distanceToLineSegment(
@@ -62,6 +70,68 @@ function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
   }
 
   return Math.min(distance2d(point, start), distance2d(point, end))
+}
+
+function getAutoHitObjects(line: Line2): LinePoints[] {
+  const instanceStart = line.geometry.getAttribute?.('instanceStart')
+  const instanceEnd = line.geometry.getAttribute?.('instanceEnd')
+  if (!instanceStart || !instanceEnd) {
+    return []
+  }
+
+  const segmentCount = Math.min(instanceStart.count, instanceEnd.count)
+  const hitObjects: LinePoints[] = []
+  for (let index = 0; index < segmentCount; index++) {
+    hitObjects.push({
+      type: 'line',
+      line: [
+        [instanceStart.getX(index), instanceStart.getY(index)],
+        [instanceEnd.getX(index), instanceEnd.getY(index)],
+      ],
+    })
+  }
+  return hitObjects
+}
+
+// Constraint objects contain HitObject information in userData in the children of the Group
+function getConstraintHitObjects(constraintGroup: Group): HitObject[] {
+  const hitObjects: HitObject[] = []
+
+  constraintGroup.traverse((child) => {
+    if (!('hitObjects' in child.userData)) {
+      return
+    }
+
+    const childHitObjects = child.userData.hitObjects as ConstraintHitObjects
+    if (childHitObjects === 'auto') {
+      if (child instanceof Line2) {
+        hitObjects.push(...getAutoHitObjects(child))
+      }
+    } else if (isArray(childHitObjects)) {
+      hitObjects.push(...childHitObjects)
+    }
+  })
+
+  return hitObjects
+}
+
+function getClosestConstraintHitDistance(
+  mousePosition: Coords2d,
+  constraintGroup: Group
+): number | null {
+  let closestDistance: number | null = null
+
+  for (const hitObject of getConstraintHitObjects(constraintGroup)) {
+    const distance =
+      hitObject.type === 'arc'
+        ? distanceToArcSegment(mousePosition, hitObject)
+        : distanceToLineSegment(mousePosition, hitObject.line)
+
+    closestDistance =
+      closestDistance === null ? distance : Math.min(closestDistance, distance)
+  }
+
+  return closestDistance
 }
 
 export type ClosestApiObject = {
@@ -129,6 +199,28 @@ export function findClosestApiObjects(
             apiObject,
           })
         }
+      }
+      return
+    }
+
+    if (isConstraint(apiObject)) {
+      const constraintGroup = sceneInfra.scene.getObjectByName(
+        String(apiObject.id)
+      )
+      if (!(constraintGroup instanceof Group) || !constraintGroup.visible) {
+        return
+      }
+
+      const distance = getClosestConstraintHitDistance(
+        mousePosition,
+        constraintGroup
+      )
+
+      if (distance !== null && distance <= hoverDistance) {
+        candidates.push({
+          distance,
+          apiObject,
+        })
       }
     }
   })

@@ -29,6 +29,7 @@ import {
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+import type { Coords2d } from '@src/lang/util'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -70,12 +71,14 @@ export function createDimensionLine(
   lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
   const line1 = new Line2(lineGeom1, materials.default.line)
   line1.userData.type = DISTANCE_CONSTRAINT_BODY
+  line1.userData.hitObjects = 'auto'
   group.add(line1)
 
   const lineGeom2 = new LineGeometry()
   lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
   const line2 = new Line2(lineGeom2, materials.default.line)
   line2.userData.type = DISTANCE_CONSTRAINT_BODY
+  line2.userData.hitObjects = 'auto'
   group.add(line2)
 
   // Arrow tip is at origin, so position directly at start/end
@@ -159,6 +162,9 @@ export function updateDimensionLine(
   group.visible = true
   const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
   let labelTextWidthPx = 0
+  if (label) {
+    delete label.userData.hitObjects
+  }
 
   // Some elements need to be hidden if the line is to small to avoid UI getting too crammed
   for (const child of group.children) {
@@ -175,6 +181,9 @@ export function updateDimensionLine(
     const theme = getResolvedTheme(sceneInfra.theme)
     const constraintColor = CONSTRAINT_COLOR[theme]
     labelTextWidthPx = updateLabel(group, obj, constraintColor, distance, scale)
+    if (label) {
+      updateLabelHitObjects(label)
+    }
   }
 
   // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
@@ -384,6 +393,51 @@ export function updateLabel(
   }
 
   return 0
+}
+
+export function getLabelHitObjects(label: SpriteLabel): Array<{
+  type: 'line'
+  line: [Coords2d, Coords2d]
+}> {
+  const minX = label.position.x - label.scale.x / 2
+  const maxX = label.position.x + label.scale.x / 2
+  const minY = label.position.y - label.scale.y / 2
+  const maxY = label.position.y + label.scale.y / 2
+
+  return [
+    {
+      type: 'line',
+      line: [
+        [minX, minY],
+        [maxX, minY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [maxX, minY],
+        [maxX, maxY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [maxX, maxY],
+        [minX, maxY],
+      ],
+    },
+    {
+      type: 'line',
+      line: [
+        [minX, maxY],
+        [minX, minY],
+      ],
+    },
+  ]
+}
+
+export function updateLabelHitObjects(label: SpriteLabel) {
+  label.userData.hitObjects = getLabelHitObjects(label)
 }
 
 function formatNumber(apiNumber: Number) {

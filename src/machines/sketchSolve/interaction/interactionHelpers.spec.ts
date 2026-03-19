@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Coords2d } from '@src/lang/util'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
   createLineApiObject,
@@ -9,6 +10,9 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { Group } from 'three'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
 
 type SketchSolveSnapshot = ReturnType<SolveActionArgs['self']['getSnapshot']>
 
@@ -20,6 +24,45 @@ function createSnapshot(objects: Parameters<typeof createSceneGraphDelta>[0]) {
       },
     },
   } as SketchSolveSnapshot
+}
+
+function createConstraintApiObject({
+  id,
+  type,
+}: {
+  id: number
+  type: 'Distance' | 'Angle'
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Constraint',
+      constraint:
+        type === 'Distance'
+          ? {
+              type,
+              points: [1, 2],
+              distance: { value: 10, units: 'Mm' },
+              source: {
+                expr: '10',
+                is_literal: true,
+              },
+            }
+          : {
+              type,
+              lines: [1, 2],
+              angle: { value: 90, units: 'Deg' },
+              source: {
+                expr: '90deg',
+                is_literal: true,
+              },
+            },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  } as ApiObject
 }
 
 describe('findClosestApiObjects', () => {
@@ -125,5 +168,99 @@ describe('findClosestApiObjects', () => {
 
     expect(result[0]?.apiObject.id).toBe(7)
     expect(result[1]?.apiObject.id).toBe(3)
+  })
+
+  it('supports auto hit objects on constraint Line2 children', () => {
+    const sceneInfra = createMockSceneInfra()
+    const constraint = createConstraintApiObject({ id: 8, type: 'Distance' })
+    const group = new Group()
+    group.name = String(constraint.id)
+    const geometry = new LineGeometry()
+    geometry.setPositions([0, 0, 0, 40, 0, 0])
+    const line = new Line2(geometry)
+    line.userData.hitObjects = 'auto'
+    group.add(line)
+    ;(sceneInfra.scene.getObjectByName as any).mockImplementation(
+      (name: string) => (name === String(constraint.id) ? group : null)
+    )
+
+    const result = findClosestApiObjects(
+      [20, 4],
+      createSnapshot([constraint]),
+      sceneInfra
+    )
+
+    expect(result[0]?.apiObject.id).toBe(8)
+    expect(result[0]?.distance).toBeCloseTo(4)
+  })
+
+  it('supports explicit arc and line hit objects on constraint children', () => {
+    const sceneInfra = createMockSceneInfra()
+    const constraint = createConstraintApiObject({ id: 9, type: 'Angle' })
+    const group = new Group()
+    group.name = String(constraint.id)
+
+    const arcChild = new Group()
+    arcChild.userData.hitObjects = [
+      {
+        type: 'arc',
+        center: [0, 0],
+        start: [30, 0],
+        end: [0, 30],
+      },
+    ]
+    group.add(arcChild)
+
+    const labelChild = new Group()
+    labelChild.userData.hitObjects = [
+      {
+        type: 'line',
+        line: [
+          [50, 50],
+          [70, 50],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [70, 50],
+          [70, 60],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [70, 60],
+          [50, 60],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [50, 60],
+          [50, 50],
+        ],
+      },
+    ]
+    group.add(labelChild)
+    ;(sceneInfra.scene.getObjectByName as any).mockImplementation(
+      (name: string) => (name === String(constraint.id) ? group : null)
+    )
+
+    const arcResult = findClosestApiObjects(
+      [21, 21],
+      createSnapshot([constraint]),
+      sceneInfra
+    )
+    expect(arcResult[0]?.apiObject.id).toBe(9)
+    expect(arcResult[0]?.distance).toBeCloseTo(Math.abs(Math.sqrt(882) - 30), 5)
+
+    const labelResult = findClosestApiObjects(
+      [52, 55],
+      createSnapshot([constraint]),
+      sceneInfra
+    )
+    expect(labelResult[0]?.apiObject.id).toBe(9)
+    expect(labelResult[0]?.distance).toBeCloseTo(2)
   })
 })

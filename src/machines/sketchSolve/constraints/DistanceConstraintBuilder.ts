@@ -75,12 +75,14 @@ export class DistanceConstraintBuilder {
     leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine1 = new Line2(leadGeom1, materials.default.line)
     leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    leadLine1.userData.hitObjects = 'auto'
     group.add(leadLine1)
 
     const leadGeom2 = new LineGeometry()
     leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine2 = new Line2(leadGeom2, materials.default.line)
     leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    leadLine2.userData.hitObjects = 'auto'
     group.add(leadLine2)
 
     // Hit areas for click detection (invisible but raycasted)
