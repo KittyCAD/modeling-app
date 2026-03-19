@@ -9,6 +9,7 @@ import {
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
+  deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
@@ -341,41 +342,6 @@ export function addDatumGdt({
     modifiedAst,
     pathToNode,
   }
-}
-
-/**
- * Deduplicates face expressions based on their string representation.
- * This prevents creating multiple annotations for the same face.
- */
-export function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
-  const seen = new Set<string>()
-  const unique: Expr[] = []
-
-  for (const expr of facesExprs) {
-    // Create a stable string representation for comparison
-    const key = exprToKey(expr)
-    if (!seen.has(key)) {
-      seen.add(key)
-      unique.push(expr)
-    }
-  }
-
-  return unique
-}
-
-/**
- * Converts an expression to a stable string key for deduplication.
- */
-function exprToKey(expr: Expr): string {
-  if (expr.type === 'Literal') {
-    return `literal:${JSON.stringify(expr.value)}`
-  }
-  if (expr.type === 'Name') {
-    // Name has a nested Identifier: expr.name.name is the actual string
-    return `name:${expr.name.name}`
-  }
-  // Fallback for other expression types (though currently only Name is used)
-  return JSON.stringify(expr)
 }
 
 /**
