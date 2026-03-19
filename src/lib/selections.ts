@@ -58,6 +58,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
+  areArraysEqual,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -851,6 +852,11 @@ export function findLastRangeStartingBefore(
   return resultIndex
 }
 
+/**
+ * Runs in O(n) time.
+ * TODO: update ArtifactIndex to be an [interval tree](https://en.wikipedia.org/wiki/Interval_tree#cite_note-Schmidt2009-2),
+ * then make this run sub-linear by using that to query for overlaps.
+ */
 function findOverlappingArtifactsFromIndex(
   selection: Selection,
   index: ArtifactIndex
@@ -863,70 +869,14 @@ function findOverlappingArtifactsFromIndex(
   const selectionRange = selection.codeRef.range
   const results: ArtifactEntry[] = []
 
-  // Binary search to find the last range where range[0] < selectionRange[0]
-  // This search does not take into consideration the end range, so it's possible
-  // the index it finds dose not have any overlap (depending on the end range)
-  // but it's main purpose is to act as a starting point for the linear part of the search
-  // so a tiny loss in efficiency is acceptable to keep the code simple
-  const startIndex = findLastRangeStartingBefore(index, selectionRange[0])
-
-  // Check all potential overlaps from the found position
-  for (let i = startIndex; i < index.length; i++) {
+  for (let i = 0; i < index.length; i++) {
     const { range, entry } = index[i]
-    // Stop if we've gone past possible overlaps
-    if (range[0] > selectionRange[1]) break
-
     if (isOverlap(range, selectionRange)) {
       results.push(entry)
     }
   }
 
   return results
-}
-
-function getBestCandidate(
-  entries: ArtifactEntry[],
-  artifactGraph: ArtifactGraph
-): ArtifactEntry | undefined {
-  if (!entries.length) {
-    return undefined
-  }
-  const sketchBlock = entries.find(
-    (entry) => entry.artifact.type === 'sketchBlock'
-  )
-  if (sketchBlock) {
-    return sketchBlock
-  }
-
-  for (const entry of entries) {
-    // Segments take precedence
-    if (entry.artifact.type === 'segment') {
-      return entry
-    }
-
-    // Handle paths and their solid2d references
-    if (entry.artifact.type === 'path') {
-      const solid2dId = entry.artifact.solid2dId
-      if (!solid2dId) {
-        return entry
-      }
-      const solid2d = artifactGraph.get(solid2dId)
-      if (solid2d?.type === 'solid2d') {
-        return { id: solid2dId, artifact: solid2d }
-      }
-      continue
-    }
-
-    // Other valid artifact types
-    if (
-      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
-        entry.artifact.type
-      )
-    ) {
-      return entry
-    }
-  }
-  return undefined
 }
 
 function createSelectionToEngine(
@@ -970,9 +920,13 @@ export function codeToIdSelections(
         selection,
         artifactIndex
       )
-      const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
 
-      return [createSelectionToEngine(selection, bestCandidate?.id)]
+      return overlappingEntries.map((entry) =>
+        createSelectionToEngine(
+          Object.assign(selection, entry.artifact),
+          entry.id
+        )
+      )
     })
     .filter(isNonNullable)
 }
