@@ -25,6 +25,7 @@ use crate::{
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]

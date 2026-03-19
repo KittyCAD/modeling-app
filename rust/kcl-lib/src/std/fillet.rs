@@ -109,19 +109,18 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             for edge_ref in &tags {
                 if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, &args)
                     && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                    && let [a, b] = face_ids.as_slice()
                 {
-                    if let [a, b] = face_ids.as_slice() {
-                        let tag_identifier = match edge_ref {
-                            EdgeReference::Tag(t) => t.value.clone(),
-                            EdgeReference::Uuid(_) => String::new(),
-                        };
-                        if !tag_identifier.is_empty() {
-                            tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                                tag_identifier,
-                                edge_id,
-                                face_ids: [*a, *b],
-                            });
-                        }
+                    let tag_identifier = match edge_ref {
+                        EdgeReference::Tag(t) => t.value.clone(),
+                        EdgeReference::Uuid(_) => String::new(),
+                    };
+                    if !tag_identifier.is_empty() {
+                        tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                            tag_identifier,
+                            edge_id,
+                            face_ids: [*a, *b],
+                        });
                     }
                 }
             }
@@ -191,19 +190,19 @@ async fn inner_fillet(
         let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
         edge_ids.push(edge_id);
         #[cfg(feature = "artifact-graph")]
-        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await {
-            if let [a, b] = face_ids.as_slice() {
-                let tag_identifier = match edge_ref {
-                    EdgeReference::Tag(t) => t.value.clone(),
-                    EdgeReference::Uuid(_) => String::new(),
-                };
-                if !tag_identifier.is_empty() {
-                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                        tag_identifier,
-                        edge_id,
-                        face_ids: [*a, *b],
-                    });
-                }
+        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            && let [a, b] = face_ids.as_slice()
+        {
+            let tag_identifier = match edge_ref {
+                EdgeReference::Tag(t) => t.value.clone(),
+                EdgeReference::Uuid(_) => String::new(),
+            };
+            if !tag_identifier.is_empty() {
+                tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                    tag_identifier,
+                    edge_id,
+                    face_ids: [*a, *b],
+                });
             }
         }
     }
