@@ -11,6 +11,9 @@ import {
   LEGACY_COOKIE_NAME,
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
@@ -44,8 +47,6 @@ export type Events =
       type: 'Log in'
       token?: string
     }
-
-export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 
 /**
  * Determine which token do we have persisted to initialize the auth machine
@@ -246,9 +247,21 @@ export function getCookie(): string | null {
 }
 
 function getTokenFromEnvOrCookie(): string {
+  if (typeof window === 'undefined') return ''
+
+  // Store the token passed to the Vercel environment
+  const queryParams = new URLSearchParams(window.location?.search ?? '')
+  const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
+  if (queryToken) {
+    window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
+    window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
+    return queryToken
+  }
+
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
-  return envToken || cookieToken || ''
+  const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+  return envToken || cookieToken || storedToken || ''
 }
 
 async function getTokenFromFile(): Promise<string> {
