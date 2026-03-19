@@ -482,7 +482,8 @@ jobs:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
-      - run: npm run test:e2e:web -- --grep=demo --retries=3
+      - name: npm run test:e2e:web
+        run: npm run test:e2e:web -- --grep=demo --retries=3
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
