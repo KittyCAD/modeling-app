@@ -1695,9 +1695,17 @@ export fn deleteFace(
 ///
 /// blend([rectangleSegmentA001, rectangleSegmentA002])
 /// ```
+///
+/// You can also pass edge specifier objects instead of tagged edges or bounded edges:
+/// ```kcl
+/// blend([
+///   { sideFaces = [seg01], endFaces = [seg02, rectangleSegmentA002], index = 0 },
+///   { sideFaces = [seg03], endFaces = [seg04, rectangleSegmentA001], index = 1 }
+/// ])
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn blend(
    /// The two edges that will be blended.
-   /// Tagged edges blend the full edge length.
-   @edges: [BoundedEdge | TaggedEdge; 2],
+   /// Tagged edges blend the full edge length. Edge specifier objects: `{ sideFaces = [...], endFaces? = [...], index? = 0 }`.
+   @edges: [BoundedEdge | TaggedEdge | any; 2],
 ): Solid {}

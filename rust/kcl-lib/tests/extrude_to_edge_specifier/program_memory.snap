@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing extrude_to_edge_specifier.kcl
+---
+{}

@@ -57,6 +57,6 @@ anyhow.workspace = true
 pretty_assertions = "1.4.1"
 wasm-bindgen-test = "0.3.64"
 
-# Local development only. Placeholder to speed up development cycle
+# Disable wasm-opt to avoid "invalid type: map, expected a string" from config parsing.
 #[package.metadata.wasm-pack.profile.release]
 #wasm-opt = false

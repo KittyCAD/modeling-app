@@ -1139,8 +1139,8 @@ export fn getCommonEdge(
 export fn getBoundedEdge(
   /// The solid that the edge belongs to.
   @solid: Solid,
-  /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
-  edge: Edge,
+  /// The edge to bound. This can be a tagged edge, an edge ID from `edgeId(...)`, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`).
+  edge: Edge | any,
   /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
   lowerBound?: number(Count),
   /// A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1.

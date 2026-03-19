@@ -96,4 +96,6 @@ pub enum Point3dAxis3dOrGeometryReference {
     Solid(Box<Solid>),
     /// Tagged edge or face.
     TaggedEdgeOrFace(TagIdentifier),
+    /// Extrude-to edge: `{ sideFaces = [...], endFaces = [...], index? }` (face tags or UUIDs).
+    EdgeToReference(super::edge::UnresolvedEdgeSpecifier),
 }
