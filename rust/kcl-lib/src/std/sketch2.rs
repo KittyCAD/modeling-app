@@ -120,9 +120,7 @@ pub(crate) async fn create_segments_in_engine(
         let tag = segment_tags.get(&segment.object_id).cloned();
 
         // Get the source range of the segment from its metadata, falling back to the sketch block's
-        let default_meta = Metadata {
-            source_range: range.clone(),
-        };
+        let default_meta = Metadata { source_range: range };
         let meta = segment.meta.first().unwrap_or(&default_meta);
         let range = meta.source_range;
 
