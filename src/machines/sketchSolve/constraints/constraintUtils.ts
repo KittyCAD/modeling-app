@@ -37,16 +37,6 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
-export function isArcSegment(
-  obj: ApiObject | undefined | null
-): obj is ArcSegment {
-  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
-}
-
-export type ArcSegment = ApiObject & {
-  kind: { type: 'Segment'; segment: { type: 'Arc' } }
-}
-
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
