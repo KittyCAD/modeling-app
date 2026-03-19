@@ -13,7 +13,6 @@ import {
   SEGMENT_TYPE_ARC,
   ARC_SEGMENT_BODY,
   POINT_SEGMENT_BODY,
-  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
@@ -169,7 +168,6 @@ function getSegmentHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
       child instanceof Mesh &&
       (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
         child.userData?.type === ARC_SEGMENT_BODY ||
-        child.userData?.type === POINT_SEGMENT_HIT_AREA ||
         child.userData?.type === POINT_SEGMENT_BODY)
   )
 
@@ -314,8 +312,7 @@ export function createOnMouseEnterCallback({
       mesh instanceof Mesh &&
       (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
         mesh.userData?.type === ARC_SEGMENT_BODY ||
-        mesh.userData?.type === POINT_SEGMENT_BODY ||
-        mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
+        mesh.userData?.type === POINT_SEGMENT_BODY)
     ) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
@@ -388,8 +385,7 @@ export function createOnMouseLeaveCallback({
         mesh instanceof Mesh &&
         (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
           mesh.userData?.type === ARC_SEGMENT_BODY ||
-          mesh.userData?.type === POINT_SEGMENT_BODY ||
-          mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
+          mesh.userData?.type === POINT_SEGMENT_BODY)
       ) {
         const allSelectedIds = getSelectedIds()
         const draftEntityIds = getDraftEntityIds?.()
@@ -1019,7 +1015,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   /**
    * Helper function to check if a point segment is within the selection box.
-   * Uses the point mesh/hit-area world position rather than the hidden CSS2D test handle.
+   * Uses the point mesh world position rather than the hidden CSS2D test handle.
    * Returns the segment ID if it should be included, null otherwise.
    */
   function checkPointSegmentInBox(
@@ -1043,7 +1039,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return null
       }
 
-      // Get the world position of the point mesh (or hit area)
+      // Get the world position of the point mesh
       pointObject.updateMatrixWorld()
       const worldPos = new Vector3()
       pointObject.getWorldPosition(worldPos)
@@ -1161,12 +1157,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a point segment mesh/hit area
+      // Check if this group has a point segment mesh
       const pointObject = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
-            c.userData?.type === POINT_SEGMENT_BODY)
+        (c) => c instanceof Mesh && c.userData?.type === POINT_SEGMENT_BODY
       )
 
       if (pointObject) {
@@ -1328,12 +1321,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a point segment mesh/hit area
+      // Check if this group has a point segment mesh
       const pointObject = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
-            c.userData?.type === POINT_SEGMENT_BODY)
+        (c) => c instanceof Mesh && c.userData?.type === POINT_SEGMENT_BODY
       )
 
       if (pointObject) {

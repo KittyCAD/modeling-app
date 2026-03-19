@@ -139,8 +139,6 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
-export const POINT_SEGMENT_HIT_AREA = 'POINT_SEGMENT_HIT_AREA'
-const POINT_SEGMENT_HIT_AREA_RENDER_ORDER = 9
 const POINT_SEGMENT_BODY_RENDER_ORDER = 10
 const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
@@ -335,32 +333,11 @@ class PointSegment implements SketchEntityUtils {
         depthTest: false,
       })
     )
-    const pointHitArea = new Mesh(
-      this.circleGeometry,
-      new MeshBasicMaterial({
-        transparent: true,
-        opacity: 0,
-        side: DoubleSide,
-        depthTest: false,
-        depthWrite: false,
-      })
-    )
     pointBody.userData.type = POINT_SEGMENT_BODY
     pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
     pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
     pointBody.layers.set(SKETCH_LAYER)
-    // Visual-only mesh: interaction is handled by POINT_SEGMENT_HIT_AREA.
-    pointBody.raycast = () => {}
-    pointHitArea.userData.type = POINT_SEGMENT_HIT_AREA
-    pointHitArea.userData.isHovered = false
-    pointHitArea.name = POINT_SEGMENT_HIT_AREA
-    pointHitArea.renderOrder = POINT_SEGMENT_HIT_AREA_RENDER_ORDER
-    pointHitArea.layers.set(SKETCH_LAYER)
-    pointHitArea.scale.setScalar(10 / 3)
-
-    // Keep DOM handle first in children array so existing tests still work.
-    segmentGroup.add(pointHitArea)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
 
@@ -403,14 +380,7 @@ class PointSegment implements SketchEntityUtils {
       console.error('No point segment body found in group')
       return
     }
-    const pointHitArea = group.children.find(
-      (child) => child.userData?.type === POINT_SEGMENT_HIT_AREA
-    )
-
     pointBody.position.set(x.value / scale, y.value / scale, 0)
-    if (pointHitArea instanceof Mesh) {
-      pointHitArea.position.copy(pointBody.position)
-    }
 
     const isSelected = selectedIds.includes(id)
     const isHovered = pointBody.userData.isHovered === true
@@ -1078,22 +1048,16 @@ export function updateSegmentHover(
   const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
-  if (mesh.userData.type === POINT_SEGMENT_HIT_AREA) {
-    const pointBody = group.children.find(
-      (child) => child.userData?.type === POINT_SEGMENT_BODY
-    )
-    if (pointBody instanceof Mesh) {
-      pointBody.userData.isHovered = isHovered
-      pointBody.renderOrder = isHovered
-        ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
-        : POINT_SEGMENT_BODY_RENDER_ORDER
-      segmentUtilsMap.PointSegment.updatePointColors(pointBody, {
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom,
-      })
-    }
+  if (mesh.userData.type === POINT_SEGMENT_BODY) {
+    mesh.renderOrder = isHovered
+      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
+      : POINT_SEGMENT_BODY_RENDER_ORDER
+    segmentUtilsMap.PointSegment.updatePointColors(mesh, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
   } else if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
     if (mesh instanceof Line2) {
       segmentUtilsMap.LineSegment.updateLineColors(

@@ -24,7 +24,6 @@ import {
   DISTANCE_CONSTRAINT_BODY,
   DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_LABEL,
-  DISTANCE_CONSTRAINT_HIT_AREA,
 } from '@src/clientSideScene/sceneConstants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -38,8 +37,6 @@ const FUNCTION_ICON_GAP = 4 // gap between icon and text
 
 const LABEL_CANVAS_PADDING = 4 // horizontal padding on each side
 export const LABEL_CANVAS_HEIGHT = 32
-export const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
-const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
 const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover them
 const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
@@ -103,23 +100,6 @@ export function createDimensionLine(
   label.userData.type = DISTANCE_CONSTRAINT_LABEL
   group.add(label)
 
-  // Hit areas for click detection (invisible but raycasted)
-
-  const line1HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-  group.add(line1HitArea)
-
-  const line2HitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
-  group.add(line2HitArea)
-
-  const labelHitArea = new Mesh(resources.planeGeometry, materials.hitArea)
-  labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-  labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
-  group.add(labelHitArea)
-
   return group
 }
 
@@ -170,9 +150,7 @@ export function updateDimensionLine(
   for (const child of group.children) {
     const isLabelVisual =
       child.userData.type === DISTANCE_CONSTRAINT_LABEL ||
-      child.userData.type === DISTANCE_CONSTRAINT_ARROW ||
-      (child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL)
+      child.userData.type === DISTANCE_CONSTRAINT_ARROW
 
     child.visible = isLabelVisual ? showLabel : true
   }
@@ -232,48 +210,6 @@ export function updateDimensionLine(
   arrow2.position.copy(end)
   arrow2.rotation.z = angle - Math.PI / 2
   arrow2.scale.setScalar(scale)
-
-  // Update hit areas for lines
-  const hitAreas = group.children.filter(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
-  ) as Mesh[]
-
-  // Update main constraint body hit areas
-  const bodyHitAreas = hitAreas.filter(
-    (hitArea) => hitArea.userData.subtype === DISTANCE_CONSTRAINT_BODY
-  )
-  if (bodyHitAreas[0]) {
-    updateLineHitArea(
-      bodyHitAreas[0],
-      lineStart,
-      gapStart,
-      HIT_AREA_WIDTH_PX * scale
-    )
-  }
-  if (bodyHitAreas[1]) {
-    updateLineHitArea(
-      bodyHitAreas[1],
-      gapEnd,
-      lineEnd,
-      HIT_AREA_WIDTH_PX * scale
-    )
-  }
-}
-
-// Helper to update a line hit area
-export function updateLineHitArea(
-  hitArea: Mesh,
-  p1: Vector3,
-  p2: Vector3,
-  hitWidth: number
-) {
-  const length = p1.distanceTo(p2)
-  const midpoint = p1.clone().add(p2).multiplyScalar(0.5)
-  const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
-
-  hitArea.position.copy(midpoint)
-  hitArea.rotation.z = angle
-  hitArea.scale.set(length, hitWidth, 1)
 }
 
 export function updateLabel(
@@ -372,22 +308,6 @@ export function updateLabel(
       canvas.height * scale * LABEL_SCALE,
       1
     )
-
-    // Update label hit area to match canvas size
-    const labelHitAreas = group.children.filter(
-      (child) =>
-        child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-    )
-    const labelHitArea = labelHitAreas[0] as Mesh
-    if (labelHitArea) {
-      labelHitArea.position.copy(label.position)
-      labelHitArea.scale.set(
-        canvas.width * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
-        canvas.height * scale * LABEL_SCALE + LABEL_HIT_AREA_PADDING_PX * scale,
-        1
-      )
-    }
 
     return (label.userData.textWidthPx ?? 0) * LABEL_SCALE + 8
   }

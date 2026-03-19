@@ -5,7 +5,6 @@ import type {
 import {
   DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_HIT_AREA,
   DISTANCE_CONSTRAINT_LABEL,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -78,11 +77,6 @@ export function updateArcDimensionLine(
       child.visible = showGap
     } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
       child.visible = showArrows
-    } else if (
-      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-      child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-    ) {
-      child.visible = showGap
     } else {
       child.visible = true
     }

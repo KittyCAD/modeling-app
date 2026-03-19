@@ -75,7 +75,7 @@ describe('tangentialArcToolImpl', () => {
       const pointBody = new Mesh()
       const pointGroup = new Group()
       pointGroup.name = '1'
-      pointBody.name = 'POINT_SEGMENT_HIT_AREA'
+      pointBody.userData.type = 'POINT_SEGMENT_BODY'
       pointGroup.add(pointBody)
 
       callbacks.onClick({

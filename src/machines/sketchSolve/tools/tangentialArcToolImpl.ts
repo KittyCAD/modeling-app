@@ -33,7 +33,6 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   POINT_SEGMENT_BODY,
-  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
@@ -139,10 +138,7 @@ function isHoverableTangentStartMesh(
   mesh: Mesh,
   sceneGraphDelta: SceneGraphDelta
 ): boolean {
-  if (
-    mesh.userData?.type !== POINT_SEGMENT_BODY &&
-    mesh.userData?.type !== POINT_SEGMENT_HIT_AREA
-  ) {
+  if (mesh.userData?.type !== POINT_SEGMENT_BODY) {
     return false
   }
 
@@ -175,8 +171,7 @@ function clearHoveredTangentStartPoints({
   sketchSegments.traverse((child) => {
     if (
       child instanceof Mesh &&
-      (child.userData?.type === POINT_SEGMENT_BODY ||
-        child.userData?.type === POINT_SEGMENT_HIT_AREA) &&
+      child.userData?.type === POINT_SEGMENT_BODY &&
       child.userData.isHovered === true
     ) {
       updateSegmentHover(child, false, selectedIds, draftEntityIds)
@@ -425,10 +420,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         return
       }
       if (!(selected instanceof Mesh)) return
-      if (
-        selected.userData?.type !== POINT_SEGMENT_BODY &&
-        selected.userData?.type !== POINT_SEGMENT_HIT_AREA
-      ) {
+      if (selected.userData?.type !== POINT_SEGMENT_BODY) {
         return
       }
       updateSegmentHover(selected, false, selectedIds, draftEntityIds)
