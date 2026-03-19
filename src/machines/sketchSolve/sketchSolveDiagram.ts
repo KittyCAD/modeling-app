@@ -147,7 +147,7 @@ async function addHorizontalConstraint(
   let result
   for (const id of context.selectedIds) {
     // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
-    await context.rustContext.addConstraint(
+    result = await context.rustContext.addConstraint(
       0,
       context.sketchId,
       {
