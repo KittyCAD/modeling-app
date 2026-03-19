@@ -475,16 +475,18 @@ export class File extends EventTarget {
     return this.pathSignal.value
   }
   set path(newPath: string) {
-    if (this.watching) {
+    const wasWatching = this.watching
+    if (wasWatching) {
       this.unwatch()
-
-      // Don't watch empty file paths, that's the whole file system!
-      if (newPath.length > 0) {
-        this.watch()
-      }
     }
 
+    // Set pathSignal before calling this.watch()!
     this.pathSignal.value = newPath
+
+    // Don't watch empty file paths, that's the whole file system!
+    if (wasWatching && newPath.length > 0) {
+      this.watch()
+    }
   }
 
   read() {
