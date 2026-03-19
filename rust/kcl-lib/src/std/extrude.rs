@@ -18,7 +18,11 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use super::{DEFAULT_TOLERANCE_MM, args::{FromKclValue, TyF64}, utils::point_to_mm};
+use super::{
+    DEFAULT_TOLERANCE_MM,
+    args::{FromKclValue, TyF64},
+    utils::point_to_mm,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -41,15 +45,13 @@ async fn unresolved_edge_specifier_to_extrude_edge_specifier(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
-    async fn resolve_face(
-        v: &TagOrUuid,
-        exec_state: &mut ExecState,
-        args: &Args,
-    ) -> Result<Uuid, KclError> {
+    async fn resolve_face(v: &TagOrUuid, exec_state: &mut ExecState, args: &Args) -> Result<Uuid, KclError> {
         match v {
             TagOrUuid::Uuid(u) => Ok(*u),
             TagOrUuid::Tag(t) => {
-                FaceTag::Tag(t.clone()).get_face_id_from_tag(exec_state, args, false).await
+                FaceTag::Tag(t.clone())
+                    .get_face_id_from_tag(exec_state, args, false)
+                    .await
             }
         }
     }
@@ -323,9 +325,9 @@ async fn inner_extrude(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
-                            entity_id: Some(plane_id),
-                            entity_reference: None,
-                        })
+                                entity_id: Some(plane_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -337,9 +339,9 @@ async fn inner_extrude(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
-                            entity_id: Some(edge_id),
-                            entity_reference: None,
-                        })
+                                entity_id: Some(edge_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -351,9 +353,9 @@ async fn inner_extrude(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
-                            entity_id: Some(face_id),
-                            entity_reference: None,
-                        })
+                                entity_id: Some(face_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -397,8 +399,7 @@ async fn inner_extrude(
                     )
                 }
                 Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner =
-                        unresolved_edge_specifier_to_extrude_edge_specifier(spec, exec_state, &args).await?;
+                    let inner = unresolved_edge_specifier_to_extrude_edge_specifier(spec, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())

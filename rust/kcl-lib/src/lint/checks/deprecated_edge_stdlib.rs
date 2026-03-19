@@ -1,5 +1,5 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags` or revolve/helic `axis` argument.
+//! when used inside fillet/chamfer `tags`, revolve/helic `axis`, or extrude `to` argument.
 //! Step 2 of refactor-to-edgeRefs: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -15,9 +15,10 @@ def_finding!(
     Z0006,
     "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
     "\
-Using 'tags' in fillet/chamfer or 'axis' in revolve/helic with deprecated stdlib (e.g. \
-getOppositeEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer) or \
-'edgeRef' (revolve/helic) with { faces: [tag1, tag2] }. The auto-fix will convert.
+Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated \
+stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' \
+(fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with \
+{ sideFaces: [tag1, tag2] }. The auto-fix will convert.
 ",
     FindingFamily::Simplify
 );
@@ -39,6 +40,10 @@ fn is_revolve_or_helix(callee_name: &str) -> bool {
     matches!(callee_name, "revolve" | "helix")
 }
 
+fn is_extrude(callee_name: &str) -> bool {
+    callee_name == "extrude"
+}
+
 /// Axis argument for revolve/helic: axis = getOppositeEdge(...) etc.
 fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
     let axis_arg = call
@@ -46,6 +51,15 @@ fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
         .iter()
         .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "axis")?;
     Some(&axis_arg.arg)
+}
+
+/// `to` argument for extrude: to = getCommonEdge(...) etc.
+fn get_to_arg(call: &CallExpressionKw) -> Option<&Expr> {
+    let to_arg = call
+        .arguments
+        .iter()
+        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "to")?;
+    Some(&to_arg.arg)
 }
 
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
@@ -106,6 +120,17 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
             format!("{} uses 'axis' with deprecated stdlib; prefer edgeRef", callee_name),
+            pos,
+            None,
+        ));
+    } else if is_extrude(callee_name)
+        && let Some(to_expr) = get_to_arg(call_node)
+        && let Expr::CallExpressionKw(inner) = to_expr
+        && is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+    {
+        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+        findings.push(Z0006.at(
+            "extrude uses 'to' with deprecated stdlib; prefer edge specifier { sideFaces = [...] }".to_string(),
             pos,
             None,
         ));
@@ -248,5 +273,19 @@ mod tests {
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 fires for helix with deprecated axis");
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_to() {
+        let kcl = r#"extrude(cylinder3, to = getCommonEdge(faces = [facetag0, facetag1]))
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for extrude with deprecated to");
+        assert!(
+            z0006[0].description.contains("to") || z0006[0].description.contains("sideFaces"),
+            "description should mention to or sideFaces"
+        );
     }
 }

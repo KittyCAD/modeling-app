@@ -30,6 +30,7 @@
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import {
+  findExtrudeToCallsToFix,
   findRevolveHelixCallsToFix,
   refactorDirectTagFilletToEdgeRefs,
   refactorFilletChamferTagsToEdgeRefs,
@@ -106,6 +107,22 @@ const KCL_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $cap1)
   |> fillet(radius = 1, tags = [getCommonEdge(faces = [e1, cap1])])
+`
+
+// Extrude to edge via deprecated getCommonEdge; refactor should produce to = { sideFaces = [facetag0, facetag1] }
+const KCL_EXTRUDE_TO_GET_COMMON_EDGE = `// Extrude circle to edge via sideFaces object (same edge as getCommonEdge(faces = [...]))
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [2, 2])
+  |> yLine(length = 1)
+  |> xLine(length = 1)
+  |> yLine(length = -1, tag = $facetag0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
+  |> close()
+cube = extrude(profile001, length = 1)
+
+sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
+cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
+yo = extrude(cylinder3, to = getCommonEdge(faces = [facetag0, facetag1]))
 `
 
 const KCL_EDGE_ID = `body = startSketchOn(XY)
@@ -408,6 +425,25 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
       expect(toFix.length).toBeGreaterThan(0)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
+
+    it('finds extrude call with to = getCommonEdge(...) for Z0006 refactor', () => {
+      const ast = assertParse(KCL_EXTRUDE_TO_GET_COMMON_EDGE, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: [0, 0, 0],
+          faceIds: [
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002',
+          ] as [string, string],
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+      const toFix = findExtrudeToCallsToFix(ast, metadata)
+      expect(toFix.length).toBeGreaterThanOrEqual(1)
+      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
   })
 
   describe('refactorDirectTagFilletToEdgeRefs (unit)', () => {
@@ -569,6 +605,35 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('extrude(length = 5, tagEnd = $cap1)')
         expect(n).toContain('fillet(radius = 1, edges = [')
         expect(n).toContain('faces = [e1, cap1]')
+      }
+    )
+
+    it(
+      'refactors extrude to = getCommonEdge(...) to to = { sideFaces = [facetag0, facetag1] }',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_EXTRUDE_TO_GET_COMMON_EDGE,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.edgeRefactorMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        const n = norm(refactored)
+        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
 
