@@ -607,10 +607,7 @@ function getLinkedPoint({
   objects: Array<ApiObject>
 }): { x: Expr; y: Expr } | null {
   const point = objects[pointId]
-  if (
-    point?.kind?.type !== 'Segment' ||
-    point?.kind?.segment?.type !== 'Point'
-  ) {
+  if (!isPointSegment(point)) {
     return null
   }
   return {
@@ -751,9 +748,6 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     : undefined
 
   sceneGraphDelta.new_graph.objects.forEach((obj) => {
-    if (obj.kind.type === 'Sketch') {
-      return
-    }
     if (obj.kind.type === 'Constraint') {
       const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
@@ -771,25 +765,25 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           context.hoveredId
         )
       }
-      return
+    } else {
+      const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+      if (!(group instanceof Group)) {
+        return
+      }
+      const ctor = buildSegmentCtorFromObject(obj, objects)
+      if (!ctor) {
+        return
+      }
+      updateSegmentGroup({
+        group,
+        input: ctor,
+        selectedIds: allSelectedIds,
+        scale: factor,
+        theme: context.sceneInfra.theme,
+        draftEntityIds,
+        objects,
+      })
     }
-    const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
-    if (!(group instanceof Group)) {
-      return
-    }
-    const ctor = buildSegmentCtorFromObject(obj, objects)
-    if (!ctor) {
-      return
-    }
-    updateSegmentGroup({
-      group,
-      input: ctor,
-      selectedIds: allSelectedIds,
-      scale: factor,
-      theme: context.sceneInfra.theme,
-      draftEntityIds,
-      objects,
-    })
   })
 }
 
