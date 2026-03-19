@@ -1120,6 +1120,7 @@ pub enum SolidCreator {
     Face(CreatorFace),
     /// Created procedurally without a sketch.
     Procedural,
+    Segments(Vec<Uuid>),
 }
 
 impl Solid {
@@ -1128,6 +1129,7 @@ impl Solid {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
+            SolidCreator::Segments(_) => None,
         }
     }
 
@@ -1136,6 +1138,7 @@ impl Solid {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
+            SolidCreator::Segments(_) => None,
         }
     }
 
