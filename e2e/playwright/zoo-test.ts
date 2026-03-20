@@ -99,7 +99,7 @@ test.beforeEach(async ({ page }) => {
 
     // Only apply to Vercel preview domain (HTML requests)
     if (
-      url.includes('vercel.app') &&
+      new URL(url).hostname.endsWith('vercel.dev.zoo.dev') &&
       process.env.VERCEL_AUTOMATION_BYPASS_SECRET
     ) {
       const headers = {
