@@ -473,9 +473,9 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 1200 # average build times are 17-18 minutes
+          max_timeout: 120 # average build times are 17-18 minutes
           check_interval: 30
-          vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}x
 
       - name: Check Vercel
         continue-on-error: true
