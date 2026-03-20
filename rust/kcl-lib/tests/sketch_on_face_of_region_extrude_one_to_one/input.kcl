@@ -16,13 +16,22 @@ prism = extrude(triangleRegion, length = 2)
 
 face001 = faceOf(prism, face = triangleRegion.tags.line1)
 towerSketch = sketch(on = face001) {
-  arc1 = arc(start = [var 0.25mm, var -4.84mm], end = [var -0.05mm, var 4.8mm], center = [var 0.07mm, var -0.02mm])
-  arc2 = arc(start = [var -0.27mm, var 4.81mm], end = [var 0.09mm, var -4.86mm], center = [var 0.01mm, var -0.02mm])
-  coincident([arc1.center, arc2.center])
-  coincident([arc1.end, arc2.start])
-  coincident([arc1.start, arc2.end])
-  arc1.center.at[0] == 0.5mm
-  arc1.center.at[1] == 0.5mm
+  line1 = line(start = [var 0.08mm, var 0.01mm], end = [var 0.67mm, var 0.01mm])
+  line2 = line(start = [var 0.67mm, var 0.01mm], end = [var 0.67mm, var 0.63mm])
+  line3 = line(start = [var 0.67mm, var 0.63mm], end = [var 0.08mm, var 0.63mm])
+  line4 = line(start = [var 0.08mm, var 0.63mm], end = [var 0.08mm, var 0.01mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line1.start.at[0] == 0.5mm
+  line1.start.at[1] == 0.5mm
+  distance([line2.start, line2.end]) == 0.25mm
+  distance([line1.start, line1.end]) == 0.25mm
 }
-towerRegion = region(point = towerSketch.arc1.center)
+towerRegion = region(point = [0.6mm, 0.6mm], sketch = towerSketch)
 tower = extrude(towerRegion, length = 3)
