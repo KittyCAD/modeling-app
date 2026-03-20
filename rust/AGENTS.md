@@ -20,6 +20,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 - Format code using the nightly toolchain: `cargo +nightly fmt`.
 - Follow clippy lints: `just lint`. If the git stage is clean (i.e. there aren't any unstaged changes), you can run `just lint-fix` to automatically apply most lints.
 - Avoid panicking. Return Results instead. Panic in tests and debug asserts are okay.
+- Avoid non-ASCII characters in comments.
 
 ## Build and test
 
