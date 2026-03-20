@@ -346,7 +346,7 @@ describe('createOnDragStartCallback', () => {
 })
 
 describe('createOnDragEndCallback', () => {
-  it('should restore visual feedback opacity when drag ends on a point segment', () => {
+  it('should restore visual feedback opacity when drag ends on a point segment', async () => {
     const setDraggingPointElement = vi.fn()
     // Create a real point segment to get the actual DOM structure
     const segmentId = 13
@@ -377,10 +377,10 @@ describe('createOnDragEndCallback', () => {
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
-      sketchExecuteMock: async () => {},
+      onComplete: async () => {},
     })
 
-    void callback({
+    await callback({
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -392,37 +392,37 @@ describe('createOnDragEndCallback', () => {
     expect(setDraggingPointElement).toHaveBeenCalledWith(null)
   })
 
-  it('should call execute implementation  once', () => {
-    const sketchExecuteMock = vi.fn(async () => {})
+  it('should call execute implementation  once', async () => {
+    const onComplete = vi.fn(async () => {})
 
     const callback = createOnDragEndCallback({
       getDraggingPointElement: () => {
         return null
       },
       setDraggingPointElement: () => {},
-      sketchExecuteMock,
+      onComplete,
     })
 
-    void callback({
+    await callback({
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
     // Should still mock execute to have the latest state in the Rust side.
-    expect(sketchExecuteMock).toHaveBeenCalled()
+    expect(onComplete).toHaveBeenCalled()
   })
-  it('should clear dragging state even when no element is currently being dragged', () => {
+  it('should clear dragging state even when no element is currently being dragged', async () => {
     const setDraggingPointElement = vi.fn()
     const getDraggingPointElement = vi.fn(() => null)
 
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
-      sketchExecuteMock: async () => {},
+      onComplete: async () => {},
     })
 
-    void callback({
+    await callback({
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -433,7 +433,7 @@ describe('createOnDragEndCallback', () => {
     expect(setDraggingPointElement).toHaveBeenCalledWith(null)
   })
 
-  it('should handle missing inner circle element gracefully', () => {
+  it('should handle missing inner circle element gracefully', async () => {
     const setDraggingPointElement = vi.fn()
     // Create an element without the inner circle structure
     const mockElement = document.createElement('div')
@@ -444,7 +444,7 @@ describe('createOnDragEndCallback', () => {
     const callback = createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
-      sketchExecuteMock: async () => {},
+      onComplete: async () => {},
     })
 
     // Should not throw when inner circle is missing
@@ -458,7 +458,7 @@ describe('createOnDragEndCallback', () => {
     expect(setDraggingPointElement).toHaveBeenCalledWith(null)
   })
 
-  it('should allow custom inner circle finder for testing', () => {
+  it('should allow custom inner circle finder for testing', async () => {
     const setDraggingPointElement = vi.fn()
     const mockElement = document.createElement('div')
     const customInnerCircle = document.createElement('div')
@@ -478,10 +478,10 @@ describe('createOnDragEndCallback', () => {
       getDraggingPointElement,
       setDraggingPointElement,
       findInnerCircle,
-      sketchExecuteMock: async () => {},
+      onComplete: async () => {},
     })
 
-    void callback({
+    await callback({
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
