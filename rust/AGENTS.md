@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to Rust development under `rust/`. It complements the repo root README.
+This file applies to Rust development under `rust/`. It complements the repo root `CONTRIBUTING.md` and `rust/kcl-lib/README.md`.
 
 ## Project overview
 
