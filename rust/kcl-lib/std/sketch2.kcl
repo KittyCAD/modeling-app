@@ -32,6 +32,15 @@ export fn arc(
   construction?: bool,
 ): Segment {}
 
+/// A circle. The circle segment always has a starting point and sweeps
+/// counterclockwise from it.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+export fn circle(
+  start: Point2d,
+  center: Point2d,
+  construction?: bool,
+): Segment {}
+
 /// Constrain points, or a point and a segment to be coincident.
 ///
 /// Supports two points, or one point and one segment (line/arc).

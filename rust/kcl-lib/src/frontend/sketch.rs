@@ -291,17 +291,19 @@ pub struct ArcCtor {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCircle")]
 pub struct Circle {
     pub start: ObjectId,
-    pub radius: Number,
-    // Invariant: Circle or ThreePointCircle
+    pub center: ObjectId,
+    // Invariant: Circle
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct CircleCtor {
+    pub start: Point2d<Expr>,
     pub center: Point2d<Expr>,
-    pub radius: Expr,
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
