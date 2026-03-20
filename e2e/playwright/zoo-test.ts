@@ -104,7 +104,7 @@ test.beforeEach(async ({ page }) => {
     ) {
       const headers = {
         ...request.headers(),
-        'x-vercel-protection-bypass':
+        'X-Vercel-Protection-Bypass':
           process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
       }
 
