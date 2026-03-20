@@ -185,7 +185,7 @@ pub const POINT_ZERO_ZERO: [TyF64; 2] = [
     TyF64::new(0.0, crate::exec::NumericType::mm()),
 ];
 
-pub(super) async fn inner_circle(
+async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
     center: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
