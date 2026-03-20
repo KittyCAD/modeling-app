@@ -441,19 +441,6 @@ pub(crate) async fn do_post_extrude<'a>(
         edge_id
     } else if let Some(id) = edge_id {
         id
-    } else if !sketch.region_mapping.is_empty() {
-        // TODO: Change modeling-cmds to be an ordered collection.
-        let mut region_segment_ids = sketch.region_mapping.keys().collect::<Vec<_>>();
-        region_segment_ids.sort_unstable();
-        let Some(id) = region_segment_ids.first() else {
-            let message = "Region mapping shouldn't be empty".to_owned();
-            debug_assert!(false, "{message}");
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                message,
-                vec![args.source_range],
-            )));
-        };
-        **id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
