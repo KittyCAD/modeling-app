@@ -203,6 +203,8 @@ layout: manual
   * [`E`](/docs/kcl-std/consts/std-math-E)
   * [`PI`](/docs/kcl-std/consts/std-math-PI)
   * [`TAU`](/docs/kcl-std/consts/std-math-TAU)
+* [**std::sketch2**](/docs/kcl-std/modules/std-sketch2)
+  * [`sketch2::ORIGIN`](/docs/kcl-std/consts/std-sketch2-ORIGIN)
 * [**std::sweep**](/docs/kcl-std/modules/std-sweep)
   * [`sweep::SKETCH_PLANE`](/docs/kcl-std/consts/std-sweep-SKETCH_PLANE)
   * [`sweep::TRAJECTORY`](/docs/kcl-std/consts/std-sweep-TRAJECTORY)

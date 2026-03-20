@@ -41,6 +41,8 @@ import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
+  buildTangentConstraintInput,
+  isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -286,6 +288,35 @@ export const sketchSolveMachine = setup({
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
         sendToolbarConstraintOutcome(self, result)
+      },
+    },
+    Tangent: {
+      actions: async ({ self, context }) => {
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const tangentConstraint = buildTangentConstraintInput(
+          context.selectedIds,
+          objects
+        )
+        if (!tangentConstraint) {
+          return
+        }
+
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          tangentConstraint,
+          jsAppSettings(context.kclManager.systemDeps.settings)
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
+          })
+        }
       },
     },
     Dimension: {
@@ -587,11 +618,9 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            obj.kind.segment.type === 'Line'
+            isLineSegment(obj) || isArcSegment(obj)
               ? obj.kind.segment.construction
-              : obj.kind.segment.type === 'Arc'
-                ? obj.kind.segment.construction
-                : false
+              : false
 
           // Toggle construction state
           const newConstruction = !currentConstruction

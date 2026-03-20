@@ -3,9 +3,9 @@ flowchart LR
   subgraph path2 [Path]
     2["Path<br>[45, 516, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    3["Segment<br>[45, 516, 0]"]
+    3["Segment<br>[69, 156, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    4["Segment<br>[45, 516, 0]"]
+    4["Segment<br>[163, 251, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   end
   1["Plane<br>[45, 516, 0]"]
