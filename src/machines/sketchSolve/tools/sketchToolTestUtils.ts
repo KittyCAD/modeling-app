@@ -177,6 +177,49 @@ export function createArcApiObject({
 }
 
 /**
+ * Helper to create a Circle ApiObject
+ */
+export function createCircleApiObject({
+  id,
+  center,
+  start,
+}: {
+  id: number
+  center: number
+  start: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Circle',
+        center,
+        start,
+        ctor: {
+          type: 'Circle',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+/**
  * Mock dependencies
  * Note: SceneInfra only needs setCallbacks, but we mock it for simplicity
  * RustContext and KclManager MUST be mocked as they have WASM bindings and complex dependencies
@@ -198,6 +241,14 @@ export function createMockRustContext(): RustContext {
     addConstraint: vi.fn(),
     editSegments: vi.fn(),
     deleteObjects: vi.fn(),
+    settingsActor: {
+      send: vi.fn(),
+      getSnapshot: vi.fn(() => ({
+        context: {
+          app: {},
+        },
+      })),
+    },
   } as unknown as RustContext
 }
 

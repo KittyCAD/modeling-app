@@ -43,6 +43,7 @@ import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
   isArcSegment,
+  isCircleSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -419,10 +420,7 @@ export const sketchSolveMachine = setup({
           }
         } else if (currentSelections.length === 1) {
           const first = currentSelections[0]
-          if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind?.segment?.type === 'Arc'
-          ) {
+          if (isArcSegment(first) || isCircleSegment(first)) {
             // Calculate radius for arc segment from its center and start point
             const centerPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
@@ -638,10 +636,11 @@ export const sketchSolveMachine = setup({
             continue
           }
 
-          // Only Line and Arc segments support construction geometry
+          // Only Line, Arc, and Circle segments support construction geometry
           if (
             obj.kind.segment.type !== 'Line' &&
-            obj.kind.segment.type !== 'Arc'
+            obj.kind.segment.type !== 'Arc' &&
+            obj.kind.segment.type !== 'Circle'
           ) {
             continue
           }
@@ -654,7 +653,7 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            isLineSegment(obj) || isArcSegment(obj)
+            isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
               ? obj.kind.segment.construction
               : false
 
@@ -671,6 +670,14 @@ export const sketchSolveMachine = setup({
               },
             })
           } else if (baseCtor.type === 'Arc') {
+            segmentsToEdit.push({
+              id,
+              ctor: {
+                ...baseCtor,
+                construction: newConstruction,
+              },
+            })
+          } else if (baseCtor.type === 'Circle') {
             segmentsToEdit.push({
               id,
               ctor: {

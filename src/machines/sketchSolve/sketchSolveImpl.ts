@@ -31,6 +31,7 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
+import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { deferredCallback } from '@src/lib/utils'
@@ -58,6 +59,7 @@ import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
   isArcSegment,
+  isCircleSegment,
   isConstraint,
   isLineSegment,
   isPointSegment,
@@ -146,6 +148,7 @@ type ToolActorRef =
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
+  | ActorRefFrom<typeof circleTool>
   | ActorRefFrom<typeof tangentialArcTool>
   | ActorRefFrom<typeof threePointArcTool>
 
@@ -159,6 +162,7 @@ export const equipTools = Object.freeze({
   pointTool,
   lineTool,
   centerArcTool,
+  circleTool,
   tangentialArcTool,
   threePointArcTool,
 })
@@ -275,6 +279,28 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       end: endPoint,
     }
+  } else if (
+    obj?.kind?.type === 'Segment' &&
+    obj.kind?.segment?.type === 'Circle'
+  ) {
+    const centerPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.center,
+    })
+    const startPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.start,
+    })
+    if (!centerPoint || !startPoint) {
+      console.error('Failed to find linked points for Circle segment', obj)
+      return null
+    }
+    return {
+      type: 'Circle',
+      center: centerPoint,
+      start: startPoint,
+      construction: obj.kind.segment.construction,
+    }
   }
   return null
 }
@@ -310,7 +336,11 @@ export function updateSegmentGroup({
   let isConstruction = false
   if (objects) {
     const segmentObj = objects[idNum]
-    if (isLineSegment(segmentObj) || isArcSegment(segmentObj)) {
+    if (
+      isLineSegment(segmentObj) ||
+      isArcSegment(segmentObj) ||
+      isCircleSegment(segmentObj)
+    ) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
   }
@@ -363,6 +393,18 @@ export function updateSegmentGroup({
       isConstruction,
       freedom: freedomResult,
     })
+  } else if (input.type === 'Circle') {
+    segmentUtilsMap.CircleSegment.update({
+      input,
+      theme,
+      scale,
+      id: idNum,
+      group,
+      selectedIds,
+      isDraft,
+      isConstruction,
+      freedom: freedomResult,
+    })
   }
 }
 
@@ -393,7 +435,8 @@ function initSegmentGroup({
     if (
       segmentObj?.kind?.type === 'Segment' &&
       (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc')
+        segmentObj.kind.segment.type === 'Arc' ||
+        segmentObj.kind.segment.type === 'Circle')
     ) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
@@ -431,6 +474,16 @@ function initSegmentGroup({
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
+      input,
+      theme,
+      scale,
+      id,
+      isDraft: isDraftValue,
+      isConstruction,
+      freedom: freedomResult,
+    })
+  } else if (input.type === 'Circle') {
+    group = segmentUtilsMap.CircleSegment.init({
       input,
       theme,
       scale,

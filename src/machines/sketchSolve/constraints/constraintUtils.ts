@@ -47,6 +47,22 @@ export type ArcSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Arc' } }
 }
 
+export function isCircleSegment(
+  obj: ApiObject | undefined | null
+): obj is CircleSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Circle'
+}
+
+export type CircleSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Circle' } }
+}
+
+export function isArcLikeSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment | CircleSegment {
+  return isArcSegment(obj) || isCircleSegment(obj)
+}
+
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -139,7 +155,7 @@ export function buildTangentConstraintInput(
 
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
-  const arcObjects = selectedObjects.filter(isArcSegment)
+  const arcObjects = selectedObjects.filter(isArcLikeSegment)
 
   if (lineObj && arcObjects.length === 1) {
     // tangent(line, arc)

@@ -1018,6 +1018,218 @@ class ArcSegment implements SketchEntityUtils {
   }
 }
 
+class CircleSegment implements SketchEntityUtils {
+  private extractCircleData(input: SegmentCtor):
+    | Error
+    | {
+        centerX: number
+        centerY: number
+        startX: number
+        startY: number
+        radius: number
+        startAngle: number
+        endAngle: number
+      } {
+    if (input.type !== 'Circle') {
+      return new Error('Invalid input type for CircleSegment')
+    }
+
+    if (
+      !(
+        hasNumericValue(input.center.x) &&
+        hasNumericValue(input.center.y) &&
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y)
+      )
+    ) {
+      return new Error('Invalid position values for CircleSegment')
+    }
+
+    const centerX = input.center.x.value
+    const centerY = input.center.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const radius = Math.hypot(startX - centerX, startY - centerY)
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
+
+    return {
+      centerX,
+      centerY,
+      startX,
+      startY,
+      radius,
+      startAngle,
+      endAngle: startAngle + Math.PI * 2,
+    }
+  }
+
+  init = (args: CreateSegmentArgs) => {
+    const { input, id } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const segmentGroup = new Group()
+    const geometry = new LineGeometry()
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: args.isConstruction,
+      dashSize: 8,
+      gapSize: 6,
+      worldUnits: false,
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
+    })
+
+    if (args.isConstruction) {
+      const circleCenter = new Vector3(
+        circleData.centerX,
+        circleData.centerY,
+        0
+      )
+      const circleStart = new Vector3(circleData.startX, circleData.startY, 0)
+      setupConstructionArcDashShader(
+        material,
+        circleCenter,
+        circleStart,
+        circleData.startAngle,
+        circleData.endAngle
+      )
+    }
+
+    const mesh = new Line2(geometry, material)
+
+    mesh.userData.type = ARC_SEGMENT_BODY
+    mesh.name = ARC_SEGMENT_BODY
+    segmentGroup.name = id.toString()
+    segmentGroup.userData = {
+      type: SEGMENT_TYPE_ARC,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+    }
+
+    segmentGroup.add(mesh)
+    segmentGroup.userData.freedom = args.freedom ?? null
+
+    this.update({
+      input,
+      theme: args.theme,
+      id,
+      scale: args.scale,
+      group: segmentGroup,
+      selectedIds: [],
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
+    })
+
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    const { input, group, id, selectedIds, isDraft, isConstruction } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle, startX, startY } =
+      circleData
+
+    const circleSegmentBody = group.children.find(
+      (child) => child.userData.type === ARC_SEGMENT_BODY
+    )
+    if (!(circleSegmentBody instanceof Line2)) {
+      console.error('No circle segment body found in group')
+      return
+    }
+
+    circleSegmentBody.geometry.setPositions(
+      createArcPositions({
+        center: [centerX, centerY],
+        radius,
+        startAngle,
+        endAngle,
+        ccw: true,
+      })
+    )
+    circleSegmentBody.geometry.computeBoundingSphere()
+    circleSegmentBody.material.linewidth =
+      SEGMENT_WIDTH_PX * window.devicePixelRatio
+
+    const isSelected = selectedIds.includes(id)
+    const isHovered = circleSegmentBody.userData.isHovered === true
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
+    group.userData.freedom = freedom
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
+
+    if (circleSegmentBody.material instanceof LineMaterial) {
+      circleSegmentBody.material.dashed = isConstruction
+
+      if (constructionChanged) {
+        if (isConstruction) {
+          setupConstructionArcDashShader(
+            circleSegmentBody.material,
+            new Vector3(centerX, centerY, 0),
+            new Vector3(startX, startY, 0),
+            startAngle,
+            endAngle
+          )
+        } else {
+          removeCustomShaderProperties(circleSegmentBody.material)
+        }
+        circleSegmentBody.material.needsUpdate = true
+        const program = getMaterialProgram(circleSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          if (hasProperty(circleSegmentBody.material, 'program')) {
+            circleSegmentBody.material.program = null
+          }
+        }
+      } else if (isConstruction) {
+        const uniforms = getMaterialUniforms(circleSegmentBody.material)
+        if (uniforms) {
+          if (uniforms.uArcCenter) {
+            uniforms.uArcCenter.value = new Vector3(centerX, centerY, 0)
+          }
+          if (uniforms.uArcStart) {
+            uniforms.uArcStart.value = new Vector3(startX, startY, 0)
+          }
+          if (uniforms.uArcStartAngle) {
+            uniforms.uArcStartAngle.value = startAngle
+          }
+          if (uniforms.uArcEndAngle) {
+            uniforms.uArcEndAngle.value = endAngle
+          }
+        }
+      }
+
+      circleSegmentBody.material.worldUnits = false
+      if (!circleSegmentBody.material.resolution) {
+        circleSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        circleSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+    }
+
+    updateLineMaterial(circleSegmentBody.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
+  }
+}
+
 function updateLineMaterial(
   material: LineMaterial,
   {
@@ -1200,5 +1412,6 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+  CircleSegment: new CircleSegment(),
   Constraint: new ConstraintBuilder(),
 }
