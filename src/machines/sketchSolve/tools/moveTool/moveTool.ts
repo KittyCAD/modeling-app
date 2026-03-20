@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   ExistingSegmentCtor,
   SceneGraphDelta,
@@ -535,6 +536,55 @@ export function createOnClickCallback({
   }
 }
 
+type Constraint = ApiObject & {
+  kind: {
+    type: 'Constraint'
+  }
+}
+type ApiConstraintCoincident = Constraint & {
+  kind: {
+    constraint: {
+      type: 'Coincident'
+    }
+  }
+}
+/**
+ * Utility to filter a scene graph to a typed array of
+ * Constraint ApiObjects.
+ */
+function isConstraint<C extends ApiConstraint['type']>(
+  obj: ApiObject,
+  targetType?: C
+): obj is Constraint &
+  (C extends undefined
+    ? {}
+    : {
+        kind: { constraint: { type: C } }
+      }) {
+  return (
+    obj.kind.type === 'Constraint' &&
+    (targetType ? obj.kind.constraint.type === targetType : true)
+  )
+}
+
+/**
+ * Utility to get the other scene graph IDs that are coincident with
+ * the passed-in one, if any.
+ */
+function getOtherCoincidentIdsByPointId(
+  targetId: number,
+  sceneGraphDelta: SceneGraphDelta
+): number[] {
+  const constraints: ApiConstraintCoincident[] =
+    sceneGraphDelta.new_graph.objects
+      .filter((obj) => isConstraint(obj, 'Coincident'))
+      .filter((obj) => obj.kind.constraint.segments.includes(targetId))
+
+  return constraints.flatMap((c) =>
+    c.kind.constraint.segments.filter((id) => id !== targetId)
+  )
+}
+
 /**
  * Creates the onDrag callback for sketch solve drag operations.
  * Handles dragging segments by calculating drag vectors and updating segment positions.
@@ -612,6 +662,9 @@ export function createOnDragCallback({
       selected,
       getParentGroup
     )
+    const entitiesCoincidentWithUnderCursor = entityUnderCursorId
+      ? getOtherCoincidentIdsByPointId(entityUnderCursorId, sceneGraphDelta)
+      : []
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -627,11 +680,16 @@ export function createOnDragCallback({
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
-      // Collect all IDs to edit (entity under cursor + selectedIds)
+      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
       if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
         idsToEdit.add(entityUnderCursorId)
       }
+      entitiesCoincidentWithUnderCursor.forEach((id) => {
+        if (!Number.isNaN(id)) {
+          idsToEdit.add(id)
+        }
+      })
       selectedIds.forEach((id) => {
         if (!Number.isNaN(id)) {
           idsToEdit.add(id)
