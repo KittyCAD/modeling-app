@@ -15,7 +15,9 @@ use crate::{
     exec::WarningLevel,
     execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
     fmt::format_number_literal,
-    front::{Angle, ArcCtor, CircleCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent},
+    front::{
+        Angle, ArcCtor, CircleCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent,
+    },
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
@@ -533,9 +535,7 @@ impl SketchApi for FrontendState {
                                 }
                                 continue;
                             }
-                            Segment::Circle(circle)
-                                if circle.start == segment_id || circle.center == segment_id =>
-                            {
+                            Segment::Circle(circle) if circle.start == segment_id || circle.center == segment_id => {
                                 if let Some(existing) = final_edits.get_mut(&owner_id) {
                                     let SegmentCtor::Circle(circle_ctor) = existing else {
                                         return Err(Error {
@@ -1629,10 +1629,8 @@ impl FrontendState {
                 &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
             )
             .await
-            .map_err(|err| {
-                Error {
-                    msg: err.error.message().to_owned(),
-                }
+            .map_err(|err| Error {
+                msg: err.error.message().to_owned(),
             })?;
 
         #[cfg(not(feature = "artifact-graph"))]
@@ -4743,10 +4741,7 @@ sketch001 = sketch(on = XY) {
 "
         );
         // The new objects are start, center, and then the circle segment.
-        assert_eq!(
-            scene_delta.new_objects,
-            vec![ObjectId(2), ObjectId(3), ObjectId(4)]
-        );
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         let circle = *scene_delta.new_objects.last().unwrap();
