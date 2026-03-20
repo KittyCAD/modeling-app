@@ -2331,9 +2331,11 @@ impl FrontendState {
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
             Segment::Arc(_) => {
+                // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
             }
             Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
             }
         };
@@ -2357,9 +2359,11 @@ impl FrontendState {
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
             Segment::Arc(_) => {
+                // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
             }
             Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
             }
         };
@@ -4881,7 +4885,7 @@ sketch001 = sketch(on = XY) {
             segment: Segment::Circle(circle),
         } = &circle_object.kind
         else {
-            unreachable!();
+            panic!("Expected circle segment, got: {:?}", circle_object.kind);
         };
         let start_point_id = circle.start;
 
