@@ -1,5 +1,4 @@
 import type {
-  ApiConstraint,
   ApiObject,
   ExistingSegmentCtor,
   SceneGraphDelta,
@@ -66,6 +65,7 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
+  getOtherCoincidentIdsByPointId,
   isPointSegment as isPointApiSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
@@ -536,55 +536,6 @@ export function createOnClickCallback({
   }
 }
 
-type Constraint = ApiObject & {
-  kind: {
-    type: 'Constraint'
-  }
-}
-type ApiConstraintCoincident = Constraint & {
-  kind: {
-    constraint: {
-      type: 'Coincident'
-    }
-  }
-}
-/**
- * Utility to filter a scene graph to a typed array of
- * Constraint ApiObjects.
- */
-function isConstraint<C extends ApiConstraint['type']>(
-  obj: ApiObject,
-  targetType?: C
-): obj is Constraint &
-  (C extends undefined
-    ? object
-    : {
-        kind: { constraint: { type: C } }
-      }) {
-  return (
-    obj.kind.type === 'Constraint' &&
-    (targetType ? obj.kind.constraint.type === targetType : true)
-  )
-}
-
-/**
- * Utility to get the other scene graph IDs that are coincident with
- * the passed-in one, if any.
- */
-function getOtherCoincidentIdsByPointId(
-  targetId: number,
-  sceneGraphDelta: SceneGraphDelta
-): number[] {
-  const constraints: ApiConstraintCoincident[] =
-    sceneGraphDelta.new_graph.objects
-      .filter((obj) => isConstraint(obj, 'Coincident'))
-      .filter((obj) => obj.kind.constraint.segments.includes(targetId))
-
-  return constraints.flatMap((c) =>
-    c.kind.constraint.segments.filter((id) => id !== targetId)
-  )
-}
-
 /**
  * Creates the onDrag callback for sketch solve drag operations.
  * Handles dragging segments by calculating drag vectors and updating segment positions.
@@ -663,7 +614,10 @@ export function createOnDragCallback({
       getParentGroup
     )
     const entitiesCoincidentWithUnderCursor = entityUnderCursorId
-      ? getOtherCoincidentIdsByPointId(entityUnderCursorId, sceneGraphDelta)
+      ? getOtherCoincidentIdsByPointId(
+          entityUnderCursorId,
+          sceneGraphDelta.new_graph
+        )
       : []
 
     // If no entity under cursor and no selectedIds, nothing to do
