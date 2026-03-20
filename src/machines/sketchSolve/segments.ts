@@ -160,6 +160,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
+  hoveredId: number | null
   isDraft: boolean
   isConstruction: boolean
   freedom?: Freedom | null
@@ -280,6 +281,7 @@ class PointSegmentDOM implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -334,7 +336,7 @@ class PointSegment implements SketchEntityUtils {
       })
     )
     pointBody.userData.type = POINT_SEGMENT_BODY
-    pointBody.userData.isHovered = false
+    //pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
     pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
     pointBody.layers.set(SKETCH_LAYER)
@@ -348,6 +350,7 @@ class PointSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -361,8 +364,16 @@ class PointSegment implements SketchEntityUtils {
       return new Error('Invalid input type for PointSegment')
     }
 
-    const { input, group, scale, selectedIds, id, isDraft, isConstruction } =
-      args
+    const {
+      input,
+      group,
+      scale,
+      selectedIds,
+      hoveredId,
+      id,
+      isDraft,
+      isConstruction,
+    } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -383,7 +394,7 @@ class PointSegment implements SketchEntityUtils {
     pointBody.position.set(x.value / scale, y.value / scale, 0)
 
     const isSelected = selectedIds.includes(id)
-    const isHovered = pointBody.userData.isHovered === true
+    const isHovered = hoveredId === id // pointBody.userData.isHovered === true
     const freedom = args.freedom ?? group.userData.freedom ?? null
 
     group.userData.freedom = freedom
@@ -391,6 +402,9 @@ class PointSegment implements SketchEntityUtils {
     group.userData.isConstruction = isConstruction
     group.userData.type = SEGMENT_TYPE_POINT
 
+    pointBody.renderOrder = isHovered
+      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
+      : POINT_SEGMENT_BODY_RENDER_ORDER
     this.updatePointColors(pointBody, {
       isSelected,
       isHovered,
@@ -511,6 +525,7 @@ class LineSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -522,7 +537,15 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, selectedIds, isDraft, isConstruction } = args
+    const {
+      input,
+      group,
+      id,
+      selectedIds,
+      hoveredId,
+      isDraft,
+      isConstruction,
+    } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -555,7 +578,7 @@ class LineSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = straightSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id //straightSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -857,6 +880,7 @@ class ArcSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -866,7 +890,15 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, selectedIds, isDraft, isConstruction } = args
+    const {
+      input,
+      group,
+      id,
+      selectedIds,
+      hoveredId,
+      isDraft,
+      isConstruction,
+    } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -902,7 +934,7 @@ class ArcSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = arcSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id //arcSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -1027,7 +1059,7 @@ export function updateSegmentHover(
   }
 
   // Store hover state in userData
-  mesh.userData.isHovered = isHovered
+  //mesh.userData.isHovered = isHovered
 
   // Get the parent group to find the segment ID
   const group = mesh.parent

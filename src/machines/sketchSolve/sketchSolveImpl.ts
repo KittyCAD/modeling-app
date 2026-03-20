@@ -285,6 +285,7 @@ export function updateSegmentGroup({
   group,
   input,
   selectedIds,
+  hoveredId,
   scale,
   theme,
   draftEntityIds,
@@ -293,6 +294,7 @@ export function updateSegmentGroup({
   group: Group
   input: SegmentCtor
   selectedIds: Array<number>
+  hoveredId: number | null
   scale: number
   theme: Themes
   draftEntityIds?: Array<number>
@@ -333,6 +335,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
+      hoveredId,
       isDraft,
       isConstruction,
       freedom: freedomResult,
@@ -345,6 +348,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
+      hoveredId,
       isDraft,
       isConstruction,
       freedom: freedomResult,
@@ -357,6 +361,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
+      hoveredId,
       isDraft,
       isConstruction,
       freedom: freedomResult,
@@ -591,6 +596,7 @@ export function updateSceneGraphFromDelta({
       group,
       input: ctor,
       selectedIds: allSelectedIds,
+      hoveredId: context.hoveredId,
       scale: factor,
       theme: context.sceneInfra.theme,
       draftEntityIds,
@@ -778,6 +784,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         group,
         input: ctor,
         selectedIds: allSelectedIds,
+        hoveredId: context.hoveredId,
         scale: factor,
         theme: context.sceneInfra.theme,
         draftEntityIds,
@@ -853,6 +860,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       group,
       input: ctor,
       selectedIds: allSelectedIds,
+      hoveredId: context.hoveredId,
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
       draftEntityIds,

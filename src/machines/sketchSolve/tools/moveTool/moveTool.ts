@@ -69,7 +69,10 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
-import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import {
+  ClosestApiObject,
+  findClosestApiObjects,
+} from '@src/machines/sketchSolve/interaction/interactionHelpers'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -1426,99 +1429,105 @@ export function setUpOnDragAndSelectionClickCallbacks({
         snapshot,
         context.sceneInfra
       )
-      const hoveredObject = closestObjects[0] ?? null
-
-      const allSelectedIds = Array.from(
-        new Set([
-          ...snapshot.context.selectedIds,
-          ...snapshot.context.duringAreaSelectIds,
-        ])
-      )
-      const draftEntityIds = snapshot.context.draftEntities
-        ? [...snapshot.context.draftEntities.segmentIds]
-        : undefined
+      const hoveredObject: ClosestApiObject | null = closestObjects[0] ?? null
+      const hoveredId = hoveredObject?.apiObject.id || null
       const lastHoveredId = snapshot.context.hoveredId
-      const lastHoveredMesh =
-        lastHoveredId === null
-          ? null
-          : getSegmentHoverMesh(
-              context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
-            )
 
-      if (!hoveredObject) {
-        if (lastHoveredMesh) {
-          updateSegmentHover(
-            lastHoveredMesh,
-            false,
-            allSelectedIds,
-            draftEntityIds
-          )
-        }
-        if (lastHoveredId !== null) {
-          self.send({ type: 'update hovered id', data: { hoveredId: null } })
-        }
-        return
+      if (hoveredId !== lastHoveredId) {
+        self.send({ type: 'update hovered id', data: { hoveredId } })
       }
 
-      if (isConstraint(hoveredObject.apiObject)) {
-        if (lastHoveredMesh) {
-          updateSegmentHover(
-            lastHoveredMesh,
-            false,
-            allSelectedIds,
-            draftEntityIds
-          )
-        }
+      // const allSelectedIds = Array.from(
+      //   new Set([
+      //     ...snapshot.context.selectedIds,
+      //     ...snapshot.context.duringAreaSelectIds,
+      //   ])
+      // )
+      // const draftEntityIds = snapshot.context.draftEntities
+      //   ? [...snapshot.context.draftEntities.segmentIds]
+      //   : undefined
+      // const lastHoveredId = snapshot.context.hoveredId
+      // const lastHoveredMesh =
+      //   lastHoveredId === null
+      //     ? null
+      //     : getSegmentHoverMesh(
+      //         context.sceneInfra.scene.getObjectByName(String(lastHoveredId))
+      //       )
 
-        if (lastHoveredId === hoveredObject.apiObject.id) {
-          return
-        }
+      // if (!hoveredObject) {
+      //   if (lastHoveredMesh) {
+      //     updateSegmentHover(
+      //       lastHoveredMesh,
+      //       false,
+      //       allSelectedIds,
+      //       draftEntityIds
+      //     )
+      //   }
+      //   if (lastHoveredId !== null) {
+      //     self.send({ type: 'update hovered id', data: { hoveredId: null } })
+      //   }
+      //   return
+      // }
 
-        self.send({
-          type: 'update hovered id',
-          data: { hoveredId: hoveredObject.apiObject.id },
-        })
-        return
-      }
+      // if (isConstraint(hoveredObject.apiObject)) {
+      //   if (lastHoveredMesh) {
+      //     updateSegmentHover(
+      //       lastHoveredMesh,
+      //       false,
+      //       allSelectedIds,
+      //       draftEntityIds
+      //     )
+      //   }
 
-      const hoveredMesh = getSegmentHoverMesh(
-        context.sceneInfra.scene.getObjectByName(
-          String(hoveredObject.apiObject.id)
-        )
-      )
-      if (!hoveredMesh) {
-        if (lastHoveredMesh) {
-          updateSegmentHover(
-            lastHoveredMesh,
-            false,
-            allSelectedIds,
-            draftEntityIds
-          )
-        }
-        if (lastHoveredId !== null) {
-          self.send({ type: 'update hovered id', data: { hoveredId: null } })
-        }
-        return
-      }
+      //   if (lastHoveredId === hoveredObject.apiObject.id) {
+      //     return
+      //   }
 
-      if (lastHoveredId === hoveredObject.apiObject.id && lastHoveredMesh) {
-        return
-      }
+      //   self.send({
+      //     type: 'update hovered id',
+      //     data: { hoveredId: hoveredObject.apiObject.id },
+      //   })
+      //   return
+      // }
 
-      if (lastHoveredMesh) {
-        updateSegmentHover(
-          lastHoveredMesh,
-          false,
-          allSelectedIds,
-          draftEntityIds
-        )
-      }
+      // const hoveredMesh = getSegmentHoverMesh(
+      //   context.sceneInfra.scene.getObjectByName(
+      //     String(hoveredObject.apiObject.id)
+      //   )
+      // )
+      // if (!hoveredMesh) {
+      //   if (lastHoveredMesh) {
+      //     updateSegmentHover(
+      //       lastHoveredMesh,
+      //       false,
+      //       allSelectedIds,
+      //       draftEntityIds
+      //     )
+      //   }
+      //   if (lastHoveredId !== null) {
+      //     self.send({ type: 'update hovered id', data: { hoveredId: null } })
+      //   }
+      //   return
+      // }
 
-      updateSegmentHover(hoveredMesh, true, allSelectedIds, draftEntityIds)
-      self.send({
-        type: 'update hovered id',
-        data: { hoveredId: hoveredObject.apiObject.id },
-      })
+      // if (lastHoveredId === hoveredObject.apiObject.id && lastHoveredMesh) {
+      //   return
+      // }
+
+      // if (lastHoveredMesh) {
+      //   updateSegmentHover(
+      //     lastHoveredMesh,
+      //     false,
+      //     allSelectedIds,
+      //     draftEntityIds
+      //   )
+      // }
+
+      // updateSegmentHover(hoveredMesh, true, allSelectedIds, draftEntityIds)
+      // self.send({
+      //   type: 'update hovered id',
+      //   data: { hoveredId: hoveredObject.apiObject.id },
+      // })
     },
     // onMouseEnter: createOnMouseEnterCallback({
     //   updateSegmentHover,
