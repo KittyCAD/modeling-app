@@ -557,7 +557,7 @@ function isConstraint<C extends ApiConstraint['type']>(
   targetType?: C
 ): obj is Constraint &
   (C extends undefined
-    ? {}
+    ? object
     : {
         kind: { constraint: { type: C } }
       }) {
