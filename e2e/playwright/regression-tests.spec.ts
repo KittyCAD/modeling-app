@@ -491,7 +491,7 @@ extrude002 = extrude(profile002, length = 150)`
       const successToastMessage = page.getByText(`Exported successfully`)
       await page.waitForTimeout(1_000)
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(1)
+      expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -569,15 +569,15 @@ extrude002 = extrude(profile002, length = 150)`
       ])
 
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(2)
+      expect(count).toBeGreaterThanOrEqual(2)
     })
   })
 
   test(`Network health indicator only appears in modeling view`, async ({
-    context,
     page,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -678,13 +678,13 @@ extrude002 = extrude(profile002, length = 150)`
   })
 
   test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
-    context,
     homePage,
     scene,
     toolbar,
     viewport,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
       await fsp.copyFile(
@@ -740,12 +740,12 @@ extrude002 = extrude(profile002, length = 150)`
     homePage,
     toolbar,
     editor,
-    context,
     page,
     scene,
     cmdBar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(
@@ -866,12 +866,12 @@ washer = extrude(washerSketch, length = thicknessMax)`
     page,
     editor,
     homePage,
-    context,
     toolbar,
     scene,
     cmdBar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'test')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(
@@ -900,10 +900,10 @@ s2 = startSketchOn(XY)
     page,
     homePage,
     scene,
-    context,
     toolbar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'test')
       await fsp.mkdir(testDir, { recursive: true })
       await fsp.writeFile(

@@ -120,7 +120,7 @@ secondSpacerBody = boxModuleFn(width = secondSpacerWidth)
 // 8 identical sockets, each with grounding notch and dual-pin recesses
 powerPlugWidth = moduleWidth
 powerPlugCount = 8
-powerPlugOveralWidth = powerPlugWidth * powerPlugCount
+powerPlugOverallWidth = powerPlugWidth * powerPlugCount
 firstPowerPlugPosition = secondSpacerPosition + secondSpacerWidth / 2 + powerPlugWidth / 2
 lastPowerPlugPosition = firstPowerPlugPosition + powerPlugWidth * (powerPlugCount - 1)
 powerPlugBody = boxModuleFn(width = powerPlugWidth)

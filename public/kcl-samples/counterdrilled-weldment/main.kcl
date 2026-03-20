@@ -58,9 +58,9 @@ plate = hole::holes(
   plateChamfered,
   face = plateTop,
   cutsAt = holePositionsSwapped,
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = stockThickness, diameter = boltDiameter),
-  holeType =   hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = stockThickness, diameter = boltDiameter),
+  holeType = hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
 )
 
 // Drill a small pin hole in the side of the tube (separate extrude)

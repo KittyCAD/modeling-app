@@ -1,5 +1,5 @@
 use proc_macro2::Span;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 
 pub fn do_for_each_example_test(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
     let item: syn::ItemFn = syn::parse2(item).unwrap();
@@ -107,6 +107,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-math-sqrt-0",
     "std-math-tan-0",
     "std-edgeId-0",
+    "std-edgeId-1",
     "std-faceId-0",
     "std-offsetPlane-0",
     "std-offsetPlane-1",
@@ -159,6 +160,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-sweep-3",
     "std-sketch-sweep-4",
     "std-sketch-sweep-5",
+    "std-sketch-sweep-6",
     "std-sketch-loft-0",
     "std-sketch-loft-1",
     "std-sketch-loft-2",
@@ -208,6 +210,9 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-involuteCircular-0",
     "std-sketch-involuteCircular-1",
     "std-sketch-line-0",
+    "std-sketch2-region-0",
+    "std-sketch2-region-1",
+    "std-sketch2-region-2",
     "std-sketch-subtract2d-0",
     "std-sketch-subtract2d-1",
     "std-sketch-conic-0",
@@ -240,7 +245,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-fillet-1",
     "std-solid-hollow-0",
     "std-solid-hollow-1",
-    "std-solid-hollow-2",
     "std-solid-patternTransform-0",
     "std-solid-patternTransform-1",
     "std-solid-patternTransform-2",
@@ -275,9 +279,14 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-flipSurface-0",
     "std-solid-flipSurface-1",
     "std-solid-split-0",
+    "std-solid-split-1",
+    "std-solid-split-2",
+    "std-solid-split-3",
+    "std-solid-split-4",
     "std-solid-isSolid-0",
     "std-solid-isSurface-0",
     "std-solid-blend-0",
+    "std-solid-blend-1",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",

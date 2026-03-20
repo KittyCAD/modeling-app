@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
-const UserSidebarMenu = ({ user }: { user?: User }) => {
+const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
   const { auth } = useApp()
   const platform = usePlatform()
   const location = useLocation()
@@ -33,13 +33,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      if (window.electron) {
-        listAllEnvironmentsWithTokens(window.electron)
-          .then((environmentsWithTokens) => {
-            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-          })
-          .catch(reportRejection)
-      }
+      listAllEnvironmentsWithTokens()
+        .then((environmentsWithTokens) => {
+          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+        })
+        .catch(reportRejection)
     }
   }, [])
 
@@ -77,9 +75,10 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           ),
           'data-testid': 'user-settings',
           onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_USER
-              : PATHS.HOME + PATHS.SETTINGS_USER
+            const targetPath =
+              filePath !== undefined
+                ? filePath + PATHS.SETTINGS_USER
+                : PATHS.HOME + PATHS.SETTINGS_USER
             void navigate(targetPath)
           },
         },
@@ -202,7 +201,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   // 2. user.first_name + ' ' + user.last_name
   // 3. user.first_name
   // 4. user.email
-  function getDisplayName(user?: User) {
+  function getDisplayName(user?: UserResponse) {
     if (!user) return null
     if (user.name) return user.name
     if (user.first_name) {

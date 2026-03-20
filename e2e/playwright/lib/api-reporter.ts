@@ -73,6 +73,11 @@ class APIReporter implements Reporter {
       logsAsString = stringContent
     }
 
+    // Only attach logs for passing tests when running TAB locally
+    if (result.status === 'passed' && process.env.TAB_API_KEY !== 'localhost') {
+      logsAsString = ''
+    }
+
     const payload = {
       // Required information
       project: `${process.env.GITHUB_SERVER_URL}/KittyCAD/modeling-app`,
@@ -86,6 +91,7 @@ class APIReporter implements Reporter {
       message: result.error?.stack,
       target: process.env.TARGET || null,
       platform: process.env.RUNNER_OS || process.platform,
+      url: process.env.VERCEL_BASE_URL || null,
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
       id: test.id, // computed file/test/project ID used for reruns

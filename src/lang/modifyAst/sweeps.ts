@@ -3,14 +3,15 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
-  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createName,
   createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
@@ -54,6 +55,7 @@ import {
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -70,6 +72,7 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
+  hideSeams,
   bodyType,
   nodeToEdit,
 }: {
@@ -87,6 +90,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: KclPreludeExtrudeMethod
+  hideSeams?: boolean
   bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
@@ -124,6 +128,7 @@ export function addExtrude({
   if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
+      artifactGraph,
       modifiedAst,
       wasmInstance,
       mNodeToEdit
@@ -133,6 +138,18 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -155,9 +172,10 @@ export function addExtrude({
     modifiedAst = tagResult.modifiedAst
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -190,6 +208,10 @@ export function addExtrude({
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
+  const hideSeamsExpr =
+    hideSeams !== undefined
+      ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
+      : []
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
@@ -206,6 +228,7 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
+    ...hideSeamsExpr,
     ...bodyTypeExpr,
   ])
 
@@ -272,6 +295,7 @@ export const SWEEP_MODULE = 'sweep'
 
 export function addSweep({
   ast,
+  artifactGraph,
   sketches,
   path,
   wasmInstance,
@@ -283,6 +307,7 @@ export function addSweep({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   path: Selections
   wasmInstance: ModuleType
@@ -306,12 +331,25 @@ export function addSweep({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
   )
   if (err(vars)) {
     return vars
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Find the path declaration for the labeled argument
@@ -328,9 +366,10 @@ export function addSweep({
 
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
-  const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
-    : []
+  const sectionalExpr =
+    sectional !== undefined
+      ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
+      : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
@@ -376,6 +415,7 @@ export function addSweep({
 
 export function addLoft({
   ast,
+  artifactGraph,
   sketches,
   wasmInstance,
   vDegree,
@@ -387,6 +427,7 @@ export function addLoft({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   wasmInstance: ModuleType
   vDegree?: KclCommandValue
@@ -410,6 +451,7 @@ export function addLoft({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -418,18 +460,31 @@ export function addLoft({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Extra labeled args expressions
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
-  const bezApproximateRationalExpr = bezApproximateRational
-    ? [
-        createLabeledArg(
-          'bezApproximateRational',
-          createLiteral(bezApproximateRational, wasmInstance)
-        ),
-      ]
-    : []
+  const bezApproximateRationalExpr =
+    bezApproximateRational !== undefined
+      ? [
+          createLabeledArg(
+            'bezApproximateRational',
+            createLiteral(bezApproximateRational, wasmInstance)
+          ),
+        ]
+      : []
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
@@ -487,6 +542,7 @@ export function addLoft({
 
 export function addRevolve({
   ast,
+  artifactGraph,
   sketches,
   angle,
   wasmInstance,
@@ -500,6 +556,7 @@ export function addRevolve({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   angle: KclCommandValue
   wasmInstance: ModuleType
@@ -525,12 +582,24 @@ export function addRevolve({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
   )
   if (err(vars)) {
     return vars
+  }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Retrieve axis expression depending on mode
@@ -545,9 +614,10 @@ export function addRevolve({
   }
 
   // Extra labeled args expressions
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(

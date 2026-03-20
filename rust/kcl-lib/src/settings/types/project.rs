@@ -96,6 +96,9 @@ pub struct ProjectAppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_debug_panel: Option<bool>,
+    /// Zookeeper reasoning mode. Uses the app default if not set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub zookeeper_mode: Option<String>,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
@@ -272,6 +275,7 @@ mod tests {
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
                     show_debug_panel: Some(true),
+                    zookeeper_mode: None,
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),

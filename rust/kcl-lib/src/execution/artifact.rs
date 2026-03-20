@@ -164,7 +164,7 @@ pub struct Segment {
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
-/// A sweep is a more generic term for extrude, revolve, loft, and sweep.
+/// A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -176,7 +176,8 @@ pub struct Sweep {
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     /// ID of trajectory path for sweep, if any
-    /// Only applicable to SweepSubType::Sweep, which can use a trajectory path
+    /// Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which
+    /// can use a second path-like input
     pub trajectory_id: Option<ArtifactId>,
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
     /// Whether this artifact has been used in a subsequent operation
@@ -192,6 +193,7 @@ pub enum SweepSubType {
     Revolve,
     RevolveAboutEdge,
     Loft,
+    Blend,
     Sweep,
 }
 
@@ -201,6 +203,24 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PrimitiveFace {
+    pub id: ArtifactId,
+    pub solid_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PrimitiveEdge {
+    pub id: ArtifactId,
+    pub solid_id: ArtifactId,
+    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -258,6 +278,7 @@ pub enum SketchBlockConstraintType {
     Parallel,
     Perpendicular,
     Radius,
+    Tangent,
     Vertical,
 }
 
@@ -274,6 +295,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
             Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
             Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Tangent { .. } => SketchBlockConstraintType::Tangent,
             Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
             Constraint::Angle(..) => SketchBlockConstraintType::Angle,
         }
@@ -432,6 +454,8 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
+    PrimitiveFace(PrimitiveFace),
+    PrimitiveEdge(PrimitiveEdge),
     PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
@@ -454,6 +478,8 @@ impl Artifact {
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
+            Artifact::PrimitiveFace(a) => a.id,
+            Artifact::PrimitiveEdge(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::SketchBlock(a) => a.id,
@@ -478,6 +504,8 @@ impl Artifact {
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
+            Artifact::PrimitiveEdge(a) => Some(&a.code_ref),
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::SketchBlock(a) => Some(&a.code_ref),
@@ -502,12 +530,14 @@ impl Artifact {
             | Artifact::Path(_)
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
+            | Artifact::PrimitiveEdge(_)
             | Artifact::StartSketchOnFace(_)
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::SketchBlock(_)
             | Artifact::SketchBlockConstraint(_)
             | Artifact::Sweep(_) => None,
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
             Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
@@ -523,6 +553,8 @@ impl Artifact {
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
+            Artifact::PrimitiveFace(_) => Some(new),
+            Artifact::PrimitiveEdge(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::SketchBlock { .. } => Some(new),
@@ -922,12 +954,23 @@ fn flatten_modeling_command_responses(
 }
 
 fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifact: Artifact) {
+    fn is_primitive_artifact(artifact: &Artifact) -> bool {
+        matches!(artifact, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
+    }
+
     let id = new_artifact.id();
     let Some(old_artifact) = map.get_mut(&id) else {
         // No old artifact exists.  Insert the new one.
         map.insert(id, new_artifact);
         return;
     };
+
+    // Primitive lookups (faceId/edgeId) may resolve to an ID that already has
+    // a richer artifact (for example Segment/Cap/Wall). Keep the existing node
+    // to avoid erasing structural graph links.
+    if is_primitive_artifact(&new_artifact) && !is_primitive_artifact(old_artifact) {
+        return;
+    }
 
     if let Some(replacement) = old_artifact.merge(new_artifact) {
         *old_artifact = replacement;
@@ -1135,6 +1178,59 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::CreateRegion(kcmc::CreateRegion {
+            object_id: origin_path_id,
+            ..
+        })
+        | ModelingCmd::CreateRegionFromQueryPoint(kcmc::CreateRegionFromQueryPoint {
+            object_id: origin_path_id,
+            ..
+        }) => {
+            let mut return_arr = Vec::new();
+            let origin_path = artifacts.get(&ArtifactId::new(*origin_path_id));
+            let Some(Artifact::Path(path)) = origin_path else {
+                internal_error!(
+                    range,
+                    "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
+                );
+            };
+            return_arr.push(Artifact::Path(Path {
+                id,
+                plane_id: path.plane_id,
+                seg_ids: Vec::new(),
+                consumed: false,
+                sweep_id: None,
+                trajectory_sweep_id: None,
+                solid2d_id: None,
+                code_ref,
+                composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
+            }));
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dGetFaceUuid(kcmc::Solid3dGetFaceUuid { object_id, .. }) => {
+            let Some(OkModelingCmdResponse::Solid3dGetFaceUuid(face_uuid)) = response else {
+                return Ok(Vec::new());
+            };
+
+            return Ok(vec![Artifact::PrimitiveFace(PrimitiveFace {
+                id: face_uuid.face_id.into(),
+                solid_id: (*object_id).into(),
+                code_ref,
+            })]);
+        }
+        ModelingCmd::Solid3dGetEdgeUuid(kcmc::Solid3dGetEdgeUuid { object_id, .. }) => {
+            let Some(OkModelingCmdResponse::Solid3dGetEdgeUuid(edge_uuid)) = response else {
+                return Ok(Vec::new());
+            };
+
+            return Ok(vec![Artifact::PrimitiveEdge(PrimitiveEdge {
+                id: edge_uuid.edge_id.into(),
+                solid_id: (*object_id).into(),
+                code_ref,
+            })]);
+        }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
         })
@@ -1315,6 +1411,46 @@ fn artifacts_to_update(
                     _ => {}
                 }
             };
+            return Ok(return_arr);
+        }
+        ModelingCmd::SurfaceBlend(surface_blend_cmd) => {
+            let surface_id_to_path_id = |surface_id: ArtifactId| -> Option<ArtifactId> {
+                match artifacts.get(&surface_id) {
+                    Some(Artifact::Path(path)) => Some(path.id),
+                    Some(Artifact::Segment(segment)) => Some(segment.path_id),
+                    Some(Artifact::Sweep(sweep)) => Some(sweep.path_id),
+                    Some(Artifact::Wall(wall)) => artifacts.get(&wall.sweep_id).and_then(|artifact| match artifact {
+                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        _ => None,
+                    }),
+                    Some(Artifact::Cap(cap)) => artifacts.get(&cap.sweep_id).and_then(|artifact| match artifact {
+                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        _ => None,
+                    }),
+                    _ => None,
+                }
+            };
+            let Some(first_surface_ref) = surface_blend_cmd.surfaces.first() else {
+                internal_error!(range, "SurfaceBlend command has no surfaces: id={id:?}, cmd={cmd:?}");
+            };
+            let first_surface_id = ArtifactId::new(first_surface_ref.object_id);
+            let path_id = surface_id_to_path_id(first_surface_id).unwrap_or(first_surface_id);
+            let trajectory_id = surface_blend_cmd
+                .surfaces
+                .get(1)
+                .map(|surface| ArtifactId::new(surface.object_id))
+                .and_then(surface_id_to_path_id);
+            let return_arr = vec![Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Blend,
+                path_id,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                trajectory_id,
+                method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                consumed: false,
+            })];
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {

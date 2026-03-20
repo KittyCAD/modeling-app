@@ -3,16 +3,50 @@
 //! tool before we integrate it into the app.
 use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
 
-use kcl_lib::{ExecutorContext, ExecutorSettings, Program, TypedPath, transpile_all_old_sketches_to_new};
+use kcl_lib::{
+    ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
+    exec::{RetryConfig, execute_with_retries},
+    pre_execute_transpile, transpile_all_old_sketches_to_new,
+};
+
+fn print_usage() {
+    eprintln!("Usage: transpile [--no-fail-fast] <filename.kcl>");
+}
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, std::io::Error> {
     let mut args = env::args();
+    // Discard program name.
     args.next();
-    let Some(filename) = args.next() else {
-        eprintln!("Usage: transpile <filename.kcl>");
+
+    // Parse arguments.
+    let mut fail_fast = true;
+    let mut filename = None;
+    for arg in args {
+        match arg.as_ref() {
+            "--help" | "-h" => {
+                print_usage();
+                return Ok(ExitCode::SUCCESS);
+            }
+            "--no-fail-fast" => {
+                fail_fast = false;
+            }
+            _ => {
+                if filename.is_some() {
+                    eprintln!("Error: multiple filenames provided");
+                    print_usage();
+                    return Ok(ExitCode::FAILURE);
+                }
+                filename = Some(arg);
+            }
+        }
+    }
+    let Some(filename) = filename else {
+        print_usage();
         return Ok(ExitCode::FAILURE);
     };
+
+    // Normalize the path.
     let mut path = PathBuf::from(&filename);
     if let Some(ext) = path.extension() {
         if !ext.eq_ignore_ascii_case("kcl") {
@@ -41,26 +75,21 @@ async fn main() -> Result<ExitCode, std::io::Error> {
 
     let project_directory_string = path.parent().map(|p| p.to_string_lossy());
     let project_directory = project_directory_string.map(|p| TypedPath::from(p.as_ref()));
+    let settings = ExecutorSettings {
+        project_directory,
+        ..Default::default()
+    };
 
-    let ctx = ExecutorContext::new_with_client(
-        ExecutorSettings {
-            project_directory,
-            ..Default::default()
-        },
-        None,
-        None,
-    )
-    .await
-    .unwrap();
     let result = async {
+        pre_execute_transpile(&mut program)?;
         // Execute.
-        let exec_outcome = ctx.run_with_caching(program.clone()).await.map_err(|e| e.error)?;
+        let exec_outcome = execute_with_retries(&RetryConfig::default(), || execute(program.clone(), settings.clone()))
+            .await
+            .map_err(|e| e.error)?;
         // Transpile.
-        transpile_all_old_sketches_to_new(&exec_outcome, &mut program)
+        transpile_all_old_sketches_to_new(&exec_outcome, &mut program, fail_fast)
     }
     .await;
-    // Always close the context.
-    ctx.close().await;
 
     match result {
         Ok(_) => {}
@@ -77,4 +106,16 @@ async fn main() -> Result<ExitCode, std::io::Error> {
     println!("{}", new_source);
 
     Ok(ExitCode::SUCCESS)
+}
+
+/// Execute and close the connection.
+async fn execute(program: Program, settings: ExecutorSettings) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    let ctx = ExecutorContext::new_with_client(settings, None, None)
+        .await
+        .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::internal(format!("{err:?}"))))?;
+    let result = ctx.run_with_caching(program).await;
+    // Always close the context.
+    ctx.close().await;
+
+    result
 }

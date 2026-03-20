@@ -214,7 +214,6 @@ pub enum SegmentCtor {
     Point(PointCtor),
     Line(LineCtor),
     Arc(ArcCtor),
-    TangentArc(TangentArcCtor),
     Circle(CircleCtor),
 }
 
@@ -271,7 +270,7 @@ pub struct Arc {
     pub start: ObjectId,
     pub end: ObjectId,
     pub center: ObjectId,
-    // Invariant: Arc or TangentArc
+    // Invariant: Arc
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
     pub construction: bool,
@@ -286,14 +285,6 @@ pub struct ArcCtor {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub construction: Option<bool>,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct TangentArcCtor {
-    pub start: Point2d<Expr>,
-    pub end: Point2d<Expr>,
-    pub tangent: StartOrEnd<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -328,6 +319,7 @@ pub enum Constraint {
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Tangent(Tangent),
     Vertical(Vertical),
 }
 
@@ -406,4 +398,10 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Tangent {
+    pub input: Vec<ObjectId>,
 }

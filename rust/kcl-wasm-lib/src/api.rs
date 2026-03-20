@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
     Program,
+    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
 };
 use wasm_bindgen::prelude::*;
 
@@ -29,6 +29,34 @@ impl Context {
             .open_project(ProjectId(project), files, FileId(open_file))
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())
+    }
+
+    #[wasm_bindgen]
+    pub async fn get_project(&self, project_id: usize) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let result = self
+            .project_manager
+            .get_project(ProjectId(project_id))
+            .await
+            .map_err(|e| format!("Failed to get project state: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize get project result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
+    pub async fn get_file(&self, project_id: usize, file_id: usize) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let result = self
+            .project_manager
+            .get_file(ProjectId(project_id), FileId(file_id))
+            .await
+            .map_err(|e| format!("Failed to get file: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize get file result. {TRUE_BUG} Details: {e}"))?)
     }
 
     #[wasm_bindgen]
@@ -468,7 +496,7 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim function from kcl-lib
-        use kcl_lib::front::{execute_trim_loop_with_context, Coords2d as Coords2dCore};
+        use kcl_lib::front::{Coords2d as Coords2dCore, execute_trim_loop_with_context};
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch

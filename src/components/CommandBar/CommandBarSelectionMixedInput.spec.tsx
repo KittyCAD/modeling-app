@@ -3,6 +3,9 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { App } from '@src/lib/app'
+import { KclManager } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
 
 vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 vi.mock('@src/lang/wasmUtils', async () => {
@@ -52,11 +55,17 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const boot = await import(`@src/lib/boot`)
-      const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        executingEditor.engineCommandManager,
         'modelingSend'
       )
       const arg = createArg(true)
@@ -66,7 +75,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 
@@ -79,11 +88,17 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
-      const boot = await import(`@src/lib/boot`)
-      const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        executingEditor.engineCommandManager,
         'modelingSend'
       )
 
@@ -94,7 +109,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 
@@ -103,11 +118,17 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
-      const boot = await import(`@src/lib/boot`)
-      const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        executingEditor.engineCommandManager,
         'modelingSend'
       )
 
@@ -118,7 +139,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 
@@ -127,11 +148,17 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should send clear selection command only once on mount', async () => {
-      const boot = await import(`@src/lib/boot`)
-      const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        executingEditor.engineCommandManager,
         'modelingSend'
       )
 
@@ -142,7 +169,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 
@@ -156,7 +183,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 
@@ -166,11 +193,17 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should set hasClearedSelection state after clearing', async () => {
-      const boot = await import(`@src/lib/boot`)
-      const mockWasmInstance =
-        await boot.app.singletons.rustContext.wasmInstancePromise
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
       const mockModelingSend = vi.spyOn(
-        boot.app.singletons.engineCommandManager,
+        executingEditor.engineCommandManager,
         'modelingSend'
       )
 
@@ -181,7 +214,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
-          wasmInstance={mockWasmInstance}
+          executingEditor={executingEditor}
         />
       )
 

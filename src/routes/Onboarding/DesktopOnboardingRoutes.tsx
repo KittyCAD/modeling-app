@@ -28,7 +28,7 @@ import {
 import { useEffect, useState } from 'react'
 import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -60,7 +60,7 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 
 function Welcome() {
   const app = useApp()
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -100,7 +100,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -178,7 +178,7 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          month. Upgrade to a paid plan for additional usage. Pro and Team plans
           come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
@@ -232,7 +232,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'fan-housing.kcl'
@@ -366,7 +366,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the text-to-cad button if it's present
@@ -480,7 +480,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 

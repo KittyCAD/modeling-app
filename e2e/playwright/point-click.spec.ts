@@ -437,6 +437,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     cmdBar,
   }) => {
+    page.on('console', console.log)
+
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -930,7 +932,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -969,7 +971,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: initialInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'radius',
       })
@@ -981,7 +983,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -995,7 +997,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
@@ -1006,6 +1008,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
+          CounterClockWise: 'false',
         },
         commandName: 'Helix',
       })
@@ -1019,6 +1022,7 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 5,
+          ccw = false,
         )`,
         { shouldNormalise: true }
       )
@@ -2631,6 +2635,95 @@ box = extrude(profile, length = 30)`
     })
   })
 
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()`
+    const blendDeclaration = `blend001 = blend([seg01, seg02])`
+
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await expect(toolbar.selectionStatus).toContainText(/2 segments?/)
+
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 segments',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
+    })
+  })
+
   test('Flip Surface point-and-click', async ({
     context,
     page,
@@ -3023,7 +3116,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '', // True value shows as empty string in header
+              RotateDuplicates: 'true',
             },
           })
         })
@@ -3041,7 +3134,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
+              RotateDuplicates: 'true',
               UseOriginal: '',
             },
             highlightedHeaderArg: 'useOriginal',
@@ -3058,8 +3151,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3097,8 +3190,8 @@ solid001 = extrude(sketch001, length = 5)`
             Axis: 'Y',
             Center: '[5, 0, 0]',
             ArcDegrees: '180',
-            RotateDuplicates: '',
-            // UseOriginal with False value appears as a button in UI, not in header
+            RotateDuplicates: 'true',
+            UseOriginal: 'false',
           },
           highlightedHeaderArg: 'center',
         })
@@ -3116,8 +3209,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'center',
           })
@@ -3133,8 +3226,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]', // [5, 3+4, 0]
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3151,8 +3244,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3168,9 +3261,10 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
+            reviewValidationError: undefined,
           })
         })
 
@@ -3186,8 +3280,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'axis',
           })
@@ -3202,8 +3296,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3220,8 +3314,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'arcDegrees',
           })
@@ -3237,8 +3331,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3255,8 +3349,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '', // True and False value appears at this stage
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'rotateDuplicates',
           })
@@ -3271,8 +3365,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3289,8 +3383,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '', // True and False value appears at this stage
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3305,8 +3399,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '',
+              RotateDuplicates: 'false',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3488,7 +3582,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '', // True value shows as empty string in header
+              UseOriginal: 'true',
             },
           })
         })
@@ -3502,7 +3596,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3538,7 +3632,7 @@ solid001 = extrude(sketch001, length = 5)`
             Instances: '6',
             Distance: '8',
             Axis: 'Y',
-            UseOriginal: '',
+            UseOriginal: 'true',
           },
           highlightedHeaderArg: 'axis',
         })
@@ -3556,7 +3650,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3572,7 +3666,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3587,7 +3681,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3603,7 +3697,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'distance',
           })
@@ -3618,7 +3712,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3634,7 +3728,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3648,7 +3742,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              // UseOriginal with False value appears as a button in UI, not in header
+              UseOriginal: 'false',
             },
           })
         })

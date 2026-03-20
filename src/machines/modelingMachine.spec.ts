@@ -20,12 +20,10 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
@@ -34,8 +32,6 @@ let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
-let sceneInfraInThisFile: SceneInfra = null!
-let sceneEntitiesManagerInThisFile: SceneEntities = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
@@ -53,9 +49,7 @@ beforeEach(async () => {
   const {
     instance,
     engineCommandManager,
-    sceneInfra,
     kclManager,
-    sceneEntitiesManager,
     rustContext,
     commandBarActor,
     machineManager,
@@ -64,8 +58,6 @@ beforeEach(async () => {
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
-  sceneInfraInThisFile = sceneInfra
-  sceneEntitiesManagerInThisFile = sceneEntitiesManager
   commandBarActorInThisFile = commandBarActor
   machineManagerInThisFile = machineManager
 })
@@ -160,17 +152,13 @@ describe('modelingMachine.test.ts', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext({
           kclManager: kclManagerInThisFile,
-          sceneInfra: sceneInfraInThisFile,
           rustContext: rustContextInThisFile,
           wasmInstance: instanceInThisFile,
-          sceneEntitiesManager: sceneEntitiesManagerInThisFile,
           engineCommandManager: engineCommandManagerInThisFile,
           commandBarActor: commandBarActorInThisFile,
           machineManager: machineManagerInThisFile,
         })
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
-        contextCopied.sceneInfra = sceneInfraInThisFile
-        contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
         contextCopied.commandBarActor = commandBarActorInThisFile
 
         const actor = createActor(modelingMachine, {
@@ -954,18 +942,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1089,18 +1073,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1234,18 +1214,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1366,18 +1342,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile

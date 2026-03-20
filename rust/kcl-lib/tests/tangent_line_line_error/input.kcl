@@ -1,0 +1,7 @@
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  l0 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  l1 = line(start = [var 0mm, var 2mm], end = [var 10mm, var 2mm])
+  tangent([l0, l1])
+}

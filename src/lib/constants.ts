@@ -14,10 +14,6 @@ export const MAX_PADDING = 7
  */
 export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
-/** Name given the temporary "project" in the browser version of the app */
-export const BROWSER_PROJECT_NAME = 'browser'
-/** Name given the temporary file in the browser version of the app */
-export const BROWSER_FILE_NAME = 'main'
 /**
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
@@ -58,7 +54,10 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  BLEND: 'blend',
   SURFACE: 'surface',
+  EDGE: 'edge',
+  FACE: 'face',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -243,8 +242,12 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
 
-/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+/** localStorage key to determine if the runtime is Playwright */
 export const IS_PLAYWRIGHT_KEY = 'playwright'
+/** localStorage key to store the token for Playwright */
+export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
+/** A query parameter for Playwright to authenticate with a Vercel deployment */
+export const VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM = 'vercel-playwright-token'
 
 /** Should we mark all the ML features as "beta"? */
 export const IS_ML_EXPERIMENTAL = true
@@ -327,12 +330,11 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
 
-// Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
+// Zookeeper input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
-// Also defined at rust/kcl-lib/src/settings/types/mod.rs#L264-L266
-export const DEFAULT_BACKFACE_COLOR = '#F20D0D'
+export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

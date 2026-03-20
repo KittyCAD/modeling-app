@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
@@ -11,6 +11,9 @@ import {
   LEGACY_COOKIE_NAME,
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
@@ -29,7 +32,7 @@ import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface UserContext {
-  user?: User
+  user?: UserResponse
   token: string
 }
 
@@ -44,8 +47,6 @@ export type Events =
       type: 'Log in'
       token?: string
     }
-
-export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 
 /**
  * Determine which token do we have persisted to initialize the auth machine
@@ -65,7 +66,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: User
+            user: UserResponse
             token: string
           }
         }
@@ -172,38 +173,28 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  if (window.electron) {
-    const environment =
-      (await readEnvironmentFile(window.electron)) ||
-      env().VITE_ZOO_BASE_DOMAIN ||
-      ''
-    updateEnvironment(environment)
+  const environment =
+    (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
+  updateEnvironment(environment)
 
-    // Update the Engine WebSocket URL override
-    const cachedKittycadWebSocketUrl =
-      await readEnvironmentConfigurationKittycadWebSocketUrl(
-        window.electron,
-        environment
-      )
-    if (cachedKittycadWebSocketUrl) {
-      updateEnvironmentKittycadWebSocketUrl(
-        environment,
-        cachedKittycadWebSocketUrl
-      )
-    }
+  // Update the Engine WebSocket URL override
+  const cachedKittycadWebSocketUrl =
+    await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
+  if (cachedKittycadWebSocketUrl) {
+    updateEnvironmentKittycadWebSocketUrl(
+      environment,
+      cachedKittycadWebSocketUrl
+    )
+  }
 
-    // Update the Zookeeper WebSocket URL override
-    const cachedMlephantWebSocketUrl =
-      await readEnvironmentConfigurationMlephantWebSocketUrl(
-        window.electron,
-        environment
-      )
-    if (cachedMlephantWebSocketUrl) {
-      updateEnvironmentMlephantWebSocketUrl(
-        environment,
-        cachedMlephantWebSocketUrl
-      )
-    }
+  // Update the Zookeeper WebSocket URL override
+  const cachedMlephantWebSocketUrl =
+    await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
+  if (cachedMlephantWebSocketUrl) {
+    updateEnvironmentMlephantWebSocketUrl(
+      environment,
+      cachedMlephantWebSocketUrl
+    )
   }
 
   let token = ''
@@ -225,7 +216,7 @@ async function getUser(input: { token?: string }) {
     }
   }
 
-  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
+  if (!token) return Promise.reject(new Error('No token found'))
 
   const me = await kcCall(() => users.get_user_self({ client }))
   if (me instanceof Error) return Promise.reject(me)
@@ -256,15 +247,27 @@ export function getCookie(): string | null {
 }
 
 function getTokenFromEnvOrCookie(): string {
+  if (typeof window === 'undefined') return ''
+
+  // Store the token passed to the Vercel environment
+  const queryParams = new URLSearchParams(window.location?.search ?? '')
+  const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
+  if (queryToken) {
+    window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
+    window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
+    return queryToken
+  }
+
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
-  return envToken || cookieToken || ''
+  const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+  return envToken || cookieToken || storedToken || ''
 }
 
 async function getTokenFromFile(): Promise<string> {
   const environmentName = env().VITE_ZOO_BASE_DOMAIN
   if (!window.electron || !environmentName) return ''
-  return readEnvironmentConfigurationToken(window.electron, environmentName)
+  return readEnvironmentConfigurationToken(environmentName)
 }
 
 /**
@@ -311,10 +314,7 @@ async function getAndSyncStoredToken(input: {
   const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
-      ? await readEnvironmentConfigurationToken(
-          window.electron,
-          environmentName
-        )
+      ? await readEnvironmentConfigurationToken(environmentName)
       : ''
   const token = inputToken || cookieToken || fileToken
 
@@ -333,17 +333,10 @@ async function getAndSyncStoredToken(input: {
     if (window.electron) {
       // has just logged in, update storage
       if (environmentName)
-        await writeEnvironmentConfigurationToken(
-          window.electron,
-          environmentName,
-          token
-        )
+        await writeEnvironmentConfigurationToken(environmentName, token)
     }
     return token
   }
-
-  // If you are web and you made it this far, you do not get a token
-  if (!isDesktop()) return ''
 
   if (!fileToken) return ''
   // default desktop login workflow to always read from disk, file will ensure login persists after app updates
@@ -363,51 +356,49 @@ async function logout() {
 async function logoutEnvironment(requestedDomain?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (window.electron) {
-    try {
-      const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
-      let token = ''
-      if (domain) {
-        token = await readEnvironmentConfigurationToken(window.electron, domain)
-      } else {
-        return new Error('Unable to logout, cannot find domain')
-      }
-
-      if (token) {
-        try {
-          const apiUrlBase = (() => {
-            try {
-              const u = new URL(domain)
-              return u.origin
-            } catch {
-              const d = generateDomainsFromBaseDomain(domain)
-              return d.API_URL
-            }
-          })()
-
-          const client = createKCClient(token, apiUrlBase)
-          await kcCall(() =>
-            oauth2.oauth2_token_revoke({
-              client,
-              body: {
-                token,
-                client_id: OAUTH2_DEVICE_CLIENT_ID,
-              },
-            })
-          )
-        } catch (e) {
-          console.error('Error revoking token:', e)
-        }
-
-        if (domain) {
-          await writeEnvironmentConfigurationToken(window.electron, domain, '')
-        }
-        await writeEnvironmentFile(window.electron, '')
-        return Promise.resolve(null)
-      }
-    } catch (e) {
-      console.error('Error reading token during logout (ignoring):', e)
+  try {
+    const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
+    let token = ''
+    if (domain) {
+      token = await readEnvironmentConfigurationToken(domain)
+    } else {
+      return new Error('Unable to logout, cannot find domain')
     }
+
+    if (token) {
+      try {
+        const apiUrlBase = (() => {
+          try {
+            const u = new URL(domain)
+            return u.origin
+          } catch {
+            const d = generateDomainsFromBaseDomain(domain)
+            return d.API_URL
+          }
+        })()
+
+        const client = createKCClient(token, apiUrlBase)
+        await kcCall(() =>
+          oauth2.oauth2_token_revoke({
+            client,
+            body: {
+              token,
+              client_id: OAUTH2_DEVICE_CLIENT_ID,
+            },
+          })
+        )
+      } catch (e) {
+        console.error('Error revoking token:', e)
+      }
+
+      if (domain) {
+        await writeEnvironmentConfigurationToken(domain, '')
+      }
+      await writeEnvironmentFile('')
+      return Promise.resolve(null)
+    }
+  } catch (e) {
+    console.error('Error reading token during logout (ignoring):', e)
   }
 
   return fetch(withAPIBaseURL('/logout'), {
@@ -421,10 +412,7 @@ async function logoutEnvironment(requestedDomain?: string) {
  * will not be sufficient.
  */
 async function logoutAllEnvironments() {
-  if (!window.electron) {
-    return new Error('unimplemented for web')
-  }
-  const environments = await listAllEnvironments(window.electron)
+  const environments = await listAllEnvironments()
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     // Make the oauth2/token/revoke request per environment

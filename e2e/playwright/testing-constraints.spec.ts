@@ -892,7 +892,7 @@ part002 = startSketchOn(XZ)
         await expect(page.locator('.cm-content')).toContainText(codeAfter)
         // expect the string 'seg01' to appear twice in '.cm-content' the tag segment and referencing the tag
         const content = await page.locator('.cm-content').innerText()
-        await expect(content.match(/seg01/g)).toHaveLength(2)
+        expect(content.match(/seg01/g)).toHaveLength(2)
         // check there are still 2 cursors (they should stay on the same lines as before constraint was applied)
         await expect(page.locator('.cm-cursor')).toHaveCount(2)
         // check actives lines
@@ -984,14 +984,14 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
 test.describe('Electron constraint tests', () => {
   test('Able to double click label to set constraint', async ({
     page,
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(

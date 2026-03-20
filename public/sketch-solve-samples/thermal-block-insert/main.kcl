@@ -1,0 +1,78 @@
+// Thermal Block Insert
+// Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency
+// Categories: Automotive, Computer Hardware
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define overall dimensions of the insert block
+insertLength = 400
+insertHeight = 200
+insertThickness = 50
+
+// Define tongue-and-groove profile parameters for interlocking geometry
+setbackFactor = 0.25 // spacing between tongues
+tongueTargetCount = insertLength / 80
+tongueCount = round(tongueTargetCount)
+tongueLength = insertLength / (tongueCount * (1 + setbackFactor * 2) + 1)
+tongueGap = tongueLength * setbackFactor * 2
+tongueStep = tongueLength + tongueGap
+tongueDepth = tongueLength * 0.5
+tongueSetback = tongueLength * setbackFactor
+
+// Function to create one side of the repeating tongue geometry along the block edge
+fn tongueBlockFn() {
+  tongueSingleBlock = xLine(length = tongueLength)
+    |> line(end = [-tongueSetback, tongueDepth])
+    |> xLine(length = tongueLength)
+    |> line(end = [-tongueSetback, -tongueDepth])
+    |> patternLinear2d(instances = tongueCount, distance = tongueStep, axis = [1, 0])
+    |> xLine(length = tongueLength)
+  return tongueSingleBlock
+}
+
+// Create top-side profile with tongues
+tongueShape = sketch(on = XY) {
+  line1 = line(start = [var -200mm, var 25mm], end = [var -152.94mm, var 25mm])
+  line2 = line(start = [var -152.94mm, var 25mm], end = [var -164.71mm, var 48.53mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -164.71mm, var 48.53mm], end = [var -117.65mm, var 48.53mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -117.65mm, var 48.53mm], end = [var -129.41mm, var 25mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -129.41mm, var 25mm], end = [var -82.35mm, var 25mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -82.35mm, var 25mm], end = [var -82.35mm, var 0mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -82.35mm, var 0mm], end = [var -482.35mm, var 0mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -482.35mm, var 0mm], end = [var -200mm, var 25mm])
+  coincident([line7.end, line8.start])
+  vertical(line3)
+  horizontal(line4)
+}
+
+// Create bottom-side profile with grooves (inverse of tongue)
+grooveShape = sketch(on = XY) {
+  line1 = line(start = [var -200mm, var -48.53mm], end = [var -152.94mm, var -48.53mm])
+  line2 = line(start = [var -152.94mm, var -48.53mm], end = [var -164.71mm, var -25mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -164.71mm, var -25mm], end = [var -117.65mm, var -25mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -117.65mm, var -25mm], end = [var -129.41mm, var -48.53mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -129.41mm, var -48.53mm], end = [var -82.35mm, var -48.53mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -82.35mm, var -48.53mm], end = [var -82.35mm, var 0mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -82.35mm, var 0mm], end = [var -482.35mm, var 0mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -482.35mm, var 0mm], end = [var -200mm, var -48.53mm])
+  coincident([line7.end, line8.start])
+  vertical(line3)
+  horizontal(line4)
+}
+
+// Extrude both tongue and groove profiles to form the final thermal insert block
+insertShape = extrude([tongueShape, grooveShape], length = insertHeight)
+
