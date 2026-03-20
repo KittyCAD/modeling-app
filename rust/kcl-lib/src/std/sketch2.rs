@@ -433,6 +433,10 @@ async fn inner_region(
     if !sketch.region_mapping.is_empty() {
         // Build reverse map: original_seg_id -> Vec<region_seg_id>
         let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+        #[expect(
+            clippy::iter_over_hash_type,
+            reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
+        )]
         for (region_id, original_id) in &sketch.region_mapping {
             reverse.entry(*original_id).or_default().push(*region_id);
         }
