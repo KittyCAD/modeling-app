@@ -252,12 +252,12 @@ export function createOnDragEndCallback({
     }
     return null
   },
-  sketchExecuteMock,
+  onComplete,
 }: {
   getDraggingPointElement: () => HTMLElement | null
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
-  sketchExecuteMock: () => Promise<unknown>
+  onComplete: () => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
@@ -277,9 +277,7 @@ export function createOnDragEndCallback({
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
     setDraggingPointElement(null)
-    // Send the last up-to-date state from the frontend to Rust. It doesn't know
-    // about this last feedback loop yet!
-    await sketchExecuteMock()
+    await onComplete()
   }
 }
 
@@ -1451,26 +1449,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragEnd: createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
-      sketchExecuteMock: async () => {
+      // Send the last up-to-date state from the frontend to Rust. It doesn't know
+      // about this last feedback loop yet!
+      onComplete: async () => {
         try {
-          const result = await context.rustContext
-            .sketchExecuteMock(SKETCH_FILE_VERSION, context.sketchId)
-            .catch((err) => {
-              console.error('failed to execute sketch mock', err)
-              return null
-            })
+          const result = await context.rustContext.sketchExecuteMock(
+            SKETCH_FILE_VERSION,
+            context.sketchId
+          )
 
-          if (result !== null) {
-            // Send the event to update the sketch outcome
-            self.send({
-              type: 'update sketch outcome',
-              data: {
-                sourceDelta: result.kclSource,
-                sceneGraphDelta: result.sceneGraphDelta,
-                writeToDisk: false,
-              },
-            })
-          }
+          // Send the event to update the sketch outcome
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          })
         } catch (err) {
           console.error('error in onDragEnd sketchExecuteMock', err)
         }
