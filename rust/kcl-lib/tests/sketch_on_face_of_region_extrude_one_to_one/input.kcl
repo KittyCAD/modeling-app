@@ -11,12 +11,12 @@ triangle = sketch(on = XY) {
   equalLength([line2, line3])
 }
 
-region001 = region(point = [1.86mm, 3.82mm], sketch = triangle)
-prism = extrude(region001, length = 2)
+triangleRegion = region(point = [1.86mm, 3.82mm], sketch = triangle)
+prism = extrude(triangleRegion, length = 2)
 
-face001 = faceOf(prism, face = triangle.line1)
+face001 = faceOf(prism, face = triangleRegion.line1)
 towerSketch = sketch(on = face001) {
   circle1 = arc(start = [var 1mm, var 0mm], end = [var 1mm, var 0mm], center = [var 0.5mm, var 0.5mm])
 }
-region002 = region(point = towerSketch.circle1.center)
-tower = extrude(region002, length = 3)
+towerRegion = region(point = towerSketch.circle1.center)
+tower = extrude(towerRegion, length = 3)
