@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing tangent_line_line_error.kcl
 ---
 {
-  "__sketch_1_on": {
+  "__sketch_0_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",

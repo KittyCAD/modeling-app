@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing tangent_arc_arc_math_only.kcl
+description: Variables in memory after executing tangent_line_arc_reversed_line.kcl
 ---
 {
   "__sketch_1_on": {
@@ -45,12 +45,12 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
+                "objectId": 8,
                 "kind": {
                   "arc": {
                     "start": [
                       {
-                        "n": -4.999999997000044,
+                        "n": -5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         }
                       },
                       {
-                        "n": 0.0,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.000000008999868,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         }
                       },
                       {
-                        "n": 0.0,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -86,7 +86,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000005999912245655804,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -94,7 +94,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         }
                       },
                       {
-                        "n": 0.0,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -111,7 +111,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
+                          "value": 5.0,
                           "units": "Mm"
                         }
                       },
@@ -123,7 +123,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
+                          "value": 5.0,
                           "units": "Mm"
                         }
                       },
@@ -135,14 +135,14 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
+                          "value": 5.0,
                           "units": "Mm"
                         }
                       }
                     },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
-                    "center_object_id": 4,
+                    "start_object_id": 5,
+                    "end_object_id": 6,
+                    "center_object_id": 7,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Fixed",
@@ -190,19 +190,19 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
           }
         }
       },
-      "b": {
+      "l": {
         "type": "Segment",
         "value": {
           "repr": {
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
+                "objectId": 4,
                 "kind": {
-                  "arc": {
+                  "line": {
                     "start": [
                       {
-                        "n": 5.00000002102672,
+                        "n": 10.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,25 +220,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "end": [
                       {
-                        "n": 11.000000027026633,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center": [
-                      {
-                        "n": 8.00000002399965,
+                        "n": -10.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -258,7 +240,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                       "start": {
                         "x": {
                           "type": "Var",
-                          "value": 7.0,
+                          "value": 10.0,
                           "units": "Mm"
                         },
                         "y": {
@@ -270,19 +252,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 13.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
+                          "value": -10.0,
                           "units": "Mm"
                         },
                         "y": {
@@ -292,12 +262,10 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                         }
                       }
                     },
-                    "start_object_id": 6,
-                    "end_object_id": 7,
-                    "center_object_id": 8,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "center_freedom": "Fixed",
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -335,7 +303,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                 "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
-                  "value": "b"
+                  "value": "l"
                 }
               }
             }
@@ -356,29 +324,23 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": true,
-                  "center": [
-                    0.000000005999912566778676,
-                    -0.0000000000000006123233999410653
-                  ],
                   "from": [
-                    -4.999999997000044,
+                    10.0,
                     0.0
                   ],
-                  "radius": 5.000000002999957,
                   "tag": {
-                    "commentStart": 65,
-                    "end": 66,
+                    "commentStart": 140,
+                    "end": 141,
                     "moduleId": 0,
-                    "start": 65,
+                    "start": 140,
                     "type": "TagDeclarator",
-                    "value": "a"
+                    "value": "l"
                   },
                   "to": [
-                    5.000000008999869,
-                    -0.000000000000001836970199823196
+                    -10.0,
+                    0.0
                   ],
-                  "type": "Arc",
+                  "type": "ToPoint",
                   "units": "mm"
                 },
                 {
@@ -387,13 +349,13 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.000000008999869,
-                    -0.000000000000001836970199823196
+                    -10.0,
+                    0.0
                   ],
                   "tag": null,
                   "to": [
-                    5.00000002102672,
-                    0.0
+                    -5.0,
+                    5.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -405,25 +367,25 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   },
                   "ccw": true,
                   "center": [
-                    8.00000002399965,
-                    -0.0000000000000003673940401082849
+                    -0.0,
+                    4.999999999999999
                   ],
                   "from": [
-                    5.00000002102672,
-                    0.0
+                    -5.0,
+                    5.0
                   ],
-                  "radius": 3.0000000029729303,
+                  "radius": 5.0,
                   "tag": {
-                    "commentStart": 159,
-                    "end": 160,
+                    "commentStart": 208,
+                    "end": 209,
                     "moduleId": 0,
-                    "start": 159,
+                    "start": 208,
                     "type": "TagDeclarator",
-                    "value": "b"
+                    "value": "a"
                   },
                   "to": [
-                    11.00000002697258,
-                    -0.0000000000000011021821203248548
+                    5.0,
+                    4.999999999999998
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -462,11 +424,11 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
               },
               "start": {
                 "from": [
-                  -4.999999997000044,
+                  10.0,
                   0.0
                 ],
                 "to": [
-                  -4.999999997000044,
+                  10.0,
                   0.0
                 ],
                 "units": "mm",
@@ -481,9 +443,9 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   "type": "TagIdentifier",
                   "value": "a"
                 },
-                "b": {
+                "l": {
                   "type": "TagIdentifier",
-                  "value": "b"
+                  "value": "l"
                 }
               },
               "artifactId": "[uuid]",

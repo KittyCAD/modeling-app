@@ -441,6 +441,11 @@ fn extract_variable_ids_from_constraint(constraint: &ezpz::Constraint, variable_
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
+        ezpz::Constraint::DistanceVar(pt0, pt1, distance) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+            extract_ids_from_distance(distance, variable_set);
+        }
         ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
@@ -448,6 +453,14 @@ fn extract_variable_ids_from_constraint(constraint: &ezpz::Constraint, variable_
         ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
+        }
+        ezpz::Constraint::LineTangentToCircle(line, circle) => {
+            extract_ids_from_line(line, variable_set);
+            extract_ids_from_circle(circle, variable_set);
+        }
+        ezpz::Constraint::CircleTangentToCircle(circle0, circle1) => {
+            extract_ids_from_circle(circle0, variable_set);
+            extract_ids_from_circle(circle1, variable_set);
         }
         ezpz::Constraint::Horizontal(line) | ezpz::Constraint::Vertical(line) => {
             extract_ids_from_line(line, variable_set);
@@ -511,6 +524,17 @@ fn extract_ids_from_arc(arc: &ezpz::datatypes::inputs::DatumCircularArc, variabl
     extract_ids_from_point(&arc.center, variable_set);
     extract_ids_from_point(&arc.start, variable_set);
     extract_ids_from_point(&arc.end, variable_set);
+}
+
+/// Extract variable IDs from a DatumCircle.
+fn extract_ids_from_circle(circle: &ezpz::datatypes::inputs::DatumCircle, variable_set: &mut AHashSet<usize>) {
+    extract_ids_from_point(&circle.center, variable_set);
+    extract_ids_from_distance(&circle.radius, variable_set);
+}
+
+/// Extract variable IDs from a DatumDistance.
+fn extract_ids_from_distance(distance: &ezpz::datatypes::inputs::DatumDistance, variable_set: &mut AHashSet<usize>) {
+    variable_set.insert(distance.id as usize);
 }
 
 /// Extract numeric IDs from a debug string.
