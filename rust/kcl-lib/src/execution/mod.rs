@@ -453,6 +453,12 @@ impl From<Metadata> for Vec<SourceRange> {
     }
 }
 
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
+    }
+}
+
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
         Self { source_range }
@@ -629,6 +635,7 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
@@ -643,7 +650,7 @@ impl ExecutorContext {
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
                 pool: None,
-                pr: None,
+                pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: None,

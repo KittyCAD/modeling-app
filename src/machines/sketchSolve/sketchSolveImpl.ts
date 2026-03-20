@@ -8,6 +8,8 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   segmentUtilsMap,
+  POINT_SEGMENT_BODY,
+  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
@@ -29,6 +31,8 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
+import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -53,7 +57,9 @@ import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
+  isArcSegment,
   isConstraint,
+  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -79,6 +85,7 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
         | 'Horizontal'
@@ -125,7 +132,8 @@ export type UpdateSketchOutcomeEvent = {
      */
     debounceEditorUpdate?: boolean
     /**
-     * If false, skip persisting to disk (useful for high-frequency drag updates)
+     * Defaults to true. Set to false to skip persisting to disk, which is useful
+     * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
   }
@@ -138,6 +146,8 @@ type ToolActorRef =
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
+  | ActorRefFrom<typeof tangentialArcTool>
+  | ActorRefFrom<typeof threePointArcTool>
 
 export const equipTools = Object.freeze({
   trimTool,
@@ -149,6 +159,8 @@ export const equipTools = Object.freeze({
   pointTool,
   lineTool,
   centerArcTool,
+  tangentialArcTool,
+  threePointArcTool,
 })
 
 export type SketchSolveContext = {
@@ -298,11 +310,7 @@ export function updateSegmentGroup({
   let isConstruction = false
   if (objects) {
     const segmentObj = objects[idNum]
-    if (
-      segmentObj?.kind?.type === 'Segment' &&
-      (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc')
-    ) {
+    if (isLineSegment(segmentObj) || isArcSegment(segmentObj)) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
   }
@@ -656,7 +664,9 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
       if (
         child instanceof Mesh &&
         (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          child.userData?.type === ARC_SEGMENT_BODY) &&
+          child.userData?.type === ARC_SEGMENT_BODY ||
+          child.userData?.type === POINT_SEGMENT_BODY ||
+          child.userData?.type === POINT_SEGMENT_HIT_AREA) &&
         child.userData.isHovered === true
       ) {
         updateSegmentHover(child, false, selectedIds, draftEntityIds)
@@ -827,7 +837,44 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
   }
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
-  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
+  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
+
+  // Point segments use group scale for constant-screen-size rendering, so they
+  // must be refreshed when the camera scale factor changes.
+  const allSelectedIds = Array.from(
+    new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+  )
+  const draftEntityIds = context.draftEntities
+    ? [...context.draftEntities.segmentIds]
+    : undefined
+
+  objects.forEach((obj) => {
+    if (!(obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point')) {
+      return
+    }
+
+    const group = sketchSolveGroup.getObjectByName(String(obj.id))
+    if (!(group instanceof Group)) {
+      return
+    }
+
+    const ctor = buildSegmentCtorFromObject(obj, objects)
+    if (!ctor) {
+      return
+    }
+
+    updateSegmentGroup({
+      group,
+      input: ctor,
+      selectedIds: allSelectedIds,
+      scale: scaleFactor,
+      theme: context.sceneInfra.theme,
+      draftEntityIds,
+      objects,
+    })
+  })
 
   const constraintGroups = sketchSolveGroup.children.filter(
     (child) => child.userData.type === CONSTRAINT_TYPE && child instanceof Group
@@ -854,8 +901,18 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
 // We store the latest kclManager reference so the debounced function can access it
 const debouncedEditorUpdate = deferredCallback(
-  ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
-    kclManager.updateCodeEditor(text),
+  ({
+    text,
+    kclManager,
+    shouldWriteToDisk,
+  }: {
+    text: string
+    kclManager: KclManager
+    shouldWriteToDisk: boolean
+  }) =>
+    kclManager.updateCodeEditor(text, {
+      shouldWriteToDisk,
+    }),
   200
 )
 
@@ -891,13 +948,15 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
+      shouldWriteToDisk: event.data.writeToDisk !== false,
     })
   } else {
+    const shouldWriteToDisk = event.data.writeToDisk !== false
+
     // Update editor immediately - no debounce for frequent updates like onMove
     context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
       shouldExecute: false,
-      // Persist changes to disk unless explicitly disabled
-      shouldWriteToDisk: event.data.writeToDisk || false,
+      shouldWriteToDisk,
     })
   }
 
@@ -952,8 +1011,6 @@ export async function deleteDraftEntities({
         data: {
           sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
-          // Without this draft segments remain written on the file until another write comes.
-          writeToDisk: true,
         },
       })
     }
