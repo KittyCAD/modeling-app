@@ -14,7 +14,7 @@ triangle = sketch(on = XY) {
 triangleRegion = region(point = [1.86mm, 3.82mm], sketch = triangle)
 prism = extrude(triangleRegion, length = 2)
 
-face001 = faceOf(prism, face = triangleRegion.line1)
+face001 = faceOf(prism, face = triangleRegion.tags.line1)
 towerSketch = sketch(on = face001) {
   circle1 = arc(start = [var 1mm, var 0mm], end = [var 1mm, var 0mm], center = [var 0.5mm, var 0.5mm])
 }
