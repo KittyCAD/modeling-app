@@ -16,7 +16,13 @@ prism = extrude(triangleRegion, length = 2)
 
 face001 = faceOf(prism, face = triangleRegion.tags.line1)
 towerSketch = sketch(on = face001) {
-  circle1 = arc(start = [var 1mm, var 0mm], end = [var 1mm, var 0mm], center = [var 0.5mm, var 0.5mm])
+  arc1 = arc(start = [var 0.25mm, var -4.84mm], end = [var -0.05mm, var 4.8mm], center = [var 0.07mm, var -0.02mm])
+  arc2 = arc(start = [var -0.27mm, var 4.81mm], end = [var 0.09mm, var -4.86mm], center = [var 0.01mm, var -0.02mm])
+  coincident([arc1.center, arc2.center])
+  coincident([arc1.end, arc2.start])
+  coincident([arc1.start, arc2.end])
+  arc1.center.at[0] == 0.5mm
+  arc1.center.at[1] == 0.5mm
 }
-towerRegion = region(point = towerSketch.circle1.center)
+towerRegion = region(point = towerSketch.arc1.center)
 tower = extrude(towerRegion, length = 3)
