@@ -65,8 +65,10 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
+  getOtherCoincidentIdsByPointId,
   isPointSegment as isPointApiSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -231,11 +233,13 @@ export function createOnDragStartCallback({
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
- * Restores visual feedback for point segments after dragging ends.
+ * Restores visual feedback for point segments after dragging ends,
+ * and syncs all necessary state between the frontend and the solver.
  *
  * @param getDraggingPointElement - Getter for the currently dragging point element
  * @param setDraggingPointElement - Setter to clear the dragging point element
  * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
+ * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
   getDraggingPointElement,
@@ -249,17 +253,19 @@ export function createOnDragEndCallback({
     }
     return null
   },
+  onComplete,
 }: {
   getDraggingPointElement: () => HTMLElement | null
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
+  onComplete: () => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
+  return async () => {
     // Restore opacity for point segment if we were dragging one
     const element = getDraggingPointElement()
     if (element) {
@@ -272,6 +278,7 @@ export function createOnDragEndCallback({
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
     setDraggingPointElement(null)
+    await onComplete()
   }
 }
 
@@ -606,6 +613,12 @@ export function createOnDragCallback({
       selected,
       getParentGroup
     )
+    const entitiesCoincidentWithUnderCursor = entityUnderCursorId
+      ? getOtherCoincidentIdsByPointId(
+          entityUnderCursorId,
+          sceneGraphDelta.new_graph
+        )
+      : []
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -621,11 +634,16 @@ export function createOnDragCallback({
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
-      // Collect all IDs to edit (entity under cursor + selectedIds)
+      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
       if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
         idsToEdit.add(entityUnderCursorId)
       }
+      entitiesCoincidentWithUnderCursor.forEach((id) => {
+        if (!Number.isNaN(id)) {
+          idsToEdit.add(id)
+        }
+      })
       selectedIds.forEach((id) => {
         if (!Number.isNaN(id)) {
           idsToEdit.add(id)
@@ -1443,6 +1461,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragEnd: createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      // Send the last up-to-date state from the frontend to Rust. It doesn't know
+      // about this last feedback loop yet!
+      onComplete: async () => {
+        try {
+          const result = await context.rustContext.sketchExecuteMock(
+            SKETCH_FILE_VERSION,
+            context.sketchId
+          )
+
+          // Send the event to update the sketch outcome
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          })
+        } catch (err) {
+          console.error('error in onDragEnd sketchExecuteMock', err)
+        }
+      },
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
