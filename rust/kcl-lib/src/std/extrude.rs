@@ -405,7 +405,10 @@ async fn inner_extrude(
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: None,
-                                entity_reference: Some(EntityReference::Edge { inner }),
+                                entity_reference: Some(EntityReference::Edge {
+                                    inner,
+                                    topology_fallback: None,
+                                }),
                             })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
