@@ -654,10 +654,10 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // Order of ID generation is important.
     let start_object_id = exec_state.next_object_id();
     let center_object_id = exec_state.next_object_id();
-    let arc_object_id = exec_state.next_object_id();
+    let circle_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
         id: exec_state.next_uuid(),
-        object_id: arc_object_id,
+        object_id: circle_object_id,
         kind: UnsolvedSegmentKind::Circle {
             start: [UnsolvedExpr::Unknown(start_x), UnsolvedExpr::Unknown(start_y)],
             center: [UnsolvedExpr::Unknown(center_x), UnsolvedExpr::Unknown(center_y)],
@@ -673,11 +673,11 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let optional_constraints = {
         let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
         let center_object_id = exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
-        let arc_object_id = exec_state.add_placeholder_scene_object(arc_object_id, args.source_range);
+        let circle_object_id = exec_state.add_placeholder_scene_object(circle_object_id, args.source_range);
 
         let mut optional_constraints = Vec::new();
         if exec_state.segment_ids_edited_contains(&start_object_id)
-            || exec_state.segment_ids_edited_contains(&arc_object_id)
+            || exec_state.segment_ids_edited_contains(&circle_object_id)
         {
             if let Some(start_x_var) = start_x_value.as_sketch_var() {
                 let x_initial_value = start_x_var.initial_value_to_solver_units(
@@ -703,7 +703,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             }
         }
         if exec_state.segment_ids_edited_contains(&center_object_id)
-            || exec_state.segment_ids_edited_contains(&arc_object_id)
+            || exec_state.segment_ids_edited_contains(&circle_object_id)
         {
             if let Some(center_x_var) = center_x_value.as_sketch_var() {
                 let x_initial_value = center_x_var.initial_value_to_solver_units(
@@ -733,7 +733,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "arc() can only be used inside a sketch block".to_owned(),
+            "circle() can only be used inside a sketch block".to_owned(),
             vec![args.source_range],
         )));
     };
