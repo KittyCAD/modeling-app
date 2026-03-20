@@ -475,16 +475,18 @@ export class File extends EventTarget {
     return this.pathSignal.value
   }
   set path(newPath: string) {
-    if (this.watching) {
+    const wasWatching = this.watching
+    if (wasWatching) {
       this.unwatch()
-
-      // Don't watch empty file paths, that's the whole file system!
-      if (newPath.length > 0) {
-        this.watch()
-      }
     }
 
+    // Set pathSignal before calling this.watch() as it uses the path!
     this.pathSignal.value = newPath
+
+    // Don't watch empty file paths, that's the whole file system!
+    if (wasWatching && newPath.length > 0) {
+      this.watch()
+    }
   }
 
   read() {
@@ -496,6 +498,9 @@ export class File extends EventTarget {
   }
 
   watch() {
+    if (this.watching || this.path.length < 1) {
+      return
+    }
     File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
       this.onWatchEvent.map((f) => f(e, p))
     })
@@ -503,6 +508,9 @@ export class File extends EventTarget {
   }
 
   unwatch() {
+    if (!this.watching) {
+      return
+    }
     File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
     this.watching = false
   }
@@ -708,6 +716,7 @@ export class KclManager extends File {
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
@@ -1143,6 +1152,8 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
     this.unwatch()
   }
 
@@ -2269,6 +2280,7 @@ export class KclManager extends File {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
+      clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this.path) {
@@ -2282,8 +2294,9 @@ export class KclManager extends File {
             .then(resolve)
             .then(() => {
               // After a cooldown, start watching this file again on disk.
-              setTimeout(() => {
+              this.timeoutRewatch = setTimeout(() => {
                 this.watch()
+                this.timeoutRewatch = undefined
               }, 1_000)
             })
             .catch((err: Error) => {
