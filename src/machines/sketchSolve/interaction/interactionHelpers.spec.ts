@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Coords2d } from '@src/lang/util'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
@@ -14,16 +13,8 @@ import { Group } from 'three'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
-type SketchSolveSnapshot = ReturnType<SolveActionArgs['self']['getSnapshot']>
-
-function createSnapshot(objects: Parameters<typeof createSceneGraphDelta>[0]) {
-  return {
-    context: {
-      sketchExecOutcome: {
-        sceneGraphDelta: createSceneGraphDelta(objects),
-      },
-    },
-  } as SketchSolveSnapshot
+function createObjectsArray(objects: ApiObject[]) {
+  return createSceneGraphDelta(objects).new_graph.objects
 }
 
 function createConstraintApiObject({
@@ -74,7 +65,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [20, 3],
-      createSnapshot([start, end, line, farPoint]),
+      createObjectsArray([start, end, line, farPoint]),
       createMockSceneInfra()
     )
 
@@ -90,7 +81,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [12, 4],
-      createSnapshot([start, end, line]),
+      createObjectsArray([start, end, line]),
       createMockSceneInfra()
     )
     const lineResult = result.find(({ apiObject }) => apiObject.id === 3)
@@ -107,7 +98,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       mousePosition,
-      createSnapshot([start, end, line, point]),
+      createObjectsArray([start, end, line, point]),
       createMockSceneInfra()
     )
 
@@ -120,7 +111,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [0, 0],
-      createSnapshot([point]),
+      createObjectsArray([point]),
       createMockSceneInfra()
     )
 
@@ -135,7 +126,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [21, 21],
-      createSnapshot([center, start, end, arc]),
+      createObjectsArray([center, start, end, arc]),
       createMockSceneInfra()
     )
 
@@ -154,7 +145,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [21, 21],
-      createSnapshot([
+      createObjectsArray([
         lineStart,
         lineEnd,
         line,
@@ -186,7 +177,7 @@ describe('findClosestApiObjects', () => {
 
     const result = findClosestApiObjects(
       [20, 4],
-      createSnapshot([constraint]),
+      createObjectsArray([constraint]),
       sceneInfra
     )
 
@@ -249,7 +240,7 @@ describe('findClosestApiObjects', () => {
 
     const arcResult = findClosestApiObjects(
       [21, 21],
-      createSnapshot([constraint]),
+      createObjectsArray([constraint]),
       sceneInfra
     )
     expect(arcResult[0]?.apiObject.id).toBe(9)
@@ -257,7 +248,7 @@ describe('findClosestApiObjects', () => {
 
     const labelResult = findClosestApiObjects(
       [52, 55],
-      createSnapshot([constraint]),
+      createObjectsArray([constraint]),
       sceneInfra
     )
     expect(labelResult[0]?.apiObject.id).toBe(9)

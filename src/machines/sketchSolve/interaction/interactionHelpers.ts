@@ -141,15 +141,9 @@ export type ClosestApiObject = {
 
 export function findClosestApiObjects(
   mousePosition: Coords2d,
-  snapshot: SketchSolveSnapshot,
+  objects: ApiObject[],
   sceneInfra: SceneInfra
 ): ClosestApiObject[] {
-  const objects =
-    snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
-  if (!objects) {
-    return []
-  }
-
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   const hoverDistance =
     HOVER_DISTANCE_PX *

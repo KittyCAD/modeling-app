@@ -1424,9 +1424,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
         intersectionPoint.twoD.y,
       ] as Coords2d
 
+      const apiObjects =
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+        []
       const closestObjects = findClosestApiObjects(
         mousePosition,
-        snapshot,
+        apiObjects,
         context.sceneInfra
       )
       const hoveredObject: ClosestApiObject | null = closestObjects[0] ?? null

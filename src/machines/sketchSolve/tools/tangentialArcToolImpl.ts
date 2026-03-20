@@ -4,7 +4,10 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
@@ -25,17 +28,13 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
-import { Mesh } from 'three'
 import {
   isArcSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import {
-  POINT_SEGMENT_BODY,
-  updateSegmentHover,
-} from '@src/machines/sketchSolve/segments'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+
+import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 
 export const TOOL_ID = 'Tangential arc tool'
 export const CREATING_ARC = `xstate.done.actor.0.${TOOL_ID}.Creating arc`
@@ -132,51 +131,6 @@ function getHoverState(self: ToolActionArgs['self']): {
       ? [...snapshot.context.draftEntities.segmentIds]
       : undefined,
   }
-}
-
-function isHoverableTangentStartMesh(
-  mesh: Mesh,
-  sceneGraphDelta: SceneGraphDelta
-): boolean {
-  if (mesh.userData?.type !== POINT_SEGMENT_BODY) {
-    return false
-  }
-
-  const clickedId = Number(mesh.parent?.name)
-  if (Number.isNaN(clickedId)) {
-    return false
-  }
-
-  return (
-    resolveTangentInfoFromClick({
-      clickedId,
-      sceneGraphDelta,
-    }) !== null
-  )
-}
-
-function clearHoveredTangentStartPoints({
-  self,
-  context,
-}: Pick<ToolActionArgs, 'self' | 'context'>) {
-  const { selectedIds, draftEntityIds } = getHoverState(self)
-  const sketchSegments =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ??
-    context.sceneInfra.scene
-
-  if (!sketchSegments || typeof sketchSegments.traverse !== 'function') {
-    return
-  }
-
-  sketchSegments.traverse((child) => {
-    if (
-      child instanceof Mesh &&
-      child.userData?.type === POINT_SEGMENT_BODY &&
-      child.userData.isHovered === true
-    ) {
-      updateSegmentHover(child, false, selectedIds, draftEntityIds)
-    }
-  })
 }
 
 function getLineTangentDirection({
@@ -368,15 +322,12 @@ export function resolveTangentInfoFromClick({
 }
 
 export function addFirstPointListener({ self, context }: ToolActionArgs) {
-  let lastHoveredMesh: Mesh | null = null
-
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
       if (!args) return
       if (args.mouseEvent.which !== 1) return
 
-      const { sceneGraphDelta, selectedIds, draftEntityIds } =
-        getHoverState(self)
+      const { sceneGraphDelta } = getHoverState(self)
       if (!sceneGraphDelta?.new_graph?.objects) return
 
       const clickedId = Number(args.selected?.parent?.name)
@@ -388,11 +339,6 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       })
       if (!tangentInfo) return
 
-      if (lastHoveredMesh) {
-        updateSegmentHover(lastHoveredMesh, false, selectedIds, draftEntityIds)
-        lastHoveredMesh = null
-      }
-
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
 
@@ -401,29 +347,43 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         data: tangentInfo,
       })
     },
-    onMove: () => {},
-    onMouseEnter: ({ selected }) => {
-      const { sceneGraphDelta, selectedIds, draftEntityIds } =
-        getHoverState(self)
-      if (!sceneGraphDelta?.new_graph?.objects) return
-      if (!(selected instanceof Mesh)) return
-      if (!isHoverableTangentStartMesh(selected, sceneGraphDelta)) return
+    onMove: ({ intersectionPoint }: OnMoveCallbackArgs) => {
+      const snapshot = self._parent?.getSnapshot()
+      if (!snapshot) {
+        console.warn("Couldn't get snapshot")
+        return
+      }
+      const mousePosition = [
+        intersectionPoint.twoD.x,
+        intersectionPoint.twoD.y,
+      ] as Coords2d
 
-      updateSegmentHover(selected, true, selectedIds, draftEntityIds)
-      lastHoveredMesh = selected
-    },
-    onMouseLeave: ({ selected }) => {
-      const { selectedIds, draftEntityIds } = getHoverState(self)
-      if (lastHoveredMesh) {
-        updateSegmentHover(lastHoveredMesh, false, selectedIds, draftEntityIds)
-        lastHoveredMesh = null
-        return
-      }
-      if (!(selected instanceof Mesh)) return
-      if (selected.userData?.type !== POINT_SEGMENT_BODY) {
-        return
-      }
-      updateSegmentHover(selected, false, selectedIds, draftEntityIds)
+      const apiObjects =
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+        []
+      const closestObjects = findClosestApiObjects(
+        mousePosition,
+        apiObjects,
+        context.sceneInfra
+      )
+
+      const sceneGraphDelta =
+        snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
+
+      const closestObjectForTrangentStart = closestObjects.find(
+        (obj) =>
+          resolveTangentInfoFromClick({
+            clickedId: obj.apiObject.id,
+            sceneGraphDelta,
+          }) !== null
+      )
+
+      self._parent?.send({
+        type: 'update hovered id',
+        data: {
+          hoveredId: closestObjectForTrangentStart?.apiObject.id ?? null,
+        },
+      })
     },
   })
 }
@@ -433,8 +393,12 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
     return
   }
 
-  console.log('animate arc ')
-  clearHoveredTangentStartPoints({ self, context })
+  self._parent?.send({
+    type: 'update hovered id',
+    data: {
+      hoveredId: null,
+    },
+  })
 
   let isEditInProgress = false
   let cachedSettings: Awaited<ReturnType<typeof jsAppSettings>> | null = null
@@ -549,8 +513,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
   })
 }
 
-export function removePointListener({ self, context }: ToolActionArgs) {
-  clearHoveredTangentStartPoints({ self, context })
+export function removePointListener({ context }: ToolActionArgs) {
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
   context.sceneInfra.setCallbacks({
     onClick: () => {},
