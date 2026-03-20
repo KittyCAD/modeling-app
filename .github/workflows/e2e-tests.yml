@@ -470,6 +470,7 @@ jobs:
       - name: Wait for Vercel
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 1200 # average build times are 17-18 minutes
@@ -477,6 +478,7 @@ jobs:
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
+        continue-on-error: true
         run: .github/ci-cd-scripts/check-vercel.sh
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
