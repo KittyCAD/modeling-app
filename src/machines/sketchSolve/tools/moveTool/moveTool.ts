@@ -1451,11 +1451,30 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragEnd: createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
-      sketchExecuteMock: () =>
-        context.rustContext.sketchExecuteMock(
-          SKETCH_FILE_VERSION,
-          context.sketchId
-        ),
+      sketchExecuteMock: async () => {
+        try {
+          const result = await context.rustContext
+            .sketchExecuteMock(SKETCH_FILE_VERSION, context.sketchId)
+            .catch((err) => {
+              console.error('failed to execute sketch mock', err)
+              return null
+            })
+
+          if (result !== null) {
+            // Send the event to update the sketch outcome
+            self.send({
+              type: 'update sketch outcome',
+              data: {
+                sourceDelta: result.kclSource,
+                sceneGraphDelta: result.sceneGraphDelta,
+                writeToDisk: false,
+              },
+            })
+          }
+        } catch (err) {
+          console.error('error in onDragEnd sketchExecuteMock', err)
+        }
+      },
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
