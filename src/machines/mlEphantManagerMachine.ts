@@ -445,6 +445,12 @@ export const mlEphantManagerMachine = setup({
         (onFulfilled, onRejected) => {
           let devCalledClose = false
 
+          // Any WS protocol messages will trigger the `api` heartbeat update.
+          const pingIntervalId = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return
+            ws.send(JSON.stringify({ type: 'ping' }))
+          }, 4_000)
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -595,6 +601,7 @@ export const mlEphantManagerMachine = setup({
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
+              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
