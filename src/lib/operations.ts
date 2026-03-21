@@ -2019,6 +2019,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Angle Constraint',
     icon: 'angle',
   },
+  arc: {
+    label: 'Arc',
+    icon: 'arc',
+  },
   coincident: {
     label: 'Coincident Constraint',
     icon: 'coincident',
@@ -2047,6 +2051,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Horizontal Constraint',
     icon: 'horizontal',
   },
+  line: {
+    label: 'Line',
+    icon: 'line',
+  },
   midpoint: {
     label: 'Midpoint Constraint',
     icon: 'midpoint',
@@ -2062,6 +2070,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   perpendicular: {
     label: 'Perpendicular Constraint',
     icon: 'perpendicular',
+  },
+  point: {
+    label: 'Point',
+    icon: 'oneDot',
   },
   radius: {
     label: 'Radius Constraint',
