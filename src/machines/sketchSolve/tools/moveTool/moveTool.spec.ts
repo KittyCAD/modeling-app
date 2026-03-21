@@ -1,14 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
-import { Group, Vector2, Vector3, Mesh } from 'three'
+import { Group, Vector2, Vector3 } from 'three'
 import {
   createOnDragStartCallback,
   createOnDragCallback,
   createOnClickCallback,
-  createOnMouseEnterCallback,
-  createOnMouseLeaveCallback,
+  setUpOnDragAndSelectionClickCallbacks,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'
 import type {
   ApiObject,
@@ -40,6 +38,77 @@ function createOnClickDeps(objects: ApiObject[] = []) {
 
 function createDraggedEntityIdGetter(entityId: number | null = null) {
   return vi.fn(() => entityId)
+}
+
+function setUpMoveToolCallbacks({
+  apiObjects = [],
+  hoveredId = null,
+  isAreaSelectActive = false,
+}: {
+  apiObjects?: ApiObject[]
+  hoveredId?: number | null
+  isAreaSelectActive?: boolean
+}) {
+  let callbacks: Record<string, unknown> = {}
+
+  const sceneInfra = {
+    setCallbacks: vi.fn((nextCallbacks) => {
+      callbacks = nextCallbacks as Record<string, unknown>
+    }),
+    scene: {
+      getObjectByName: vi.fn(() => null),
+    },
+    getClientSceneScaleFactor: vi.fn(() => 1),
+    isAreaSelectActive,
+  } as unknown as SceneInfra
+
+  const snapshot = {
+    context: {
+      hoveredId,
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      sketchId: 0,
+      draftEntities: undefined,
+      sketchExecOutcome: {
+        sceneGraphDelta: createSceneGraphDelta(apiObjects),
+      },
+    },
+  }
+
+  const self = {
+    getSnapshot: vi.fn(() => snapshot),
+    send: vi.fn(),
+  }
+
+  const context = {
+    sceneInfra,
+    rustContext: {
+      editSegments: vi.fn(),
+      settingsActor: null,
+    },
+    kclManager: {
+      fileSettings: {
+        defaultLengthUnit: 'mm' as UnitLength,
+      },
+    },
+  }
+
+  setUpOnDragAndSelectionClickCallbacks({
+    self: self as never,
+    context: context as never,
+  })
+
+  if (typeof callbacks.onMove !== 'function') {
+    throw new Error('Move tool did not register an onMove callback')
+  }
+
+  return {
+    onMove: callbacks.onMove as (args: {
+      intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+    }) => void,
+    sceneInfra,
+    send: self.send,
+  }
 }
 
 /**
@@ -74,51 +143,6 @@ function createPointSegmentGroup({
     return result
   }
   throw new Error('Failed to create point segment group')
-}
-
-/**
- * Helper function to create a line segment mesh for testing.
- * Uses the same function that creates line segments in production,
- * ensuring tests match the actual runtime structure.
- */
-export function createLineSegmentMesh({
-  segmentId,
-  theme = Themes.Dark,
-  scale = 1,
-}: {
-  segmentId: number
-  theme?: Themes
-  scale?: number
-}): Mesh {
-  const result = segmentUtilsMap.LineSegment.init({
-    input: {
-      type: 'Line',
-      start: {
-        x: { type: 'Var', value: 0, units: 'Mm' },
-        y: { type: 'Var', value: 0, units: 'Mm' },
-      },
-      end: {
-        x: { type: 'Var', value: 10, units: 'Mm' },
-        y: { type: 'Var', value: 10, units: 'Mm' },
-      },
-    },
-    theme,
-    scale,
-    id: segmentId,
-    isDraft: false,
-    isConstruction: false,
-  })
-  if (result instanceof Group) {
-    // Find the STRAIGHT_SEGMENT_BODY mesh within the group
-    const mesh = result.children.find(
-      (child) =>
-        child instanceof Mesh && child.userData?.type === STRAIGHT_SEGMENT_BODY
-    )
-    if (mesh instanceof Mesh) {
-      return mesh
-    }
-  }
-  throw new Error('Failed to create line segment mesh')
 }
 
 describe('createOnDragStartCallback', () => {
@@ -1113,281 +1137,90 @@ describe('createOnClickCallback', () => {
   })
 })
 
-describe('createOnMouseEnterCallback', () => {
-  it('should highlight line segments on hover to provide visual feedback', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
+describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
+  it('should update hovered id when moving onto a segment', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
     })
 
-    callback({
-      selected: lineMesh,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
     })
 
-    // Hovering over a line segment should highlight it to show it's interactive
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      true,
-      [],
-      undefined
-    )
-    expect(setLastHoveredMesh).toHaveBeenCalledWith(lineMesh)
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: 5 },
+    })
   })
 
-  it('should not highlight during area select to avoid visual conflicts', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
+  it('should clear the hovered id when moving away from the hovered segment', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+      hoveredId: 5,
     })
 
-    callback({
-      selected: lineMesh,
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(200, 200),
+        threeD: new Vector3(200, 200, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: null },
+    })
+  })
+
+  it('should not update hovered id during area select', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onMove, send, sceneInfra } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
       isAreaSelectActive: true,
-      mouseEvent: createTestMouseEvent(),
     })
 
-    // Should not highlight during area select to keep the UI clean
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+
+    expect(send).not.toHaveBeenCalled()
+    expect(sceneInfra.scene.getObjectByName).not.toHaveBeenCalled()
   })
 
-  it('should ignore non-line-segment objects to only highlight relevant segments', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-    const pointGroup = createPointSegmentGroup({ segmentId: 3 })
+  it('should avoid redundant hover updates when the hovered segment is unchanged', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+      hoveredId: 5,
     })
 
-    callback({
-      selected: pointGroup,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
     })
 
-    // Point segments should not trigger hover highlighting
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-
-  it('should include selected IDs when highlighting to show selection state', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [5, 13])
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 7 })
-
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: lineMesh,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Highlighting should include selected IDs so the hover effect respects selection state
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      true,
-      [5, 13],
-      undefined
-    )
-  })
-
-  it('should handle undefined selected gracefully', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Should not crash when nothing is selected
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-})
-
-describe('createOnMouseLeaveCallback', () => {
-  it('should clear hover highlighting when leaving a line segment', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Leaving a hovered segment should clear the highlight to restore normal appearance
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      false,
-      [],
-      undefined
-    )
-    expect(setLastHoveredMesh).toHaveBeenCalledWith(null)
-  })
-
-  it('should not clear hover during area select to avoid visual conflicts', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: true,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Should not modify hover state during area select
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-
-  it('should include selected IDs when clearing hover to maintain selection state', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [5, 13])
-    const lineMesh = createLineSegmentMesh({ segmentId: 7 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Clearing hover should include selected IDs to maintain proper visual state
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      false,
-      [5, 13],
-      undefined
-    )
-  })
-
-  it('should handle case where no mesh was previously hovered', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const getLastHoveredMesh = vi.fn(() => null)
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Should not crash when no mesh was hovered
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-
-  it('should ignore non-line-segment objects when clearing hover', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const pointGroup = createPointSegmentGroup({ segmentId: 3 })
-    const getLastHoveredMesh = vi.fn(() => null)
-    const setLastHoveredMesh = vi.fn()
-    const onUpdateHoveredId = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
-      onUpdateHoveredId,
-    })
-
-    callback({
-      selected: pointGroup,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Point segments should not trigger hover clearing
-    expect(updateSegmentHover).not.toHaveBeenCalled()
+    expect(send).not.toHaveBeenCalled()
   })
 })
