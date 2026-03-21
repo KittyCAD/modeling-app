@@ -6,12 +6,8 @@ import {
   createOnClickCallback,
   createOnMouseEnterCallback,
   createOnMouseLeaveCallback,
-  findEntityUnderCursorId,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import {
-  SEGMENT_TYPE_POINT,
-  segmentUtilsMap,
-} from '@src/machines/sketchSolve/segments'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'
 import type {
@@ -21,12 +17,29 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 function createTestMouseEvent(): MouseEvent {
   return new MouseEvent('click', {
     bubbles: true,
     cancelable: true,
   })
+}
+
+function createOnClickDeps(objects: ApiObject[] = []) {
+  return {
+    getApiObjects: () => createSceneGraphDelta(objects).new_graph.objects,
+    sceneInfra: {
+      scene: {
+        getObjectByName: vi.fn(() => null),
+      },
+      getClientSceneScaleFactor: vi.fn(() => 1),
+    } as unknown as SceneInfra,
+  }
+}
+
+function createDraggedEntityIdGetter(entityId: number | null = null) {
+  return vi.fn(() => entityId)
 }
 
 /**
@@ -109,11 +122,15 @@ export function createLineSegmentMesh({
 }
 
 describe('createOnDragStartCallback', () => {
-  it('should track the drag start position for calculating drag vectors', () => {
+  it('should track the drag start position and dragged entity id', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const setDraggedEntityId = vi.fn()
+    const getHoveredId = vi.fn(() => 13)
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDraggedEntityId,
+      getHoveredId,
     })
 
     const intersectionPoint = {
@@ -137,6 +154,9 @@ describe('createOnDragStartCallback', () => {
     expect(callArg).not.toBe(intersectionPoint.twoD)
     expect(callArg.x).toBe(10)
     expect(callArg.y).toBe(20)
+    expect(setDraggedEntityId).toHaveBeenCalledOnce()
+    expect(setDraggedEntityId).toHaveBeenCalledWith(13)
+    expect(getHoveredId).toHaveBeenCalledOnce()
   })
 })
 
@@ -167,6 +187,45 @@ function createPointApiObject({
         owner: null,
         freedom: 'Free',
         constraints: [],
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createLineApiObject({
+  id,
+  start,
+  end,
+}: {
+  id: number
+  start: number
+  end: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Line',
+        start,
+        end,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+        ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -226,6 +285,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const getContextData = vi.fn(() => ({
       selectedIds: [],
       sketchId: 0,
@@ -241,6 +301,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -268,6 +329,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const getContextData = vi.fn(() => ({
       selectedIds: [],
       sketchId: 0,
@@ -283,6 +345,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -310,6 +373,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -327,6 +391,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -355,6 +420,7 @@ describe('createOnDragCallback', () => {
     // Last successful drag was at (5, 10)
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(5, 10))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5, x: 0, y: 0 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -377,6 +443,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -423,6 +490,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(13)
     // Create a point segment that will be under the cursor
     const pointObject = createPointApiObject({ id: 13, x: 10, y: 20 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
@@ -449,6 +517,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -492,6 +561,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(13)
     // Create multiple point segments
     const point1 = createPointApiObject({ id: 5, x: 0, y: 0 })
     const point2 = createPointApiObject({ id: 13, x: 10, y: 20 })
@@ -519,6 +589,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -560,6 +631,7 @@ describe('createOnDragCallback', () => {
     })
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -590,6 +662,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -666,6 +739,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -688,6 +762,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -721,6 +796,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -742,6 +818,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -772,6 +849,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -790,6 +868,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -819,6 +898,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -837,6 +917,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -867,6 +948,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     // Create a non-segment object (e.g., a Sketch object)
     const sketchObject: ApiObject = {
       id: 5,
@@ -898,6 +980,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -921,89 +1004,25 @@ describe('createOnDragCallback', () => {
   })
 })
 
-describe('findEntityUnderCursorId', () => {
-  it('should return null when no object is selected', () => {
-    const getParentGroup = vi.fn()
-    const result = findEntityUnderCursorId(undefined, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should return segment ID when selected is a Group with numeric name and point segment type', () => {
-    const group = new Group()
-    group.name = '13'
-    group.userData = { type: SEGMENT_TYPE_POINT }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBe(13)
-  })
-
-  it('should return segment ID when selected is a Group with numeric name and line segment type', () => {
-    const group = new Group()
-    group.name = '5'
-    group.userData = { type: 'LINE' }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBe(5)
-  })
-
-  it('should return null when Group name is not numeric', () => {
-    const group = new Group()
-    group.name = 'not-a-number'
-    group.userData = { type: SEGMENT_TYPE_POINT }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should use getParentGroup when selected is not a Group', () => {
-    const mesh = new Group() // Using Group as a mock for any Object3D
-    mesh.name = 'not-a-group'
-    const parentGroup = new Group()
-    parentGroup.name = '42'
-    const getParentGroup = vi.fn(() => parentGroup)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBe(42)
-  })
-
-  it('should return null when getParentGroup returns null', () => {
-    const mesh = new Group()
-    const getParentGroup = vi.fn(() => null)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should return null when getParentGroup returns group with non-numeric name', () => {
-    const mesh = new Group()
-    const parentGroup = new Group()
-    parentGroup.name = 'invalid'
-    const getParentGroup = vi.fn(() => parentGroup)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBeNull()
-  })
-})
-
 describe('createOnClickCallback', () => {
   it('should select a segment when clicking on it to enable editing', async () => {
-    const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
-    const pointGroup = createPointSegmentGroup({ segmentId: 13 })
+    const pointObject = createPointApiObject({ id: 13, x: 10, y: 20 })
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps([pointObject]),
       onUpdateSelectedIds,
       onEditConstraint,
     })
 
     await callback({
-      selected: pointGroup,
+      selected: undefined,
       mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
       intersects: [],
     })
 
@@ -1015,12 +1034,11 @@ describe('createOnClickCallback', () => {
   })
 
   it('should clear selection when clicking on empty space to deselect all segments', async () => {
-    const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps(),
       onUpdateSelectedIds,
       onEditConstraint,
     })
@@ -1038,43 +1056,15 @@ describe('createOnClickCallback', () => {
     })
   })
 
-  it('should find segment via getParentGroup when selected is not a Group', async () => {
-    const mesh = new Group() // Mock for any Object3D
-    const parentGroup = new Group()
-    parentGroup.name = '42'
-    const getParentGroup = vi.fn(() => parentGroup)
-    const onUpdateSelectedIds = vi.fn()
-    const onEditConstraint = vi.fn()
-
-    const callback = createOnClickCallback({
-      getParentGroup,
-      onUpdateSelectedIds,
-      onEditConstraint,
-    })
-
-    await callback({
-      selected: mesh,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Should find the segment through getParentGroup and select it
-    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
-      selectedIds: [42],
-      duringAreaSelectIds: [],
-    })
-  })
-
   it('should handle clicking on non-segment objects by clearing selection', async () => {
     const nonSegmentGroup = new Group()
     nonSegmentGroup.name = 'not-a-segment'
     nonSegmentGroup.userData = { type: 'other' }
-    const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps(),
       onUpdateSelectedIds,
       onEditConstraint,
     })
@@ -1093,22 +1083,25 @@ describe('createOnClickCallback', () => {
   })
 
   it('should select line segments identified by STRAIGHT_SEGMENT_BODY children', async () => {
-    const lineGroup = new Group()
-    lineGroup.name = '5'
-    lineGroup.userData = { type: 'LINE' }
-    const getParentGroup = vi.fn()
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps([start, end, line]),
       onUpdateSelectedIds,
       onEditConstraint,
     })
 
     await callback({
-      selected: lineGroup,
+      selected: undefined,
       mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
       intersects: [],
     })
 

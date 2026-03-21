@@ -195,8 +195,10 @@ export type ConstraintObject = ApiObject & {
   kind: { type: 'Constraint' }
 }
 
-export function isConstraint(obj: ApiObject): obj is ConstraintObject {
-  return obj.kind.type === 'Constraint'
+export function isConstraint(
+  obj: ApiObject | undefined
+): obj is ConstraintObject {
+  return obj?.kind.type === 'Constraint'
 }
 
 export type DistanceConstraint = ApiObject & {

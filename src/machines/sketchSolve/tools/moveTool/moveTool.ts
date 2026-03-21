@@ -8,12 +8,8 @@ import type {
 import { roundOff } from '@src/lib/utils'
 import {
   htmlHelper,
-  SEGMENT_TYPE_LINE,
-  SEGMENT_TYPE_POINT,
-  SEGMENT_TYPE_ARC,
   ARC_SEGMENT_BODY,
   POINT_SEGMENT_BODY,
-  updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
   type Object3D,
@@ -33,10 +29,7 @@ import {
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import {
-  getParentGroup,
-  STRAIGHT_SEGMENT_BODY,
-} from '@src/clientSideScene/sceneConstants'
+import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -67,12 +60,13 @@ import {
   isConstraint,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
-import {
-  ClosestApiObject,
-  findClosestApiObjects,
-} from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -161,22 +155,6 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
-function getSegmentHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
-  if (!(segmentGroup instanceof Group)) {
-    return null
-  }
-
-  const segmentMesh = segmentGroup.children.find(
-    (child) =>
-      child instanceof Mesh &&
-      (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
-        child.userData?.type === ARC_SEGMENT_BODY ||
-        child.userData?.type === POINT_SEGMENT_BODY)
-  )
-
-  return segmentMesh instanceof Mesh ? segmentMesh : null
-}
-
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
  * Handles initialization of drag state.
@@ -185,8 +163,12 @@ function getSegmentHoverMesh(segmentGroup: Object3D | undefined): Mesh | null {
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
+  setDraggedEntityId,
+  getHoveredId,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  setDraggedEntityId: (entityId: number | null) => void
+  getHoveredId: () => number | null
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -195,73 +177,26 @@ export function createOnDragStartCallback({
 }) => void | Promise<void> {
   return ({ intersectionPoint }) => {
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setDraggedEntityId(getHoveredId())
   }
 }
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
  */
-export function createOnDragEndCallback(): (arg: {
+export function createOnDragEndCallback({
+  setDraggedEntityId,
+}: {
+  setDraggedEntityId: (entityId: number | null) => void
+}): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {}
-}
-
-/**
- * Finds the segment ID of the entity under the cursor.
- * Handles both Group objects (from CSS2DObject parents) and regular three.js objects.
- *
- * @param selected - The selected object from the scene
- * @param getParentGroup - Function to find parent group for non-Group objects
- * @returns The segment ID if found, null otherwise
- */
-export function findEntityUnderCursorId(
-  selected: Object3D | undefined,
-  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
-): number | null {
-  if (!selected) {
-    return null
+  return () => {
+    setDraggedEntityId(null)
   }
-
-  // Check if selected is already a Group with a numeric name (segment group)
-  if (selected instanceof Group) {
-    const groupId = Number(selected.name)
-    if (!Number.isNaN(groupId)) {
-      // Check if it's a point, line, or arc segment by userData.type or child mesh type.
-      const isPointSegment = selected.userData?.type === SEGMENT_TYPE_POINT
-      const isLineSegment =
-        selected.userData?.type === SEGMENT_TYPE_LINE ||
-        selected.children.some(
-          (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
-        )
-      const isArcSegment =
-        selected.userData?.type === SEGMENT_TYPE_ARC ||
-        selected.children.some(
-          (child) => child.userData?.type === ARC_SEGMENT_BODY
-        )
-
-      if (isPointSegment || isLineSegment || isArcSegment) {
-        return groupId
-      }
-    }
-  }
-
-  // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
-  const groupUnderCursor = getParentGroup(selected, [
-    SEGMENT_TYPE_POINT,
-    SEGMENT_TYPE_LINE,
-    SEGMENT_TYPE_ARC,
-    CONSTRAINT_TYPE,
-  ])
-  if (groupUnderCursor) {
-    const groupId = Number(groupUnderCursor.name)
-    return Number.isNaN(groupId) ? null : groupId
-  }
-
-  return null
 }
 
 /**
@@ -403,16 +338,17 @@ export function createOnMouseLeaveCallback({
  * Creates the onClick callback for sketch solve click operations.
  * Handles selecting segments when clicked and clearing selection when clicking on empty space.
  *
- * @param getParentGroup - Function to find parent group for non-Group objects
  * @param onUpdateSelectedIds - Function to update the selected IDs in the state machine
  * @returns The onClick callback function
  */
 export function createOnClickCallback({
-  getParentGroup,
+  getApiObjects,
+  sceneInfra,
   onUpdateSelectedIds,
   onEditConstraint,
 }: {
-  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
+  getApiObjects: () => ApiObject[]
+  sceneInfra: SceneInfra
   onUpdateSelectedIds: (data: {
     selectedIds: Array<number>
     duringAreaSelectIds: Array<number>
@@ -424,36 +360,32 @@ export function createOnClickCallback({
   intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected, mouseEvent }) => {
-    // Find the segment group under the cursor using the same logic as drag operations
-    const entityUnderCursorId = findEntityUnderCursorId(
-      selected,
-      getParentGroup
-    )
-    if (
-      mouseEvent.detail === 2 &&
-      selected?.parent?.userData.type === CONSTRAINT_TYPE &&
-      entityUnderCursorId
-    ) {
-      // Double clicking on Constraint
-      onEditConstraint(entityUnderCursorId)
-      return
+  return async ({ selected, mouseEvent, intersectionPoint }) => {
+    let closestObject: ClosestApiObject | undefined
+
+    if (intersectionPoint) {
+      const mousePosition = [
+        intersectionPoint.twoD.x,
+        intersectionPoint.twoD.y,
+      ] as Coords2d
+
+      const closestObjects = findClosestApiObjects(
+        mousePosition,
+        getApiObjects(),
+        sceneInfra
+      )
+      closestObject = closestObjects[0]
     }
 
-    if (entityUnderCursorId !== null) {
-      // Segment found - select it and clear any area selection
+    if (mouseEvent.detail === 2 && isConstraint(closestObject?.apiObject)) {
+      // Double clicking on Constraint
+      onEditConstraint(closestObject.apiObject.id)
+    } else {
       onUpdateSelectedIds({
-        selectedIds: [entityUnderCursorId],
+        selectedIds: closestObject ? [closestObject.apiObject.id] : [],
         duringAreaSelectIds: [],
       })
-      return
     }
-
-    // No segment found, so clear selection.
-    onUpdateSelectedIds({
-      selectedIds: [],
-      duringAreaSelectIds: [],
-    })
   }
 }
 
@@ -465,6 +397,7 @@ export function createOnClickCallback({
  * @param setIsSolveInProgress - Setter to mark solve as in progress/complete
  * @param getLastSuccessfulDragFromPoint - Getter for the last successful drag start point
  * @param setLastSuccessfulDragFromPoint - Setter to update the last successful drag start point
+ * @param getDraggedEntityId - Getter for the entity captured at drag start
  * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome)
  * @param editSegments - Function to edit segments via Rust context
  * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
@@ -476,6 +409,7 @@ export function createOnDragCallback({
   setIsSolveInProgress,
   getLastSuccessfulDragFromPoint,
   setLastSuccessfulDragFromPoint,
+  getDraggedEntityId,
   getContextData,
   editSegments,
   onNewSketchOutcome,
@@ -486,6 +420,7 @@ export function createOnDragCallback({
   setIsSolveInProgress: (value: boolean) => void
   getLastSuccessfulDragFromPoint: () => Vector2
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  getDraggedEntityId: () => number | null
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -515,7 +450,7 @@ export function createOnDragCallback({
   mouseEvent: MouseEvent
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected, intersectionPoint }) => {
+  return async ({ intersectionPoint }) => {
     // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
       return
@@ -529,11 +464,7 @@ export function createOnDragCallback({
       return
     }
 
-    // Find the entity under cursor to determine what's being dragged
-    const entityUnderCursorId = findEntityUnderCursorId(
-      selected,
-      getParentGroup
-    )
+    const entityUnderCursorId = getDraggedEntityId()
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -642,6 +573,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
+  const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
+    null
+  )
 
   // Selection box visual element
   const [getSelectionBoxObject, setSelectionBoxObject] =
@@ -1351,13 +1285,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDraggedEntityId,
+      getHoveredId: () => self.getSnapshot().context.hoveredId,
     }),
-    onDragEnd: createOnDragEndCallback(),
+    onDragEnd: createOnDragEndCallback({
+      setDraggedEntityId,
+    }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
@@ -1394,8 +1333,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
     }),
+    onMouseDownSelection: () => {
+      return self.getSnapshot().context.hoveredId !== null
+    },
     onClick: createOnClickCallback({
-      getParentGroup,
+      getApiObjects: () =>
+        self.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta.new_graph
+          .objects ?? [],
+      sceneInfra: context.sceneInfra,
       onUpdateSelectedIds: (data: {
         selectedIds: Array<number>
         duringAreaSelectIds: Array<number>
@@ -1409,12 +1354,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }),
     onMove: ({ intersectionPoint }: OnMoveCallbackArgs) => {
       if (context.sceneInfra.isAreaSelectActive) {
-        return
-      }
-
-      const sketchSceneObject =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (!(sketchSceneObject instanceof Group)) {
         return
       }
 

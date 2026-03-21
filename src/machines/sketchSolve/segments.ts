@@ -1045,6 +1045,7 @@ function updateLineMaterial(
   material.color.set(color)
 }
 
+// TODO delete
 /**
  * Updates the hover state of a segment mesh (line, arc, or point)
  */

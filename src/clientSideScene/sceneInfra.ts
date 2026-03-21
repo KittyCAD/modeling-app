@@ -1,5 +1,5 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Intersection, Object3D } from 'three'
+import { Intersection, Object3D } from 'three'
 import type { Group } from 'three'
 import {
   AmbientLight,
@@ -116,6 +116,7 @@ export class SceneInfra {
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
+  onMouseDownSelection: () => Object3D | null = () => null
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
@@ -128,6 +129,7 @@ export class SceneInfra {
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
+    onMouseDownSelection?: () => boolean
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
     onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
@@ -139,6 +141,8 @@ export class SceneInfra {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
+    this.onMouseDownSelection =
+      callbacks.onMouseDownSelection || this.onMouseDownSelection
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.onAreaSelectStartCallback =
@@ -197,6 +201,7 @@ export class SceneInfra {
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
+      onMouseDownSelection: () => null,
       onMouseEnter: () => {},
       onMouseLeave: () => {},
       onAreaSelectStart: () => {},
@@ -307,7 +312,7 @@ export class SceneInfra {
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: Object3D
+    object: Object3D // just a dummy Object3D in case of sketch solve, should be deleted when sketch 1 gets deprecated
     hasBeenDragged: boolean
   } | null = null
   areaSelect: {
@@ -790,17 +795,26 @@ export class SceneInfra {
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
+    const selectedOnMouseDown = this.onMouseDownSelection()
 
-    const intersect = this.raycastRing()[0]
-    if (intersect) {
-      const intersectParent = intersect?.object?.parent as Group
-      this.selected = intersectParent.isGroup
-        ? {
-            mouseDownVector,
-            object: intersect.object,
-            hasBeenDragged: false,
-          }
-        : null
+    if (selectedOnMouseDown) {
+      this.selected = {
+        mouseDownVector,
+        object: new Object3D(), // just a dummy, delete this propert if sketch 1 is deprecated
+        hasBeenDragged: false,
+      }
+    } else {
+      const intersect = this.raycastRing()[0]
+      if (intersect) {
+        const intersectParent = intersect?.object?.parent as Group
+        this.selected = intersectParent.isGroup
+          ? {
+              mouseDownVector,
+              object: intersect.object,
+              hasBeenDragged: false,
+            }
+          : null
+      }
     }
 
     // If nothing was selected, initialize area select
