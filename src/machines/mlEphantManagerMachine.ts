@@ -496,6 +496,11 @@ export const mlEphantManagerMachine = setup({
               return
             }
 
+            // Ignore pong
+            if ('pong' in response) {
+              return
+            }
+
             if (
               'error' in response &&
               (response.error.detail.includes(
@@ -910,6 +915,12 @@ export const mlEphantManagerMachine = setup({
                     const lastMessageType:
                       | TypeVariant<MlCopilotServerMessage>
                       | undefined = ts.find((t) => t in r)
+
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) {
+                      return context
+                    }
 
                     return {
                       conversation,
