@@ -46,7 +46,6 @@ impl From<KclErrorWithOutputs> for ExecError {
 }
 
 /// How did the KCL execution fail, with extra state.
-#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
 #[derive(Debug, thiserror::Error)]
 #[error("{error}")]
 pub struct ExecErrorWithState {

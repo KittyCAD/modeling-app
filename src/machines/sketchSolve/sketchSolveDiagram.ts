@@ -74,7 +74,7 @@ async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
-  constraintType: 'HorizontalDistance' | 'VerticalDistance'
+  providedDistance?: number
 ) {
   let segmentsToConstrain = context.selectedIds
   if (segmentsToConstrain.length === 1) {
@@ -91,12 +91,15 @@ async function addAxisDistanceConstraint(
       (id) => context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
     )
     .filter(Boolean)
-  let distance = DEFAULT_DISTANCE_FALLBACK
+  let distance =
+    providedDistance !== undefined
+      ? providedDistance
+      : DEFAULT_DISTANCE_FALLBACK
   const units = baseUnitToNumericSuffix(
     context.kclManager.fileSettings.defaultLengthUnit
   )
   // Calculate distance between two points if both are point segments
-  if (currentSelections.length === 2) {
+  if (currentSelections.length === 2 && providedDistance === undefined) {
     const first = currentSelections[0]
     const second = currentSelections[1]
     if (isPointSegment(first) && isPointSegment(second)) {
@@ -124,7 +127,7 @@ async function addAxisDistanceConstraint(
     0,
     context.sketchId,
     {
-      type: constraintType,
+      type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
       distance: { value: distance, units },
       points: segmentsToConstrain,
       source: {
@@ -134,6 +137,46 @@ async function addAxisDistanceConstraint(
     },
     jsAppSettings(context.kclManager.systemDeps.settings)
   )
+  sendToolbarConstraintOutcome(self, result)
+}
+
+async function addHorizontalConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  let result
+  for (const id of context.selectedIds) {
+    // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
+    result = await context.rustContext.addConstraint(
+      0,
+      context.sketchId,
+      {
+        type: 'Horizontal',
+        line: id,
+      },
+      jsAppSettings(context.kclManager.systemDeps.settings)
+    )
+  }
+  sendToolbarConstraintOutcome(self, result)
+}
+
+async function addVerticalConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  let result
+  for (const id of context.selectedIds) {
+    // TODO this is not how Vertical should operate long term, as it should be an equipable tool
+    await context.rustContext.addConstraint(
+      0,
+      context.sketchId,
+      {
+        type: 'Vertical',
+        line: id,
+      },
+      jsAppSettings(context.kclManager.systemDeps.settings)
+    )
+  }
   sendToolbarConstraintOutcome(self, result)
 }
 
@@ -481,22 +524,12 @@ export const sketchSolveMachine = setup({
     },
     HorizontalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(
-          context,
-          self,
-          'horizontal',
-          'HorizontalDistance'
-        )
+        await addAxisDistanceConstraint(context, self, 'horizontal')
       },
     },
     VerticalDistance: {
       actions: async ({ self, context }) => {
-        await addAxisDistanceConstraint(
-          context,
-          self,
-          'vertical',
-          'VerticalDistance'
-        )
+        await addAxisDistanceConstraint(context, self, 'vertical')
       },
     },
     Parallel: {
@@ -546,38 +579,42 @@ export const sketchSolveMachine = setup({
     },
     Vertical: {
       actions: async ({ self, context }) => {
-        let result
-        for (const id of context.selectedIds) {
-          // TODO this is not how Vertical should operate long term, as it should be an equipable tool
-          result = await context.rustContext.addConstraint(
-            0,
-            context.sketchId,
-            {
-              type: 'Vertical',
-              line: id,
-            },
-            jsAppSettings(context.kclManager.systemDeps.settings)
+        const itemsToConstrain = context.selectedIds
+        const selectionIsAllPoints = itemsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
           )
+          .every((selection) => isPointSegment(selection))
+
+        // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
+        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+          await addAxisDistanceConstraint(context, self, 'horizontal', 0)
+          return
+        } else {
+          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+          await addVerticalConstraint(context, self)
         }
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     Horizontal: {
       actions: async ({ self, context }) => {
-        let result
-        for (const id of context.selectedIds) {
-          // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
-          result = await context.rustContext.addConstraint(
-            0,
-            context.sketchId,
-            {
-              type: 'Horizontal',
-              line: id,
-            },
-            jsAppSettings(context.kclManager.systemDeps.settings)
+        const itemsToConstrain = context.selectedIds
+        const selectionIsAllPoints = itemsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
           )
+          .every((selection) => isPointSegment(selection))
+
+        // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
+        if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
+          await addAxisDistanceConstraint(context, self, 'vertical', 0)
+          return
+        } else {
+          // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
+          await addHorizontalConstraint(context, self)
         }
-        sendToolbarConstraintOutcome(self, result)
       },
     },
     construction: {

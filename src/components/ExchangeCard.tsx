@@ -211,7 +211,6 @@ export const ChatBubble = (props: {
   dataTestId?: string
   placeholderTestId?: string
   className?: string
-  showCancelledInsteadOfPlaceholder?: boolean
 }) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
@@ -226,8 +225,6 @@ export const ChatBubble = (props: {
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
           {hasVisibleChildren(props.children) ? (
             props.children
-          ) : props.showCancelledInsteadOfPlaceholder ? (
-            <span>Message canceled.</span>
           ) : (
             <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
@@ -267,6 +264,7 @@ type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
   isLastResponse: boolean
+  onClickClearChat: () => void
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -312,22 +310,30 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     ) : null
   }, [props.deltasAggregated])
 
-  return (
-    <ChatBubble
-      side={'left'}
-      wfull={true}
-      userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
-      dataTestId="ml-response-chat-bubble"
-      placeholderTestId="ml-response-chat-bubble-thinking"
-      className="py-4"
-      showCancelledInsteadOfPlaceholder={!props.isLastResponse}
-    >
-      {[
-        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
-        deltasAggregatedMarkdown,
-      ].filter((x: ReactNode) => x !== null)}
-    </ChatBubble>
-  )
+  const children = [
+    itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+    deltasAggregatedMarkdown,
+  ].filter((x: ReactNode) => x !== null)
+
+  return hasVisibleChildren(children) || props.isLastResponse ? (
+    <>
+      <ChatBubble
+        side={'left'}
+        wfull={true}
+        userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+        dataTestId="ml-response-chat-bubble"
+        placeholderTestId="ml-response-chat-bubble-thinking"
+        className="py-4"
+      >
+        {children}
+      </ChatBubble>
+      <ResponseCardToolBar
+        responses={props.items}
+        isLastResponse={props.isLastResponse}
+        onClickClearChat={props.onClickClearChat}
+      />
+    </>
+  ) : null
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
@@ -434,10 +440,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
-        isLastResponse={props.isLastResponse}
-      />
-      <ResponseCardToolBar
-        responses={props.responses}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
       />
