@@ -271,6 +271,20 @@ export const searchStatusExtension = defineExtensionFactory(({ services }) => {
 }, 'search-status-extension')
 
 /**
+ * `uses` is the structural composition primitive for declarative extensions.
+ *
+ * This bundle does not contribute facets or services directly. Instead, it says
+ * "when you install `searchFeatureExtension`, also install these child
+ * extensions." Reach for `uses` when a few extensions always ship together and
+ * you want one higher-level unit without introducing plugin metadata or toggle
+ * behavior.
+ */
+export const searchFeatureExtension = defineExtension({
+  id: 'search-feature-extension',
+  uses: [searchExtension, searchStatusExtension],
+})
+
+/**
  * This runtime extension is the canonical "feature toggle" pattern.
  *
  * The controller service lives outside `workspaceCompartment`, so the toggle
@@ -515,8 +529,7 @@ export function createExampleExtensions(
   return [
     baseExtension,
     personalWorkspaceExtension,
-    searchExtension,
-    searchStatusExtension,
+    searchFeatureExtension,
     workspaceToggleExtension,
     workspaceCompartment.of(),
     createAnalyticsToggleExtension(includeAnalyticsProvider),
