@@ -16,6 +16,7 @@ import {
   ServiceContribution,
 } from './types'
 import { defineService } from './service'
+import { appendFacet } from './facet'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -194,6 +195,39 @@ export function defineRuntimeExtension<T extends RuntimeExtensionDefinition>(
   spec: T
 ): T {
   return spec
+}
+
+interface PluginInfo {
+  id: string
+  title: string
+  description: string
+}
+interface PluginSpec extends PluginInfo {
+  extensions: readonly ExtensionNode[]
+}
+export interface PluginRecord extends PluginInfo {
+  service: Service<CompartmentToggleController>
+}
+export const pluginsFacet = appendFacet<PluginRecord>('plugins')
+export function createPlugin({
+  extensions,
+  ...info
+}: PluginSpec): ExtensionNode[] {
+  const compartment = new Compartment()
+  const toggle = createTogglableExtension({
+    name: info.id,
+    extensions,
+    compartment,
+  })
+  const pluginExtension = defineExtension({
+    provides: [
+      provide(pluginsFacet, {
+        ...info,
+        service: toggle.service,
+      }),
+    ],
+  })
+  return [compartment.of(...extensions), toggle.extension, pluginExtension]
 }
 
 export function createTogglableExtension({
