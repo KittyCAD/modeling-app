@@ -1,4 +1,8 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+  SceneGraph,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -195,10 +199,23 @@ export type ConstraintObject = ApiObject & {
   kind: { type: 'Constraint' }
 }
 
-export function isConstraint(
-  obj: ApiObject | undefined
-): obj is ConstraintObject {
-  return obj?.kind.type === 'Constraint'
+/**
+ * Utility to filter a scene graph to a typed array of
+ * Constraint ApiObjects.
+ */
+export function isConstraint<C extends ApiConstraint['type']>(
+  obj: ApiObject,
+  targetType?: C
+): obj is ConstraintObject &
+  (C extends undefined
+    ? object
+    : {
+        kind: { constraint: { type: C } }
+      }) {
+  return (
+    obj.kind.type === 'Constraint' &&
+    (targetType ? obj.kind.constraint.type === targetType : true)
+  )
 }
 
 export type DistanceConstraint = ApiObject & {
@@ -226,6 +243,10 @@ export type DiameterConstraint = ApiObject & {
 
 export type AngleConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Angle' } }
+}
+
+export type CoincidentConstraint = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
 }
 
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
@@ -343,4 +364,21 @@ export function pointToCoords2d(point: PointSegment): Coords2d {
     point.kind.segment.position.x.value,
     point.kind.segment.position.y.value,
   ]
+}
+
+/**
+ * Utility to get the other scene graph IDs that are coincident with
+ * the passed-in one, if any.
+ */
+export function getOtherCoincidentIdsByPointId(
+  targetId: number,
+  sceneGraph: SceneGraph
+): number[] {
+  const constraints: CoincidentConstraint[] = sceneGraph.objects
+    .filter((obj) => isConstraint(obj, 'Coincident'))
+    .filter((obj) => obj.kind.constraint.segments.includes(targetId))
+
+  return constraints.flatMap((c) =>
+    c.kind.constraint.segments.filter((id) => id !== targetId)
+  )
 }

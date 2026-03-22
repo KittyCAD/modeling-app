@@ -5,6 +5,7 @@ import {
   createOnDragCallback,
   createOnClickCallback,
   setUpOnDragAndSelectionClickCallbacks,
+  createOnDragEndCallback,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { Themes } from '@src/lib/theme'
@@ -413,6 +414,45 @@ describe('createOnDragCallback', () => {
     // Should return early without calling editSegments
     expect(editSegments).not.toHaveBeenCalled()
     expect(setIsSolveInProgress).not.toHaveBeenCalled()
+  })
+
+  it('should call execute implementation  once', async () => {
+    const onComplete = vi.fn(async () => {})
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement: () => {
+        return null
+      },
+      setDraggingPointElement: () => {},
+      onComplete,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Should still mock execute to have the latest state in the Rust side.
+    expect(onComplete).toHaveBeenCalled()
+  })
+  it('should clear dragging state even when no element is currently being dragged', async () => {
+    const setDraggedEntityId = vi.fn()
+
+    const callback = createOnDragEndCallback({
+      setDraggedEntityId,
+      onComplete: async () => {},
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Should still clear the dragging state even if no element was being dragged
+    // This ensures state is always clean after drag ends
+    expect(setDraggedEntityId).toHaveBeenCalledWith(null)
   })
 
   it('should return early when no scene graph delta is available', async () => {

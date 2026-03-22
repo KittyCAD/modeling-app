@@ -27,7 +27,10 @@ import {
   type SelectionBoxVisualState,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
-import { isConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getOtherCoincidentIdsByPointId,
+  isConstraint,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   OnMoveCallbackArgs,
   SceneInfra,
@@ -35,6 +38,7 @@ import type {
 import type { Coords2d } from '@src/lang/util'
 import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -151,19 +155,25 @@ export function createOnDragStartCallback({
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
+ * Syncs all necessary state between the frontend and the solver.
+ *
+ * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
   setDraggedEntityId,
+  onComplete,
 }: {
   setDraggedEntityId: (entityId: number | null) => void
+  onComplete: () => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
+  return async () => {
     setDraggedEntityId(null)
+    await onComplete()
   }
 }
 
@@ -298,6 +308,12 @@ export function createOnDragCallback({
     }
 
     const entityUnderCursorId = getDraggedEntityId()
+    const entitiesCoincidentWithUnderCursor = entityUnderCursorId
+      ? getOtherCoincidentIdsByPointId(
+          entityUnderCursorId,
+          sceneGraphDelta.new_graph
+        )
+      : []
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -313,11 +329,17 @@ export function createOnDragCallback({
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
-      // Collect all IDs to edit (entity under cursor + selectedIds)
+      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
       if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
         idsToEdit.add(entityUnderCursorId)
       }
+
+      entitiesCoincidentWithUnderCursor.forEach((id) => {
+        if (!Number.isNaN(id)) {
+          idsToEdit.add(id)
+        }
+      })
       selectedIds.forEach((id) => {
         if (!Number.isNaN(id)) {
           idsToEdit.add(id)
@@ -447,6 +469,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }),
     onDragEnd: createOnDragEndCallback({
       setDraggedEntityId,
+      // Send the last up-to-date state from the frontend to Rust. It doesn't know
+      // about this last feedback loop yet!
+      onComplete: async () => {
+        try {
+          const result = await context.rustContext.sketchExecuteMock(
+            SKETCH_FILE_VERSION,
+            context.sketchId
+          )
+
+          // Send the event to update the sketch outcome
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          })
+        } catch (err) {
+          console.error('error in onDragEnd sketchExecuteMock', err)
+        }
+      },
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
