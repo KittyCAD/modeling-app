@@ -57,7 +57,7 @@ function createConstraintApiObject({
 }
 
 describe('findClosestApiObjects', () => {
-  it('includes line segments when they are within the 12px threshold', () => {
+  it('includes line segments when they are within the hover threshold', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -89,7 +89,7 @@ describe('findClosestApiObjects', () => {
     expect(lineResult?.distance).toBeCloseTo(Math.sqrt(20))
   })
 
-  it('sorts points ahead of lines when the mouse is within the point radius', () => {
+  it('sorts points ahead of lines when both are within the hover threshold', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -106,7 +106,7 @@ describe('findClosestApiObjects', () => {
     expect(result[1]?.apiObject.id).toBe(3)
   })
 
-  it('sorts by distance when the mouse is outside the point radius', () => {
+  it('still prioritizes points over lines even when the line is closer', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -119,8 +119,8 @@ describe('findClosestApiObjects', () => {
       createMockSceneInfra()
     )
 
-    expect(result[0]?.apiObject.id).toBe(3)
-    expect(result[1]?.apiObject.id).toBe(4)
+    expect(result[0]?.apiObject.id).toBe(4)
+    expect(result[1]?.apiObject.id).toBe(3)
   })
 
   it('filters out candidates that are beyond the threshold', () => {

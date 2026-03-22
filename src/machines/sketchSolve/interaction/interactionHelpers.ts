@@ -152,10 +152,8 @@ export function findClosestApiObjects(
   )
   // hoverDistance adds some extra hit area for segments to hover over / click on.
   // All segments outside of hoverDistance are dropped.
-  // Points take precedence over other segments if the mouse is within the point radius,
-  // because we prioritize the points over the lines the points are on.
-  // However, if the mouse is outside of the point radius (and may still be within hoverDistance),
-  // the closest segment should win.
+  // Points always take precedence over other segments to make them easier to target
+  // when they overlap line or arc geometry.
   const hoverDistance = 8 * scale
 
   const candidates: ClosestApiObject[] = []
