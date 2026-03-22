@@ -5,21 +5,11 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { getAngleDiff, roundOff } from '@src/lib/utils'
-import { htmlHelper } from '@src/machines/sketchSolve/segments'
-import {
-  type Object3D,
-  type Vector3,
-  Group,
-  Vector2,
-} from 'three'
-import {
-  SKETCH_LAYER,
-  SKETCH_SOLVE_GROUP,
-} from '@src/clientSideScene/sceneUtils'
+import { roundOff } from '@src/lib/utils'
+import { type Object3D, type Vector3, type Group, Vector2 } from 'three'
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -29,26 +19,15 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import {
-  AREA_SELECT_BORDER_WIDTH,
-  LINE_EXTENSION_SIZE,
-  calculateCornerLineStyles,
-  calculateLabelPositioning,
-  calculateLabelStyles,
-  calculateSelectionBoxProperties,
-  doesLineSegmentIntersectBox,
+  findContainedSegments,
+  findIntersectingSegments,
   isIntersectionSelectionMode,
   project3DToScreen,
-  transformToLocalSpace,
+  removeSelectionBox,
+  type SelectionBoxVisualState,
+  updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
-import {
-  getArcPoints,
-  getLinePoints,
-  isConstraint,
-  isArcSegment,
-  isLineSegment,
-  isPointSegment,
-  pointToCoords2d,
-} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   OnMoveCallbackArgs,
   SceneInfra,
@@ -445,627 +424,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
   )
   const [getHorizontalLine, setHorizontalLine] =
     createGetSet<HTMLElement | null>(null)
-
-  /**
-   * Mutation function: Creates selection box DOM elements
-   * Creates the initial HTML structure for the selection box visual
-   */
-  function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
-    boxDiv: HTMLElement
-    verticalLine: HTMLElement
-    horizontalLine: HTMLElement
-    labelsWrapper: HTMLElement
-  } {
-    const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
-    const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
-            <div
-              ${{ key: 'id', value: 'selection-box' }}
-              class = "border-bg-3 bg-black/5 dark:bg-white/10"
-              style="
-                position: absolute;
-                pointer-events: none;
-                border-width: ${borderWidthPx};
-                border-style: ${borderStyle};
-                transform: translate(-50%, -50%);
-                box-sizing: border-box;
-              "
-            >
-              <div
-                ${{ key: 'id', value: 'vertical-line' }}
-                class="bg-3"
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  width: ${borderWidthPx};
-                "
-              ></div>
-              <div
-                ${{ key: 'id', value: 'horizontal-line' }}
-                class="bg-3"
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  height: ${borderWidthPx};
-                "
-              ></div>
-              <div
-                ${{ key: 'id', value: 'labels-wrapper' }}
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  white-space: nowrap;
-                  display: flex;
-                  gap: 0px;
-                  align-items: center;
-                "
-              >
-                <div
-                  ${{ key: 'id', value: 'intersects-label' }}
-                  class="text-3 dark:text-3"
-                  style="
-                    font-size: 11px;
-                    user-select: none;
-                    width: 100px;
-                    padding: 6px;
-                    margin: 0px;
-                    text-align: right;
-                  "
-                >Intersects</div>
-                <div
-                  ${{ key: 'id', value: 'contains-label' }}
-                  class="text-3 dark:text-3"
-                  style="
-                    font-size: 11px;
-                    user-select: none;
-                    width: 100px;
-                    padding: 6px;
-                    margin: 0px;
-                  "
-                >Within</div>
-              </div>
-            </div>
-          `
-
-    return {
-      boxDiv,
-      verticalLine,
-      horizontalLine,
-      labelsWrapper,
-    }
-  }
-
-  /**
-   * Mutation function: Updates selection box position in 3D space
-   * Positions the CSS2DObject at the calculated local space position
-   */
-  function updateSelectionBoxPosition(
-    selectionBoxObject: CSS2DObject,
-    localCenter: Vector3
-  ): void {
-    selectionBoxObject.position.copy(localCenter)
-  }
-
-  /**
-   * Mutation function: Updates selection box size and border style
-   * Sets the box dimensions and border appearance
-   */
-  function updateSelectionBoxSizeAndBorder(
-    boxDiv: HTMLElement,
-    widthPx: number,
-    heightPx: number,
-    borderStyle: 'dashed' | 'solid'
-  ): void {
-    boxDiv.style.width = `${widthPx}px`
-    boxDiv.style.height = `${heightPx}px`
-    boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
-    boxDiv.style.borderStyle = borderStyle
-  }
-
-  /**
-   * Mutation function: Updates label styles based on selection mode
-   * Applies opacity and font weight to show which mode is active
-   */
-  function updateLabelStyles(
-    labelsWrapper: HTMLElement,
-    labelStyles: {
-      intersectsLabel: { opacity: string; fontWeight: string }
-      containsLabel: { opacity: string; fontWeight: string }
-    }
-  ): void {
-    const intersectsLabel = labelsWrapper.children[0] as HTMLElement
-    const containsLabel = labelsWrapper.children[1] as HTMLElement
-
-    if (intersectsLabel && containsLabel) {
-      intersectsLabel.style.opacity = labelStyles.intersectsLabel.opacity
-      intersectsLabel.style.fontWeight = labelStyles.intersectsLabel.fontWeight
-      containsLabel.style.opacity = labelStyles.containsLabel.opacity
-      containsLabel.style.fontWeight = labelStyles.containsLabel.fontWeight
-    }
-  }
-
-  /**
-   * Mutation function: Updates label position
-   * Positions labels at the drag start point relative to box center
-   */
-  function updateLabelPosition(
-    labelsWrapper: HTMLElement,
-    startX: number,
-    finalOffsetY: number
-  ): void {
-    labelsWrapper.style.left = `calc(50% + ${startX}px)`
-    labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
-    labelsWrapper.style.transform = 'translate(-50%, -50%)'
-  }
-
-  /**
-   * Mutation function: Updates corner line positions and styles
-   * Positions and sizes the vertical and horizontal corner lines
-   */
-  function updateCornerLinePositions(
-    verticalLine: HTMLElement,
-    horizontalLine: HTMLElement,
-    cornerLineStyles: {
-      verticalLine: {
-        height: string
-        bottom?: string
-        top?: string
-        left?: string
-        right?: string
-      }
-      horizontalLine: {
-        width: string
-        left?: string
-        right?: string
-        top?: string
-        bottom?: string
-      }
-    }
-  ): void {
-    // Reset vertical line positions
-    verticalLine.style.top = ''
-    verticalLine.style.right = ''
-    verticalLine.style.bottom = ''
-    verticalLine.style.left = ''
-
-    verticalLine.style.height = cornerLineStyles.verticalLine.height
-    if (cornerLineStyles.verticalLine.bottom !== undefined) {
-      verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
-    }
-    if (cornerLineStyles.verticalLine.top !== undefined) {
-      verticalLine.style.top = cornerLineStyles.verticalLine.top
-    }
-    if (cornerLineStyles.verticalLine.left !== undefined) {
-      verticalLine.style.left = cornerLineStyles.verticalLine.left
-    }
-    if (cornerLineStyles.verticalLine.right !== undefined) {
-      verticalLine.style.right = cornerLineStyles.verticalLine.right
-    }
-
-    // Reset horizontal line positions
-    horizontalLine.style.top = ''
-    horizontalLine.style.right = ''
-    horizontalLine.style.bottom = ''
-    horizontalLine.style.left = ''
-
-    horizontalLine.style.width = cornerLineStyles.horizontalLine.width
-    if (cornerLineStyles.horizontalLine.left !== undefined) {
-      horizontalLine.style.left = cornerLineStyles.horizontalLine.left
-    }
-    if (cornerLineStyles.horizontalLine.right !== undefined) {
-      horizontalLine.style.right = cornerLineStyles.horizontalLine.right
-    }
-    if (cornerLineStyles.horizontalLine.top !== undefined) {
-      horizontalLine.style.top = cornerLineStyles.horizontalLine.top
-    }
-    if (cornerLineStyles.horizontalLine.bottom !== undefined) {
-      horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
-    }
-  }
-
-  /**
-   * Helper function to create or update the selection box visual
-   * Uses 3D coordinates and projects to screen space for accurate sizing
-   */
-  function updateSelectionBox(
-    startPoint3D: Vector3,
-    currentPoint3D: Vector3
-  ): void {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
-    )
-
-    // Calculate all properties using pure functions
-    const properties = calculateSelectionBoxProperties(
-      startPoint3D,
-      currentPoint3D,
-      camera,
-      viewportSize
-    )
-
-    const sketchSceneObject =
-      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    const sketchSceneGroup =
-      sketchSceneObject instanceof Group ? sketchSceneObject : null
-
-    if (!getSelectionBoxGroup()) {
-      // Create the selection box group and CSS2DObject
-      const newSelectionBoxGroup = new Group()
-      newSelectionBoxGroup.name = 'selectionBox'
-      newSelectionBoxGroup.userData.type = 'selectionBox'
-      setSelectionBoxGroup(newSelectionBoxGroup)
-
-      // Create DOM elements using mutation function
-      const elements = createSelectionBoxElements(properties.borderStyle)
-      setBoxDiv(elements.boxDiv)
-      setVerticalLine(elements.verticalLine)
-      setHorizontalLine(elements.horizontalLine)
-      setLabelsWrapper(elements.labelsWrapper)
-
-      const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
-      newSelectionBoxObject.userData.type = 'selectionBox'
-      setSelectionBoxObject(newSelectionBoxObject)
-      getSelectionBoxGroup()?.add(newSelectionBoxObject)
-
-      // Add to sketch solve group (will inherit its rotation)
-      if (sketchSceneGroup) {
-        sketchSceneGroup.add(getSelectionBoxGroup()!)
-        getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
-        newSelectionBoxObject.layers.set(SKETCH_LAYER)
-      }
-    }
-
-    const currentSelectionBoxObject = getSelectionBoxObject()
-    if (
-      currentSelectionBoxObject &&
-      currentSelectionBoxObject.element instanceof HTMLElement
-    ) {
-      // Calculate local space position using pure function
-      const localCenter = transformToLocalSpace(
-        properties.center3D,
-        sketchSceneGroup ?? null
-      )
-      updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
-
-      // Update box size and border
-      const boxDivElement = getBoxDiv()
-      if (boxDivElement) {
-        updateSelectionBoxSizeAndBorder(
-          boxDivElement,
-          properties.widthPx,
-          properties.heightPx,
-          properties.borderStyle
-        )
-      }
-
-      // Calculate label positioning using pure function
-      const labelPositioning = calculateLabelPositioning(
-        properties.startPx,
-        properties.boxMinPx,
-        properties.boxMaxPx,
-        properties.isDraggingUpward
-      )
-
-      // Update label styles using pure function
-      const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
-      const currentLabelsWrapper = getLabelsWrapper()
-      if (currentLabelsWrapper) {
-        updateLabelStyles(currentLabelsWrapper, labelStyles)
-        updateLabelPosition(
-          currentLabelsWrapper,
-          labelPositioning.startX,
-          labelPositioning.finalOffsetY
-        )
-      }
-
-      // Calculate corner line styles using pure function
-      const cornerLineStyles = calculateCornerLineStyles(
-        labelPositioning.startX,
-        labelPositioning.startY,
-        LINE_EXTENSION_SIZE,
-        AREA_SELECT_BORDER_WIDTH
-      )
-
-      // Update corner line positions
-      const currentVerticalLine = getVerticalLine()
-      const currentHorizontalLine = getHorizontalLine()
-      if (
-        currentVerticalLine &&
-        currentVerticalLine instanceof HTMLElement &&
-        currentHorizontalLine &&
-        currentHorizontalLine instanceof HTMLElement
-      ) {
-        updateCornerLinePositions(
-          currentVerticalLine,
-          currentHorizontalLine,
-          cornerLineStyles
-        )
-      }
-    }
-  }
-
-  /**
-   * Helper function to remove the selection box visual
-   */
-  function removeSelectionBox(): void {
-    const currentSelectionBoxGroup = getSelectionBoxGroup()
-    if (currentSelectionBoxGroup) {
-      currentSelectionBoxGroup.removeFromParent()
-      const currentSelectionBoxObject = getSelectionBoxObject()
-      if (currentSelectionBoxObject?.element instanceof HTMLElement) {
-        currentSelectionBoxObject.element.remove()
-      }
-      setSelectionBoxGroup(null)
-      setSelectionBoxObject(null)
-      setLabelsWrapper(null)
-    }
-  }
-
-  function isPointWithinBox(
-    point: Coords2d,
-    boxMin: Coords2d,
-    boxMax: Coords2d
-  ): boolean {
-    return (
-      point[0] >= boxMin[0] &&
-      point[0] <= boxMax[0] &&
-      point[1] >= boxMin[1] &&
-      point[1] <= boxMax[1]
-    )
-  }
-
-  function getContainedArcPoints(
-    center: Coords2d,
-    start: Coords2d,
-    end: Coords2d
-  ): Coords2d[] {
-    const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
-    if (radius === 0) {
-      return [start, end]
-    }
-
-    const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
-    const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
-    const sweepAngle = getAngleDiff(startAngle, endAngle, true)
-    const candidateAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
-    const extremaPoints = candidateAngles
-      .filter((angle) => getAngleDiff(startAngle, angle, true) <= sweepAngle)
-      .map(
-        (angle) =>
-          [
-            center[0] + Math.cos(angle) * radius,
-            center[1] + Math.sin(angle) * radius,
-          ] as Coords2d
-      )
-
-    return [start, end, ...extremaPoints]
-  }
-
-  function doesArcIntersectBox(
-    center: Coords2d,
-    start: Coords2d,
-    end: Coords2d,
-    boxMin: Coords2d,
-    boxMax: Coords2d
-  ): boolean {
-    if (
-      isPointWithinBox(start, boxMin, boxMax) ||
-      isPointWithinBox(end, boxMin, boxMax)
-    ) {
-      return true
-    }
-
-    const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
-    if (radius === 0) {
-      return false
-    }
-
-    const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
-    const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
-    const sweepAngle = getAngleDiff(startAngle, endAngle, true)
-    const epsilon = 1e-9
-
-    const isPointOnArc = (x: number, y: number): boolean => {
-      if (
-        x < boxMin[0] - epsilon ||
-        x > boxMax[0] + epsilon ||
-        y < boxMin[1] - epsilon ||
-        y > boxMax[1] + epsilon
-      ) {
-        return false
-      }
-
-      const angle = Math.atan2(y - center[1], x - center[0])
-      return getAngleDiff(startAngle, angle, true) <= sweepAngle + epsilon
-    }
-
-    for (const x of [boxMin[0], boxMax[0]]) {
-      const dx = x - center[0]
-      const offsetSquared = radius * radius - dx * dx
-      if (offsetSquared < 0) {
-        continue
-      }
-
-      const offset = Math.sqrt(Math.max(0, offsetSquared))
-      if (
-        isPointOnArc(x, center[1] + offset) ||
-        isPointOnArc(x, center[1] - offset)
-      ) {
-        return true
-      }
-    }
-
-    for (const y of [boxMin[1], boxMax[1]]) {
-      const dy = y - center[1]
-      const offsetSquared = radius * radius - dy * dy
-      if (offsetSquared < 0) {
-        continue
-      }
-
-      const offset = Math.sqrt(Math.max(0, offsetSquared))
-      if (
-        isPointOnArc(center[0] + offset, y) ||
-        isPointOnArc(center[0] - offset, y)
-      ) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  /**
-   * Helper function to find segments contained within the selection box.
-   * Uses API object geometry in sketch coordinates instead of scene meshes.
-   */
-  function findContainedSegments(
-    startPoint: Coords2d,
-    currentPoint: Coords2d
-  ): Array<number> {
-    const snapshot = self.getSnapshot()
-    const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
-    const objects = sceneGraphDelta?.new_graph.objects
-    if (!objects) {
-      return []
-    }
-
-    const boxMin: Coords2d = [
-      Math.min(startPoint[0], currentPoint[0]),
-      Math.min(startPoint[1], currentPoint[1]),
-    ]
-    const boxMax: Coords2d = [
-      Math.max(startPoint[0], currentPoint[0]),
-      Math.max(startPoint[1], currentPoint[1]),
-    ]
-    const containedIds: Array<number> = []
-    objects.forEach((apiObject) => {
-      if (!apiObject) {
-        return
-      }
-
-      if (isPointSegment(apiObject)) {
-        if (
-          apiObject.kind.segment.owner !== null &&
-          apiObject.kind.segment.owner !== undefined
-        ) {
-          return
-        }
-
-        if (isPointWithinBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
-          containedIds.push(apiObject.id)
-        }
-        return
-      }
-
-      if (isLineSegment(apiObject)) {
-        const linePoints = getLinePoints(apiObject, objects)
-        if (
-          linePoints &&
-          linePoints.every((point) => isPointWithinBox(point, boxMin, boxMax))
-        ) {
-          containedIds.push(apiObject.id)
-        }
-        return
-      }
-
-      if (isArcSegment(apiObject)) {
-        const arcPoints = getArcPoints(apiObject, objects)
-        if (
-          arcPoints &&
-          getContainedArcPoints(
-            arcPoints.center,
-            arcPoints.start,
-            arcPoints.end
-          ).every((point) => isPointWithinBox(point, boxMin, boxMax))
-        ) {
-          containedIds.push(apiObject.id)
-        }
-      }
-    })
-
-    return containedIds
-  }
-
-  /**
-   * Helper function to find segments that intersect with the selection box.
-   * Uses API object geometry in sketch coordinates instead of scene meshes.
-   */
-  function findIntersectingSegments(
-    startPoint: Coords2d,
-    currentPoint: Coords2d
-  ): Array<number> {
-    const snapshot = self.getSnapshot()
-    const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
-    const objects = sceneGraphDelta?.new_graph.objects
-    if (!objects) {
-      return []
-    }
-
-    const boxMin: Coords2d = [
-      Math.min(startPoint[0], currentPoint[0]),
-      Math.min(startPoint[1], currentPoint[1]),
-    ]
-    const boxMax: Coords2d = [
-      Math.max(startPoint[0], currentPoint[0]),
-      Math.max(startPoint[1], currentPoint[1]),
-    ]
-    const intersectingIds: Array<number> = []
-    objects.forEach((apiObject) => {
-      if (!apiObject) {
-        return
-      }
-
-      if (isPointSegment(apiObject)) {
-        if (
-          apiObject.kind.segment.owner !== null &&
-          apiObject.kind.segment.owner !== undefined
-        ) {
-          return
-        }
-
-        if (isPointWithinBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
-          intersectingIds.push(apiObject.id)
-        }
-        return
-      }
-
-      if (isLineSegment(apiObject)) {
-        const linePoints = getLinePoints(apiObject, objects)
-        if (
-          linePoints &&
-          doesLineSegmentIntersectBox(
-            linePoints[0],
-            linePoints[1],
-            boxMin,
-            boxMax
-          )
-        ) {
-          intersectingIds.push(apiObject.id)
-        }
-        return
-      }
-
-      if (isArcSegment(apiObject)) {
-        const arcPoints = getArcPoints(apiObject, objects)
-        if (
-          arcPoints &&
-          doesArcIntersectBox(
-            arcPoints.center,
-            arcPoints.start,
-            arcPoints.end,
-            boxMin,
-            boxMax
-          )
-        ) {
-          intersectingIds.push(apiObject.id)
-        }
-      }
-    })
-
-    return intersectingIds
+  const selectionBoxState: SelectionBoxVisualState = {
+    getSelectionBoxObject,
+    setSelectionBoxObject,
+    getSelectionBoxGroup,
+    setSelectionBoxGroup,
+    getLabelsWrapper,
+    setLabelsWrapper,
+    getBoxDiv,
+    setBoxDiv,
+    getVerticalLine,
+    setVerticalLine,
+    getHorizontalLine,
+    setHorizontalLine,
   }
 
   context.sceneInfra.setCallbacks({
@@ -1171,7 +542,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
       // Area select started - create the selection box visual and clear any previous area select
       if (startPoint.threeD) {
-        updateSelectionBox(scaledStartPoint, scaledStartPoint)
+        updateSelectionBox({
+          startPoint3D: scaledStartPoint,
+          currentPoint3D: scaledStartPoint,
+          sceneInfra: context.sceneInfra,
+          selectionBoxState,
+        })
         // Clear any previous duringAreaSelectIds
         self.send({
           type: 'update selected ids',
@@ -1190,7 +566,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
       // Update selection box visual during drag
       if (scaledStartPoint && scaledCurrentPoint) {
-        updateSelectionBox(scaledStartPoint, scaledCurrentPoint)
+        updateSelectionBox({
+          startPoint3D: scaledStartPoint,
+          currentPoint3D: scaledCurrentPoint,
+          sceneInfra: context.sceneInfra,
+          selectionBoxState,
+        })
+
+        const snapshot = self.getSnapshot()
+        const apiObjects =
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? []
 
         // Calculate selection box bounds in screen space for contains check
         const camera = context.sceneInfra.camControls.camera
@@ -1219,6 +605,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         if (isIntersectionBox) {
           // Intersection box: find segments that intersect with the selection box
           const intersectingIds = findIntersectingSegments(
+            apiObjects,
             startCoords,
             currentCoords
           )
@@ -1230,7 +617,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
           })
         } else {
           // Contains box: find segments fully contained within the selection box
-          const containedIds = findContainedSegments(startCoords, currentCoords)
+          const containedIds = findContainedSegments(
+            apiObjects,
+            startCoords,
+            currentCoords
+          )
 
           // Update duringAreaSelectIds (temporary selection during drag)
           self.send({
@@ -1242,7 +633,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     },
     onAreaSelectEnd: () => {
       // Remove selection box visual
-      removeSelectionBox()
+      removeSelectionBox(selectionBoxState)
 
       // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
       const snapshot = self.getSnapshot()

@@ -118,7 +118,6 @@ describe('isIntersectionSelectionMode', () => {
   })
 })
 
-
 describe('calculateSelectionBoxProperties', () => {
   it('should calculate all selection box properties from 3D points', () => {
     const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
@@ -461,13 +460,23 @@ describe('transformToLocalSpace', () => {
 
 describe('doesLineSegmentIntersectBox', () => {
   it('should return true when a line crosses the box', () => {
-    const result = doesLineSegmentIntersectBox([-10, 0], [10, 0], [-1, -1], [1, 1])
+    const result = doesLineSegmentIntersectBox(
+      [-10, 0],
+      [10, 0],
+      [-1, -1],
+      [1, 1]
+    )
 
     expect(result).toBe(true)
   })
 
   it('should return false when a line stays outside the box', () => {
-    const result = doesLineSegmentIntersectBox([5, 5], [10, 10], [-1, -1], [1, 1])
+    const result = doesLineSegmentIntersectBox(
+      [5, 5],
+      [10, 10],
+      [-1, -1],
+      [1, 1]
+    )
 
     expect(result).toBe(false)
   })

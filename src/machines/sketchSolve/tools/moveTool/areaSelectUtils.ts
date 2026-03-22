@@ -1,15 +1,47 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
-  type Group,
+  SKETCH_LAYER,
+  SKETCH_SOLVE_GROUP,
+} from '@src/clientSideScene/sceneUtils'
+import { getAngleDiff } from '@src/lib/utils'
+import {
+  getArcPoints,
+  getLinePoints,
+  isArcSegment,
+  isLineSegment,
+  isPointSegment,
+  pointToCoords2d,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { htmlHelper } from '@src/machines/sketchSolve/segments'
+import type { Coords2d } from '@src/lang/util'
+import {
+  Group,
   type OrthographicCamera,
   type PerspectiveCamera,
   Vector3,
   Vector2,
 } from 'three'
-import type { Coords2d } from '@src/lang/util'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
 const LABEL_VERTICAL_OFFSET = 12
+
+export type SelectionBoxVisualState = {
+  getSelectionBoxObject: () => CSS2DObject | null
+  setSelectionBoxObject: (value: CSS2DObject | null) => void
+  getSelectionBoxGroup: () => Group | null
+  setSelectionBoxGroup: (value: Group | null) => void
+  getLabelsWrapper: () => HTMLElement | null
+  setLabelsWrapper: (value: HTMLElement | null) => void
+  getBoxDiv: () => HTMLElement | null
+  setBoxDiv: (value: HTMLElement | null) => void
+  getVerticalLine: () => HTMLElement | null
+  setVerticalLine: (value: HTMLElement | null) => void
+  getHorizontalLine: () => HTMLElement | null
+  setHorizontalLine: (value: HTMLElement | null) => void
+}
 
 /**
  * Projects a 3D point to 2D screen coordinates.
@@ -362,4 +394,569 @@ export function doesLineSegmentIntersectBox(
   }
 
   return false
+}
+
+function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
+  boxDiv: HTMLElement
+  verticalLine: HTMLElement
+  horizontalLine: HTMLElement
+  labelsWrapper: HTMLElement
+} {
+  const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
+  const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
+          <div
+            ${{ key: 'id', value: 'selection-box' }}
+            class = "border-bg-3 bg-black/5 dark:bg-white/10"
+            style="
+              position: absolute;
+              pointer-events: none;
+              border-width: ${borderWidthPx};
+              border-style: ${borderStyle};
+              transform: translate(-50%, -50%);
+              box-sizing: border-box;
+            "
+          >
+            <div
+              ${{ key: 'id', value: 'vertical-line' }}
+              class="bg-3"
+              style="
+                position: absolute;
+                pointer-events: none;
+                width: ${borderWidthPx};
+              "
+            ></div>
+            <div
+              ${{ key: 'id', value: 'horizontal-line' }}
+              class="bg-3"
+              style="
+                position: absolute;
+                pointer-events: none;
+                height: ${borderWidthPx};
+              "
+            ></div>
+            <div
+              ${{ key: 'id', value: 'labels-wrapper' }}
+              style="
+                position: absolute;
+                pointer-events: none;
+                white-space: nowrap;
+                display: flex;
+                gap: 0px;
+                align-items: center;
+              "
+            >
+              <div
+                ${{ key: 'id', value: 'intersects-label' }}
+                class="text-3 dark:text-3"
+                style="
+                  font-size: 11px;
+                  user-select: none;
+                  width: 100px;
+                  padding: 6px;
+                  margin: 0px;
+                  text-align: right;
+                "
+              >Intersects</div>
+              <div
+                ${{ key: 'id', value: 'contains-label' }}
+                class="text-3 dark:text-3"
+                style="
+                  font-size: 11px;
+                  user-select: none;
+                  width: 100px;
+                  padding: 6px;
+                  margin: 0px;
+                "
+              >Within</div>
+            </div>
+          </div>
+        `
+
+  return {
+    boxDiv,
+    verticalLine,
+    horizontalLine,
+    labelsWrapper,
+  }
+}
+
+function updateSelectionBoxPosition(
+  selectionBoxObject: CSS2DObject,
+  localCenter: Vector3
+): void {
+  selectionBoxObject.position.copy(localCenter)
+}
+
+function updateSelectionBoxSizeAndBorder(
+  boxDiv: HTMLElement,
+  widthPx: number,
+  heightPx: number,
+  borderStyle: 'dashed' | 'solid'
+): void {
+  boxDiv.style.width = `${widthPx}px`
+  boxDiv.style.height = `${heightPx}px`
+  boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
+  boxDiv.style.borderStyle = borderStyle
+}
+
+function updateLabelStylesInDom(
+  labelsWrapper: HTMLElement,
+  labelStyles: {
+    intersectsLabel: { opacity: string; fontWeight: string }
+    containsLabel: { opacity: string; fontWeight: string }
+  }
+): void {
+  const intersectsLabel = labelsWrapper.children[0] as HTMLElement
+  const containsLabel = labelsWrapper.children[1] as HTMLElement
+
+  if (intersectsLabel && containsLabel) {
+    intersectsLabel.style.opacity = labelStyles.intersectsLabel.opacity
+    intersectsLabel.style.fontWeight = labelStyles.intersectsLabel.fontWeight
+    containsLabel.style.opacity = labelStyles.containsLabel.opacity
+    containsLabel.style.fontWeight = labelStyles.containsLabel.fontWeight
+  }
+}
+
+function updateLabelPosition(
+  labelsWrapper: HTMLElement,
+  startX: number,
+  finalOffsetY: number
+): void {
+  labelsWrapper.style.left = `calc(50% + ${startX}px)`
+  labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
+  labelsWrapper.style.transform = 'translate(-50%, -50%)'
+}
+
+function updateCornerLinePositions(
+  verticalLine: HTMLElement,
+  horizontalLine: HTMLElement,
+  cornerLineStyles: {
+    verticalLine: {
+      height: string
+      bottom?: string
+      top?: string
+      left?: string
+      right?: string
+    }
+    horizontalLine: {
+      width: string
+      left?: string
+      right?: string
+      top?: string
+      bottom?: string
+    }
+  }
+): void {
+  verticalLine.style.top = ''
+  verticalLine.style.right = ''
+  verticalLine.style.bottom = ''
+  verticalLine.style.left = ''
+
+  verticalLine.style.height = cornerLineStyles.verticalLine.height
+  if (cornerLineStyles.verticalLine.bottom !== undefined) {
+    verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
+  }
+  if (cornerLineStyles.verticalLine.top !== undefined) {
+    verticalLine.style.top = cornerLineStyles.verticalLine.top
+  }
+  if (cornerLineStyles.verticalLine.left !== undefined) {
+    verticalLine.style.left = cornerLineStyles.verticalLine.left
+  }
+  if (cornerLineStyles.verticalLine.right !== undefined) {
+    verticalLine.style.right = cornerLineStyles.verticalLine.right
+  }
+
+  horizontalLine.style.top = ''
+  horizontalLine.style.right = ''
+  horizontalLine.style.bottom = ''
+  horizontalLine.style.left = ''
+
+  horizontalLine.style.width = cornerLineStyles.horizontalLine.width
+  if (cornerLineStyles.horizontalLine.left !== undefined) {
+    horizontalLine.style.left = cornerLineStyles.horizontalLine.left
+  }
+  if (cornerLineStyles.horizontalLine.right !== undefined) {
+    horizontalLine.style.right = cornerLineStyles.horizontalLine.right
+  }
+  if (cornerLineStyles.horizontalLine.top !== undefined) {
+    horizontalLine.style.top = cornerLineStyles.horizontalLine.top
+  }
+  if (cornerLineStyles.horizontalLine.bottom !== undefined) {
+    horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
+  }
+}
+
+export function updateSelectionBox({
+  startPoint3D,
+  currentPoint3D,
+  sceneInfra,
+  selectionBoxState,
+}: {
+  startPoint3D: Vector3
+  currentPoint3D: Vector3
+  sceneInfra: SceneInfra
+  selectionBoxState: SelectionBoxVisualState
+}): void {
+  const camera = sceneInfra.camControls.camera
+  const renderer = sceneInfra.renderer
+
+  const viewportSize = new Vector2(
+    renderer.domElement.clientWidth,
+    renderer.domElement.clientHeight
+  )
+
+  const properties = calculateSelectionBoxProperties(
+    startPoint3D,
+    currentPoint3D,
+    camera,
+    viewportSize
+  )
+
+  const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSceneGroup =
+    sketchSceneObject instanceof Group ? sketchSceneObject : null
+
+  if (!selectionBoxState.getSelectionBoxGroup()) {
+    const newSelectionBoxGroup = new Group()
+    newSelectionBoxGroup.name = 'selectionBox'
+    newSelectionBoxGroup.userData.type = 'selectionBox'
+    selectionBoxState.setSelectionBoxGroup(newSelectionBoxGroup)
+
+    const elements = createSelectionBoxElements(properties.borderStyle)
+    selectionBoxState.setBoxDiv(elements.boxDiv)
+    selectionBoxState.setVerticalLine(elements.verticalLine)
+    selectionBoxState.setHorizontalLine(elements.horizontalLine)
+    selectionBoxState.setLabelsWrapper(elements.labelsWrapper)
+
+    const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
+    newSelectionBoxObject.userData.type = 'selectionBox'
+    selectionBoxState.setSelectionBoxObject(newSelectionBoxObject)
+    selectionBoxState.getSelectionBoxGroup()?.add(newSelectionBoxObject)
+
+    if (sketchSceneGroup) {
+      sketchSceneGroup.add(selectionBoxState.getSelectionBoxGroup()!)
+      selectionBoxState.getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
+      newSelectionBoxObject.layers.set(SKETCH_LAYER)
+    }
+  }
+
+  const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
+  if (
+    currentSelectionBoxObject &&
+    currentSelectionBoxObject.element instanceof HTMLElement
+  ) {
+    const localCenter = transformToLocalSpace(
+      properties.center3D,
+      sketchSceneGroup
+    )
+    updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
+
+    const boxDivElement = selectionBoxState.getBoxDiv()
+    if (boxDivElement) {
+      updateSelectionBoxSizeAndBorder(
+        boxDivElement,
+        properties.widthPx,
+        properties.heightPx,
+        properties.borderStyle
+      )
+    }
+
+    const labelPositioning = calculateLabelPositioning(
+      properties.startPx,
+      properties.boxMinPx,
+      properties.boxMaxPx,
+      properties.isDraggingUpward
+    )
+
+    const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
+    const currentLabelsWrapper = selectionBoxState.getLabelsWrapper()
+    if (currentLabelsWrapper) {
+      updateLabelStylesInDom(currentLabelsWrapper, labelStyles)
+      updateLabelPosition(
+        currentLabelsWrapper,
+        labelPositioning.startX,
+        labelPositioning.finalOffsetY
+      )
+    }
+
+    const cornerLineStyles = calculateCornerLineStyles(
+      labelPositioning.startX,
+      labelPositioning.startY,
+      LINE_EXTENSION_SIZE,
+      AREA_SELECT_BORDER_WIDTH
+    )
+
+    const currentVerticalLine = selectionBoxState.getVerticalLine()
+    const currentHorizontalLine = selectionBoxState.getHorizontalLine()
+    if (
+      currentVerticalLine &&
+      currentVerticalLine instanceof HTMLElement &&
+      currentHorizontalLine &&
+      currentHorizontalLine instanceof HTMLElement
+    ) {
+      updateCornerLinePositions(
+        currentVerticalLine,
+        currentHorizontalLine,
+        cornerLineStyles
+      )
+    }
+  }
+}
+
+export function removeSelectionBox(
+  selectionBoxState: SelectionBoxVisualState
+): void {
+  const currentSelectionBoxGroup = selectionBoxState.getSelectionBoxGroup()
+  if (currentSelectionBoxGroup) {
+    currentSelectionBoxGroup.removeFromParent()
+    const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
+    if (currentSelectionBoxObject?.element instanceof HTMLElement) {
+      currentSelectionBoxObject.element.remove()
+    }
+    selectionBoxState.setSelectionBoxGroup(null)
+    selectionBoxState.setSelectionBoxObject(null)
+    selectionBoxState.setLabelsWrapper(null)
+    selectionBoxState.setBoxDiv(null)
+    selectionBoxState.setVerticalLine(null)
+    selectionBoxState.setHorizontalLine(null)
+  }
+}
+
+function getContainedArcPoints(
+  center: Coords2d,
+  start: Coords2d,
+  end: Coords2d
+): Coords2d[] {
+  const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+  if (radius === 0) {
+    return [start, end]
+  }
+
+  const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const candidateAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
+  const extremaPoints = candidateAngles
+    .filter((angle) => getAngleDiff(startAngle, angle, true) <= sweepAngle)
+    .map(
+      (angle) =>
+        [
+          center[0] + Math.cos(angle) * radius,
+          center[1] + Math.sin(angle) * radius,
+        ] as Coords2d
+    )
+
+  return [start, end, ...extremaPoints]
+}
+
+function doesArcIntersectBox(
+  center: Coords2d,
+  start: Coords2d,
+  end: Coords2d,
+  boxMin: Coords2d,
+  boxMax: Coords2d
+): boolean {
+  if (
+    isPointInBox(start, boxMin, boxMax) ||
+    isPointInBox(end, boxMin, boxMax)
+  ) {
+    return true
+  }
+
+  const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+  if (radius === 0) {
+    return false
+  }
+
+  const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const epsilon = 1e-9
+
+  const isPointOnArc = (x: number, y: number): boolean => {
+    if (
+      x < boxMin[0] - epsilon ||
+      x > boxMax[0] + epsilon ||
+      y < boxMin[1] - epsilon ||
+      y > boxMax[1] + epsilon
+    ) {
+      return false
+    }
+
+    const angle = Math.atan2(y - center[1], x - center[0])
+    return getAngleDiff(startAngle, angle, true) <= sweepAngle + epsilon
+  }
+
+  for (const x of [boxMin[0], boxMax[0]]) {
+    const dx = x - center[0]
+    const offsetSquared = radius * radius - dx * dx
+    if (offsetSquared < 0) {
+      continue
+    }
+
+    const offset = Math.sqrt(Math.max(0, offsetSquared))
+    if (
+      isPointOnArc(x, center[1] + offset) ||
+      isPointOnArc(x, center[1] - offset)
+    ) {
+      return true
+    }
+  }
+
+  for (const y of [boxMin[1], boxMax[1]]) {
+    const dy = y - center[1]
+    const offsetSquared = radius * radius - dy * dy
+    if (offsetSquared < 0) {
+      continue
+    }
+
+    const offset = Math.sqrt(Math.max(0, offsetSquared))
+    if (
+      isPointOnArc(center[0] + offset, y) ||
+      isPointOnArc(center[0] - offset, y)
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+
+export function findContainedSegments(
+  objects: Array<ApiObject>,
+  startPoint: Coords2d,
+  currentPoint: Coords2d
+): Array<number> {
+  if (objects.length === 0) {
+    return []
+  }
+
+  const boxMin: Coords2d = [
+    Math.min(startPoint[0], currentPoint[0]),
+    Math.min(startPoint[1], currentPoint[1]),
+  ]
+  const boxMax: Coords2d = [
+    Math.max(startPoint[0], currentPoint[0]),
+    Math.max(startPoint[1], currentPoint[1]),
+  ]
+  const containedIds: Array<number> = []
+  objects.forEach((apiObject) => {
+    if (!apiObject) {
+      return
+    }
+
+    if (isPointSegment(apiObject)) {
+      if (
+        apiObject.kind.segment.owner !== null &&
+        apiObject.kind.segment.owner !== undefined
+      ) {
+        return
+      }
+
+      if (isPointInBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+        containedIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isLineSegment(apiObject)) {
+      const linePoints = getLinePoints(apiObject, objects)
+      if (
+        linePoints &&
+        linePoints.every((point) => isPointInBox(point, boxMin, boxMax))
+      ) {
+        containedIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isArcSegment(apiObject)) {
+      const arcPoints = getArcPoints(apiObject, objects)
+      if (
+        arcPoints &&
+        getContainedArcPoints(
+          arcPoints.center,
+          arcPoints.start,
+          arcPoints.end
+        ).every((point) => isPointInBox(point, boxMin, boxMax))
+      ) {
+        containedIds.push(apiObject.id)
+      }
+    }
+  })
+
+  return containedIds
+}
+
+export function findIntersectingSegments(
+  objects: Array<ApiObject>,
+  startPoint: Coords2d,
+  currentPoint: Coords2d
+): Array<number> {
+  if (objects.length === 0) {
+    return []
+  }
+
+  const boxMin: Coords2d = [
+    Math.min(startPoint[0], currentPoint[0]),
+    Math.min(startPoint[1], currentPoint[1]),
+  ]
+  const boxMax: Coords2d = [
+    Math.max(startPoint[0], currentPoint[0]),
+    Math.max(startPoint[1], currentPoint[1]),
+  ]
+  const intersectingIds: Array<number> = []
+  objects.forEach((apiObject) => {
+    if (!apiObject) {
+      return
+    }
+
+    if (isPointSegment(apiObject)) {
+      if (
+        apiObject.kind.segment.owner !== null &&
+        apiObject.kind.segment.owner !== undefined
+      ) {
+        return
+      }
+
+      if (isPointInBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+        intersectingIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isLineSegment(apiObject)) {
+      const linePoints = getLinePoints(apiObject, objects)
+      if (
+        linePoints &&
+        doesLineSegmentIntersectBox(
+          linePoints[0],
+          linePoints[1],
+          boxMin,
+          boxMax
+        )
+      ) {
+        intersectingIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isArcSegment(apiObject)) {
+      const arcPoints = getArcPoints(apiObject, objects)
+      if (
+        arcPoints &&
+        doesArcIntersectBox(
+          arcPoints.center,
+          arcPoints.start,
+          arcPoints.end,
+          boxMin,
+          boxMax
+        )
+      ) {
+        intersectingIds.push(apiObject.id)
+      }
+    }
+  })
+
+  return intersectingIds
 }
