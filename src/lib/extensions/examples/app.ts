@@ -7,6 +7,7 @@ import {
   provide,
   provideService,
 } from '../helpers'
+import { ExtensionHost } from '../host'
 import { defineService } from '../service'
 import { Compartment } from '../types'
 
@@ -53,6 +54,38 @@ export const workspaceCompartment = new Compartment()
 export const baseExtension = defineExtension({
   id: 'base-extension',
   provides: [provide(settingsFacet, { theme: 'dark' })],
+})
+
+export const personalWorkspaceExtension = defineExtension({
+  id: 'workspace.personal',
+  provides: [
+    provide(
+      toolbarFacet,
+      {
+        id: 'workspace.current',
+        label: 'Workspace: Personal',
+        run: () => {},
+      },
+      { key: 'workspace.current', precedence: 'high' }
+    ),
+    provide(settingsFacet, { showSidebar: true }),
+  ],
+})
+
+export const teamWorkspaceExtension = defineExtension({
+  id: 'workspace.team',
+  provides: [
+    provide(
+      toolbarFacet,
+      {
+        id: 'workspace.current',
+        label: 'Workspace: Team',
+        run: () => {},
+      },
+      { key: 'workspace.current', precedence: 'high' }
+    ),
+    provide(settingsFacet, { showSidebar: false }),
+  ],
 })
 
 export const searchExtension = defineExtensionFactory(() => {
@@ -120,3 +153,16 @@ export const searchStatusExtension = defineExtensionFactory(({ services }) => {
     }),
   }
 }, 'search-status-extension')
+
+export const defaultExampleExtensions = [
+  baseExtension,
+  searchExtension,
+  searchStatusExtension,
+  workspaceCompartment.of(personalWorkspaceExtension),
+] as const
+
+export function createExampleHost() {
+  const host = new ExtensionHost()
+  host.configure(defaultExampleExtensions)
+  return host
+}
