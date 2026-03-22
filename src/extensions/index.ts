@@ -1,4 +1,4 @@
-import { ExtensionNode } from '@src/lib/extensions'
-import { telemetry } from './telemetry'
+import type { ExtensionNode } from '@src/lib/extensions'
+import { telemetry } from '@src/extensions/telemetry'
 
-export const coreExtensions: ExtensionNode[] = [telemetry].flat()
+export const coreExtensions: ExtensionNode[] = [telemetry]

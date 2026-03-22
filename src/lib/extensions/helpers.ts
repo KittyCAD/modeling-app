@@ -212,8 +212,9 @@ interface PluginSpec extends PluginInfo {
 /**
  * Resolved plugin metadata exposed through `pluginsFacet`.
  *
- * The `service` points at a stable controller that lives outside the plugin's
- * compartment and can toggle the plugin subtree at runtime.
+ * The `service` is plugin-management metadata. It points at a stable
+ * controller that lives outside the plugin's compartment and can toggle the
+ * plugin subtree at runtime.
  */
 export interface PluginRecord extends PluginInfo {
   service: Service<CompartmentToggleController>
@@ -225,33 +226,34 @@ export const pluginsFacet = appendFacet<PluginRecord>('plugins')
 /**
  * Build a plugin from declarative extension content.
  *
- * A plugin is modeled as:
+ * A plugin is modeled as one installable extension node with:
  * - one compartment that owns the plugin's runtime-toggled subtree
  * - one controller service that can reconfigure that compartment
  * - one metadata contribution for discovery and UI presentation
  *
- * The returned value is an extension subtree rather than a single node, so
- * callers typically spread it into `configure(...)` or `uses: [...]`.
+ * UI contributed by a plugin should read app or router context from React
+ * hooks at render time rather than from the runtime extension factory context.
  */
 export function createPlugin({
   extensions,
   ...info
-}: PluginSpec): ExtensionNode[] {
+}: PluginSpec): ExtensionDefinition {
   const compartment = new Compartment()
   const toggle = createTogglableExtension({
     name: info.id,
     extensions,
     compartment,
   })
-  const pluginExtension = defineExtension({
+  return defineExtension({
+    id: info.id,
     provides: [
       provide(pluginsFacet, {
         ...info,
         service: toggle.service,
       }),
     ],
+    uses: [compartment.of(...extensions), toggle.extension],
   })
-  return [compartment.of(...extensions), toggle.extension, pluginExtension]
 }
 
 /**

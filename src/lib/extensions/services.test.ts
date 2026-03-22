@@ -7,11 +7,13 @@ import {
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
-import { appendFacet } from './facet'
+import { appendFacet, firstWinsFacet } from './facet'
 import {
   createCompartmentToggleController,
+  createPlugin,
   defineExtension,
   defineExtensionFactory,
+  pluginsFacet,
   provide,
   provideService,
 } from './helpers'
@@ -225,6 +227,41 @@ describe('services', () => {
     expect(host.get(toggleService).active.value).toBe(false)
     expect(host.get(stableService).isOpen.value).toBe(true)
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
+  })
+
+  it('installs a plugin as one extension node and preserves its toggle metadata', () => {
+    const featureFacet = firstWinsFacet<string>('feature', 'uninitialized')
+    const plugin = createPlugin({
+      id: 'feature-plugin',
+      title: 'Feature Plugin',
+      description: 'A toggleable feature plugin.',
+      extensions: [
+        defineExtension({
+          provides: [provide(featureFacet, 'enabled')],
+        }),
+      ],
+    })
+    const host = new ExtensionHost()
+
+    host.configure([plugin])
+
+    const [pluginRecord] = host.get(pluginsFacet)
+
+    expect(plugin.id).toBe('feature-plugin')
+    expect(host.get(featureFacet)).toEqual('enabled')
+    expect(pluginRecord).toEqual(
+      expect.objectContaining({
+        id: 'feature-plugin',
+        title: 'Feature Plugin',
+        description: 'A toggleable feature plugin.',
+      })
+    )
+
+    const pluginService = host.get(pluginRecord.service)
+    pluginService.disable()
+    expect(host.get(featureFacet)).toEqual('uninitialized')
+    pluginService.enable()
+    expect(host.get(featureFacet)).toEqual('enabled')
   })
 
   it('can inspect active service providers', () => {
