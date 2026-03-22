@@ -10,4 +10,3 @@ export const statusBarFacet = mergeObjectsFacet<{
   global: [],
   local: [],
 })
-window.routesFacet = routesFacet

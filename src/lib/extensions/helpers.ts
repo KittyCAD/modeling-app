@@ -1,8 +1,8 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { ExtensionHost } from './host'
-import {
-  Compartment,
+import { Compartment } from './types'
+import type {
   ExtensionDefinition,
   ExtensionFactory,
   ExtensionKey,
@@ -197,18 +197,42 @@ export function defineRuntimeExtension<T extends RuntimeExtensionDefinition>(
   return spec
 }
 
+/** Human-facing metadata shown for a plugin in plugin-management UIs. */
 interface PluginInfo {
   id: string
   title: string
   description: string
 }
+
+/** Input shape for constructing a plugin with a toggleable compartment. */
 interface PluginSpec extends PluginInfo {
   extensions: readonly ExtensionNode[]
 }
+
+/**
+ * Resolved plugin metadata exposed through `pluginsFacet`.
+ *
+ * The `service` points at a stable controller that lives outside the plugin's
+ * compartment and can toggle the plugin subtree at runtime.
+ */
 export interface PluginRecord extends PluginInfo {
   service: Service<CompartmentToggleController>
 }
+
+/** Registry of installed plugins for settings screens and similar UIs. */
 export const pluginsFacet = appendFacet<PluginRecord>('plugins')
+
+/**
+ * Build a plugin from declarative extension content.
+ *
+ * A plugin is modeled as:
+ * - one compartment that owns the plugin's runtime-toggled subtree
+ * - one controller service that can reconfigure that compartment
+ * - one metadata contribution for discovery and UI presentation
+ *
+ * The returned value is an extension subtree rather than a single node, so
+ * callers typically spread it into `configure(...)` or `uses: [...]`.
+ */
 export function createPlugin({
   extensions,
   ...info
@@ -230,6 +254,12 @@ export function createPlugin({
   return [compartment.of(...extensions), toggle.extension, pluginExtension]
 }
 
+/**
+ * Create a stable toggle-controller service for a compartment-backed feature.
+ *
+ * The controller extension must live outside the compartment it mutates so the
+ * service remains available after the feature is turned off.
+ */
 export function createTogglableExtension({
   name,
   extensions,
