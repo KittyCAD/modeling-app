@@ -35,6 +35,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 
 export const TOOL_ID = 'Tangential arc tool'
 export const CREATING_ARC = `xstate.done.actor.0.${TOOL_ID}.Creating arc`
@@ -359,8 +360,11 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       ] as Coords2d
 
       const apiObjects =
-        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
-        []
+        getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
       const closestObjects = findClosestApiObjects(
         mousePosition,
         apiObjects,

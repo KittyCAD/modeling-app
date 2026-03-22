@@ -39,6 +39,7 @@ import type { Coords2d } from '@src/lang/util'
 import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -538,9 +539,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
       return self.getSnapshot().context.hoveredId !== null
     },
     onClick: createOnClickCallback({
-      getApiObjects: () =>
-        self.getSnapshot().context.sketchExecOutcome?.sceneGraphDelta.new_graph
-          .objects ?? [],
+      getApiObjects: () => {
+        const snapshot = self.getSnapshot()
+        return getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
+      },
       sceneInfra: context.sceneInfra,
       onUpdateSelectedIds: (data: {
         selectedIds: Array<number>
@@ -565,8 +571,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
       ] as Coords2d
 
       const apiObjects =
-        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
-        []
+        getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
       const closestObjects = findClosestApiObjects(
         mousePosition,
         apiObjects,
@@ -619,8 +628,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
         const snapshot = self.getSnapshot()
         const apiObjects =
-          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
-            .objects ?? []
+          getCurrentSketchObjectsById(
+            snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+              .objects ?? [],
+            snapshot.context.sketchId
+          )
 
         // Calculate selection box bounds in screen space for contains check
         const camera = context.sceneInfra.camControls.camera

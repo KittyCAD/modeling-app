@@ -61,6 +61,7 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -467,6 +468,10 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds: Array<number>
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    objects,
+    context.sketchId
+  )
   const factor = getSketchSolveScaleFactor(context)
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
@@ -495,19 +500,7 @@ export function updateSceneGraphFromDelta({
     }
   }
 
-  // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
-  let skipBecauseBeforeCurrentSketch = true
-  let skipBecauseAfterCurrentSketch = false
-  objects.forEach((obj) => {
-    if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
-      skipBecauseBeforeCurrentSketch = false
-    }
-    if (obj.kind.type === 'Sketch' && obj.id > context.sketchId) {
-      skipBecauseAfterCurrentSketch = true
-    }
-    if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
-      return
-    }
+  currentSketchObjects.forEach((obj) => {
     // sketch is not a drawable object
     if (obj.kind.type === 'Sketch') {
       return
@@ -741,6 +734,10 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    objects,
+    context.sketchId
+  )
   const factor = getSketchSolveScaleFactor(context)
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
@@ -753,7 +750,10 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     ? [...context.draftEntities.segmentIds]
     : undefined
 
-  sceneGraphDelta.new_graph.objects.forEach((obj) => {
+  currentSketchObjects.forEach((obj) => {
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
     if (obj.kind.type === 'Constraint') {
       const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
@@ -832,6 +832,10 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   }
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    objects,
+    context.sketchId
+  )
   const scaleFactor = getSketchSolveScaleFactor(context)
 
   const allSelectedIds = Array.from(
@@ -841,7 +845,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     ? [...context.draftEntities.segmentIds]
     : undefined
 
-  objects.forEach((obj) => {
+  currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {
       return
     }

@@ -45,10 +45,12 @@ function setUpMoveToolCallbacks({
   apiObjects = [],
   hoveredId = null,
   isAreaSelectActive = false,
+  sketchId = 0,
 }: {
   apiObjects?: ApiObject[]
   hoveredId?: number | null
   isAreaSelectActive?: boolean
+  sketchId?: number
 }) {
   let callbacks: Record<string, unknown> = {}
   const getObjectByName = vi.fn(() => null)
@@ -77,15 +79,21 @@ function setUpMoveToolCallbacks({
     isAreaSelectActive,
   } as unknown as SceneInfra
 
+  const sceneGraphObjects = apiObjects.some(
+    (obj) => obj.kind.type === 'Sketch' && obj.id === sketchId
+  )
+    ? apiObjects
+    : [createSketchApiObject({ id: sketchId }), ...apiObjects]
+
   const snapshot = {
     context: {
       hoveredId,
       selectedIds: [],
       duringAreaSelectIds: [],
-      sketchId: 0,
+      sketchId,
       draftEntities: undefined,
       sketchExecOutcome: {
-        sceneGraphDelta: createSceneGraphDelta(apiObjects),
+        sceneGraphDelta: createSceneGraphDelta(sceneGraphObjects),
       },
     },
   }
@@ -116,8 +124,17 @@ function setUpMoveToolCallbacks({
   if (typeof callbacks.onAreaSelect !== 'function') {
     throw new Error('Move tool did not register an onAreaSelect callback')
   }
+  if (typeof callbacks.onClick !== 'function') {
+    throw new Error('Move tool did not register an onClick callback')
+  }
 
   return {
+    onClick: callbacks.onClick as (args: {
+      mouseEvent: MouseEvent
+      intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
+      intersects: Array<unknown>
+      selected?: Group
+    }) => Promise<void>,
     onMove: callbacks.onMove as (args: {
       intersectionPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
@@ -280,6 +297,23 @@ function createArcApiObject({
         ctor_applicable: false,
         construction: false,
       },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createSketchApiObject({ id }: { id: number }): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      plane: 0,
+      segments: [],
+      constraints: [],
     },
     label: '',
     comments: '',
@@ -1327,6 +1361,39 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     })
 
     expect(send).not.toHaveBeenCalled()
+  })
+})
+
+describe('setUpOnDragAndSelectionClickCallbacks onClick', () => {
+  it('should ignore overlapping points from earlier sketches and select from the active sketch', async () => {
+    const firstSketch = createSketchApiObject({ id: 1 })
+    const firstSketchPoint = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const activeSketch = createSketchApiObject({ id: 10 })
+    const activeSketchPoint = createPointApiObject({ id: 11, x: 10, y: 20 })
+
+    const { onClick, send } = setUpMoveToolCallbacks({
+      apiObjects: [
+        firstSketch,
+        firstSketchPoint,
+        activeSketch,
+        activeSketchPoint,
+      ],
+      sketchId: 10,
+    })
+
+    await onClick({
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      intersects: [],
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { selectedIds: [11], duringAreaSelectIds: [] },
+    })
   })
 })
 
