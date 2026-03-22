@@ -5,21 +5,12 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
-import {
-  htmlHelper,
-  ARC_SEGMENT_BODY,
-  POINT_SEGMENT_BODY,
-} from '@src/machines/sketchSolve/segments'
+import { getAngleDiff, roundOff } from '@src/lib/utils'
+import { htmlHelper } from '@src/machines/sketchSolve/segments'
 import {
   type Object3D,
-  type OrthographicCamera,
-  type PerspectiveCamera,
-  Box3,
-  ExtrudeGeometry,
+  type Vector3,
   Group,
-  Vector3,
-  Mesh,
   Vector2,
 } from 'three'
 import {
@@ -29,7 +20,6 @@ import {
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -41,23 +31,23 @@ import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import {
   AREA_SELECT_BORDER_WIDTH,
   LINE_EXTENSION_SIZE,
-  areAllPointsContained,
-  calculateBoxBounds,
   calculateCornerLineStyles,
   calculateLabelPositioning,
   calculateLabelStyles,
   calculateSelectionBoxProperties,
   doesLineSegmentIntersectBox,
-  doesSegmentIntersectSelectionBox,
-  extractTrianglesFromMesh,
   isIntersectionSelectionMode,
   project3DToScreen,
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
+  getArcPoints,
+  getLinePoints,
   isConstraint,
+  isArcSegment,
+  isLineSegment,
   isPointSegment,
+  pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   OnMoveCallbackArgs,
@@ -224,7 +214,7 @@ export function createOnClickCallback({
   intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected, mouseEvent, intersectionPoint }) => {
+  return async ({ mouseEvent, intersectionPoint }) => {
     let closestObject: ClosestApiObject | undefined
 
     if (intersectionPoint) {
@@ -814,74 +804,127 @@ export function setUpOnDragAndSelectionClickCallbacks({
     }
   }
 
-  /**
-   * Helper function to check if a point segment is within the selection box.
-   * Uses the point mesh world position rather than the hidden CSS2D test handle.
-   * Returns the segment ID if it should be included, null otherwise.
-   */
-  function checkPointSegmentInBox(
-    pointObject: Object3D,
-    segmentId: number,
-    objects: Array<any>,
-    camera: any,
-    renderer: any,
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
-  ): number | null {
-    // Handle point segment - check if it has an owner (line endpoint)
-    const obj = objects[segmentId]
-    if (isPointSegment(obj)) {
-      // Skip if point has an owner (it's a line endpoint)
-      // Maybe we can enable these selection with a key modifier in the future
+  function isPointWithinBox(
+    point: Coords2d,
+    boxMin: Coords2d,
+    boxMax: Coords2d
+  ): boolean {
+    return (
+      point[0] >= boxMin[0] &&
+      point[0] <= boxMax[0] &&
+      point[1] >= boxMin[1] &&
+      point[1] <= boxMax[1]
+    )
+  }
+
+  function getContainedArcPoints(
+    center: Coords2d,
+    start: Coords2d,
+    end: Coords2d
+  ): Coords2d[] {
+    const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+    if (radius === 0) {
+      return [start, end]
+    }
+
+    const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+    const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+    const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+    const candidateAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
+    const extremaPoints = candidateAngles
+      .filter((angle) => getAngleDiff(startAngle, angle, true) <= sweepAngle)
+      .map(
+        (angle) =>
+          [
+            center[0] + Math.cos(angle) * radius,
+            center[1] + Math.sin(angle) * radius,
+          ] as Coords2d
+      )
+
+    return [start, end, ...extremaPoints]
+  }
+
+  function doesArcIntersectBox(
+    center: Coords2d,
+    start: Coords2d,
+    end: Coords2d,
+    boxMin: Coords2d,
+    boxMax: Coords2d
+  ): boolean {
+    if (
+      isPointWithinBox(start, boxMin, boxMax) ||
+      isPointWithinBox(end, boxMin, boxMax)
+    ) {
+      return true
+    }
+
+    const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+    if (radius === 0) {
+      return false
+    }
+
+    const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+    const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+    const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+    const epsilon = 1e-9
+
+    const isPointOnArc = (x: number, y: number): boolean => {
       if (
-        obj.kind.segment.owner !== null &&
-        obj.kind.segment.owner !== undefined
+        x < boxMin[0] - epsilon ||
+        x > boxMax[0] + epsilon ||
+        y < boxMin[1] - epsilon ||
+        y > boxMax[1] + epsilon
       ) {
-        return null
+        return false
       }
 
-      // Get the world position of the point mesh
-      pointObject.updateMatrixWorld()
-      const worldPos = new Vector3()
-      pointObject.getWorldPosition(worldPos)
+      const angle = Math.atan2(y - center[1], x - center[0])
+      return getAngleDiff(startAngle, angle, true) <= sweepAngle + epsilon
+    }
 
-      // Project to screen space
-      const viewportSize = new Vector2(
-        renderer.domElement.clientWidth,
-        renderer.domElement.clientHeight
-      )
-      const screenPos = project3DToScreen(worldPos, camera, viewportSize)
+    for (const x of [boxMin[0], boxMax[0]]) {
+      const dx = x - center[0]
+      const offsetSquared = radius * radius - dx * dx
+      if (offsetSquared < 0) {
+        continue
+      }
 
-      // Check if the point is within the selection box
+      const offset = Math.sqrt(Math.max(0, offsetSquared))
       if (
-        screenPos.x >= boxMinPx.x &&
-        screenPos.x <= boxMaxPx.x &&
-        screenPos.y >= boxMinPx.y &&
-        screenPos.y <= boxMaxPx.y
+        isPointOnArc(x, center[1] + offset) ||
+        isPointOnArc(x, center[1] - offset)
       ) {
-        return segmentId
+        return true
       }
     }
-    return null
+
+    for (const y of [boxMin[1], boxMax[1]]) {
+      const dy = y - center[1]
+      const offsetSquared = radius * radius - dy * dy
+      if (offsetSquared < 0) {
+        continue
+      }
+
+      const offset = Math.sqrt(Math.max(0, offsetSquared))
+      if (
+        isPointOnArc(center[0] + offset, y) ||
+        isPointOnArc(center[0] - offset, y)
+      ) {
+        return true
+      }
+    }
+
+    return false
   }
 
   /**
-   * Helper function to find segments (line segments and point segments) contained within the selection box
-   * Uses screen-space projection to check if segments are within the box
+   * Helper function to find segments contained within the selection box.
+   * Uses API object geometry in sketch coordinates instead of scene meshes.
    */
   function findContainedSegments(
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
+    startPoint: Coords2d,
+    currentPoint: Coords2d
   ): Array<number> {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-    const sketchSegments =
-      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    if (!sketchSegments) {
-      return []
-    }
-
-    // Get scene graph objects to check point ownership
     const snapshot = self.getSnapshot()
     const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
     const objects = sceneGraphDelta?.new_graph.objects
@@ -889,92 +932,56 @@ export function setUpOnDragAndSelectionClickCallbacks({
       return []
     }
 
+    const boxMin: Coords2d = [
+      Math.min(startPoint[0], currentPoint[0]),
+      Math.min(startPoint[1], currentPoint[1]),
+    ]
+    const boxMax: Coords2d = [
+      Math.max(startPoint[0], currentPoint[0]),
+      Math.max(startPoint[1], currentPoint[1]),
+    ]
     const containedIds: Array<number> = []
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
-    )
-
-    // Traverse all groups in the sketch solve group
-    sketchSegments.traverse((child: Object3D) => {
-      if (!(child instanceof Group)) {
+    objects.forEach((apiObject) => {
+      if (!apiObject) {
         return
       }
 
-      const segmentId = Number(child.name)
-      if (Number.isNaN(segmentId)) {
-        return
-      }
+      if (isPointSegment(apiObject)) {
+        if (
+          apiObject.kind.segment.owner !== null &&
+          apiObject.kind.segment.owner !== undefined
+        ) {
+          return
+        }
 
-      // Check if this group has a line or arc segment mesh
-      const segmentMesh = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
-            c.userData?.type === ARC_SEGMENT_BODY)
-      )
-
-      if (segmentMesh && segmentMesh instanceof Mesh) {
-        // Handle line or arc segment (same logic for both)
-        // Get the bounding box of the mesh in world space
-        segmentMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(segmentMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // For "contains" selection, check if ALL corners are within the selection box
-        const allCornersContained = areAllPointsContained(
-          screenCorners,
-          boxMinPx,
-          boxMaxPx
-        )
-
-        if (allCornersContained) {
-          containedIds.push(segmentId)
+        if (isPointWithinBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+          containedIds.push(apiObject.id)
         }
         return
       }
 
-      // Check if this group has a point segment mesh
-      const pointObject = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === POINT_SEGMENT_BODY
-      )
+      if (isLineSegment(apiObject)) {
+        const linePoints = getLinePoints(apiObject, objects)
+        if (
+          linePoints &&
+          linePoints.every((point) => isPointWithinBox(point, boxMin, boxMax))
+        ) {
+          containedIds.push(apiObject.id)
+        }
+        return
+      }
 
-      if (pointObject) {
-        const pointId = checkPointSegmentInBox(
-          pointObject,
-          segmentId,
-          objects,
-          camera,
-          renderer,
-          boxMinPx,
-          boxMaxPx
-        )
-        if (pointId !== null) {
-          containedIds.push(pointId)
+      if (isArcSegment(apiObject)) {
+        const arcPoints = getArcPoints(apiObject, objects)
+        if (
+          arcPoints &&
+          getContainedArcPoints(
+            arcPoints.center,
+            arcPoints.start,
+            arcPoints.end
+          ).every((point) => isPointWithinBox(point, boxMin, boxMax))
+        ) {
+          containedIds.push(apiObject.id)
         }
       }
     })
@@ -983,22 +990,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   /**
-   * Helper function to find segments (line segments, arc segments, and point segments) that intersect with the selection box
-   * Uses improved intersection logic: checks bounding box containment first, then polygon intersection
+   * Helper function to find segments that intersect with the selection box.
+   * Uses API object geometry in sketch coordinates instead of scene meshes.
    */
   function findIntersectingSegments(
-    boxMinPx: Vector2,
-    boxMaxPx: Vector2
+    startPoint: Coords2d,
+    currentPoint: Coords2d
   ): Array<number> {
-    const camera = context.sceneInfra.camControls.camera
-    const renderer = context.sceneInfra.renderer
-    const sketchSegments =
-      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-    if (!sketchSegments) {
-      return []
-    }
-
-    // Get scene graph objects to check point ownership
     const snapshot = self.getSnapshot()
     const sceneGraphDelta = snapshot.context.sketchExecOutcome?.sceneGraphDelta
     const objects = sceneGraphDelta?.new_graph.objects
@@ -1006,139 +1004,63 @@ export function setUpOnDragAndSelectionClickCallbacks({
       return []
     }
 
+    const boxMin: Coords2d = [
+      Math.min(startPoint[0], currentPoint[0]),
+      Math.min(startPoint[1], currentPoint[1]),
+    ]
+    const boxMax: Coords2d = [
+      Math.max(startPoint[0], currentPoint[0]),
+      Math.max(startPoint[1], currentPoint[1]),
+    ]
     const intersectingIds: Array<number> = []
-    const viewportSize = new Vector2(
-      renderer.domElement.clientWidth,
-      renderer.domElement.clientHeight
-    )
-
-    // Traverse all groups in the sketch solve group
-    sketchSegments.traverse((child: Object3D) => {
-      if (!(child instanceof Group)) {
+    objects.forEach((apiObject) => {
+      if (!apiObject) {
         return
       }
 
-      const segmentId = Number(child.name)
-      if (Number.isNaN(segmentId)) {
-        return
-      }
-
-      // Check if this group has a line or arc segment mesh
-      const segmentMesh = child.children.find(
-        (c) =>
-          c instanceof Mesh &&
-          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
-            c.userData?.type === ARC_SEGMENT_BODY)
-      )
-
-      if (segmentMesh && segmentMesh instanceof Mesh) {
-        // If this is a `Line2` (screen-space line), intersect using its
-        // polyline segments instead of mesh triangles.
-        if (segmentMesh instanceof Line2) {
-          if (
-            doesLine2IntersectSelectionBox({
-              line: segmentMesh,
-              camera,
-              viewportSize,
-              selectionMinPx: boxMinPx,
-              selectionMaxPx: boxMaxPx,
-            })
-          ) {
-            intersectingIds.push(segmentId)
-          }
+      if (isPointSegment(apiObject)) {
+        if (
+          apiObject.kind.segment.owner !== null &&
+          apiObject.kind.segment.owner !== undefined
+        ) {
           return
         }
 
-        // This part is probably not running at the moment since we're only using Line2
-        // but it's kept here in case we start using other types of Meshes
-
-        // Handle line or arc segment (same logic for both)
-        // For line segments, check geometry type
-        if (segmentMesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
-          const geometry = segmentMesh.geometry
-          if (!(geometry instanceof ExtrudeGeometry)) {
-            return
-          }
-        }
-
-        // Get the bounding box of the mesh in world space
-        segmentMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(segmentMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // Compute the bounding box of the segment in screen space
-        const segmentMinPx = new Vector2(
-          Math.min(...screenCorners.map((c) => c.x)),
-          Math.min(...screenCorners.map((c) => c.y))
-        )
-        const segmentMaxPx = new Vector2(
-          Math.max(...screenCorners.map((c) => c.x)),
-          Math.max(...screenCorners.map((c) => c.y))
-        )
-
-        // Extract triangles from the mesh
-        const triangles = extractTrianglesFromMesh(
-          segmentMesh,
-          camera,
-          viewportSize
-        )
-
-        // Use improved intersection logic
-        const intersects = doesSegmentIntersectSelectionBox(
-          segmentMinPx,
-          segmentMaxPx,
-          boxMinPx,
-          boxMaxPx,
-          triangles
-        )
-
-        if (intersects) {
-          intersectingIds.push(segmentId)
+        if (isPointWithinBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+          intersectingIds.push(apiObject.id)
         }
         return
       }
 
-      // Check if this group has a point segment mesh
-      const pointObject = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === POINT_SEGMENT_BODY
-      )
+      if (isLineSegment(apiObject)) {
+        const linePoints = getLinePoints(apiObject, objects)
+        if (
+          linePoints &&
+          doesLineSegmentIntersectBox(
+            linePoints[0],
+            linePoints[1],
+            boxMin,
+            boxMax
+          )
+        ) {
+          intersectingIds.push(apiObject.id)
+        }
+        return
+      }
 
-      if (pointObject) {
-        const pointId = checkPointSegmentInBox(
-          pointObject,
-          segmentId,
-          objects,
-          camera,
-          renderer,
-          boxMinPx,
-          boxMaxPx
-        )
-        if (pointId !== null) {
-          intersectingIds.push(pointId)
+      if (isArcSegment(apiObject)) {
+        const arcPoints = getArcPoints(apiObject, objects)
+        if (
+          arcPoints &&
+          doesArcIntersectBox(
+            arcPoints.center,
+            arcPoints.start,
+            arcPoints.end,
+            boxMin,
+            boxMax
+          )
+        ) {
+          intersectingIds.push(apiObject.id)
         }
       }
     })
@@ -1258,6 +1180,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }
     },
     onAreaSelect: ({ startPoint, currentPoint }) => {
+      const startCoords: Coords2d = [startPoint.twoD.x, startPoint.twoD.y]
+      const currentCoords: Coords2d = [currentPoint.twoD.x, currentPoint.twoD.y]
       const scaledStartPoint = startPoint.threeD
         .clone()
         .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
@@ -1287,11 +1211,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
           viewportSize
         )
 
-        const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
-          startPx,
-          currentPx
-        )
-
         // Determine selection mode based on drag direction
         const isIntersectionBox = isIntersectionSelectionMode(
           startPx,
@@ -1299,7 +1218,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
         )
         if (isIntersectionBox) {
           // Intersection box: find segments that intersect with the selection box
-          const intersectingIds = findIntersectingSegments(boxMinPx, boxMaxPx)
+          const intersectingIds = findIntersectingSegments(
+            startCoords,
+            currentCoords
+          )
 
           // Update duringAreaSelectIds (temporary selection during drag)
           self.send({
@@ -1308,7 +1230,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           })
         } else {
           // Contains box: find segments fully contained within the selection box
-          const containedIds = findContainedSegments(boxMinPx, boxMaxPx)
+          const containedIds = findContainedSegments(startCoords, currentCoords)
 
           // Update duringAreaSelectIds (temporary selection during drag)
           self.send({
@@ -1344,60 +1266,4 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }
     },
   })
-}
-
-function doesLine2IntersectSelectionBox({
-  line,
-  camera,
-  viewportSize,
-  selectionMinPx,
-  selectionMaxPx,
-}: {
-  line: Line2
-  camera: OrthographicCamera | PerspectiveCamera
-  viewportSize: Vector2
-  selectionMinPx: Vector2
-  selectionMaxPx: Vector2
-}): boolean {
-  const instanceStart = line.geometry.getAttribute?.('instanceStart')
-  const instanceEnd = line.geometry.getAttribute?.('instanceEnd')
-  if (!instanceStart || !instanceEnd) {
-    return false
-  }
-
-  const segmentCount = Math.min(instanceStart.count, instanceEnd.count)
-  if (segmentCount <= 0) {
-    return false
-  }
-
-  // Small padding to roughly match the old extruded-mesh hit area.
-  const paddingPx = 1
-  const min = new Vector2(
-    selectionMinPx.x - paddingPx,
-    selectionMinPx.y - paddingPx
-  )
-  const max = new Vector2(
-    selectionMaxPx.x + paddingPx,
-    selectionMaxPx.y + paddingPx
-  )
-
-  const v0 = new Vector3()
-  const v1 = new Vector3()
-
-  for (let i = 0; i < segmentCount; i++) {
-    v0.set(instanceStart.getX(i), instanceStart.getY(i), instanceStart.getZ(i))
-    v1.set(instanceEnd.getX(i), instanceEnd.getY(i), instanceEnd.getZ(i))
-
-    v0.applyMatrix4(line.matrixWorld)
-    v1.applyMatrix4(line.matrixWorld)
-
-    const p0 = project3DToScreen(v0, camera, viewportSize)
-    const p1 = project3DToScreen(v1, camera, viewportSize)
-
-    if (doesLineSegmentIntersectBox(p0, p1, min, max)) {
-      return true
-    }
-  }
-
-  return false
 }

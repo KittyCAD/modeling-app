@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { Group, Vector2, Vector3 } from 'three'
+import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
 import {
   createOnDragStartCallback,
   createOnDragCallback,
@@ -50,6 +50,11 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive?: boolean
 }) {
   let callbacks: Record<string, unknown> = {}
+  const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
+  camera.position.z = 10
+  camera.lookAt(0, 0, 0)
+  camera.updateProjectionMatrix()
+  camera.updateMatrixWorld()
 
   const sceneInfra = {
     setCallbacks: vi.fn((nextCallbacks) => {
@@ -58,7 +63,15 @@ function setUpMoveToolCallbacks({
     scene: {
       getObjectByName: vi.fn(() => null),
     },
+    camControls: { camera },
+    renderer: {
+      domElement: {
+        clientWidth: 100,
+        clientHeight: 100,
+      },
+    },
     getClientSceneScaleFactor: vi.fn(() => 1),
+    baseUnitMultiplier: 1,
     isAreaSelectActive,
   } as unknown as SceneInfra
 
@@ -101,10 +114,17 @@ function setUpMoveToolCallbacks({
   if (typeof callbacks.onMove !== 'function') {
     throw new Error('Move tool did not register an onMove callback')
   }
+  if (typeof callbacks.onAreaSelect !== 'function') {
+    throw new Error('Move tool did not register an onAreaSelect callback')
+  }
 
   return {
     onMove: callbacks.onMove as (args: {
       intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+    }) => void,
+    onAreaSelect: callbacks.onAreaSelect as (args: {
+      startPoint: { twoD: Vector2; threeD: Vector3 }
+      currentPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
     sceneInfra,
     send: self.send,
@@ -192,10 +212,12 @@ function createPointApiObject({
   id,
   x = 0,
   y = 0,
+  owner = null,
 }: {
   id: number
   x?: number
   y?: number
+  owner?: number | null
 }): ApiObject {
   return {
     id,
@@ -208,9 +230,55 @@ function createPointApiObject({
           y: { value: y, units: 'Mm' },
         },
         ctor: null,
-        owner: null,
+        owner,
         freedom: 'Free',
         constraints: [],
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createArcApiObject({
+  id,
+  center,
+  start,
+  end,
+}: {
+  id: number
+  center: number
+  start: number
+  end: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Arc',
+        center,
+        start,
+        end,
+        ctor: {
+          type: 'Arc',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+        ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -1222,5 +1290,114 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     })
 
     expect(send).not.toHaveBeenCalled()
+  })
+})
+
+describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
+  it('should select contained line segments from api objects without scene geometry', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onAreaSelect, send, sceneInfra } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+    })
+
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(-5, -5),
+        threeD: new Vector3(-5, -5, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(15, 5),
+        threeD: new Vector3(15, 5, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [5] },
+    })
+    expect(sceneInfra.scene.getObjectByName).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not treat an arc as contained when its sweep extends outside the box', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const end = createPointApiObject({ id: 3, x: -10, y: 0, owner: 4 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [center, start, end, arc],
+    })
+
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(-11, -1),
+        threeD: new Vector3(-11, -1, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(11, 1),
+        threeD: new Vector3(11, 1, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [] },
+    })
+  })
+
+  it('should select line segments that intersect the box in intersection mode', () => {
+    const start = createPointApiObject({ id: 1, x: -10, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+    })
+
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(1, -1),
+        threeD: new Vector3(1, -1, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(-1, 1),
+        threeD: new Vector3(-1, 1, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [5] },
+    })
+  })
+
+  it('should select arcs that intersect the box in intersection mode', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const end = createPointApiObject({ id: 3, x: -10, y: 0, owner: 4 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [center, start, end, arc],
+    })
+
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(1, 11),
+        threeD: new Vector3(1, 11, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(-1, 9),
+        threeD: new Vector3(-1, 9, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [4] },
+    })
   })
 })
