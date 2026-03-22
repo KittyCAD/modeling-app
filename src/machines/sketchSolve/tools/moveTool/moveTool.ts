@@ -602,33 +602,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
           startPx,
           currentPx
         )
-        if (isIntersectionBox) {
-          // Intersection box: find segments that intersect with the selection box
-          const intersectingIds = findIntersectingSegments(
-            apiObjects,
-            startCoords,
-            currentCoords
-          )
+        const duringAreaSelectIds = isIntersectionBox
+          ? findIntersectingSegments(apiObjects, startCoords, currentCoords)
+          : findContainedSegments(apiObjects, startCoords, currentCoords)
 
-          // Update duringAreaSelectIds (temporary selection during drag)
-          self.send({
-            type: 'update selected ids',
-            data: { duringAreaSelectIds: intersectingIds },
-          })
-        } else {
-          // Contains box: find segments fully contained within the selection box
-          const containedIds = findContainedSegments(
-            apiObjects,
-            startCoords,
-            currentCoords
-          )
-
-          // Update duringAreaSelectIds (temporary selection during drag)
-          self.send({
-            type: 'update selected ids',
-            data: { duringAreaSelectIds: containedIds },
-          })
-        }
+        // Update duringAreaSelectIds (temporary selection during drag)
+        self.send({
+          type: 'update selected ids',
+          data: { duringAreaSelectIds },
+        })
       }
     },
     onAreaSelectEnd: () => {
