@@ -7,14 +7,10 @@ import {
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { Location } from 'react-router-dom'
 
-export const defaultGlobalStatusBarItems = ({
-  location,
-  filePath,
-}: {
+export const defaultGlobalStatusBarItems = (_props: {
   location: Location
   filePath?: string
 }): StatusBarItemType[] => [

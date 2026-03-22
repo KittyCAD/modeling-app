@@ -55,7 +55,6 @@ import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { ExtensionHost } from '@src/lib/extensions'
-import { routesFacet } from '@src/facets'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {

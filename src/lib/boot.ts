@@ -7,7 +7,7 @@ import {
   moduleFsViaWindow,
   StorageName,
 } from '@src/lib/fs-zds'
-import { ExtensionHost } from './extensions'
+import { ExtensionHost } from '@src/lib/extensions'
 import { coreExtensions } from '@src/extensions'
 
 // Earliest as possible point to configure the fs layer.
