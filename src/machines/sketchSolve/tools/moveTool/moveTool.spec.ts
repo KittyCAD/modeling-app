@@ -416,14 +416,12 @@ describe('createOnDragCallback', () => {
     expect(setIsSolveInProgress).not.toHaveBeenCalled()
   })
 
-  it('should call execute implementation  once', async () => {
+  it('should clear dragged entity id and call onComplete once', async () => {
+    const setDraggedEntityId = vi.fn()
     const onComplete = vi.fn(async () => {})
 
     const callback = createOnDragEndCallback({
-      getDraggingPointElement: () => {
-        return null
-      },
-      setDraggingPointElement: () => {},
+      setDraggedEntityId,
       onComplete,
     })
 
@@ -433,8 +431,8 @@ describe('createOnDragCallback', () => {
       intersects: [],
     })
 
-    // Should still mock execute to have the latest state in the Rust side.
-    expect(onComplete).toHaveBeenCalled()
+    expect(setDraggedEntityId).toHaveBeenCalledWith(null)
+    expect(onComplete).toHaveBeenCalledTimes(1)
   })
   it('should clear dragging state even when no element is currently being dragged', async () => {
     const setDraggedEntityId = vi.fn()

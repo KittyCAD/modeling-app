@@ -204,7 +204,7 @@ export type ConstraintObject = ApiObject & {
  * Constraint ApiObjects.
  */
 export function isConstraint<C extends ApiConstraint['type']>(
-  obj: ApiObject,
+  obj: ApiObject | undefined,
   targetType?: C
 ): obj is ConstraintObject &
   (C extends undefined
@@ -213,7 +213,7 @@ export function isConstraint<C extends ApiConstraint['type']>(
         kind: { constraint: { type: C } }
       }) {
   return (
-    obj.kind.type === 'Constraint' &&
+    obj?.kind.type === 'Constraint' &&
     (targetType ? obj.kind.constraint.type === targetType : true)
   )
 }
