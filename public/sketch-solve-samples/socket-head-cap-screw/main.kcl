@@ -1,0 +1,47 @@
+// Socket Head Cap Screw
+// This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.
+// Categories: Fasteners
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+boltDiameter = 0.190
+boltLength = 1.0
+boltHeadLength = boltDiameter
+boltHeadDiameter = 0.313
+boltHexDrive = 5 / 32
+boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
+
+// Create the head of the cap screw
+sketch001 = sketch(on = XZ) {
+  circle1 = arc(start = [var 0.16in, var 0in], end = [var 0.16in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+boltHead = extrude(region001, length = -boltHeadLength)
+  |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+
+// Define the sketch of the hex pattern on the screw head
+sketch002 = sketch(on = startSketchOn(boltHead, face = START)) {
+  line1 = line(start = [var 0.08in, var 0.05in], end = [var 0.08in, var -0.05in])
+  line2 = line(start = [var 0.08in, var -0.05in], end = [var 0in, var -0.09in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var -0.09in], end = [var -0.08in, var -0.05in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.08in, var -0.05in], end = [var -0.08in, var 0.05in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.08in, var 0.05in], end = [var 0in, var 0.09in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0in, var 0.09in], end = [var 0.08in, var 0.05in])
+  coincident([line5.end, line6.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+hexPatternSketch = extrude(region002, length = -boltHeadLength * 0.75)
+sketch003 = sketch(on = startSketchOn(boltHead, face = END)) {
+  circle1 = arc(start = [var 0.1in, var 0in], end = [var 0.1in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+boltBody = extrude(region003, length = boltLength)
+  |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
+  |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
+

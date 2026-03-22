@@ -99,7 +99,7 @@ wideHoleOffset = 30
 
 // Two slots mirrored across the plate width
 wideHolePlane = startSketchOn(XY)
-wideHoleShape = sketch(on = XY) {
+wideHoleShape = sketch(on = wideHolePlane) {
   line1 = line(start = [var -24mm, var 6mm], end = [var 24mm, var 6mm])
   arc2 = arc(start = [var 24mm, var -6mm], end = [var 24mm, var 6mm], center = [var 24mm, var 0mm])
   coincident([line1.end, arc2.end])
