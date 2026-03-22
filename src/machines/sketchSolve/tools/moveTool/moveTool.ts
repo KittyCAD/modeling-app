@@ -570,12 +570,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         intersectionPoint.twoD.y,
       ] as Coords2d
 
-      const apiObjects =
-        getCurrentSketchObjectsById(
-          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
-            .objects ?? [],
-          snapshot.context.sketchId
-        )
+      const apiObjects = getCurrentSketchObjectsById(
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+          [],
+        snapshot.context.sketchId
+      )
       const closestObjects = findClosestApiObjects(
         mousePosition,
         apiObjects,
@@ -627,12 +626,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
 
         const snapshot = self.getSnapshot()
-        const apiObjects =
-          getCurrentSketchObjectsById(
-            snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
-              .objects ?? [],
-            snapshot.context.sketchId
-          )
+        const apiObjects = getCurrentSketchObjectsById(
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
+            .objects ?? [],
+          snapshot.context.sketchId
+        )
 
         // Calculate selection box bounds in screen space for contains check
         const camera = context.sceneInfra.camControls.camera

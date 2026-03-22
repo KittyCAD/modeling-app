@@ -359,12 +359,11 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         intersectionPoint.twoD.y,
       ] as Coords2d
 
-      const apiObjects =
-        getCurrentSketchObjectsById(
-          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph
-            .objects ?? [],
-          snapshot.context.sketchId
-        )
+      const apiObjects = getCurrentSketchObjectsById(
+        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
+          [],
+        snapshot.context.sketchId
+      )
       const closestObjects = findClosestApiObjects(
         mousePosition,
         apiObjects,
