@@ -50,6 +50,7 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive?: boolean
 }) {
   let callbacks: Record<string, unknown> = {}
+  const getObjectByName = vi.fn(() => null)
   const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
   camera.position.z = 10
   camera.lookAt(0, 0, 0)
@@ -61,7 +62,7 @@ function setUpMoveToolCallbacks({
       callbacks = nextCallbacks as Record<string, unknown>
     }),
     scene: {
-      getObjectByName: vi.fn(() => null),
+      getObjectByName,
     },
     camControls: { camera },
     renderer: {
@@ -106,10 +107,7 @@ function setUpMoveToolCallbacks({
     },
   }
 
-  setUpOnDragAndSelectionClickCallbacks({
-    self: self as never,
-    context: context as never,
-  })
+  setUpOnDragAndSelectionClickCallbacks({ self, context } as any)
 
   if (typeof callbacks.onMove !== 'function') {
     throw new Error('Move tool did not register an onMove callback')
@@ -127,6 +125,7 @@ function setUpMoveToolCallbacks({
       currentPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
     sceneInfra,
+    getObjectByName,
     send: self.send,
   }
 }
@@ -1256,7 +1255,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const { onMove, send, sceneInfra } = setUpMoveToolCallbacks({
+    const { onMove, send, getObjectByName } = setUpMoveToolCallbacks({
       apiObjects: [start, end, line],
       isAreaSelectActive: true,
     })
@@ -1269,7 +1268,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     })
 
     expect(send).not.toHaveBeenCalled()
-    expect(sceneInfra.scene.getObjectByName).not.toHaveBeenCalled()
+    expect(getObjectByName).not.toHaveBeenCalled()
   })
 
   it('should avoid redundant hover updates when the hovered segment is unchanged', () => {
@@ -1299,7 +1298,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
     const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
     const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const { onAreaSelect, send, sceneInfra } = setUpMoveToolCallbacks({
+    const { onAreaSelect, send, getObjectByName } = setUpMoveToolCallbacks({
       apiObjects: [start, end, line],
     })
 
@@ -1318,7 +1317,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
       type: 'update selected ids',
       data: { duringAreaSelectIds: [5] },
     })
-    expect(sceneInfra.scene.getObjectByName).toHaveBeenCalledTimes(1)
+    expect(getObjectByName).toHaveBeenCalledTimes(1)
   })
 
   it('should not treat an arc as contained when its sweep extends outside the box', () => {

@@ -1,6 +1,6 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import { Intersection, Object3D } from 'three'
-import type { Group } from 'three'
+import { Object3D } from 'three'
+import type { Group, Intersection } from 'three'
 import {
   AmbientLight,
   Color,
@@ -116,7 +116,7 @@ export class SceneInfra {
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
-  onMouseDownSelection: () => Object3D | null = () => null
+  onMouseDownSelection: () => boolean = () => false
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
@@ -201,7 +201,7 @@ export class SceneInfra {
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
-      onMouseDownSelection: () => null,
+      onMouseDownSelection: () => false,
       onMouseEnter: () => {},
       onMouseLeave: () => {},
       onAreaSelectStart: () => {},
