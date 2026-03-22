@@ -7,6 +7,8 @@ import {
   moduleFsViaWindow,
   StorageName,
 } from '@src/lib/fs-zds'
+import { ExtensionHost } from './extensions'
+import { coreExtensions } from '@src/extensions'
 
 // Earliest as possible point to configure the fs layer.
 // In the future we can have the user switch between them at run-time, but
@@ -36,12 +38,19 @@ if (typeof window !== 'undefined' && isPlaywright()) {
   })
 }
 
+const host = new ExtensionHost()
+host.configure(coreExtensions)
+
 /**
  * This separates the instantiation of the app used by the frontend codebase
  * from its class definition. This app instance should not be referenced by any tests, but rather
  * created anew.
  */
-export const app = App.fromDefaults()
+export const app = App.fromProvided({
+  extensions: {
+    host,
+  },
+})
 export const AppContext = React.createContext(app)
 window.app = app
 

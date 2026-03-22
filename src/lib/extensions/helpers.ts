@@ -239,7 +239,7 @@ export function createPlugin({
   ...info
 }: PluginSpec): ExtensionDefinition {
   const compartment = new Compartment()
-  const toggle = createTogglableExtension({
+  const toggle = createToggleableExtension({
     name: info.id,
     extensions,
     compartment,
@@ -262,7 +262,7 @@ export function createPlugin({
  * The controller extension must live outside the compartment it mutates so the
  * service remains available after the feature is turned off.
  */
-export function createTogglableExtension({
+function createToggleableExtension({
   name,
   extensions,
   compartment,
