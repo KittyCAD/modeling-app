@@ -65,6 +65,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useSignals } from '@preact/signals-react/runtime'
 import { isMobile } from '@src/lib/isMobile'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
+import { statusBarFacet } from '@src/facets'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -74,7 +75,15 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor } = useApp()
+  const {
+    auth,
+    billing,
+    settings,
+    layout,
+    project,
+    systemIOActor,
+    extensions,
+  } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
@@ -393,6 +402,7 @@ export function OpenedProject() {
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({ location, filePath }),
+            ...extensions.host.signal(statusBarFacet).value.global,
           ]}
           localItems={[
             ...(getSettings().app.showDebugPanel.current

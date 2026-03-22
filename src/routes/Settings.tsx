@@ -11,8 +11,12 @@ import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsL
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { PluginsList } from '@src/components/PluginList'
+import { useApp } from '@src/lib/boot'
+import { pluginsFacet } from '@src/lib/extensions'
 
 export const Settings = () => {
+  const app = useApp()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const close = () => {
@@ -25,7 +29,7 @@ export const Settings = () => {
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
   const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel | 'keybindings') ??
+    (searchParams.get('tab') as SettingsLevel | 'keybindings' | 'plugins') ??
     (isFileSettings ? 'project' : 'user')
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -105,7 +109,7 @@ export const Settings = () => {
                 gridTemplateRows: '1fr',
               }}
             >
-              {searchParamTab !== 'keybindings' ? (
+              {searchParamTab === 'user' || searchParamTab === 'project' ? (
                 <>
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
@@ -117,11 +121,17 @@ export const Settings = () => {
                     ref={scrollRef}
                   />
                 </>
-              ) : (
+              ) : searchParamTab === 'keybindings' ? (
                 <>
                   <KeybindingsSectionsList scrollRef={scrollRef} />
                   <AllKeybindingsFields ref={scrollRef} />
                 </>
+              ) : (
+                <PluginsList
+                  ref={scrollRef}
+                  host={app.extensions.host}
+                  plugins={app.extensions.host.signal(pluginsFacet).value}
+                />
               )}
             </div>
           </Dialog.Panel>

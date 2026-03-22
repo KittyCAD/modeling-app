@@ -44,6 +44,11 @@ export function SettingsTabs({
           />
         )}
       </RadioGroup.Option>
+      <RadioGroup.Option value="plugins">
+        {({ checked }) => (
+          <SettingsTabButton checked={checked} icon="function" text="Plugins" />
+        )}
+      </RadioGroup.Option>
     </RadioGroup>
   )
 }
