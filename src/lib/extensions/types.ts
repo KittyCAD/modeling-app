@@ -207,6 +207,10 @@ export interface ExtensionHostLike extends DisposableLike {
   get<I, O>(facet: Facet<I, O>): O
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
   signal<I, O>(facet: Facet<I, O>): ReadonlySignal<O>
+  reconfigure(
+    compartment: Compartment,
+    extensions: readonly ExtensionNode[]
+  ): void
   optional<T>(service: Service<T>): T | undefined
   debugService<T>(
     service: Service<T>

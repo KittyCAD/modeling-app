@@ -1,13 +1,15 @@
 import { computed, signal } from '@preact/signals-core'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   CombineMutationError,
   MissingServiceError,
+  ReconfigurationError,
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
 import { appendFacet } from './facet'
 import {
+  createCompartmentToggleController,
   defineExtension,
   defineExtensionFactory,
   provide,
@@ -15,6 +17,7 @@ import {
 } from './helpers'
 import { ExtensionHost } from './host'
 import { defineService } from './service'
+import { Compartment } from './types'
 
 describe('services', () => {
   it('resolves singleton services and exposes readonly signal fields', () => {
@@ -86,6 +89,20 @@ describe('services', () => {
     expect(() => host.inspect()).toThrow(ServiceResolutionError)
   })
 
+  it('throws when a factory reconfigures a compartment during graph construction', () => {
+    const compartment = new Compartment()
+
+    const badFactory = defineExtensionFactory(({ host }) => {
+      host.reconfigure(compartment, [])
+      return { extension: defineExtension({}) }
+    }, 'bad-reconfigure-factory')
+
+    const host = new ExtensionHost()
+    host.configure([compartment.of(defineExtension({})), badFactory])
+
+    expect(() => host.inspect()).toThrow(ReconfigurationError)
+  })
+
   it('throws when a same-host service method is called while combining', () => {
     const facet = appendFacet<number>('numbers')
     const service = defineService<{
@@ -118,6 +135,96 @@ describe('services', () => {
     ])
 
     expect(() => host.get(facet)).toThrow(CombineMutationError)
+  })
+
+  it('throws when reconfigure is called during facet combine', () => {
+    const facet = appendFacet<number>('numbers')
+    const compartment = new Compartment()
+    const host = new ExtensionHost()
+
+    host.configure([
+      compartment.of(defineExtension({})),
+      defineExtension({
+        provides: [
+          provide(
+            facet,
+            computed(() => {
+              host.reconfigure(compartment, [])
+              return 1
+            })
+          ),
+        ],
+      }),
+    ])
+
+    expect(() => host.get(facet)).toThrow(ReconfigurationError)
+  })
+
+  it('toggle controller reconfigures a compartment and preserves unrelated runtime instances', () => {
+    const toggleService = defineService<{
+      active: { readonly value: boolean }
+      enable(): void
+      disable(): void
+      toggle(): void
+    }>('toggle')
+    const stableService = defineService<{
+      isOpen: { readonly value: boolean }
+      open(): void
+    }>('stable')
+    const featureFacet = appendFacet<string>('feature')
+    const compartment = new Compartment()
+    const runtimeCalls = vi.fn()
+
+    const stableRuntime = defineExtensionFactory(() => {
+      runtimeCalls()
+      const isOpen = signal(false)
+
+      return {
+        extension: defineExtension({
+          providesServices: [
+            provideService(stableService, {
+              isOpen,
+              open() {
+                isOpen.value = true
+              },
+            }),
+          ],
+        }),
+      }
+    }, 'stable-runtime')
+
+    const toggleExtension = defineExtensionFactory(({ host }) => {
+      const controller = createCompartmentToggleController({
+        host,
+        compartment,
+        activeExtensions: [
+          defineExtension({
+            provides: [provide(featureFacet, 'enabled')],
+          }),
+        ],
+      })
+
+      return {
+        extension: defineExtension({
+          providesServices: [provideService(toggleService, controller)],
+        }),
+      }
+    }, 'toggle-extension')
+
+    const host = new ExtensionHost()
+    host.configure([stableRuntime, toggleExtension, compartment.of()])
+
+    host.get(stableService).open()
+    host.get(toggleService).enable()
+    expect(host.get(featureFacet)).toEqual(['enabled'])
+    expect(host.get(toggleService).active.value).toBe(true)
+    expect(host.get(stableService).isOpen.value).toBe(true)
+
+    host.get(toggleService).disable()
+    expect(host.get(featureFacet)).toEqual([])
+    expect(host.get(toggleService).active.value).toBe(false)
+    expect(host.get(stableService).isOpen.value).toBe(true)
+    expect(runtimeCalls).toHaveBeenCalledTimes(1)
   })
 
   it('can inspect active service providers', () => {

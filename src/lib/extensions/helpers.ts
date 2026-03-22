@@ -1,10 +1,12 @@
-import { type ReadonlySignal, computed } from '@preact/signals-core'
+import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { ExtensionHost } from './host'
-import type {
+import {
+  Compartment,
   ExtensionDefinition,
   ExtensionFactory,
   ExtensionKey,
+  ExtensionNode,
   Facet,
   FacetContribution,
   MaybeSignal,
@@ -13,6 +15,7 @@ import type {
   Service,
   ServiceContribution,
 } from './types'
+import { defineService } from './service'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -83,6 +86,19 @@ export function readonlyFromSignal<T>(
   value: ReadonlySignal<T>
 ): ReadonlySignal<T> {
   return computed(() => value.value)
+}
+
+/**
+ * Stable controller shape for toggling a compartment-backed feature subtree.
+ *
+ * If callers bypass this controller and reconfigure the compartment directly,
+ * the `active` signal may no longer reflect the host's true state.
+ */
+export interface CompartmentToggleController {
+  readonly active: ReadonlySignal<boolean>
+  enable(): void
+  disable(): void
+  toggle(): void
 }
 
 /**
@@ -178,6 +194,78 @@ export function defineRuntimeExtension<T extends RuntimeExtensionDefinition>(
   spec: T
 ): T {
   return spec
+}
+
+export function createTogglableExtension({
+  name,
+  extensions,
+  compartment,
+}: {
+  name: string
+  extensions: readonly ExtensionNode[]
+  compartment: Compartment
+}) {
+  const service = defineService<CompartmentToggleController>(`${name}-toggle`)
+  return {
+    service,
+    extension: defineExtensionFactory((ctx) => {
+      const impl = createCompartmentToggleController({
+        host: ctx.host,
+        activeExtensions: extensions,
+        initialActive: true,
+        compartment,
+      })
+      return {
+        extension: defineRuntimeExtension({
+          providesServices: [provideService(service, impl)],
+        }),
+      }
+    }, `${name}-toggle-ext`),
+  }
+}
+
+type CompartmentToggleControllerProps = {
+  host: Pick<ExtensionHost, 'reconfigure'>
+  compartment: Compartment
+  activeExtensions: readonly ExtensionNode[]
+  inactiveExtensions?: readonly ExtensionNode[]
+  initialActive?: boolean
+}
+
+/**
+ * Build a controller service for a compartment-backed feature toggle.
+ *
+ * The controller should live outside the compartment it mutates.
+ * `initialActive` should match the host's initial compartment contents.
+ */
+export function createCompartmentToggleController({
+  host,
+  compartment,
+  activeExtensions,
+  inactiveExtensions = [],
+  initialActive = false,
+}: CompartmentToggleControllerProps): CompartmentToggleController {
+  const active = signal(initialActive)
+
+  return {
+    active,
+    enable() {
+      active.value = true
+      host.reconfigure(compartment, activeExtensions)
+    },
+    disable() {
+      active.value = false
+      host.reconfigure(compartment, inactiveExtensions)
+    },
+    toggle() {
+      if (active.value) {
+        this.disable()
+        return
+      }
+
+      this.enable()
+    },
+  }
 }
 
 export function provide<I>(

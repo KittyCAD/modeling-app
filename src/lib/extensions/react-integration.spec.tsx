@@ -1,14 +1,13 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { ExtensionHost } from './host'
 import {
   createExampleHost,
   searchService,
-  teamWorkspaceExtension,
   toolbarFacet,
-  workspaceCompartment,
+  workspaceToggleService,
 } from './examples/app'
+import type { ExtensionHost } from './host'
 
 function Toolbar({ host }: { host: ExtensionHost }) {
   useSignals()
@@ -37,6 +36,20 @@ function SearchQuery({ host }: { host: ExtensionHost }) {
   )
 }
 
+function WorkspaceToggle({ host }: { host: ExtensionHost }) {
+  useSignals()
+  const workspaceToggle = host.get(workspaceToggleService)
+
+  return (
+    <div>
+      <span data-testid="workspace-active">
+        {workspaceToggle.active.value ? 'active' : 'inactive'}
+      </span>
+      <button onClick={() => workspaceToggle.toggle()}>Toggle Workspace</button>
+    </div>
+  )
+}
+
 describe('React integration', () => {
   it('renders toolbar items from facet signals', () => {
     const host = createExampleHost()
@@ -44,6 +57,7 @@ describe('React integration', () => {
     render(<Toolbar host={host} />)
 
     expect(screen.getByText('Workspace: Personal')).toBeInTheDocument()
+    expect(screen.getByText('Enable Team Workspace')).toBeInTheDocument()
     expect(screen.getByText('Open Search')).toBeInTheDocument()
     expect(screen.getByText('Search Idle')).toBeInTheDocument()
   })
@@ -81,15 +95,18 @@ describe('React integration', () => {
       <>
         <Toolbar host={host} />
         <SearchQuery host={host} />
+        <WorkspaceToggle host={host} />
       </>
     )
 
     fireEvent.click(screen.getByText('Open Search'))
     expect(screen.getByText('Close Search')).toBeInTheDocument()
 
-    host.reconfigure(workspaceCompartment, [teamWorkspaceExtension])
+    fireEvent.click(screen.getByText('Toggle Workspace'))
 
     expect(await screen.findByText('Workspace: Team')).toBeInTheDocument()
+    expect(screen.getByText('Disable Team Workspace')).toBeInTheDocument()
+    expect(screen.getByTestId('workspace-active')).toHaveTextContent('active')
     expect(screen.getByText('Close Search')).toBeInTheDocument()
   })
 })

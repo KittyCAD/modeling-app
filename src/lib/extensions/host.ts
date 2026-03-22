@@ -6,6 +6,7 @@ import {
 } from '@preact/signals-core'
 import {
   MissingServiceError,
+  ReconfigurationError,
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
@@ -189,6 +190,18 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     compartment: Compartment,
     extensions: readonly ExtensionNode[]
   ): void {
+    if (this.flattenDepth > 0) {
+      throw new ReconfigurationError(
+        'Cannot reconfigure a compartment while building the extension graph.'
+      )
+    }
+
+    if (this.combineDepth > 0) {
+      throw new ReconfigurationError(
+        'Cannot reconfigure a compartment while combining a facet.'
+      )
+    }
+
     let holder = this.compartmentContent.get(compartment.id)
     if (!holder) {
       holder = signal(extensions)

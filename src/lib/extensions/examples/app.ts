@@ -1,6 +1,7 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
 import { appendFacet, defineFacet, mergeObjectsFacet } from '../facet'
 import {
+  createCompartmentToggleController,
   defineExtension,
   defineExtensionFactory,
   defineRuntimeExtension,
@@ -38,6 +39,13 @@ export interface SearchService {
   setQuery(value: string): void
 }
 
+export interface WorkspaceToggleService {
+  readonly active: ReadonlySignal<boolean>
+  enable(): void
+  disable(): void
+  toggle(): void
+}
+
 export const commandsFacet = appendFacet<Command>('commands')
 export const toolbarFacet = defineFacet<ToolbarItem, readonly ToolbarItem[]>({
   name: 'toolbar',
@@ -49,6 +57,8 @@ export const settingsFacet = mergeObjectsFacet<AppSettings>('settings', {
   showSidebar: true,
 })
 export const searchService = defineService<SearchService>('search')
+export const workspaceToggleService =
+  defineService<WorkspaceToggleService>('workspace-toggle')
 export const workspaceCompartment = new Compartment()
 
 export const baseExtension = defineExtension({
@@ -82,7 +92,7 @@ export const teamWorkspaceExtension = defineExtension({
         label: 'Workspace: Team',
         run: () => {},
       },
-      { key: 'workspace.current', precedence: 'high' }
+      { key: 'workspace.current', precedence: 'highest' }
     ),
     provide(settingsFacet, { showSidebar: false }),
   ],
@@ -154,11 +164,42 @@ export const searchStatusExtension = defineExtensionFactory(({ services }) => {
   }
 }, 'search-status-extension')
 
+export const workspaceToggleExtension = defineExtensionFactory(({ host }) => {
+  const controller = createCompartmentToggleController({
+    host,
+    compartment: workspaceCompartment,
+    activeExtensions: [teamWorkspaceExtension],
+    initialActive: false,
+  })
+
+  return {
+    extension: defineRuntimeExtension({
+      id: 'workspace-toggle-extension',
+      providesServices: [provideService(workspaceToggleService, controller)],
+      provides: [
+        provide(
+          toolbarFacet,
+          computed(() => ({
+            id: 'workspace.toggle',
+            label: controller.active.value
+              ? 'Disable Team Workspace'
+              : 'Enable Team Workspace',
+            run: () => controller.toggle(),
+          })),
+          { key: 'workspace.toggle', precedence: 'high' }
+        ),
+      ],
+    }),
+  }
+}, 'workspace-toggle-extension')
+
 export const defaultExampleExtensions = [
   baseExtension,
+  personalWorkspaceExtension,
   searchExtension,
   searchStatusExtension,
-  workspaceCompartment.of(personalWorkspaceExtension),
+  workspaceToggleExtension,
+  workspaceCompartment.of(),
 ] as const
 
 export function createExampleHost() {
