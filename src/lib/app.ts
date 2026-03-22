@@ -54,6 +54,9 @@ import type { Project } from '@src/lib/project'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { ExtensionHost } from './extensions'
+import { coreExtensions } from '@src/extensions'
+import { routesFacet } from '@src/facets'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -101,6 +104,10 @@ export type AppLayoutSystem = {
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
+export type AppExtensionSystem = {
+  host: ExtensionHost
+}
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -112,6 +119,7 @@ export interface AppSubsystems {
   settings: AppSettingsSystem
   billing: AppBillingSystem
   layout: AppLayoutSystem
+  extensions: AppExtensionSystem
 }
 
 export class App implements AppSubsystems {
@@ -147,6 +155,8 @@ export class App implements AppSubsystems {
   billing: AppBillingSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
+  /** The extension system for the application */
+  extensions: AppExtensionSystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -166,6 +176,7 @@ export class App implements AppSubsystems {
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
+    this.extensions = subsystems.extensions
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
         wasmInstancePromise: this.wasmPromise,
@@ -279,6 +290,12 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value })
       ),
     }
+    const extensionsHost = new ExtensionHost()
+    extensionsHost.configure(coreExtensions)
+    extensionsHost.debugFacet(routesFacet)
+    const extensions = {
+      host: extensionsHost,
+    }
 
     return {
       wasmPromise,
@@ -290,6 +307,7 @@ export class App implements AppSubsystems {
       settings,
       billing,
       layout,
+      extensions,
     }
   }
 

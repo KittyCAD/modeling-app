@@ -32,6 +32,7 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
+import { routesFacet } from './facets'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -130,10 +131,6 @@ export const Router = () => {
                   path: makeUrlPathRelative(PATHS.SETTINGS),
                   element: <Settings />,
                 },
-                {
-                  path: makeUrlPathRelative(PATHS.TELEMETRY),
-                  element: <Telemetry />,
-                },
               ],
             },
             {
@@ -150,10 +147,11 @@ export const Router = () => {
                   },
                 ]
               : []),
+            ...app.extensions.host.signal(routesFacet).value,
           ],
         },
       ]),
-    [app]
+    [app, app.extensions.host.signal(routesFacet).value]
   )
 
   return (
