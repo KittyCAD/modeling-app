@@ -1,12 +1,11 @@
 import type { ForwardedRef } from 'react'
 import { forwardRef } from 'react'
-
-import {
+import type {
   CompartmentToggleController,
   ExtensionHost,
   PluginRecord,
 } from '@src/lib/extensions'
-import { Toggle } from './Toggle/Toggle'
+import { Toggle } from '@src/components/Toggle/Toggle'
 
 type PluginsListProps = {
   plugins: readonly PluginRecord[]

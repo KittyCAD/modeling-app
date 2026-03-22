@@ -1,8 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { RouteObject, useLocation, useNavigate } from 'react-router-dom'
-
+import { type RouteObject, useLocation, useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { TelemetryExplorer } from '@src/components/TelemetryExplorer'
 import { useDotDotSlash } from '@src/hooks/useDotDotSlash'

@@ -54,7 +54,7 @@ import type { Project } from '@src/lib/project'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
-import { ExtensionHost } from './extensions'
+import { ExtensionHost } from '@src/lib/extensions'
 import { coreExtensions } from '@src/extensions'
 import { routesFacet } from '@src/facets'
 
