@@ -65,7 +65,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useSignals } from '@preact/signals-react/runtime'
 import { isMobile } from '@src/lib/isMobile'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { statusBarFacet } from '@src/facets'
+import { statusBarGlobalItemsFacet } from '@src/facets'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -402,7 +402,7 @@ export function OpenedProject() {
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({ location, filePath }),
-            ...extensions.host.signal(statusBarFacet).value.global,
+            ...extensions.host.signal(statusBarGlobalItemsFacet).value,
           ]}
           localItems={[
             ...(getSettings().app.showDebugPanel.current

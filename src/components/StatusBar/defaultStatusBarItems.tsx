@@ -41,16 +41,6 @@ export const defaultGlobalStatusBarItems = ({
         },
       ]
     : []),
-  {
-    id: 'settings',
-    element: 'link',
-    icon: 'settings',
-    href: location.pathname.includes(PATHS.FILE)
-      ? location.pathname + PATHS.SETTINGS + '?tab=project'
-      : PATHS.HOME + PATHS.SETTINGS,
-    'data-testid': 'settings-link',
-    label: 'Settings',
-  },
 ]
 
 function EnvironmentStatusBarItem() {

@@ -1,7 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { routesFacet, statusBarFacet } from '@src/facets'
+import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
 import { defineExtension, provide, createPlugin } from '@src/lib/extensions'
 import { PATHS } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
@@ -46,13 +46,9 @@ function TelemetryStatusBarItem() {
 /** Contributes a status-bar entry point for the telemetry plugin. */
 const telemetryStatusBarExt = defineExtension({
   provides: [
-    provide(statusBarFacet, {
-      global: [
-        {
-          id: 'telemetry',
-          component: TelemetryStatusBarItem,
-        },
-      ],
+    provide(statusBarGlobalItemsFacet, {
+      id: 'telemetry',
+      component: TelemetryStatusBarItem,
     }),
   ],
 })
