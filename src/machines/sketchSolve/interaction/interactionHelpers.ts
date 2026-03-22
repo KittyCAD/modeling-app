@@ -2,7 +2,6 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { distance2d, dot2d, subVec } from '@src/lib/utils2d'
-import type { SolveActionArgs } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { getAngleDiff, isArray } from '@src/lib/utils'
 import {
   getArcPoints,
@@ -16,7 +15,6 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
-type SketchSolveSnapshot = ReturnType<SolveActionArgs['self']['getSnapshot']>
 type ArcPoints = NonNullable<ReturnType<typeof getArcPoints>>
 type LinePoints = {
   type: 'line'
@@ -24,7 +22,6 @@ type LinePoints = {
 }
 type HitObject = ({ type: 'arc' } & ArcPoints) | LinePoints
 type ConstraintHitObjects = HitObject[] | 'auto'
-const HOVER_DISTANCE_PX = 12
 
 function distanceToLineSegment(
   point: Coords2d,
@@ -139,17 +136,27 @@ export type ClosestApiObject = {
   apiObject: ApiObject
 }
 
+/**
+ * Finds the closest apiObject to mousePosition (which is given in sketch space).
+ * Uses ApiObjects instead of the three.js scene.
+ * Constraints still use the three.js group to avoid having to set up its hit areas manually.
+ */
 export function findClosestApiObjects(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
 ): ClosestApiObject[] {
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  const hoverDistance =
-    HOVER_DISTANCE_PX *
-    sceneInfra.getClientSceneScaleFactor(
-      sketchSceneObject instanceof Group ? sketchSceneObject : null
-    )
+  const scale = sceneInfra.getClientSceneScaleFactor(
+    sketchSceneObject instanceof Group ? sketchSceneObject : null
+  )
+  // hoverDistance adds some extra hit area for segments to hover over / click on.
+  // All segments outside of hoverDistance are dropped.
+  // Points take precedence over other segments if the mouse is within the point radius,
+  // because we prioritize the points over the lines the points are on.
+  // However, if the mouse is outside of the point radius (and may still be within hoverDistance),
+  // the closest segment should win.
+  const hoverDistance = 8 * scale
 
   const candidates: ClosestApiObject[] = []
 

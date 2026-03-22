@@ -139,6 +139,7 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
+export const POINT_SEGMENT_RADIUS = 3
 const POINT_SEGMENT_BODY_RENDER_ORDER = 10
 const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
@@ -236,8 +237,6 @@ class PointSegmentDOM implements SketchEntityUtils {
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              width: 6px;
-              height: 6px;
               border-radius: 50%;
               display: none;
               background: #ffffff;
@@ -316,7 +315,7 @@ class PointSegmentDOM implements SketchEntityUtils {
 class PointSegment implements SketchEntityUtils {
   private readonly pointDom = new PointSegmentDOM()
   // TODO don't dispose
-  private readonly circleGeometry = new CircleGeometry(3, 12)
+  private readonly circleGeometry = new CircleGeometry(POINT_SEGMENT_RADIUS, 12)
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
