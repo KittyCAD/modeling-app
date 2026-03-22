@@ -1192,23 +1192,16 @@ export async function getPlaneDataFromSketchBlock(
   systemDeps: {
     rustContext: RustContext
     sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+    ast: Node<Program>
+    execState: ExecState
+    wasmInstance: ModuleType
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
-  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
-  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
-  // XY no matter what for now
-
-  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact.
+  // If `planeId` is missing, the sketch is on a default plane and we currently
+  // fall back to XY.
   if (!sketchBlock.planeId) {
-    return null
-  }
-
-  // Try to get the artifact from the graph
-  const _artifact = artifactGraph.get(sketchBlock.planeId)
-
-  // Use the default XY plane.
-  // This is a temporary solution while we determine the proper approach for default planes
-  if (true) {
     const defaultPlanes = systemDeps.rustContext.defaultPlanes
     if (defaultPlanes?.xy) {
       const defaultResult = getDefaultSketchPlaneData(
@@ -1220,6 +1213,39 @@ export async function getPlaneDataFromSketchBlock(
       }
     }
     return null
+  }
+
+  const defaultResult = getDefaultSketchPlaneData(
+    sketchBlock.planeId,
+    systemDeps
+  )
+  if (!err(defaultResult) && defaultResult) {
+    return defaultResult
+  }
+
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const offsetResult = await getOffsetSketchPlaneData(artifact, {
+    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+    sceneInfra: systemDeps.sceneInfra,
+  })
+  if (!err(offsetResult) && offsetResult) {
+    return offsetResult
+  }
+
+  const sweepFaceSelected = await selectionBodyFace(
+    sketchBlock.planeId,
+    artifactGraph,
+    systemDeps.ast,
+    systemDeps.execState,
+    {
+      wasmInstance: systemDeps.wasmInstance,
+      rustContext: systemDeps.rustContext,
+      sceneInfra: systemDeps.sceneInfra,
+      sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+    }
+  )
+  if (sweepFaceSelected) {
+    return sweepFaceSelected
   }
 
   return null
@@ -1251,9 +1277,9 @@ export async function getOffsetSketchPlaneData(
 ): Promise<Error | false | OffsetPlane> {
   const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
-    return new Error(
-      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
-    )
+    // Non-plane artifacts are expected here when selecting sweep faces.
+    // Return false so callers can continue to face-selection fallback logic.
+    return false
   }
   const planeId = artifact.id
   try {
