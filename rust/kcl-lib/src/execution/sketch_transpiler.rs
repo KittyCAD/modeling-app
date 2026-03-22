@@ -807,11 +807,10 @@ fn extract_sketch_surface_expr_from_call(call: &ast::Node<ast::CallExpressionKw>
 fn extract_sketch_surface_expr_from_start_sketch_on(
     call: &ast::Node<ast::CallExpressionKw>,
 ) -> Result<ast::Expr, KclError> {
-    if call.arguments.is_empty() {
-        if let Some(surface_expr) = call.unlabeled.as_ref() {
+    if call.arguments.is_empty()
+        && let Some(surface_expr) = call.unlabeled.as_ref() {
             return Ok(surface_expr.clone());
         }
-    }
 
     Ok(ast::Expr::CallExpressionKw(Box::new(call.clone())))
 }
