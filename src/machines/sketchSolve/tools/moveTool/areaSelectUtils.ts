@@ -641,10 +641,7 @@ export function updateSelectionBox({
   }
 
   const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
-  if (
-    currentSelectionBoxObject &&
-    currentSelectionBoxObject.element instanceof HTMLElement
-  ) {
+  if (currentSelectionBoxObject?.element instanceof HTMLElement) {
     const localCenter = transformToLocalSpace(
       properties.center3D,
       sketchSceneGroup
@@ -689,9 +686,7 @@ export function updateSelectionBox({
     const currentVerticalLine = selectionBoxState.getVerticalLine()
     const currentHorizontalLine = selectionBoxState.getHorizontalLine()
     if (
-      currentVerticalLine &&
       currentVerticalLine instanceof HTMLElement &&
-      currentHorizontalLine &&
       currentHorizontalLine instanceof HTMLElement
     ) {
       updateCornerLinePositions(
