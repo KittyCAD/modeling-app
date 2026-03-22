@@ -800,7 +800,7 @@ export class SceneInfra {
     if (selectedOnMouseDown) {
       this.selected = {
         mouseDownVector,
-        object: new Object3D(), // just a dummy, delete this propert if sketch 1 is deprecated
+        object: new Object3D(), // just a dummy, delete this property if sketch 1 is deprecated
         hasBeenDragged: false,
       }
     } else {
