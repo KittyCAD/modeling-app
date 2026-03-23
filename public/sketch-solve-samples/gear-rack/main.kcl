@@ -1,0 +1,73 @@
+// 100mm Gear Rack
+// A flat bar or rail that is engraved with teeth along its length. These teeth are designed to mesh with the teeth of a gear, known as a pinion. When the pinion, a small cylindrical gear, rotates, its teeth engage with the teeth on the rack, causing the rack to move linearly. Conversely, linear motion applied to the rack will cause the pinion to rotate.
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+length = 100
+pitchHeight = 11.5
+width = 5
+height = 12
+minHeight = 10.875
+
+// Create the body of the rack
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -50mm, var 0mm], end = [var 50mm, var 0mm])
+  line2 = line(start = [var 50mm, var 0mm], end = [var 50mm, var 10.88mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 50mm, var 10.88mm], end = [var -50mm, var 10.88mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -50mm, var 10.88mm], end = [var -50mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+rackBody = extrude(region001, length = width)
+
+// Create a function for sketch of a single tooth
+fn tooth() {
+  sketch002 = startSketchOn(XY)
+    |> startProfile(at = [-length / 2 + 0.567672, minHeight])
+    |> tangentialArc(end = [0.157636, 0.110378])
+    |> line(end = [0.329118, 0.904244])
+    |> tangentialArc(end = [0.157636, 0.110378])
+    |> line(end = [0.186505, 0])
+    |> tangentialArc(end = [0.157636, -0.110378])
+    |> line(end = [0.329118, -0.904244])
+    |> tangentialArc(end = [0.157636, -0.110378])
+    |> close()
+  toothSketch = extrude(sketch002, length = width)
+  return toothSketch
+}
+
+// Pattern the single tooth over the length of the rack body
+teeth = tooth()
+  |> patternLinear3d(axis = [10, 0, 0], distance = 1.570796, instances = 63)
+
+// Sketch and extrude the first end cap. This is a partial tooth
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -50mm, var 11.85mm], end = [var -49.69mm, var 10.99mm])
+  arc2 = arc(start = [var -49.69mm, var 10.99mm], end = [var -49.53mm, var 10.88mm], center = [var -49.53mm, var 11.04mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -49.53mm, var 10.88mm], end = [var -50mm, var 10.88mm])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var -50mm, var 10.88mm], end = [var -50mm, var 11.85mm])
+  coincident([line3.end, line4.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.arc2])
+endCapTooth = extrude(region002, length = width)
+
+// Sketch and extrude the second end cap. This is a partial tooth
+sketch003 = sketch(on = XY) {
+  line1 = line(start = [var 50mm, var 11.85mm], end = [var 49.69mm, var 10.99mm])
+  arc2 = arc(start = [var 49.53mm, var 10.88mm], end = [var 49.69mm, var 10.99mm], center = [var 49.53mm, var 11.04mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 49.53mm, var 10.88mm], end = [var 50mm, var 10.88mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 50mm, var 10.88mm], end = [var 50mm, var 11.85mm])
+  coincident([line3.end, line4.start])
+}
+region003 = region(segments = [sketch003.line1, sketch003.arc2])
+endCapTooth2 = extrude(region003, length = width)
+
