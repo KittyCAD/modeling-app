@@ -20,7 +20,7 @@ overallBracketWidth = halfBracketWidth * 2
 
 // outline profile
 outlineSketch = startSketchOn(XZ)
-outlineProfile = sketch(on = XZ) {
+outlineProfile = sketch(on = outlineSketch) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 70mm])
   line2 = line(start = [var 0mm, var 70mm], end = [var 4mm, var 70mm])
   coincident([line1.end, line2.start])
@@ -82,7 +82,7 @@ bracketWithCountersunkHole = hole::hole(
 slotWidth = fastenerHoleDiameter
 slotOverallLength = fastenerHoleDiameter * 3
 slotSketch = startSketchOn(XY)
-slotProfile = sketch(on = XY) {
+slotProfile = sketch(on = slotSketch) {
   line1 = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
   arc2 = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
   coincident([line1.end, arc2.end])

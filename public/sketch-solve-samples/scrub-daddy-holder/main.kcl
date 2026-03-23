@@ -1,0 +1,56 @@
+// Scrub Daddy Sponge Holder
+// A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit magnets with a diameter of 6mm and thickness of 3 mm.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+magnetDiameter = 6.2
+magnetThickness = 3
+spongeThickness = 40
+spongeEyeDiameter = 14
+spongeEyeCenter2Center = 34
+spongeDiameter = 100
+
+sketch = startSketchOn(XY)
+
+// create the magnets so we can subtract them from the holder later
+sketch001 = startProfile(sketch, at = [0, 0])
+  |> circle(center = [spongeEyeCenter2Center / 2, 0], diameter = magnetDiameter)
+  |> patternCircular2d(instances = 2, center = [0, 0])
+magnets = extrude(sketch001, length = magnetThickness)
+
+// create the base of the holder
+sketch002 = sketch(on = sketch) {
+  line1 = line(start = [var -30mm, var -10.5mm], end = [var 30mm, var -10.5mm])
+  line2 = line(start = [var 30mm, var -10.5mm], end = [var 30mm, var 10.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 30mm, var 10.5mm], end = [var -30mm, var 10.5mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -30mm, var 10.5mm], end = [var -30mm, var -10.5mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+region001 = region(segments = [sketch002.line1, sketch002.line2])
+base = extrude(region001, length = magnetThickness * 1.5)
+  |> subtract(tools = [magnets])
+  |> fillet(
+       radius = 5,
+       tags = [
+         getNextAdjacentEdge(line001),
+         getNextAdjacentEdge(line002),
+         getNextAdjacentEdge(line003),
+         getNextAdjacentEdge(line004)
+       ],
+     )
+
+// create the holder pegs which go into the eyes of the sponge
+sketch003 = sketch(on = startSketchOn(base, face = END)) {
+  circle1 = arc(start = [var 24mm, var 0mm], end = [var 24mm, var 0mm], center = [var 17mm, var 0mm])
+}
+region002 = region(segments = [sketch003.circle1])
+holder = extrude(region002, length = spongeThickness - magnetThickness)
+  |> fillet(radius = 2, tags = [getOppositeEdge(circ001), circ001])
+  |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)
+
