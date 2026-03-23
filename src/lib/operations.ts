@@ -63,6 +63,7 @@ import {
 } from '@src/lang/modifyAst'
 import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { circle } from '@src/lang/std/sketch'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2022,6 +2023,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   arc: {
     label: 'Arc',
     icon: 'arc',
+  },
+  circle: {
+    label: 'Circle',
+    icon: 'circle',
   },
   coincident: {
     label: 'Coincident Constraint',
