@@ -16,7 +16,6 @@ import {
   type Identifier,
   type LabeledArg,
   type Literal,
-  type MemberExpression,
   type NumericSuffix,
   type ObjectExpression,
   type PipeExpression,
@@ -397,22 +396,4 @@ export function findUniqueName(
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
   return { label: createIdentifier(label), arg, type: 'LabeledArg' }
-}
-
-export function createMemberExpression(
-  parent: string | Expr,
-  propertyName: string
-): Node<MemberExpression> {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object: typeof parent === 'string' ? createLocalName(parent) : parent,
-    property: createLocalName(propertyName),
-    computed: false,
-  }
 }

@@ -2958,6 +2958,7 @@ export const modelingMachine = setup({
             artifactOrPlaneId,
             kclManager.artifactGraph,
             kclManager.astSignal.value,
+            kclManager.execState,
             {
               wasmInstance,
               rustContext,
@@ -2987,32 +2988,29 @@ export const modelingMachine = setup({
           if (!project) {
             console.warn('No project available for newSketch call')
           } else {
-            const settings = jsAppSettings(rustContext.settingsActor)
-            const setProgramOutcome = await rustContext.hackSetProgram(
-              kclManager.ast,
-              settings
-            )
-            if (setProgramOutcome.type !== 'Success') {
-              const errorMessage = `Failed to sync program before creating sketch: ${setProgramOutcome.error.error.details.msg}`
-              toast.error(errorMessage)
-              return reject(new Error(errorMessage))
+            // Construct SketchCtor based on the result
+            let sketchArgs: SketchCtor
+
+            // Determine the plane type from the result
+            if (result.type === 'defaultPlane') {
+              sketchArgs = {
+                on: { default: toPlaneName(result.plane) },
+              }
+            } else {
+              sketchArgs = {
+                on: {
+                  artifact:
+                    result.type === 'extrudeFace'
+                      ? result.faceId
+                      : result.planeId,
+                },
+              }
             }
 
-            const sketchArgs = (
-              result.type === 'defaultPlane'
-                ? {
-                    on: { default: toPlaneName(result.plane) },
-                  }
-                : {
-                    on: {
-                      artifact:
-                        result.type === 'extrudeFace'
-                          ? result.faceId
-                          : result.planeId,
-                    },
-                  }
-            ) as SketchCtor
-
+            await rustContext.hackSetProgram(
+              kclManager.ast,
+              jsAppSettings(rustContext.settingsActor)
+            )
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
               0, // fileId - using 0 as placeholder
@@ -3024,7 +3022,6 @@ export const modelingMachine = setup({
                 },
               }
             )
-
             kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
               shouldAddToHistory: false,
             })

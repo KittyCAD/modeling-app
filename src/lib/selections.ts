@@ -1224,6 +1224,7 @@ export async function getPlaneDataFromSketchBlock(
     sketchBlock.planeId,
     artifactGraph,
     systemDeps.ast,
+    systemDeps.execState,
     {
       wasmInstance: systemDeps.wasmInstance,
       rustContext: systemDeps.rustContext,
@@ -1261,12 +1262,12 @@ export async function getOffsetSketchPlaneData(
     sceneInfra: SceneInfra
     sceneEntitiesManager: SceneEntities
   }
-): Promise<Error | OffsetPlane | null> {
+): Promise<Error | false | OffsetPlane> {
   const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
-    // Non-plane artifacts (e.g. wall/cap) are expected to fall through to
-    // sweep-face selection, not raise an error.
-    return null
+    return new Error(
+      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
+    )
   }
   const planeId = artifact.id
   try {
@@ -1340,8 +1341,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result)) return result
-  if (!result) return false
+  if (err(result) || result === false) return result
 
   try {
     sceneInfra.modelingSend({
@@ -1359,6 +1359,7 @@ export async function selectionBodyFace(
   planeOrFaceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
+  execState: ExecState,
   systemDeps: {
     sceneInfra: SceneInfra
     rustContext: RustContext

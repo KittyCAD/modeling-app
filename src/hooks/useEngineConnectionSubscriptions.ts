@@ -145,6 +145,7 @@ export async function selectSketchPlane(
       planeOrFaceId,
       kclManager.artifactGraph,
       kclManager.ast,
+      kclManager.execState,
       {
         rustContext: kclManager.rustContext,
         sceneInfra: kclManager.sceneInfra,
