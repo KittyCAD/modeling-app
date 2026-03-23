@@ -8,7 +8,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
-import { Group, Mesh } from 'three'
+import { Group } from 'three'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -43,10 +43,6 @@ import {
   fromPromise,
 } from 'xstate'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import {
-  STRAIGHT_SEGMENT_BODY,
-  ARC_SEGMENT_BODY,
-} from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
