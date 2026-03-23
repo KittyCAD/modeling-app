@@ -69,6 +69,9 @@ test:
     cargo install cargo-nextest --locked
     {{cnr}} --workspace --features=artifact-graph
 
+csharp-c-smoke:
+    /bin/zsh kcl-csharp/run_c_smoke.sh
+
 [working-directory: 'kcl-python-bindings']
 python-test:
     just test

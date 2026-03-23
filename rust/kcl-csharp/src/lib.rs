@@ -2,40 +2,178 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::c_char;
 use std::path::PathBuf;
+use std::sync::Mutex;
+use std::sync::OnceLock;
 
+use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
 use kcl_lib::KclError;
+use kcl_lib::Program;
+use kcl_lib::TypedPath;
 use kcmc::units::UnitLength;
 use kcmc::websocket::RawFile;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::format::OutputFormat3d;
 use tokio::runtime::Runtime;
 
-struct ExecutedKcl {
+static RUNTIME: OnceLock<Result<Runtime, String>> = OnceLock::new();
+
+struct KclSession {
     ctx: ExecutorContext,
-    program: kcl_lib::Program,
-    #[expect(dead_code)]
-    code: String,
-    #[expect(dead_code)]
-    filename: String,
 }
 
-async fn run_and_export_inner(
+pub struct SessionHandle {
+    session: Mutex<KclSession>,
+}
+
+/// Where to find KCL source code.
+enum KclInput {
+    Path(PathBuf),
+    Code(String),
+}
+
+struct ParsedKclProgram {
+    program: Program,
+    current_file: Option<PathBuf>,
+}
+
+type KclResult<T> = Result<T, Error>;
+
+enum Error {
+    KclError(KclError),
+    Setup(String),
+}
+
+impl From<KclError> for Error {
+    fn from(kcl_error: KclError) -> Self {
+        Self::KclError(kcl_error)
+    }
+}
+
+impl Error {
+    fn setup(message: impl Into<String>) -> Self {
+        Self::Setup(message.into())
+    }
+
+    fn into_message(self) -> String {
+        match self {
+            Self::KclError(error) => error.to_string(),
+            Self::Setup(message) => message,
+        }
+    }
+}
+
+impl KclSession {
+    fn context_for_run(&self, current_file: Option<PathBuf>) -> ExecutorContext {
+        let mut settings = self.ctx.settings.clone();
+        settings.current_file = None;
+        settings.project_directory = None;
+        if let Some(current_file) = current_file {
+            settings.with_current_file(TypedPath(current_file));
+        }
+
+        ExecutorContext {
+            engine: self.ctx.engine.clone(),
+            fs: self.ctx.fs.clone(),
+            settings,
+            context_type: self.ctx.context_type.clone(),
+        }
+    }
+
+    async fn run_and_export(
+        &self,
+        kcl_input: KclInput,
+        export_format: FileExportFormat,
+        current_file_override: Option<PathBuf>,
+    ) -> KclResult<Vec<RawFile>> {
+        let ParsedKclProgram { program, current_file } = load_and_parse(kcl_input, current_file_override).await?;
+        let ctx = self.context_for_run(current_file);
+        let mut state = ExecState::new(&ctx);
+        ctx.send_clear_scene(&mut state, kcl_lib::SourceRange::default())
+            .await?;
+        ctx.run(&program, &mut state)
+            .await
+            // TODO: Expose more than just this one KCL error,
+            // should probably expose the nonfatal warnings, etc.
+            .map_err(|error_with_outputs| error_with_outputs.error)?;
+
+        export_from_ctx(&ctx, &program, export_format).await
+    }
+
+    async fn close(&self) {
+        self.ctx.close().await;
+    }
+}
+
+async fn new_session_inner(auth_token: Option<String>) -> KclResult<KclSession> {
+    let ctx = ExecutorContext::new_with_client(default_settings(), auth_token, None)
+        .await
+        .map_err(|e| Error::setup(e.to_string()))?;
+    Ok(KclSession { ctx })
+}
+
+async fn run_one_shot(
     kcl_input: KclInput,
     export_format: FileExportFormat,
     auth_token: Option<String>,
+    current_file_override: Option<PathBuf>,
 ) -> KclResult<Vec<RawFile>> {
-    let ExecutedKcl {
-        ctx,
-        program,
-        code: _,
-        filename: _,
-    } = run_kcl(kcl_input, false, auth_token).await?;
+    let session = new_session_inner(auth_token).await?;
+    let result = session
+        .run_and_export(kcl_input, export_format, current_file_override)
+        .await;
+    session.close().await;
+    result
+}
 
+fn default_settings() -> ExecutorSettings {
+    let mut settings = ExecutorSettings::default();
+    // Must turn on SSAO, without it, transparent images will look opaque.
+    settings.enable_ssao = true;
+    settings
+}
+
+async fn load_and_parse(kcl_input: KclInput, current_file_override: Option<PathBuf>) -> KclResult<ParsedKclProgram> {
+    let (code, current_file) = match kcl_input {
+        KclInput::Path(input_path) => {
+            let (code, path) = get_code_and_file_path(input_path).await?;
+            (code, Some(path))
+        }
+        KclInput::Code(code) => (code, current_file_override),
+    };
+
+    let program = Program::parse_no_errs(&code)?;
+    Ok(ParsedKclProgram { program, current_file })
+}
+
+async fn get_code_and_file_path(mut path: PathBuf) -> KclResult<(String, PathBuf)> {
+    // Check if the path is a directory, if so we want to look for a main.kcl inside.
+    if path.is_dir() {
+        path = path.join("main.kcl");
+        if !path.exists() {
+            return Err(Error::setup("Directory must contain a main.kcl file"));
+        }
+    } else if let Some(ext) = path.extension()
+        && ext != "kcl"
+    {
+        return Err(Error::setup("File must have a .kcl extension"));
+    }
+
+    let code = tokio::fs::read_to_string(&path)
+        .await
+        .map_err(|e| Error::setup(e.to_string()))?;
+    Ok((code, path))
+}
+
+async fn export_from_ctx(
+    ctx: &ExecutorContext,
+    program: &Program,
+    export_format: FileExportFormat,
+) -> KclResult<Vec<RawFile>> {
     let settings = program.meta_settings()?.unwrap_or_default();
     let units: UnitLength = settings.default_length_units;
 
-    // This will not return until there are files.
     let resp = ctx
         .engine
         .send_modeling_cmd(
@@ -53,139 +191,10 @@ async fn run_and_export_inner(
         )
         .await?;
 
-    let result = match resp {
+    match resp {
         kcmc::websocket::OkWebSocketResponseData::Export { files } => Ok(files),
-        _ => Err(Error::Setup(format!("Unexpected response from engine: {resp:?}"))),
-    };
-
-    ctx.close().await;
-    result
-}
-
-async fn new_context_state(
-    current_file: Option<std::path::PathBuf>,
-    mock: bool,
-    auth_token: Option<String>,
-) -> KclResult<(ExecutorContext, kcl_lib::ExecState)> {
-    let mut settings: kcl_lib::ExecutorSettings = Default::default();
-    if let Some(current_file) = current_file {
-        settings.with_current_file(kcl_lib::TypedPath(current_file));
+        _ => Err(Error::setup(format!("Unexpected response from engine: {resp:?}"))),
     }
-    // Must turn on SSAO, without it, transparent images will look opaque.
-    settings.enable_ssao = true;
-    let ctx = if mock {
-        ExecutorContext::new_mock(Some(settings)).await
-    } else {
-        ExecutorContext::new_with_client(settings, auth_token, None)
-            .await
-            .map_err(|e| Error::Setup(e.to_string()))?
-    };
-    let state = kcl_lib::ExecState::new(&ctx);
-    Ok((ctx, state))
-}
-
-async fn run_kcl(input: KclInput, mock: bool, auth_token: Option<String>) -> KclResult<ExecutedKcl> {
-    let KclProgram {
-        code,
-        program,
-        path,
-        filename,
-    } = load_and_parse(input).await?;
-
-    let (ctx, mut state) = new_context_state(path, mock, auth_token).await?;
-    ctx.run(&program, &mut state)
-        .await
-        // TODO: Expose more than just this one KCL error,
-        // should probably expose the nonfatal warnings, etc.
-        .map_err(|error_with_outputs| error_with_outputs.error)?;
-
-    Ok(ExecutedKcl {
-        ctx,
-        program,
-        code,
-        filename,
-    })
-}
-
-/// Where to find KCL source code.
-enum KclInput {
-    Path(PathBuf),
-    Code(String),
-}
-
-struct KclProgram {
-    code: String,
-    program: kcl_lib::Program,
-    path: Option<PathBuf>,
-    filename: String,
-}
-
-type KclResult<T> = Result<T, Error>;
-
-enum Error {
-    KclError(KclError),
-    Setup(String),
-}
-
-impl From<KclError> for Error {
-    fn from(kcl_error: KclError) -> Self {
-        Self::KclError(kcl_error)
-    }
-}
-
-impl Error {
-    fn setup(message: String) -> Self {
-        Self::Setup(message)
-    }
-}
-
-async fn load_and_parse(input: KclInput) -> KclResult<KclProgram> {
-    async fn get_code_and_file_path(mut path: PathBuf) -> KclResult<(String, std::path::PathBuf)> {
-        // Check if the path is a directory, if so we want to look for a main.kcl inside.
-        if path.is_dir() {
-            path = path.join("main.kcl");
-            if !path.exists() {
-                let message = "Directory must contain a main.kcl file".to_owned();
-                return Err(Error::Setup(message));
-            }
-        } else {
-            // Otherwise be sure we have a kcl file.
-            if let Some(ext) = path.extension()
-                && ext != "kcl"
-            {
-                let message = "File must have a .kcl extension".to_owned();
-                return Err(Error::Setup(message));
-            }
-        }
-
-        let code = tokio::fs::read_to_string(&path)
-            .await
-            .map_err(|e| Error::Setup(e.to_string()))?;
-        Ok((code, path))
-    }
-
-    let (code, path, filename) = match input {
-        KclInput::Path(input_path) => {
-            let (code, path) = get_code_and_file_path(input_path.clone()).await?;
-            let filename = path.display().to_string();
-            (code, Some(path), filename)
-        }
-        KclInput::Code(code) => (code, None, String::new()),
-    };
-
-    // In the future, you can throw
-    // ```
-    // .map_err(|err| into_miette_for_parse(&filename, &code, err))
-    // ```
-    // onto this for nicer-looking errors.
-    let program = kcl_lib::Program::parse_no_errs(&code)?;
-
-    Ok(KclProgram {
-        code,
-        program,
-        path,
-        filename,
-    })
 }
 
 #[repr(C)]
@@ -238,7 +247,7 @@ impl ExportResult {
                 exports: boxed_files_into_raw_ptr(exports),
                 ..Default::default()
             },
-            Err(e) => match e {
+            Err(error) => match error {
                 Error::KclError(kcl_error) => ExportResult {
                     kcl_error: c_string_into_raw(kcl_error.to_string()),
                     kcl_error_set: true,
@@ -268,6 +277,36 @@ impl ExportResult {
     }
 }
 
+#[repr(C)]
+#[derive(Default)]
+pub struct SessionStartResult {
+    pub session: *mut SessionHandle,
+    pub setup_error_set: bool,
+    pub setup_error: *mut c_char,
+}
+
+impl SessionStartResult {
+    fn new(result: KclResult<KclSession>) -> Self {
+        match result {
+            Ok(session) => Self {
+                session: Box::into_raw(Box::new(SessionHandle {
+                    session: Mutex::new(session),
+                })),
+                ..Default::default()
+            },
+            Err(error) => Self {
+                setup_error_set: true,
+                setup_error: c_string_into_raw(error.into_message()),
+                ..Default::default()
+            },
+        }
+    }
+
+    unsafe fn free(self) {
+        unsafe { free_c_string(self.setup_error) };
+    }
+}
+
 fn c_string_into_raw(value: impl Into<String>) -> *mut c_char {
     let bytes = value
         .into()
@@ -293,6 +332,21 @@ fn boxed_files_into_raw_ptr(files: Vec<RawFile>) -> *mut ExportedFile {
     Box::into_raw(exported_files.into_boxed_slice()) as *mut ExportedFile
 }
 
+fn runtime() -> KclResult<&'static Runtime> {
+    match RUNTIME.get_or_init(|| Runtime::new().map_err(|e| format!("Could not start Tokio runtime: {e}"))) {
+        Ok(runtime) => Ok(runtime),
+        Err(message) => Err(Error::setup(message.clone())),
+    }
+}
+
+fn session_handle_from_ptr(session: *mut SessionHandle) -> KclResult<&'static SessionHandle> {
+    if session.is_null() {
+        return Err(Error::setup("session must not be null"));
+    }
+
+    Ok(unsafe { &*session })
+}
+
 unsafe fn free_c_string(ptr: *mut c_char) {
     if !ptr.is_null() {
         drop(unsafe { CString::from_raw(ptr) });
@@ -305,25 +359,29 @@ unsafe fn free_boxed_bytes(ptr: *mut u8, len: usize) {
     }
 }
 
-fn path_buf_from_c_string(path: *const c_char) -> KclResult<PathBuf> {
+fn path_buf_from_c_string(path: *const c_char, arg_name: &str) -> KclResult<PathBuf> {
     if path.is_null() {
-        return Err(Error::setup("kcl_source_file must not be null".to_owned()));
+        return Err(Error::setup(format!("{arg_name} must not be null")));
     }
 
     let path = unsafe { CStr::from_ptr(path) }
         .to_str()
-        .map_err(|_| Error::setup("kcl_source_file must be valid UTF-8".to_owned()))?;
+        .map_err(|_| Error::setup(format!("{arg_name} must be valid UTF-8")))?;
     Ok(PathBuf::from(path))
 }
 
-fn string_from_c_string(s: *const c_char) -> KclResult<String> {
+fn optional_path_buf_from_c_string(path: *const c_char, arg_name: &str) -> KclResult<Option<PathBuf>> {
+    optional_string_from_c_string(path, arg_name).map(|path| path.map(PathBuf::from))
+}
+
+fn string_from_c_string(s: *const c_char, arg_name: &str) -> KclResult<String> {
     if s.is_null() {
-        return Err(Error::setup("kcl string must not be null".to_owned()));
+        return Err(Error::setup(format!("{arg_name} must not be null")));
     }
 
     let contents = unsafe { CStr::from_ptr(s) }
         .to_str()
-        .map_err(|_| Error::setup("kcl string must be valid UTF-8".to_owned()))?;
+        .map_err(|_| Error::setup(format!("{arg_name} must be valid UTF-8")))?;
     Ok(contents.to_owned())
 }
 
@@ -391,6 +449,86 @@ impl From<FileExportFormat> for kcmc::shared::FileExportFormat {
     }
 }
 
+/// Start a KCL session backed by a live engine connection.
+/// Pass `auth_token` as null or an empty string to fall back to the environment.
+#[unsafe(no_mangle)]
+pub extern "C" fn start_session(auth_token: *const c_char) -> SessionStartResult {
+    let auth_token = match optional_string_from_c_string(auth_token, "auth_token") {
+        Ok(auth_token) => auth_token,
+        Err(error) => return SessionStartResult::new(Err(error)),
+    };
+
+    let runtime = match runtime() {
+        Ok(runtime) => runtime,
+        Err(error) => return SessionStartResult::new(Err(error)),
+    };
+
+    SessionStartResult::new(runtime.block_on(new_session_inner(auth_token)))
+}
+
+/// Run the KCL program in an existing session and export the current scene.
+/// Pass `current_file` as null or an empty string when there is no on-disk file path.
+#[unsafe(no_mangle)]
+pub extern "C" fn session_run_contents_and_export(
+    session: *mut SessionHandle,
+    contents: *const c_char,
+    current_file: *const c_char,
+    export_format: FileExportFormat,
+) -> ExportResult {
+    let session = match session_handle_from_ptr(session) {
+        Ok(session) => session,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let contents = match string_from_c_string(contents, "contents") {
+        Ok(contents) => contents,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let current_file = match optional_path_buf_from_c_string(current_file, "current_file") {
+        Ok(current_file) => current_file,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let runtime = match runtime() {
+        Ok(runtime) => runtime,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let session = match session.session.lock() {
+        Ok(session) => session,
+        Err(_) => return ExportResult::new(Err(Error::setup("session lock poisoned"))),
+    };
+
+    let result = runtime.block_on(session.run_and_export(KclInput::Code(contents), export_format, current_file));
+    ExportResult::new(result)
+}
+
+/// Run the KCL file in an existing session and export the current scene.
+/// Input: a filepath to a .kcl file, or a directory containing a `main.kcl`.
+#[unsafe(no_mangle)]
+pub extern "C" fn session_run_file_and_export(
+    session: *mut SessionHandle,
+    kcl_source_file: *const c_char,
+    export_format: FileExportFormat,
+) -> ExportResult {
+    let session = match session_handle_from_ptr(session) {
+        Ok(session) => session,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let kcl_source_file = match path_buf_from_c_string(kcl_source_file, "kcl_source_file") {
+        Ok(path) => path,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let runtime = match runtime() {
+        Ok(runtime) => runtime,
+        Err(error) => return ExportResult::new(Err(error)),
+    };
+    let session = match session.session.lock() {
+        Ok(session) => session,
+        Err(_) => return ExportResult::new(Err(Error::setup("session lock poisoned"))),
+    };
+
+    let result = runtime.block_on(session.run_and_export(KclInput::Path(kcl_source_file), export_format, None));
+    ExportResult::new(result)
+}
+
 /// Run the KCL file, and export it to some file format.
 /// Input: a filepath to a .kcl file, or a directory containing a `main.kcl`.
 /// Pass `auth_token` as null or an empty string to fall back to the environment.
@@ -400,31 +538,30 @@ pub extern "C" fn run_file_and_export(
     export_format: FileExportFormat,
     auth_token: *const c_char,
 ) -> ExportResult {
-    let kcl_source_file = match path_buf_from_c_string(kcl_source_file) {
+    let kcl_source_file = match path_buf_from_c_string(kcl_source_file, "kcl_source_file") {
         Ok(path) => path,
         Err(error) => return ExportResult::new(Err(error)),
     };
-
     let auth_token = match optional_string_from_c_string(auth_token, "auth_token") {
         Ok(auth_token) => auth_token,
         Err(error) => return ExportResult::new(Err(error)),
     };
-
-    let rt = match runtime() {
-        Ok(rt) => rt,
-        Err(e) => return ExportResult::new(Err(e)),
+    let runtime = match runtime() {
+        Ok(runtime) => runtime,
+        Err(error) => return ExportResult::new(Err(error)),
     };
 
-    let result = rt.block_on(run_and_export_inner(
+    let result = runtime.block_on(run_one_shot(
         KclInput::Path(kcl_source_file),
         export_format,
         auth_token,
+        None,
     ));
     ExportResult::new(result)
 }
 
 /// Run the KCL program, and export it to some file format.
-/// Input: A KCL program in a string.
+/// Input: a KCL program in a string.
 /// Pass `auth_token` as null or an empty string to fall back to the environment.
 #[unsafe(no_mangle)]
 pub extern "C" fn run_contents_and_export(
@@ -432,36 +569,51 @@ pub extern "C" fn run_contents_and_export(
     export_format: FileExportFormat,
     auth_token: *const c_char,
 ) -> ExportResult {
-    let kcl_contents = match string_from_c_string(contents) {
-        Ok(s) => s,
+    let contents = match string_from_c_string(contents, "contents") {
+        Ok(contents) => contents,
         Err(error) => return ExportResult::new(Err(error)),
     };
-
     let auth_token = match optional_string_from_c_string(auth_token, "auth_token") {
         Ok(auth_token) => auth_token,
         Err(error) => return ExportResult::new(Err(error)),
     };
-
-    let rt = match runtime() {
-        Ok(rt) => rt,
-        Err(e) => return ExportResult::new(Err(e)),
+    let runtime = match runtime() {
+        Ok(runtime) => runtime,
+        Err(error) => return ExportResult::new(Err(error)),
     };
 
-    let result = rt.block_on(run_and_export_inner(
-        KclInput::Code(kcl_contents),
-        export_format,
-        auth_token,
-    ));
+    let result = runtime.block_on(run_one_shot(KclInput::Code(contents), export_format, auth_token, None));
     ExportResult::new(result)
 }
 
-/// Users must call this exactly once for each successful `run_and_export` result,
-/// after you've has copied out the data.
+/// Users must call this exactly once for each successful `start_session` result
+/// after reading the error message, if any.
+#[unsafe(no_mangle)]
+pub extern "C" fn free_session_start_result(result: SessionStartResult) {
+    unsafe { result.free() };
+}
+
+/// Users must call this exactly once for each successful `run_*_and_export` result,
+/// after they have copied out the data.
 #[unsafe(no_mangle)]
 pub extern "C" fn free_export_result(result: ExportResult) {
     unsafe { result.free() };
 }
 
-fn runtime() -> KclResult<Runtime> {
-    Runtime::new().map_err(|e| Error::Setup(format!("Could not start Tokio runtime: {e}")))
+/// Close the live engine connection for this session and free the session handle.
+#[unsafe(no_mangle)]
+pub extern "C" fn free_session(session: *mut SessionHandle) {
+    if session.is_null() {
+        return;
+    }
+
+    let session = unsafe { Box::from_raw(session) };
+    let session = match session.session.into_inner() {
+        Ok(session) => session,
+        Err(poisoned) => poisoned.into_inner(),
+    };
+
+    if let Ok(runtime) = runtime() {
+        runtime.block_on(session.close());
+    }
 }
