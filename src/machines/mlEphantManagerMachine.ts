@@ -418,6 +418,12 @@ export const mlEphantManagerMachine = setup({
         ? `?conversation_id=${maybeConversationId}&replay=true`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+
+      // Defensive: if there's already an open connection, close it.
+      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        args.input.context.ws?.close()
+      }
+
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
@@ -444,6 +450,12 @@ export const mlEphantManagerMachine = setup({
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
           let devCalledClose = false
+
+          // Any WS protocol messages will trigger the `api` heartbeat update.
+          const pingIntervalId = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return
+            ws.send(JSON.stringify({ type: 'ping' }))
+          }, 4_000)
 
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
@@ -487,6 +499,11 @@ export const mlEphantManagerMachine = setup({
 
             // Ignore the session data
             if ('session_data' in response) {
+              return
+            }
+
+            // Ignore pong
+            if ('pong' in response) {
               return
             }
 
@@ -595,6 +612,7 @@ export const mlEphantManagerMachine = setup({
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
+              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
@@ -705,6 +723,11 @@ export const mlEphantManagerMachine = setup({
 }).createMachine({
   initial: S.Await,
   context: mlEphantDefaultContext,
+  exit: (args) => {
+    // Make sure the connection is closed.
+    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    args.context?.ws?.close()
+  },
   states: {
     [S.Await]: {
       on: {
@@ -903,6 +926,12 @@ export const mlEphantManagerMachine = setup({
                     const lastMessageType:
                       | TypeVariant<MlCopilotServerMessage>
                       | undefined = ts.find((t) => t in r)
+
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) {
+                      return context
+                    }
 
                     return {
                       conversation,

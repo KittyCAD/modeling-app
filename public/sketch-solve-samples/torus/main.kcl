@@ -12,7 +12,7 @@ crossSectionDiameter = 10
 sketch = startSketchOn(XY)
 
 // create the profile for the cross section of the torus
-profile = sketch(on = XY) {
+profile = sketch(on = sketch) {
   circle1 = arc(start = [var 20mm, var 0mm], end = [var 20mm, var 0mm], center = [var 15mm, var 0mm])
 }
 
