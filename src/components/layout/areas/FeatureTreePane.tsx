@@ -353,6 +353,7 @@ function SketchBlockOperationGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
+                size="sm"
               />
             )
           })}
@@ -407,6 +408,7 @@ function OperationItemGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
+                size="sm"
               />
             )
           })}
@@ -441,6 +443,7 @@ const OperationItemWrapper = memo(
     customSuffix,
     className,
     Tooltip,
+    size = 'default',
     ...props
   }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
@@ -451,11 +454,13 @@ const OperationItemWrapper = memo(
     onContextMenu?: (e: MouseEvent) => void
     Tooltip?: ReactNode
     isSelected?: boolean
+    size?: 'default' | 'sm'
   } & OpValueProps) => {
     return (
       <RowItemWithIconMenuAndToggle
         {...props}
         icon={icon}
+        size={size}
         LabelSecondary={
           <>
             {variableName && valueDetail ? (
@@ -523,6 +528,7 @@ interface OperationProps {
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
+  size?: 'default' | 'sm'
 }
 /**
  * A button with an icon, name, and context menu
@@ -536,6 +542,7 @@ const OperationItem = ({
   systemDeps,
   modelingActor,
   engineCommandManager,
+  size,
 }: OperationProps) => {
   useSignals()
   const { layout } = useApp()
@@ -968,6 +975,7 @@ const OperationItem = ({
       isSelected={isSelected}
       errors={errors}
       disabled={!enabled}
+      size={size}
       visibilityToggle={
         item.type === 'StdLibCall' && item.name === 'helix'
           ? {
