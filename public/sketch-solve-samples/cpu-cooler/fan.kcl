@@ -9,7 +9,7 @@ import * from "parameters.kcl"
 
 // Model the center of the fan
 sketch001 = sketch(on = YZ) {
-  circle1 = arc(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
 fanCenter = extrude(region001, length = fanHeight)

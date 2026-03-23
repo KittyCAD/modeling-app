@@ -71,7 +71,7 @@ tankRevolve = revolve(region001, angle = 220deg, axis = Y)
 
 // Model the brass valve on top of the tank port
 sketch001 = sketch(on = offsetPlane(XY, offset = tankHeight - 0.5)) {
-  circle1 = arc(start = [var 0.66in, var 0in], end = [var 0.66in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.66in, var 0in], center = [var 0in, var 0in])
 }
 region002 = region(segments = [sketch001.circle1])
 valveBody = extrude(region002, length = 1.5, tagEnd = $capEnd001)
@@ -84,7 +84,7 @@ valveBody = extrude(region002, length = 1.5, tagEnd = $capEnd001)
 
 // Model the outlet port of the valve, then union it all together
 sketch002 = sketch(on = YZ) {
-  circle1 = arc(start = [var 0.03in, var 2.53in], end = [var 0.03in, var 2.53in], center = [var 0in, var 2.53in])
+  circle1 = circle(start = [var 0.03in, var 2.53in], center = [var 0in, var 2.53in])
 }
 region003 = region(segments = [sketch002.circle1])
 valvePort = extrude(region003, length = 1.3)
@@ -133,7 +133,7 @@ bracketProfile = extrude(region004, length = 1, symmetric = true)
 
 // Cut holes in the bracket for a mounting strap
 sketch004 = sketch(on = offsetPlane(XY, offset = tankHeight * 0.67)) {
-  circle1 = arc(start = [var 4.75in, var 0.06in], end = [var 4.75in, var 0.06in], center = [var 0in, var 0.06in])
+  circle1 = circle(start = [var 4.75in, var 0.06in], center = [var 0in, var 0.06in])
 }
 region005 = region(segments = [sketch004.circle1])
 strapSleeve = extrude(region005, length = .8, symmetric = true)
@@ -141,7 +141,7 @@ bracketSleeve = subtract([bracketProfile], tools = [strapSleeve])
 
 // Create holes in the bracket for anchor mounts to secure the bracket to a wall
 sketch005 = sketch(on = offsetPlane(XZ, offset = -tankDiameter / 1.9)) {
-  circle1 = arc(start = [var 0.18in, var 1.68in], end = [var 0.18in, var 1.68in], center = [var 0.17in, var 1.68in])
+  circle1 = circle(start = [var 0.18in, var 1.68in], center = [var 0.17in, var 1.68in])
 }
 region006 = region(segments = [sketch005.circle1])
 mountingHoles = extrude(region006, length = -5)
@@ -159,7 +159,7 @@ bracket = subtract(
 
 // Model a circular strap to secure the tank to the bracket
 sketch006 = sketch(on = offsetPlane(XY, offset = tankHeight * 0.67)) {
-  circle1 = arc(start = [var 4.74in, var 0.08in], end = [var 4.74in, var 0.08in], center = [var 0in, var 0.08in])
+  circle1 = circle(start = [var 4.74in, var 0.08in], center = [var 0in, var 0.08in])
 }
 region007 = region(segments = [sketch006.circle1])
 mountingStrap = extrude(region007, length = .75, symmetric = true)

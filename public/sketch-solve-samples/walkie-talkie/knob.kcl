@@ -9,7 +9,7 @@ import width, thickness, height, knobDiameter, knobHeight, knobFilletRadius from
 
 // Create the knob sketch and revolve
 sketch001 = sketch(on = XY) {
-  circle1 = arc(start = [var 0.25in, var 0in], end = [var 0.25in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.25in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 extrude(region001, length = knobHeight)
