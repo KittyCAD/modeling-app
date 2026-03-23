@@ -3519,37 +3519,17 @@ fn sketch_face_of_artifact_ast_expr(
             };
             let face_expr: ast::Expr;
             if let Some(region_name) = &region_name {
-                // Prefer index-based region->sketch segment resolution for wall faces.
-                // Some wall segment code_refs can point to the region expression itself.
-                let mut candidate_path_ids = Vec::new();
-                let mut seen_path_ids = HashSet::new();
-                let mut push_path_id = |path_id: crate::execution::ArtifactId| {
-                    if seen_path_ids.insert(path_id) {
-                        candidate_path_ids.push(path_id);
-                    }
-                };
-                push_path_id(segment.path_id);
-                for path_id in &wall.path_ids {
-                    push_path_id(*path_id);
-                }
-                push_path_id(sweep.path_id);
-
-                let mut segment_index = candidate_path_ids.into_iter().find_map(|path_id| {
-                    artifact_graph.get(&path_id).and_then(|artifact| match artifact {
+                let segment_index = artifact_graph
+                    .get(&segment.path_id)
+                    .and_then(|artifact| match artifact {
                         Artifact::Path(path) => path.seg_ids.iter().position(|seg_id| *seg_id == wall.seg_id),
                         _ => None,
                     })
-                });
-
-                // Fallback: if the expected path IDs are stale, scan all paths.
-                if segment_index.is_none() {
-                    segment_index = artifact_graph.values().find_map(|artifact| {
-                        let Artifact::Path(path) = artifact else {
-                            return None;
-                        };
-                        path.seg_ids.iter().position(|seg_id| *seg_id == wall.seg_id)
-                    });
-                }
+                    .ok_or_else(|| Error {
+                        msg: format!(
+                            "Could not resolve wall segment index from segment path for selected region wall: {artifact_id:?}"
+                        ),
+                    })?;
                 let Some(ast::Definition::Variable(region_decl)) = ast.get_variable(region_name) else {
                     return Err(Error {
                         msg: format!("Region variable not found in AST: {region_name}"),
@@ -3606,31 +3586,6 @@ fn sketch_face_of_artifact_ast_expr(
                         msg: format!("Could not resolve named sketch segments for region {region_name}"),
                     });
                 }
-                // Prefer direct segment name resolution from node_path when available.
-                if segment_index.is_none() {
-                    let maybe_segment_name = variable_name_from_code_ref_node_path(ast, &segment.code_ref)
-                        .or_else(|| variable_name_from_code_ref_node_path(ast, &wall.face_code_ref));
-                    if let Some(segment_name) = maybe_segment_name {
-                        segment_index = segment_variable_names.iter().position(|name| name == &segment_name);
-                    }
-                }
-                // Fallback: derive index from wall ordering on the same sweep.
-                if segment_index.is_none() {
-                    let mut sweep_walls: Vec<_> = artifact_graph
-                        .values()
-                        .filter_map(|artifact| match artifact {
-                            Artifact::Wall(w) if w.sweep_id == wall.sweep_id => Some(w),
-                            _ => None,
-                        })
-                        .collect();
-                    sweep_walls.sort_by(|a, b| {
-                        let a_id: uuid::Uuid = a.id.into();
-                        let b_id: uuid::Uuid = b.id.into();
-                        a.cmd_id.cmp(&b.cmd_id).then_with(|| a_id.cmp(&b_id))
-                    });
-                    segment_index = sweep_walls.iter().position(|w| w.id == wall.id);
-                }
-                let segment_index = segment_index.unwrap_or(0).min(segment_variable_names.len() - 1);
                 let segment_name = segment_variable_names.get(segment_index).ok_or_else(|| Error {
                     msg: format!(
                         "Could not map region wall segment index {segment_index} to a named sketch segment for region {region_name}"
