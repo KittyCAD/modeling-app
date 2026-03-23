@@ -467,9 +467,9 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: Wait for Vercel
+      - name: Wait for Vercel (preview)
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
-        id: wait-for-vercel
+        id: wait-for-vercel-preview
         if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -477,9 +477,9 @@ jobs:
           check_interval: 30
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
-      - name: Wait for Vercel
+      - name: Wait for Vercel (staging)
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
-        id: wait-for-vercel
+        id: wait-for-vercel-staging
         if: github.event_name == 'push' && github.ref_name == 'main'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -491,13 +491,13 @@ jobs:
       - name: Check Vercel
         run: .github/ci-cd-scripts/check-vercel.sh
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: npm run test:e2e:web
         run: npm run test:e2e:web -- --grep=demo --retries=3
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
