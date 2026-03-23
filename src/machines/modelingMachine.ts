@@ -3315,7 +3315,6 @@ export const modelingMachine = setup({
             artifactOrPlaneId,
             kclManager.artifactGraph,
             kclManager.astSignal.value,
-            kclManager.execState,
             {
               wasmInstance,
               rustContext,

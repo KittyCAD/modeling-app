@@ -1199,19 +1199,7 @@ export async function getPlaneDataFromSketchBlock(
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // Similar logic to selectSketchPlane but for a sketchBlock artifact.
-  // If `planeId` is missing, the sketch is on a default plane and we currently
-  // fall back to XY.
   if (!sketchBlock.planeId) {
-    const defaultPlanes = systemDeps.rustContext.defaultPlanes
-    if (defaultPlanes?.xy) {
-      const defaultResult = getDefaultSketchPlaneData(
-        defaultPlanes.xy,
-        systemDeps
-      )
-      if (!err(defaultResult) && defaultResult) {
-        return defaultResult
-      }
-    }
     return null
   }
 
@@ -1236,7 +1224,6 @@ export async function getPlaneDataFromSketchBlock(
     sketchBlock.planeId,
     artifactGraph,
     systemDeps.ast,
-    systemDeps.execState,
     {
       wasmInstance: systemDeps.wasmInstance,
       rustContext: systemDeps.rustContext,
@@ -1274,12 +1261,12 @@ export async function getOffsetSketchPlaneData(
     sceneInfra: SceneInfra
     sceneEntitiesManager: SceneEntities
   }
-): Promise<Error | false | OffsetPlane> {
+): Promise<Error | OffsetPlane> {
   const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
-    // Non-plane artifacts are expected here when selecting sweep faces.
-    // Return false so callers can continue to face-selection fallback logic.
-    return false
+    return new Error(
+      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
+    )
   }
   const planeId = artifact.id
   try {
@@ -1353,7 +1340,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result) || result === false) return result
+  if (err(result)) return result
 
   try {
     sceneInfra.modelingSend({
@@ -1371,7 +1358,6 @@ export async function selectionBodyFace(
   planeOrFaceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  execState: ExecState,
   systemDeps: {
     sceneInfra: SceneInfra
     rustContext: RustContext
