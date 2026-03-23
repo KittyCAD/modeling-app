@@ -445,7 +445,7 @@ sketch001 = sketch(on = XY) {
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await page.waitForTimeout(1000)
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch(on')
     })
   })
