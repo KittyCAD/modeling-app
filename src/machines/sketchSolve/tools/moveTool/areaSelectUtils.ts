@@ -778,7 +778,9 @@ function doesArcIntersectBox(
 
   const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
   const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
-  const sweepAngle = isCircle ? Math.PI * 2 : getAngleDiff(startAngle, endAngle, true)
+  const sweepAngle = isCircle
+    ? Math.PI * 2
+    : getAngleDiff(startAngle, endAngle, true)
   const epsilon = 1e-9
 
   const isPointOnArc = (x: number, y: number): boolean => {

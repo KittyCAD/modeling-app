@@ -21,6 +21,7 @@ type ArcPoints = {
   end: Coords2d
   isCircle?: boolean
 }
+type CirclePoints = Pick<ArcPoints, 'center' | 'start'>
 type LinePoints = {
   type: 'line'
   line: [Coords2d, Coords2d]
@@ -53,14 +54,10 @@ function distanceToLineSegment(
 }
 
 function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
-  const { center, start, end, isCircle = false } = arc
+  const { center, start, end } = arc
   const radius = distance2d(center, start)
   if (radius === 0) {
     return distance2d(point, center)
-  }
-
-  if (isCircle) {
-    return Math.abs(distance2d(point, center) - radius)
   }
 
   const pointAngle = Math.atan2(point[1] - center[1], point[0] - center[0])
@@ -76,6 +73,19 @@ function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
   }
 
   return Math.min(distance2d(point, start), distance2d(point, end))
+}
+
+function distanceToCircleSegment(
+  point: Coords2d,
+  circle: CirclePoints
+): number {
+  const { center, start } = circle
+  const radius = distance2d(center, start)
+  if (radius === 0) {
+    return distance2d(point, center)
+  }
+
+  return Math.abs(distance2d(point, center) - radius)
 }
 
 function getAutoHitObjects(line: Line2): LinePoints[] {
@@ -200,7 +210,9 @@ export function findClosestApiObjects(
     if (isArcLikeSegment(apiObject)) {
       const arcPoints = getArcPoints(apiObject, objects)
       if (arcPoints) {
-        const distance = distanceToArcSegment(mousePosition, arcPoints)
+        const distance = arcPoints.isCircle
+          ? distanceToCircleSegment(mousePosition, arcPoints)
+          : distanceToArcSegment(mousePosition, arcPoints)
         if (distance <= hoverDistance) {
           candidates.push({
             distance,
