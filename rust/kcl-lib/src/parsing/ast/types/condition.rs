@@ -1,6 +1,12 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use super::{BoxNode, ConstraintLevel, Digest, Expr, Node, NodeList};
+use super::BoxNode;
+use super::ConstraintLevel;
+use super::Digest;
+use super::Expr;
+use super::Node;
+use super::NodeList;
 use crate::SourceRange;
 
 // TODO: This should be its own type, similar to Program,

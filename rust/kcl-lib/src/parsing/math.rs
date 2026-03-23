@@ -2,10 +2,11 @@
 #![allow(clippy::result_large_err)]
 
 use super::CompilationError;
-use crate::{
-    SourceRange,
-    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
-};
+use crate::SourceRange;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Node;
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
@@ -123,13 +124,10 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        ModuleId,
-        parsing::{
-            ast::types::{Literal, LiteralValue},
-            token::NumericSuffix,
-        },
-    };
+    use crate::ModuleId;
+    use crate::parsing::ast::types::Literal;
+    use crate::parsing::ast::types::LiteralValue;
+    use crate::parsing::token::NumericSuffix;
 
     #[test]
     fn parse_and_evaluate() {

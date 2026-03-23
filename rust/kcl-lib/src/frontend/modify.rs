@@ -1,6 +1,10 @@
 use std::collections::HashSet;
 
-use crate::parsing::ast::types::{BinaryPart, BodyItem, CodeBlock, Expr, ImportSelector};
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
 
 /// Find all defined names in the given code block. This ignores names defined
 /// by glob imports.
@@ -214,7 +218,9 @@ fn next_free_name_using_max_and_padding(
 mod tests {
     use std::collections::HashSet;
 
-    use super::{next_free_name, next_free_name_using_max, next_free_name_using_padding};
+    use super::next_free_name;
+    use super::next_free_name_using_max;
+    use super::next_free_name_using_padding;
 
     #[test]
     fn next_free_name_defaults_to_no_padding() {

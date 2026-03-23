@@ -1,12 +1,16 @@
 use std::collections::HashSet;
 
-use crate::{
-    KclError, SourceRange,
-    errors::KclErrorDetails,
-    front::find_defined_names,
-    frontend::modify::next_free_name_with_padding,
-    parsing::ast::types::{self as ast, ItemVisibility, LabeledArg, PipeExpression, VariableDeclarator, VariableKind},
-};
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::front::find_defined_names;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::ast::types::{self as ast};
 
 /// Transform code like this
 ///

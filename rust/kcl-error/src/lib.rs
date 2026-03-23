@@ -1,5 +1,7 @@
-use serde::{Deserialize, Serialize};
-pub use source_range::{ModuleId, SourceRange};
+use serde::Deserialize;
+use serde::Serialize;
+pub use source_range::ModuleId;
+pub use source_range::SourceRange;
 
 mod source_range;
 

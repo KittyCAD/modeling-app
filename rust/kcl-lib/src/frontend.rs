@@ -1,40 +1,72 @@
-use std::{
-    cell::Cell,
-    collections::{HashMap, HashSet},
-    ops::ControlFlow,
-};
+use std::cell::Cell;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
-use kcl_error::{CompilationError, SourceRange};
+use kcl_error::CompilationError;
+use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
-    collections::AhashIndexSet,
-    exec::WarningLevel,
-    execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
-    fmt::format_number_literal,
-    front::{
-        Angle, ArcCtor, CircleCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent,
-    },
-    frontend::{
-        api::{
-            Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
-            SourceDelta, SourceRef, Version,
-        },
-        modify::{find_defined_names, next_free_name, next_free_name_with_padding},
-        sketch::{
-            Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
-            SegmentCtor, SketchApi, SketchCtor, Vertical,
-        },
-        traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
-    },
-    parsing::ast::types as ast,
-    pretty::NumericSuffix,
-    std::constraints::LinesAtAngleKind,
-    walk::{NodeMut, Visitable},
-};
+use crate::ExecOutcome;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::KclErrorWithOutputs;
+use crate::Program;
+use crate::collections::AhashIndexSet;
+use crate::exec::WarningLevel;
+use crate::execution::MockConfig;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::fmt::format_number_literal;
+use crate::front::Angle;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Distance;
+use crate::front::Freedom;
+use crate::front::LinesEqualLength;
+use crate::front::Parallel;
+use crate::front::Perpendicular;
+use crate::front::PointCtor;
+use crate::front::Tangent;
+use crate::frontend::api::Error;
+use crate::frontend::api::Expr;
+use crate::frontend::api::FileId;
+use crate::frontend::api::Number;
+use crate::frontend::api::ObjectId;
+use crate::frontend::api::ObjectKind;
+use crate::frontend::api::Plane;
+use crate::frontend::api::ProjectId;
+use crate::frontend::api::SceneGraph;
+use crate::frontend::api::SceneGraphDelta;
+use crate::frontend::api::SourceDelta;
+use crate::frontend::api::SourceRef;
+use crate::frontend::api::Version;
+use crate::frontend::modify::find_defined_names;
+use crate::frontend::modify::next_free_name;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::frontend::sketch::Coincident;
+use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::Diameter;
+use crate::frontend::sketch::ExistingSegmentCtor;
+use crate::frontend::sketch::Horizontal;
+use crate::frontend::sketch::LineCtor;
+use crate::frontend::sketch::Point2d;
+use crate::frontend::sketch::Radius;
+use crate::frontend::sketch::Segment;
+use crate::frontend::sketch::SegmentCtor;
+use crate::frontend::sketch::SketchApi;
+use crate::frontend::sketch::SketchCtor;
+use crate::frontend::sketch::Vertical;
+use crate::frontend::traverse::MutateBodyItem;
+use crate::frontend::traverse::TraversalReturn;
+use crate::frontend::traverse::Visitor;
+use crate::frontend::traverse::dfs_mut;
+use crate::parsing::ast::types as ast;
+use crate::pretty::NumericSuffix;
+use crate::std::constraints::LinesAtAngleKind;
+use crate::walk::NodeMut;
+use crate::walk::Visitable;
 
 pub(crate) mod api;
 pub(crate) mod modify;
@@ -4244,12 +4276,14 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
-    use crate::{
-        engine::PlaneName,
-        front::{Distance, Object, Plane, Sketch, Tangent},
-        frontend::sketch::Vertical,
-        pretty::NumericSuffix,
-    };
+    use crate::engine::PlaneName;
+    use crate::front::Distance;
+    use crate::front::Object;
+    use crate::front::Plane;
+    use crate::front::Sketch;
+    use crate::front::Tangent;
+    use crate::frontend::sketch::Vertical;
+    use crate::pretty::NumericSuffix;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {

@@ -1,26 +1,30 @@
 //! Standard library revolution surfaces.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{Angle, Opposite},
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{BodyType, Point3d},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::shared::Opposite;
+use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::Point3d;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::extrude::do_post_extrude;
 
 extern crate nalgebra_glm as glm;
 

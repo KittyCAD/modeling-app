@@ -1,12 +1,15 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    CoreDump, Program, SourceRange,
-    exec::{NumericType, UnitType, WarningLevel},
-    pretty::NumericSuffix,
-};
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+use kcl_lib::CoreDump;
+use kcl_lib::Program;
+use kcl_lib::SourceRange;
+use kcl_lib::exec::NumericType;
+use kcl_lib::exec::UnitType;
+use kcl_lib::exec::WarningLevel;
+use kcl_lib::pretty::NumericSuffix;
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
