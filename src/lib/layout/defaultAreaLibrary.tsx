@@ -135,7 +135,7 @@ export const useDefaultAreaLibrary = () => {
         history: {
           hide: () => false,
           shortcut: 'Shift + H',
-          Component: HistoryView
+          Component: HistoryView,
         },
         debug: {
           hide: () => getSettings().app.showDebugPanel.current === false,

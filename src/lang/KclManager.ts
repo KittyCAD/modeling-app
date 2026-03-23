@@ -538,8 +538,8 @@ export class File extends EventTarget {
     read: (path: string) => fsZds.readFile(path, 'utf8'),
     write: (path: string, content: string) =>
       fsZds.writeFile(path, File.encoder.encode(content)),
-    watch: window.electron?.watchFileOn || (() => { }),
-    unwatch: window.electron?.watchFileOff || (() => { }),
+    watch: window.electron?.watchFileOn || (() => {}),
+    unwatch: window.electron?.watchFileOff || (() => {}),
   }
   static encoder = new TextEncoder()
 }
@@ -573,7 +573,7 @@ export class KclManager extends File {
     return this._wasmInstance
   }
   readonly systemDeps: SystemDeps
-  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => { }
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
   // CORE STATE
@@ -729,10 +729,10 @@ export class KclManager extends File {
     If this value isn't `null`, don't watch for file system writes it was probably us!
    */
   public writingPromise = signal<Promise<unknown> | null>(null)
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => { }
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
   private _convertToVariableEnabled: boolean = false
-  private _convertToVariableCallback: () => void = () => { }
+  private _convertToVariableCallback: () => void = () => {}
 
   // CONFIGURATION
 
@@ -898,14 +898,17 @@ export class KclManager extends File {
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
-      this.history.entries.value = [{
-        type: '',
-        date: new Date(),
-        absoluteFilePath: this.path || 'Missing filename.',
-        right: update.state.doc.toString(),
-        left: `${this.code}`,
-        wroteToDisk: false,
-      }, ...this.history.entries.value]
+      this.history.entries.value = [
+        {
+          type: '',
+          date: new Date(),
+          absoluteFilePath: this.path || 'Missing filename.',
+          right: update.state.doc.toString(),
+          left: `${this.code}`,
+          wroteToDisk: false,
+        },
+        ...this.history.entries.value,
+      ]
       const newCode = update.view.state.doc.toString()
       this._code.value = newCode
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
@@ -2241,7 +2244,7 @@ export class KclManager extends File {
       annotations: [
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
-          !resolvedOptions.shouldClearHistory
+            !resolvedOptions.shouldClearHistory
         ),
       ],
       effects: [

@@ -114,7 +114,8 @@ export const DiffView = (props: AreaTypeComponentProps) => {
   const { settings } = useApp()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
-  const applicationProjectDirectory = settingsValues.app.projectDirectory.current
+  const applicationProjectDirectory =
+    settingsValues.app.projectDirectory.current
   const { kclLSP } = useLspContext()
   const lastEntrySelected = kclManager.history.lastEntrySelected.value
 

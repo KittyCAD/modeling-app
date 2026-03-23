@@ -44,8 +44,9 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
   const { settings, project } = useApp()
   const settingsValues = settings.useSettings()
   const theValue = kclManager.history.entries.value
-  const applicationProjectDirectory = settingsValues.app.projectDirectory.current
-  console.log(theValue);
+  const applicationProjectDirectory =
+    settingsValues.app.projectDirectory.current
+  console.log(theValue)
   return (
     <LayoutPanel
       title={props.layout.label}

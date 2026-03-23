@@ -32,10 +32,10 @@ export type AreaTypeDefinition = {
   useNotifications?: () => ReturnType<
     typeof useMemo<
       | {
-        value: string | number
-        onClick: MouseEventHandler
-        title?: string
-      }
+          value: string | number
+          onClick: MouseEventHandler
+          title?: string
+        }
       | undefined
     >
   >
