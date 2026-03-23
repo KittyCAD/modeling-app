@@ -1,31 +1,40 @@
 //! Standard library shapes.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{Angle, Point2d as KPoint2d},
-};
-use kittycad_modeling_cmds::{self as kcmc, shared::PathSegment, units::UnitLength};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
-use super::{
-    args::TyF64,
-    utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
-};
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch, SketchSurface,
-        types::{RuntimeType, adjust_length},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        Args,
-        utils::{calculate_circle_center, distance},
-    },
-};
+use super::args::TyF64;
+use super::utils::point_to_len_unit;
+use super::utils::point_to_mm;
+use super::utils::point_to_typed;
+use super::utils::untype_point;
+use super::utils::untyped_point_to_mm;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BasePath;
+use crate::execution::ExecState;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::types::RuntimeType;
+use crate::execution::types::adjust_length;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::utils::calculate_circle_center;
+use crate::std::utils::distance;
 
 /// A sketch surface or a sketch.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

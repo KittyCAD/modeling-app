@@ -1,25 +1,31 @@
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
+use std::str::FromStr;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    CompilationError, KclError, SourceRange,
-    errors::KclErrorDetails,
-    exec::PlaneKind,
-    execution::{
-        ExecState, Plane, PlaneInfo, Point3d, annotations,
-        kcl_value::{KclValue, TypeDef},
-        memory::{self},
-    },
-    fmt,
-    parsing::{
-        ast::types::{PrimitiveType as AstPrimitiveType, Type},
-        token::NumericSuffix,
-    },
-    std::args::{FromKclValue, TyF64},
-};
+use crate::CompilationError;
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::exec::PlaneKind;
+use crate::execution::ExecState;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Point3d;
+use crate::execution::annotations;
+use crate::execution::kcl_value::KclValue;
+use crate::execution::kcl_value::TypeDef;
+use crate::execution::memory::{self};
+use crate::fmt;
+use crate::parsing::ast::types::PrimitiveType as AstPrimitiveType;
+use crate::parsing::ast::types::Type;
+use crate::parsing::token::NumericSuffix;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeType {
@@ -1767,7 +1773,8 @@ impl KclValue {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{ExecTestResults, parse_execute};
+    use crate::execution::ExecTestResults;
+    use crate::execution::parse_execute;
 
     async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
         let ctx = crate::ExecutorContext::new_mock(None).await;

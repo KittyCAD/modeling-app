@@ -1,10 +1,10 @@
 use anyhow::Result;
 
-use super::ast_visitor::{Visitable, Visitor};
-use crate::{
-    parsing::ast::types::{NodeRef, Program},
-    walk::Node,
-};
+use super::ast_visitor::Visitable;
+use super::ast_visitor::Visitor;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 /// *DEPRECATED* Walk trait.
 ///

@@ -1,16 +1,28 @@
 //! Standard library plane helpers.
 
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Color};
-use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, units::UnitLength, websocket::OkWebSocketResponseData,
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Color;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use super::{args::TyF64, sketch::PlaneData};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneInfo, PlaneKind, types::RuntimeType},
-    std::{Args, faces::FaceSpecifier},
-};
+use super::args::TyF64;
+use super::sketch::PlaneData;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::PlaneKind;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::faces::FaceSpecifier;
 
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -277,7 +289,8 @@ async fn make_offset_plane_in_engine(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::{PlaneInfo, Point3d};
+    use crate::execution::PlaneInfo;
+    use crate::execution::Point3d;
 
     #[test]
     fn fixes_left_handed_plane() {

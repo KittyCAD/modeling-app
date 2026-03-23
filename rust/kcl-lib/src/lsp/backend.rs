@@ -4,14 +4,24 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use dashmap::DashMap;
-use tower_lsp::lsp_types::{
-    CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-    DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
-    TextDocumentItem, WorkspaceFolder,
-};
+use tower_lsp::lsp_types::CreateFilesParams;
+use tower_lsp::lsp_types::DeleteFilesParams;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DidChangeConfigurationParams;
+use tower_lsp::lsp_types::DidChangeTextDocumentParams;
+use tower_lsp::lsp_types::DidChangeWatchedFilesParams;
+use tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams;
+use tower_lsp::lsp_types::DidCloseTextDocumentParams;
+use tower_lsp::lsp_types::DidOpenTextDocumentParams;
+use tower_lsp::lsp_types::DidSaveTextDocumentParams;
+use tower_lsp::lsp_types::InitializedParams;
+use tower_lsp::lsp_types::MessageType;
+use tower_lsp::lsp_types::RenameFilesParams;
+use tower_lsp::lsp_types::TextDocumentItem;
+use tower_lsp::lsp_types::WorkspaceFolder;
 
-use crate::{execution::typed_path::TypedPath, fs::FileSystem};
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileSystem;
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
