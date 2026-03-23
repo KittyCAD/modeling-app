@@ -428,21 +428,15 @@ export const mlEphantManagerMachine = setup({
       ws.binaryType = 'arraybuffer'
 
       // TODO: Get the server side to instead insert "interrupt"...
-      const addErrorIfInterrupted = (exchanges: Exchange[]) => {
+      const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
         const lastExchange = exchanges.slice(-1)[0]
         const lastResponse = lastExchange?.responses.slice(-1)[0]
-        if (
+        return (
           (lastExchange?.responses?.length > 0 &&
             lastResponse !== undefined &&
             !('end_of_stream' in lastResponse)) ||
           lastExchange?.responses?.length === 0
-        ) {
-          lastExchange.responses.push({
-            error: {
-              detail: 'Interrupted',
-            },
-          })
-        }
+        )
       }
 
       let maybeReplayedExchanges: Exchange[] = []
@@ -543,8 +537,6 @@ export const mlEphantManagerMachine = setup({
                   'type' in responseReplay &&
                   responseReplay.type === 'user'
                 ) {
-                  addErrorIfInterrupted(maybeReplayedExchanges)
-
                   if (isMlCopilotUserRequest(responseReplay)) {
                     maybeReplayedExchanges.push({
                       request: responseReplay,
@@ -574,8 +566,21 @@ export const mlEphantManagerMachine = setup({
                 }
                 lastExchange.responses.push(responseReplay)
               }
+            }
 
-              addErrorIfInterrupted(maybeReplayedExchanges)
+            // As it reads: if it looks like (so yea, a heuristic) we got
+            // disconnected on the last prompt, submit an unrecorded "continue"
+            // prompt.
+            if (hasBeenInterruptedOnLast(maybeReplayedExchanges)) {
+              const request: Extract<MlCopilotClientMessage, { type: 'user' }> =
+                {
+                  type: 'user',
+                  content: 'we got disconnected, please continue',
+                  // @ts-expect-error
+                  record: false,
+                }
+
+              ws.send(JSON.stringify(request))
             }
 
             // We're only considered setup when a conversation_id is assigned
