@@ -28,6 +28,7 @@ describe('circleToolImpl', () => {
   describe('createCircleActor', () => {
     it('creates a circle segment using the circle label', async () => {
       const rustContext = createMockRustContext()
+      const spiedFn = vi.spyOn(rustContext, 'addSegment')
       const kclManager = createMockKclManager()
       const sceneGraphDelta = createSceneGraphDelta([], [])
       ;(rustContext.addSegment as any).mockResolvedValue({
@@ -45,7 +46,7 @@ describe('circleToolImpl', () => {
         },
       })
 
-      expect(rustContext.addSegment).toHaveBeenCalledWith(
+      expect(spiedFn).toHaveBeenCalledWith(
         0,
         7,
         {

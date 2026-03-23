@@ -1,6 +1,5 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { hasNumericValue } from '@src/lib/kclHelpers'
 import {
   isArcLikeSegment,
   isDiameterConstraint,
