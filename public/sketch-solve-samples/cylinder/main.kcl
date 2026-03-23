@@ -12,7 +12,7 @@ diameter = 10
 sketch = startSketchOn(XY)
 
 // create the profile centered at the origin
-profile = sketch(on = XY) {
+profile = sketch(on = sketch) {
   circle1 = arc(start = [var 5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 

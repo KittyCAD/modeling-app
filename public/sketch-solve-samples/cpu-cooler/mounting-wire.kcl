@@ -1,0 +1,130 @@
+// Mounting Wire
+// The flexible metal wire used to clip the fans onto the heat sink
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Draw the XZ component of the mounting wire path
+upperArm = sketch(on = offsetPlane(XZ, offset = fanSize / 2 + 2)) {
+  line1 = line(start = [var -12mm, var 100mm], end = [var -12mm, var 107mm])
+  arc2 = arc(start = [var -12mm, var 107mm], end = [var -14mm, var 109mm], center = [var -14mm, var 107mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -14mm, var 109mm], end = [var -23mm, var 109mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -25mm, var 111mm], end = [var -23mm, var 109mm], center = [var -23mm, var 111mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -25mm, var 111mm], end = [var -25mm, var 125mm])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -25mm, var 125mm], end = [var -27mm, var 127mm], center = [var -27mm, var 125mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -27mm, var 127mm], end = [var -36mm, var 127mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var -37.97mm, var 128.65mm], end = [var -36mm, var 127mm], center = [var -36mm, var 129mm])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -37.97mm, var 128.65mm], end = [var -41.91mm, var 151mm])
+  coincident([arc8.start, line9.start])
+  arc10 = arc(start = [var -41.91mm, var 151mm], end = [var -43.88mm, var 152.65mm], center = [var -43.88mm, var 150.65mm])
+  coincident([line9.end, arc10.start])
+  vertical(arc2)
+  horizontal(arc4)
+  vertical(arc6)
+  horizontal(arc8)
+}
+
+// Draw the XZ component of the mounting wire path
+lowerArm = sketch(on = offsetPlane(XZ, offset = fanSize / 2 + 2)) {
+  line1 = line(start = [var -12mm, var 100mm], end = [var -12mm, var 93mm])
+  arc2 = arc(start = [var -14mm, var 91mm], end = [var -12mm, var 93mm], center = [var -14mm, var 93mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -14mm, var 91mm], end = [var -23mm, var 91mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -23mm, var 91mm], end = [var -25mm, var 89mm], center = [var -23mm, var 89mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -25mm, var 89mm], end = [var -25mm, var 75mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -27mm, var 73mm], end = [var -25mm, var 75mm], center = [var -27mm, var 75mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -27mm, var 73mm], end = [var -36mm, var 73mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -36mm, var 73mm], end = [var -37.97mm, var 71.35mm], center = [var -36mm, var 71mm])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var -37.97mm, var 71.35mm], end = [var -41.91mm, var 49mm])
+  coincident([arc8.end, line9.start])
+  arc10 = arc(start = [var -43.88mm, var 47.35mm], end = [var -41.91mm, var 49mm], center = [var -43.88mm, var 49.35mm])
+  coincident([line9.end, arc10.end])
+  vertical(arc2)
+  horizontal(arc4)
+  vertical(arc6)
+  horizontal(arc8)
+}
+
+// Create the profile of the mounting wire and sweep along the XZ path
+wireProfile = startSketchOn(offsetPlane(XY, offset = 40 + fanSize / 2))
+sketch001 = sketch(on = wireProfile) {
+  circle1 = arc(start = [var -11mm, var -62mm], end = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
+}
+region001 = region(segments = [sketch001.circle1])
+sweepUpperArm = sweep(region001, path = upperArm)
+
+sketch002 = sketch(on = wireProfile) {
+  circle1 = arc(start = [var -11mm, var -62mm], end = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
+}
+region002 = region(segments = [sketch002.circle1])
+sweepLowerArm = sweep(region002, path = lowerArm)
+
+// Draw the XY components of the mounting wire path
+upperHook = sketch(on = offsetPlane(XY, offset = segEndY(seg07))) {
+  line1 = line(start = [var -43.88mm, var -62mm], end = [var -52.5mm, var -62mm])
+  arc2 = arc(start = [var -54.5mm, var -60mm], end = [var -52.5mm, var -62mm], center = [var -52.5mm, var -60mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -54.5mm, var -60mm], end = [var -54.5mm, var -54.5mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -52.5mm, var -52.5mm], end = [var -54.5mm, var -54.5mm], center = [var -52.5mm, var -54.5mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -52.5mm, var -52.5mm], end = [var -44.17mm, var -52.5mm])
+  coincident([arc4.start, line5.start])
+  horizontal(arc2)
+  vertical(arc4)
+}
+
+// Draw the XY components of the mounting wire path
+lowerHook = sketch(on = offsetPlane(XY, offset = segEndY(seg08))) {
+  line1 = line(start = [var -43.88mm, var -62mm], end = [var -52.5mm, var -62mm])
+  arc2 = arc(start = [var -54.5mm, var -60mm], end = [var -52.5mm, var -62mm], center = [var -52.5mm, var -60mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -54.5mm, var -60mm], end = [var -54.5mm, var -54.5mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -52.5mm, var -52.5mm], end = [var -54.5mm, var -54.5mm], center = [var -52.5mm, var -54.5mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -52.5mm, var -52.5mm], end = [var -44.17mm, var -52.5mm])
+  coincident([arc4.start, line5.start])
+  horizontal(arc2)
+  vertical(arc4)
+}
+
+// Sweep the wire profile around the hook-shaped segments of the mounting wire
+hookProfile = startSketchOn(offsetPlane(YZ, offset = segEndX(seg07)))
+sketch003 = sketch(on = hookProfile) {
+  circle1 = arc(start = [var -61mm, var 152.65mm], end = [var -61mm, var 152.65mm], center = [var -62mm, var 152.65mm])
+}
+region003 = region(segments = [sketch003.circle1])
+sweepUpperHook = sweep(region003, path = upperHook)
+
+sketch004 = sketch(on = hookProfile) {
+  circle1 = arc(start = [var -61mm, var 47.35mm], end = [var -61mm, var 47.35mm], center = [var -62mm, var 47.35mm])
+}
+region004 = region(segments = [sketch004.circle1])
+sweepLowerHook = sweep(region004, path = lowerHook)
+
+// Union each piece of the wire into a single continuous sweep
+[
+       sweepLowerArm,
+       sweepLowerHook,
+       sweepUpperArm,
+       sweepUpperHook
+     ]
+  |> appearance(color = "#0d0d0d")
+

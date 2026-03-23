@@ -1,0 +1,78 @@
+// Ceiling Propeller
+// A twisted ceiling fan geometry made using boolean cutouts
+// Categories: Construction
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+bladeCount = 3 // Number of fan blades
+bladeTwistAngle = 5deg // Twist angle applied to the void cut geometry
+bladeSpanLength = 100 // Blade span (radial length)
+bladeWidth = 17.5 // Half-width of the blade at its widest point
+bladeBaseThickness = 10 // Total thickness of the extruded root/base
+bladeThickness = 2 // Thickness of the profile at void section
+
+
+// Root geometry
+bladeRootWidth = bladeWidth * 2
+bladeSeamLength = bladeRootWidth / 2 / cos(30deg) // Angled base segment (30°)
+
+
+// Void cutout dimensions
+voidCutoutLength = bladeSpanLength + 30 // Longitudinal length of the void
+voidCutoutWidth = bladeWidth * 3 // Width of the void cut
+voidCutoutHeight = bladeWidth * 2 // Height (used in tangential arc)
+
+
+// Construct blade profile
+bladePlane = offsetPlane(XY, offset = -bladeBaseThickness / 2)
+bladeSketch = startSketchOn(XY)
+bladeProfile = sketch(on = bladePlane) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 17.5mm, var 10.1mm])
+  line2 = line(start = [var 17.5mm, var 10.1mm], end = [var 8.75mm, var 22.6mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 8.75mm, var 22.6mm], end = [var 8.75mm, var 116.77mm])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var 8.75mm, var 116.77mm], end = [var 2.92mm, var 122.6mm], center = [var 2.92mm, var 116.77mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 2.92mm, var 122.6mm], end = [var 0mm, var 122.6mm])
+  coincident([arc4.end, line5.start])
+  vertical(line3)
+  tangent([line3, arc4])
+  radius(arc4) == 5.83mm
+  horizontal(line5)
+}
+
+region001 = region(segments = [bladeProfile.line1, bladeProfile.line2])
+// Extrude blade solid and apply fillets
+bladeSolid = extrude(region001, length = bladeBaseThickness)
+
+// Construct twisted void cutout (one side only)
+voidSketch = startSketchOn(YZ)
+voidProfile = sketch(on = voidSketch) {
+  line1 = line(start = [var 150mm, var 1mm], end = [var 35mm, var 1mm])
+  arc2 = arc(start = [var 0mm, var 36mm], end = [var 35mm, var 1mm], center = [var 35mm, var 36mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 0mm, var 36mm], end = [var 150mm, var 36mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 150mm, var 36mm], end = [var 150mm, var 1mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+
+region002 = region(segments = [voidProfile.line1, voidProfile.arc2])
+voidCutoutOne = extrude(region002, length = voidCutoutWidth, symmetric = true)
+  |> rotate(roll = 0, pitch = bladeTwistAngle, yaw = 0)
+
+// Mirror second void cut to other side
+voidCutoutTwo = clone(voidCutoutOne)
+  |> rotate(roll = 0, pitch = 180, yaw = 0)
+
+// Subtract voids from blade
+bladeWithVoidOne = subtract([bladeSolid], tools = [voidCutoutOne])
+bladeWithVoids = subtract([bladeWithVoidOne], tools = [voidCutoutTwo])
+  // Circular pattern: 3 blade instance fan
+  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
+

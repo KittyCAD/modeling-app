@@ -22,7 +22,7 @@ cupRadius = cupDiameter / 2
 // --- Tee Profile ---
 teeSketch = startSketchOn(YZ)
 
-teeProfile = sketch(on = YZ) {
+teeProfile = sketch(on = teeSketch) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 2.25mm, var 10mm])
   line2 = line(start = [var 2.25mm, var 10mm], end = [var 2.25mm, var 55.4mm])
   coincident([line1.end, line2.start])
