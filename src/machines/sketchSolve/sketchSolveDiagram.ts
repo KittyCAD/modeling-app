@@ -141,18 +141,19 @@ async function addAxisDistanceConstraint(
   sendToolbarConstraintOutcome(self, result)
 }
 
-async function addHorizontalConstraint(
+async function addLineOrientationConstraint(
   context: SketchSolveContext,
-  self: SolveActionArgs['self']
+  self: SolveActionArgs['self'],
+  type: 'Horizontal' | 'Vertical'
 ) {
   let result
   for (const id of context.selectedIds) {
-    // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
+    // TODO this is not how these constraints should operate long term, as they should be equipable tools
     result = await context.rustContext.addConstraint(
       0,
       context.sketchId,
       {
-        type: 'Horizontal',
+        type,
         line: id,
       },
       jsAppSettings(context.kclManager.systemDeps.settings)
@@ -161,24 +162,18 @@ async function addHorizontalConstraint(
   sendToolbarConstraintOutcome(self, result)
 }
 
+async function addHorizontalConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  await addLineOrientationConstraint(context, self, 'Horizontal')
+}
+
 async function addVerticalConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self']
 ) {
-  let result
-  for (const id of context.selectedIds) {
-    // TODO this is not how Vertical should operate long term, as it should be an equipable tool
-    await context.rustContext.addConstraint(
-      0,
-      context.sketchId,
-      {
-        type: 'Vertical',
-        line: id,
-      },
-      jsAppSettings(context.kclManager.systemDeps.settings)
-    )
-  }
-  sendToolbarConstraintOutcome(self, result)
+  await addLineOrientationConstraint(context, self, 'Vertical')
 }
 
 export const sketchSolveMachine = setup({
