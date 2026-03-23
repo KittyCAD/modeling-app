@@ -90,6 +90,7 @@ export type SketchSolveMachineEvent =
         | 'VerticalDistance'
         | 'construction'
     }
+  | { type: 'toggle non-visual constraints' }
   | {
       type: 'update selected ids'
       data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
@@ -175,6 +176,7 @@ export type SketchSolveContext = {
     constraintIds: Array<number>
   }
   editingConstraintId?: number
+  showNonVisualConstraints: boolean
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchId: number
   // Dependencies passed from parent
