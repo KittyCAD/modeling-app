@@ -522,6 +522,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::arc(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::arc"),
         ),
+        ("sketch2", "circle") => (
+            |e, a| Box::pin(crate::std::constraints::circle(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::circle"),
+        ),
         ("sketch2", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::coincident"),

@@ -22,7 +22,7 @@ use crate::{
         normalize_to_solver_distance_unit,
         types::{NumericType, adjust_length},
     },
-    front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
+    front::{ArcCtor, CircleCtor, Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{
         Args,
@@ -2082,6 +2082,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    Circle {
+        start: UnsolvedPoint2dExpr,
+        center: UnsolvedPoint2dExpr,
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        construction: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2109,6 +2117,7 @@ impl Segment {
             SegmentKind::Point { .. } => true,
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
+            SegmentKind::Circle { construction, .. } => *construction,
         }
     }
 }
@@ -2147,6 +2156,18 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    Circle {
+        start: [TyF64; 2],
+        center: [TyF64; 2],
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
         construction: bool,

@@ -1,18 +1,17 @@
 ---
-title: "sketch2::arc"
+title: "sketch2::circle"
 subtitle: "Function in std::sketch2"
-excerpt: "Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points."
+excerpt: "Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
+Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it.
 
 ```kcl
-sketch2::arc(
+sketch2::circle(
   start: Point2d,
-  end: Point2d,
   center: Point2d,
   construction?: bool,
 ): Segment
@@ -25,7 +24,6 @@ sketch2::arc(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
 | `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | A boolean value. | No |
 
