@@ -1,0 +1,40 @@
+// Lug Nut
+// lug Nuts are essential components used to create secure connections, whether for electrical purposes, like terminating wires or grounding, or for mechanical purposes, such as providing mounting points or reinforcing structural joints.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+customPlane = {
+  origin = {
+    x = lugSpacing / 2,
+    y = -tBell - 0.85 - (lugLength * 25),
+    z = 0
+  },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = -1, z = 0 }
+}
+
+sketch001 = sketch(on = customPlane) {
+  line1 = line(start = [var 0.47in, var 0in], end = [var 0.47in, var 0.63in])
+  arc2 = arc(start = [var 0.47in, var 0.63in], end = [var 0.35in, var 0.74in], center = [var 0.35in, var 0.63in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 0.35in, var 0.74in], end = [var 0in, var 0.74in])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var 0in, var 0.74in], end = [var 0in, var 0.38in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0in, var 0.38in], end = [var 0.35in, var 0.38in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.35in, var 0.38in], end = [var 0.47in, var 0in])
+  coincident([line5.end, line6.start])
+  vertical(arc2)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+lugNut = revolve(region001, axis = Y)
+  |> appearance(color = "#ededed", metalness = 70, roughness = 30)
+

@@ -1,13 +1,13 @@
 ---
 title: "sketch2::arc"
 subtitle: "Function in std::sketch2"
-excerpt: "A circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points."
+excerpt: "Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
+Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
 
 ```kcl
 sketch2::arc(

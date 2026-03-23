@@ -12,7 +12,7 @@ height = 10
 sketch = startSketchOn(XY)
 
 // create the profile at the top of the cone
-profile = sketch(on = XY) {
+profile = sketch(on = sketch) {
   line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   coincident([line1.end, line2.start])

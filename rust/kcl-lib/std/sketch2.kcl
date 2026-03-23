@@ -17,17 +17,25 @@ export fn point(
 @(impl = std_rust_constrainable, experimental = true, feature_tree = true)
 export fn line(
   start: Point2d,
-  end?: Point2d,
-  midpoint?: Point2d,
+  end: Point2d,
   construction?: bool,
 ): Segment {}
 
-/// A circular arc. The arc segment always sweeps counterclockwise from start to end.
+/// Create a circular arc. The arc segment always sweeps counterclockwise from start to end.
 /// To change direction, swap the start and end points.
 @(impl = std_rust_constrainable, experimental = true, feature_tree = true)
 export fn arc(
   start: Point2d,
   end: Point2d,
+  center: Point2d,
+  construction?: bool,
+): Segment {}
+
+/// Create a circle in a sketch. The circle segment always has a starting point
+/// and sweeps counterclockwise from it.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+export fn circle(
+  start: Point2d,
   center: Point2d,
   construction?: bool,
 ): Segment {}

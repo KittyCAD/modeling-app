@@ -338,6 +338,44 @@ pub(super) fn substitute_sketch_var_in_segment(
                 meta: segment.meta,
             })
         }
+        UnsolvedSegmentKind::Circle {
+            start,
+            center,
+            ctor,
+            start_object_id,
+            center_object_id,
+            construction,
+        } => {
+            let (start_x, start_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
+            let (start_y, start_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, analysis, &srs)?;
+            let (center_x, center_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[0], solve_outcome, solution_ty, analysis, &srs)?;
+            let (center_y, center_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[1], solve_outcome, solution_ty, analysis, &srs)?;
+            let start = [start_x, start_y];
+            let center = [center_x, center_y];
+            Ok(Segment {
+                id: segment.id,
+                object_id: segment.object_id,
+                kind: SegmentKind::Circle {
+                    start,
+                    center,
+                    ctor: ctor.clone(),
+                    start_object_id: *start_object_id,
+                    center_object_id: *center_object_id,
+                    start_freedom: point_freedom(start_x_freedom, start_y_freedom),
+                    center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    construction: *construction,
+                },
+                surface: surface.clone(),
+                sketch_id,
+                sketch,
+                tag: segment.tag,
+                meta: segment.meta,
+            })
+        }
     }
 }
 
@@ -790,6 +828,89 @@ pub(super) fn create_segment_scene_objects(
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: arc_artifact_id,
+                    source,
+                };
+                scene_objects.push(segment_object);
+            }
+            SegmentKind::Circle {
+                start,
+                center,
+                ctor,
+                start_object_id,
+                center_object_id,
+                start_freedom,
+                center_freedom,
+                construction,
+            } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let center_final_freedom = center_freedom.unwrap_or(Freedom::Free);
+                let start_point2d = TyF64::to_point2d(start).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting start point runtime type to API value: {:?}", start),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let start_artifact_id = exec_state.next_artifact_id();
+                let start_point_object = Object {
+                    id: *start_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: start_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: start_final_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: start_artifact_id,
+                    source: source.clone(),
+                };
+                let start_point_object_id = start_point_object.id;
+                scene_objects.push(start_point_object);
+
+                let center_point2d = TyF64::to_point2d(center).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting center point runtime type to API value: {:?}", center),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let center_artifact_id = exec_state.next_artifact_id();
+                let center_point_object = Object {
+                    id: *center_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: center_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: center_final_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: center_artifact_id,
+                    source: source.clone(),
+                };
+                let center_point_object_id = center_point_object.id;
+                scene_objects.push(center_point_object);
+
+                let circle_artifact_id = exec_state.next_artifact_id();
+                let segment_object = Object {
+                    id: segment.object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Circle(crate::front::Circle {
+                            start: start_point_object_id,
+                            center: center_point_object_id,
+                            ctor: crate::front::SegmentCtor::Circle(ctor.as_ref().clone()),
+                            ctor_applicable: true,
+                            construction: *construction,
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: circle_artifact_id,
                     source,
                 };
                 scene_objects.push(segment_object);
