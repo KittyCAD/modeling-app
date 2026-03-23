@@ -7,7 +7,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createMemberExpression,
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
@@ -18,19 +17,14 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
-  modifyAstWithTagsForSelection,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
-import {
-  getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
-  type ArtifactId,
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
@@ -45,7 +39,6 @@ import {
   type Expr,
   type PathToNode,
   type Program,
-  type VariableDeclarator,
   type VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
@@ -58,14 +51,9 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
-  ExtrudeFacePlane,
-  ModelingMachineContext,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { sketchLineHelperMapKw } from '@src/lang/std/sketch'
-import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addShell({
   ast,
@@ -1268,274 +1256,4 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   }
 
   return { solidsExprs: solidExprs, faceExprs }
-}
-
-function getSketchBlockSegmentVariableNames(
-  sketchBlock: Extract<Expr, { type: 'SketchBlock' }>
-): string[] {
-  const segmentVariableNames: string[] = []
-  for (const item of sketchBlock.body.items) {
-    if (item.type !== 'VariableDeclaration') continue
-    const init = item.declaration.init
-    if (init.type !== 'CallExpressionKw') continue
-    if (!(init.callee.name.name in sketchLineHelperMapKw)) continue
-    segmentVariableNames.push(item.declaration.id.name)
-  }
-  return segmentVariableNames
-}
-
-function findWallSegmentIndexInPath({
-  artifactGraph,
-  wallArtifact,
-  segmentArtifact,
-}: {
-  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
-  wallArtifact: Extract<Artifact, { type: 'wall' }>
-  segmentArtifact: Extract<Artifact, { type: 'segment' }>
-}): number | null {
-  const candidatePathIds: ArtifactId[] = []
-  const seenPathIds = new Set<ArtifactId>()
-  const addPathCandidate = (pathId: ArtifactId | null | undefined) => {
-    if (!pathId || seenPathIds.has(pathId)) return
-    seenPathIds.add(pathId)
-    candidatePathIds.push(pathId)
-  }
-
-  addPathCandidate(segmentArtifact.pathId)
-  wallArtifact.pathIds.forEach(addPathCandidate)
-
-  const sweepArtifact = artifactGraph.get(wallArtifact.sweepId)
-  if (sweepArtifact?.type === 'sweep') {
-    addPathCandidate(sweepArtifact.pathId)
-  }
-
-  const matchingCodeRefs = [segmentArtifact.codeRef, wallArtifact.faceCodeRef]
-  const findMatchingIndexInPath = (
-    pathArtifact: Extract<Artifact, { type: 'path' }>
-  ) => {
-    const directIndex = pathArtifact.segIds.indexOf(segmentArtifact.id)
-    if (directIndex >= 0) return directIndex
-
-    return pathArtifact.segIds.findIndex((segId) => {
-      const candidateSegment = artifactGraph.get(segId)
-      if (!candidateSegment || candidateSegment.type !== 'segment') return false
-      return matchingCodeRefs.some((referenceCodeRef) => {
-        if (
-          JSON.stringify(candidateSegment.codeRef.pathToNode) ===
-          JSON.stringify(referenceCodeRef.pathToNode)
-        ) {
-          return true
-        }
-        return (
-          JSON.stringify(candidateSegment.codeRef.range) ===
-          JSON.stringify(referenceCodeRef.range)
-        )
-      })
-    })
-  }
-
-  for (const pathId of candidatePathIds) {
-    const pathArtifact = artifactGraph.get(pathId)
-    if (!pathArtifact || pathArtifact.type !== 'path') continue
-    const matchingIndex = findMatchingIndexInPath(pathArtifact)
-    if (matchingIndex >= 0) {
-      return matchingIndex
-    }
-  }
-
-  for (const artifact of artifactGraph.values()) {
-    if (artifact.type !== 'path') continue
-    const matchingIndex = findMatchingIndexInPath(artifact)
-    if (matchingIndex >= 0) {
-      return matchingIndex
-    }
-  }
-
-  return null
-}
-
-function getFaceTagFromExecState(
-  faceId: ArtifactId,
-  execState: ModelingMachineContext['kclManager']['execState']
-): string | null {
-  for (const variable of Object.values(execState.variables)) {
-    if (!variable || variable.type !== 'Solid') continue
-    for (const surface of variable.value.value) {
-      if (surface.faceId !== faceId) continue
-      if (surface.tag?.value) return surface.tag.value
-    }
-  }
-  return null
-}
-
-export function insertFaceOfReferenceForSketchSolveSelection({
-  ast,
-  faceSelection,
-  artifactGraph,
-  execState,
-  wasmInstance,
-}: {
-  ast: Node<Program>
-  faceSelection: ExtrudeFacePlane
-  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
-  execState: ModelingMachineContext['kclManager']['execState']
-  wasmInstance: ModuleType
-}): { modifiedAst: Node<Program> } | Error {
-  let modifiedAst = structuredClone(ast)
-  const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
-    modifiedAst,
-    faceSelection.extrudePathToNode,
-    wasmInstance,
-    'VariableDeclarator'
-  )
-  if (err(extrudeVarDec)) {
-    return extrudeVarDec
-  }
-
-  const extrudeInit = extrudeVarDec.node.init
-  if (extrudeInit.type !== 'CallExpressionKw') {
-    return new Error('Selected face is not backed by an extrude call')
-  }
-
-  let faceExpr: Expr
-  if (faceSelection.faceInfo.type === 'cap') {
-    faceExpr = createLocalName(
-      faceSelection.faceInfo.subType === 'start' ? 'START' : 'END'
-    )
-  } else if (faceSelection.faceInfo.type === 'edgeCut') {
-    faceExpr = createLocalName(faceSelection.faceInfo.tagName)
-  } else {
-    const extrudeInputExpr = extrudeInit.unlabeled
-    if (!extrudeInputExpr || extrudeInputExpr.type !== 'Name') {
-      return new Error(
-        'Could not resolve extrude input expression for selected face'
-      )
-    }
-    const extrudeInputInit =
-      getVariableDeclaration(modifiedAst, extrudeInputExpr.name.name)
-        ?.declaration.init ?? null
-    const isRegionInput =
-      extrudeInputInit !== null &&
-      extrudeInputInit.type === 'CallExpressionKw' &&
-      extrudeInputInit.callee.name.name === 'region'
-
-    const faceTagFromExecState = getFaceTagFromExecState(
-      faceSelection.faceId,
-      execState
-    )
-    if (faceTagFromExecState) {
-      faceExpr = isRegionInput
-        ? createMemberExpression(
-            createMemberExpression(extrudeInputExpr.name.name, 'tags'),
-            faceTagFromExecState
-          )
-        : createLocalName(faceTagFromExecState)
-    } else {
-      const faceArtifact = artifactGraph.get(faceSelection.faceId)
-      if (!faceArtifact || faceArtifact.type !== 'wall') {
-        return new Error('Could not resolve selected wall face artifact')
-      }
-      const segmentArtifact = artifactGraph.get(faceArtifact.segId)
-      if (!segmentArtifact || segmentArtifact.type !== 'segment') {
-        return new Error('Could not resolve wall segment for selected face')
-      }
-
-      let segmentTagResult:
-        | { modifiedAst: Node<Program>; tag: string }
-        | Error = new Error('Could not resolve wall segment for selected face')
-      for (const candidateCodeRef of [
-        segmentArtifact.codeRef,
-        faceArtifact.faceCodeRef,
-      ]) {
-        let tagResult = mutateAstWithTagForSketchSegment(
-          structuredClone(modifiedAst),
-          candidateCodeRef.pathToNode,
-          wasmInstance
-        )
-        if (err(tagResult)) {
-          const pathFromRange = getNodePathFromSourceRange(
-            modifiedAst,
-            candidateCodeRef.range
-          )
-          tagResult = mutateAstWithTagForSketchSegment(
-            structuredClone(modifiedAst),
-            pathFromRange,
-            wasmInstance
-          )
-        }
-        segmentTagResult = tagResult
-        if (!err(tagResult)) {
-          break
-        }
-      }
-
-      if (!err(segmentTagResult)) {
-        modifiedAst = segmentTagResult.modifiedAst
-        const segmentTag = segmentTagResult.tag
-        faceExpr = isRegionInput
-          ? createMemberExpression(
-              createMemberExpression(extrudeInputExpr.name.name, 'tags'),
-              segmentTag
-            )
-          : createLocalName(segmentTag)
-      } else if (isRegionInput) {
-        const segmentIndex = findWallSegmentIndexInPath({
-          artifactGraph,
-          wallArtifact: faceArtifact,
-          segmentArtifact,
-        })
-        if (segmentIndex === null) {
-          return new Error('Could not resolve selected wall segment index')
-        }
-
-        const sketchArg = extrudeInputInit.arguments.find(
-          (arg) => arg.label?.name === 'sketch'
-        )?.arg
-        if (!sketchArg || sketchArg.type !== 'Name') {
-          return new Error(
-            'Could not resolve region sketch expression for selected face'
-          )
-        }
-
-        const sketchInit =
-          getVariableDeclaration(modifiedAst, sketchArg.name.name)?.declaration
-            .init ?? null
-        if (!sketchInit || sketchInit.type !== 'SketchBlock') {
-          return new Error(
-            'Could not resolve sketch block used by region for selected face'
-          )
-        }
-        const segmentVariableNames =
-          getSketchBlockSegmentVariableNames(sketchInit)
-        const segmentName = segmentVariableNames[segmentIndex]
-        if (!segmentName) {
-          return new Error(
-            'Could not resolve sketch segment name for selected wall face'
-          )
-        }
-
-        faceExpr = createMemberExpression(
-          createMemberExpression(extrudeInputExpr.name.name, 'tags'),
-          segmentName
-        )
-      } else {
-        return segmentTagResult
-      }
-    }
-  }
-
-  const faceVarName = findUniqueName(modifiedAst, 'face')
-  const faceOfExpr = createCallExpressionStdLibKw(
-    'faceOf',
-    createLocalName(extrudeVarDec.node.id.name),
-    [createLabeledArg('face', faceExpr)]
-  )
-  const faceDecl = createVariableDeclaration(faceVarName, faceOfExpr)
-  const insertIndex = Number(faceSelection.extrudePathToNode[1]?.[0])
-  if (!Number.isFinite(insertIndex)) {
-    return new Error('Could not determine where to insert faceOf call')
-  }
-  modifiedAst.body.splice(insertIndex + 1, 0, faceDecl)
-
-  return { modifiedAst }
 }

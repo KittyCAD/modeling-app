@@ -108,7 +108,6 @@ import {
   addOffsetPlane,
   addShell,
   addHole,
-  insertFaceOfReferenceForSketchSolveSelection,
 } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
@@ -2989,9 +2988,8 @@ export const modelingMachine = setup({
             console.warn('No project available for newSketch call')
           } else {
             const settings = jsAppSettings(rustContext.settingsActor)
-            let sketchSourceAst = kclManager.ast
-            let setProgramOutcome = await rustContext.hackSetProgram(
-              sketchSourceAst,
+            const setProgramOutcome = await rustContext.hackSetProgram(
+              kclManager.ast,
               settings
             )
             if (setProgramOutcome.type !== 'Success') {
@@ -3000,59 +2998,20 @@ export const modelingMachine = setup({
               return reject(new Error(errorMessage))
             }
 
-            // Construct SketchCtor based on the selected plane/face.
-            let sketchArgs: SketchCtor
-            if (result.type === 'defaultPlane') {
-              sketchArgs = {
-                on: { default: toPlaneName(result.plane) },
-              }
-            } else {
-              const selectedArtifactId =
-                result.type === 'extrudeFace' ? result.faceId : result.planeId
-              let selectedObject = setProgramOutcome.sceneGraph.objects.find(
-                (object) => object.artifact_id === selectedArtifactId
-              )
-
-              if (!selectedObject && result.type === 'extrudeFace') {
-                const insertFaceRefResult =
-                  insertFaceOfReferenceForSketchSolveSelection({
-                    ast: sketchSourceAst,
-                    faceSelection: result,
-                    artifactGraph: kclManager.artifactGraph,
-                    execState: kclManager.execState,
-                    wasmInstance,
-                  })
-                if (err(insertFaceRefResult)) {
-                  const errorMessage = insertFaceRefResult.message
-                  toast.error(errorMessage)
-                  return reject(insertFaceRefResult)
-                }
-
-                sketchSourceAst = insertFaceRefResult.modifiedAst
-                setProgramOutcome = await rustContext.hackSetProgram(
-                  sketchSourceAst,
-                  settings
-                )
-                if (setProgramOutcome.type !== 'Success') {
-                  const errorMessage = `Failed to sync face reference before creating sketch: ${setProgramOutcome.error.error.details.msg}`
-                  toast.error(errorMessage)
-                  return reject(new Error(errorMessage))
-                }
-
-                selectedObject = setProgramOutcome.sceneGraph.objects.find(
-                  (object) => object.artifact_id === selectedArtifactId
-                )
-              }
-
-              if (!selectedObject) {
-                const errorMessage =
-                  'Could not resolve selected face/plane for sketch creation'
-                toast.error(errorMessage)
-                return reject(new Error(errorMessage))
-              }
-
-              sketchArgs = { on: { object: selectedObject.id } }
-            }
+            const sketchArgs = (
+              result.type === 'defaultPlane'
+                ? {
+                    on: { default: toPlaneName(result.plane) },
+                  }
+                : {
+                    on: {
+                      artifact:
+                        result.type === 'extrudeFace'
+                          ? result.faceId
+                          : result.planeId,
+                    },
+                  }
+            ) as SketchCtor
 
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
@@ -3065,6 +3024,7 @@ export const modelingMachine = setup({
                 },
               }
             )
+
             kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
               shouldAddToHistory: false,
             })

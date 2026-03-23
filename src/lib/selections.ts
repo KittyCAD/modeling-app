@@ -1261,12 +1261,12 @@ export async function getOffsetSketchPlaneData(
     sceneInfra: SceneInfra
     sceneEntitiesManager: SceneEntities
   }
-): Promise<Error | OffsetPlane> {
+): Promise<Error | OffsetPlane | null> {
   const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
-    return new Error(
-      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
-    )
+    // Non-plane artifacts (e.g. wall/cap) are expected to fall through to
+    // sweep-face selection, not raise an error.
+    return null
   }
   const planeId = artifact.id
   try {
@@ -1341,6 +1341,7 @@ export async function selectOffsetSketchPlane(
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
   if (err(result)) return result
+  if (!result) return false
 
   try {
     sceneInfra.modelingSend({

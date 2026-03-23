@@ -156,6 +156,7 @@ pub enum ObjectKind {
 #[serde(rename_all = "camelCase")]
 pub enum Plane {
     Object(ObjectId),
+    Artifact(ArtifactId),
     Default(PlaneName),
 }
 

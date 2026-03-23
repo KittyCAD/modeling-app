@@ -9,6 +9,10 @@ use kcl_error::{CompilationError, SourceRange};
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
+#[cfg(feature = "artifact-graph")]
+use crate::NodePathStep;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{Artifact, ArtifactGraph, CapSubType};
 use crate::{
     ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
@@ -134,6 +138,8 @@ pub enum SetProgramOutcome {
 pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
+    #[cfg(feature = "artifact-graph")]
+    artifact_graph: ArtifactGraph,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
@@ -157,6 +163,8 @@ impl FrontendState {
                 settings: Default::default(),
                 sketch_mode: Default::default(),
             },
+            #[cfg(feature = "artifact-graph")]
+            artifact_graph: Default::default(),
             point_freedom_cache: HashMap::new(),
         }
     }
@@ -173,6 +181,38 @@ impl FrontendState {
             .flatten()
             .map(|settings| settings.default_length_units)
             .unwrap_or(UnitLength::Millimeters)
+    }
+
+    fn sketch_on_ast_expr(&self, ast: &mut ast::Node<ast::Program>, on: &Plane) -> api::Result<ast::Expr> {
+        match on {
+            Plane::Default(name) => Ok(default_plane_ast_expr(*name)),
+            Plane::Object(object_id) => {
+                let on_object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
+                    msg: format!("Sketch plane object not found: {object_id:?}"),
+                })?;
+                get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+            }
+            Plane::Artifact(artifact_id) => {
+                if let Some(on_object) = self
+                    .scene_graph
+                    .objects
+                    .iter()
+                    .find(|object| object.artifact_id == *artifact_id)
+                {
+                    return get_or_insert_ast_reference(ast, &on_object.source, "plane", None);
+                }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    return sketch_face_of_artifact_ast_expr(ast, &self.artifact_graph, artifact_id);
+                }
+                #[cfg(not(feature = "artifact-graph"))]
+                {
+                    Err(Error {
+                        msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
+                    })
+                }
+            }
+        }
     }
 }
 
@@ -218,7 +258,7 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
+        let plane_ast = self.sketch_on_ast_expr(&mut new_ast, &args.on)?;
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
@@ -3225,6 +3265,7 @@ impl FrontendState {
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
+            self.artifact_graph = outcome.artifact_graph.clone();
             let new_objects = std::mem::take(&mut outcome.scene_objects);
 
             if freedom_analysis_ran {
@@ -3419,19 +3460,222 @@ fn only_sketch_block(
     Ok(())
 }
 
-fn sketch_on_ast_expr(
+#[cfg(feature = "artifact-graph")]
+fn sketch_face_of_artifact_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    scene_graph: &SceneGraph,
-    on: &Plane,
+    artifact_graph: &ArtifactGraph,
+    artifact_id: &crate::execution::ArtifactId,
 ) -> api::Result<ast::Expr> {
-    match on {
-        Plane::Default(name) => Ok(default_plane_ast_expr(*name)),
-        Plane::Object(object_id) => {
-            let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
-                msg: format!("Sketch plane object not found: {object_id:?}"),
+    let artifact = artifact_graph.get(artifact_id).ok_or_else(|| Error {
+        msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
+    })?;
+
+    match artifact {
+        Artifact::Wall(wall) => {
+            let segment = artifact_graph
+                .get(&wall.seg_id)
+                .and_then(|artifact| match artifact {
+                    Artifact::Segment(segment) => Some(segment),
+                    _ => None,
+                })
+                .ok_or_else(|| Error {
+                    msg: format!("Could not resolve wall segment for sketch plane artifact: {artifact_id:?}"),
+                })?;
+            let sweep = artifact_graph
+                .get(&wall.sweep_id)
+                .and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                })
+                .ok_or_else(|| Error {
+                    msg: format!("Could not resolve wall sweep for sketch plane artifact: {artifact_id:?}"),
+                })?;
+            let solid_name = variable_name_from_code_ref_node_path(ast, &sweep.code_ref).ok_or_else(|| Error {
+                msg: format!("Could not resolve extrude variable for selected wall: {artifact_id:?}"),
             })?;
-            get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+            let solid_expr = ast_name_expr(solid_name);
+
+            let region_name = if let ast::Expr::Name(solid_name_expr) = &solid_expr {
+                let solid_name = &solid_name_expr.name.name;
+                if let Some(ast::Definition::Variable(solid_decl)) = ast.get_variable(solid_name)
+                    && let ast::Expr::CallExpressionKw(extrude_call) = &solid_decl.init
+                    && extrude_call.callee.name.name == "extrude"
+                    && let Some(ast::Expr::Name(region_name_expr)) = extrude_call.unlabeled.as_ref()
+                {
+                    let candidate = region_name_expr.name.name.clone();
+                    if let Some(ast::Definition::Variable(region_decl)) = ast.get_variable(&candidate)
+                        && let ast::Expr::CallExpressionKw(region_call) = &region_decl.init
+                        && region_call.callee.name.name == "region"
+                    {
+                        Some(candidate)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            let face_expr: ast::Expr;
+            if let Some(region_name) = &region_name {
+                // Prefer index-based region->sketch segment resolution for wall faces.
+                // Some wall segment code_refs can point to the region expression itself.
+                let mut candidate_path_ids = Vec::new();
+                let mut seen_path_ids = HashSet::new();
+                let mut push_path_id = |path_id: crate::execution::ArtifactId| {
+                    if seen_path_ids.insert(path_id) {
+                        candidate_path_ids.push(path_id);
+                    }
+                };
+                push_path_id(segment.path_id);
+                for path_id in &wall.path_ids {
+                    push_path_id(*path_id);
+                }
+                push_path_id(sweep.path_id);
+
+                let mut segment_index = candidate_path_ids.into_iter().find_map(|path_id| {
+                    artifact_graph.get(&path_id).and_then(|artifact| match artifact {
+                        Artifact::Path(path) => path.seg_ids.iter().position(|seg_id| *seg_id == wall.seg_id),
+                        _ => None,
+                    })
+                });
+
+                // Fallback: if the expected path IDs are stale, scan all paths.
+                if segment_index.is_none() {
+                    segment_index = artifact_graph.values().find_map(|artifact| {
+                        let Artifact::Path(path) = artifact else {
+                            return None;
+                        };
+                        path.seg_ids.iter().position(|seg_id| *seg_id == wall.seg_id)
+                    });
+                }
+                let Some(ast::Definition::Variable(region_decl)) = ast.get_variable(region_name) else {
+                    return Err(Error {
+                        msg: format!("Region variable not found in AST: {region_name}"),
+                    });
+                };
+                let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+                    return Err(Error {
+                        msg: format!("Region variable is not a call expression: {region_name}"),
+                    });
+                };
+                let Some(sketch_arg) = region_call
+                    .arguments
+                    .iter()
+                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some("sketch"))
+                else {
+                    return Err(Error {
+                        msg: format!("Region call has no sketch argument: {region_name}"),
+                    });
+                };
+                let ast::Expr::Name(sketch_name_expr) = &sketch_arg.arg else {
+                    return Err(Error {
+                        msg: format!("Region sketch argument is not a sketch variable: {region_name}"),
+                    });
+                };
+                let Some(ast::Definition::Variable(sketch_decl)) = ast.get_variable(&sketch_name_expr.name.name) else {
+                    return Err(Error {
+                        msg: format!("Sketch variable not found in AST: {}", sketch_name_expr.name.name),
+                    });
+                };
+                let ast::Expr::SketchBlock(sketch_block) = &sketch_decl.init else {
+                    return Err(Error {
+                        msg: format!("Sketch variable is not a sketch block: {}", sketch_name_expr.name.name),
+                    });
+                };
+                let segment_variable_names: Vec<String> = sketch_block
+                    .body
+                    .items
+                    .iter()
+                    .filter_map(|item| {
+                        let ast::BodyItem::VariableDeclaration(item) = item else {
+                            return None;
+                        };
+                        let ast::Expr::CallExpressionKw(call) = &item.declaration.init else {
+                            return None;
+                        };
+                        if !matches!(call.callee.name.name.as_str(), "line" | "arc" | "circle") {
+                            return None;
+                        }
+                        Some(item.declaration.id.name.clone())
+                    })
+                    .collect();
+                if segment_variable_names.is_empty() {
+                    return Err(Error {
+                        msg: format!("Could not resolve named sketch segments for region {region_name}"),
+                    });
+                }
+                // Prefer direct segment name resolution from node_path when available.
+                if segment_index.is_none() {
+                    let maybe_segment_name = variable_name_from_code_ref_node_path(ast, &segment.code_ref)
+                        .or_else(|| variable_name_from_code_ref_node_path(ast, &wall.face_code_ref));
+                    if let Some(segment_name) = maybe_segment_name {
+                        segment_index = segment_variable_names.iter().position(|name| name == &segment_name);
+                    }
+                }
+                // Fallback: derive index from wall ordering on the same sweep.
+                if segment_index.is_none() {
+                    let mut sweep_walls: Vec<_> = artifact_graph
+                        .values()
+                        .filter_map(|artifact| match artifact {
+                            Artifact::Wall(w) if w.sweep_id == wall.sweep_id => Some(w),
+                            _ => None,
+                        })
+                        .collect();
+                    sweep_walls.sort_by(|a, b| {
+                        let a_id: uuid::Uuid = a.id.into();
+                        let b_id: uuid::Uuid = b.id.into();
+                        a.cmd_id.cmp(&b.cmd_id).then_with(|| a_id.cmp(&b_id))
+                    });
+                    segment_index = sweep_walls.iter().position(|w| w.id == wall.id);
+                }
+                let segment_index = segment_index.unwrap_or(0).min(segment_variable_names.len() - 1);
+                let segment_name = segment_variable_names.get(segment_index).ok_or_else(|| Error {
+                    msg: format!(
+                        "Could not map region wall segment index {segment_index} to a named sketch segment for region {region_name}"
+                    ),
+                })?;
+                face_expr = create_member_expression(
+                    create_member_expression(ast_name_expr(region_name.clone()), "tags"),
+                    segment_name,
+                );
+            } else {
+                face_expr = get_or_insert_ast_reference(
+                    ast,
+                    &SourceRef::Simple {
+                        range: segment.code_ref.range,
+                    },
+                    "line",
+                    None,
+                )?;
+            }
+
+            Ok(create_face_of_ast(solid_expr, face_expr))
         }
+        Artifact::Cap(cap) => {
+            let sweep = artifact_graph
+                .get(&cap.sweep_id)
+                .and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                })
+                .ok_or_else(|| Error {
+                    msg: format!("Could not resolve cap sweep for sketch plane artifact: {artifact_id:?}"),
+                })?;
+            let solid_name = variable_name_from_code_ref_node_path(ast, &sweep.code_ref).ok_or_else(|| Error {
+                msg: format!("Could not resolve extrude variable for selected cap: {artifact_id:?}"),
+            })?;
+            let solid_expr = ast_name_expr(solid_name);
+            let face_expr = match cap.sub_type {
+                CapSubType::Start => ast_name_expr("START".to_owned()),
+                CapSubType::End => ast_name_expr("END".to_owned()),
+            };
+            Ok(create_face_of_ast(solid_expr, face_expr))
+        }
+        _ => Err(Error {
+            msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
+        }),
     }
 }
 
@@ -3453,6 +3697,34 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
         ast::UnaryOperator::Neg,
         ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
     )))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
+        unlabeled: Some(solid_expr),
+        arguments: vec![ast::LabeledArg {
+            label: Some(ast::Identifier::new("face")),
+            arg: face_expr,
+        }],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn variable_name_from_code_ref_node_path(
+    ast: &ast::Node<ast::Program>,
+    code_ref: &crate::execution::CodeRef,
+) -> Option<String> {
+    let NodePathStep::ProgramBodyItem { index } = code_ref.node_path.steps.first()? else {
+        return None;
+    };
+    let ast::BodyItem::VariableDeclaration(var_decl) = ast.body.get(*index)? else {
+        return None;
+    };
+    Some(var_decl.declaration.id.name.clone())
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -4246,6 +4518,7 @@ mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
+        execution::Artifact,
         front::{Distance, Object, Plane, Sketch, Tangent},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
@@ -7028,6 +7301,111 @@ face = faceOf(cube, face = side)
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_face_artifact_simple() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+len = 2mm
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [len, 0], tag = $side)
+  |> line(end = [0, len])
+  |> line(end = [-len, 0])
+  |> line(end = [0, -len])
+  |> close()
+  |> extrude(length = len)
+
+face = faceOf(cube, face = side)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let face_object = find_first_face_object(&frontend.scene_graph).unwrap();
+        let face_id = face_object.id;
+        let face_artifact_id = face_object.artifact_id.clone();
+
+        let sketch_args = SketchCtor {
+            on: Plane::Artifact(face_artifact_id.clone()),
+        };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(2));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
+        let sketch_object = &scene_delta.new_graph.objects[2];
+        assert_eq!(sketch_object.id, ObjectId(2));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchCtor {
+                    on: Plane::Artifact(face_artifact_id),
+                },
+                plane: face_id,
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_region_extrude() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [0, 0], end = [0, 1])
+  line2 = line(start = [0, 1], end = [1, 1])
+  line3 = line(start = [1, 1], end = [0, 0])
+}
+region001 = region(point = [0.1, 0.1], sketch = sketch002)
+extrude001 = extrude(region001, length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_artifact_id = frontend
+            .artifact_graph
+            .values()
+            .find_map(|artifact| {
+                if let Artifact::Wall(wall) = artifact {
+                    Some(wall.id)
+                } else {
+                    None
+                }
+            })
+            .expect("expected a wall artifact");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Artifact(wall_artifact_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+        assert!(!src_delta.text.contains("region001.tags.region001"));
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

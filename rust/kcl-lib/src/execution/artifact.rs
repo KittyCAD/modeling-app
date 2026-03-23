@@ -700,6 +700,10 @@ pub struct ArtifactGraph {
 }
 
 impl ArtifactGraph {
+    pub fn get(&self, id: &ArtifactId) -> Option<&Artifact> {
+        self.map.get(id)
+    }
+
     pub fn len(&self) -> usize {
         self.map.len()
     }
