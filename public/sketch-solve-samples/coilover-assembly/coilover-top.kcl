@@ -10,7 +10,7 @@ import eyeEndMountOuterDia, pointOffset, eyeEndMountLength, eyeEndMountHoleDia, 
 // Stopper for the Piston Rod located just below Upper Mount Plate
 pistonRodStopSketch = startSketchOn(XY)
 pistonRodStopperProfile = sketch(on = pistonRodStopSketch) {
-  circle1 = arc(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 region001 = region(segments = [pistonRodStopperProfile.circle1])
@@ -25,7 +25,7 @@ pistonRodStopperExtrude = extrude(region001, length = -pistonRodStopLength, tagS
 // Piston Rod located below the Stopper
 pistonRodSketch = startSketchOn(pistonRodStopperExtrude, face = START)
 pistonRodProfile = sketch(on = pistonRodSketch) {
-  circle1 = arc(start = [var 4.95mm, var 0mm], end = [var 4.95mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 4.95mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [pistonRodProfile.circle1])
 pistonRodExtrude = extrude(region002, length = 200)
@@ -33,7 +33,7 @@ pistonRodExtrude = extrude(region002, length = 200)
 // Upper Mount Plate
 upperMountPlateSketch = startSketchOn(pistonRodStopperExtrude, face = END)
 upperMountPlateProfile = sketch(on = upperMountPlateSketch) {
-  circle1 = arc(start = [var 35mm, var 0mm], end = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [upperMountPlateProfile.circle1])
 upperMountPlateExtrude = extrude(region003, length = upperMountPlateThickness, tagEnd = $capEnd001)
@@ -47,7 +47,7 @@ upperMountPlateExtrude = extrude(region003, length = upperMountPlateThickness, t
 // Eye End for Upper Mount
 eyeEndSketch = startSketchOn(upperMountPlateExtrude, face = END)
 eyeEndProfile = sketch(on = eyeEndSketch) {
-  circle1 = arc(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [eyeEndProfile.circle1])
 eyeEndExtrude = extrude(region004, length = eyeEndMountLength, tagEnd = $capEnd002)
@@ -102,7 +102,7 @@ upperMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
 eyeEndHolePlane = offsetPlane(XZ, offset = 15)
 eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
 eyeEndHoleProfile = sketch(on = eyeEndHoleSketch) {
-  circle1 = arc(start = [var 6.25mm, var 52.5mm], end = [var 6.25mm, var 52.5mm], center = [var 0mm, var 52.5mm])
+  circle1 = circle(start = [var 6.25mm, var 52.5mm], center = [var 0mm, var 52.5mm])
 }
 region006 = region(segments = [eyeEndHoleProfile.circle1])
 eyeEndHoleExtrude = extrude(region006, length = -40)

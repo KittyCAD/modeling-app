@@ -4,6 +4,7 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
+  createCircleApiObject,
   createLineApiObject,
   createMockSceneInfra,
   createPointApiObject,
@@ -149,6 +150,21 @@ describe('findClosestApiObjects', () => {
 
     expect(result[0]?.apiObject.id).toBe(4)
     expect(result[0]?.distance).toBeCloseTo(Math.abs(Math.sqrt(882) - 30), 5)
+  })
+
+  it('includes circles when the mouse is within the circle stroke threshold', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const start = createPointApiObject({ id: 2, x: 30, y: 0 })
+    const circle = createCircleApiObject({ id: 3, center: 1, start: 2 })
+
+    const result = findClosestApiObjects(
+      [0, 22],
+      createObjectsArray([center, start, circle]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(3)
+    expect(result[0]?.distance).toBeCloseTo(8)
   })
 
   it('sorts lines and arcs by distance within the same priority bucket', () => {

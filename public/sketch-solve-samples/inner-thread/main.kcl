@@ -6,13 +6,13 @@
 
 outerCylinderRadius = 5
 sketch001 = sketch(on = XY) {
-  circle1 = arc(start = [var 5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
 outerCylinder = extrude(region001, length = 10)
 
 sketch002 = sketch(on = XY) {
-  circle1 = arc(start = [var 4mm, var 0mm], end = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [sketch002.circle1])
 inner = extrude(region002, length = 10)

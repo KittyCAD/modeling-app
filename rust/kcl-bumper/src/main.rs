@@ -1,7 +1,11 @@
 //! Bumps versions in Cargo.toml.
-use anyhow::{Context, Result};
+use anyhow::Context;
+use anyhow::Result;
 use clap::Parser;
-use toml_edit::{DocumentMut, Item, Value, value};
+use toml_edit::DocumentMut;
+use toml_edit::Item;
+use toml_edit::Value;
+use toml_edit::value;
 
 fn main() -> Result<()> {
     let args = Args::parse();

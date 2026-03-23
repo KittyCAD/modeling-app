@@ -1,13 +1,23 @@
 //! A binary to transpile KCL files with old sketch syntax (startProfile in pipe
 //! expressions) to the new sketch block syntax. This is only a temporary dev
 //! tool before we integrate it into the app.
-use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
+use std::env;
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
+use std::process::ExitCode;
 
-use kcl_lib::{
-    ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
-    exec::{RetryConfig, execute_with_retries},
-    pre_execute_transpile, transpile_all_old_sketches_to_new,
-};
+use kcl_lib::ExecOutcome;
+use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
+use kcl_lib::KclError;
+use kcl_lib::KclErrorWithOutputs;
+use kcl_lib::Program;
+use kcl_lib::TypedPath;
+use kcl_lib::exec::RetryConfig;
+use kcl_lib::exec::execute_with_retries;
+use kcl_lib::pre_execute_transpile;
+use kcl_lib::transpile_all_old_sketches_to_new;
 
 fn print_usage() {
     eprintln!("Usage: transpile [--no-fail-fast] <filename.kcl>");

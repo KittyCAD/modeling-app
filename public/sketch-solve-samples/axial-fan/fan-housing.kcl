@@ -69,7 +69,7 @@ bodyMiddle = extrude(region002, length = fanHeight - 4 - 4)
 
 // Cut a hole in the body to accommodate the fan
 sketch004 = sketch(on = startSketchOn(bodyMiddle, face = END)) {
-  circle1 = arc(start = [var 55.2mm, var 0mm], end = [var 55.2mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 55.2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [sketch004.circle1])
 bodyFanHole = extrude(region003, length = -(fanHeight - 4 - 4))
@@ -90,13 +90,13 @@ topHoles = extrude(region004, length = 4)
 
 // Create a housing for the electric motor to sit
 sketch006 = sketch(on = startSketchOn(bottomFaceSketch, face = END)) {
-  circle1 = arc(start = [var 11.2mm, var 0mm], end = [var 11.2mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 11.2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [sketch006.circle1])
 motorHousing = extrude(region005, length = 16)
 
 sketch007 = sketch(on = startSketchOn(motorHousing, face = END)) {
-  circle1 = arc(start = [var 10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region006 = region(segments = [sketch007.circle1])
 extrude(region006, length = -16)

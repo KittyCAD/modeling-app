@@ -15,7 +15,7 @@ boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 
 // Create the head of the cap screw
 sketch001 = sketch(on = XZ) {
-  circle1 = arc(start = [var 0.16in, var 0in], end = [var 0.16in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.16in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 boltHead = extrude(region001, length = -boltHeadLength)
@@ -38,7 +38,7 @@ sketch002 = sketch(on = startSketchOn(boltHead, face = START)) {
 region002 = region(segments = [sketch002.line1, sketch002.line2])
 hexPatternSketch = extrude(region002, length = -boltHeadLength * 0.75)
 sketch003 = sketch(on = startSketchOn(boltHead, face = END)) {
-  circle1 = arc(start = [var 0.1in, var 0in], end = [var 0.1in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [sketch003.circle1])
 boltBody = extrude(region003, length = boltLength)

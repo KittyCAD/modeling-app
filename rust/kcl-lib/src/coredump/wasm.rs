@@ -4,7 +4,8 @@ use anyhow::Result;
 use serde_json::Value as JValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{coredump::CoreDump, wasm::JsFuture};
+use crate::coredump::CoreDump;
+use crate::wasm::JsFuture;
 
 #[wasm_bindgen(module = "/../../src/lib/coredump.ts")]
 extern "C" {

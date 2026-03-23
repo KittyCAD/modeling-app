@@ -51,13 +51,13 @@ sketch001 = extrude(region001, length = basePlateThickness)
 
 // Base Motor for actuating first joint
 sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
-  circle1 = arc(start = [var 4in, var 0in], end = [var 4in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
 }
 region002 = region(segments = [sketch002.circle1])
 extrude002 = extrude(region002, length = baseHeight - basePlateThickness - 1.5)
   |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
 sketch003 = sketch(on = startSketchOn(extrude002, face = END)) {
-  circle1 = arc(start = [var 0.5in, var 0in], end = [var 0.5in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.5in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [sketch003.circle1])
 extrude003 = extrude(region003, length = 1)

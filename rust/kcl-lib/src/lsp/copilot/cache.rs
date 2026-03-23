@@ -1,10 +1,9 @@
 //! The cache.
 
-use std::{
-    collections::HashMap,
-    fmt::Debug,
-    sync::{Mutex, RwLock},
-};
+use std::collections::HashMap;
+use std::fmt::Debug;
+use std::sync::Mutex;
+use std::sync::RwLock;
 
 use crate::lsp::copilot::types::CopilotCompletionResponse;
 

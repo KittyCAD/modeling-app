@@ -67,14 +67,14 @@ plate = hole::holes(
 
 // Drill a small pin hole in the side of the tube (separate extrude)
 pinholeSketch = sketch(on = YZ) {
-  circle1 = arc(start = [var 0.13in, var 2.2in], end = [var 0.13in, var 2.2in], center = [var 0in, var 2.2in])
+  circle1 = circle(start = [var 0.13in, var 2.2in], center = [var 0in, var 2.2in])
 }
 region002 = region(segments = [pinholeSketch.circle1])
 pinhole = extrude(region002, length = -10)
 
 // Model the central tube and subtract the pin hole (separate extrude)
 centralTubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
-  circle1 = arc(start = [var 0.74in, var 0in], end = [var 0.74in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.74in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [centralTubeSketch.circle1])
 centralTubeSolid = extrude(region003, length = tubeHeight)
