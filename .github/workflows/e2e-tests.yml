@@ -445,7 +445,7 @@ jobs:
   vercel:
     name: e2e:web (vercel)
     runs-on: namespace-profile-ubuntu-8-cores
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main')
 
     steps:
       - uses: actions/checkout@v6
@@ -470,8 +470,20 @@ jobs:
       - name: Wait for Vercel
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel
+        if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 1200 # average build times are 17-18 minutes
+          check_interval: 30
+          vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Wait for Vercel
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
+        id: wait-for-vercel
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: staging
           max_timeout: 1200 # average build times are 17-18 minutes
           check_interval: 30
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -490,8 +502,8 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           CI_SUITE: e2e:web
           TARGET: web
 
