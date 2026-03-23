@@ -8,8 +8,8 @@ import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { Sprite, SpriteMaterial, Texture } from 'three'
-import { Vector3 } from 'three'
+import type { Object3D, SpriteMaterial, Texture } from 'three'
+import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
@@ -291,9 +291,7 @@ export function calculateDimensionLabelScreenPosition(
     console.warn(`Constraint group ${constraintId} not found in scene`)
     return
   }
-  const label = constraintGroup.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = constraintGroup.children.find(isSpriteLabel)
   if (!label) {
     console.warn(`Label not found in constraint group ${constraintId}`)
     return
@@ -357,6 +355,12 @@ export type SpriteLabel = Sprite & {
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
+}
+
+export function isSpriteLabel(child: Object3D): child is SpriteLabel {
+  return (
+    child instanceof Sprite && child.userData.type === DISTANCE_CONSTRAINT_LABEL
+  )
 }
 
 export function pointToCoords2d(point: PointSegment): Coords2d {

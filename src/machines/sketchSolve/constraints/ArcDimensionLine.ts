@@ -15,7 +15,7 @@ import {
   updateLabelHitObjects,
   updateLabel,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
-import type { SpriteLabel } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isSpriteLabel } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -48,9 +48,10 @@ export function updateArcDimensionLine(
   const { center, radius, startAngle, sweepAngle: sweep } = renderInput
   const arcLengthPx = (radius * sweep) / scale
 
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel
+  const label = group.children.find(isSpriteLabel)
+  if (!label) {
+    return
+  }
   label.position.set(
     renderInput.labelPosition[0],
     renderInput.labelPosition[1],

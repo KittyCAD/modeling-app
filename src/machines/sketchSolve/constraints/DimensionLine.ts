@@ -12,6 +12,7 @@ import {
 import {
   CONSTRAINT_TYPE,
   isConstraintWithSource,
+  isSpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type {
   ConstraintObject,
@@ -125,9 +126,7 @@ export function updateDimensionLine(
       )
     : lineCenter
 
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = group.children.find(isSpriteLabel)
   if (label) {
     // Need to update label position even if it's not shown because it's used to
     // place the input box when double clicking on it.
@@ -219,9 +218,7 @@ export function updateLabel(
   apiNumber: Number,
   scale: number
 ) {
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = group.children.find(isSpriteLabel)
   if (label?.material.map) {
     const canvas = label.material.map.source.data
 
