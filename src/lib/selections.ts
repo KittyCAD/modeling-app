@@ -879,6 +879,51 @@ function findOverlappingArtifactsFromIndex(
   return results
 }
 
+function getBestCandidate(
+  entries: ArtifactEntry[],
+  artifactGraph: ArtifactGraph
+): ArtifactEntry | undefined {
+  if (!entries.length) {
+    return undefined
+  }
+  const sketchBlock = entries.find(
+    (entry) => entry.artifact.type === 'sketchBlock'
+  )
+  if (sketchBlock) {
+    return sketchBlock
+  }
+
+  for (const entry of entries) {
+    // Segments take precedence
+    if (entry.artifact.type === 'segment') {
+      return entry
+    }
+
+    // Handle paths and their solid2d references
+    if (entry.artifact.type === 'path') {
+      const solid2dId = entry.artifact.solid2dId
+      if (!solid2dId) {
+        return entry
+      }
+      const solid2d = artifactGraph.get(solid2dId)
+      if (solid2d?.type === 'solid2d') {
+        return { id: solid2dId, artifact: solid2d }
+      }
+      continue
+    }
+
+    // Other valid artifact types
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
+        entry.artifact.type
+      )
+    ) {
+      return entry
+    }
+  }
+  return undefined
+}
+
 function createSelectionToEngine(
   selection: Selection,
   candidateId?: ArtifactId
@@ -920,13 +965,9 @@ export function codeToIdSelections(
         selection,
         artifactIndex
       )
+      const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
 
-      return overlappingEntries.map((entry) =>
-        createSelectionToEngine(
-          Object.assign(selection, entry.artifact),
-          entry.id
-        )
-      )
+      return [createSelectionToEngine(selection, bestCandidate?.id)]
     })
     .filter(isNonNullable)
 }
