@@ -1,7 +1,9 @@
 use anyhow::Result;
 use ezpz::Constraint as SolverConstraint;
 use ezpz::datatypes::AngleKind;
+use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumCircularArc;
+use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
 use kittycad_modeling_cmds as kcmc;
