@@ -1,7 +1,6 @@
-use crate::frontend::{
-    api::ObjectId,
-    trim::{Coords2d, execute_trim_flow},
-};
+use crate::frontend::api::ObjectId;
+use crate::frontend::trim::Coords2d;
+use crate::frontend::trim::execute_trim_flow;
 
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
@@ -2125,7 +2124,10 @@ sketch(on = YZ) {
 
 // Helper function to get objects from KCL code (similar to getSceneGraphDeltaFromKcl in TypeScript)
 async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Object> {
-    use crate::{ExecutorContext, Program, execution::MockConfig, frontend::FrontendState};
+    use crate::ExecutorContext;
+    use crate::Program;
+    use crate::execution::MockConfig;
+    use crate::frontend::FrontendState;
 
     // Parse KCL code
     let parse_result = Program::parse(kcl_code).expect("Failed to parse KCL");
@@ -2196,7 +2198,9 @@ mod get_trim_spawn_terminations_tests {
     use kittycad_modeling_cmds::units::UnitLength;
 
     use super::*;
-    use crate::frontend::trim::{Coords2d, TrimTermination, get_trim_spawn_terminations};
+    use crate::frontend::trim::Coords2d;
+    use crate::frontend::trim::TrimTermination;
+    use crate::frontend::trim::get_trim_spawn_terminations;
 
     #[tokio::test]
     async fn test_line_segment_intersection_terminations() {

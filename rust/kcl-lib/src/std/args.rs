@@ -1,33 +1,48 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{
-    shared::BodyType,
-    units::{UnitAngle, UnitLength},
-};
+use kcmc::shared::BodyType;
+use kcmc::units::UnitAngle;
+use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
+use crate::CompilationError;
+use crate::MetaSettings;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ExecState;
+use crate::execution::Extrudable;
+use crate::execution::ExtrudeSurface;
+use crate::execution::Helix;
+use crate::execution::KclObjectFields;
+use crate::execution::KclValue;
+use crate::execution::Metadata;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
-use crate::{
-    CompilationError, MetaSettings, ModuleId, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane,
-        PlaneInfo, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
-        kcl_value::FunctionSource,
-        types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
-    },
-    front::Number,
-    parsing::ast::types::TagNode,
-    std::{
-        CircularDirection,
-        shapes::{PolygonType, SketchOrSurface},
-        sketch::FaceTag,
-        sweep::SweepPath,
-    },
-};
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::NumericSuffixTypeConvertError;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::execution::types::UnitType;
+use crate::front::Number;
+use crate::parsing::ast::types::TagNode;
+use crate::std::CircularDirection;
+use crate::std::shapes::PolygonType;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::FaceTag;
+use crate::std::sweep::SweepPath;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";

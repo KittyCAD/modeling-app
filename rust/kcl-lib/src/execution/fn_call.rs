@@ -1,20 +1,36 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use crate::{
-    CompilationError, NodePath, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, Solid, StatementKind,
-        TagEngineInfo, TagIdentifier, annotations,
-        cad_op::{Group, OpArg, OpKclValue, Operation},
-        control_continue,
-        kcl_value::{FunctionBody, FunctionSource, NamedParam},
-        memory,
-        types::RuntimeType,
-    },
-    parsing::ast::types::{CallExpressionKw, Node, Type},
-};
+use crate::CompilationError;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BodyType;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Geometry;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::Metadata;
+use crate::execution::Solid;
+use crate::execution::StatementKind;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
+use crate::execution::cad_op::Group;
+use crate::execution::cad_op::OpArg;
+use crate::execution::cad_op::OpKclValue;
+use crate::execution::cad_op::Operation;
+use crate::execution::control_continue;
+use crate::execution::kcl_value::FunctionBody;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::NamedParam;
+use crate::execution::memory;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Type;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -940,10 +956,16 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
-    use crate::{
-        execution::{ContextType, EnvironmentRef, memory::Stack, parse_execute, types::NumericType},
-        parsing::ast::types::{DefaultParamVal, FunctionExpression, Identifier, Parameter, Program},
-    };
+    use crate::execution::ContextType;
+    use crate::execution::EnvironmentRef;
+    use crate::execution::memory::Stack;
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::parsing::ast::types::DefaultParamVal;
+    use crate::parsing::ast::types::FunctionExpression;
+    use crate::parsing::ast::types::Identifier;
+    use crate::parsing::ast::types::Parameter;
+    use crate::parsing::ast::types::Program;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {

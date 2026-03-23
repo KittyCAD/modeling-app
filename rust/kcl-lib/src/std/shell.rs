@@ -1,18 +1,22 @@
 //! Standard library shells.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
 use kittycad_modeling_cmds as kcmc;
 
 use super::args::TyF64;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, KclValue, ModelingCmdMeta, Solid,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::{Args, sketch::FaceTag},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::sketch::FaceTag;
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

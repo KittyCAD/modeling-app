@@ -1,37 +1,56 @@
-use std::{collections::HashMap, f64::consts::TAU};
+use std::collections::HashMap;
+use std::f64::consts::TAU;
 
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    ok_response::OkModelingCmdResponse,
-    shared::{Angle as KAngle, PathSegment, Point2d as KPoint2d},
-    units::UnitLength,
-    websocket::OkWebSocketResponseData,
-};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::Angle as KAngle;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
 
-use crate::{
-    ExecState, ExecutorContext, KclError,
-    errors::KclErrorDetails,
-    exec::{KclValue, NumericType, Sketch},
-    execution::{
-        BasePath, GeoMeta, Metadata, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META,
-        SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SketchSurface,
-        types::{ArrayLen, RuntimeType},
-    },
-    front::ObjectId,
-    parsing::ast::types::TagNode,
-    std::{
-        Args, CircularDirection,
-        args::{FromKclValue, TyF64},
-        shapes::SketchOrSurface,
-        sketch::{StraightLineParams, create_sketch, relative_arc, straight_line},
-        utils::{distance, point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm},
-    },
-    std_utils::untyped_point_to_unit,
-};
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::exec::NumericType;
+use crate::exec::Sketch;
+use crate::execution::BasePath;
+use crate::execution::GeoMeta;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SketchSurface;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::front::ObjectId;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::CircularDirection;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::StraightLineParams;
+use crate::std::sketch::create_sketch;
+use crate::std::sketch::relative_arc;
+use crate::std::sketch::straight_line;
+use crate::std::utils::distance;
+use crate::std::utils::point_to_len_unit;
+use crate::std::utils::point_to_mm;
+use crate::std::utils::untype_point;
+use crate::std::utils::untyped_point_to_mm;
+use crate::std_utils::untyped_point_to_unit;
 
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.

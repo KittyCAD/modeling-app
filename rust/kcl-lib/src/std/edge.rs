@@ -1,19 +1,29 @@
 //! Edge helper functions.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
+use crate::std::sketch::FaceTag;
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
 fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
