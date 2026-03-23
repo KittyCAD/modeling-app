@@ -36,17 +36,17 @@ function createTestMachine(mockActors?: {
     actors: {
       createArc: fromPromise(
         mockActors?.createArc ||
-          (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }))
+        (async () => ({
+          kclSource: { text: 'test' } as SourceDelta,
+          sceneGraphDelta: createSceneGraphDelta([], []),
+        }))
       ),
       finalizeArc: fromPromise(
         mockActors?.finalizeArc ||
-          (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }))
+        (async () => ({
+          kclSource: { text: 'test' } as SourceDelta,
+          sceneGraphDelta: createSceneGraphDelta([], []),
+        }))
       ),
     },
   })
@@ -104,8 +104,8 @@ describe('tangentialArcTool - XState', () => {
     actor.send({
       type: 'select tangent info',
       data: {
-        segmentId: 10,
-        tangentStart: { id: 11, point: [10, 0] },
+        ownerId: 10,
+        tangentStart: { pointId: 11, position: [10, 0] },
         tangentDirection: [1, 0],
       },
     })
@@ -147,8 +147,8 @@ describe('tangentialArcTool - XState', () => {
     actor.send({
       type: 'select tangent info',
       data: {
-        segmentId: 10,
-        tangentStart: { id: 11, point: [10, 0] },
+        ownerId: 10,
+        tangentStart: { pointId: 11, position: [10, 0] },
         tangentDirection: [1, 0],
       },
     })

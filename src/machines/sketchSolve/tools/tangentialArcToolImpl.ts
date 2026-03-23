@@ -44,10 +44,10 @@ export const FINALIZING_ARC = `xstate.done.actor.0.${TOOL_ID}.Finalizing arc`
 const EPSILON = 1e-8
 
 type TangentInfo = {
-  segmentId: number
+  ownerId: number // the id of the previous owner segment the tangent will start from
   tangentStart: {
-    id: number
-    point: Coords2d
+    pointId: number // the id of the point segment the tangent will start from
+    position: Coords2d // the position of the point
   }
   tangentDirection: Coords2d
 }
@@ -55,21 +55,21 @@ type TangentInfo = {
 export type ToolEvents =
   | BaseToolEvent
   | {
-      type: 'select tangent info'
-      data: TangentInfo
-    }
+    type: 'select tangent info'
+    data: TangentInfo
+  }
   | {
-      type: 'add point'
-      data: Coords2d
-      clickNumber?: 2
-    }
+    type: 'add point'
+    data: Coords2d
+    clickNumber?: 2
+  }
   | {
-      type: typeof CREATING_ARC | typeof FINALIZING_ARC
-      output: {
-        kclSource: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-      }
+    type: typeof CREATING_ARC | typeof FINALIZING_ARC
+    output: {
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
     }
+  }
 
 export type ToolContext = {
   tangentInfo?: TangentInfo
@@ -277,24 +277,24 @@ export function resolveTangentInfoFromClick({
   const pointCoords = getPointFromObjects(objects, pointId)
   const tangentDirection = isLineSegment(owner)
     ? getLineTangentDirection({
-        objects,
-        segmentId: ownerId,
-        tangentPointId: pointId,
-      })
+      objects,
+      segmentId: ownerId,
+      tangentPointId: pointId,
+    })
     : getArcTangentDirection({
-        objects,
-        segmentId: ownerId,
-        tangentPointId: pointId,
-      })
+      objects,
+      segmentId: ownerId,
+      tangentPointId: pointId,
+    })
   if (!pointCoords || !tangentDirection) {
     return null
   }
 
   return {
-    segmentId: ownerId,
+    ownerId,
     tangentStart: {
-      id: pointId,
-      point: pointCoords,
+      pointId,
+      position: pointCoords,
     },
     tangentDirection,
   }
@@ -424,7 +424,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
 
       const endPoint: Coords2d = [twoD.x, twoD.y]
       const centerPoint = findTangentialArcCenter({
-        startPoint: context.tangentInfo.tangentStart.point,
+        startPoint: context.tangentInfo.tangentStart.position,
         endPoint,
         tangentDirection: context.tangentInfo.tangentDirection,
       })
@@ -432,7 +432,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         return
       }
       const arcEndpoints = resolveTangentialArcEndpoints(
-        context.tangentInfo.tangentStart.point,
+        context.tangentInfo.tangentStart.position,
         endPoint,
         context.tangentInfo.tangentDirection
       )
@@ -518,18 +518,18 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         clickNumber: 2,
       })
     },
-    onMouseEnter: () => {},
-    onMouseLeave: () => {},
+    onMouseEnter: () => { },
+    onMouseLeave: () => { },
   })
 }
 
 export function removePointListener({ context }: ToolActionArgs) {
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
   context.sceneInfra.setCallbacks({
-    onClick: () => {},
-    onMove: () => {},
-    onMouseEnter: () => {},
-    onMouseLeave: () => {},
+    onClick: () => { },
+    onMove: () => { },
+    onMouseEnter: () => { },
+    onMouseLeave: () => { },
   })
 }
 
@@ -622,30 +622,30 @@ export async function createArcActor({
   input,
 }: {
   input:
-    | {
-        tangentInfo: TangentInfo
-        rustContext: RustContext
-        kclManager: KclManager
-        sketchId: number
-      }
-    | {
-        error: string
-      }
+  | {
+    tangentInfo: TangentInfo
+    rustContext: RustContext
+    kclManager: KclManager
+    sketchId: number
+  }
+  | {
+    error: string
+  }
 }): Promise<
   | {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-    }
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
   | {
-      error: string
-    }
+    error: string
+  }
 > {
   if ('error' in input) {
     return { error: input.error }
   }
 
   const { tangentInfo, rustContext, kclManager, sketchId } = input
-  const startPoint = tangentInfo.tangentStart.point
+  const startPoint = tangentInfo.tangentStart.position
   const tangentDirection = tangentInfo.tangentDirection
   const tangentUnit = normalizeVec(tangentDirection)
   if (isInvalidUnitVector(tangentUnit)) {
@@ -694,25 +694,25 @@ export async function finalizeArcActor({
   input,
 }: {
   input:
-    | {
-        arcId: number
-        endPoint: Coords2d
-        tangentInfo: TangentInfo
-        rustContext: RustContext
-        kclManager: KclManager
-        sketchId: number
-      }
-    | {
-        error: string
-      }
+  | {
+    arcId: number
+    endPoint: Coords2d
+    tangentInfo: TangentInfo
+    rustContext: RustContext
+    kclManager: KclManager
+    sketchId: number
+  }
+  | {
+    error: string
+  }
 }): Promise<
   | {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-    }
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
   | {
-      error: string
-    }
+    error: string
+  }
 > {
   if ('error' in input) {
     return { error: input.error }
@@ -720,10 +720,10 @@ export async function finalizeArcActor({
 
   const { arcId, endPoint, tangentInfo, rustContext, kclManager, sketchId } =
     input
-  const startPoint = tangentInfo.tangentStart.point
+  const startPoint = tangentInfo.tangentStart.position
   const tangentDirection = tangentInfo.tangentDirection
-  const tangentSegmentId = tangentInfo.segmentId
-  const tangentStartId = tangentInfo.tangentStart.id
+  const tangentSegmentId = tangentInfo.ownerId
+  const tangentStartId = tangentInfo.tangentStart.pointId
 
   const centerPoint = findTangentialArcCenter({
     startPoint,
