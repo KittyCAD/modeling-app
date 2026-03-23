@@ -230,6 +230,9 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
+    'toggle non-visual constraints': assign(({ context }) => ({
+      showNonVisualConstraints: !context.showNonVisualConstraints,
+    })),
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
@@ -281,6 +284,7 @@ export const sketchSolveMachine = setup({
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
+      showNonVisualConstraints: false,
     }
   },
   id: 'Sketch Solve Mode',
@@ -314,6 +318,11 @@ export const sketchSolveMachine = setup({
       actions: 'delete draft entities',
       description:
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
+    },
+    'toggle non-visual constraints': {
+      actions: ['toggle non-visual constraints'],
+      description:
+        'Toggles whether non-visual constraints should be shown in sketch solve mode.',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state
