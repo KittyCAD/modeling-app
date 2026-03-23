@@ -63,7 +63,6 @@ import {
 } from '@src/lang/modifyAst'
 import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { circle } from '@src/lang/std/sketch'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
