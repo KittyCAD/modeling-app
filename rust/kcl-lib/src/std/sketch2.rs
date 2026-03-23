@@ -107,11 +107,6 @@ pub(crate) async fn create_segments_in_engine(
             outer_sketch = Some(sketch);
         };
 
-        // Get the source range of the segment from its metadata, falling back to the sketch block's
-        let default_meta = Metadata { source_range: range };
-        let meta = segment.meta.first().unwrap_or(&default_meta);
-        let range = meta.source_range;
-
         let Some(sketch) = &outer_sketch else {
             return Err(KclError::new_internal(KclErrorDetails::new(
                 "Sketch should have been initialized before creating segments".to_owned(),
