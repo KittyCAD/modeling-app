@@ -109,8 +109,8 @@ describe('tangentialArcToolImpl', () => {
       expect(send).toHaveBeenCalledWith({
         type: 'select tangent info',
         data: {
-          segmentId: 3,
-          tangentStart: { id: 1, point: [0, 0] },
+          ownerId: 3,
+          tangentStart: { pointId: 1, position: [0, 0] },
           tangentDirection: [-1, 0],
         },
       })
@@ -154,13 +154,13 @@ describe('tangentialArcToolImpl', () => {
       })
 
       expect(tangentInfoAtStart).toEqual({
-        segmentId: 3,
-        tangentStart: { id: 1, point: [0, 0] },
+        ownerId: 3,
+        tangentStart: { pointId: 1, position: [0, 0] },
         tangentDirection: [-1, 0],
       })
       expect(tangentInfoAtEnd).toEqual({
-        segmentId: 3,
-        tangentStart: { id: 2, point: [20, 0] },
+        ownerId: 3,
+        tangentStart: { pointId: 2, position: [20, 0] },
         tangentDirection: [1, 0],
       })
     })
@@ -200,13 +200,13 @@ describe('tangentialArcToolImpl', () => {
       })
 
       expect(tangentInfoAtStart).toEqual({
-        segmentId: 4,
-        tangentStart: { id: 2, point: [5, 0] },
+        ownerId: 4,
+        tangentStart: { pointId: 2, position: [5, 0] },
         tangentDirection: [0, -1],
       })
       expect(tangentInfoAtEnd).toEqual({
-        segmentId: 4,
-        tangentStart: { id: 3, point: [0, 5] },
+        ownerId: 4,
+        tangentStart: { pointId: 3, position: [0, 5] },
         tangentDirection: [-1, 0],
       })
       expect(tangentInfoAtCenter).toBeNull()
