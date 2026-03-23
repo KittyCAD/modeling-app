@@ -43,7 +43,7 @@ export const FINALIZING_ARC = `xstate.done.actor.0.${TOOL_ID}.Finalizing arc`
 
 const EPSILON = 1e-8
 
-export type TangentInfo = {
+type TangentInfo = {
   segmentId: number
   tangentStart: {
     id: number
@@ -110,28 +110,6 @@ function getPointFromObjects(
     point.kind.segment.position.x.value,
     point.kind.segment.position.y.value,
   ]
-}
-
-function getHoverState(self: ToolActionArgs['self']): {
-  sceneGraphDelta?: SceneGraphDelta
-  selectedIds: Array<number>
-  draftEntityIds?: Array<number>
-} {
-  const snapshot = self._parent?.getSnapshot()
-  const selectedIds = Array.from(
-    new Set([
-      ...(snapshot?.context?.selectedIds ?? []),
-      ...(snapshot?.context?.duringAreaSelectIds ?? []),
-    ])
-  )
-
-  return {
-    sceneGraphDelta: snapshot?.context?.sketchExecOutcome?.sceneGraphDelta,
-    selectedIds,
-    draftEntityIds: snapshot?.context?.draftEntities
-      ? [...snapshot.context.draftEntities.segmentIds]
-      : undefined,
-  }
 }
 
 function getLineTangentDirection({
@@ -322,30 +300,68 @@ export function resolveTangentInfoFromClick({
   }
 }
 
+function findClosestTangentTarget({
+  mousePosition,
+  sceneGraphDelta,
+  sketchId,
+  sceneInfra,
+}: {
+  mousePosition: Coords2d
+  sceneGraphDelta: SceneGraphDelta
+  sketchId: number
+  sceneInfra: SceneInfra
+}): { apiObject: ApiObject; tangentInfo: TangentInfo } | null {
+  const apiObjects = getCurrentSketchObjectsById(
+    sceneGraphDelta.new_graph.objects,
+    sketchId
+  )
+  const closestObjects = findClosestApiObjects(
+    mousePosition,
+    apiObjects,
+    sceneInfra
+  )
+
+  for (const closestObject of closestObjects) {
+    const tangentInfo = resolveTangentInfoFromClick({
+      clickedId: closestObject.apiObject.id,
+      sceneGraphDelta,
+    })
+    if (tangentInfo) {
+      return {
+        apiObject: closestObject.apiObject,
+        tangentInfo,
+      }
+    }
+  }
+
+  return null
+}
+
 export function addFirstPointListener({ self, context }: ToolActionArgs) {
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
       if (!args) return
       if (args.mouseEvent.which !== 1) return
 
-      const { sceneGraphDelta } = getHoverState(self)
+      const snapshot = self._parent?.getSnapshot()
+      const sceneGraphDelta =
+        snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
       if (!sceneGraphDelta?.new_graph?.objects) return
-
-      const clickedId = Number(args.selected?.parent?.name)
-      if (Number.isNaN(clickedId)) return
-
-      const tangentInfo = resolveTangentInfoFromClick({
-        clickedId,
-        sceneGraphDelta,
-      })
-      if (!tangentInfo) return
 
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
 
+      const tangentTarget = findClosestTangentTarget({
+        mousePosition: [twoD.x, twoD.y],
+        sceneGraphDelta,
+        sketchId: snapshot.context.sketchId,
+        sceneInfra: context.sceneInfra,
+      })
+      if (!tangentTarget) return
+
       self.send({
         type: 'select tangent info',
-        data: tangentInfo,
+        data: tangentTarget.tangentInfo,
       })
     },
     onMove: ({ intersectionPoint }: OnMoveCallbackArgs) => {
@@ -359,32 +375,23 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         intersectionPoint.twoD.y,
       ] as Coords2d
 
-      const apiObjects = getCurrentSketchObjectsById(
-        snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
-          [],
-        snapshot.context.sketchId
-      )
-      const closestObjects = findClosestApiObjects(
-        mousePosition,
-        apiObjects,
-        context.sceneInfra
-      )
-
       const sceneGraphDelta =
         snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
+      if (!sceneGraphDelta) {
+        return
+      }
 
-      const closestObjectForTrangentStart = closestObjects.find(
-        (obj) =>
-          resolveTangentInfoFromClick({
-            clickedId: obj.apiObject.id,
-            sceneGraphDelta,
-          }) !== null
-      )
+      const tangentTarget = findClosestTangentTarget({
+        mousePosition,
+        sceneGraphDelta,
+        sketchId: snapshot.context.sketchId,
+        sceneInfra: context.sceneInfra,
+      })
 
       self._parent?.send({
         type: 'update hovered id',
         data: {
-          hoveredId: closestObjectForTrangentStart?.apiObject.id ?? null,
+          hoveredId: tangentTarget?.apiObject.id ?? null,
         },
       })
     },
