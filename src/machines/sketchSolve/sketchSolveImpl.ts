@@ -587,8 +587,9 @@ export function updateSceneGraphFromDelta({
           objects,
           factor,
           context.sceneInfra,
-          selectedIds,
-          context.hoveredId
+          allSelectedIds,
+          context.hoveredId,
+          context.showNonVisualConstraints
         )
       }
       return
@@ -800,7 +801,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           factor,
           context.sceneInfra,
           allSelectedIds,
-          context.hoveredId
+          context.hoveredId,
+          context.showNonVisualConstraints
         )
       }
     } else {
@@ -917,8 +919,9 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         objects,
         scaleFactor,
         context.sceneInfra,
-        context.selectedIds,
-        context.hoveredId
+        allSelectedIds,
+        context.hoveredId,
+        context.showNonVisualConstraints
       )
     }
   })

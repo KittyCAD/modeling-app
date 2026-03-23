@@ -326,7 +326,7 @@ export const sketchSolveMachine = setup({
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
     },
     'toggle non-visual constraints': {
-      actions: ['toggle non-visual constraints'],
+      actions: ['toggle non-visual constraints', 'refresh selection styling'],
       description:
         'Toggles whether non-visual constraints should be shown in sketch solve mode.',
     },
