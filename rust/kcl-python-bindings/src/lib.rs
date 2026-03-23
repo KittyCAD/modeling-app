@@ -1,34 +1,45 @@
 #![allow(clippy::useless_conversion)]
-use std::{
-    future::Future,
-    path::{Path, PathBuf},
-};
+use std::future::Future;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
-use kcl_lib::{
-    ExecutorContext,
-    lint::{Discovered, FindingFamily, checks},
-};
-use kittycad_modeling_cmds::{
-    self as kcmc, ImageFormat, ImportFile, ModelingCmd,
-    format::{InputFormat3d, OutputFormat3d},
-    ok_response::OkModelingCmdResponse,
-    shared::FileExportFormat,
-    units::{UnitAngle, UnitLength},
-    websocket::{OkWebSocketResponseData, RawFile},
-};
-use pyo3::{
-    Bound, PyErr, PyResult, Python, exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods,
-    pymodule, types::PyModule, wrap_pyfunction,
-};
+use kcl_lib::ExecutorContext;
+use kcl_lib::lint::Discovered;
+use kcl_lib::lint::FindingFamily;
+use kcl_lib::lint::checks;
+use kittycad_modeling_cmds::ImageFormat;
+use kittycad_modeling_cmds::ImportFile;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::format::InputFormat3d;
+use kittycad_modeling_cmds::format::OutputFormat3d;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::FileExportFormat;
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::RawFile;
+use kittycad_modeling_cmds::{self as kcmc};
+use pyo3::Bound;
+use pyo3::PyErr;
+use pyo3::PyResult;
+use pyo3::Python;
+use pyo3::exceptions::PyException;
+use pyo3::prelude::PyModuleMethods;
+use pyo3::pyclass;
+use pyo3::pyfunction;
+use pyo3::pymethods;
+use pyo3::pymodule;
+use pyo3::types::PyModule;
+use pyo3::wrap_pyfunction;
 use pyo3_stub_gen::define_stub_info_gatherer;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::bridge::{
-    bounding_box::BoundingBoxResponse,
-    physical_properties::{PhysicalPropertiesRequest, PhysicalPropertiesResponse},
-};
+use crate::bridge::bounding_box::BoundingBoxResponse;
+use crate::bridge::physical_properties::PhysicalPropertiesRequest;
+use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 
 mod bridge;
 

@@ -366,6 +366,27 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await editor.expectEditor.toContain('parallel([line1, line2])')
     })
+
+    await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
+      await toolbar.circleBtn.click()
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [circleCenterClick] = scene.makeMouseHelpers(0.75, 0.65, {
+        format: 'ratio',
+      })
+      const [circleRadiusClick] = scene.makeMouseHelpers(0.85, 0.78, {
+        format: 'ratio',
+      })
+
+      await circleCenterClick()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await circleRadiusClick()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('circle(start = [')
+      await expect(pointHandles).toHaveCount(11)
+    })
   })
 
   test('can delete individual constraints and the sketch block from the feature tree', async ({
@@ -380,7 +401,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Set up the app with test code', async () => {
       const code = `@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
@@ -402,7 +423,7 @@ sketch(on = XY) {
         timeout: 10000,
       })
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
+        'sketch001',
         0
       )
       await solveSketchOperation.dblclick()
@@ -414,33 +435,38 @@ sketch(on = XY) {
     })
 
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await page.waitForTimeout(1000)
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await page.waitForTimeout(1000)
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(
         'coincident([line2.start, line1.end])'
       )
     })
 
     await test.step('Delete sketch block from feature tree and verify code updates', async () => {
-      const op = await toolbar.getFeatureTreeOperation('Solve Sketch', 0)
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch(on')
     })
   })

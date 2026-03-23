@@ -8,17 +8,12 @@ import {
 import {
   createDimensionLine,
   DIMENSION_HIDE_THRESHOLD_PX,
-  HIT_AREA_WIDTH_PX,
   updateDimensionLine,
-  updateLineHitArea,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
-import {
-  DISTANCE_CONSTRAINT_HIT_AREA,
-  DISTANCE_CONSTRAINT_LEADER_LINE,
-} from '@src/clientSideScene/sceneConstants'
-import { type Group, Mesh, Vector3 } from 'three'
+import { DISTANCE_CONSTRAINT_LEADER_LINE } from '@src/clientSideScene/sceneConstants'
+import { type Group, Vector3 } from 'three'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
@@ -75,30 +70,15 @@ export class DistanceConstraintBuilder {
     leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine1 = new Line2(leadGeom1, materials.default.line)
     leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    leadLine1.userData.hitObjects = 'auto'
     group.add(leadLine1)
 
     const leadGeom2 = new LineGeometry()
     leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
     const leadLine2 = new Line2(leadGeom2, materials.default.line)
     leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+    leadLine2.userData.hitObjects = 'auto'
     group.add(leadLine2)
-
-    // Hit areas for click detection (invisible but raycasted)
-    const leadLine1HitArea = new Mesh(
-      this.resources.planeGeometry,
-      materials.hitArea
-    )
-    leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-    leadLine1HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
-    group.add(leadLine1HitArea)
-
-    const leadLine2HitArea = new Mesh(
-      this.resources.planeGeometry,
-      materials.hitArea
-    )
-    leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
-    leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
-    group.add(leadLine2HitArea)
   }
 
   private updateLeaderLines(
@@ -126,29 +106,6 @@ export class DistanceConstraintBuilder {
 
     leadLine1.geometry.setPositions([p1.x, p1.y, 0, leadEnd1.x, leadEnd1.y, 0])
     leadLine2.geometry.setPositions([p2.x, p2.y, 0, leadEnd2.x, leadEnd2.y, 0])
-
-    // Update hit areas for leader lines
-    const leaderHitAreas = group.children.filter(
-      (child) =>
-        child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-        child.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
-    ) as Mesh[]
-    if (leaderHitAreas[0]) {
-      updateLineHitArea(
-        leaderHitAreas[0],
-        p1,
-        leadEnd1,
-        HIT_AREA_WIDTH_PX * scale
-      )
-    }
-    if (leaderHitAreas[1]) {
-      updateLineHitArea(
-        leaderHitAreas[1],
-        p2,
-        leadEnd2,
-        HIT_AREA_WIDTH_PX * scale
-      )
-    }
   }
 }
 

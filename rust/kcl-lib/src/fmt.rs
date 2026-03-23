@@ -1,6 +1,7 @@
 use serde::Serialize;
 
-use crate::{execution::types::NumericType, pretty::NumericSuffix};
+use crate::execution::types::NumericType;
+use crate::pretty::NumericSuffix;
 
 /// For the UI, display a number and its type for debugging purposes. This is
 /// used by TS.
@@ -85,7 +86,8 @@ pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, Format
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+    use kittycad_modeling_cmds::units::UnitAngle;
+    use kittycad_modeling_cmds::units::UnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;

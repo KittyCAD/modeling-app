@@ -1,20 +1,53 @@
 use std::fmt::Write;
 
-use crate::{
-    KclError, ModuleId,
-    parsing::{
-        DeprecationKind, PIPE_OPERATOR,
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
-            BinaryOperator, BinaryPart, Block, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr,
-            FormatOptions, FunctionExpression, Identifier, IfExpression, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, Parameter, PipeExpression, Program,
-            SketchBlock, SketchVar, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
-        },
-        deprecation,
-    },
-};
+use crate::KclError;
+use crate::ModuleId;
+use crate::parsing::DeprecationKind;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::AscribedExpression;
+use crate::parsing::ast::types::Associativity;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Block;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::FormatOptions;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeList;
+use crate::parsing::ast::types::NonCodeMeta;
+use crate::parsing::ast::types::NonCodeNode;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::Parameter;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::deprecation;
 
 #[allow(dead_code)]
 pub fn fmt(input: &str) -> Result<String, KclError> {
@@ -1270,7 +1303,8 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{ModuleId, parsing::ast::types::FormatOptions};
+    use crate::ModuleId;
+    use crate::parsing::ast::types::FormatOptions;
 
     #[test]
     fn test_recast_annotations_without_body_items() {
