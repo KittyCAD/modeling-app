@@ -9,17 +9,21 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-#[cfg(feature = "artifact-graph")]
-use crate::NodePathStep;
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactGraph, CapSubType};
 use crate::ExecOutcome;
 use crate::ExecutorContext;
 use crate::KclError;
 use crate::KclErrorWithOutputs;
+#[cfg(feature = "artifact-graph")]
+use crate::NodePathStep;
 use crate::Program;
 use crate::collections::AhashIndexSet;
 use crate::exec::WarningLevel;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::fmt::format_number_literal;
@@ -3613,7 +3617,7 @@ fn sketch_face_of_artifact_ast_expr(
                         msg: format!("Sketch variable is not a sketch block: {}", sketch_name_expr.name.name),
                     });
                 };
-                let segment_variable_names: Vec<String> = sketch_block
+                let segment_variables: Vec<(String, SourceRange)> = sketch_block
                     .body
                     .items
                     .iter()
@@ -3627,37 +3631,35 @@ fn sketch_face_of_artifact_ast_expr(
                         if !matches!(call.callee.name.name.as_str(), "line" | "arc" | "circle") {
                             return None;
                         }
-                        Some(item.declaration.id.name.clone())
+                        Some((
+                            item.declaration.id.name.clone(),
+                            SourceRange::from(&item.declaration.init),
+                        ))
                     })
                     .collect();
-                if segment_variable_names.is_empty() {
+                if segment_variables.is_empty() {
                     return Err(Error {
                         msg: format!("Could not resolve named sketch segments for region {region_name}"),
                     });
                 }
-                let segment_name = if let Some(segment_name) =
+                let segment_name = if let Some(candidate) =
                     variable_name_from_code_ref_node_path(ast, &source_segment.code_ref)
-                    && segment_variable_names.iter().any(|name| name == &segment_name)
+                    && segment_variables.iter().any(|(name, _)| name == &candidate)
                 {
-                    segment_name
+                    candidate
                 } else {
-                    let segment_index = artifact_graph
-                        .get(&source_segment.path_id)
-                        .and_then(|artifact| match artifact {
-                            Artifact::Path(path) => path.seg_ids.iter().position(|seg_id| *seg_id == source_segment.id),
-                            _ => None,
+                    let source_range = source_segment.code_ref.range;
+                    segment_variables
+                        .iter()
+                        .find(|(_, segment_range)| {
+                            segment_range.module_id() == source_range.module_id()
+                                && segment_range.start() <= source_range.end()
+                                && source_range.start() <= segment_range.end()
                         })
+                        .map(|(name, _)| name.clone())
                         .ok_or_else(|| Error {
                             msg: format!(
-                                "Could not resolve original segment index for selected region wall: {artifact_id:?}"
-                            ),
-                        })?;
-                    segment_variable_names
-                        .get(segment_index)
-                        .cloned()
-                        .ok_or_else(|| Error {
-                            msg: format!(
-                                "Could not map original segment index {segment_index} to a named sketch segment for region {region_name}"
+                                "Could not resolve source segment name for selected region wall: {artifact_id:?}"
                             ),
                         })?
                 };
@@ -7394,12 +7396,12 @@ face = faceOf(cube, face = side)
         let initial_source = "\
 @settings(experimentalFeatures = allow)
 
-sketch002 = sketch(on = YZ) {
+s = sketch(on = YZ) {
   line1 = line(start = [0, 0], end = [0, 1])
   line2 = line(start = [0, 1], end = [1, 1])
   line3 = line(start = [1, 1], end = [0, 0])
 }
-region001 = region(point = [0.1, 0.1], sketch = sketch002)
+region001 = region(point = [0.1, 0.1], sketch = s)
 extrude001 = extrude(region001, length = 5)
 ";
 
@@ -7430,6 +7432,7 @@ extrude001 = extrude(region001, length = 5)
             .await
             .unwrap();
         assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+        assert!(!src_delta.text.contains("region001.tags.s"));
         assert!(!src_delta.text.contains("region001.tags.region001"));
 
         ctx.close().await;
