@@ -1221,6 +1221,10 @@ fn artifacts_to_update(
                 return Ok(return_arr);
             };
             // Each key is a segment in the region.
+            #[expect(
+                clippy::iter_over_hash_type,
+                reason = "This is bad for deterministic output, especially in tests, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
+            )]
             for segment_id in region_mapping.keys() {
                 return_arr.push(Artifact::Segment(Segment {
                     id: ArtifactId::new(*segment_id),
