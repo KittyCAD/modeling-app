@@ -1,10 +1,5 @@
 import toast from 'react-hot-toast'
-import type {
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  Quaternion,
-} from 'three'
+import type { Intersection, Object3D, Quaternion } from 'three'
 
 import {
   BoxGeometry,
@@ -41,7 +36,6 @@ import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 import {
   isQuaternionVertical,
   orthoScale,
-  perspScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import {
@@ -182,8 +176,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { ActorRefFrom } from 'xstate'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
   type updateExtraSegments as updateExtraSegmentsFn,
   type getEventForSegmentSelection as getEventForSegmentSelectionFn,
@@ -204,26 +197,29 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: CommandBarActorType
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
-
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    commandBarActor: CommandBarActorType,
+    getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.kclManager = kclManager
     this.rustContext = rustContext
+    this.commandBarActor = commandBarActor
+    this.getSettings = getSettings
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
@@ -269,11 +265,7 @@ export class SceneEntities {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
-      const factor =
-        (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, segment)) /
-        this.sceneInfra.baseUnitMultiplier
+      const factor = this.sceneInfra.getClientSceneScaleFactor(segment)
       let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
@@ -387,14 +379,11 @@ export class SceneEntities {
       }
     })
     if (this.axisGroup) {
-      const factor =
-        this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
+      const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
+      x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+      y?.scale.set(factor, 1, 1)
       this.updateInfiniteGrid()
     }
     const draftPoint = this.getDraftPoint()
@@ -435,7 +424,6 @@ export class SceneEntities {
     up: [number, number, number],
     sketchPosition?: [number, number, number]
   ) {
-    const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const axisPixelWidth = 1.6
@@ -470,12 +458,9 @@ export class SceneEntities {
     this.axisGroup = new Group()
     const gridRenderer = new InfiniteGridRenderer()
 
-    const factor =
-      this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
-    xAxisMesh?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
-    yAxisMesh?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+    const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
+    xAxisMesh?.scale.set(1, factor, 1)
+    yAxisMesh?.scale.set(factor, 1, 1)
 
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
     this.currentSketchQuaternion &&
@@ -1298,8 +1283,8 @@ export class SceneEntities {
             const snaps = {
               previousArcTag: '',
               negativeTangentDirection,
-              xAxis: !!intersectsXAxis,
-              yAxis: !!intersectsYAxis,
+              xAxis: intersectsXAxis,
+              yAxis: intersectsYAxis,
             }
 
             // This might need to become its own function if we want more
@@ -1369,10 +1354,7 @@ export class SceneEntities {
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_MOCK,
-          {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          },
+          this.kclManager,
           {
             // TODO: understand why this is needed
             skipErrorsOnMockExecution: true,
@@ -1632,10 +1614,7 @@ export class SceneEntities {
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
-        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          rustContext: this.rustContext,
-        })
+        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
@@ -1865,10 +1844,7 @@ export class SceneEntities {
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
@@ -2071,10 +2047,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
       },
@@ -2309,10 +2282,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
       },
@@ -2576,10 +2546,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
           } else {
@@ -2795,10 +2762,7 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
-            kclManager: this.kclManager,
-            rustContext: this.rustContext,
-          })
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }
       },
@@ -2852,6 +2816,8 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
+        // TODO: update the `updateCodeEditor` workflow to allow for writes to file
+        // without execution so that we can drop this stray write to disk
         await this.kclManager.writeToFile()
       },
       onDrag: async ({
@@ -2992,7 +2958,7 @@ export class SceneEntities {
 
   getSnappedDragPoint(
     pos: Vector2,
-    intersects: Intersection<Object3D<Object3DEventMap>>[],
+    intersects: Intersection[],
     mouseEvent: MouseEvent,
     wasmInstance: ModuleType,
     // During draft segment mouse move:
@@ -3004,21 +2970,101 @@ export class SceneEntities {
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
-    const intersectsYAxis = intersects.find(
+    // Note: these could also be calculated without intersects, just by using the mouse position coordinates
+    const intersectsYAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
-    const intersectsXAxis = intersects.find(
+    const intersectsXAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    // Snap to previous segment's tangent direction when drawing a straight segment
-    let snappedToTangent = false
-    let negativeTangentDirection = false
     let snappedToGrid = false
     let snappedToProfileStart = false
+    let negativeTangentDirection = false
+    let snappedToTangent = false
+
+    // Highest priority: try snapping to profileStart to close it
+    const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+      snappedPoint,
+      sketchEntryNodePath
+    )
+    if (snappedToProfileStartResult) {
+      snappedToProfileStart = true
+      snappedPoint = snappedToProfileStartResult
+    } else {
+      // Snap to tangent
+      const snappedToTangentResult = this.trySnapToTangentDirection(
+        snappedPoint,
+        mouseEvent,
+        wasmInstance,
+        intersectsXAxis,
+        intersectsYAxis,
+        currentObject
+      )
+      if (snappedToTangentResult.snappedToTangent) {
+        snappedToTangent = true
+        snappedPoint = snappedToTangentResult.snappedPoint
+        negativeTangentDirection =
+          snappedToTangentResult.negativeTangentDirection
+      } else {
+        // Snap to axes
+        snappedPoint = [
+          intersectsYAxis ? 0 : snappedPoint[0],
+          intersectsXAxis ? 0 : snappedPoint[1],
+        ] as const
+
+        // Snap to grid
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
+
+        // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+        // point might now line up with a profileStart, in which case we want to close the shape.
+        // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
+        // it's now close enough.
+        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+          snappedPoint,
+          sketchEntryNodePath
+        )
+        if (snappedToProfileStartResult) {
+          snappedToProfileStart = true
+          snappedPoint = snappedToProfileStartResult
+        }
+      }
+    }
+
+    return {
+      isSnapped:
+        intersectsYAxis ||
+        intersectsXAxis ||
+        snappedToTangent ||
+        snappedToGrid ||
+        snappedToProfileStart,
+      snappedToTangent,
+      snappedToProfileStart,
+      negativeTangentDirection,
+      snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
+    }
+  }
+
+  // Snap to previous segment's tangent direction when drawing a straight segment
+  private trySnapToTangentDirection(
+    snappedPoint: Coords2d,
+    mouseEvent: MouseEvent,
+    wasmInstance: ModuleType,
+    intersectsXAxis: boolean,
+    intersectsYAxis: boolean,
+    currentObject?: Object3D | Group
+  ) {
+    snappedPoint = [...snappedPoint]
+    let snappedToTangent = false
+    let negativeTangentDirection = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
-    const forceDirectionSnapping = mouseEvent.shiftKey
+    const forceTangentSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
       const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
       const currentIndex =
@@ -3038,25 +3084,23 @@ export class SceneEntities {
             const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
-            // See if snapDirection intersects with any of the axes
             if (intersectsXAxis || intersectsYAxis) {
               let intersectionPoint: Coords2d | undefined
               if (intersectsXAxis && intersectsYAxis) {
-                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
-                intersectionPoint = [0, 0]
+                // Current mouse position is close to the origin (mouse intersects both axes)
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  // Could be either x or y axis line since we're intersecting both
+                  line1: xAxisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
               } else {
-                // Intersects only one axis
+                // Mouse intersects only one axis
                 const axisLine: [Coords2d, Coords2d] = intersectsXAxis
-                  ? [
-                      [0, 0],
-                      [1, 0],
-                    ]
-                  : [
-                      [0, 0],
-                      [0, 1],
-                    ]
+                  ? xAxisLine
+                  : yAxisLine
                 // See if that axis line intersects with the tangent direction
-                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
+                // Note: this includes both positive and negative tangent directions as it checks 2 lines.
                 intersectionPoint = calculateIntersectionOfTwoLines({
                   line1: axisLine,
                   line2Angle: getAngle([0, 0], snapDirection),
@@ -3083,7 +3127,7 @@ export class SceneEntities {
                 true
               )
               if (
-                forceDirectionSnapping ||
+                forceTangentSnapping ||
                 (this.sceneInfra.screenSpaceDistance(
                   closestPoint,
                   snappedPoint
@@ -3105,65 +3149,10 @@ export class SceneEntities {
       }
     }
 
-    if (!snappedToTangent) {
-      // Highest priority: try snapping to profile start to close it
-      if (sketchEntryNodePath) {
-        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-          snappedPoint,
-          sketchEntryNodePath
-        )
-        if (snappedToProfileStartResult.snappedToProfileStart) {
-          snappedToProfileStart = true
-          snappedPoint = snappedToProfileStartResult.point
-        }
-      }
-      if (!snappedToProfileStart) {
-        // If snapping to profileStart didn't occur, try snapping to axes, grid
-
-        // Snap to axes
-        snappedPoint = [
-          intersectsYAxis ? 0 : snappedPoint[0],
-          intersectsXAxis ? 0 : snappedPoint[1],
-        ] as const
-
-        // Snap to grid
-        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-          snappedPoint,
-          mouseEvent
-        ))
-
-        if (sketchEntryNodePath) {
-          // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
-          // point might now line up with a profileStart, in which case we want to close the shape.
-          // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
-          // it's now close enough.
-
-          const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-            snappedPoint,
-            sketchEntryNodePath
-          )
-          if (snappedToProfileStartResult.snappedToProfileStart) {
-            snappedToProfileStart = true
-            snappedPoint = snappedToProfileStartResult.point
-          }
-        }
-      }
-    }
-
     return {
-      isSnapped: !!(
-        intersectsYAxis ||
-        intersectsXAxis ||
-        snappedToTangent ||
-        snappedToGrid ||
-        snappedToProfileStart
-      ),
       snappedToTangent,
-      snappedToProfileStart,
-      negativeTangentDirection,
       snappedPoint,
-      intersectsXAxis,
-      intersectsYAxis,
+      negativeTangentDirection,
     }
   }
 
@@ -3191,7 +3180,13 @@ export class SceneEntities {
     }
   }
   // Same purpose as maybeSnapProfileStartIntersect2d but takes sketchEntryNodePath instead of intersects.
-  maybeSnapToProfileStart(posWorld: Coords2d, sketchEntryNodePath: PathToNode) {
+  maybeSnapToProfileStart(
+    posWorld: Coords2d,
+    sketchEntryNodePath: PathToNode | undefined
+  ) {
+    if (!sketchEntryNodePath) {
+      return undefined
+    }
     const expressionIndex = Number(sketchEntryNodePath[1][0])
     const profileStartGroup = Object.values(this.activeSegments).find((seg) => {
       return (
@@ -3200,10 +3195,7 @@ export class SceneEntities {
       )
     })
 
-    const result = {
-      point: posWorld,
-      snappedToProfileStart: false,
-    }
+    let result: Coords2d | undefined
 
     if (profileStartGroup) {
       // Profile start in baseunit coordinates
@@ -3214,9 +3206,8 @@ export class SceneEntities {
         this.sceneInfra.screenSpaceDistance(posWorld, profileStartPoint) <
         20 * window.devicePixelRatio
 
-      result.snappedToProfileStart = snapped
       if (snapped) {
-        result.point = [...profileStartPoint]
+        result = [...profileStartPoint]
       }
     }
 
@@ -3228,7 +3219,7 @@ export class SceneEntities {
     intersection2d: _intersection2d,
   }: {
     sketchEntryNodePath: PathToNode
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersects: Intersection[]
     intersection2d: Vector2
   }) {
     const intersectsProfileStart = intersects
@@ -3256,11 +3247,11 @@ export class SceneEntities {
     mouseEvent,
     wasmInstance,
   }: {
-    object: Object3D<Object3DEventMap>
+    object: Object3D
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersects: Intersection[]
     draftInfo?: {
       truncatedAst: Node<Program>
       variableDeclarationName: string
@@ -3616,11 +3607,7 @@ export class SceneEntities {
       this.activeSegments[pathToNodeStr] ||
       this.activeSegments[originalPathToNodeStr]
     const type = group?.userData?.type
-    const factor =
-      (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, group)) /
-      this.sceneInfra.baseUnitMultiplier
+    const factor = this.sceneInfra.getClientSceneScaleFactor(group)
     let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
@@ -3795,18 +3782,14 @@ export class SceneEntities {
           const hoveringArrow = selected?.parent?.name === ARROWHEAD
           updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
           updateExtraSegments(parent, 'selected', isSelected)
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3873,18 +3856,12 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent) {
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
-
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -4109,11 +4086,7 @@ export class SceneEntities {
     return {
       group: segmentGroup,
       updater: (group: Group, to: Coords2d, orthoFactor: number) => {
-        const scale =
-          (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-            ? orthoFactor
-            : perspScale(this.sceneInfra.camControls.camera, group)) /
-          this.sceneInfra.baseUnitMultiplier
+        const scale = this.sceneInfra.getClientSceneScaleFactor(group)
         const from = group.userData.from
 
         const straightSegmentBodyDashed = group.children.find(
@@ -4258,7 +4231,7 @@ function sketchFromPathToNode({
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
   const result = variables[varDec?.id?.name || '']
-  if (result?.type === 'Solid') {
+  if (result?.type === 'Solid' && result.value.sketch.creatorType == 'sketch') {
     return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)
@@ -4376,7 +4349,7 @@ function computeSelectionFromSourceRangeAndAST(
 }
 
 function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
-  return (group: Group<Object3DEventMap> | null) => {
+  return (group: Group | null) => {
     if (group?.name !== PROFILE_START) return false
     const groupExpressionIndex = Number(group.userData.pathToNode[1][0])
     const isProfileStartOfCurrentExpr =
@@ -4446,3 +4419,12 @@ function findTangentDirection(segmentGroup: Group, wasmInstance: ModuleType) {
   }
   return tangentDirection
 }
+
+const xAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [1, 0],
+]
+const yAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [0, 1],
+]

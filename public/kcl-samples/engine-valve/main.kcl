@@ -1,5 +1,6 @@
 // Engine Valve
 // A mechanical valve used in internal combustion engines to control intake or exhaust flow
+// Categories: Automotive
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 

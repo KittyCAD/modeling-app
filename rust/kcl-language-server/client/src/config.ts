@@ -37,6 +37,7 @@ export class Config {
   constructor(ctx: vscode.ExtensionContext) {
     this.globalStorageUri = ctx.globalStorageUri
     vscode.workspace.onDidChangeConfiguration(
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- this arg is provided on next line.
       this.onDidChangeConfiguration,
       this,
       ctx.subscriptions

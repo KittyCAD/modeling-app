@@ -455,7 +455,7 @@ description: Artifact commands clock.kcl
           "r": 0.67058825,
           "g": 0.2627451,
           "b": 0.12941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -684,7 +684,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -913,7 +913,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1142,7 +1142,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1371,7 +1371,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1600,7 +1600,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1829,7 +1829,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2058,7 +2058,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2321,7 +2321,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2584,7 +2584,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2847,7 +2847,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3076,7 +3076,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3339,7 +3339,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3568,7 +3568,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3797,7 +3797,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4060,7 +4060,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4289,7 +4289,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4518,7 +4518,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4747,7 +4747,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4976,7 +4976,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -5341,7 +5341,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -5706,7 +5706,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6071,7 +6071,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6300,7 +6300,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6665,7 +6665,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -6894,7 +6894,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -7123,7 +7123,7 @@ description: Artifact commands clock.kcl
           "r": 0.078431375,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -7658,7 +7658,7 @@ description: Artifact commands clock.kcl
           "r": 0.2509804,
           "g": 0.2509804,
           "b": 0.2509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -8063,7 +8063,7 @@ description: Artifact commands clock.kcl
           "r": 0.2509804,
           "g": 0.2509804,
           "b": 0.2509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

@@ -1917,16 +1917,6 @@ export function createArcGeometry({
     !ccw,
     0
   )
-  const arcEnd = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    endAngle,
-    startAngle,
-    ccw,
-    0
-  )
 
   const shape = createLineShape(scale)
   if (!isDashed) {
@@ -1967,6 +1957,16 @@ export function createArcGeometry({
     })
   }
 
+  const arcEnd = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    endAngle,
+    startAngle,
+    ccw,
+    0
+  )
   // Create dashes at the start of the arc
   for (let i = 0; i < dashesAtEachEnd; i++) {
     const t = i / totalDashes

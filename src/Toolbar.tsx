@@ -14,7 +14,6 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { kclManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -23,11 +22,19 @@ import type {
   ToolbarItemResolvedDropdown,
   ToolbarModeName,
 } from '@src/lib/toolbar'
-import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import {
+  isToolbarItemResolvedDropdown,
+  useToolbarConfig,
+} from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { useSignals } from '@preact/signals-react/runtime'
+import { useApp, useSingletons } from '@src/lib/boot'
 
-type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
+type ToolbarProps = { isExecuting: boolean } & Omit<
+  ReturnType<typeof useModelingContext>,
+  'theProject'
+> &
   Pick<
     ReturnType<typeof useNetworkContext>,
     'overallState' | 'immediateState'
@@ -39,6 +46,9 @@ type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
+    const { commands } = useApp()
+    const { kclManager } = useSingletons()
+    const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -46,12 +56,6 @@ const Toolbar_ = memo(
     const buttonBgClassName =
       'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
     const buttonBorderClassName = '!border-transparent'
-
-    const isInTemporaryWorkspace = kclManager.isBufferMode
-
-    const onClickSave = () => {
-      kclManager.exitFromTemporaryWorkspaceMode()
-    }
 
     const sketchPathId = useMemo(() => {
       if (
@@ -75,7 +79,7 @@ const Toolbar_ = memo(
     const disableAllButtons =
       (props.overallState !== NetworkHealthState.Ok &&
         props.overallState !== NetworkHealthState.Weak) ||
-      kclManager.isExecutingSignal.value ||
+      props.isExecuting ||
       props.immediateState.type !==
         EngineConnectionStateType.ConnectionEstablished ||
       !props.isStreamReady ||
@@ -96,17 +100,18 @@ const Toolbar_ = memo(
         modelingState: props.state,
         modelingSend: props.send,
         sketchPathId,
-        editorHasFocus: kclManager.getEditorView()?.hasFocus,
+        editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
         props.state,
         props.send,
-        commandBarActor.send,
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        commands.send,
         sketchPathId,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        kclManager.getEditorView()?.hasFocus,
+
+        kclManager.editorView.hasFocus,
       ]
     )
 
@@ -227,13 +232,14 @@ const Toolbar_ = memo(
     return (
       <menu
         data-current-mode={currentMode}
+        data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
       >
         <ul
           ref={toolbarButtonsRef}
           className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center '
+            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
           }
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
@@ -319,7 +325,7 @@ const Toolbar_ = memo(
                       }
                       name={selectedIcon.title}
                       // aria-description is still in ARIA 1.3 draft.
-                      // eslint-disable-next-line jsx-a11y/aria-props
+
                       aria-description={selectedIcon.description}
                       onClick={() =>
                         selectedIcon.onClick(selectedIcon.callbackProps)
@@ -386,7 +392,7 @@ const Toolbar_ = memo(
                   }
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
+
                   aria-description={itemConfig.description}
                   aria-pressed={itemConfig.isActive}
                   disabled={
@@ -425,20 +431,6 @@ const Toolbar_ = memo(
           })}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
-          {isInTemporaryWorkspace && (
-            <div className="flex flex-row gap-2 justify-center">
-              <div className="mt-2 animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg flex items-center">
-                Temporary workspace
-              </div>
-              <button
-                data-testid="tws-save"
-                onClick={onClickSave}
-                className="mt-2 py-1 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
-              >
-                Save
-              </button>
-            </div>
-          )}
           {props.state.matches('Sketch no face') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
@@ -449,8 +441,8 @@ const Toolbar_ = memo(
           {props.state.matches('sketchSolveMode') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Sketch mode revamp, expect bugs, disable again in settings if
-                you want normal sketch mode
+                Sketch solve mode is experimental. Disable in settings if you
+                want classic sketch mode.
               </p>
             </div>
           )}
@@ -459,6 +451,7 @@ const Toolbar_ = memo(
     )
   },
   (oldP, newP) =>
+    oldP.isExecuting === newP.isExecuting &&
     oldP.state.value === newP.state.value &&
     oldP.overallState === newP.overallState &&
     oldP.immediateState?.type === newP.immediateState?.type &&
@@ -674,9 +667,12 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
-  const { state, send, context } = useModelingContext()
+  const { kclManager } = useSingletons()
+  const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
+  useSignals()
+
   return (
     <Toolbar_
       state={state}
@@ -685,7 +681,9 @@ export function Toolbar() {
       overallState={overallState}
       immediateState={immediateState}
       isStreamReady={isStreamReady}
+      actor={actor}
       isStreamAcceptingInput={isStreamAcceptingInput}
+      isExecuting={kclManager.isExecutingSignal.value}
     />
   )
 }

@@ -1,5 +1,6 @@
 // Color Cube
 // This is a color cube centered about the origin. It is used to help determine orientation in the scene.
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

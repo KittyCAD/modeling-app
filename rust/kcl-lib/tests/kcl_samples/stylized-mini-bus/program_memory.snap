@@ -40,6 +40,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -115,6 +116,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -122,7 +125,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -273,6 +275,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -280,7 +284,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -358,6 +361,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -433,6 +437,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -440,7 +446,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -518,13 +523,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": -900.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -623,6 +629,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -630,7 +638,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -717,6 +724,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -792,6 +800,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -799,7 +809,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -877,13 +886,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": -1000.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -982,6 +992,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": -1000.0,
@@ -989,7 +1001,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1076,6 +1087,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1151,6 +1163,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1158,7 +1172,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1255,6 +1268,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1364,6 +1378,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1371,7 +1387,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1468,6 +1483,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1577,6 +1593,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1584,7 +1602,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1658,6 +1675,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1688,6 +1706,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 10,
               "origin": {
                 "x": -1850.0,
                 "y": 0.0,
@@ -1695,7 +1715,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1749,6 +1768,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1779,6 +1799,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 10,
               "origin": {
                 "x": -1850.0,
                 "y": 0.0,
@@ -1786,7 +1808,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1857,13 +1878,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": -1850.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -1920,6 +1942,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 10,
             "origin": {
               "x": -1850.0,
               "y": 0.0,
@@ -1927,7 +1951,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2001,6 +2024,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 10,
             "origin": {
               "x": -1850.0,
               "y": 0.0,
@@ -2008,7 +2033,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2065,13 +2089,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": -1850.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2165,6 +2190,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2274,6 +2300,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2281,7 +2309,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2387,6 +2414,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2496,6 +2524,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2503,7 +2533,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2586,6 +2615,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2661,6 +2691,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -2668,7 +2700,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2810,6 +2841,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -2817,7 +2850,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2898,6 +2930,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2973,6 +3006,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 1850.0,
                 "y": 0.0,
@@ -2980,7 +3015,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3034,6 +3068,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3109,6 +3144,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 1850.0,
                 "y": 0.0,
@@ -3116,7 +3153,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3205,13 +3241,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 1850.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3313,6 +3350,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": 1850.0,
               "y": 0.0,
@@ -3320,7 +3359,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -3439,6 +3477,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": 1850.0,
               "y": 0.0,
@@ -3446,7 +3486,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -3503,13 +3542,14 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 1850.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3587,6 +3627,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3642,6 +3683,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 6,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3649,7 +3692,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3711,6 +3753,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3741,6 +3784,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 6,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3748,7 +3793,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3822,6 +3866,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3877,6 +3922,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3884,7 +3931,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3946,6 +3992,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3976,6 +4023,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3983,7 +4032,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4057,6 +4105,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4112,6 +4161,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4119,7 +4170,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4181,6 +4231,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4211,6 +4262,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4218,7 +4271,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4292,6 +4344,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4347,6 +4400,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4354,7 +4409,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4416,6 +4470,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4446,6 +4501,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4453,7 +4510,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

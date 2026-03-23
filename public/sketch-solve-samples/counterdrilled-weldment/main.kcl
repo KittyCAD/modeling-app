@@ -1,0 +1,159 @@
+// Counterdrilled Weldment
+// A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
+// Categories: Manufacturing, Construction
+
+// Set units
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+// Define parameters
+boltSpacingX = 5
+boltSpacingY = 3
+boltDiameter = 1 / 4
+counterdrillDiameter = 7 / 16
+counterdrillDepth = 3 / 16
+tubeInnerDiameter = 1 + 1 / 4
+tubeThickness = 0.115
+tubeHeight = 2
+stockThickness = .5
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterdrill diameter to the bolt spacing
+blockLength = boltSpacingX + boltDiameter * 6
+blockWidth = boltSpacingY + boltDiameter * 6
+
+// Draw the base plate
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -3.25in, var -2.25in], end = [var 3.25in, var -2.25in])
+  line2 = line(start = [var 3.25in, var -2.25in], end = [var 3.25in, var 2.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3.25in, var 2.25in], end = [var -3.25in, var 2.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -3.25in, var 2.25in], end = [var -3.25in, var -2.25in])
+  coincident([line3.end, line4.start])
+}
+
+// Define hole positions (face-local: note X/Y swapped vs world XY)
+holePositionsSwapped = [
+  [-boltSpacingY / 2, -boltSpacingX / 2],
+  [-boltSpacingY / 2, boltSpacingX / 2],
+  [boltSpacingY / 2, -boltSpacingX / 2],
+  [boltSpacingY / 2, boltSpacingX / 2]
+]
+
+region001 = region(segments = [plateSketch.line1, plateSketch.line2])
+// 1) Extrude plate
+plateTopExtrude = extrude(region001, length = stockThickness, tagEnd = $plateTop)
+
+// 2) Chamfer perimeter (separate from extrude)
+plateChamfered = chamfer(
+  plateTopExtrude,
+  length = boltDiameter * 2,
+  tags = [
+    getNextAdjacentEdge(rectangleSegmentB001),
+    getNextAdjacentEdge(rectangleSegmentA001),
+    getNextAdjacentEdge(rectangleSegmentC001),
+    getNextAdjacentEdge(rectangleSegmentD001)
+  ],
+)
+
+// 3) Hole pattern (separate statement for readability)
+plate = hole::holes(
+  plateChamfered,
+  face = plateTop,
+  cutsAt = holePositionsSwapped,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = stockThickness, diameter = boltDiameter),
+  holeType = hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
+)
+
+// Drill a small pin hole in the side of the tube (separate extrude)
+pinholeSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 0.13in, var 2.2in], center = [var 0in, var 2.2in])
+}
+region002 = region(segments = [pinholeSketch.circle1])
+pinhole = extrude(region002, length = -10)
+
+// Model the central tube and subtract the pin hole (separate extrude)
+centralTubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
+  circle1 = circle(start = [var 0.74in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [centralTubeSketch.circle1])
+centralTubeSolid = extrude(region003, length = tubeHeight)
+centralTube = subtract([centralTubeSolid], tools = [pinhole])
+
+// Inline fins (no extrude piping)
+// Diagonal plane helper for i = 1
+finDiagPlane1 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [
+    boltSpacingX / 2 * 1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+finProfile1 = sketch(on = finDiagPlane1) {
+  line1 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
+  line2 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
+  coincident([line4.end, line5.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line5)
+}
+region004 = region(segments = [finProfile1.line1, finProfile1.line2])
+finSolid1 = extrude(region004, length = tubeThickness, symmetric = true)
+
+// Pattern to opposite side around Z axis
+finPair1 = patternCircular3d(
+  finSolid1,
+  instances = 2,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)
+
+// Diagonal plane helper for i = -1
+finDiagPlane2 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [
+    boltSpacingX / 2 * -1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+finProfile2 = sketch(on = finDiagPlane2) {
+  line1 = line(start = [var 0.74in, var 0.5in], end = [var 2.48in, var 0.5in])
+  line2 = line(start = [var 2.48in, var 0.5in], end = [var 2.48in, var 0.65in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.48in, var 0.65in], end = [var 0.89in, var 2.1in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.89in, var 2.1in], end = [var 0.74in, var 2.1in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.74in, var 2.1in], end = [var 0.74in, var 0.5in])
+  coincident([line4.end, line5.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line5)
+}
+region005 = region(segments = [finProfile2.line1, finProfile2.line2])
+finSolid2 = extrude(region005, length = tubeThickness, symmetric = true)
+
+// Pattern to opposite side around Z axis
+finPair2 = patternCircular3d(
+  finSolid2,
+  instances = 2,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)
+

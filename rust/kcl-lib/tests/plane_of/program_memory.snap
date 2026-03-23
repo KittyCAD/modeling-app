@@ -8,6 +8,7 @@ description: Variables in memory after executing plane_of.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
       "objectId": 1,
       "origin": {
         "x": 0.0,
@@ -15,7 +16,6 @@ description: Variables in memory after executing plane_of.kcl
         "z": 1828.8,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -66,6 +66,7 @@ description: Variables in memory after executing plane_of.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -124,6 +125,8 @@ description: Variables in memory after executing plane_of.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -131,7 +134,6 @@ description: Variables in memory after executing plane_of.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

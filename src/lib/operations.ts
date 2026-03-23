@@ -1,6 +1,5 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -11,6 +10,7 @@ import {
 } from '@src/lang/modifyAst/faces'
 import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
   retrieveTagDeclaratorFromOpArg,
   SWEEP_CONSTANTS,
   SWEEP_MODULE,
@@ -18,6 +18,7 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
+  getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { StdLibCallOp } from '@src/lang/queryAst'
@@ -27,10 +28,7 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
-  type CallExpressionKw,
-  type PipeExpression,
   type Program,
-  type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
@@ -41,22 +39,30 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import { stripQuotes } from '@src/lib/utils'
+import { isArray, stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 import {
-  KCL_PRELUDE_BODY_TYPE_SOLID,
-  KCL_PRELUDE_BODY_TYPE_SURFACE,
   type KclPreludeBodyType,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeExtrudeMethod,
+  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { ActorRefFrom } from 'xstate'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import type { KclManager } from '@src/lang/KclManager'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -404,19 +410,21 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     }
   }
 
+  // hideSeams argument from a string to boolean
+  let hideSeams: boolean | undefined
+  if ('hideSeams' in operation.labeledArgs && operation.labeledArgs.hideSeams) {
+    hideSeams =
+      code.slice(
+        ...operation.labeledArgs.hideSeams.sourceRange.map(boundToUtf16)
+      ) === 'true'
+  }
+
   // bodyType argument from a string
   let bodyType: KclPreludeBodyType | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
-    const result = code.slice(
-      ...operation.labeledArgs.bodyType.sourceRange.map(boundToUtf16)
-    )
-    if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
-      bodyType = KCL_PRELUDE_BODY_TYPE_SOLID
-    } else if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
-      bodyType = KCL_PRELUDE_BODY_TYPE_SURFACE
-    } else {
-      return { reason: "Couldn't retrieve bodyType argument" }
-    }
+    const res = retrieveBodyTypeFromOpArg(operation.labeledArgs.bodyType, code)
+    if (err(res)) return { reason: res.message }
+    bodyType = res
   }
 
   // 3. Assemble the default argument values for the command,
@@ -434,6 +442,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     twistAngleStep,
     twistCenter,
     method,
+    hideSeams,
     bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -540,6 +549,14 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // bodyType argument from a string
+  let bodyType: KclPreludeBodyType | undefined
+  if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
+    const res = retrieveBodyTypeFromOpArg(operation.labeledArgs.bodyType, code)
+    if (err(res)) return { reason: res.message }
+    bodyType = res
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -550,6 +567,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     baseCurveIndex,
     tagStart,
     tagEnd,
+    bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1089,6 +1107,14 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // bodyType argument from a string
+  let bodyType: KclPreludeBodyType | undefined
+  if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
+    const res = retrieveBodyTypeFromOpArg(operation.labeledArgs.bodyType, code)
+    if (err(res)) return { reason: res.message }
+    bodyType = res
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1099,6 +1125,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     relativeTo,
     tagStart,
     tagEnd,
+    bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1349,6 +1376,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // bodyType argument from a string
+  let bodyType: KclPreludeBodyType | undefined
+  if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
+    const res = retrieveBodyTypeFromOpArg(operation.labeledArgs.bodyType, code)
+    if (err(res)) return { reason: res.message }
+    bodyType = res
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1362,6 +1397,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     bidirectionalAngle,
     tagStart,
     tagEnd,
+    bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1654,13 +1690,13 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
-    (arg) => ('error' in arg ? undefined : arg)
-  )
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1670,6 +1706,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     precision,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1715,13 +1752,13 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   // Extract optional parameters
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
-    'error' in arg ? undefined : arg
-  )
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1730,11 +1767,84 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     name,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditSplit: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Boolean Split',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  if (!operation.unlabeledArg) {
+    return { reason: "Couldn't retrieve operation arguments" }
+  }
+
+  const targets = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    artifactGraph
+  )
+  if (err(targets)) {
+    return { reason: "Couldn't retrieve targets" }
+  }
+
+  let tools: Selections | undefined
+  const toolsArg = operation.labeledArgs?.tools
+  if (toolsArg) {
+    const toolsResult = retrieveSelectionsFromOpArg(toolsArg, artifactGraph)
+    if (err(toolsResult)) {
+      return { reason: "Couldn't retrieve tools" }
+    }
+    tools = toolsResult
+  }
+
+  let merge: boolean | undefined
+  const mergeArg = operation.labeledArgs?.merge
+  if (mergeArg) {
+    const mergeValue = code.slice(
+      ...mergeArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (mergeValue !== 'true' && mergeValue !== 'false') {
+      return { reason: "Couldn't retrieve merge argument" }
+    }
+    merge = mergeValue === 'true'
+  }
+
+  let keepTools: boolean | undefined
+  const keepToolsArg = operation.labeledArgs?.keepTools
+  if (keepToolsArg) {
+    const keepToolsValue = code.slice(
+      ...keepToolsArg.sourceRange.map((r) => toUtf16(r, code))
+    )
+    if (keepToolsValue !== 'true' && keepToolsValue !== 'false') {
+      return { reason: "Couldn't retrieve keepTools argument" }
+    }
+    keepTools = keepToolsValue === 'true'
+  }
+
+  const argDefaultValues: ModelingCommandSchema['Boolean Split'] = {
+    targets,
+    tools,
+    merge,
+    keepTools,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -1750,6 +1860,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Appearance',
     icon: 'text',
     prepareToEdit: prepareToEditAppearance,
+  },
+  blend: {
+    label: 'Blend',
+    icon: 'blend',
   },
   chamfer: {
     label: 'Chamfer',
@@ -1779,6 +1893,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
     prepareToEdit: prepareToEditFillet,
+  },
+  flipSurface: {
+    label: 'Flip Surface',
+    icon: 'flipSurface',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   'gdt::datum': {
     label: 'Datum',
@@ -1889,6 +2009,92 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  deleteFace: {
+    label: 'Delete Face',
+    icon: 'deleteFace',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  angle: {
+    label: 'Angle Constraint',
+    icon: 'angle',
+  },
+  arc: {
+    label: 'Arc',
+    icon: 'arc',
+  },
+  circle: {
+    label: 'Circle',
+    icon: 'circle',
+  },
+  coincident: {
+    label: 'Coincident Constraint',
+    icon: 'coincident',
+  },
+  concentric: {
+    label: 'Concentric Constraint',
+    icon: 'concentric',
+  },
+  diameter: {
+    label: 'Diameter Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  distance: {
+    label: 'Distance Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  equalLength: {
+    label: 'Equal Length Constraint',
+    icon: 'equal',
+  },
+  fixed: {
+    label: 'Fixed Constraint',
+    icon: 'fix',
+  },
+  horizontal: {
+    label: 'Horizontal Constraint',
+    icon: 'horizontal',
+  },
+  line: {
+    label: 'Line',
+    icon: 'line',
+  },
+  midpoint: {
+    label: 'Midpoint Constraint',
+    icon: 'midpoint',
+  },
+  normal: {
+    label: 'Normal Constraint',
+    icon: 'normal',
+  },
+  parallel: {
+    label: 'Parallel Constraint',
+    icon: 'parallel',
+  },
+  perpendicular: {
+    label: 'Perpendicular Constraint',
+    icon: 'perpendicular',
+  },
+  point: {
+    label: 'Point',
+    icon: 'oneDot',
+  },
+  radius: {
+    label: 'Radius Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  symmetric: {
+    label: 'Symmetric Constraint',
+    icon: 'symmetry',
+  },
+  tangent: {
+    label: 'Tangent Constraint',
+    icon: 'tangent',
+  },
+  vertical: {
+    label: 'Vertical Constraint',
+    icon: 'vertical',
+  },
   'hole::hole': {
     label: 'Hole',
     icon: 'hole',
@@ -1896,10 +2102,21 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  'hole::holes': {
+    label: 'Holes',
+    icon: 'hole',
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
     prepareToEdit: prepareToEditSketchSolve,
+  },
+  split: {
+    label: 'Split',
+    icon: 'split',
+    supportsAppearance: true,
+    supportsTransform: true,
+    prepareToEdit: prepareToEditSplit,
   },
   startSketchOn: {
     label: 'Sketch',
@@ -1976,7 +2193,31 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
-type NestedOpList = (Operation | Operation[])[]
+export type NestedOpList = (Operation | Operation[])[]
+
+function getSketchBlockOperationKey(op: Operation): string | null {
+  if (!('nodePath' in op)) {
+    return null
+  }
+  const sketchBlockIndex = op.nodePath.steps.findIndex(
+    (step) => step.type === 'SketchBlock'
+  )
+  if (sketchBlockIndex < 0) {
+    return null
+  }
+  return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex + 1))
+}
+
+export function isSketchBlockOperationGroup(items: Operation[]): boolean {
+  if (items.length === 0) {
+    return false
+  }
+  const firstKey = getSketchBlockOperationKey(items[0])
+  if (!firstKey) {
+    return false
+  }
+  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
+}
 
 /**
  * Given an operations list, group streaks of provided types
@@ -2026,6 +2267,53 @@ export function groupOperationTypeStreaks(
   // Flush any remaining streak
   flushStreak()
 
+  return result
+}
+
+/**
+ * Given a list that may already contain grouped operation streaks, group
+ * contiguous operations that belong to the same sketch block.
+ */
+export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
+  const result: NestedOpList = []
+  let currentSketchKey: string | null = null
+  let currentSketchOps: Operation[] = []
+
+  const flushSketchOps = () => {
+    if (currentSketchOps.length === 0) {
+      return
+    }
+    result.push([...currentSketchOps])
+    currentSketchOps = []
+    currentSketchKey = null
+  }
+
+  for (const item of opList) {
+    if (isArray(item)) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    const sketchKey = getSketchBlockOperationKey(item)
+    if (!sketchKey) {
+      flushSketchOps()
+      result.push(item)
+      continue
+    }
+
+    if (currentSketchKey === null || currentSketchKey === sketchKey) {
+      currentSketchKey = sketchKey
+      currentSketchOps.push(item)
+      continue
+    }
+
+    flushSketchOps()
+    currentSketchKey = sketchKey
+    currentSketchOps.push(item)
+  }
+
+  flushSketchOps()
   return result
 }
 
@@ -2114,8 +2402,17 @@ export function getOperationVariableName(
     return undefined
   }
 
+  // Handle inner sketch block variables
+  if (
+    op.type === 'StdLibCall' &&
+    op.nodePath.steps.some((s) => s.type === 'SketchBlock')
+  ) {
+    return undefined
+  }
+
   if (
     op.type !== 'StdLibCall' &&
+    op.type !== 'SketchSolve' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
     !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
@@ -2128,9 +2425,6 @@ export function getOperationVariableName(
 
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
-  if (pathToNode.length === 0) {
-    return undefined
-  }
 
   // If this is a module instance, the variable name is the import alias.
   if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
@@ -2153,52 +2447,7 @@ export function getOperationVariableName(
   }
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
-  const call = getNodeFromPath<CallExpressionKw>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'CallExpressionKw'
-  )
-  if (err(call) || call.node.type !== 'CallExpressionKw') {
-    return undefined
-  }
-  // Find the var name from the variable declaration.
-  const varDec = getNodeFromPath<VariableDeclaration>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
-  )
-  if (err(varDec)) {
-    return undefined
-  }
-  if (varDec.node.type !== 'VariableDeclaration') {
-    // There's no variable declaration for this call.
-    return undefined
-  }
-  const varName = varDec.node.declaration.id.name
-  // If the operation is a simple assignment, we can use the variable name.
-  if (varDec.node.declaration.init === call.node) {
-    return varName
-  }
-  // If the AST node is in a pipe expression, we can only use the variable
-  // name if it's the last operation in the pipe.
-  const pipe = getNodeFromPath<PipeExpression>(
-    program,
-    pathToNode,
-    wasmInstance,
-    'PipeExpression'
-  )
-  if (err(pipe)) {
-    return undefined
-  }
-  if (
-    pipe.node.type === 'PipeExpression' &&
-    pipe.node.body[pipe.node.body.length - 1] === call.node
-  ) {
-    return varName
-  }
-  return undefined
+  return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
 }
 
 /**
@@ -2216,6 +2465,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
+  isNotHideOperation,
 ]
 
 /**
@@ -2281,6 +2531,20 @@ function isNotUserFunctionWithNoOperations(
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
+}
+
+/**
+ * A filter to exclude `hide()` operations from a list of operations.
+ */
+function isNotHideOperation(ops: Operation[]): Operation[] {
+  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+}
+
+/**
+ * Filter Operations list to just hide() calls
+ */
+export function getHideOperations(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type === 'StdLibCall' && op.name === 'hide')
 }
 
 export interface EnterEditFlowProps {
@@ -2706,6 +2970,20 @@ async function prepareToEditAppearance({
     roughness = result
   }
 
+  let opacity: KclCommandValue | undefined
+  if (operation.labeledArgs.opacity) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.opacity.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve opacity argument" }
+    }
+    opacity = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2714,10 +2992,121 @@ async function prepareToEditAppearance({
     color,
     metalness,
     roughness,
+    opacity,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
     argDefaultValues,
   }
+}
+
+export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+export function getHideOpByArtifactId(
+  ops: Operation[],
+  searchId: string
+): HideOperation | undefined {
+  const found = ops.find((op) => {
+    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+      return undefined
+    }
+    if (op.unlabeledArg?.value.type === 'Array') {
+      const found = op.unlabeledArg.value.value.find(
+        (a) =>
+          'value' in a &&
+          typeof a.value === 'object' &&
+          'artifactId' in a.value &&
+          typeof a.value?.artifactId === 'string' &&
+          a.value.artifactId === searchId
+      )
+
+      return found ? op : undefined
+    } else if (
+      op.unlabeledArg?.value &&
+      'value' in op.unlabeledArg.value &&
+      op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value === 'object' &&
+      'artifactId' in op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
+      op.unlabeledArg.value.value.artifactId
+    ) {
+      return op.unlabeledArg.value.value.artifactId === searchId
+        ? op
+        : undefined
+    }
+    return undefined
+  })
+
+  return found as HideOperation | undefined
+}
+
+export function onHide(props: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+}) {
+  const selection = props.modelingActor.getSnapshot().context.selectionRanges
+
+  props.modelingActor.send({
+    type: 'Hide',
+    data: {
+      objects: selection,
+    },
+  })
+}
+
+export async function onUnhide(props: {
+  hideOperation: HideOperation
+  targetArtifact: Artifact
+  kclManager: KclManager
+}) {
+  if (props.hideOperation.unlabeledArg === null) {
+    return new Error('Missing unlabeled arg for hide operation')
+  }
+  let modifiedAst = structuredClone(props.kclManager.ast)
+  const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+
+  if (
+    props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    'codeRef' in props.targetArtifact
+  ) {
+    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
+    // Multi-item case: remove that target artifact's name
+    const termToDelete = getVariableNameFromNodePath(
+      pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
+      modifiedAst,
+      wasmInstance
+    )
+    if (!termToDelete) {
+      return new Error(
+        'Variable name to delete not found while trying to unhide'
+      )
+    }
+
+    const deleteResult = deleteTermFromUnlabeledArgumentArray(
+      props.kclManager.ast,
+      pathToNode,
+      wasmInstance,
+      termToDelete
+    )
+    if (err(deleteResult)) {
+      return deleteResult
+    }
+    modifiedAst = deleteResult
+  } else {
+    // Single item case: Delete the node
+    const result = deleteTopLevelStatement(modifiedAst, pathToNode)
+    if (err(result)) {
+      return result
+    }
+  }
+
+  return updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    props.kclManager,
+    {
+      focusPath: [],
+    }
+  )
 }

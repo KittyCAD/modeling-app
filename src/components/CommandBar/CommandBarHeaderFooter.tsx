@@ -7,16 +7,13 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type {
+  CommandArgument,
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -30,13 +27,18 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
-  const commandBarState = useCommandBarState()
+  const { commands, project } = useApp()
+  const commandBarState = commands.useState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
-  const nonHiddenArgs = useMemo(() => {
+  const nonHiddenArgs = useMemo<
+    Record<string, CommandArgument<unknown>> | undefined
+  >(() => {
     if (!selectedCommand?.args) return undefined
-    const s = { ...selectedCommand.args }
+    const s = {
+      ...selectedCommand.args,
+    } as Record<string, CommandArgument<unknown>>
     for (const [name, arg] of Object.entries(s)) {
       const { isHidden } = evaluateCommandBarArg(
         name,
@@ -88,7 +90,7 @@ function CommandBarHeaderFooter({
         const argName = Object.keys(nonHiddenArgs)[parseInt(b.keys[0], 10) - 1]
         const arg = nonHiddenArgs[argName]
         if (!argName || !arg) return
-        commandBarActor.send({
+        commands.send({
           type: 'Change current argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -143,7 +145,14 @@ function CommandBarHeaderFooter({
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue !== undefined ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 
@@ -156,7 +165,7 @@ function CommandBarHeaderFooter({
                     type="button"
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
-                      commandBarActor.send({
+                      commands.send({
                         type: isReviewing
                           ? 'Edit argument'
                           : 'Change current argument',
@@ -181,14 +190,16 @@ function CommandBarHeaderFooter({
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
-                      {argValue ? (
-                        arg.inputType === 'selection' ||
-                        arg.inputType === 'selectionMixed' ? (
+                      {argValue !== undefined ? (
+                        project?.executingEditor.value &&
+                        (arg.inputType === 'selection' ||
+                          arg.inputType === 'selectionMixed') ? (
                           getSelectionTypeDisplayText(
-                            kclManager.astSignal.value,
+                            project.executingEditor.value.astSignal.value,
                             argValue as Selections
                           )
-                        ) : arg.inputType === 'kcl' ? (
+                        ) : arg.inputType === 'kcl' &&
+                          (argValue as KclCommandValue).valueCalculated ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,
                             4
@@ -197,6 +208,8 @@ function CommandBarHeaderFooter({
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'boolean' ? (
+                          String(argValue)
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

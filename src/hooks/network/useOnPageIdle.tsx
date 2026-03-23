@@ -1,10 +1,5 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  useSettings,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -16,10 +11,12 @@ export const useOnPageIdle = ({
   startCallback: () => void
   idleCallback: () => void
 }) => {
-  const settings = useSettings()
+  const { settings } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsValues = settings.useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
-    settings.app.streamIdleMode.current
+    settingsValues.app.streamIdleMode.current
   )
   const { state: modelingMachineState } = useModelingContext()
   const IDLE_TIME_MS = Number(streamIdleMode)
@@ -49,7 +46,7 @@ export const useOnPageIdle = ({
         intervalId.current = null
       }
     }
-  }, [])
+  }, [kclManager])
 
   useEffect(() => {
     timeoutStart.current = streamIdleMode ? Date.now() : null
@@ -84,26 +81,32 @@ export const useOnPageIdle = ({
           ) {
             timeoutStart.current = null
             try {
-              await sceneInfra.camControls.saveRemoteCameraState()
+              await kclManager.sceneInfra.camControls.saveRemoteCameraState()
             } catch (e) {
               console.warn('unable to save old camera state on idle', e)
-              sceneInfra.camControls.clearOldCameraState()
+              kclManager.sceneInfra.camControls.clearOldCameraState()
             }
-            console.log(sceneInfra.camControls.oldCameraState)
+            console.log(kclManager.sceneInfra.camControls.oldCameraState)
             console.warn('detected idle, tearing down connection.')
             EngineDebugger.addLog({
               label: 'useOnPageIdle',
               message: 'Calling tearDown()',
             })
             // We do a full tear down at the moment.
-            engineCommandManager.tearDown()
+            kclManager.engineCommandManager.tearDown()
             idleCallback()
           }
         }
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [IDLE_TIME_MS, idleCallback, modelingMachineState])
+  }, [
+    IDLE_TIME_MS,
+    idleCallback,
+    modelingMachineState,
+    kclManager.engineCommandManager,
+    kclManager.sceneInfra.camControls,
+  ])
 
   useEffect(() => {
     if (!streamIdleMode) return

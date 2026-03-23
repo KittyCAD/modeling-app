@@ -36,6 +36,7 @@ impl<'a> WalkForNames<'a> {
         }
     }
 
+    #[must_use]
     fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
         match self {
             WalkForNames::All => WalkForNames::Selected(names.collect()),
@@ -85,29 +86,13 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
     result.description = description;
 
-    'items: for n in &parsed.body {
+    for n in &parsed.body {
         if n.visibility() != ItemVisibility::Export {
             continue;
         }
         match n {
             crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
                 crate::parsing::ast::types::ImportPath::Std { path } => {
-                    // Just hide modules where the import is marked as experimental.
-                    for attr in &import.outer_attrs {
-                        if let Annotation {
-                            name: None,
-                            properties: Some(props),
-                            ..
-                        } = &attr.inner
-                        {
-                            for p in props {
-                                if p.key.name == annotations::EXPERIMENTAL {
-                                    continue 'items;
-                                }
-                            }
-                        }
-                    }
-
                     let m = match &import.selector {
                         ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
                         ImportSelector::None { .. } => {
@@ -125,7 +110,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         )?),
                     };
                     if let Some(m) = m {
-                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
+                        let key = format!("M:{}", &m.qual_name);
+                        let mut dd = DocData::Mod(m);
+                        dd.with_meta(&import.outer_attrs);
+                        result.children.insert(key, dd);
                     }
                 }
                 p => return Err(format!("Unexpected import: `{p}`")),
@@ -272,6 +260,15 @@ impl DocData {
             DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
             DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
             DocData::Mod(_) => false,
+        }
+    }
+
+    pub fn is_experimental(&self) -> bool {
+        match self {
+            DocData::Fn(f) => f.properties.experimental,
+            DocData::Const(c) => c.properties.experimental,
+            DocData::Ty(t) => t.properties.experimental,
+            DocData::Mod(d) => d.properties.experimental,
         }
     }
 
@@ -459,6 +456,7 @@ pub struct ModData {
     /// The description of the module.
     pub description: Option<String>,
     pub module_name: String,
+    pub properties: Properties,
 
     pub children: IndexMap<String, DocData>,
 }
@@ -478,6 +476,13 @@ impl ModData {
             description: None,
             children: IndexMap::new(),
             module_name,
+            properties: Properties {
+                exported: false,
+                deprecated: false,
+                experimental: false,
+                doc_hidden: false,
+                impl_kind: Default::default(),
+            },
         }
     }
 
@@ -645,6 +650,8 @@ impl FnData {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "split" {
+            return "split([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract2d" {
@@ -1238,7 +1245,7 @@ impl ApplyMeta for ModData {
     }
 
     fn experimental(&mut self, experimental: bool) {
-        assert!(!experimental);
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1314,9 +1321,21 @@ impl ApplyMeta for ArgData {
 
 #[cfg(test)]
 mod test {
+    use std::path::{Path, PathBuf};
+
     use kcl_derive_docs::{for_all_example_test, for_each_example_test};
 
     use super::*;
+
+    fn stdlib_module_path(module_name: &str) -> PathBuf {
+        let file_stem = match module_name {
+            "std" | "" => "prelude",
+            other => other,
+        };
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("std")
+            .join(format!("{file_stem}.kcl"))
+    }
 
     #[test]
     fn smoke() {
@@ -1410,15 +1429,26 @@ mod test {
             );
         };
 
+        let source_path = stdlib_module_path(&d.module_name);
+        let owner_name = d.qual_name.as_str();
         for (i, eg) in d.examples.iter().enumerate() {
             if i != number {
                 continue;
             }
+            eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
+            eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
             let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
-                    panic!("Error testing example {}{i}: {}", d.name, e.error.message());
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
                 }
-                Err(other_err) => panic!("{}", other_err),
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
                 Ok(img) => img,
             };
             if eg.1.norun {

@@ -23,6 +23,7 @@ use crate::{
     engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
+    log::logln,
 };
 
 #[derive(Debug, PartialEq)]
@@ -309,6 +310,7 @@ impl EngineConnection {
                             }) => {
                                 let mut sd = session_data2.write().await;
                                 sd.replace(session.clone());
+                                logln!("API Call ID: {}", session.api_call_id);
                             }
                             WebSocketResponse::Failure(FailureWebSocketResponse {
                                 success: _,
@@ -510,7 +512,7 @@ impl EngineManager for EngineConnection {
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine_hangup(KclErrorDetails::new(
                         "Modeling command failed: websocket closed early".to_string(),
                         vec![source_range],
                     )));

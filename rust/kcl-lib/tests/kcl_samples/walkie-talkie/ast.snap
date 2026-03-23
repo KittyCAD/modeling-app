@@ -36,8 +36,6 @@ description: Result of parsing walkie-talkie.kcl
           "filename": "body.kcl"
         },
         "preComments": [
-          "",
-          "",
           "// import parts and parameters"
         ],
         "selector": {
@@ -203,8 +201,6 @@ description: Result of parsing walkie-talkie.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Import the body"
         ],
         "start": 0,
@@ -432,33 +428,12 @@ description: Result of parsing walkie-talkie.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "1": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Import the case",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Import the antenna"
         ],
         "start": 0,
@@ -601,30 +576,14 @@ description: Result of parsing walkie-talkie.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "1": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Import the talk button",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Import the case"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -819,30 +778,14 @@ description: Result of parsing walkie-talkie.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "1": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Import the frequency knob",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Import the talk button"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1086,30 +1029,14 @@ description: Result of parsing walkie-talkie.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "1": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Import the buttons",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Import the frequency knob"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1332,6 +1259,9 @@ description: Result of parsing walkie-talkie.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Import the buttons"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2446,6 +2376,7 @@ description: Result of parsing walkie-talkie.kcl
         "preComments": [
           "// Walkie Talkie",
           "// A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+          "// Categories: Manufacturing, Computer Hardware",
           "",
           "",
           "// set units"
@@ -2519,7 +2450,92 @@ description: Result of parsing walkie-talkie.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

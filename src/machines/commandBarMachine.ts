@@ -1,4 +1,3 @@
-import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { KclManager } from '@src/lang/KclManager'
 import type {
   Command,
@@ -7,6 +6,8 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
@@ -18,6 +19,7 @@ export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
+  machineManager: MachineManager
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
@@ -93,7 +95,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set machine manager'; data: MachineManager }
   | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
@@ -113,12 +114,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set machine manager': assign({
-      machineManager: ({ event, context }) => {
-        if (event.type !== 'Set machine manager') return context.machineManager
-        return event.data
       },
     }),
     'Set kclManager': assign({
@@ -186,7 +181,7 @@ export const commandBarMachine = setup({
               ? argConfig.required(context)
               : argConfig.required
 
-          if (argIsRequired) {
+          if (argIsRequired || argConfig.prepopulate) {
             lastRequiredArg = {
               ...argConfig,
               name: argName,
@@ -194,7 +189,9 @@ export const commandBarMachine = setup({
           }
 
           const mustNotSkipArg =
-            (argIsRequired || argConfig.skip === false) &&
+            (argIsRequired ||
+              argConfig.prepopulate ||
+              argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
@@ -295,7 +292,7 @@ export const commandBarMachine = setup({
             event.data.argDefaultValues &&
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
-              : arg.skip && 'defaultValue' in arg
+              : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
                 ? arg.defaultValue
                 : undefined
         }
@@ -326,6 +323,33 @@ export const commandBarMachine = setup({
           (typeof argConfig.required === 'function'
             ? !argConfig.required(context)
             : !argConfig.required)
+      )
+    },
+    // Only for add-kcl-file-to-project on web
+    'All required arguments provided': ({ context }) => {
+      if (isDesktop()) return false
+      const { selectedCommand, argumentsToSubmit } = context
+      if (
+        selectedCommand?.name !== 'add-kcl-file-to-project' ||
+        !selectedCommand?.args
+      )
+        return false
+      return Object.entries(selectedCommand.args).every(
+        ([argName, argConfig]) => {
+          if (
+            typeof argConfig.hidden === 'function'
+              ? argConfig.hidden(context)
+              : argConfig.hidden
+          )
+            return true
+          const isRequired =
+            typeof argConfig.required === 'function'
+              ? argConfig.required(context)
+              : argConfig.required
+          if (!isRequired) return true
+          const value = argumentsToSubmit[argName]
+          return value !== undefined && value !== null && value !== ''
+        }
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
@@ -531,13 +555,6 @@ export const commandBarMachine = setup({
     },
     argumentsToSubmit: {},
     reviewValidationError: undefined,
-    machineManager: {
-      machines: [],
-      machineApiIp: null,
-      currentMachine: null,
-      setCurrentMachine: () => {},
-      noMachinesReason: () => undefined,
-    },
   }),
   id: 'Command Bar',
   initial: 'Closed',
@@ -574,6 +591,10 @@ export const commandBarMachine = setup({
         {
           target: 'Checking Arguments',
           guard: 'All arguments are skippable',
+        },
+        {
+          target: 'Checking Arguments',
+          guard: 'All required arguments provided',
         },
         {
           target: 'Gathering arguments',
@@ -685,11 +706,6 @@ export const commandBarMachine = setup({
     },
   },
   on: {
-    'Set machine manager': {
-      reenter: false,
-      actions: 'Set machine manager',
-    },
-
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

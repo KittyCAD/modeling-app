@@ -49,6 +49,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -124,6 +125,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -131,7 +134,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -209,13 +211,14 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -314,6 +317,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -321,7 +326,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -408,6 +412,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -483,6 +488,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -490,7 +497,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -541,13 +547,14 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -646,6 +653,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -653,7 +662,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -699,13 +707,14 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -766,6 +775,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -841,6 +851,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -848,7 +860,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -931,6 +942,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1006,6 +1018,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1013,7 +1027,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1096,6 +1109,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1171,6 +1185,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1178,7 +1194,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1261,6 +1276,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1336,6 +1352,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1343,7 +1361,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1426,6 +1443,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1501,6 +1519,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1508,143 +1528,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1698,6 +1581,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1773,6 +1657,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1780,7 +1666,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1834,6 +1719,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1909,6 +1795,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1916,7 +1804,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1970,6 +1857,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2045,6 +1933,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2052,7 +1942,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2106,6 +1995,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2181,6 +2071,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2188,7 +2080,144 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "creatorType": "sketch",
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2271,6 +2300,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2346,6 +2376,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2353,7 +2385,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2436,6 +2467,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2511,6 +2543,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2518,7 +2552,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2601,6 +2634,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2676,6 +2710,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2683,7 +2719,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2766,6 +2801,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2841,6 +2877,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2848,7 +2886,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2931,6 +2968,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3006,6 +3044,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3013,7 +3053,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3096,6 +3135,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3171,6 +3211,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3178,7 +3220,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3261,6 +3302,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3336,6 +3378,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3343,7 +3387,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3426,6 +3469,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3501,6 +3545,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3508,7 +3554,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3591,6 +3636,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3666,6 +3712,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3673,7 +3721,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3756,6 +3803,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3831,6 +3879,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3838,7 +3888,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3921,6 +3970,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3996,6 +4046,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4003,7 +4055,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4086,6 +4137,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4161,6 +4213,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4168,7 +4222,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4251,6 +4304,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4326,6 +4380,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4333,7 +4389,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4416,6 +4471,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4491,6 +4547,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4498,7 +4556,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4581,6 +4638,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4656,6 +4714,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4663,7 +4723,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4746,6 +4805,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4821,6 +4881,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4828,7 +4890,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4911,6 +4972,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4986,6 +5048,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4993,7 +5057,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5076,6 +5139,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5151,6 +5215,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5158,7 +5224,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5241,6 +5306,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5316,6 +5382,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5323,7 +5391,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5406,6 +5473,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5481,6 +5549,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5488,7 +5558,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5571,6 +5640,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5646,6 +5716,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5653,7 +5725,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5736,6 +5807,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5811,6 +5883,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5818,7 +5892,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5901,6 +5974,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5976,6 +6050,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5983,7 +6059,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6066,6 +6141,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6141,6 +6217,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6148,7 +6226,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6231,6 +6308,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6306,6 +6384,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6313,7 +6393,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6396,6 +6475,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6471,6 +6551,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6478,7 +6560,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6561,6 +6642,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6636,6 +6718,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6643,7 +6727,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6726,6 +6809,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6801,6 +6885,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6808,7 +6894,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6891,6 +6976,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6966,6 +7052,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6973,7 +7061,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7056,6 +7143,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7131,6 +7219,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7138,7 +7228,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7221,6 +7310,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7296,6 +7386,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7303,7 +7395,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7386,6 +7477,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7461,6 +7553,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7468,7 +7562,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7551,6 +7644,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7626,6 +7720,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7633,7 +7729,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7716,6 +7811,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7791,6 +7887,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7798,7 +7896,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7881,6 +7978,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7956,6 +8054,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7963,7 +8063,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8114,6 +8213,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8189,6 +8289,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8196,7 +8298,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8279,6 +8380,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8354,6 +8456,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8361,7 +8465,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8444,6 +8547,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8519,6 +8623,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8526,7 +8632,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8609,6 +8714,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8684,6 +8790,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8691,7 +8799,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8774,6 +8881,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8849,6 +8957,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8856,7 +8966,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8939,6 +9048,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9014,6 +9124,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9021,7 +9133,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9159,6 +9270,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9166,7 +9279,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -9285,6 +9397,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9292,7 +9406,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -9375,6 +9488,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9450,6 +9564,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9457,7 +9573,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9511,6 +9626,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9586,6 +9702,8 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9593,7 +9711,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

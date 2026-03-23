@@ -1081,8 +1081,6 @@ description: Result of parsing plane_of_chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extra bit to show it working on the rendered model"
         ],
         "start": 0,
@@ -1096,6 +1094,18 @@ description: Result of parsing plane_of_chamfer.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
           {
             "commentStart": 0,
             "end": 0,

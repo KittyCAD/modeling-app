@@ -1,5 +1,6 @@
 // Zoo Logo
 // The logo for the Zoo Corporation
+// Categories: Maker
 
 // Set units in inches (in)
 @settings(defaultLengthUnit = in)

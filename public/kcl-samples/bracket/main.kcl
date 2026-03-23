@@ -1,5 +1,6 @@
 // Shelf Bracket
 // This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
+// Categories: Manufacturing, Automotive, Aerospace, Construction
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

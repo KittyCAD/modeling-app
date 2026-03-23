@@ -161,6 +161,7 @@ translate(
   x = 4,
   y = 5,
   z = 6,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -190,7 +191,12 @@ translate(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> translate(x = 4, y = 5, z = 6)
+  |> translate(
+       x = 4,
+       y = 5,
+       z = 6,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -392,6 +398,7 @@ scale(
   x = 4,
   y = 5,
   z = 6,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -421,7 +428,12 @@ scale(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> scale(x = 4, y = 5, z = 6)
+  |> scale(
+       x = 4,
+       y = 5,
+       z = 6,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -556,6 +568,7 @@ rotate(
   roll = 40,
   pitch = 50,
   yaw = 60,
+  global = false,
 )`
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -585,7 +598,12 @@ rotate(
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> rotate(roll = 40, pitch = 50, yaw = 60)
+  |> rotate(
+       roll = 40,
+       pitch = 50,
+       yaw = 60,
+       global = false,
+     )
 `
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -698,7 +716,7 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
-    it('should add a call with metalness and roughness', async () => {
+    it('should add a call with metalness, roughness, and opacity', async () => {
       const {
         artifactGraph,
         ast,
@@ -723,6 +741,11 @@ extrude001 = extrude(profile001, length = 1)`
           instanceInThisFile,
           rustContextInThisFile
         ),
+        opacity: await getKclCommandValue(
+          '3',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -734,6 +757,7 @@ appearance(
   color = "#FF0000",
   metalness = 1,
   roughness = 2,
+  opacity = 3,
 )`)
     })
 

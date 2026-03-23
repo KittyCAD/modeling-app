@@ -15,6 +15,11 @@ import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -78,9 +83,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         )
         try {
           isEditInProgress = true
-          const settings = await jsAppSettings(
-            context.rustContext.settingsActor
-          )
+          const settings = jsAppSettings(context.rustContext.settingsActor)
           // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
           const result = await context.rustContext.editSegments(
             0,
@@ -107,10 +110,15 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
             ],
             settings
           )
-          self._parent?.send({
+          const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
-            data: { ...result, writeToDisk: false },
-          })
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          }
+          self._parent?.send(sendData)
           await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit segment', err)
@@ -195,13 +203,14 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
       // Send result to parent if we have valid data
       if (output.kclSource && output.sceneGraphDelta) {
-        self._parent?.send({
+        const sendData: SketchSolveMachineEvent = {
           type: 'update sketch outcome',
           data: {
-            kclSource: output.kclSource,
+            sourceDelta: output.kclSource,
             sceneGraphDelta: output.sceneGraphDelta,
           },
-        })
+        }
+        self._parent?.send(sendData)
       }
     }
     return {}
@@ -234,17 +243,13 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       .reverse()
       .find((objId) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        if (!obj) return false
-        return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+        return isLineSegment(obj)
       })
 
     let lastLineEndPointId: number | undefined
     if (lineId !== undefined) {
       const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
-      if (
-        lineObj?.kind.type === 'Segment' &&
-        lineObj.kind.segment.type === 'Line'
-      ) {
+      if (isLineSegment(lineObj)) {
         // The end point ID is stored in the Line segment
         lastLineEndPointId = lineObj.kind.segment.end
       }
@@ -252,10 +257,11 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
     // Send draft entities to parent if they exist (from chaining)
     if (output.newlyAddedEntities) {
-      self._parent?.send({
+      const sendData: SketchSolveMachineEvent = {
         type: 'set draft entities',
         data: output.newlyAddedEntities,
-      })
+      }
+      self._parent?.send(sendData)
     }
 
     return {
@@ -270,7 +276,7 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     output.sceneGraphDelta?.new_objects.filter((objId) => {
       const obj = output.sceneGraphDelta!.new_graph.objects[objId]
       if (!obj) return false
-      return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+      return isPointSegment(obj)
     }) || []
 
   // The last point ID is the end point of the newly created line
@@ -281,17 +287,13 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     .reverse()
     .find((objId) => {
       const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-      if (!obj) return false
-      return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+      return isLineSegment(obj)
     })
 
   let lastLineEndPointId: number | undefined
   if (lineId !== undefined && output.sceneGraphDelta) {
     const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
-    if (
-      lineObj?.kind.type === 'Segment' &&
-      lineObj.kind.segment.type === 'Line'
-    ) {
+    if (isLineSegment(lineObj)) {
       // The end point ID is stored in the Line segment
       lastLineEndPointId = lineObj.kind.segment.end
     }
@@ -316,10 +318,11 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
   // Send draft entities to parent for tracking
   if (entitiesToTrack.segmentIds.length > 0) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'set draft entities',
       data: entitiesToTrack,
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   if (pointId !== undefined && output.sceneGraphDelta) {
@@ -354,10 +357,11 @@ export function storePendingSketchOutcome({
 
   // Send draft entities to parent for tracking
   if (output.newlyAddedEntities) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'set draft entities',
       data: output.newlyAddedEntities,
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   // Store the result, but DON'T send it yet - we'll check the flag in 'check double click' state
@@ -379,15 +383,18 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
   // double-clicks to the delete path). The debounceEditorUpdate flag allows the parent to
   // cancel this update if a subsequent double-click is detected within the debounce window.
   if (context.pendingSketchOutcome) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'update sketch outcome',
       data: {
-        ...context.pendingSketchOutcome,
-        debounceEditorUpdate: true, // Debounce to allow cancellation if double-click is detected
+        sourceDelta: context.pendingSketchOutcome.kclSource,
+        sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
+        debounceEditorUpdate: true,
+        writeToDisk: true,
       },
-    })
-    // Clear draft entities after successfully sending (they're now committed)
-    self._parent?.send({ type: 'clear draft entities' })
+    }
+    self._parent?.send(sendData)
+    const clearData: SketchSolveMachineEvent = { type: 'clear draft entities' }
+    self._parent?.send(clearData)
   }
   return {}
 }
@@ -406,14 +413,15 @@ export function sendDeleteResultToParentWithDebounce({
   if (event.output) {
     const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
-      self._parent?.send({
+      const sendData: SketchSolveMachineEvent = {
         type: 'update sketch outcome',
         data: {
-          kclSource: output.kclSource,
+          sourceDelta: output.kclSource,
           sceneGraphDelta: output.sceneGraphDelta,
-          debounceEditorUpdate: true, // Debounce to allow cancellation if needed
+          debounceEditorUpdate: true,
         },
-      })
+      }
+      self._parent?.send(sendData)
     }
   }
   return {}
@@ -433,13 +441,14 @@ export function sendDeleteResultToParent({
   if (event.output) {
     const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
-      self._parent?.send({
+      const sendData: SketchSolveMachineEvent = {
         type: 'update sketch outcome',
         data: {
-          kclSource: output.kclSource,
+          sourceDelta: output.kclSource,
           sceneGraphDelta: output.sceneGraphDelta,
         },
-      })
+      }
+      self._parent?.send(sendData)
     }
   }
   return {}

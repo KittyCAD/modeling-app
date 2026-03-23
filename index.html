@@ -27,6 +27,12 @@
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root" class="h-screen overflow-y-auto"></div>
   <script type="module" src="/src/index.tsx"></script>
+  <script type="module">
+    // Polyfill for anchor positioning in CSS thanks to Oddbird
+    if (!("anchorName" in document.documentElement.style)) {
+      import("https://unpkg.com/@oddbird/css-anchor-positioning");
+    }
+  </script>
 </body>
 
 </html>

@@ -44,7 +44,20 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
         fs,
     } = config;
 
-    let executor_ctx = None;
+    // Create an executor context for code actions (like transpilation)
+    // We use a mock engine since we don't have a live engine connection in the LSP worker.
+    // This is sufficient for transpilation which only needs to execute code to get ExecOutcome.
+    let executor_ctx =
+        match kcl_lib::ExecutorContext::new_mock_for_lsp(fs.clone(), kcl_lib::ExecutorSettings::default()) {
+            Ok(ctx) => {
+                web_sys::console::log_1(&"Created mock executor context for LSP code actions".into());
+                Some(ctx)
+            }
+            Err(e) => {
+                web_sys::console::warn_1(&format!("Failed to create executor context for LSP: {}", e).into());
+                None
+            }
+        };
 
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());

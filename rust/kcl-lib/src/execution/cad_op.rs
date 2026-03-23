@@ -218,6 +218,9 @@ pub enum OpKclValue {
     Sketch {
         value: Box<OpSketch>,
     },
+    Segment {
+        artifact_id: ArtifactId,
+    },
     Solid {
         value: Box<OpSolid>,
     },
@@ -231,6 +234,7 @@ pub enum OpKclValue {
     Module {},
     Type {},
     KclNone {},
+    BoundedEdge {},
 }
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
@@ -300,13 +304,9 @@ impl From<&KclValue> for OpKclValue {
                     // Arguments to constraint functions will be unsolved.
                     Self::KclNone {}
                 }
-                crate::execution::geometry::SegmentRepr::Solved { .. } => {
-                    debug_assert!(
-                        false,
-                        "Solved segment not sent to the engine cannot be represented in operations"
-                    );
-                    Self::KclNone {}
-                }
+                crate::execution::geometry::SegmentRepr::Solved { segment, .. } => Self::Segment {
+                    artifact_id: ArtifactId::new(segment.id),
+                },
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(OpSketch {
@@ -330,6 +330,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
+            KclValue::BoundedEdge { .. } => Self::BoundedEdge {},
         }
     }
 }

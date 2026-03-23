@@ -30,10 +30,10 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
     let ident = &decl.id;
     let name = &ident.name;
 
-    if !name.is_case(convert_case::Case::Camel) {
-        // Get what it should be.
-        let new_name = name.to_case(convert_case::Case::Camel);
+    // Get what it should be in camel case.
+    let new_name = name.to_case(convert_case::Case::Camel);
 
+    if new_name != *name {
         let mut prog = prog.clone();
         prog.rename_symbol(&new_name, ident.start);
         let recast = prog.recast_top(&Default::default(), 0);
@@ -59,7 +59,7 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty, _prog: &AstNode<Program
     let ident = &decl.key;
     let name = &ident.name;
 
-    if !name.is_case(convert_case::Case::Camel) {
+    if name.to_case(convert_case::Case::Camel) != *name {
         // We can't rename the properties yet.
         findings.push(Z0001.at(
             format!("found '{name}'"),

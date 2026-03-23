@@ -1,16 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
-import { Group, Vector2, Vector3, Mesh } from 'three'
+import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
 import {
   createOnDragStartCallback,
-  createOnDragEndCallback,
   createOnDragCallback,
   createOnClickCallback,
-  createOnMouseEnterCallback,
-  createOnMouseLeaveCallback,
-  findEntityUnderCursorId,
+  setUpOnDragAndSelectionClickCallbacks,
+  createOnDragEndCallback,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'
 import type {
   ApiObject,
@@ -19,12 +16,136 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 function createTestMouseEvent(): MouseEvent {
   return new MouseEvent('click', {
     bubbles: true,
     cancelable: true,
   })
+}
+
+function createOnClickDeps(objects: ApiObject[] = []) {
+  return {
+    getApiObjects: () => createSceneGraphDelta(objects).new_graph.objects,
+    sceneInfra: {
+      scene: {
+        getObjectByName: vi.fn(() => null),
+      },
+      getClientSceneScaleFactor: vi.fn(() => 1),
+    } as unknown as SceneInfra,
+  }
+}
+
+function createDraggedEntityIdGetter(entityId: number | null = null) {
+  return vi.fn(() => entityId)
+}
+
+function setUpMoveToolCallbacks({
+  apiObjects = [],
+  hoveredId = null,
+  isAreaSelectActive = false,
+  sketchId = 0,
+}: {
+  apiObjects?: ApiObject[]
+  hoveredId?: number | null
+  isAreaSelectActive?: boolean
+  sketchId?: number
+}) {
+  let callbacks: Record<string, unknown> = {}
+  const getObjectByName = vi.fn(() => null)
+  const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
+  camera.position.z = 10
+  camera.lookAt(0, 0, 0)
+  camera.updateProjectionMatrix()
+  camera.updateMatrixWorld()
+
+  const sceneInfra = {
+    setCallbacks: vi.fn((nextCallbacks) => {
+      callbacks = nextCallbacks as Record<string, unknown>
+    }),
+    scene: {
+      getObjectByName,
+    },
+    camControls: { camera },
+    renderer: {
+      domElement: {
+        clientWidth: 100,
+        clientHeight: 100,
+      },
+    },
+    getClientSceneScaleFactor: vi.fn(() => 1),
+    baseUnitMultiplier: 1,
+    isAreaSelectActive,
+  } as unknown as SceneInfra
+
+  const sceneGraphObjects = apiObjects.some(
+    (obj) => obj.kind.type === 'Sketch' && obj.id === sketchId
+  )
+    ? apiObjects
+    : [createSketchApiObject({ id: sketchId }), ...apiObjects]
+
+  const snapshot = {
+    context: {
+      hoveredId,
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      sketchId,
+      draftEntities: undefined,
+      sketchExecOutcome: {
+        sceneGraphDelta: createSceneGraphDelta(sceneGraphObjects),
+      },
+    },
+  }
+
+  const self = {
+    getSnapshot: vi.fn(() => snapshot),
+    send: vi.fn(),
+  }
+
+  const context = {
+    sceneInfra,
+    rustContext: {
+      editSegments: vi.fn(),
+      settingsActor: null,
+    },
+    kclManager: {
+      fileSettings: {
+        defaultLengthUnit: 'mm' as UnitLength,
+      },
+    },
+  }
+
+  setUpOnDragAndSelectionClickCallbacks({ self, context } as any)
+
+  if (typeof callbacks.onMove !== 'function') {
+    throw new Error('Move tool did not register an onMove callback')
+  }
+  if (typeof callbacks.onAreaSelect !== 'function') {
+    throw new Error('Move tool did not register an onAreaSelect callback')
+  }
+  if (typeof callbacks.onClick !== 'function') {
+    throw new Error('Move tool did not register an onClick callback')
+  }
+
+  return {
+    onClick: callbacks.onClick as (args: {
+      mouseEvent: MouseEvent
+      intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
+      intersects: Array<unknown>
+      selected?: Group
+    }) => Promise<void>,
+    onMove: callbacks.onMove as (args: {
+      intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+    }) => void,
+    onAreaSelect: callbacks.onAreaSelect as (args: {
+      startPoint: { twoD: Vector2; threeD: Vector3 }
+      currentPoint: { twoD: Vector2; threeD: Vector3 }
+    }) => void,
+    sceneInfra,
+    getObjectByName,
+    send: self.send,
+  }
 }
 
 /**
@@ -52,6 +173,8 @@ function createPointSegmentGroup({
     theme,
     scale,
     id: segmentId,
+    isDraft: false,
+    isConstruction: false,
   })
   if (result instanceof Group) {
     return result
@@ -59,61 +182,16 @@ function createPointSegmentGroup({
   throw new Error('Failed to create point segment group')
 }
 
-/**
- * Helper function to create a line segment mesh for testing.
- * Uses the same function that creates line segments in production,
- * ensuring tests match the actual runtime structure.
- */
-export function createLineSegmentMesh({
-  segmentId,
-  theme = Themes.Dark,
-  scale = 1,
-}: {
-  segmentId: number
-  theme?: Themes
-  scale?: number
-}): Mesh {
-  const result = segmentUtilsMap.LineSegment.init({
-    input: {
-      type: 'Line',
-      start: {
-        x: { type: 'Var', value: 0, units: 'Mm' },
-        y: { type: 'Var', value: 0, units: 'Mm' },
-      },
-      end: {
-        x: { type: 'Var', value: 10, units: 'Mm' },
-        y: { type: 'Var', value: 10, units: 'Mm' },
-      },
-    },
-    theme,
-    scale,
-    id: segmentId,
-  })
-  if (result instanceof Group) {
-    // Find the STRAIGHT_SEGMENT_BODY mesh within the group
-    const mesh = result.children.find(
-      (child) =>
-        child instanceof Mesh && child.userData?.type === STRAIGHT_SEGMENT_BODY
-    )
-    if (mesh instanceof Mesh) {
-      return mesh
-    }
-  }
-  throw new Error('Failed to create line segment mesh')
-}
-
 describe('createOnDragStartCallback', () => {
-  it('should track the drag start position for calculating drag vectors', () => {
+  it('should track the drag start position and dragged entity id', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    const findPointSegmentElement = vi.fn(() => null)
+    const setDraggedEntityId = vi.fn()
+    const getHoveredId = vi.fn(() => 13)
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
+      setDraggedEntityId,
+      getHoveredId,
     })
 
     const intersectionPoint = {
@@ -137,348 +215,9 @@ describe('createOnDragStartCallback', () => {
     expect(callArg).not.toBe(intersectionPoint.twoD)
     expect(callArg.x).toBe(10)
     expect(callArg.y).toBe(20)
-  })
-
-  it('should set draggingPointElement to null when selected is not a Group', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    const findPointSegmentElement = vi.fn(() => null)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-  })
-
-  it('should ignore groups that are not valid segment groups (non-numeric names)', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    const findPointSegmentElement = vi.fn(() => null)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    const group = new Group()
-    group.name = 'invalid-name'
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: group,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-    expect(findPointSegmentElement).not.toHaveBeenCalled()
-  })
-
-  it('should ignore groups that are not point segments (no CSS2DObject handle)', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    const findPointSegmentElement = vi.fn(() => null)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    // Create a group that looks like a segment but isn't a point segment
-    const group = new Group()
-    group.name = '5' // Valid numeric ID, but missing the CSS2DObject handle (`userData.type === 'handle'`)
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: group,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-    expect(findPointSegmentElement).not.toHaveBeenCalled()
-  })
-
-  it('should set visual feedback element when dragging a point segment', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    // The segment ID is used to find the DOM element that displays the point
-    // This ID comes from the Group's name property, which must be numeric
-    const segmentId = 13
-    const pointGroup = createPointSegmentGroup({ segmentId })
-
-    // Find the actual DOM element created by the point segment
-    const handleElement =
-      pointGroup.children[0]?.userData?.type === 'handle'
-        ? (pointGroup.children[0] as any).element
-        : null
-    if (handleElement instanceof HTMLElement === false) {
-      throw new Error('Failed to get handle element from point segment group')
-    }
-
-    const getDraggingPointElement = vi.fn(() => handleElement)
-    const findPointSegmentElement = vi.fn(() => handleElement)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: pointGroup,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // The segment ID (from group.name) is used to find the visual element
-    expect(findPointSegmentElement).toHaveBeenCalledWith(segmentId)
-    expect(setDraggingPointElement).toHaveBeenCalledWith(handleElement)
-    expect(getDraggingPointElement).toHaveBeenCalled()
-  })
-
-  it('should handle case where point segment DOM element cannot be found', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    // Simulate the DOM query failing to find the element
-    const findPointSegmentElement = vi.fn(() => null)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    // Use a real point segment group to ensure we're testing the right structure
-    const segmentId = 13
-    const pointGroup = createPointSegmentGroup({ segmentId })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: pointGroup,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Should still attempt to find the element using the segment ID
-    expect(findPointSegmentElement).toHaveBeenCalledWith(segmentId)
-    // But gracefully handle when it's not found
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-    expect(getDraggingPointElement).toHaveBeenCalled()
-  })
-
-  it('should not set visual feedback for line segments (only point segments)', () => {
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-    const findPointSegmentElement = vi.fn(() => null)
-
-    const callback = createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
-      findPointSegmentElement,
-    })
-
-    // Create a group that represents a line segment (not a point)
-    // Line segments don't have CSS2DObject handles, so they shouldn't trigger
-    // the visual feedback logic
-    const group = new Group()
-    group.name = '5' // Valid segment ID
-    // Line segments have different structure - no CSS2DObject with 'handle' type
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: group,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Line segments don't need DOM element lookup for visual feedback
-    expect(findPointSegmentElement).not.toHaveBeenCalled()
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-  })
-})
-
-describe('createOnDragEndCallback', () => {
-  it('should restore visual feedback opacity when drag ends on a point segment', () => {
-    const setDraggingPointElement = vi.fn()
-    // Create a real point segment to get the actual DOM structure
-    const segmentId = 13
-    const pointGroup = createPointSegmentGroup({ segmentId })
-
-    // Get the actual DOM element from the point segment
-    const handleElement =
-      pointGroup.children[0]?.userData?.type === 'handle'
-        ? (pointGroup.children[0] as any).element
-        : null
-    if (!(handleElement instanceof HTMLElement)) {
-      throw new Error('Failed to get handle element from point segment group')
-    }
-
-    // Find the inner circle that shows the visual feedback using the data attribute
-    const innerCircle = handleElement.querySelector(
-      '[data-point-inner-circle="true"]'
-    )
-    if (innerCircle instanceof HTMLElement === false) {
-      throw new Error('Failed to find inner circle in point segment')
-    }
-
-    // Simulate the drag state by setting opacity to 0.7 (as done in onDragStart)
-    innerCircle.style.opacity = '0.7'
-
-    const getDraggingPointElement = vi.fn(() => handleElement)
-
-    const callback = createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-    })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Opacity should be restored to full visibility to indicate drag has ended
-    expect(innerCircle.style.opacity).toBe('1')
-    // Dragging element should be cleared
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-  })
-
-  it('should clear dragging state even when no element is currently being dragged', () => {
-    const setDraggingPointElement = vi.fn()
-    const getDraggingPointElement = vi.fn(() => null)
-
-    const callback = createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-    })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Should still clear the dragging state even if no element was being dragged
-    // This ensures state is always clean after drag ends
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-  })
-
-  it('should handle missing inner circle element gracefully', () => {
-    const setDraggingPointElement = vi.fn()
-    // Create an element without the inner circle structure
-    const mockElement = document.createElement('div')
-    // Don't add the inner circle div
-
-    const getDraggingPointElement = vi.fn(() => mockElement)
-
-    const callback = createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-    })
-
-    // Should not throw when inner circle is missing
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Should still clear the dragging state even if inner circle is missing
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
-  })
-
-  it('should allow custom inner circle finder for testing', () => {
-    const setDraggingPointElement = vi.fn()
-    const mockElement = document.createElement('div')
-    const customInnerCircle = document.createElement('div')
-    customInnerCircle.id = 'custom-inner'
-    mockElement.appendChild(customInnerCircle)
-
-    // Set initial opacity
-    customInnerCircle.style.opacity = '0.7'
-
-    const getDraggingPointElement = vi.fn(() => mockElement)
-    // Custom finder that looks for element with id 'custom-inner'
-    const findInnerCircle = vi.fn((element: HTMLElement) =>
-      element.querySelector('#custom-inner')
-    )
-
-    const callback = createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-      findInnerCircle,
-    })
-
-    void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Custom finder should be used
-    expect(findInnerCircle).toHaveBeenCalledWith(mockElement)
-    // Opacity should be restored
-    expect(customInnerCircle.style.opacity).toBe('1')
-    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
+    expect(setDraggedEntityId).toHaveBeenCalledOnce()
+    expect(setDraggedEntityId).toHaveBeenCalledWith(13)
+    expect(getHoveredId).toHaveBeenCalledOnce()
   })
 })
 
@@ -490,10 +229,12 @@ function createPointApiObject({
   id,
   x = 0,
   y = 0,
+  owner = null,
 }: {
   id: number
   x?: number
   y?: number
+  owner?: number | null
 }): ApiObject {
   return {
     id,
@@ -506,9 +247,111 @@ function createPointApiObject({
           y: { value: y, units: 'Mm' },
         },
         ctor: null,
-        owner: null,
+        owner,
         freedom: 'Free',
         constraints: [],
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createArcApiObject({
+  id,
+  center,
+  start,
+  end,
+}: {
+  id: number
+  center: number
+  start: number
+  end: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Arc',
+        center,
+        start,
+        end,
+        ctor: {
+          type: 'Arc',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createSketchApiObject({ id }: { id: number }): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      plane: 0,
+      segments: [],
+      constraints: [],
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
+
+function createLineApiObject({
+  id,
+  start,
+  end,
+}: {
+  id: number
+  start: number
+  end: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Line',
+        start,
+        end,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+        ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -568,6 +411,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const getContextData = vi.fn(() => ({
       selectedIds: [],
       sketchId: 0,
@@ -583,6 +427,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -605,11 +450,49 @@ describe('createOnDragCallback', () => {
     expect(setIsSolveInProgress).not.toHaveBeenCalled()
   })
 
+  it('should clear dragged entity id and call onComplete once', async () => {
+    const setDraggedEntityId = vi.fn()
+    const onComplete = vi.fn(async () => {})
+
+    const callback = createOnDragEndCallback({
+      setDraggedEntityId,
+      onComplete,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(setDraggedEntityId).toHaveBeenCalledWith(null)
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+  it('should clear dragging state even when no element is currently being dragged', async () => {
+    const setDraggedEntityId = vi.fn()
+
+    const callback = createOnDragEndCallback({
+      setDraggedEntityId,
+      onComplete: async () => {},
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Should still clear the dragging state even if no element was being dragged
+    // This ensures state is always clean after drag ends
+    expect(setDraggedEntityId).toHaveBeenCalledWith(null)
+  })
+
   it('should return early when no scene graph delta is available', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const getContextData = vi.fn(() => ({
       selectedIds: [],
       sketchId: 0,
@@ -625,6 +508,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -652,6 +536,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter()
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -669,6 +554,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -697,6 +583,7 @@ describe('createOnDragCallback', () => {
     // Last successful drag was at (5, 10)
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(5, 10))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5, x: 0, y: 0 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -719,6 +606,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -765,6 +653,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(13)
     // Create a point segment that will be under the cursor
     const pointObject = createPointApiObject({ id: 13, x: 10, y: 20 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
@@ -791,6 +680,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -834,6 +724,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(13)
     // Create multiple point segments
     const point1 = createPointApiObject({ id: 5, x: 0, y: 0 })
     const point2 = createPointApiObject({ id: 13, x: 10, y: 20 })
@@ -861,6 +752,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -902,6 +794,7 @@ describe('createOnDragCallback', () => {
     })
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -932,6 +825,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1008,6 +902,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -1030,6 +925,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1063,6 +959,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -1084,6 +981,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1114,6 +1012,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -1132,6 +1031,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1161,6 +1061,7 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     const pointObject = createPointApiObject({ id: 5 })
     const sceneGraphDelta = createSceneGraphDelta([pointObject])
     const getContextData = vi.fn(() => ({
@@ -1179,6 +1080,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1209,12 +1111,14 @@ describe('createOnDragCallback', () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
     // Create a non-segment object (e.g., a Sketch object)
     const sketchObject: ApiObject = {
       id: 5,
       kind: {
         type: 'Sketch',
         args: { on: { default: 'xy' } },
+        plane: 0,
         segments: [],
         constraints: [],
       },
@@ -1239,6 +1143,7 @@ describe('createOnDragCallback', () => {
       setIsSolveInProgress,
       getLastSuccessfulDragFromPoint,
       setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
       getContextData,
       editSegments,
       onNewSketchOutcome,
@@ -1262,99 +1167,25 @@ describe('createOnDragCallback', () => {
   })
 })
 
-describe('findEntityUnderCursorId', () => {
-  it('should return null when no object is selected', () => {
-    const getParentGroup = vi.fn()
-    const result = findEntityUnderCursorId(undefined, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should return segment ID when selected is a Group with numeric name and point segment type', () => {
-    const group = new Group()
-    group.name = '13'
-    group.userData = { type: 'point' }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBe(13)
-  })
-
-  it('should return segment ID when selected is a Group with numeric name and line segment type', () => {
-    const group = new Group()
-    group.name = '5'
-    group.userData = { type: 'LINE' }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBe(5)
-  })
-
-  it('should return segment ID when Group has point segment child with handle type', () => {
-    const group = new Group()
-    group.name = '7'
-    const handleChild = new Group()
-    handleChild.userData = { type: 'handle' }
-    group.add(handleChild)
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBe(7)
-  })
-
-  it('should return null when Group name is not numeric', () => {
-    const group = new Group()
-    group.name = 'not-a-number'
-    group.userData = { type: 'point' }
-    const getParentGroup = vi.fn()
-
-    const result = findEntityUnderCursorId(group, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should use getParentGroup when selected is not a Group', () => {
-    const mesh = new Group() // Using Group as a mock for any Object3D
-    mesh.name = 'not-a-group'
-    const parentGroup = new Group()
-    parentGroup.name = '42'
-    const getParentGroup = vi.fn(() => parentGroup)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBe(42)
-  })
-
-  it('should return null when getParentGroup returns null', () => {
-    const mesh = new Group()
-    const getParentGroup = vi.fn(() => null)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBeNull()
-  })
-
-  it('should return null when getParentGroup returns group with non-numeric name', () => {
-    const mesh = new Group()
-    const parentGroup = new Group()
-    parentGroup.name = 'invalid'
-    const getParentGroup = vi.fn(() => parentGroup)
-
-    const result = findEntityUnderCursorId(mesh, getParentGroup)
-    expect(result).toBeNull()
-  })
-})
-
 describe('createOnClickCallback', () => {
   it('should select a segment when clicking on it to enable editing', async () => {
-    const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
-    const pointGroup = createPointSegmentGroup({ segmentId: 13 })
+    const onEditConstraint = vi.fn()
+    const pointObject = createPointApiObject({ id: 13, x: 10, y: 20 })
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps([pointObject]),
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
-      selected: pointGroup,
+      selected: undefined,
       mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
       intersects: [],
     })
 
@@ -1366,12 +1197,13 @@ describe('createOnClickCallback', () => {
   })
 
   it('should clear selection when clicking on empty space to deselect all segments', async () => {
-    const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps(),
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1387,41 +1219,17 @@ describe('createOnClickCallback', () => {
     })
   })
 
-  it('should find segment via getParentGroup when selected is not a Group', async () => {
-    const mesh = new Group() // Mock for any Object3D
-    const parentGroup = new Group()
-    parentGroup.name = '42'
-    const getParentGroup = vi.fn(() => parentGroup)
-    const onUpdateSelectedIds = vi.fn()
-
-    const callback = createOnClickCallback({
-      getParentGroup,
-      onUpdateSelectedIds,
-    })
-
-    await callback({
-      selected: mesh,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Should find the segment through getParentGroup and select it
-    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
-      selectedIds: [42],
-      duringAreaSelectIds: [],
-    })
-  })
-
   it('should handle clicking on non-segment objects by clearing selection', async () => {
     const nonSegmentGroup = new Group()
     nonSegmentGroup.name = 'not-a-segment'
     nonSegmentGroup.userData = { type: 'other' }
-    const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps(),
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1437,48 +1245,26 @@ describe('createOnClickCallback', () => {
     })
   })
 
-  it('should select point segments identified by handle children', async () => {
-    const pointGroup = new Group()
-    pointGroup.name = '7'
-    const handleChild = new Group()
-    handleChild.userData = { type: 'handle' }
-    pointGroup.add(handleChild)
-    const getParentGroup = vi.fn()
-    const onUpdateSelectedIds = vi.fn()
-
-    const callback = createOnClickCallback({
-      getParentGroup,
-      onUpdateSelectedIds,
-    })
-
-    await callback({
-      selected: pointGroup,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    // Point segments with handle children should be selectable
-    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
-      selectedIds: [7],
-      duringAreaSelectIds: [],
-    })
-  })
-
   it('should select line segments identified by STRAIGHT_SEGMENT_BODY children', async () => {
-    const lineGroup = new Group()
-    lineGroup.name = '5'
-    lineGroup.userData = { type: 'LINE' }
-    const getParentGroup = vi.fn()
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
-      getParentGroup,
+      ...createOnClickDeps([start, end, line]),
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
-      selected: lineGroup,
+      selected: undefined,
       mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
       intersects: [],
     })
 
@@ -1490,261 +1276,232 @@ describe('createOnClickCallback', () => {
   })
 })
 
-describe('createOnMouseEnterCallback', () => {
-  it('should highlight line segments on hover to provide visual feedback', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
+describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
+  it('should update hovered id when moving onto a segment', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
     })
 
-    callback({
-      selected: lineMesh,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
     })
 
-    // Hovering over a line segment should highlight it to show it's interactive
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      true,
-      [],
-      undefined
-    )
-    expect(setLastHoveredMesh).toHaveBeenCalledWith(lineMesh)
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: 5 },
+    })
   })
 
-  it('should not highlight during area select to avoid visual conflicts', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
+  it('should clear the hovered id when moving away from the hovered segment', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+      hoveredId: 5,
     })
 
-    callback({
-      selected: lineMesh,
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(200, 200),
+        threeD: new Vector3(200, 200, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: { hoveredId: null },
+    })
+  })
+
+  it('should not update hovered id during area select', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onMove, send, getObjectByName } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
       isAreaSelectActive: true,
-      mouseEvent: createTestMouseEvent(),
     })
 
-    // Should not highlight during area select to keep the UI clean
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+
+    expect(send).not.toHaveBeenCalled()
+    expect(getObjectByName).not.toHaveBeenCalled()
   })
 
-  it('should ignore non-line-segment objects to only highlight relevant segments', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-    const pointGroup = createPointSegmentGroup({ segmentId: 3 })
+  it('should avoid redundant hover updates when the hovered segment is unchanged', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+      hoveredId: 5,
     })
 
-    callback({
-      selected: pointGroup,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
     })
 
-    // Point segments should not trigger hover highlighting
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-
-  it('should include selected IDs when highlighting to show selection state', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [5, 13])
-    const setLastHoveredMesh = vi.fn()
-    const lineMesh = createLineSegmentMesh({ segmentId: 7 })
-
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-    })
-
-    callback({
-      selected: lineMesh,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Highlighting should include selected IDs so the hover effect respects selection state
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      true,
-      [5, 13],
-      undefined
-    )
-  })
-
-  it('should handle undefined selected gracefully', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const setLastHoveredMesh = vi.fn()
-
-    const callback = createOnMouseEnterCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      setLastHoveredMesh,
-    })
-
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Should not crash when nothing is selected
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
+    expect(send).not.toHaveBeenCalled()
   })
 })
 
-describe('createOnMouseLeaveCallback', () => {
-  it('should clear hover highlighting when leaving a line segment', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
+describe('setUpOnDragAndSelectionClickCallbacks onClick', () => {
+  it('should ignore overlapping points from earlier sketches and select from the active sketch', async () => {
+    const firstSketch = createSketchApiObject({ id: 1 })
+    const firstSketchPoint = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const activeSketch = createSketchApiObject({ id: 10 })
+    const activeSketchPoint = createPointApiObject({ id: 11, x: 10, y: 20 })
 
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
+    const { onClick, send } = setUpMoveToolCallbacks({
+      apiObjects: [
+        firstSketch,
+        firstSketchPoint,
+        activeSketch,
+        activeSketchPoint,
+      ],
+      sketchId: 10,
     })
 
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
+    await onClick({
       mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      intersects: [],
     })
 
-    // Leaving a hovered segment should clear the highlight to restore normal appearance
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      false,
-      [],
-      undefined
-    )
-    expect(setLastHoveredMesh).toHaveBeenCalledWith(null)
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { selectedIds: [11], duringAreaSelectIds: [] },
+    })
+  })
+})
+
+describe('setUpOnDragAndSelectionClickCallbacks onAreaSelect', () => {
+  it('should select contained line segments from api objects without scene geometry', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+
+    const { onAreaSelect, send, getObjectByName } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
+    })
+
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(-5, -5),
+        threeD: new Vector3(-5, -5, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(15, 5),
+        threeD: new Vector3(15, 5, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [5] },
+    })
+    expect(getObjectByName).toHaveBeenCalledTimes(1)
   })
 
-  it('should not clear hover during area select to avoid visual conflicts', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const lineMesh = createLineSegmentMesh({ segmentId: 5 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
+  it('should not treat an arc as contained when its sweep extends outside the box', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const end = createPointApiObject({ id: 3, x: -10, y: 0, owner: 4 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [center, start, end, arc],
     })
 
-    callback({
-      selected: undefined,
-      isAreaSelectActive: true,
-      mouseEvent: createTestMouseEvent(),
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(-11, -1),
+        threeD: new Vector3(-11, -1, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(11, 1),
+        threeD: new Vector3(11, 1, 0),
+      },
     })
 
-    // Should not modify hover state during area select
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [] },
+    })
   })
 
-  it('should include selected IDs when clearing hover to maintain selection state', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [5, 13])
-    const lineMesh = createLineSegmentMesh({ segmentId: 7 })
-    const getLastHoveredMesh = vi.fn(() => lineMesh)
-    const setLastHoveredMesh = vi.fn()
+  it('should select line segments that intersect the box in intersection mode', () => {
+    const start = createPointApiObject({ id: 1, x: -10, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
 
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line],
     })
 
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(1, -1),
+        threeD: new Vector3(1, -1, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(-1, 1),
+        threeD: new Vector3(-1, 1, 0),
+      },
     })
 
-    // Clearing hover should include selected IDs to maintain proper visual state
-    expect(updateSegmentHover).toHaveBeenCalledWith(
-      lineMesh,
-      false,
-      [5, 13],
-      undefined
-    )
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [5] },
+    })
   })
 
-  it('should handle case where no mesh was previously hovered', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const getLastHoveredMesh = vi.fn(() => null)
-    const setLastHoveredMesh = vi.fn()
+  it('should select arcs that intersect the box in intersection mode', () => {
+    const center = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const start = createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 })
+    const end = createPointApiObject({ id: 3, x: -10, y: 0, owner: 4 })
+    const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
+    const { onAreaSelect, send } = setUpMoveToolCallbacks({
+      apiObjects: [center, start, end, arc],
     })
 
-    callback({
-      selected: undefined,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
+    onAreaSelect({
+      startPoint: {
+        twoD: new Vector2(1, 11),
+        threeD: new Vector3(1, 11, 0),
+      },
+      currentPoint: {
+        twoD: new Vector2(-1, 9),
+        threeD: new Vector3(-1, 9, 0),
+      },
     })
 
-    // Should not crash when no mesh was hovered
-    expect(updateSegmentHover).not.toHaveBeenCalled()
-    expect(setLastHoveredMesh).not.toHaveBeenCalled()
-  })
-
-  it('should ignore non-line-segment objects when clearing hover', () => {
-    const updateSegmentHover = vi.fn()
-    const getSelectedIds = vi.fn(() => [])
-    const pointGroup = createPointSegmentGroup({ segmentId: 3 })
-    const getLastHoveredMesh = vi.fn(() => null)
-    const setLastHoveredMesh = vi.fn()
-
-    const callback = createOnMouseLeaveCallback({
-      updateSegmentHover,
-      getSelectedIds,
-      getLastHoveredMesh,
-      setLastHoveredMesh,
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: { duringAreaSelectIds: [4] },
     })
-
-    callback({
-      selected: pointGroup,
-      isAreaSelectActive: false,
-      mouseEvent: createTestMouseEvent(),
-    })
-
-    // Point segments should not trigger hover clearing
-    expect(updateSegmentHover).not.toHaveBeenCalled()
   })
 })

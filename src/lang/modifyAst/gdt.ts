@@ -9,6 +9,7 @@ import {
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
+  deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
@@ -35,6 +36,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  * @param precision - Number of decimal places to display (optional)
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -49,6 +51,7 @@ export function addFlatnessGdt({
   precision,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -61,6 +64,7 @@ export function addFlatnessGdt({
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -130,6 +134,7 @@ export function addFlatnessGdt({
     wasmInstance,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })
@@ -208,6 +213,7 @@ export function addFlatnessGdt({
  * @param name - The datum identifier (e.g., 'A', 'B', 'C')
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -221,6 +227,7 @@ export function addDatumGdt({
   wasmInstance,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -232,6 +239,7 @@ export function addDatumGdt({
   wasmInstance: ModuleType
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -291,6 +299,7 @@ export function addDatumGdt({
     nodeToEdit: mNodeToEdit,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })
@@ -333,41 +342,6 @@ export function addDatumGdt({
     modifiedAst,
     pathToNode,
   }
-}
-
-/**
- * Deduplicates face expressions based on their string representation.
- * This prevents creating multiple annotations for the same face.
- */
-function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
-  const seen = new Set<string>()
-  const unique: Expr[] = []
-
-  for (const expr of facesExprs) {
-    // Create a stable string representation for comparison
-    const key = exprToKey(expr)
-    if (!seen.has(key)) {
-      seen.add(key)
-      unique.push(expr)
-    }
-  }
-
-  return unique
-}
-
-/**
- * Converts an expression to a stable string key for deduplication.
- */
-function exprToKey(expr: Expr): string {
-  if (expr.type === 'Literal') {
-    return `literal:${JSON.stringify(expr.value)}`
-  }
-  if (expr.type === 'Name') {
-    // Name has a nested Identifier: expr.name.name is the actual string
-    return `name:${expr.name.name}`
-  }
-  // Fallback for other expression types (though currently only Name is used)
-  return JSON.stringify(expr)
 }
 
 /**
@@ -451,6 +425,7 @@ function processGdtStyleParameters({
   nodeToEdit,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
 }: {
@@ -459,6 +434,7 @@ function processGdtStyleParameters({
   nodeToEdit?: PathToNode
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
 }): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
@@ -482,6 +458,13 @@ function processGdtStyleParameters({
     framePlane.variableName
   ) {
     insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+  }
+  if (
+    leaderScale &&
+    'variableName' in leaderScale &&
+    leaderScale.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(leaderScale, modifiedAst, nodeToEdit)
   }
   if (
     fontPointSize &&
@@ -517,7 +500,12 @@ function processGdtStyleParameters({
     labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
   }
 
-  // Add font-related optional labeled arguments if provided
+  // Add scale-related optional labeled arguments if provided
+  if (leaderScale !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('leaderScale', valueOrVariable(leaderScale))
+    )
+  }
   if (fontPointSize !== undefined) {
     labeledArgs.push(
       createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))

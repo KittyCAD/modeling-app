@@ -20,7 +20,7 @@ export const Settings = () => {
     if (document.activeElement instanceof HTMLInputElement) {
       document.activeElement.blur()
     }
-    navigate(location.pathname.replace(PATHS.SETTINGS, ''))
+    void navigate(location.pathname.replace(PATHS.SETTINGS, ''))
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)

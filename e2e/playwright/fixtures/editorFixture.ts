@@ -114,7 +114,7 @@ export class EditorFixture {
     await this.scrollToBottom()
     try {
       // Use expect.poll to implement retry logic
-      await expect
+      expect
         .poll(
           async () => {
             const code = await this.codeContent.textContent()
@@ -208,18 +208,17 @@ export class EditorFixture {
       nextLineCount = await this.lines.count()
     } while (nextLineCount !== currLineCount)
   }
-  scrollToText(text: string, placeCursor?: boolean) {
+  async scrollToText(text: string, placeCursor?: boolean) {
+    if (!(await this.checkIfPaneIsOpen())) {
+      await this.openPane()
+    }
+    await expect(this.codeContent).not.toBeEmpty()
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
-        const editorView = window.kclManager.getEditorView()
-        // error TS2339: Property 'docView' does not exist on type 'EditorView'.
-        // Except it does so :shrug:
-        // @ts-ignore
-        const index = editorView?.docView.view.state.doc
-          .toString()
-          .indexOf(args.text)
-        editorView?.focus()
-        editorView?.dispatch({
+        const editorView = window.kclManager.editorView
+        const index = editorView.state.doc.toString().indexOf(args.text)
+        editorView.focus()
+        editorView.dispatch({
           selection: window.EditorSelection.create([
             window.EditorSelection.cursor(index),
           ]),

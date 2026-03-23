@@ -629,7 +629,6 @@ description: Artifact commands herringbone-gear.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -654,7 +653,8 @@ description: Artifact commands herringbone-gear.kcl
         "v_degree": 1,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {

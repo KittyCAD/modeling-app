@@ -1,9 +1,8 @@
-import fsSync from 'node:fs'
+import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import path from 'path'
 import packageJson from '@root/package.json'
-import type { MachinesListing } from '@src/components/MachineManagerProvider'
+import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
@@ -55,6 +54,10 @@ const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
+const getMachineApiRunning = (): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.get-state')
+const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.set-state', signal)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -80,7 +83,7 @@ const watchFileOn = (
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1 })
+  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
@@ -104,11 +107,7 @@ const watchFileOff = (path: string, key: string) => {
     fsWatchListeners.set(path, watchers)
   }
 }
-const copy = fs.cp
 const readFile = fs.readFile
-// It seems like from the node source code this does not actually block but also
-// don't trust me on that (jess).
-const exists = (path: string) => fsSync.existsSync(path)
 const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
@@ -117,46 +116,86 @@ const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
 
+/**
+ * Recursively move a file or folder to a destination
+ * using the native Node `.rename` function,
+ * creating any folders necessary to do so,
+ * and falling back to copy-and-delete if rename fails.
+ */
+export async function move(
+  source: string | URL,
+  destination: string | URL
+): Promise<undefined | Error> {
+  const sourceIsDir = (await fs.stat(source)).isDirectory()
+
+  if (sourceIsDir) {
+    const destinationStat = await fs.stat(destination).catch((e) => {
+      console.error(e)
+      return e
+    })
+    const destinationIsDir =
+      'isDirectory' in destinationStat && destinationStat.isDirectory()
+    const destinationIsNotEmpty =
+      (await fs.readdir(destination).catch((e) => e)).length !== 0
+
+    if (destinationIsDir && destinationIsNotEmpty) {
+      const sourceContents = await fs.readdir(source)
+      const bundledContentsResults = await Promise.all(
+        sourceContents.map((relPath) =>
+          move(
+            path.join(source.toString(), relPath),
+            path.join(destination.toString(), relPath)
+          )
+        )
+      )
+      const bundledContentsErrors = bundledContentsResults.filter(
+        (r) => r !== undefined
+      )
+      if (bundledContentsErrors.length) {
+        return new Error(
+          `Several errors occurred while attempting move: ${bundledContentsErrors.map((e) => e.message).join(', ')}`
+        )
+      }
+      await fs.rm(source, { recursive: true })
+      return undefined
+    }
+  }
+
+  return fs
+    .rename(source, destination)
+    .catch(async (e) => {
+      if (e.code === 'ENOENT') {
+        // We need to make the directories in the destination
+        const dirToMake = sourceIsDir
+          ? destination
+          : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
+        await fs.mkdir(dirToMake, { recursive: true })
+        return fs.rename(source, destination)
+      }
+      // I want the catch below to catch it
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw e
+    })
+    .catch((e) => {
+      console.error(e)
+      if (e.code === 'EXDEV') {
+        // Rename somehow isn't allowed, but copy+delete might be 🤞
+        return Promise.all([
+          fs.cp(source, destination, {
+            recursive: true,
+          }),
+          fs.rm(source, {
+            recursive: true,
+          }),
+        ])
+      }
+      return e
+    })
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-async function statIsDirectory(path: string): Promise<boolean> {
-  try {
-    const res = await stat(path)
-    return res.isDirectory()
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-      return false
-    }
-    return false // either way we don't know if it is a directory
-  }
-}
-
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
-
-const canReadWriteDirectory = async (
-  path: string
-): Promise<{ value: boolean; error: unknown } | Error> => {
-  const isDirectory = await statIsDirectory(path)
-  if (!isDirectory) {
-    return new Error('path is not a directory. Do not send a file path.')
-  }
-
-  // bitwise OR to check read and write permissions
-  try {
-    const canReadWrite = await fs.access(
-      path,
-      fs.constants.R_OK | fs.constants.W_OK
-    )
-    // This function returns undefined. If it cannot access the path it will throw an error
-    return canReadWrite === undefined
-      ? { value: true, error: undefined }
-      : { value: false, error: undefined }
-  } catch (e) {
-    console.error(e)
-    return { value: false, error: e }
-  }
-}
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
@@ -249,17 +288,16 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  access: fs.access,
   copyFile: fs.copyFile,
   readFile,
   writeFile,
-  exists,
   readdir,
   rename,
   rm: fs.rm,
-  path,
   stat,
-  statIsDirectory,
   mkdir: fs.mkdir,
+  move,
   // opens a dialog
   open,
   save,
@@ -272,8 +310,7 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join,
-  sep: path.sep,
+  path: path,
   takeElectronWindowScreenshot,
   os: {
     isMac,
@@ -308,12 +345,13 @@ contextBridge.exposeInMainWorld('electron', {
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  getMachineApiRunning,
+  setMachineApiState,
   createHomePageMenu,
   createModelingPageMenu,
   createFallbackMenu,
   enableMenu,
   disableMenu,
   menuOn,
-  canReadWriteDirectory,
-  copy,
+  cp: fs.cp,
 })

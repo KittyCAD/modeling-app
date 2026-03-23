@@ -38,16 +38,13 @@ node_modules/.package-lock.json: package.json package-lock.json
 $(CARGO): rust/rust-toolchain.toml
 ifdef WINDOWS
 	npm run install:rust:windows
+	@ powershell -Command "if (Test-Path '$(CARGO)') { (Get-Item '$(CARGO)').LastWriteTime = Get-Date }"
 else
 	npm run install:rust
 endif
 
 $(WASM_PACK):
-ifdef WINDOWS
 	npm run install:wasm-pack:cargo
-else
-	npm run install:wasm-pack:sh
-endif
 
 ###############################################################################
 # BUILD
@@ -139,7 +136,9 @@ test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tes
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
+ifndef E2E_GREP
 	npm run test:e2e:kcl
+endif
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests

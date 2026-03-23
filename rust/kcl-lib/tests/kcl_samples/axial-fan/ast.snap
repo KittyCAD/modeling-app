@@ -100,8 +100,6 @@ description: Result of parsing axial-fan.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Produce the model for each imported part"
         ],
         "start": 0,
@@ -179,6 +177,7 @@ description: Result of parsing axial-fan.kcl
         "preComments": [
           "// PC Fan",
           "// A small axial fan, used to push or draw airflow over components to remove excess heat",
+          "// Categories: Computer Hardware",
           "",
           "",
           "// Set units"
@@ -252,7 +251,20 @@ description: Result of parsing axial-fan.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

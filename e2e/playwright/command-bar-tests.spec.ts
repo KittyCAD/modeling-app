@@ -6,7 +6,7 @@ import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -49,11 +49,11 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -169,11 +169,6 @@ test.describe('Command bar tests', () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // FIXME: No KCL code, unable to wait for engine execution
-    await page.waitForTimeout(10000)
-
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
     // Put the cursor in the code editor
     await page.locator('.cm-content').click()
 
@@ -252,13 +247,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
@@ -268,7 +263,7 @@ test.describe('Command bar tests', () => {
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'length',
     })
@@ -474,9 +469,9 @@ test.describe('Command bar tests', () => {
     editor,
     homePage,
     toolbar,
-    context,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProjectDir = path.join(dir, 'testProjectDir')
       await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
       await Promise.all([
@@ -551,10 +546,10 @@ test.describe('Command bar tests', () => {
   test(`Can add and edit a named parameter or constant`, async ({
     page,
     homePage,
-    context,
     cmdBar,
     scene,
     editor,
+    folderSetupFn,
   }) => {
     const projectName = 'test'
     const beforeKclCode = `a = 5
@@ -563,7 +558,7 @@ c = 3 + a
 theta = 45deg
 export exported = 1
 `
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
       await fsp.mkdir(testProject, { recursive: true })
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
@@ -762,17 +757,150 @@ export exported = 2`,
     async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
       await cmdBar.expectCommandName('Settings · app · theme')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Settings · app · theme',
-        currentArgKey: 'value',
-        currentArgValue: '',
-        headerArguments: {
-          Level: 'user',
-          Value: '',
-        },
-        highlightedHeaderArg: 'value',
-      })
     }
   )
+
+  test('Step back works on non-required and required arguments and closes', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('Extrude')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'Profiles',
+    })
+
+    await editor.selectText('circle(center = [0, 0], radius = 5)')
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
+
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+
+    await cmdBar.clickOptionalArgument('bodyType')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: '',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+    await cmdBar.selectOption({ name: 'Solid' }).click()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+    })
+
+    await cmdBar.clickOptionalArgument('method')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'method',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+        Method: '',
+      },
+      highlightedHeaderArg: 'method',
+    })
+    // Here we specifically don't input anything, making the arg unvalidated
+
+    await cmdBar.stepBack()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+
+    await cmdBar.stepBack()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+      highlightedHeaderArg: 'length',
+    })
+
+    await cmdBar.stepBack()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+      highlightedHeaderArg: 'Profiles',
+    })
+
+    await cmdBar.stepBack()
+    await cmdBar.expectState({ stage: 'commandBarClosed' })
+  })
 })

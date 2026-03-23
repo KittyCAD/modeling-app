@@ -1,9 +1,11 @@
+import ms from 'ms'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
   MlCopilotMode,
+  MlCopilotFile,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
@@ -57,9 +59,11 @@ export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  Cancel = 'cancel',
   Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
+  BackendShutdown = 'backend-shutdown',
 }
 
 export type MlEphantManagerEvents =
@@ -93,6 +97,8 @@ export type MlEphantManagerEvents =
       selections: Selections
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
+      additionalFiles?: File[]
+      sketch_solve?: boolean // allow Zookeeper to reference experimental docs
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -102,10 +108,17 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.ConversationClose
     }
   | {
+      type: MlEphantManagerTransitions.Cancel
+    }
+  | {
       type: MlEphantManagerTransitions.Interrupt
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
+      closeReason?: string
+    }
+  | {
+      type: MlEphantManagerTransitions.BackendShutdown
     }
 
 export interface Exchange {
@@ -133,12 +146,15 @@ export interface MlEphantManagerContext {
   apiToken: string
   ws?: WebSocket
   abruptlyClosed: boolean
+  closeReason?: string
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  awaitingResponse: boolean
+  pendingBackendShutdown: boolean
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
@@ -153,12 +169,15 @@ export const mlEphantDefaultContext = (args: {
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
   abruptlyClosed: false,
+  closeReason: undefined,
   conversation: undefined,
   cachedSetup: undefined,
   lastMessageId: undefined,
   lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
+  awaitingResponse: false,
+  pendingBackendShutdown: false,
 })
 
 function isString(x: unknown): x is string {
@@ -167,6 +186,106 @@ function isString(x: unknown): x is string {
 
 function isPresent<T>(x: undefined | T): x is T {
   return x !== null && x !== undefined
+}
+
+type BackendShutdownMessage = Extract<
+  MlCopilotServerMessage,
+  { backend_shutdown: { reason?: string } }
+>
+
+function isBackendShutdownMessage(
+  response: unknown
+): response is BackendShutdownMessage {
+  if (typeof response !== 'object' || response === null) return false
+  const candidate = response as { backend_shutdown?: { reason?: string } }
+  return typeof candidate.backend_shutdown === 'object'
+}
+
+function isResponseComplete(response: MlCopilotServerMessage): boolean {
+  return 'end_of_stream' in response || 'error' in response
+}
+
+async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+  return {
+    name: file.name,
+    mimetype: file.type || 'application/octet-stream',
+    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+  }
+}
+
+export const MlEphantConversationToMarkdown = (
+  conversation?: Conversation
+): string => {
+  if (conversation === undefined) return ''
+
+  let agg = ''
+  let meta = ''
+
+  for (const exchange of conversation.exchanges) {
+    let entry = ''
+    let reason = ''
+    if (exchange.request) {
+      if ('content' in exchange.request) {
+        entry += '## You:\n\n'
+        entry += exchange.request.content + '\n\n'
+      }
+    }
+    for (const response of exchange.responses) {
+      if ('reasoning' in response) {
+        if ('content' in response.reasoning) {
+          if (
+            [
+              'created_kcl_file',
+              'updated_kcl_file',
+              'deleted_kcl_file',
+            ].includes(response.reasoning.type) === false
+          ) {
+            const contentWithoutCode = response.reasoning.content.replace(
+              /```[\s\S]*?```/gm,
+              '~~Code redacted~~'
+            )
+            reason += `${contentWithoutCode}\n\n`
+          }
+        } else if ('error' in response.reasoning) {
+          reason += `**${response.reasoning.error}**\n\n`
+
+          // We will ignore code. It adds a lot of noise. We can look at honeycomb
+          // with the api call id if we really want it.
+        } else if ('code' in response.reasoning) {
+          reason += '~~Code redacted~~\n\n'
+        } else if ('steps' in response.reasoning) {
+          for (const step of response.reasoning.steps) {
+            reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
+          }
+        }
+      }
+      if ('error' in response) {
+        reason += `**${response.error.detail}**\n\n`
+      }
+
+      // An error signals end of stream as well.
+      if ('error' in response || 'end_of_stream' in response) {
+        let time = 0
+        if ('end_of_stream' in response) {
+          time =
+            new Date(response.end_of_stream.completed_at ?? 0).getTime() -
+            new Date(response.end_of_stream.started_at ?? 0).getTime()
+        }
+
+        entry += `## Zookeeper (${time === 0 ? 'unknown' : ms(time, { long: true })}):\n\n`
+        entry += reason + '\n'
+        entry += new Array(80).fill('-').join('') + '\n\n'
+
+        if ('end_of_stream' in response) {
+          entry += response.end_of_stream.whole_response ?? '' + '\n'
+          meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+        }
+      }
+    }
+    agg += entry + '\n\n'
+  }
+
+  return meta + '\n' + agg + '\n\n'
 }
 
 function xor(a: boolean, b: boolean): boolean {
@@ -230,6 +349,36 @@ export const mlEphantManagerMachine = setup({
         toast.error(event.error.message)
       }
     },
+    handleAbruptClose: assign(({ event }) => {
+      assertEvent(event, MlEphantManagerTransitions.AbruptClose)
+      if (event.closeReason) {
+        toast.error(event.closeReason)
+      }
+      return {
+        abruptlyClosed: true,
+        closeReason: event.closeReason,
+      }
+    }),
+    handleBackendShutdown: assign(({ context }) => {
+      if (context.awaitingResponse) {
+        return { pendingBackendShutdown: true }
+      }
+      return {}
+    }),
+    disconnectIfIdle: ({ context }) => {
+      if (!context.awaitingResponse) {
+        context.ws?.close()
+      }
+    },
+    disconnectIfPendingBackendShutdown: ({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.ResponseReceive)
+      if (
+        context.pendingBackendShutdown &&
+        isResponseComplete(event.response)
+      ) {
+        context.ws?.close()
+      }
+    },
     cacheSetup: assign({
       conversationId: ({ event }) => {
         assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
@@ -269,6 +418,12 @@ export const mlEphantManagerMachine = setup({
         ? `?conversation_id=${maybeConversationId}&replay=true`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+
+      // Defensive: if there's already an open connection, close it.
+      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        args.input.context.ws?.close()
+      }
+
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
@@ -296,6 +451,12 @@ export const mlEphantManagerMachine = setup({
         (onFulfilled, onRejected) => {
           let devCalledClose = false
 
+          // Any WS protocol messages will trigger the `api` heartbeat update.
+          const pingIntervalId = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return
+            ws.send(JSON.stringify({ type: 'ping' }))
+          }, 4_000)
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -316,6 +477,15 @@ export const mlEphantManagerMachine = setup({
               }
             }
 
+            if (isBackendShutdownMessage(response)) {
+              if (theRefParentSend) {
+                theRefParentSend({
+                  type: MlEphantManagerTransitions.BackendShutdown,
+                })
+              }
+              return
+            }
+
             if (!isMlCopilotServerMessage(response))
               return new Error('Not a MlCopilotServerMessage')
 
@@ -329,6 +499,11 @@ export const mlEphantManagerMachine = setup({
 
             // Ignore the session data
             if ('session_data' in response) {
+              return
+            }
+
+            // Ignore pong
+            if ('pong' in response) {
               return
             }
 
@@ -430,10 +605,17 @@ export const mlEphantManagerMachine = setup({
             }
           })
 
-          ws.addEventListener('close', function (event: Event) {
+          ws.addEventListener('close', function (event: CloseEvent) {
             if (theRefParentSend !== undefined && devCalledClose === false) {
+              let closeReason: string | undefined
+              if (event.code === 1009) {
+                closeReason =
+                  'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
+              }
+              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
+                closeReason,
               })
             }
           })
@@ -469,6 +651,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
+      const additionalFiles =
+        event.additionalFiles && event.additionalFiles.length > 0
+          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+          : undefined
+
       const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
         type: 'user',
         content: requestData.body.prompt ?? '',
@@ -476,6 +663,8 @@ export const mlEphantManagerMachine = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
+        sketch_solve: event.sketch_solve ?? false,
+        ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
       context.ws.send(JSON.stringify(request))
@@ -495,6 +684,23 @@ export const mlEphantManagerMachine = setup({
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
+    }),
+    [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Cancel>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'cancel',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
     }),
     [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
       args: XSInput<MlEphantManagerTransitions.Interrupt>
@@ -517,6 +723,11 @@ export const mlEphantManagerMachine = setup({
 }).createMachine({
   initial: S.Await,
   context: mlEphantDefaultContext,
+  exit: (args) => {
+    // Make sure the connection is closed.
+    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    args.context?.ws?.close()
+  },
   states: {
     [S.Await]: {
       on: {
@@ -529,6 +740,8 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               conversation: undefined,
               conversationId: undefined,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
             }),
             'cacheSetup',
           ],
@@ -558,7 +771,14 @@ export const mlEphantManagerMachine = setup({
         src: MlEphantManagerStates.Setup,
         onDone: {
           target: MlEphantManagerStates.Ready,
-          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
+          actions: [
+            assign(({ event }) => ({
+              ...event.output,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
+            })),
+            'clearCacheSetup',
+          ],
         },
         onError: {
           target: MlEphantManagerStates.Setup,
@@ -595,12 +815,20 @@ export const mlEphantManagerMachine = setup({
         ...transitions([MlEphantManagerTransitions.ConversationClose]),
         [MlEphantManagerTransitions.AbruptClose]: {
           target: MlEphantManagerTransitions.AbruptClose,
-          actions: [assign({ abruptlyClosed: true })],
+          actions: ['handleAbruptClose'],
+        },
+        [MlEphantManagerTransitions.BackendShutdown]: {
+          actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },
       },
     },
     [MlEphantManagerStates.Ready]: {
       type: 'parallel',
+      on: {
+        [MlEphantManagerTransitions.BackendShutdown]: {
+          actions: ['handleBackendShutdown', 'disconnectIfIdle'],
+        },
+      },
       states: {
         [MlEphantManagerStates.Response]: {
           initial: S.Await,
@@ -613,7 +841,7 @@ export const mlEphantManagerMachine = setup({
                 ]),
                 [MlEphantManagerTransitions.AbruptClose]: {
                   target: MlEphantManagerTransitions.AbruptClose,
-                  actions: [assign({ abruptlyClosed: true })],
+                  actions: ['handleAbruptClose'],
                 },
               },
             },
@@ -628,12 +856,14 @@ export const mlEphantManagerMachine = setup({
               always: {
                 target: S.Await,
                 actions: [
+                  'disconnectIfPendingBackendShutdown',
                   assign(({ event, context }) => {
                     assertEvent(event, [
                       MlEphantManagerTransitions.ResponseReceive,
                     ])
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
+                    const responseComplete = isResponseComplete(event.response)
 
                     const conversation: Conversation = {
                       exchanges: Array.from(
@@ -653,6 +883,10 @@ export const mlEphantManagerMachine = setup({
                       return {
                         conversation,
                         lastMessageId,
+                        awaitingResponse: false,
+                        pendingBackendShutdown: responseComplete
+                          ? false
+                          : context.pendingBackendShutdown,
                       }
                     }
 
@@ -693,10 +927,22 @@ export const mlEphantManagerMachine = setup({
                       | TypeVariant<MlCopilotServerMessage>
                       | undefined = ts.find((t) => t in r)
 
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) {
+                      return context
+                    }
+
                     return {
                       conversation,
                       lastMessageId,
                       lastMessageType,
+                      awaitingResponse: responseComplete
+                        ? false
+                        : context.awaitingResponse,
+                      pendingBackendShutdown: responseComplete
+                        ? false
+                        : context.pendingBackendShutdown,
                     }
                   }),
                 ],
@@ -710,6 +956,7 @@ export const mlEphantManagerMachine = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
+                MlEphantManagerTransitions.Cancel,
                 MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
                 MlEphantManagerTransitions.AbruptClose,
@@ -735,7 +982,30 @@ export const mlEphantManagerMachine = setup({
                 src: MlEphantManagerTransitions.MessageSend,
                 onDone: {
                   target: S.Await,
-                  actions: [assign(({ event }) => event.output)],
+                  actions: [
+                    assign(({ event, context }) => ({
+                      ...event.output,
+                      awaitingResponse: true,
+                      pendingBackendShutdown: context.pendingBackendShutdown,
+                    })),
+                  ],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.Cancel]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [MlEphantManagerTransitions.Cancel])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.Cancel,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
               },
@@ -787,6 +1057,8 @@ export const mlEphantManagerMachine = setup({
               cachedSetup: undefined,
               lastMessageId: undefined,
               lastMessageType: undefined,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
             })
           },
           (args) => {

@@ -19,7 +19,37 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [],
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "on",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "XY",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
             "body": {
               "commentStart": 0,
               "end": 0,
@@ -188,16 +218,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -288,16 +309,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -535,16 +547,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -744,16 +747,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -794,16 +788,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -944,16 +929,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -994,16 +970,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1055,16 +1022,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1174,16 +1132,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1340,16 +1289,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sketch2",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        ],
+                        "path": [],
                         "start": 0,
                         "type": "Name"
                       },
@@ -1369,8 +1309,6 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Point at (1,0)."
                   ],
                   "start": 0,
@@ -1589,16 +1527,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1708,16 +1637,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1800,16 +1720,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -1922,8 +1833,6 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                   },
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Arc between the lines."
                   ],
                   "start": 0,
@@ -1948,16 +1857,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                         "start": 0,
                         "type": "Identifier"
                       },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
+                      "path": [],
                       "start": 0,
                       "type": "Name"
                     },
@@ -2078,6 +1978,30 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
               "non_code_meta": {
                 "nonCodeNodes": {
                   "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "10": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "15": [
                     {
                       "commentStart": 0,
                       "end": 0,

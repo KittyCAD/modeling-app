@@ -2,7 +2,6 @@ import type { Command } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import type { ActorRefFrom } from 'xstate'
 
 export function createAuthCommands({
@@ -10,7 +9,7 @@ export function createAuthCommands({
 }: { authActor: ActorRefFrom<typeof authMachine> }) {
   const authCommands: Command[] = [
     {
-      groupId: ACTOR_IDS.AUTH,
+      groupId: 'auth',
       name: 'log-out',
       displayName: 'Log out',
       description: 'Log out of your account.',
@@ -19,7 +18,7 @@ export function createAuthCommands({
       onSubmit: () => authActor.send({ type: 'Log out' }),
     },
     {
-      groupId: ACTOR_IDS.AUTH,
+      groupId: 'auth',
       name: 'refresh',
       displayName: 'Reload app',
       description: 'Force the scene, features, and editor to reload.',

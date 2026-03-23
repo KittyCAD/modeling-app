@@ -7,8 +7,8 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { rustContext } from '@src/lib/singletons'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
+import { platform } from '@src/lib/utils'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean
@@ -30,16 +30,42 @@ export const SetVarNameModal = ({
   valueName,
   selectionRanges,
 }: SetVarNameModalProps) => {
+  const { kclManager } = useSingletons()
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',
       initialVariableName: valueName,
       selectionRanges,
-      rustContext,
+      rustContext: kclManager.rustContext,
       code: kclManager.codeSignal.value,
       ast: kclManager.astSignal.value,
       variables: kclManager.variablesSignal.value,
     })
+  const cancelButton = (
+    <ActionButton
+      key="cancel"
+      Element="button"
+      type="button"
+      onClick={() => onReject(false)}
+    >
+      Cancel
+    </ActionButton>
+  )
+  const confirmButton = (
+    <ActionButton
+      key="confirm"
+      Element="button"
+      type="submit"
+      disabled={!isNewVariableNameUnique}
+      iconStart={{ icon: 'plus' }}
+    >
+      Add variable
+    </ActionButton>
+  )
+  const orderedButtons =
+    platform() === 'windows'
+      ? [confirmButton, cancelButton]
+      : [cancelButton, confirmButton]
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -86,18 +112,8 @@ export const SetVarNameModal = ({
                 shouldCreateVariable={true}
                 showCheckbox={false}
               />
-              <div className="mt-8 flex justify-between">
-                <ActionButton Element="button" onClick={() => onReject(false)}>
-                  Cancel
-                </ActionButton>
-                <ActionButton
-                  Element="button"
-                  type="submit"
-                  disabled={!isNewVariableNameUnique}
-                  iconStart={{ icon: 'plus' }}
-                >
-                  Add variable
-                </ActionButton>
+              <div className="mt-8 flex justify-end gap-2">
+                {orderedButtons}
               </div>
             </form>
           </Dialog.Panel>

@@ -71,10 +71,10 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 625,
-            "end": 640,
+            "commentStart": 668,
+            "end": 683,
             "moduleId": 0,
-            "start": 625,
+            "start": 668,
             "type": "TagDeclarator",
             "value": "basePlateEdge1"
           },
@@ -85,10 +85,10 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 723,
-            "end": 738,
+            "commentStart": 766,
+            "end": 781,
             "moduleId": 0,
-            "start": 723,
+            "start": 766,
             "type": "TagDeclarator",
             "value": "basePlateEdge2"
           },
@@ -99,10 +99,10 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 828,
-            "end": 843,
+            "commentStart": 871,
+            "end": 886,
             "moduleId": 0,
-            "start": 828,
+            "start": 871,
             "type": "TagDeclarator",
             "value": "basePlateEdge3"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 913,
-            "end": 928,
+            "commentStart": 956,
+            "end": 971,
             "moduleId": 0,
-            "start": 913,
+            "start": 956,
             "type": "TagDeclarator",
             "value": "basePlateEdge4"
           },
@@ -159,6 +159,7 @@ description: Variables in memory after executing mounting-plate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -172,10 +173,10 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 625,
-              "end": 640,
+              "commentStart": 668,
+              "end": 683,
               "moduleId": 0,
-              "start": 625,
+              "start": 668,
               "type": "TagDeclarator",
               "value": "basePlateEdge1"
             },
@@ -196,10 +197,10 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 723,
-              "end": 738,
+              "commentStart": 766,
+              "end": 781,
               "moduleId": 0,
-              "start": 723,
+              "start": 766,
               "type": "TagDeclarator",
               "value": "basePlateEdge2"
             },
@@ -220,10 +221,10 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 828,
-              "end": 843,
+              "commentStart": 871,
+              "end": 886,
               "moduleId": 0,
-              "start": 828,
+              "start": 871,
               "type": "TagDeclarator",
               "value": "basePlateEdge3"
             },
@@ -244,10 +245,10 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 913,
-              "end": 928,
+              "commentStart": 956,
+              "end": 971,
               "moduleId": 0,
-              "start": 913,
+              "start": 956,
               "type": "TagDeclarator",
               "value": "basePlateEdge4"
             },
@@ -379,6 +380,8 @@ description: Variables in memory after executing mounting-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -386,7 +389,6 @@ description: Variables in memory after executing mounting-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -551,10 +553,10 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 625,
-            "end": 640,
+            "commentStart": 668,
+            "end": 683,
             "moduleId": 0,
-            "start": 625,
+            "start": 668,
             "type": "TagDeclarator",
             "value": "basePlateEdge1"
           },
@@ -575,10 +577,10 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 723,
-            "end": 738,
+            "commentStart": 766,
+            "end": 781,
             "moduleId": 0,
-            "start": 723,
+            "start": 766,
             "type": "TagDeclarator",
             "value": "basePlateEdge2"
           },
@@ -599,10 +601,10 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 828,
-            "end": 843,
+            "commentStart": 871,
+            "end": 886,
             "moduleId": 0,
-            "start": 828,
+            "start": 871,
             "type": "TagDeclarator",
             "value": "basePlateEdge3"
           },
@@ -623,10 +625,10 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 913,
-            "end": 928,
+            "commentStart": 956,
+            "end": 971,
             "moduleId": 0,
-            "start": 913,
+            "start": 956,
             "type": "TagDeclarator",
             "value": "basePlateEdge4"
           },
@@ -641,6 +643,8 @@ description: Variables in memory after executing mounting-plate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -648,7 +652,6 @@ description: Variables in memory after executing mounting-plate.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -712,13 +715,14 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

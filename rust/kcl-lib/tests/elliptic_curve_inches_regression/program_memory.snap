@@ -110,13 +110,14 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "in"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -175,6 +176,14 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "id": "[uuid]",
             "sourceRange": []
           },
+          "control1": [
+            -75.651309,
+            35.31668
+          ],
+          "control2": [
+            -58.29019,
+            31.196099999999998
+          ],
           "from": [
             -90.658755,
             60.855171
@@ -184,7 +193,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             -40.454074999999996,
             34.182681
           ],
-          "type": "ToPoint",
+          "type": "Bezier",
           "units": "in"
         },
         {
@@ -192,6 +201,14 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "id": "[uuid]",
             "sourceRange": []
           },
+          "control1": [
+            -22.617959999999997,
+            37.169262
+          ],
+          "control2": [
+            -4.306847999999995,
+            47.263005
+          ],
           "from": [
             -40.454074999999996,
             34.182681
@@ -201,7 +218,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             13.334875000000004,
             47.374937
           ],
-          "type": "ToPoint",
+          "type": "Bezier",
           "units": "in"
         },
         {
@@ -209,6 +226,14 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "id": "[uuid]",
             "sourceRange": []
           },
+          "control1": [
+            30.976598000000003,
+            47.486869000000006
+          ],
+          "control2": [
+            47.948933000000004,
+            37.616992
+          ],
           "from": [
             13.334875000000004,
             47.374937
@@ -218,7 +243,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             61.470926000000006,
             36.332651
           ],
-          "type": "ToPoint",
+          "type": "Bezier",
           "units": "in"
         },
         {
@@ -226,6 +251,14 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "id": "[uuid]",
             "sourceRange": []
           },
+          "control1": [
+            74.992919,
+            35.04831
+          ],
+          "control2": [
+            85.06457,
+            42.349506999999996
+          ],
           "from": [
             61.470926000000006,
             36.332651
@@ -235,7 +268,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             90.65875500000001,
             60.85517
           ],
-          "type": "ToPoint",
+          "type": "Bezier",
           "units": "in"
         },
         {
@@ -259,6 +292,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -266,7 +301,6 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           "units": "in"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

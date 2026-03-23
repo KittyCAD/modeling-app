@@ -88,10 +88,12 @@ async fn inner_chamfer(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::ObjectVisible {
-                    object_id: custom_profile.id,
-                    hidden: true,
-                }),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(custom_profile.id)
+                        .hidden(true)
+                        .build(),
+                ),
             )
             .await?;
         CutTypeV2::Custom {
@@ -117,14 +119,16 @@ async fn inner_chamfer(
         exec_state
             .batch_end_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(mcmd::Solid3dCutEdges {
-                    edge_ids: vec![edge_id],
-                    extra_face_ids: vec![],
-                    strategy,
-                    object_id: solid.id,
-                    tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
-                    cut_type,
-                }),
+                ModelingCmd::from(
+                    mcmd::Solid3dCutEdges::builder()
+                        .edge_ids(vec![edge_id])
+                        .extra_face_ids(vec![])
+                        .strategy(strategy)
+                        .object_id(solid.id)
+                        .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                        .cut_type(cut_type)
+                        .build(),
+                ),
             )
             .await?;
 

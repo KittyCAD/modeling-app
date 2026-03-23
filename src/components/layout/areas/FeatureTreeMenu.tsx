@@ -2,11 +2,14 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { commandBarActor } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 
 import styles from './KclEditorMenu.module.css'
+import { isDesktop } from '@src/lib/isDesktop'
+import Tooltip from '@src/components/Tooltip'
 
 export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
+  const { commands } = useApp()
   return (
     <Menu>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
@@ -33,7 +36,7 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() =>
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'code',
@@ -44,6 +47,28 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
               className={styles.button}
             >
               <span>Create parameter</span>
+            </button>
+          </Menu.Item>
+          <Menu.Item>
+            <button
+              onClick={() =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'code',
+                    name: 'Insert',
+                  },
+                })
+              }
+              disabled={!isDesktop()}
+              className={styles.button}
+            >
+              <span>Insert from a file</span>
+              {!isDesktop() && (
+                <Tooltip position="right">
+                  Available only in the desktop app
+                </Tooltip>
+              )}
             </button>
           </Menu.Item>
         </Menu.Items>

@@ -1,7 +1,6 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -10,38 +9,55 @@ import type {
   Conversation,
   Exchange,
 } from '@src/machines/mlEphantManagerMachine'
-import type { ReactNode } from 'react'
+import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
+import Tooltip from '@src/components/Tooltip'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
 
 const noop = () => {}
+
+export interface QueuedMessage {
+  id: string
+  text: string
+  mode: MlCopilotMode
+  attachments: File[]
+}
 
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
-  onProcess: (request: string, mode: MlCopilotMode) => void
-  onInterrupt: () => void
+  onProcess: (request: string, mode: MlCopilotMode, attachments: File[]) => void
+  onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  userBlockedOnPayment?: boolean
+  blockedReason?: string
   defaultPrompt?: string
+  initialMlCopilotMode?: MlCopilotMode // resolved from project settings
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
+  onSteer: (id: string) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
   fast: {
     pretty: 'Fast',
+    description: 'Lighter reasoning. Best for quick edits and simple tasks.',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
   thoughtful: {
     pretty: 'Thoughtful',
+    description: 'More thorough reasoning. Best for complex designs.',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
     ),
@@ -71,10 +87,9 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
 
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
-              {' '}
               {ML_COPILOT_MODE.map((mode) => (
                 <div
                   tabIndex={0}
@@ -84,11 +99,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode)
                   }}
-                  className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode}`}
                 >
-                  {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
-                  {ML_COPILOT_MODE_META[mode].pretty}
+                  {ML_COPILOT_MODE_META[mode].icon({
+                    className: 'w-5 h-5 shrink-0 mt-0.5',
+                  })}
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-medium">
+                      {ML_COPILOT_MODE_META[mode].pretty}
+                    </span>
+                    <span className="text-chalkboard-70 text-[11px] leading-tight">
+                      {ML_COPILOT_MODE_META[mode].description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </>
@@ -104,6 +128,8 @@ export interface MlEphantExtraInputsProps {
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
+  onAttachFiles: () => void
+  attachmentsDisabled?: boolean
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
@@ -120,6 +146,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           })}
           {ML_COPILOT_MODE_META[props.mode].pretty}
         </MlCopilotModes>
+        <button
+          type="button"
+          data-testid="ml-ephant-attachments-button"
+          onClick={props.onAttachFiles}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Attach files"
+        >
+          <CustomIcon name="paperclip" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Attach files</span>
+          </Tooltip>
+        </button>
       </div>
     </div>
   )
@@ -144,6 +183,7 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
+  const { kclManager } = useSingletons()
   const selectionText = getSelectionTypeDisplayText(
     kclManager.astSignal.value,
     props.selections.data
@@ -160,32 +200,136 @@ interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
-  onInterrupt: MlEphantConversationProps['onInterrupt']
+  onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
+  initialMlCopilotMode?: MlCopilotMode
+  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
 }
 
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
-  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [mode, setMode] = useState<MlCopilotMode>(
+    props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+  )
+  const [attachments, setAttachments] = useState<File[]>([])
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
+  useEffect(() => {
+    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+    setMode(next)
+  }, [props.initialMlCopilotMode])
+
   const onClick = () => {
     if (props.disabled) return
 
-    if (!value) return
+    if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, mode)
+    props.onProcess(value, mode, attachments)
     setValue('')
+    setAttachments([])
+  }
+
+  const appendAttachments = (files: File[]) => {
+    if (!files.length) return
+    setAttachments((current) => {
+      const next = [...current]
+      for (const file of files) {
+        const exists = next.some(
+          (existing) =>
+            existing.name === file.name &&
+            existing.size === file.size &&
+            (existing.lastModified === file.lastModified ||
+              existing.lastModified === 0 ||
+              file.lastModified === 0)
+        )
+        if (!exists) {
+          next.push(file)
+        }
+      }
+      return next
+    })
+  }
+
+  const onAttachFiles = () => {
+    if (props.disabled) return
+    fileInputRef.current?.click()
+  }
+
+  const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? [])
+    if (!files.length) return
+
+    appendAttachments(files)
+
+    event.target.value = ''
+  }
+
+  const onRemoveAttachment = (index: number) => {
+    setAttachments((current) => current.filter((_, i) => i !== index))
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (props.disabled) return
+    if (isExternalFileDrag(e)) {
+      setIsDraggingOver(true)
+    }
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Only set to false if we're leaving the container (not entering a child)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX
+    const y = e.clientY
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      setIsDraggingOver(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDraggingOver(false)
+    if (props.disabled) return
+
+    const files = Array.from(e.dataTransfer.files)
+    if (!files.length) return
+
+    appendAttachments(files)
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const files = Array.from(e.clipboardData.files)
+    if (!files.length) return
+    if (props.disabled) return
+
+    // Prevent default only if we have files to handle
+    e.preventDefault()
+
+    appendAttachments(files)
   }
 
   const selectionsContext:
@@ -194,7 +338,27 @@ export const MlEphantConversationInput = (
 
   return (
     <div className="flex flex-col p-4 gap-2">
-      <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
+      <div
+        className={`p-2 border b-4 focus-within:b-default flex flex-col gap-2 relative ${isDraggingOver ? 'border-ml-green border-dashed' : ''}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDraggingOver && (
+          <div className="absolute inset-0 bg-ml-green/10 flex items-center justify-center pointer-events-none z-10 rounded">
+            <span className="text-sm text-ml-green font-medium">
+              Drop files to attach
+            </span>
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          onChange={onFileInputChange}
+          className="hidden"
+        />
         <textarea
           autoCapitalize="off"
           autoCorrect="off"
@@ -204,9 +368,11 @@ export const MlEphantConversationInput = (
           value={value}
           ref={refDiv}
           placeholder={
-            props.hasAlreadySentPrompts
-              ? ''
-              : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
+            props.isProcessing
+              ? 'Type a follow-up to queue...'
+              : props.hasAlreadySentPrompts
+                ? ''
+                : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
           }
           onKeyDown={(e) => {
             const isOnlyEnter =
@@ -216,15 +382,43 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
+          onPaste={handlePaste}
           className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {attachments.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${file.size}`}
+                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                title={file.name}
+              >
+                <CustomIcon name="file" className="w-4 h-4" />
+                <span className="max-w-[160px] truncate">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => onRemoveAttachment(index)}
+                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
+                  aria-label={`Remove ${file.name}`}
+                >
+                  <CustomIcon name="close" className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
             mode={mode}
-            onSetMode={setMode}
+            onSetMode={(m) => {
+              setMode(m)
+              props.onMlCopilotModeChange?.(m)
+            }}
+            onAttachFiles={onAttachFiles}
+            attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">
             {!props.disabled && props.needsReconnect && (
@@ -236,24 +430,29 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            {props.hasPromptCompleted ? (
+            {props.isProcessing && (
               <button
-                data-testid="ml-ephant-conversation-input-button"
-                disabled={props.disabled}
-                onClick={onClick}
-                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
-              >
-                <CustomIcon name="arrowShortUp" className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                data-testid="ml-ephant-conversation-input-button"
-                onClick={props.onInterrupt}
+                data-testid="ml-ephant-conversation-cancel-button"
+                onClick={props.onCancel}
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
+                <Tooltip position="top" hoverOnly={true}>
+                  <span>Cancel</span>
+                </Tooltip>
               </button>
             )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
+            >
+              <CustomIcon name="arrowShortUp" className="w-5 h-5" />
+              <Tooltip position="top" hoverOnly={true}>
+                <span>{props.isProcessing ? 'Queue' : 'Send'}</span>
+              </Tooltip>
+            </button>
           </div>
         </div>
       </div>
@@ -288,28 +487,41 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
-  const [autoScroll, setAutoScroll] = useState<boolean>(true)
+  const exchangesLength = props.conversation?.exchanges.length ?? 0
+  const lastExchange = exchangesLength
+    ? props.conversation?.exchanges[exchangesLength - 1]
+    : undefined
+  const isEndOfStream = lastExchange?.responses.some(
+    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
+  )
 
-  const onProcess = (request: string, mode: MlCopilotMode) => {
-    setAutoScroll(true)
-    props.onProcess(request, mode)
-  }
-
+  // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (autoScroll === false) {
-      return
-    }
-    if (refScroll.current == null) {
-      return
-    }
-    if (!props.hasPromptCompleted) {
-      return
-    }
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+    if (exchangesLength === 0) return
+
+    requestAnimationFrame(() => {
+      if (refScroll.current) {
+        refScroll.current.scrollTo({
+          top: refScroll.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
     })
-  }, [props.hasPromptCompleted, autoScroll])
+  }, [exchangesLength])
+
+  // Autoscroll: right after Zookeeper completes its turn in the exchange.
+  useEffect(() => {
+    if (isEndOfStream) {
+      requestAnimationFrame(() => {
+        if (refScroll.current) {
+          refScroll.current.scrollTo({
+            top: refScroll.current.scrollHeight,
+            behavior: 'smooth',
+          })
+        }
+      })
+    }
+  }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -326,29 +538,22 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     }
   )
 
-  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
-
-  useEffect(() => {
-    if (refScroll.current === null) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [hasCards])
-
   return (
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto">
+          <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
-              {props.userBlockedOnPayment ? (
-                <StarterCard
-                  text={`Zookeeper is unavailable because you have run out of credits for the month. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
-                />
+              {props.blockedReason ? (
+                <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
-                  exchangeCards
+                  <>
+                    {exchangeCards}
+                    {lastExchange && !isEndOfStream && (
+                      <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
+                    )}
+                  </>
                 ) : (
                   <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
                 )
@@ -359,21 +564,71 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               )}
             </div>
           </div>
+          {props.queue.length > 0 && (
+            <div className="border-t b-4 px-4 py-2 flex flex-col gap-1">
+              <span className="text-xs text-3">Queued</span>
+              {props.queue.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-0.5 text-xs"
+                >
+                  <span className="text-3 shrink-0">{index + 1}.</span>
+                  <span className="truncate min-w-0 flex-1">{msg.text}</span>
+                  {msg.attachments.length > 0 && (
+                    <span className="text-3 shrink-0 flex items-center gap-0.5">
+                      <CustomIcon name="paperclip" className="w-3 h-3" />
+                      {msg.attachments.length}
+                    </span>
+                  )}
+                  <span className="text-3 shrink-0">
+                    {ML_COPILOT_MODE_META[msg.mode].pretty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => props.onSteer(msg.id)}
+                    className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
+                    aria-label={`Send queued message ${index + 1} now`}
+                  >
+                    <CustomIcon name="arrowShortUp" className="w-4 h-4" />
+                    Steer
+                    <Tooltip position="top" hoverOnly={true}>
+                      <span>Interrupt and send this prompt</span>
+                    </Tooltip>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => props.onRemoveFromQueue(msg.id)}
+                    className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
+                    aria-label={`Remove queued message ${index + 1}`}
+                  >
+                    <CustomIcon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={
-                props.userBlockedOnPayment || props.disabled || props.isLoading
+                Boolean(props.blockedReason) ||
+                props.disabled ||
+                props.isLoading
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
-              onProcess={onProcess}
+              onProcess={props.onProcess}
+              initialMlCopilotMode={props.initialMlCopilotMode}
+              onMlCopilotModeChange={props.onMlCopilotModeChange}
               onReconnect={props.onReconnect}
-              onInterrupt={props.onInterrupt}
+              onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
               }
+              isProcessing={props.isProcessing}
+              queue={props.queue}
+              onRemoveFromQueue={props.onRemoveFromQueue}
             />
           </div>
         </div>

@@ -382,10 +382,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 522,
-            "end": 528,
+            "commentStart": 543,
+            "end": 549,
             "moduleId": 0,
-            "start": 522,
+            "start": 543,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -470,6 +470,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -500,10 +501,10 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 522,
-              "end": 528,
+              "commentStart": 543,
+              "end": 549,
               "moduleId": 0,
-              "start": 522,
+              "start": 543,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -705,6 +706,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -712,7 +715,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -817,10 +819,10 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 522,
-            "end": 528,
+            "commentStart": 543,
+            "end": 549,
             "moduleId": 0,
-            "start": 522,
+            "start": 543,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1022,6 +1024,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1029,7 +1033,6 @@ description: Variables in memory after executing poopy-shoe.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -1095,10 +1098,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1310,
-            "end": 1316,
+            "commentStart": 1331,
+            "end": 1337,
             "moduleId": 0,
-            "start": 1310,
+            "start": 1331,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1183,6 +1186,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1213,10 +1217,10 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1310,
-              "end": 1316,
+              "commentStart": 1331,
+              "end": 1337,
               "moduleId": 0,
-              "start": 1310,
+              "start": 1331,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1418,6 +1422,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1425,7 +1431,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -1507,6 +1512,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1570,6 +1576,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": -1.4375,
@@ -1577,7 +1585,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": "in"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1712,10 +1719,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2966,
-            "end": 2972,
+            "commentStart": 2987,
+            "end": 2993,
             "moduleId": 0,
-            "start": 2966,
+            "start": 2987,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -1723,6 +1730,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1933,10 +1941,10 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2966,
-              "end": 2972,
+              "commentStart": 2987,
+              "end": 2993,
               "moduleId": 0,
-              "start": 2966,
+              "start": 2987,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -1952,6 +1960,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -1982,10 +1991,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1310,
-                  "end": 1316,
+                  "commentStart": 1331,
+                  "end": 1337,
                   "moduleId": 0,
-                  "start": 1310,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2070,6 +2079,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2100,10 +2110,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1310,
-                    "end": 1316,
+                    "commentStart": 1331,
+                    "end": 1337,
                     "moduleId": 0,
-                    "start": 1310,
+                    "start": 1331,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2305,6 +2315,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "YZ",
+                "objectId": 1,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2312,7 +2324,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "YZ",
                 "xAxis": {
                   "x": 0.0,
                   "y": -1.0,
@@ -2437,10 +2448,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3571,
-            "end": 3577,
+            "commentStart": 3592,
+            "end": 3598,
             "moduleId": 0,
-            "start": 3571,
+            "start": 3592,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2455,6 +2466,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2546,10 +2558,10 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 3571,
-              "end": 3577,
+              "commentStart": 3592,
+              "end": 3598,
               "moduleId": 0,
-              "start": 3571,
+              "start": 3592,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2581,6 +2593,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": -3.875,
             "y": 0.0,
@@ -2588,7 +2602,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": "in"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2677,6 +2690,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2753,6 +2767,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "seg03",
           "xAxis": {
             "x": 0.0,
@@ -2804,10 +2819,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3571,
-                  "end": 3577,
+                  "commentStart": 3592,
+                  "end": 3598,
                   "moduleId": 0,
-                  "start": 3571,
+                  "start": 3592,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -2822,6 +2837,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2913,10 +2929,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3571,
-                    "end": 3577,
+                    "commentStart": 3592,
+                    "end": 3598,
                     "moduleId": 0,
-                    "start": 3571,
+                    "start": 3592,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -2948,6 +2964,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 4,
                 "origin": {
                   "x": -3.875,
                   "y": 0.0,
@@ -2955,7 +2973,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": "in"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -3071,6 +3088,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3147,6 +3165,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -3247,10 +3266,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2966,
-                  "end": 2972,
+                  "commentStart": 2987,
+                  "end": 2993,
                   "moduleId": 0,
-                  "start": 2966,
+                  "start": 2987,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3258,6 +3277,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3468,10 +3488,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2966,
-                    "end": 2972,
+                    "commentStart": 2987,
+                    "end": 2993,
                     "moduleId": 0,
-                    "start": 2966,
+                    "start": 2987,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -3487,6 +3507,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 3,
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
@@ -3517,10 +3538,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1310,
-                        "end": 1316,
+                        "commentStart": 1331,
+                        "end": 1337,
                         "moduleId": 0,
-                        "start": 1310,
+                        "start": 1331,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3605,6 +3626,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -3635,10 +3657,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 1310,
-                          "end": 1316,
+                          "commentStart": 1331,
+                          "end": 1337,
                           "moduleId": 0,
-                          "start": 1310,
+                          "start": 1331,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -3840,6 +3862,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "YZ",
+                      "objectId": 1,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -3847,7 +3871,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "YZ",
                       "xAxis": {
                         "x": 0.0,
                         "y": -1.0,
@@ -3996,6 +4019,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4071,6 +4095,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 7,
           "origin": {
             "x": -3.875,
             "y": 0.0,
@@ -4078,7 +4104,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": "in"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,

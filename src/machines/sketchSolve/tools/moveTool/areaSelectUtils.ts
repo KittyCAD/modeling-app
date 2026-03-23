@@ -1,16 +1,47 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
-  type Group,
+  SKETCH_LAYER,
+  SKETCH_SOLVE_GROUP,
+} from '@src/clientSideScene/sceneUtils'
+import { getAngleDiff } from '@src/lib/utils'
+import {
+  getArcPoints,
+  getLinePoints,
+  isArcSegment,
+  isLineSegment,
+  isPointSegment,
+  pointToCoords2d,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { htmlHelper } from '@src/machines/sketchSolve/segments'
+import type { Coords2d } from '@src/lang/util'
+import {
+  Group,
   type OrthographicCamera,
   type PerspectiveCamera,
-  type Mesh,
   Vector3,
   Vector2,
-  BufferGeometry,
 } from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
 const LABEL_VERTICAL_OFFSET = 12
+
+export type SelectionBoxVisualState = {
+  getSelectionBoxObject: () => CSS2DObject | null
+  setSelectionBoxObject: (value: CSS2DObject | null) => void
+  getSelectionBoxGroup: () => Group | null
+  setSelectionBoxGroup: (value: Group | null) => void
+  getLabelsWrapper: () => HTMLElement | null
+  setLabelsWrapper: (value: HTMLElement | null) => void
+  getBoxDiv: () => HTMLElement | null
+  setBoxDiv: (value: HTMLElement | null) => void
+  getVerticalLine: () => HTMLElement | null
+  setVerticalLine: (value: HTMLElement | null) => void
+  getHorizontalLine: () => HTMLElement | null
+  setHorizontalLine: (value: HTMLElement | null) => void
+}
 
 /**
  * Projects a 3D point to 2D screen coordinates.
@@ -71,56 +102,6 @@ export function isIntersectionSelectionMode(
   currentPoint: Vector2
 ): boolean {
   return startPoint.x > currentPoint.x
-}
-
-/**
- * Checks if two axis-aligned bounding boxes intersect.
- * Pure function that determines if two boxes overlap in screen space.
- *
- * @param box1Min - Minimum corner of first box
- * @param box1Max - Maximum corner of first box
- * @param box2Min - Minimum corner of second box
- * @param box2Max - Maximum corner of second box
- * @returns True if boxes intersect, false otherwise
- */
-export function doBoxesIntersect(
-  box1Min: Vector2,
-  box1Max: Vector2,
-  box2Min: Vector2,
-  box2Max: Vector2
-): boolean {
-  // Two axis-aligned boxes intersect if:
-  // - box1Min.x <= box2Max.x AND box1Max.x >= box2Min.x AND
-  // - box1Min.y <= box2Max.y AND box1Max.y >= box2Min.y
-  return (
-    box1Min.x <= box2Max.x &&
-    box1Max.x >= box2Min.x &&
-    box1Min.y <= box2Max.y &&
-    box1Max.y >= box2Min.y
-  )
-}
-
-/**
- * Checks if all points are contained within a bounding box.
- * Pure function that determines if all points are inside the box boundaries.
- *
- * @param points - Array of points to check
- * @param boxMin - Minimum corner of the box
- * @param boxMax - Maximum corner of the box
- * @returns True if all points are contained, false otherwise
- */
-export function areAllPointsContained(
-  points: Array<Vector2>,
-  boxMin: Vector2,
-  boxMax: Vector2
-): boolean {
-  return points.every(
-    (point) =>
-      point.x >= boxMin.x &&
-      point.x <= boxMax.x &&
-      point.y >= boxMin.y &&
-      point.y <= boxMax.y
-  )
 }
 
 /**
@@ -332,78 +313,18 @@ export function transformToLocalSpace(
 }
 
 /**
- * Pure function: Extracts triangles (polygons) from a Three.js mesh geometry
- * Returns an array of triangles, where each triangle is an array of 3 Vector3 vertices in world space
- */
-export function extractTrianglesFromMesh(
-  mesh: Mesh,
-  camera: OrthographicCamera | PerspectiveCamera,
-  viewportSize: Vector2
-): Array<[Vector2, Vector2, Vector2]> {
-  const geometry = mesh.geometry
-  // ExtrudeGeometry extends BufferGeometry, so this check works for both
-  if (!(geometry instanceof BufferGeometry)) {
-    return []
-  }
-
-  mesh.updateMatrixWorld()
-  const positionAttr = geometry.getAttribute('position')
-  if (!positionAttr) {
-    return []
-  }
-
-  const positions = positionAttr.array as Float32Array
-  const triangles: Array<[Vector2, Vector2, Vector2]> = []
-
-  // Get indices or generate sequential indices
-  let indices: Array<number>
-  if (geometry.index) {
-    const idxArr = geometry.index.array as ArrayLike<number>
-    indices = Array.from(idxArr)
-  } else {
-    indices = Array.from({ length: positionAttr.count }, (_, i) => i)
-  }
-
-  // Extract triangles (every 3 indices form a triangle)
-  for (let i = 0; i < indices.length; i += 3) {
-    const i0 = indices[i] * 3
-    const i1 = indices[i + 1] * 3
-    const i2 = indices[i + 2] * 3
-
-    // Get vertices in local space
-    const v0 = new Vector3(positions[i0], positions[i0 + 1], positions[i0 + 2])
-    const v1 = new Vector3(positions[i1], positions[i1 + 1], positions[i1 + 2])
-    const v2 = new Vector3(positions[i2], positions[i2 + 1], positions[i2 + 2])
-
-    // Transform to world space
-    v0.applyMatrix4(mesh.matrixWorld)
-    v1.applyMatrix4(mesh.matrixWorld)
-    v2.applyMatrix4(mesh.matrixWorld)
-
-    // Project to screen space
-    const screen0 = project3DToScreen(v0, camera, viewportSize)
-    const screen1 = project3DToScreen(v1, camera, viewportSize)
-    const screen2 = project3DToScreen(v2, camera, viewportSize)
-
-    triangles.push([screen0, screen1, screen2])
-  }
-
-  return triangles
-}
-
-/**
  * Pure function: Checks if a point is inside a 2D axis-aligned box
  */
 function isPointInBox(
-  point: Vector2,
-  boxMin: Vector2,
-  boxMax: Vector2
+  point: Coords2d,
+  boxMin: Coords2d,
+  boxMax: Coords2d
 ): boolean {
   return (
-    point.x >= boxMin.x &&
-    point.x <= boxMax.x &&
-    point.y >= boxMin.y &&
-    point.y <= boxMax.y
+    point[0] >= boxMin[0] &&
+    point[0] <= boxMax[0] &&
+    point[1] >= boxMin[1] &&
+    point[1] <= boxMax[1]
   )
 }
 
@@ -411,11 +332,11 @@ function isPointInBox(
  * Pure function: Checks if a line segment intersects with a 2D axis-aligned box
  * Uses Liang-Barsky algorithm for efficient line-box intersection
  */
-function doesLineSegmentIntersectBox(
-  p0: Vector2,
-  p1: Vector2,
-  boxMin: Vector2,
-  boxMax: Vector2
+export function doesLineSegmentIntersectBox(
+  p0: Coords2d,
+  p1: Coords2d,
+  boxMin: Coords2d,
+  boxMax: Coords2d
 ): boolean {
   // If either endpoint is inside the box, it intersects
   if (isPointInBox(p0, boxMin, boxMax) || isPointInBox(p1, boxMin, boxMax)) {
@@ -424,16 +345,16 @@ function doesLineSegmentIntersectBox(
 
   // Check if line segment intersects box edges
   // Use parametric line equation: P(t) = p0 + t * (p1 - p0), t in [0, 1]
-  const dx = p1.x - p0.x
-  const dy = p1.y - p0.y
+  const dx = p1[0] - p0[0]
+  const dy = p1[1] - p0[1]
 
   // Check intersection with box edges
   // Left edge: x = boxMin.x
   if (dx !== 0) {
-    const t = (boxMin.x - p0.x) / dx
+    const t = (boxMin[0] - p0[0]) / dx
     if (t >= 0 && t <= 1) {
-      const y = p0.y + t * dy
-      if (y >= boxMin.y && y <= boxMax.y) {
+      const y = p0[1] + t * dy
+      if (y >= boxMin[1] && y <= boxMax[1]) {
         return true
       }
     }
@@ -441,10 +362,10 @@ function doesLineSegmentIntersectBox(
 
   // Right edge: x = boxMax.x
   if (dx !== 0) {
-    const t = (boxMax.x - p0.x) / dx
+    const t = (boxMax[0] - p0[0]) / dx
     if (t >= 0 && t <= 1) {
-      const y = p0.y + t * dy
-      if (y >= boxMin.y && y <= boxMax.y) {
+      const y = p0[1] + t * dy
+      if (y >= boxMin[1] && y <= boxMax[1]) {
         return true
       }
     }
@@ -452,10 +373,10 @@ function doesLineSegmentIntersectBox(
 
   // Top edge: y = boxMin.y
   if (dy !== 0) {
-    const t = (boxMin.y - p0.y) / dy
+    const t = (boxMin[1] - p0[1]) / dy
     if (t >= 0 && t <= 1) {
-      const x = p0.x + t * dx
-      if (x >= boxMin.x && x <= boxMax.x) {
+      const x = p0[0] + t * dx
+      if (x >= boxMin[0] && x <= boxMax[0]) {
         return true
       }
     }
@@ -463,10 +384,10 @@ function doesLineSegmentIntersectBox(
 
   // Bottom edge: y = boxMax.y
   if (dy !== 0) {
-    const t = (boxMax.y - p0.y) / dy
+    const t = (boxMax[1] - p0[1]) / dy
     if (t >= 0 && t <= 1) {
-      const x = p0.x + t * dx
-      if (x >= boxMin.x && x <= boxMax.x) {
+      const x = p0[0] + t * dx
+      if (x >= boxMin[0] && x <= boxMax[0]) {
         return true
       }
     }
@@ -475,171 +396,562 @@ function doesLineSegmentIntersectBox(
   return false
 }
 
-/**
- * Pure function: Checks if a triangle (polygon) intersects with a 2D axis-aligned box
- * Returns true if the triangle intersects the box (not just contained)
- */
-export function doesTriangleIntersectBox(
-  triangle: [Vector2, Vector2, Vector2],
-  boxMin: Vector2,
-  boxMax: Vector2
+function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
+  boxDiv: HTMLElement
+  verticalLine: HTMLElement
+  horizontalLine: HTMLElement
+  labelsWrapper: HTMLElement
+} {
+  const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
+  const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
+          <div
+            ${{ key: 'id', value: 'selection-box' }}
+            class = "border-bg-3 bg-black/5 dark:bg-white/10"
+            style="
+              position: absolute;
+              pointer-events: none;
+              border-width: ${borderWidthPx};
+              border-style: ${borderStyle};
+              transform: translate(-50%, -50%);
+              box-sizing: border-box;
+            "
+          >
+            <div
+              ${{ key: 'id', value: 'vertical-line' }}
+              class="bg-3"
+              style="
+                position: absolute;
+                pointer-events: none;
+                width: ${borderWidthPx};
+              "
+            ></div>
+            <div
+              ${{ key: 'id', value: 'horizontal-line' }}
+              class="bg-3"
+              style="
+                position: absolute;
+                pointer-events: none;
+                height: ${borderWidthPx};
+              "
+            ></div>
+            <div
+              ${{ key: 'id', value: 'labels-wrapper' }}
+              style="
+                position: absolute;
+                pointer-events: none;
+                white-space: nowrap;
+                display: flex;
+                gap: 0px;
+                align-items: center;
+              "
+            >
+              <div
+                ${{ key: 'id', value: 'intersects-label' }}
+                class="text-3 dark:text-3"
+                style="
+                  font-size: 11px;
+                  user-select: none;
+                  width: 100px;
+                  padding: 6px;
+                  margin: 0px;
+                  text-align: right;
+                "
+              >Intersects</div>
+              <div
+                ${{ key: 'id', value: 'contains-label' }}
+                class="text-3 dark:text-3"
+                style="
+                  font-size: 11px;
+                  user-select: none;
+                  width: 100px;
+                  padding: 6px;
+                  margin: 0px;
+                "
+              >Within</div>
+            </div>
+          </div>
+        `
+
+  return {
+    boxDiv,
+    verticalLine,
+    horizontalLine,
+    labelsWrapper,
+  }
+}
+
+function updateSelectionBoxPosition(
+  selectionBoxObject: CSS2DObject,
+  localCenter: Vector3
+): void {
+  selectionBoxObject.position.copy(localCenter)
+}
+
+function updateSelectionBoxSizeAndBorder(
+  boxDiv: HTMLElement,
+  widthPx: number,
+  heightPx: number,
+  borderStyle: 'dashed' | 'solid'
+): void {
+  boxDiv.style.width = `${widthPx}px`
+  boxDiv.style.height = `${heightPx}px`
+  boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
+  boxDiv.style.borderStyle = borderStyle
+}
+
+function updateLabelStylesInDom(
+  labelsWrapper: HTMLElement,
+  labelStyles: {
+    intersectsLabel: { opacity: string; fontWeight: string }
+    containsLabel: { opacity: string; fontWeight: string }
+  }
+): void {
+  const intersectsLabel = labelsWrapper.children[0] as HTMLElement
+  const containsLabel = labelsWrapper.children[1] as HTMLElement
+
+  if (intersectsLabel && containsLabel) {
+    intersectsLabel.style.opacity = labelStyles.intersectsLabel.opacity
+    intersectsLabel.style.fontWeight = labelStyles.intersectsLabel.fontWeight
+    containsLabel.style.opacity = labelStyles.containsLabel.opacity
+    containsLabel.style.fontWeight = labelStyles.containsLabel.fontWeight
+  }
+}
+
+function updateLabelPosition(
+  labelsWrapper: HTMLElement,
+  startX: number,
+  finalOffsetY: number
+): void {
+  labelsWrapper.style.left = `calc(50% + ${startX}px)`
+  labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
+  labelsWrapper.style.transform = 'translate(-50%, -50%)'
+}
+
+function updateCornerLinePositions(
+  verticalLine: HTMLElement,
+  horizontalLine: HTMLElement,
+  cornerLineStyles: {
+    verticalLine: {
+      height: string
+      bottom?: string
+      top?: string
+      left?: string
+      right?: string
+    }
+    horizontalLine: {
+      width: string
+      left?: string
+      right?: string
+      top?: string
+      bottom?: string
+    }
+  }
+): void {
+  verticalLine.style.top = ''
+  verticalLine.style.right = ''
+  verticalLine.style.bottom = ''
+  verticalLine.style.left = ''
+
+  verticalLine.style.height = cornerLineStyles.verticalLine.height
+  if (cornerLineStyles.verticalLine.bottom !== undefined) {
+    verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
+  }
+  if (cornerLineStyles.verticalLine.top !== undefined) {
+    verticalLine.style.top = cornerLineStyles.verticalLine.top
+  }
+  if (cornerLineStyles.verticalLine.left !== undefined) {
+    verticalLine.style.left = cornerLineStyles.verticalLine.left
+  }
+  if (cornerLineStyles.verticalLine.right !== undefined) {
+    verticalLine.style.right = cornerLineStyles.verticalLine.right
+  }
+
+  horizontalLine.style.top = ''
+  horizontalLine.style.right = ''
+  horizontalLine.style.bottom = ''
+  horizontalLine.style.left = ''
+
+  horizontalLine.style.width = cornerLineStyles.horizontalLine.width
+  if (cornerLineStyles.horizontalLine.left !== undefined) {
+    horizontalLine.style.left = cornerLineStyles.horizontalLine.left
+  }
+  if (cornerLineStyles.horizontalLine.right !== undefined) {
+    horizontalLine.style.right = cornerLineStyles.horizontalLine.right
+  }
+  if (cornerLineStyles.horizontalLine.top !== undefined) {
+    horizontalLine.style.top = cornerLineStyles.horizontalLine.top
+  }
+  if (cornerLineStyles.horizontalLine.bottom !== undefined) {
+    horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
+  }
+}
+
+export function updateSelectionBox({
+  startPoint3D,
+  currentPoint3D,
+  sceneInfra,
+  selectionBoxState,
+}: {
+  startPoint3D: Vector3
+  currentPoint3D: Vector3
+  sceneInfra: SceneInfra
+  selectionBoxState: SelectionBoxVisualState
+}): void {
+  const camera = sceneInfra.camControls.camera
+  const renderer = sceneInfra.renderer
+
+  const viewportSize = new Vector2(
+    renderer.domElement.clientWidth,
+    renderer.domElement.clientHeight
+  )
+
+  const properties = calculateSelectionBoxProperties(
+    startPoint3D,
+    currentPoint3D,
+    camera,
+    viewportSize
+  )
+
+  const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSceneGroup =
+    sketchSceneObject instanceof Group ? sketchSceneObject : null
+
+  if (!selectionBoxState.getSelectionBoxGroup()) {
+    const newSelectionBoxGroup = new Group()
+    newSelectionBoxGroup.name = 'selectionBox'
+    newSelectionBoxGroup.userData.type = 'selectionBox'
+    selectionBoxState.setSelectionBoxGroup(newSelectionBoxGroup)
+
+    const elements = createSelectionBoxElements(properties.borderStyle)
+    selectionBoxState.setBoxDiv(elements.boxDiv)
+    selectionBoxState.setVerticalLine(elements.verticalLine)
+    selectionBoxState.setHorizontalLine(elements.horizontalLine)
+    selectionBoxState.setLabelsWrapper(elements.labelsWrapper)
+
+    const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
+    newSelectionBoxObject.userData.type = 'selectionBox'
+    selectionBoxState.setSelectionBoxObject(newSelectionBoxObject)
+    selectionBoxState.getSelectionBoxGroup()?.add(newSelectionBoxObject)
+
+    if (sketchSceneGroup) {
+      sketchSceneGroup.add(selectionBoxState.getSelectionBoxGroup()!)
+      selectionBoxState.getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
+      newSelectionBoxObject.layers.set(SKETCH_LAYER)
+    }
+  }
+
+  const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
+  if (currentSelectionBoxObject?.element instanceof HTMLElement) {
+    const localCenter = transformToLocalSpace(
+      properties.center3D,
+      sketchSceneGroup
+    )
+    updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
+
+    const boxDivElement = selectionBoxState.getBoxDiv()
+    if (boxDivElement) {
+      updateSelectionBoxSizeAndBorder(
+        boxDivElement,
+        properties.widthPx,
+        properties.heightPx,
+        properties.borderStyle
+      )
+    }
+
+    const labelPositioning = calculateLabelPositioning(
+      properties.startPx,
+      properties.boxMinPx,
+      properties.boxMaxPx,
+      properties.isDraggingUpward
+    )
+
+    const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
+    const currentLabelsWrapper = selectionBoxState.getLabelsWrapper()
+    if (currentLabelsWrapper) {
+      updateLabelStylesInDom(currentLabelsWrapper, labelStyles)
+      updateLabelPosition(
+        currentLabelsWrapper,
+        labelPositioning.startX,
+        labelPositioning.finalOffsetY
+      )
+    }
+
+    const cornerLineStyles = calculateCornerLineStyles(
+      labelPositioning.startX,
+      labelPositioning.startY,
+      LINE_EXTENSION_SIZE,
+      AREA_SELECT_BORDER_WIDTH
+    )
+
+    const currentVerticalLine = selectionBoxState.getVerticalLine()
+    const currentHorizontalLine = selectionBoxState.getHorizontalLine()
+    if (
+      currentVerticalLine instanceof HTMLElement &&
+      currentHorizontalLine instanceof HTMLElement
+    ) {
+      updateCornerLinePositions(
+        currentVerticalLine,
+        currentHorizontalLine,
+        cornerLineStyles
+      )
+    }
+  }
+}
+
+export function removeSelectionBox(
+  selectionBoxState: SelectionBoxVisualState
+): void {
+  const currentSelectionBoxGroup = selectionBoxState.getSelectionBoxGroup()
+  if (currentSelectionBoxGroup) {
+    currentSelectionBoxGroup.removeFromParent()
+    const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
+    if (currentSelectionBoxObject?.element instanceof HTMLElement) {
+      currentSelectionBoxObject.element.remove()
+    }
+    selectionBoxState.setSelectionBoxGroup(null)
+    selectionBoxState.setSelectionBoxObject(null)
+    selectionBoxState.setLabelsWrapper(null)
+    selectionBoxState.setBoxDiv(null)
+    selectionBoxState.setVerticalLine(null)
+    selectionBoxState.setHorizontalLine(null)
+  }
+}
+
+function getContainedArcPoints(
+  center: Coords2d,
+  start: Coords2d,
+  end: Coords2d
+): Coords2d[] {
+  const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+  if (radius === 0) {
+    return [start, end]
+  }
+
+  const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const candidateAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
+  const extremaPoints = candidateAngles
+    .filter((angle) => getAngleDiff(startAngle, angle, true) <= sweepAngle)
+    .map(
+      (angle) =>
+        [
+          center[0] + Math.cos(angle) * radius,
+          center[1] + Math.sin(angle) * radius,
+        ] as Coords2d
+    )
+
+  return [start, end, ...extremaPoints]
+}
+
+function doesArcIntersectBox(
+  center: Coords2d,
+  start: Coords2d,
+  end: Coords2d,
+  boxMin: Coords2d,
+  boxMax: Coords2d
 ): boolean {
-  const [v0, v1, v2] = triangle
-
-  // Check if any vertex is inside the box
   if (
-    isPointInBox(v0, boxMin, boxMax) ||
-    isPointInBox(v1, boxMin, boxMax) ||
-    isPointInBox(v2, boxMin, boxMax)
+    isPointInBox(start, boxMin, boxMax) ||
+    isPointInBox(end, boxMin, boxMax)
   ) {
     return true
   }
 
-  // Check if any triangle edge intersects the box
-  if (
-    doesLineSegmentIntersectBox(v0, v1, boxMin, boxMax) ||
-    doesLineSegmentIntersectBox(v1, v2, boxMin, boxMax) ||
-    doesLineSegmentIntersectBox(v2, v0, boxMin, boxMax)
-  ) {
-    return true
+  const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
+  if (radius === 0) {
+    return false
   }
 
-  // Check if box is entirely inside triangle (for convex triangles)
-  // This handles cases where the box is inside a large triangle
-  const boxCorners = [
-    new Vector2(boxMin.x, boxMin.y),
-    new Vector2(boxMax.x, boxMin.y),
-    new Vector2(boxMax.x, boxMax.y),
-    new Vector2(boxMin.x, boxMax.y),
-  ]
+  const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const epsilon = 1e-9
 
-  // Check if all box corners are inside the triangle
-  // Using barycentric coordinates or point-in-triangle test
-  const allCornersInside = boxCorners.every((corner) => {
-    return isPointInTriangle(corner, v0, v1, v2)
-  })
+  const isPointOnArc = (x: number, y: number): boolean => {
+    if (
+      x < boxMin[0] - epsilon ||
+      x > boxMax[0] + epsilon ||
+      y < boxMin[1] - epsilon ||
+      y > boxMax[1] + epsilon
+    ) {
+      return false
+    }
 
-  if (allCornersInside) {
-    return true
+    const angle = Math.atan2(y - center[1], x - center[0])
+    return getAngleDiff(startAngle, angle, true) <= sweepAngle + epsilon
+  }
+
+  for (const x of [boxMin[0], boxMax[0]]) {
+    const dx = x - center[0]
+    const offsetSquared = radius * radius - dx * dx
+    if (offsetSquared < 0) {
+      continue
+    }
+
+    const offset = Math.sqrt(Math.max(0, offsetSquared))
+    if (
+      isPointOnArc(x, center[1] + offset) ||
+      isPointOnArc(x, center[1] - offset)
+    ) {
+      return true
+    }
+  }
+
+  for (const y of [boxMin[1], boxMax[1]]) {
+    const dy = y - center[1]
+    const offsetSquared = radius * radius - dy * dy
+    if (offsetSquared < 0) {
+      continue
+    }
+
+    const offset = Math.sqrt(Math.max(0, offsetSquared))
+    if (
+      isPointOnArc(center[0] + offset, y) ||
+      isPointOnArc(center[0] - offset, y)
+    ) {
+      return true
+    }
   }
 
   return false
 }
 
-/**
- * Pure function: Checks if a point is inside a triangle using barycentric coordinates
- */
-function isPointInTriangle(
-  point: Vector2,
-  v0: Vector2,
-  v1: Vector2,
-  v2: Vector2
-): boolean {
-  const dX = point.x - v2.x
-  const dY = point.y - v2.y
-  const dX20 = v2.x - v0.x
-  const dY20 = v2.y - v0.y
-  const dX21 = v2.x - v1.x
-  const dY21 = v2.y - v1.y
-
-  const denom = dX20 * dY21 - dX21 * dY20
-  if (Math.abs(denom) < 1e-10) {
-    return false // Degenerate triangle
+export function findContainedSegments(
+  objects: Array<ApiObject>,
+  startPoint: Coords2d,
+  currentPoint: Coords2d
+): Array<number> {
+  if (objects.length === 0) {
+    return []
   }
 
-  const a = (dX * dY21 - dY * dX21) / denom
-  const b = (dX20 * dY - dY20 * dX) / denom
-  const c = 1 - a - b
-
-  return a >= 0 && b >= 0 && c >= 0
-}
-
-/**
- * Pure function: Checks if any polygon in an array intersects with a box
- * Uses binary tree pattern for efficiency: starts in middle, keeps dividing
- * Returns true as soon as one polygon intersects (early exit)
- */
-export function doesAnyPolygonIntersectBox(
-  polygons: Array<[Vector2, Vector2, Vector2]>,
-  boxMin: Vector2,
-  boxMax: Vector2
-): boolean {
-  if (polygons.length === 0) {
-    return false
-  }
-
-  // Binary tree pattern: check middle, then divide
-  function checkRange(start: number, end: number): boolean {
-    if (start >= end) {
-      return false
-    }
-
-    const mid = Math.floor((start + end) / 2)
-
-    // Check middle polygon
-    if (doesTriangleIntersectBox(polygons[mid], boxMin, boxMax)) {
-      return true
-    }
-
-    // Recursively check left and right halves
-    if (checkRange(start, mid)) {
-      return true
-    }
-
-    if (checkRange(mid + 1, end)) {
-      return true
-    }
-
-    return false
-  }
-
-  return checkRange(0, polygons.length)
-}
-
-/**
- * Pure function: Determines if a segment intersects with the selection box
- * Uses improved logic:
- * 1. If segment bounding box is entirely inside selection box → intersects
- * 2. Else if bounding boxes intersect → check if any polygon intersects
- * 3. Else doesn't intersect
- */
-export function doesSegmentIntersectSelectionBox(
-  segmentBoundingBoxMin: Vector2,
-  segmentBoundingBoxMax: Vector2,
-  selectionBoxMin: Vector2,
-  selectionBoxMax: Vector2,
-  polygons: Array<[Vector2, Vector2, Vector2]>
-): boolean {
-  // Step 1: Check if segment bounding box is entirely inside selection box
-  const segmentCorners = [
-    new Vector2(segmentBoundingBoxMin.x, segmentBoundingBoxMin.y),
-    new Vector2(segmentBoundingBoxMax.x, segmentBoundingBoxMin.y),
-    new Vector2(segmentBoundingBoxMax.x, segmentBoundingBoxMax.y),
-    new Vector2(segmentBoundingBoxMin.x, segmentBoundingBoxMax.y),
+  const boxMin: Coords2d = [
+    Math.min(startPoint[0], currentPoint[0]),
+    Math.min(startPoint[1], currentPoint[1]),
   ]
+  const boxMax: Coords2d = [
+    Math.max(startPoint[0], currentPoint[0]),
+    Math.max(startPoint[1], currentPoint[1]),
+  ]
+  const containedIds: Array<number> = []
+  objects.forEach((apiObject) => {
+    if (!apiObject) {
+      return
+    }
 
-  const allCornersInside = areAllPointsContained(
-    segmentCorners,
-    selectionBoxMin,
-    selectionBoxMax
-  )
+    if (isPointSegment(apiObject)) {
+      if (
+        apiObject.kind.segment.owner !== null &&
+        apiObject.kind.segment.owner !== undefined
+      ) {
+        return
+      }
 
-  if (allCornersInside) {
-    return true
+      if (isPointInBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+        containedIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isLineSegment(apiObject)) {
+      const linePoints = getLinePoints(apiObject, objects)
+      if (
+        linePoints &&
+        linePoints.every((point) => isPointInBox(point, boxMin, boxMax))
+      ) {
+        containedIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isArcSegment(apiObject)) {
+      const arcPoints = getArcPoints(apiObject, objects)
+      if (
+        arcPoints &&
+        getContainedArcPoints(
+          arcPoints.center,
+          arcPoints.start,
+          arcPoints.end
+        ).every((point) => isPointInBox(point, boxMin, boxMax))
+      ) {
+        containedIds.push(apiObject.id)
+      }
+    }
+  })
+
+  return containedIds
+}
+
+export function findIntersectingSegments(
+  objects: Array<ApiObject>,
+  startPoint: Coords2d,
+  currentPoint: Coords2d
+): Array<number> {
+  if (objects.length === 0) {
+    return []
   }
 
-  // Step 2: Check if bounding boxes intersect
-  const boxesIntersect = doBoxesIntersect(
-    segmentBoundingBoxMin,
-    segmentBoundingBoxMax,
-    selectionBoxMin,
-    selectionBoxMax
-  )
+  const boxMin: Coords2d = [
+    Math.min(startPoint[0], currentPoint[0]),
+    Math.min(startPoint[1], currentPoint[1]),
+  ]
+  const boxMax: Coords2d = [
+    Math.max(startPoint[0], currentPoint[0]),
+    Math.max(startPoint[1], currentPoint[1]),
+  ]
+  const intersectingIds: Array<number> = []
+  objects.forEach((apiObject) => {
+    if (!apiObject) {
+      return
+    }
 
-  if (!boxesIntersect) {
-    return false
-  }
+    if (isPointSegment(apiObject)) {
+      if (
+        apiObject.kind.segment.owner !== null &&
+        apiObject.kind.segment.owner !== undefined
+      ) {
+        return
+      }
 
-  // Step 3: Check if any polygon intersects the selection box
-  return doesAnyPolygonIntersectBox(polygons, selectionBoxMin, selectionBoxMax)
+      if (isPointInBox(pointToCoords2d(apiObject), boxMin, boxMax)) {
+        intersectingIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isLineSegment(apiObject)) {
+      const linePoints = getLinePoints(apiObject, objects)
+      if (
+        linePoints &&
+        doesLineSegmentIntersectBox(
+          linePoints[0],
+          linePoints[1],
+          boxMin,
+          boxMax
+        )
+      ) {
+        intersectingIds.push(apiObject.id)
+      }
+      return
+    }
+
+    if (isArcSegment(apiObject)) {
+      const arcPoints = getArcPoints(apiObject, objects)
+      if (
+        arcPoints &&
+        doesArcIntersectBox(
+          arcPoints.center,
+          arcPoints.start,
+          arcPoints.end,
+          boxMin,
+          boxMax
+        )
+      ) {
+        intersectingIds.push(apiObject.id)
+      }
+    }
+  })
+
+  return intersectingIds
 }

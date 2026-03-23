@@ -4,7 +4,7 @@ import {
   darkModeMatcher,
   getOppositeTheme,
   getThemeColorForEngine,
-  Themes,
+  type Themes,
 } from '@src/lib/theme'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type {
@@ -32,9 +32,14 @@ import {
   createOnEngineOffline,
 } from '@src/network/connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
-import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  binaryToUuid,
+  hexToRgba,
+  isArray,
+  promiseFactory,
+  uuidv4,
+} from '@src/lib/utils'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -45,7 +50,6 @@ import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -59,6 +63,11 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+export type ConnectionSystemDeps = {
+  settingsActor: SettingsActorType
+}
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -87,24 +96,24 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
-  sceneInfra: SceneInfra | undefined
-  kclManager: KclManager | undefined
-
-  // Circular dependency that is why it can be undefined
-  rustContext: RustContext | undefined
+  private readonly systemDeps: ConnectionSystemDeps
 
   streamDimensions = {
     // startFromWasm uses 256, 256
     width: 256,
     height: 256,
   }
-  settings: SettingsViaQueryString = {
-    theme: Themes.Dark,
-    highlightEdges: true,
-    enableSSAO: true,
-    showScaleGrid: false,
-    cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
-    cameraOrbit: 'spherical',
+  get settings(): SettingsViaQueryString {
+    const s = getSettingsFromActorContext(this.systemDeps.settingsActor)
+    return {
+      theme: s.app.theme.current,
+      highlightEdges: s.modeling.highlightEdges.current,
+      enableSSAO: s.modeling.enableSSAO.current,
+      showScaleGrid: s.modeling.showScaleGrid.current,
+      cameraProjection: s.modeling.cameraProjection.current,
+      cameraOrbit: s.modeling.cameraOrbit.current,
+      backfaceColor: s.modeling.backfaceColor.current,
+    }
   }
 
   subscriptions: {
@@ -125,29 +134,15 @@ export class ConnectionManager extends EventTarget {
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
 
-  callbackOnUnitTestingConnection: (() => void) | null
+  callbackOnUnitTestingConnection: ((message: string) => void) | null
 
-  constructor(settings?: SettingsViaQueryString) {
+  constructor(systemDeps: ConnectionSystemDeps) {
     super()
+    this.systemDeps = systemDeps
     this.started = false
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
-
-    if (settings) {
-      // completely overwrite the settings
-      this.settings = settings
-    } else {
-      // Gotcha: This runs in testing environments
-      this.settings = {
-        theme: Themes.Dark,
-        highlightEdges: true,
-        enableSSAO: true,
-        showScaleGrid: false,
-        cameraProjection: 'perspective',
-        cameraOrbit: 'spherical',
-      }
-    }
   }
 
   setInSequence(sequence: number) {
@@ -158,22 +153,20 @@ export class ConnectionManager extends EventTarget {
     this._camControlsCameraChange = cb
   }
 
-  // I guess this in the entry point
-  // Don't initialize a different set of default settings, what is the point!
   async start({
-    settings,
     width,
     height,
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
+    rustContext,
   }: {
-    settings?: SettingsViaQueryString
     width: number
     height: number
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
-    callbackOnUnitTestingConnection?: () => void
+    callbackOnUnitTestingConnection?: (message: string) => void
+    rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -203,23 +196,12 @@ export class ConnectionManager extends EventTarget {
       return Promise.reject(new Error(`height is <=0, ${height}`))
     }
 
-    // Make sure dependencies exist during runtime otherwise crash!
-    if (!this.rustContext) {
-      return Promise.reject(new Error('rustContext is undefined'))
-    }
-    1
-    if (!this.sceneInfra) {
-      return Promise.reject(new Error('sceneInfra is undefined'))
-    }
-
-    if (settings) {
-      this.settings = settings
-    }
-
     this.streamDimensions = {
       width,
       height,
     }
+
+    const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL()
     this.connection = new Connection({
@@ -229,7 +211,7 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
-      handleMessage: this.handleMessage.bind(this),
+      handleMessage,
     })
 
     // Nothing more to do when using a lite engine initialization
@@ -289,7 +271,7 @@ export class ConnectionManager extends EventTarget {
         return this.inSequence
       },
       websocket: this.connection.websocket,
-      handleMessage: this.handleMessage.bind(this),
+      handleMessage,
       connection: this.connection,
       trackListener: this.trackListener.bind(this),
     })
@@ -341,16 +323,13 @@ export class ConnectionManager extends EventTarget {
     )
 
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
-      rustContext: this.rustContext,
       settings: this.settings,
-      jsAppSettings: await jsAppSettings(this.rustContext.settingsActor),
-      path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
+      setBackfaceColor: this.setBackfaceColor.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
-      sceneInfra: this.sceneInfra,
       connection: this.connection,
       setStreamIsReady,
     })
@@ -484,6 +463,53 @@ export class ConnectionManager extends EventTarget {
       type: 'darkModeMatcher',
     })
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  /** Set the default backface color in the engine, with debug logging */
+  async setBackfaceColor(color: string) {
+    const rgbaColor = hexToRgba(color)
+    if (!rgbaColor) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setBackfaceColor, invalid hex color',
+        metadata: { color },
+      })
+      return
+    }
+
+    const cmd = {
+      type: 'set_default_system_properties',
+      backface_color: rgbaColor,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setBackfaceColor - set_default_system_properties - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setBackfaceColor, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
   }
 
   /** Set the edge highlighting setting in the engine, with debug logging */
@@ -696,6 +722,17 @@ export class ConnectionManager extends EventTarget {
       reject(value)
       isSettled = true
     }
+
+    if (this.pendingCommands[id]) {
+      const duplicateCommandMessage =
+        'You are attempting to send the same command twice. Rejecting this attempt.'
+      console.error(duplicateCommandMessage)
+      console.error(message)
+      console.error(new Error().stack)
+      reject(duplicateCommandMessage)
+      return promise
+    }
+
     this.pendingCommands[id] = {
       resolve: wrappedResolved,
       reject: wrappedReject,
@@ -742,150 +779,150 @@ export class ConnectionManager extends EventTarget {
   }
 
   // this.connection.websocket.addEventListener('message') handler
-  handleMessage(event: MessageEvent) {
-    if (!this.rustContext) {
-      console.warn('rustContext is undefined not processing event:', event)
-      return
-    }
+  createMessageHandler(rustContext?: RustContext) {
+    return (event: MessageEvent) => {
+      let message: WebSocketResponse | null = null
 
-    let message: WebSocketResponse | null = null
+      if (event.data instanceof ArrayBuffer) {
+        const binaryData = new Uint8Array(event.data)
 
-    if (event.data instanceof ArrayBuffer) {
-      const binaryData = new Uint8Array(event.data)
+        try {
+          message = msgpackDecode(binaryData) as WebSocketResponse
+        } catch (msgpackError) {
+          console.error(
+            'handleMessage: failed to deserialize binary websocket message',
+            { msgpackError }
+          )
+        }
+        // The request id comes back as binary and we want to get the uuid
+        // string from that.
 
-      try {
-        message = msgpackDecode(binaryData) as WebSocketResponse
-      } catch (msgpackError) {
-        console.error(
-          'handleMessage: failed to deserialize binary websocket message',
-          { msgpackError }
-        )
+        if (message?.request_id) {
+          message.request_id = binaryToUuid(message.request_id)
+        }
+      } else {
+        message = JSON.parse(event.data)
       }
-      // The request id comes back as binary and we want to get the uuid
-      // string from that.
 
-      if (message?.request_id) {
-        message.request_id = binaryToUuid(message.request_id)
+      if (message === null) {
+        EngineDebugger.addLog({
+          label: 'handleMessage',
+          message: 'received a null message from the engine',
+        })
+        // We should never get here.
+        console.warn('Received a null message from the engine', event)
+        return
       }
-    } else {
-      message = JSON.parse(event.data)
-    }
 
-    if (message === null) {
-      EngineDebugger.addLog({
-        label: 'handleMessage',
-        message: 'received a null message from the engine',
+      if (message.request_id === undefined || message.request_id === null) {
+        // We only care about messages that have a request id, so we can
+        // ignore the rest.
+
+        // Most likely ping/pong requests here
+        return
+      }
+
+      // If the connection is started from WASM it doesn't need
+      // `sendResponse` at all, because the call is coming from
+      // inside the house, as it were, from WASM itself.
+      rustContext?.sendResponse(message).catch((error) => {
+        console.warn('Error sending response to rust', error)
+        EngineDebugger.addLog({
+          label: 'rustContext.sendResponse',
+          message: 'error sending response to rust',
+          metadata: {
+            error,
+          },
+        })
       })
-      // We should never get here.
-      console.warn('Received a null message from the engine', event)
-      return
-    }
 
-    if (message.request_id === undefined || message.request_id === null) {
-      // We only care about messages that have a request id, so we can
-      // ignore the rest.
-
-      // Most likely ping/pong requests here
-      return
-    }
-
-    this.rustContext.sendResponse(message).catch((error) => {
-      console.warn('Error sending response to rust', error)
-      EngineDebugger.addLog({
-        label: 'rustContext.sendResponse',
-        message: 'error sending response to rust',
-        metadata: {
-          error,
-        },
-      })
-    })
-
-    const pending = this.pendingCommands[message.request_id || '']
-    if (pending && !message.success) {
-      pending.reject([message])
-      delete this.pendingCommands[message.request_id || '']
-    }
-
-    if (
-      !(
-        pending &&
-        message.success &&
-        (isModelingResponse(message) ||
-          isModelingBatchResponse(message) ||
-          isExportResponse(message))
-      )
-    ) {
-      if (pending) {
+      const pending = this.pendingCommands[message.request_id || '']
+      if (pending && !message.success) {
         pending.reject([message])
         delete this.pendingCommands[message.request_id || '']
       }
-      return
-    }
 
-    pending.resolve([message])
-    delete this.pendingCommands[message.request_id || '']
-
-    if (message.resp.type === 'export' && message.request_id) {
-      this.responseMap[message.request_id] = message.resp
-    } else if (
-      message.resp.type === 'modeling' &&
-      pending.command.type === 'modeling_cmd_req' &&
-      message.request_id
-    ) {
-      this.addCommandLog({
-        type: CommandLogType.ReceiveReliable,
-        data: message.resp,
-        id: message?.request_id || '',
-        cmd_type: pending?.command?.cmd?.type,
-      })
-
-      const modelingResponse = message.resp.data.modeling_response
-
-      Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
-        (callback) => callback(modelingResponse)
-      )
-
-      this.responseMap[message.request_id] = message.resp
-    } else if (
-      message.resp.type === 'modeling_batch' &&
-      pending.command.type === 'modeling_cmd_batch_req'
-    ) {
-      let individualPendingResponses: {
-        [key: string]: WebSocketRequest
-      } = {}
-      pending.command.requests.forEach(({ cmd, cmd_id }) => {
-        individualPendingResponses[cmd_id] = {
-          type: 'modeling_cmd_req',
-          cmd,
-          cmd_id,
+      if (
+        !(
+          pending &&
+          message.success &&
+          (isModelingResponse(message) ||
+            isModelingBatchResponse(message) ||
+            isExportResponse(message))
+        )
+      ) {
+        if (pending) {
+          pending.reject([message])
+          delete this.pendingCommands[message.request_id || '']
         }
-      })
-      Object.entries(message.resp.data.responses).forEach(
-        ([commandId, response]) => {
-          if (!('response' in response)) return
-          const command = individualPendingResponses[commandId]
-          if (!command) return
-          if (command.type === 'modeling_cmd_req')
-            this.addCommandLog({
-              type: CommandLogType.ReceiveReliable,
-              data: {
-                type: 'modeling',
-                data: {
-                  modeling_response: response.response,
-                },
-              },
-              id: commandId,
-              cmd_type: command?.cmd?.type,
-            })
+        return
+      }
 
-          this.responseMap[commandId] = {
-            type: 'modeling',
-            data: {
-              modeling_response: response.response,
-            },
+      pending.resolve([message])
+      delete this.pendingCommands[message.request_id || '']
+
+      if (message.resp.type === 'export' && message.request_id) {
+        this.responseMap[message.request_id] = message.resp
+      } else if (
+        message.resp.type === 'modeling' &&
+        pending.command.type === 'modeling_cmd_req' &&
+        message.request_id
+      ) {
+        this.addCommandLog({
+          type: CommandLogType.ReceiveReliable,
+          data: message.resp,
+          id: message?.request_id || '',
+          cmd_type: pending?.command?.cmd?.type,
+        })
+
+        const modelingResponse = message.resp.data.modeling_response
+
+        Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
+          (callback) => callback(modelingResponse)
+        )
+
+        this.responseMap[message.request_id] = message.resp
+      } else if (
+        message.resp.type === 'modeling_batch' &&
+        pending.command.type === 'modeling_cmd_batch_req'
+      ) {
+        let individualPendingResponses: {
+          [key: string]: WebSocketRequest
+        } = {}
+        pending.command.requests.forEach(({ cmd, cmd_id }) => {
+          individualPendingResponses[cmd_id] = {
+            type: 'modeling_cmd_req',
+            cmd,
+            cmd_id,
           }
-        }
-      )
+        })
+        Object.entries(message.resp.data.responses).forEach(
+          ([commandId, response]) => {
+            if (!('response' in response)) return
+            const command = individualPendingResponses[commandId]
+            if (!command) return
+            if (command.type === 'modeling_cmd_req')
+              this.addCommandLog({
+                type: CommandLogType.ReceiveReliable,
+                data: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
+                id: commandId,
+                cmd_type: command?.cmd?.type,
+              })
+
+            this.responseMap[commandId] = {
+              type: 'modeling',
+              data: {
+                modeling_response: response.response,
+              },
+            }
+          }
+        )
+      }
     }
   }
 
@@ -1230,6 +1267,12 @@ export class ConnectionManager extends EventTarget {
   }
 
   /**
+   * A way for outside systems to let us know if we're stale
+   * and we should cancel all future commands before they're sent
+   */
+  public executionIsStale = false
+
+  /**
    * A wrapper around the sendCommand where all inputs are JSON strings
    *
    * This one does not wait for a response.
@@ -1252,18 +1295,15 @@ export class ConnectionManager extends EventTarget {
     if (commandStr === undefined) {
       return new Error('commandStr is undefined')
     }
-    if (!this.kclManager) {
-      return new Error('this.kclManager is undefined')
-    }
 
     const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
-    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.kclManager.executeIsStale) {
+    if (this.executionIsStale) {
       return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
@@ -1287,9 +1327,6 @@ export class ConnectionManager extends EventTarget {
     if (this.connection === undefined) {
       return Promise.reject(new Error('this.connection is undefined'))
     }
-    if (!this.kclManager) {
-      return Promise.reject(new Error('this.kclManager is undefined'))
-    }
     if (id === undefined) {
       return Promise.reject(new Error('id is undefined'))
     }
@@ -1304,9 +1341,9 @@ export class ConnectionManager extends EventTarget {
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
-    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Current execution is stale, going to interrupt, a new execution will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (this.kclManager.executeIsStale) {
+    if (this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
     try {

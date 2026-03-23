@@ -4,7 +4,7 @@ import {
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { type SnapshotFrom, waitFor } from 'xstate'
+import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
@@ -13,15 +13,12 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
-import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { fanParts } from '@src/lib/exampleKcl'
 import {
   type OnboardingPath,
   isOnboardingPath,
@@ -29,15 +26,12 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import {
-  commandBarActor,
-  getLayout,
-  setLayout,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { waitForToastAnimationEnd } from '@src/lib/toast'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import {
   defaultLayout,
@@ -46,12 +40,14 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { useApp } from '@src/lib/boot'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
   slug?: OnboardingPath,
-  platform: keyof typeof onboardingPaths = 'browser'
+  platform: keyof typeof onboardingPaths = 'desktop'
 ) {
   return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
 }
@@ -70,27 +66,32 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
+  const { settings } = useApp()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
   return useCallback(() => {
+    if (!filePath) {
+      return new Error(`filePath is undefined`)
+    }
+
     if (!isOnboardingPath(newStatus)) {
       return new Error(
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
-    settingsActor.send({
+    settings.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
-  }, [filePath, newStatus, navigate])
+    void navigate(targetRoute)
+  }, [filePath, newStatus, navigate, settings])
 }
 
 export function useDismiss() {
+  const { settings } = useApp()
   const filePath = useAbsoluteFilePath()
-  const send = settingsActor.send
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
@@ -99,13 +100,21 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      send({
+      if (!filePath) {
+        return new Error('filePath is undefined')
+      }
+
+      settings.send({
         type: 'set.app.onboardingStatus',
         data: { level: 'user', value: dismissalType },
       })
-      waitFor(settingsActor, (state) => state.matches('idle'))
+      waitFor(settings.actor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          if (!filePath) {
+            return Promise.reject(new Error('bug: filePath is undefined'))
+          }
+
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -115,7 +124,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [send, filePath, navigate]
+    [settings, filePath, navigate]
   )
 
   return settingsCallback
@@ -123,7 +132,7 @@ export function useDismiss() {
 
 export function useAdjacentOnboardingSteps(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const onboardingPathsArray = Object.values(onboardingPaths[platform])
   const stepNumber = getStepNumber(currentSlug, platform)
@@ -142,7 +151,7 @@ export function useAdjacentOnboardingSteps(
 
 export function useOnboardingClicks(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [previousOnboardingStatus, nextOnboardingStatus] =
     useAdjacentOnboardingSteps(currentSlug, platform)
@@ -154,7 +163,7 @@ export function useOnboardingClicks(
 
 export function OnboardingButtons({
   currentSlug,
-  platform = 'browser',
+  platform = 'desktop',
   dismissPosition = 'left',
   className,
   dismissClassName,
@@ -265,81 +274,39 @@ export function OnboardingButtons({
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
+  systemIOActor: SystemIOActor
+  settingsActor: SettingsActorType
   navigate: NavigateFunction
+  executingPath?: string
 }
 
 export const ERROR_MUST_WARN = 'Must warn user before overwrite'
 
 /**
  * Accept to begin the onboarding tutorial,
- * depending on the platform and the state of the user's code.
  */
-export async function acceptOnboarding(deps: OnboardingUtilDeps) {
+export function acceptOnboarding(deps: OnboardingUtilDeps) {
   // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
     : deps.onboardingStatus
-  if (isDesktop()) {
-    /**
-     * Bulk create the assembly and navigate to the project
-     */
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-      data: {
-        files: fanParts.map((part) => ({
-          requestedProjectName: ONBOARDING_PROJECT_NAME,
-          ...part,
-        })),
-        // Make a unique tutorial project each time
-        override: true,
+
+  /**
+   * Bulk create the assembly and navigate to the project
+   */
+  deps.systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: fanParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
-      },
-    })
-
-    return Promise.resolve()
-  }
-
-  const isCodeResettable = hasResetReadyCode(
-    deps.kclManager,
-    await deps.kclManager.wasmInstancePromise
-  )
-  if (isCodeResettable) {
-    return resetCodeAndAdvanceOnboarding(deps)
-  }
-
-  return Promise.reject(new Error(ERROR_MUST_WARN))
-}
-
-/**
- * Given that the user has accepted overwriting their web editor,
- * advance to the next step and clear their editor.
- */
-export async function resetCodeAndAdvanceOnboarding({
-  onboardingStatus,
-  kclManager,
-  navigate,
-}: OnboardingUtilDeps) {
-  // Non-path statuses should be coerced to the start path
-  const resolvedOnboardingStatus = !isOnboardingPath(onboardingStatus)
-    ? onboardingStartPath
-    : onboardingStatus
-  // We do want to update both the state and editor here.
-  kclManager.updateCodeStateEditor(browserAxialFan)
-  kclManager.writeToFile().catch(reportRejection)
-  kclManager.executeCode().catch(reportRejection)
-  navigate(
-    makeUrlPathRelative(
-      joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
-    )
-  )
-}
-
-function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
-  return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
-    kclManager.codeSignal.value === browserAxialFan
-  )
+        ...part,
+      })),
+      // Make a unique tutorial project each time
+      override: true,
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
+    },
+  })
 }
 
 export function needsToOnboard(
@@ -353,12 +320,14 @@ export function needsToOnboard(
   )
 }
 
-export function onDismissOnboardingInvite() {
+export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
   })
-  toast.dismiss(ONBOARDING_TOAST_ID)
+  void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
+    toast.dismiss(ONBOARDING_TOAST_ID)
+  })
   toast.success(
     'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
@@ -386,12 +355,10 @@ function TutorialToastCard(props: TutorialToastCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
 ) {
+  const { settings } = useApp()
   function onAccept() {
     acceptOnboarding(props)
-      .then(() => {
-        toast.dismiss(ONBOARDING_TOAST_ID)
-      })
-      .catch((reason) => catchOnboardingWarnError(reason, props))
+    toast.dismiss(ONBOARDING_TOAST_ID)
   }
 
   const quickTipSrc = (index: number) =>
@@ -400,6 +367,7 @@ export function TutorialRequestToast(
   return (
     <div
       data-testid="onboarding-toast"
+      id={ONBOARDING_TOAST_ID}
       className="flex flex-col justify-between gap-6 text-default"
     >
       <section className="flex items-center gap-4">
@@ -420,7 +388,6 @@ export function TutorialRequestToast(
         >
           <strong>Zookeeper</strong> is in the right sidebar, where you can
           create or modify parts with prompts.{' '}
-          <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
           src={quickTipSrc(2)}
@@ -449,8 +416,9 @@ export function TutorialRequestToast(
             iconClassName: 'bg-destroy-80 text-6',
           }}
           data-negative-button="dismiss"
+          data-testid="onboarding-not-right-now"
           name="dismiss"
-          onClick={onDismissOnboardingInvite}
+          onClick={() => onDismissOnboardingInvite(settings.actor)}
         >
           Not right now
         </ActionButton>
@@ -507,7 +475,7 @@ export async function catchOnboardingWarnError(
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
-    resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
+    acceptOnboarding(props)
   }
 
   return (
@@ -532,7 +500,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             }}
             data-negative-button="dismiss"
             name="dismiss"
-            onClick={onDismissOnboardingInvite}
+            onClick={() => onDismissOnboardingInvite(props.settingsActor)}
           >
             I'll save it
           </ActionButton>
@@ -582,21 +550,21 @@ export function useOnboardingPanes(
   onMount: DefaultLayoutPaneID[] | undefined = [],
   onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
+  const { layout } = useApp()
   useEffect(() => {
-    setLayout(
-      setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
+    layout.set(
+      setOpenPanes(structuredClone(layout.get() || defaultLayout), onMount)
     )
 
     return () =>
-      setLayout(
-        setOpenPanes(structuredClone(getLayout() || defaultLayout), onUnmount)
+      layout.set(
+        setOpenPanes(structuredClone(layout.get() || defaultLayout), onUnmount)
       )
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [onMount, onUnmount])
+  }, [onMount, onUnmount, layout])
 }
 
 export function isModelingCmdGroupReady(
-  state: SnapshotFrom<typeof commandBarActor>
+  state: SnapshotFrom<ActorRefFrom<typeof commandBarMachine>>
 ) {
   // Ensure that the modeling command group is available
   if (
@@ -615,23 +583,24 @@ export function useOnModelingCmdGroupReadyOnce(
   callback: () => void,
   deps: React.DependencyList
 ) {
+  const { commands } = useApp()
   const [isReadyOnce, setReadyOnce] = useState(false)
 
   // Set up a subscription to the command bar actor's
   // modeling command group
   useEffect(() => {
-    const isReadyNow = isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    const isReadyNow = isModelingCmdGroupReady(commands.actor.getSnapshot())
     if (isReadyNow) {
       setReadyOnce(true)
     } else {
-      const subscription = commandBarActor.subscribe((state) => {
+      const subscription = commands.actor.subscribe((state) => {
         if (isModelingCmdGroupReady(state)) {
           setReadyOnce(true)
         }
       })
       return () => subscription.unsubscribe()
     }
-  }, [])
+  }, [commands.actor])
 
   // Fire the callback when the modeling command group is ready
   useEffect(() => {
@@ -639,7 +608,7 @@ export function useOnModelingCmdGroupReadyOnce(
       callback()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [isReadyOnce, ...deps])
+  }, [isReadyOnce, callback, ...deps])
 }
 
 /**
@@ -648,7 +617,7 @@ export function useOnModelingCmdGroupReadyOnce(
  */
 export function useAdvanceOnboardingOnFormSubmit(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [_prev, goToNext] = useOnboardingClicks(currentSlug, platform)
 

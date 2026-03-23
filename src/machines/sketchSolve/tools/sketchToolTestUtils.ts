@@ -117,6 +117,7 @@ export function createLineApiObject({
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -165,6 +166,7 @@ export function createArcApiObject({
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -182,10 +184,9 @@ export function createArcApiObject({
 export function createMockSceneInfra(): SceneInfra {
   return {
     setCallbacks: vi.fn(),
+    getClientSceneScaleFactor: vi.fn(() => 1),
     scene: {
-      getObjectByName: vi.fn(() => ({
-        getObjectByName: vi.fn(() => null),
-      })),
+      getObjectByName: vi.fn(() => null),
     },
   } as unknown as SceneInfra
 }

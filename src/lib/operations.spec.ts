@@ -16,6 +16,7 @@ import {
 import {
   filterOperations,
   getOperationVariableName,
+  groupSketchBlockOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
 import { expect, describe, it } from 'vitest'
@@ -29,6 +30,30 @@ function stdlib(name: string): Operation {
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
     isError: false,
+  }
+}
+
+function stdlibInSketchBlock(name: string, index = 0): Operation {
+  const op = stdlib(name)
+  if (op.type !== 'StdLibCall') {
+    return op
+  }
+  return {
+    ...op,
+    nodePath: {
+      steps: [
+        {
+          type: 'ProgramBodyItem',
+          index,
+        },
+        {
+          type: 'ExpressionStatementExpr',
+        },
+        {
+          type: 'SketchBlock',
+        },
+      ],
+    },
   }
 }
 
@@ -339,6 +364,68 @@ describe('operations.test.ts', () => {
         [moduleBegin('m1'), moduleBegin('m2')],
         userReturn(),
         stdlib('s3'),
+      ])
+    })
+  })
+
+  describe('groupSketchBlockOperations', () => {
+    it('groups contiguous operations from the same sketch block', () => {
+      const ops = [
+        stdlib('offsetPlane'),
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+        stdlibInSketchBlock('coincident', 1),
+        stdlib('extrude'),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        stdlib('offsetPlane'),
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+          stdlibInSketchBlock('coincident', 1),
+        ],
+        stdlib('extrude'),
+      ])
+    })
+
+    it('keeps separate sketch blocks separate', () => {
+      const ops = [
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+        stdlib('offsetPlane'),
+        stdlibInSketchBlock('coincident', 2),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+        ],
+        stdlib('offsetPlane'),
+        [stdlibInSketchBlock('coincident', 2)],
+      ])
+    })
+
+    it('does not merge pre-grouped operation streaks into sketch block groups', () => {
+      const ops = [
+        [stdlib('a'), stdlib('b')],
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        [stdlib('a'), stdlib('b')],
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+        ],
       ])
     })
   })

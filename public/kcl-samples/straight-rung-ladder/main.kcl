@@ -1,5 +1,6 @@
 // Straight Rung Ladder
 // A basic parametric ladder model with two side rails and evenly spaced rungs. Designed for use in architectural layouts, equipment modeling, or marine/industrial planning.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 

@@ -1,13 +1,11 @@
 import ms from 'ms'
 
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
-
-import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { MlCopilotServerMessage, MlCopilotFile } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 interface IRowCollapse {
   fn: () => void
@@ -106,12 +104,6 @@ export const KclDocs = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -126,15 +118,7 @@ export const KclDocs = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -145,12 +129,6 @@ export const FeatureTreeOutline = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -165,15 +143,7 @@ export const FeatureTreeOutline = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -353,18 +323,11 @@ export const NothingInParticular = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-    unescape,
-  }
   return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="brain" className="w-6 h-6" />}>
-          <span className="animate-shimmer">Thinking</span>
+          <span>Thinking</span>
         </ThoughtHeader>
       }
     >
@@ -372,15 +335,7 @@ export const NothingInParticular = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -405,6 +360,154 @@ export const ThoughtContainer = (props: {
       {props.heading}
       {props.children}
     </div>
+  )
+}
+
+/**
+ * Convert a byte array to a data URL for displaying images/files
+ */
+const bytesToDataUrl = (data: number[], mimetype: string): string => {
+  const uint8Array = new Uint8Array(data)
+  const blob = new Blob([uint8Array], { type: mimetype })
+  return URL.createObjectURL(blob)
+}
+
+/**
+ * Check if a mimetype is an image type
+ */
+const isImageMimetype = (mimetype: string): boolean => {
+  return mimetype.startsWith('image/')
+}
+
+/**
+ * Component for displaying an image file with error handling
+ */
+const ImageFileItem = (props: {
+  file: MlCopilotFile
+  url: string | undefined
+  onDownload: (url: string, filename: string) => void
+}) => {
+  const [imageError, setImageError] = useState(false)
+
+  if (!props.url || imageError) {
+    // Fallback to file icon if image fails to load
+    return (
+      <button
+        onClick={() =>
+          props.url && props.onDownload(props.url, props.file.name)
+        }
+        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+        title={`Click to download ${props.file.name}`}
+      >
+        <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+        <span className="text-sm truncate">{props.file.name}</span>
+        <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40">
+        {props.file.name}
+      </span>
+      <button
+        onClick={() => props.onDownload(props.url!, props.file.name)}
+        className="cursor-pointer hover:opacity-80 transition-opacity text-left"
+        title={`Click to download ${props.file.name}`}
+      >
+        <img
+          src={props.url}
+          alt={props.file.name}
+          className="max-w-full h-auto rounded border border-chalkboard-30 dark:border-chalkboard-80"
+          onError={() => setImageError(true)}
+        />
+      </button>
+    </div>
+  )
+}
+
+export const FilesSnapshot = (props: {
+  files: MlCopilotFile[]
+}) => {
+  const [objectUrls, setObjectUrls] = useState<string[]>([])
+
+  useEffect(() => {
+    // Create object URLs for all files
+    const urls = props.files.map((file) =>
+      bytesToDataUrl(file.data, file.mimetype)
+    )
+    setObjectUrls(urls)
+
+    // Cleanup object URLs when component unmounts
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [props.files])
+
+  const handleDownload = (url: string, filename: string) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const imageFiles = props.files.filter((file) =>
+    isImageMimetype(file.mimetype)
+  )
+  const otherFiles = props.files.filter(
+    (file) => !isImageMimetype(file.mimetype)
+  )
+
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
+          {props.files.length === 1
+            ? 'Zookeeper File'
+            : `Zookeeper Files (${props.files.length})`}
+        </ThoughtHeader>
+      }
+    >
+      {/* Using a custom content wrapper without height restriction for images */}
+      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3">
+        <div className="flex flex-col gap-3">
+          {imageFiles.map((file, index) => {
+            const fileIndex = props.files.indexOf(file)
+            const url = objectUrls[fileIndex]
+            return (
+              <ImageFileItem
+                key={index}
+                file={file}
+                url={url}
+                onDownload={handleDownload}
+              />
+            )
+          })}
+          {otherFiles.map((file, index) => {
+            const fileIndex = props.files.indexOf(file)
+            const url = objectUrls[fileIndex]
+            return (
+              <button
+                key={`other-${index}`}
+                onClick={() => url && handleDownload(url, file.name)}
+                className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+                title={`Click to download ${file.name}`}
+              >
+                <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm truncate">{file.name}</span>
+                <CustomIcon
+                  name="download"
+                  className="w-4 h-4 ml-auto flex-shrink-0"
+                />
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </ThoughtContainer>
   )
 }
 
@@ -552,6 +655,10 @@ const fromDataToComponent = (
     }
   }
 
+  if ('files' in thought) {
+    return <FilesSnapshot key={options.key} files={thought.files.files} />
+  }
+
   return null
 }
 
@@ -561,6 +668,9 @@ export const Thinking = (props: {
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
+  const isProgrammaticScrollRef = useRef(false)
+  const userHasInteractedWithPaneRef = useRef(false)
+  const [userHasManuallyScrolled, setUserHasManuallyScrolled] = useState(false)
   const [anyRowCollapse, setAnyRowCollapse] = useState<IRowCollapse[]>([])
   const collapseAndClearAllRows = useCallback(() => {
     anyRowCollapse.forEach((row) => {
@@ -571,29 +681,61 @@ export const Thinking = (props: {
 
   const reasoningThoughts =
     props.thoughts?.filter((x: MlCopilotServerMessage) => {
-      return 'reasoning' in x
+      return 'reasoning' in x || 'files' in x
     }) ?? []
 
+  // Resume reasoning autoscroll when a new prompt is sent
   useEffect(() => {
-    if (props.onlyShowImmediateThought === true) {
+    if (reasoningThoughts.length === 0) {
+      userHasInteractedWithPaneRef.current = false
+      setUserHasManuallyScrolled(false)
+    }
+  }, [reasoningThoughts.length])
+
+  const onReasoningPaneInteraction = useCallback(() => {
+    isProgrammaticScrollRef.current = false
+    userHasInteractedWithPaneRef.current = true
+  }, [])
+
+  const onReasoningScroll = useCallback(() => {
+    const el = refViewFull.current
+    if (!el) return
+
+    if (isProgrammaticScrollRef.current) {
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 4
+      if (atBottom) {
+        isProgrammaticScrollRef.current = false
+      }
       return
     }
-    if (refViewFull.current === null) {
-      return
+    // Show the scrollbar after user has manually scrolled
+    if (userHasInteractedWithPaneRef.current) {
+      setUserHasManuallyScrolled(true)
     }
-    const c = refViewFull.current.children
-    if (c.length === 0) {
+  }, [])
+
+  useEffect(() => {
+    if (props.onlyShowImmediateThought === true || userHasManuallyScrolled) {
       return
     }
 
-    setTimeout(() => {
-      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-      setTimeout(() => {
-        if (refViewFull.current === null) return
-        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+    // Autoscroll to the bottom until the user manually scrolls
+    requestAnimationFrame(() => {
+      if (refViewFull.current === null) {
+        return
+      }
+
+      isProgrammaticScrollRef.current = true
+      refViewFull.current.scrollTo({
+        top: refViewFull.current.scrollHeight,
+        behavior: 'smooth',
       })
     })
-  }, [reasoningThoughts.length, props.onlyShowImmediateThought])
+  }, [
+    reasoningThoughts.length,
+    props.onlyShowImmediateThought,
+    userHasManuallyScrolled,
+  ])
 
   if (props.thoughts === undefined) {
     return (
@@ -616,13 +758,14 @@ export const Thinking = (props: {
   }
 
   const lastTextualThought = reasoningThoughts.findLast(
-    (thought) => thought.reasoning.type === 'text'
+    (thought) => 'reasoning' in thought && thought.reasoning.type === 'text'
   )
 
   const componentLastGenericThought = (
     <Generic
       content={
         lastTextualThought !== undefined &&
+        'reasoning' in lastTextualThought &&
         lastTextualThought.reasoning.type === 'text'
           ? lastTextualThought.reasoning.content
           : ''
@@ -634,8 +777,14 @@ export const Thinking = (props: {
     <div
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
+      role="region"
       style={{ maxHeight: '20lh' }}
-      className="select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      className={`relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`}
+      onScroll={onReasoningScroll}
+      onWheel={onReasoningPaneInteraction}
+      onTouchStart={onReasoningPaneInteraction}
+      onPointerDown={onReasoningPaneInteraction}
+      onKeyDown={onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {anyRowCollapse.length > 0 && (

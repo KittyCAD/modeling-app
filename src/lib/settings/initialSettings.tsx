@@ -3,6 +3,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { type MlCopilotMode, type UserFeatureEntry, users } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -11,13 +12,16 @@ import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_ML_COPILOT_MODE,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
   BaseUnit,
+  HideOnPlatformValue,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -26,7 +30,9 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { getToken } from '@src/machines/authMachine'
+import { hexToRgba } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -129,9 +135,94 @@ export class Setting<T = unknown> {
 }
 
 const MS_IN_MINUTE = 1000 * 60
+const COLOR_INPUT_DEBOUNCE_MS = 500
+const FEATURES_CACHE_TTL_MS = 30 * 1_000
+
+type CachedFeaturesData = Extract<
+  Awaited<ReturnType<typeof users.user_features_get>>,
+  { features: unknown }
+>
+function isCachedFeaturesData(
+  r: CachedFeaturesData | Error
+): r is CachedFeaturesData {
+  return !(r instanceof Error)
+}
+let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
+let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
+
+/**
+ * Helper function to fetch user features and determine if the corresponding setting should be visible
+ * Returns 'both' (hidden) if feature flag doesn't exist, or null (visible) if it does
+ */
+/**
+ * Higher-order function that returns an async hideOnPlatform function.
+ * The returned function checks if the specified feature flag exists,
+ * and returns null (visible) if it does, or the defaultHide value if it doesn't.
+ *
+ * @param featureFlagId - The feature flag ID to check for
+ * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
+ * @returns An async function that resolves to the hideOnPlatform value
+ */
+function hideWithoutFeatureFlag(
+  featureFlagId: UserFeatureEntry['id'],
+  defaultHide: HideOnPlatformValue = 'both'
+): () => Promise<HideOnPlatformValue | null> {
+  return async (): Promise<HideOnPlatformValue | null> => {
+    try {
+      const token = await getToken()
+      if (!token) {
+        return defaultHide
+      }
+
+      const now = Date.now()
+      const cacheValid =
+        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
+
+      type FeaturesResult = CachedFeaturesData | Error
+      let featuresData: FeaturesResult
+
+      if (cacheValid && featuresCache) {
+        featuresData = featuresCache.data
+      } else if (featuresFetchPromise) {
+        featuresData = await featuresFetchPromise
+      } else {
+        const client = createKCClient(token)
+        featuresFetchPromise = kcCall(() =>
+          users.user_features_get({ client })
+        ).then((result) => {
+          featuresFetchPromise = null
+          if (isCachedFeaturesData(result)) {
+            featuresCache = { data: result, fetchedAt: Date.now() }
+          }
+          return result
+        })
+        featuresData = await featuresFetchPromise
+      }
+
+      if (featuresData instanceof Error) {
+        console.error('Error fetching user features:', featuresData.message)
+        return defaultHide
+      }
+
+      // Check if the specified feature flag exists
+      const hasFeatureFlag = featuresData.features.find(
+        (feat: { id: string }) => feat.id === featureFlagId
+      )
+
+      if (hasFeatureFlag) {
+        return null // null means visible (no hiding)
+      } else {
+        return defaultHide
+      }
+    } catch (error) {
+      console.error(`Error checking feature flag ${featureFlagId}:`, error)
+      return defaultHide
+    }
+  }
+}
 
 export function createSettings() {
-  return {
+  const settings = {
     // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
     app: {
       /**
@@ -168,6 +259,25 @@ export function createSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
+      }),
+      machineApi: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        hideOnPlatform: 'web',
+        description:
+          'Whether to enable Machine API discovery and printing controls on desktop',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Zookeeper reasoning mode
+       */
+      zookeeperMode: new Setting<MlCopilotMode>({
+        defaultValue: DEFAULT_ML_COPILOT_MODE,
+        validate: (v) => v === 'fast' || v === 'thoughtful',
+        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
       }),
       /**
        * Stream resource saving behavior toggle
@@ -318,6 +428,43 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      backfaceColor: new Setting<string>({
+        defaultValue: DEFAULT_BACKFACE_COLOR,
+        description: 'Default backface color for surfaces',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.backfaceColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
+      }),
       /**
        * The controls for how to navigate the 3D view
        */
@@ -392,14 +539,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Use the new sketch mode implementation - solver (Dev only)
+       * Visibility is controlled by the 'new_sketch_mode' feature flag.
+       * If the feature flag exists, the setting will be visible.
+       * Otherwise, it will be hidden.
        */
-      useNewSketchMode: new Setting<boolean>({
+      useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
         defaultValue: false,
-        description: 'Use the new sketch mode implementation',
+        description:
+          'Default to the experimental solver-based sketch mode for all new sketches.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -693,6 +842,8 @@ export function createSettings() {
       }),
     },
   }
+
+  return settings
 }
 
 export type SettingsType = ReturnType<typeof createSettings>

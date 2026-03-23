@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing runtime_exit.kcl
+---
+{
+  "foo": {
+    "type": "Function",
+    "value": null
+  },
+  "x": {
+    "type": "Number",
+    "value": 42.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  }
+}

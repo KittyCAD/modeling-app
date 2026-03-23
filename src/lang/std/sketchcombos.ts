@@ -2099,7 +2099,13 @@ export function transformAstSketchLines({
     let kclVal = memVars[varName]
     let sketch
     if (kclVal?.type === 'Solid') {
-      sketch = kclVal.value.sketch
+      const creatorType = kclVal.value.sketch.creatorType
+      if (creatorType == 'sketch') {
+        sketch = kclVal.value.sketch
+      } else {
+        console.warn(`Solid was unexpectedly created by ${creatorType}`)
+        return
+      }
     } else {
       sketch = sketchFromKclValue(kclVal, varName)
       if (err(sketch)) {

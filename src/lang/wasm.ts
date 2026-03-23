@@ -40,6 +40,7 @@ import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -50,7 +51,9 @@ export type {
   Artifact,
   Cap as CapArtifact,
   CodeRef,
+  PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
   Segment as SegmentArtifact,
@@ -106,6 +109,7 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
   | 'ImportStatement'
+  | 'SketchBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -317,7 +321,23 @@ export function sketchFromKclValueOptional(
   varName: string | null
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
-  if (obj?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'Solid') {
+    if (obj?.value.sketch.creatorType == 'sketch') {
+      return obj.value.sketch
+    } else {
+      const created = obj?.value.sketch.creatorType
+      return new Reason(
+        `${varName} is a solid created from a ${created} which we don't support yet`
+      )
+    }
+  }
+  if (obj?.type === 'HomArray') {
+    // Note: no artifact id, finding the first sketch
+    const sketch = obj.value.find((sk) => sk.type === 'Sketch')
+    if (sketch) {
+      return sketch.value
+    }
+  }
   if (!varName) {
     varName = 'a KCL value'
   }
@@ -628,9 +648,9 @@ export function distanceBetweenPoint2DExpr(
   }
 
   // Calculate distance
-  const dx = x2Converted[0] - x1Converted[0]
-  const dy = y2Converted[0] - y1Converted[0]
-  const distance = Math.hypot(dx, dy)
+  const coord1: Coords2d = [x1Converted[0], y1Converted[0]]
+  const coord2: Coords2d = [x2Converted[0], y2Converted[0]]
+  const distance = distance2d(coord1, coord2)
 
   return { distance, units: targetSuffix }
 }

@@ -86,12 +86,14 @@ async fn inner_shell(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dShellFace {
-                hollow: false,
-                face_ids,
-                object_id: solids[0].id,
-                shell_thickness: LengthUnit(thickness.to_mm()),
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dShellFace::builder()
+                    .hollow(false)
+                    .face_ids(face_ids)
+                    .object_id(solids[0].id)
+                    .shell_thickness(LengthUnit(thickness.to_mm()))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -122,12 +124,14 @@ async fn inner_hollow(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dShellFace {
-                hollow: true,
-                face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
-                object_id: solid.id,
-                shell_thickness: LengthUnit(thickness.to_mm()),
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dShellFace::builder()
+                    .hollow(true)
+                    .face_ids(Vec::new()) // This is empty because we want to hollow the entire object.
+                    .object_id(solid.id)
+                    .shell_thickness(LengthUnit(thickness.to_mm()))
+                    .build(),
+            ),
         )
         .await?;
 

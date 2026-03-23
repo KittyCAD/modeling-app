@@ -1,6 +1,4 @@
-import { kclManager } from '@src/lib/singletons'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSettings } from '@src/lib/singletons'
 import {
   getProjectDirectoryFromKCLFilePath,
   parentPathRelativeToApplicationDirectory,
@@ -11,6 +9,7 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useLoaderData } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 function timeSince(date: Date) {
   const now = new Date()
@@ -41,12 +40,12 @@ function timeSince(date: Date) {
 
 export const HistoryView = (props: AreaTypeComponentProps) => {
   useSignals()
+  const { kclManager } = useSingletons()
+  const { settings, project } = useApp()
+  const settingsValues = settings.useSettings()
   const theValue = kclManager.history.entries.value
-  const settings = useSettings()
-  const applicationProjectDirectory = settings.app.projectDirectory.current
-  const loaderData = useLoaderData() as IndexLoaderData
-  const { project } = loaderData
-
+  const applicationProjectDirectory = settingsValues.app.projectDirectory.current
+  console.log(theValue);
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -68,7 +67,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                   e.absoluteFilePath,
                   applicationProjectDirectory
                 )
-                return projectDirectoryName === project.name
+                return projectDirectoryName === project?.name
               })
               .map((e) => {
                 const path = parentPathRelativeToProject(

@@ -13,7 +13,7 @@ export class History {
   public entries = signal<HistoryEntry[]>([])
   public lastEntrySelected = signal<HistoryEntry | null>(null)
   private _maxLength = 100
-  constructor() {}
+  constructor() { }
 
   get maxLength() {
     return this._maxLength

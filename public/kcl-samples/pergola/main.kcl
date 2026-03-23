@@ -1,5 +1,6 @@
 // Stylized Pergola
 // A parametric modern pergola with vertical posts, surrounding beams, and evenly spaced roof slats. Designed for garden, patio, or backyard use. Ideal for architectural visualization and parametric prototyping.
+// Categories: Construction
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 

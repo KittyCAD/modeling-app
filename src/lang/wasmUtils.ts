@@ -18,6 +18,7 @@ export const wasmUrl = () => {
     : document.location.protocol +
       webSafeJoin(webSafePathSplit(document.location.pathname).slice(0, -1)) +
       wasmFile
+
   return fullUrl
 }
 // Initialise the wasm module.

@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[88, 128, 0]"]
+    2["Path<br>[88, 128, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     3["Segment<br>[134, 152, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -16,7 +16,7 @@ flowchart LR
     8[Solid2d]
   end
   subgraph path25 [Path]
-    25["Path<br>[401, 458, 0]"]
+    25["Path<br>[401, 458, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     26["Segment<br>[401, 458, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -24,7 +24,7 @@ flowchart LR
   end
   1["Plane<br>[47, 64, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["Sweep Extrusion<br>[254, 320, 0]"]
+  9["Sweep Extrusion<br>[254, 320, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10[Wall]
     %% face_code_ref=Missing NodePath
@@ -48,7 +48,7 @@ flowchart LR
   23["SweepEdge Adjacent"]
   24["Plane<br>[348, 376, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  28["Sweep Extrusion<br>[476, 518, 0]"]
+  28["Sweep Extrusion<br>[476, 518, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   29[Wall]
     %% face_code_ref=Missing NodePath
@@ -58,7 +58,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   32["SweepEdge Opposite"]
   33["SweepEdge Adjacent"]
-  34["CompositeSolid Subtract<br>[529, 572, 0]"]
+  34["CompositeSolid Subtract<br>[529, 572, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   35["StartSketchOnPlane<br>[334, 377, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]

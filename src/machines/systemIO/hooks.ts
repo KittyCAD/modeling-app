@@ -1,46 +1,79 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/singletons'
-import { systemIOActor } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
+  type SystemIOActor,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
+import {
+  type BillingActor,
+  BillingTransition,
+} from '@src/machines/billingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
-export const useRequestedProjectName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedProjectName)
-export const useRequestedFileName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedFileName)
-export const useProjectDirectoryPath = () =>
-  useSelector(systemIOActor, (state) => state.context.projectDirectoryPath)
-export const useFolders = () =>
-  useSelector(systemIOActor, (state) => state.context.folders)
-export const useState = () => useSelector(systemIOActor, (state) => state)
-export const useCanReadWriteProjectDirectory = () =>
-  useSelector(
+export const useRequestedProjectName = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(
+    systemIOActor,
+    (state) => state.context.requestedProjectName
+  )
+}
+export const useRequestedFileName = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.requestedFileName)
+}
+export const useProjectDirectoryPath = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(
+    systemIOActor,
+    (state) => state.context.projectDirectoryPath
+  )
+}
+export const useFolders = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.folders)
+}
+export const useState = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state)
+}
+export const useCanReadWriteProjectDirectory = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
-export const useHasListedProjects = () =>
-  useSelector(systemIOActor, (state) => state.context.hasListedProjects)
+}
+export const useHasListedProjects = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
+}
 
-export const useClearURLParams = () =>
-  useSelector(systemIOActor, (state) => state.context.clearURLParams)
+export const useLastOperation = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.lastOperation)
+}
+
+export const useClearURLParams = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.clearURLParams)
+}
 
 export const useProjectIdToConversationId = (
-  mlEphantManagerActor2: MlEphantManagerActor,
+  mlEphantManagerActor: MlEphantManagerActor,
   systemIOActor: SystemIOActor,
   settings2: SettingsType
 ) => {
   useEffect(() => {
     let lastConversationId =
-      mlEphantManagerActor2.getSnapshot().context.conversationId
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+      mlEphantManagerActor.getSnapshot().context.conversationId
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return
       }
@@ -73,24 +106,29 @@ export const useProjectIdToConversationId = (
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings2.meta.id.current])
 }
 
+export interface MlEphantNewFileRequestProps {
+  toolOutput: MlToolResult
+  projectNameCurrentlyOpened: string
+  fileFocusedOnInEditor?: FileEntry
+}
+
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
-  mlEphantManagerActor2: MlEphantManagerActor,
-  fn2: (
-    toolOutputTextToCad: MlToolResult,
-    projectNameCurrentlyOpened: string,
-    fileFocusedOnInEditor?: FileEntry
-  ) => void
+  mlEphantManagerActor: MlEphantManagerActor,
+  billingActor: BillingActor,
+  token: string,
+  engineCommandManager: ConnectionManager,
+  fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
@@ -105,15 +143,27 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn2(
-        lastResponse.tool_output.result,
-        next.context.projectNameCurrentlyOpened,
-        next.context.fileFocusedOnInEditor
-      )
+      fn({
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
+        fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+      })
+
+      // TODO: Move elsewhere eventually, decouple from SystemIOActor
+      billingActor.send({
+        type: BillingTransition.Update,
+        apiToken: token,
+      })
+
+      // Clear selections since new model
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      })
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

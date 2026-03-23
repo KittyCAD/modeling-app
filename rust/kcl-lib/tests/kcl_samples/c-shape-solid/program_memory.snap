@@ -26,6 +26,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -81,6 +82,8 @@ description: Variables in memory after executing c-shape-solid.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -88,7 +91,6 @@ description: Variables in memory after executing c-shape-solid.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -237,6 +239,8 @@ description: Variables in memory after executing c-shape-solid.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -244,7 +248,6 @@ description: Variables in memory after executing c-shape-solid.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -290,13 +293,14 @@ description: Variables in memory after executing c-shape-solid.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -349,6 +353,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -404,6 +409,8 @@ description: Variables in memory after executing c-shape-solid.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -411,7 +418,6 @@ description: Variables in memory after executing c-shape-solid.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -494,6 +500,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -569,6 +576,8 @@ description: Variables in memory after executing c-shape-solid.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -576,7 +585,6 @@ description: Variables in memory after executing c-shape-solid.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -645,13 +653,14 @@ description: Variables in memory after executing c-shape-solid.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": -1.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -750,6 +759,8 @@ description: Variables in memory after executing c-shape-solid.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -757,7 +768,6 @@ description: Variables in memory after executing c-shape-solid.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -803,13 +813,14 @@ description: Variables in memory after executing c-shape-solid.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": -1.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

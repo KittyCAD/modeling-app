@@ -163,7 +163,9 @@ impl IntoDiagnostic for &Discovered {
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),
             severity: Some(self.severity()),
-            code: None,
+            code: Some(tower_lsp::lsp_types::NumberOrString::String(
+                self.finding.code.to_string(),
+            )),
             // TODO: this is neat we can pass a URL to a help page here for this specific error.
             code_description: None,
             source: Some("lint".to_string()),

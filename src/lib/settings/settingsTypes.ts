@@ -9,6 +9,13 @@ import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 
+export type RgbaColor = {
+  r: number
+  g: number
+  b: number
+  a: number
+}
+
 export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
@@ -16,6 +23,7 @@ export interface SettingsViaQueryString {
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
+  backfaceColor: string
 }
 
 export const baseUnits = {
@@ -62,6 +70,9 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   }
 }
 
+/** Platform values for hiding settings */
+export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
+
 export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
@@ -107,7 +118,9 @@ export interface SettingProps<T = unknown> {
    * Whether to hide the setting on a certain platform.
    * This will be applied in both the settings panel and the command bar.
    */
-  hideOnPlatform?: 'web' | 'desktop' | 'both'
+  hideOnPlatform?:
+    | HideOnPlatformValue
+    | (() => Promise<HideOnPlatformValue | null>)
   /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`

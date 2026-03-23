@@ -1,14 +1,22 @@
 use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
-use base64::Engine;
 use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::ExecutorContext;
+use crate::{
+    ConnectionError, ExecutorContext,
+    errors::ExecErrorWithState,
+    util::{RetryConfig, execute_with_retries},
+};
 
 mod type_formatter;
+
+fn escape_frontmatter_value(value: &str) -> String {
+    // YAML frontmatter is double-quoted in templates, so escape backslashes and quotes.
+    value.replace('\\', "\\\\").replace('"', "\\\"")
+}
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -35,6 +43,23 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
+    hbs.register_helper(
+        "frontmatter_escape",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let input = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                let first_line = input.lines().next().unwrap_or("");
+                out.write(&escape_frontmatter_value(first_line))?;
+                Ok(())
+            },
+        ),
+    );
+
     // Register a helper to do safe YAML new lines.
     hbs.register_helper(
         "safe_yaml",
@@ -50,8 +75,8 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
                 {
                     // Only get the first part before the newline.
                     // This is to prevent the YAML from breaking.
-                    let string = string.split('\n').next().unwrap_or("");
-                    out.write(string)?;
+                    let first_line = string.lines().next().unwrap_or("");
+                    out.write(&escape_frontmatter_value(first_line))?;
                     return Ok(());
                 }
                 out.write("")?;
@@ -181,20 +206,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         crate::unparser::fmt(src).unwrap()
     };
 
-    let image_base64 = if props.norun {
-        String::new()
-    } else {
-        let image_path = format!(
-            "{}/tests/outputs/serial_test_example_{}{}.png",
-            env!("CARGO_MANIFEST_DIR"),
-            file_name,
-            index
-        );
-        let image_data =
-            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {image_path}"));
-        base64::engine::general_purpose::STANDARD.encode(&image_data)
-    };
-
     let gltf_path = if props.norun || props.no3d {
         String::new()
     } else {
@@ -217,7 +228,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         "content": content,
         "gltf_path": gltf_path,
         "image_path": image_path,
-        "image_base64": image_base64,
     }))
 }
 
@@ -284,6 +294,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
         "module": mod_name_std(&m.module_name),
         "summary": m.summary,
         "description": m.description,
+        "experimental": m.properties.experimental,
         "modules": modules,
         "functions": functions,
         "types": types,
@@ -565,7 +576,7 @@ async fn test_code_in_topics() {
             }
 
             let f = path.display().to_string();
-            join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
+            join_set.spawn(async move { (format!("{f}, example {i}"), run_example_with_retries(&eg).await) });
         }
     }
     let results: Vec<_> = join_set
@@ -606,13 +617,26 @@ fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     result
 }
 
-async fn run_example(text: &str) -> Result<()> {
+/// Execute the example code, with retries if we get a transient error from the
+/// engine.
+async fn run_example_with_retries(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client().await?;
-    let mut exec_state = crate::execution::ExecState::new(&ctx);
-    ctx.run(&program, &mut exec_state).await?;
-    ctx.close().await;
+    execute_with_retries(&RetryConfig::default(), || run_example(&program)).await?;
     Ok(())
+}
+
+async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
+    let ctx = ExecutorContext::new_with_default_client()
+        .await
+        .map_err(ConnectionError::CouldNotMakeClient)?;
+    let mut exec_state = crate::execution::ExecState::new(&ctx);
+    let result = ctx
+        .run(program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state));
+    // Always close, even when there's an error.
+    ctx.close().await;
+    result.map(|_| ())
 }
 
 #[cfg(test)]

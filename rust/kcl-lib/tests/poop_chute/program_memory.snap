@@ -191,6 +191,7 @@ description: Variables in memory after executing poop_chute.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -426,6 +427,8 @@ description: Variables in memory after executing poop_chute.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -433,7 +436,6 @@ description: Variables in memory after executing poop_chute.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -733,6 +735,8 @@ description: Variables in memory after executing poop_chute.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -740,7 +744,6 @@ description: Variables in memory after executing poop_chute.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -894,6 +897,7 @@ description: Variables in memory after executing poop_chute.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1129,6 +1133,8 @@ description: Variables in memory after executing poop_chute.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1136,7 +1142,6 @@ description: Variables in memory after executing poop_chute.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,

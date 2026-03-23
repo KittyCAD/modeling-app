@@ -47,7 +47,7 @@ bigCube = startSketchOn(XY)
   |> extrude(length = cubeLen, symmetric = true)
   |> translate(x = 5)
 
-  // Add a hole to the cube.
+// Add a hole to the cube.
 // It'll have a drilled end, and a countersink (angled tip at the start).
 bigCube
   |> hole::hole(
@@ -87,7 +87,7 @@ bigCube = startSketchOn(XY)
   |> extrude(length = cubeLen, symmetric = true)
   |> translate(x = 5)
 
-  // Add a hole to the cube.
+// Add a hole to the cube.
 // It'll have a drilled end, and a counterbore (vertical hole that emerges from a larger hole)
 bigCube
   |> hole::hole(

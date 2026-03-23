@@ -84,8 +84,6 @@ description: Result of parsing split-washer-flat-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The full outer diameter of the washer — it must be bigger than the hole"
         ],
         "start": 0,
@@ -126,8 +124,6 @@ description: Result of parsing split-washer-flat-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The washer's thickness — this defines the height of the solid body"
         ],
         "start": 0,
@@ -168,8 +164,6 @@ description: Result of parsing split-washer-flat-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The width of the split — how wide the cutout gap will be"
         ],
         "start": 0,
@@ -537,25 +531,6 @@ description: Result of parsing split-washer-flat-version.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Now we turn that flat ring into a 3D washer by extruding it upward",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -665,6 +640,9 @@ description: Result of parsing split-washer-flat-version.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Now we turn that flat ring into a 3D washer by extruding it upward"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -957,8 +935,6 @@ description: Result of parsing split-washer-flat-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The wedge also needs to be taller than the washer"
         ],
         "start": 0,
@@ -1069,8 +1045,6 @@ description: Result of parsing split-washer-flat-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// We draw the wedge as a thin rectangle, centered vertically on the Y-axis"
         ],
         "start": 0,
@@ -1616,25 +1590,6 @@ description: Result of parsing split-washer-flat-version.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Turn this sketch into a 3D wedge that slices through the ring",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1744,6 +1699,9 @@ description: Result of parsing split-washer-flat-version.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Turn this sketch into a 3D wedge that slices through the ring"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1924,6 +1882,42 @@ description: Result of parsing split-washer-flat-version.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "3": [
           {
             "commentStart": 0,
@@ -1932,7 +1926,17 @@ description: Result of parsing split-washer-flat-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "───────────────────────────",
               "style": "line"
             }
@@ -1994,6 +1998,18 @@ description: Result of parsing split-washer-flat-version.kcl
             }
           }
         ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "6": [
           {
             "commentStart": 0,
@@ -2002,7 +2018,17 @@ description: Result of parsing split-washer-flat-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "───────────────────────────────────",
               "style": "line"
             }
@@ -2088,6 +2114,42 @@ description: Result of parsing split-washer-flat-version.kcl
             }
           }
         ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "14": [
           {
             "commentStart": 0,
@@ -2096,7 +2158,17 @@ description: Result of parsing split-washer-flat-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "────────────────────────────────",
               "style": "line"
             }
@@ -2181,6 +2253,18 @@ description: Result of parsing split-washer-flat-version.kcl
           "value": {
             "type": "blockComment",
             "value": "A flat split washer — also known as a spring lock washer — is a small metal ring with a gap in it. It's usually placed under a nut or bolt head to stop it from loosening when things vibrate. Normally, this washer is springy and twisted, but for simplicity, we’re making a flat version.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Fasteners",
             "style": "line"
           }
         },

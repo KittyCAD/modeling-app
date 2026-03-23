@@ -10,9 +10,7 @@ import {
   lineNumbers,
   rectangularSelection,
 } from '@codemirror/view'
-import { getSettings, kclManager } from '@src/lib/singletons'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSettings } from '@src/lib/singletons'
 import {
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
@@ -24,7 +22,7 @@ import type { LanguageSupport } from '@codemirror/language'
 import { bracketMatching, foldGutter } from '@codemirror/language'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { useLspContext } from '@src/components/LspProvider'
-import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
+import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { getResolvedTheme } from '@src/lib/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { lineHighlightField } from '@src/editor/highlightextension'
@@ -33,18 +31,25 @@ import { history } from '@codemirror/commands'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ActionButton } from '@src/components/ActionButton'
 import { reportRejection } from '@src/lib/trap'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { SettingsType } from '@src/lib/settings/initialSettings'
 
 function setDiff(
   editorRef: React.RefObject<HTMLDivElement | null>,
   mergeViewRef: React.RefObject<EditorView | null>,
   left: string,
   right: string,
-  kclLSP: LanguageSupport | null
+  kclLSP: LanguageSupport | null,
+  settingsActor
 ) {
   if (mergeViewRef.current) {
     mergeViewRef.current.destroy()
   }
-
+  const getSettings = (): SettingsType => {
+    const { currentProject: _, ...settings } =
+      settingsActor.getSnapshot().context
+    return settings
+  }
   const extensions = [
     themeCompartment.of(
       editorTheme[getResolvedTheme(getSettings().app.theme.current)]
@@ -103,10 +108,13 @@ function copyToClipboard(message: string) {
 
 export const DiffView = (props: AreaTypeComponentProps) => {
   useSignals()
+  const { kclManager } = useSingletons()
   const editor = useRef<HTMLDivElement>(null)
   const mergeView = useRef<EditorView>(null)
-  const settings = useSettings()
-  const applicationProjectDirectory = settings.app.projectDirectory.current
+  const { settings } = useApp()
+  const settingsValues = settings.useSettings()
+  const settingsActor = settings.actor
+  const applicationProjectDirectory = settingsValues.app.projectDirectory.current
   const { kclLSP } = useLspContext()
   const lastEntrySelected = kclManager.history.lastEntrySelected.value
 
@@ -121,7 +129,8 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       mergeView,
       lastEntrySelected.left,
       lastEntrySelected.right,
-      kclLSP
+      kclLSP,
+      settingsActor
     )
   }, [lastEntrySelected, kclLSP])
 

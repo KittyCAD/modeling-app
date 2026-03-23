@@ -10,10 +10,14 @@ import { PATHS } from '@src/lib/paths'
 
 export const Telemetry = () => {
   const navigate = useNavigate()
-  const close = () => navigate(location.pathname.replace(PATHS.TELEMETRY, ''))
   const location = useLocation()
+  const close = () => {
+    void navigate(location.pathname.replace(PATHS.TELEMETRY, ''))
+  }
   const dotDotSlash = useDotDotSlash()
-  useHotkeys('esc', () => navigate(dotDotSlash()))
+  useHotkeys('esc', () => {
+    void navigate(dotDotSlash())
+  })
   return (
     <Transition appear show={true} as={Fragment}>
       <Dialog

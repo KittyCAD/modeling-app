@@ -13,7 +13,7 @@ classifiers = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-asyncio"]
+test = ["pytest", "pytest-asyncio", "flaky"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]

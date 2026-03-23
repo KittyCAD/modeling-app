@@ -4,7 +4,7 @@ import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing Gizmo', () => {
+test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
   const cases = [
     {
       testDescription: 'top view',
@@ -249,7 +249,7 @@ test.describe('Testing Gizmo', () => {
   })
 })
 
-test.describe(`Testing gizmo, fixture-based`, () => {
+test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
   test('Center on selection from menu, disable interaction in sketch mode', async ({
     context,
     page,

@@ -1,5 +1,6 @@
 // Bike hub washer
 // Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.
+// Categories: Automotive
 
 @settings(defaultLengthUnit = mm)
 

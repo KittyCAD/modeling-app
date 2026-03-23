@@ -3,12 +3,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import CubeGizmo from '@src/components/gizmo/CubeGizmo'
 import AxisGizmo from '@src/components/gizmo/AxisGizmo'
-import { useSettings } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 
 export default function Gizmo() {
+  const { settings } = useApp()
   const menuItems = useViewControlMenuItems()
-  const settings = useSettings()
-  const gizmoType = settings.modeling.gizmoType.current
+  const settingsValues = settings.useSettings()
+  const gizmoType = settingsValues.modeling.gizmoType.current
 
   return (
     <div className="relative">
@@ -21,7 +22,7 @@ export default function Gizmo() {
 function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
   return (
     <Popover className="absolute top-0 right-0 pointer-events-auto">
-      {({ close }) => (
+      {(popover) => (
         <>
           <Popover.Button className="border-none p-0 m-0 -translate-y-1/4 translate-x-1/4">
             <CustomIcon
@@ -38,7 +39,11 @@ function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
           >
             <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
               {items.map((item, index) => (
-                <li key={index} className="contents" onClick={() => close()}>
+                <li
+                  key={index}
+                  className="contents"
+                  onClick={() => popover.close()}
+                >
                   {item}
                 </li>
               ))}

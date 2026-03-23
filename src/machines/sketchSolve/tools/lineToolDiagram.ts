@@ -1,6 +1,5 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
@@ -23,6 +22,11 @@ import {
   storePendingSketchOutcome,
   sendStoredResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import { isLineSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -35,12 +39,7 @@ export const machine = setup({
   types: {
     context: {} as ToolContext,
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'animate draft segment listener': animateDraftSegmentListener,
@@ -89,7 +88,7 @@ export const machine = setup({
             sketchId, // sketchId from context
             segmentCtor,
             'line-segment', // label
-            await jsAppSettings(rustContext.settingsActor)
+            jsAppSettings(rustContext.settingsActor)
           )
 
           return result
@@ -162,7 +161,7 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            await jsAppSettings(rustContext.settingsActor)
+            jsAppSettings(rustContext.settingsActor)
           )
 
           // After updating the point, create a new line segment chained from it (unless double-click)
@@ -197,17 +196,14 @@ export const machine = setup({
               previousEndPointId, // previous line's end point ID
               newLineCtor,
               'line-segment',
-              await jsAppSettings(rustContext.settingsActor)
+              jsAppSettings(rustContext.settingsActor)
             )
 
             // Extract the new line segment from the chained result
             const newLine = chainResult.sceneGraphDelta.new_objects.find(
               (objId) => {
                 const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
-                return (
-                  obj?.kind.type === 'Segment' &&
-                  obj.kind.segment.type === 'Line'
-                )
+                return isLineSegment(obj)
               }
             )
 
@@ -216,10 +212,7 @@ export const machine = setup({
             if (newLine !== undefined) {
               const lineObj =
                 chainResult.sceneGraphDelta.new_graph.objects[newLine]
-              if (
-                lineObj?.kind.type === 'Segment' &&
-                lineObj.kind.segment.type === 'Line'
-              ) {
+              if (isLineSegment(lineObj)) {
                 // The start and end point IDs are stored in the Line segment
                 // newLineStartPointId = lineObj.kind.segment.start
                 newLineEndPointId = lineObj.kind.segment.end
@@ -386,8 +379,10 @@ export const machine = setup({
     },
     'delete newly added entities': {
       entry: ({ self }) => {
-        // Request parent to delete draft entities
-        self._parent?.send({ type: 'delete draft entities' })
+        const sendData: SketchSolveMachineEvent = {
+          type: 'delete draft entities',
+        }
+        self._parent?.send(sendData)
       },
       always: {
         target: 'ready for user click',
@@ -406,8 +401,10 @@ export const machine = setup({
       entry: [
         'remove point listener',
         ({ self }) => {
-          // Clear draft entities when unequipping normally
-          self._parent?.send({ type: 'clear draft entities' })
+          const sendData: SketchSolveMachineEvent = {
+            type: 'clear draft entities',
+          }
+          self._parent?.send(sendData)
         },
       ],
       description: 'Any teardown logic should go here.',
@@ -463,8 +460,10 @@ export const machine = setup({
     },
     'delete draft entities on unequip': {
       entry: ({ self }) => {
-        // Request parent to delete draft entities
-        self._parent?.send({ type: 'delete draft entities' })
+        const sendData: SketchSolveMachineEvent = {
+          type: 'delete draft entities',
+        }
+        self._parent?.send(sendData)
       },
       always: [
         {

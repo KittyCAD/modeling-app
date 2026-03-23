@@ -177,7 +177,7 @@ description: Artifact commands revolve_on_face.kcl
           "r": 0.06666667,
           "g": 0.06666667,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -335,7 +335,7 @@ description: Artifact commands revolve_on_face.kcl
           "r": 1.0,
           "g": 0.06666667,
           "b": 0.06666667,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

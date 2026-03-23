@@ -502,7 +502,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -589,7 +588,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1138,7 +1136,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

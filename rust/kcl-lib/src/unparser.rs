@@ -119,9 +119,12 @@ fn recast_body(
                 result.push_str(&stmt.recast(options, indentation_level));
             }
             BodyItem::ExpressionStatement(expression_statement) => {
+                let mut tmp_buf = String::new();
                 expression_statement
                     .expression
-                    .recast(&mut result, options, indentation_level, ExprContext::Other)
+                    .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
+                options.write_indentation(&mut result, indentation_level);
+                result.push_str(tmp_buf.trim_start());
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
                 variable_declaration.recast(&mut result, options, indentation_level);
@@ -180,7 +183,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -207,19 +210,6 @@ impl Node<NonCodeNode> {
                     }
                 }
             },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{add_start_new_line}{indentation}//\n")
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
@@ -306,7 +296,29 @@ impl ImportStatement {
 pub(crate) enum ExprContext {
     Pipe,
     FnDecl,
+    /// Being used as an argument to a call expression, which is in a pipe expression.
+    PipeCallArg,
+    /// Being used as an argument to a call expression.
+    CallArg,
     Other,
+}
+
+impl ExprContext {
+    fn in_pipe(self) -> bool {
+        matches!(self, ExprContext::Pipe | ExprContext::PipeCallArg)
+    }
+
+    fn needs_leading_indent(self) -> bool {
+        !matches!(self, ExprContext::CallArg | ExprContext::PipeCallArg)
+    }
+
+    fn call_arg_context(self) -> ExprContext {
+        if self.in_pipe() {
+            ExprContext::PipeCallArg
+        } else {
+            ExprContext::CallArg
+        }
+    }
 }
 
 impl Expr {
@@ -396,7 +408,13 @@ impl AscribedExpression {
 }
 
 impl BinaryPart {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+    pub(crate) fn recast(
+        &self,
+        buf: &mut String,
+        options: &FormatOptions,
+        indentation_level: usize,
+        ctxt: ExprContext,
+    ) {
         match &self {
             BinaryPart::Literal(literal) => {
                 literal.recast(buf);
@@ -448,16 +466,17 @@ fn recast_args(
     indentation_level: usize,
     ctxt: ExprContext,
 ) -> Vec<String> {
+    let arg_ctxt = ctxt.call_arg_context();
     let mut arg_list = if let Some(first_arg) = unlabeled {
         let mut first = String::with_capacity(256);
-        first_arg.recast(&mut first, options, indentation_level, ctxt);
+        first_arg.recast(&mut first, options, indentation_level, arg_ctxt);
         vec![first.trim().to_owned()]
     } else {
         Vec::with_capacity(arguments.len())
     };
     arg_list.extend(arguments.iter().map(|arg| {
         let mut buf = String::with_capacity(256);
-        arg.recast(&mut buf, options, indentation_level, ctxt);
+        arg.recast(&mut buf, options, indentation_level, arg_ctxt);
         buf
     }));
     arg_list
@@ -472,11 +491,7 @@ fn recast_call(
     indentation_level: usize,
     ctxt: ExprContext,
 ) {
-    let smart_indent_level = if ctxt == ExprContext::Pipe {
-        0
-    } else {
-        indentation_level
-    };
+    let smart_indent_level = if ctxt.in_pipe() { 0 } else { indentation_level };
     let name = callee;
 
     if let Some(suggestion) = deprecation(&name.name.inner.name, DeprecationKind::Function) {
@@ -491,7 +506,7 @@ fn recast_call(
     let multiline = has_lots_of_args || some_arg_is_already_multiline;
     if multiline {
         let next_indent = indentation_level + 1;
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(next_indent)
         } else {
             options.get_indentation(next_indent)
@@ -500,12 +515,14 @@ fn recast_call(
         let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
         args.push(',');
         let args = args;
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
         };
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
@@ -515,7 +532,9 @@ fn recast_call(
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         write!(buf, "{args}").no_fail();
@@ -646,6 +665,24 @@ impl TagDeclarator {
 
 impl ArrayExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        fn indent_multiline_item(item: &str, indent: &str) -> String {
+            if !item.contains('\n') {
+                return item.to_owned();
+            }
+            let mut out = String::with_capacity(item.len() + indent.len() * 2);
+            let mut first = true;
+            for segment in item.split_inclusive('\n') {
+                if first {
+                    out.push_str(segment);
+                    first = false;
+                    continue;
+                }
+                out.push_str(indent);
+                out.push_str(segment);
+            }
+            out
+        }
+
         // Reconstruct the order of items in the array.
         // An item can be an element (i.e. an expression for a KCL value),
         // or a non-code item (e.g. a comment)
@@ -691,23 +728,25 @@ impl ArrayExpression {
 
         // Otherwise, we format a multi-line representation.
         buf.push_str("[\n");
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
         };
         for format_item in format_items {
-            buf.push_str(&inner_indentation);
-            buf.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+            let item = if let Some(x) = format_item.strip_suffix(" ") {
                 x
             } else {
                 &format_item
-            });
+            };
+            let item = indent_multiline_item(item, &inner_indentation);
+            buf.push_str(&inner_indentation);
+            buf.push_str(&item);
             if !format_item.ends_with('\n') {
                 buf.push('\n')
             }
         }
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -800,7 +839,7 @@ impl ObjectExpression {
         indentation_level: usize,
         ctxt: ExprContext,
     ) {
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
@@ -822,7 +861,7 @@ impl ObjectExpression {
                 }
             })
             .collect();
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -961,7 +1000,15 @@ impl IfExpression {
         lines.push((0, "}".to_owned()));
         let out = lines
             .into_iter()
-            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .enumerate()
+            .map(|(idx, (ind, line))| {
+                let indentation = if ctxt.in_pipe() && idx == 0 {
+                    String::new()
+                } else {
+                    options.get_indentation(indentation_level + ind)
+                };
+                format!("{indentation}{}", line.trim())
+            })
             .collect::<Vec<_>>()
             .join("\n");
         buf.push_str(&out);
@@ -978,6 +1025,10 @@ impl Node<PipeExpression> {
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
+                    if let NonCodeValue::NewLine = val.value {
+                        buf.push('\n');
+                        continue;
+                    }
                     // TODO: Remove allocation here by switching val.recast to accept buf.
                     let formatted = if val.end == self.end {
                         val.recast(options, indentation_level)
@@ -988,7 +1039,9 @@ impl Node<PipeExpression> {
                             .trim_end_matches('\n')
                             .to_string()
                     };
-                    if let NonCodeValue::BlockComment { .. } = val.value {
+                    if let NonCodeValue::BlockComment { .. } = val.value
+                        && !buf.ends_with('\n')
+                    {
                         buf.push('\n');
                     }
                     buf.push_str(&formatted);
@@ -1767,16 +1820,14 @@ myNestedVar = [
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast_top(&Default::default(), 0);
-        assert_eq!(
-            recasted,
-            r#"bing = { yo = 55 }
+        let expected = r#"bing = { yo = 55 }
 myNestedVar = [
   {
-  prop = line(a = [bing.yo, 21], b = sketch001)
-}
+    prop = line(a = [bing.yo, 21], b = sketch001)
+  }
 ]
-"#
-        );
+"#;
+        assert_eq!(recasted, expected,);
     }
 
     #[test]
@@ -3265,6 +3316,154 @@ x = 1
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn inline_ifs() {
+        let code = "y = true
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> if y {
+    yLine(length = 1)
+  } else {
+    xLine(length = 1)
+  }
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_binary_expressions() {
+        let code = "\
+fn foo() {
+  1 == 2
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_assignment() {
+        let code = "\
+fn foo() {
+  x = 1
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_unary_expression() {
+        let code = "\
+fn foo() {
+  -x
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_array_expression() {
+        let code = "\
+fn foo() {
+  [1, 2]
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_name_expression() {
+        let code = "\
+fn foo() {
+  x
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_member_assignment() {
+        let code = "\
+brakcetPlane = {
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 }
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn badly_formatted_inline_calls() {
+        let code = "\
+return union([right, left])
+  |> subtract(tools = [
+       translate(axle(), y = pitchStabL + forkBaseL + wheelRGap + wheelR + addedLength),
+       socket(rakeAngle = rearRake, xyTrans = [0, 12]),
+       socket(
+         rakeAngle = frontRake,
+         xyTrans = [
+           wheelW / 2 + wheelWGap + forkTineW / 2,
+           40 + addedLength
+         ],
+       )
+     ])
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn fn_args_prefixed_with_spaces() {
+        let code = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
+  holeType =   hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)";
+        let expected = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(recasted, expected);
     }
 }

@@ -1,11 +1,12 @@
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
+
 use indexmap::IndexMap;
 pub use kcl_error::{CompilationError, Severity, Suggestion, Tag};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
     ModuleId, SourceRange,
     exec::KclValue,
@@ -13,10 +14,17 @@ use crate::{
     lsp::{IntoDiagnostic, ToLspRange},
     modules::{ModulePath, ModuleSource},
 };
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::{ArtifactCommand, ArtifactGraph, Operation},
+    front::{Number, Object, ObjectId},
+};
 
-mod details;
-
-pub use details::KclErrorDetails;
+pub trait IsRetryable {
+    /// Returns true if the error is transient and the operation that caused it
+    /// should be retried.
+    fn is_retryable(&self) -> bool;
+}
 
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
@@ -38,8 +46,8 @@ impl From<KclErrorWithOutputs> for ExecError {
 }
 
 /// How did the KCL execution fail, with extra state.
-#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
+#[error("{error}")]
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: Option<crate::execution::ExecState>,
@@ -55,12 +63,24 @@ impl ExecErrorWithState {
     }
 }
 
+impl IsRetryable for ExecErrorWithState {
+    fn is_retryable(&self) -> bool {
+        self.error.is_retryable()
+    }
+}
+
 impl ExecError {
     pub fn as_kcl_error(&self) -> Option<&crate::KclError> {
         let ExecError::Kcl(k) = &self else {
             return None;
         };
         Some(&k.error)
+    }
+}
+
+impl IsRetryable for ExecError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, ExecError::Kcl(kcl_error) if kcl_error.is_retryable())
     }
 }
 
@@ -120,8 +140,14 @@ pub enum KclError {
     },
     #[error("invalid expression: {details:?}")]
     InvalidExpression { details: KclErrorDetails },
+    #[error("max call stack size exceeded: {details:?}")]
+    MaxCallStack { details: KclErrorDetails },
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
+    #[error("engine hangup: {details:?}")]
+    EngineHangup { details: KclErrorDetails },
+    #[error("engine internal: {details:?}")]
+    EngineInternal { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
     Internal { details: KclErrorDetails },
 }
@@ -129,6 +155,12 @@ pub enum KclError {
 impl From<KclErrorWithOutputs> for KclError {
     fn from(error: KclErrorWithOutputs) -> Self {
         error.error
+    }
+}
+
+impl IsRetryable for KclError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, KclError::EngineHangup { .. } | KclError::EngineInternal { .. })
     }
 }
 
@@ -150,6 +182,16 @@ pub struct KclErrorWithOutputs {
     pub _artifact_commands: Vec<ArtifactCommand>,
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
@@ -164,6 +206,9 @@ impl KclErrorWithOutputs {
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
         #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
+        #[cfg(feature = "artifact-graph")] scene_objects: Vec<Object>,
+        #[cfg(feature = "artifact-graph")] source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+        #[cfg(feature = "artifact-graph")] var_solutions: Vec<(SourceRange, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -178,6 +223,13 @@ impl KclErrorWithOutputs {
             _artifact_commands: artifact_commands,
             #[cfg(feature = "artifact-graph")]
             artifact_graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions,
+            scene_graph: Default::default(),
             filenames,
             source_files,
             default_planes,
@@ -194,6 +246,13 @@ impl KclErrorWithOutputs {
             _artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: Default::default(),
+            scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
             default_planes: Default::default(),
@@ -244,6 +303,15 @@ impl KclErrorWithOutputs {
             filename,
             related,
         })
+    }
+}
+
+impl IsRetryable for KclErrorWithOutputs {
+    fn is_retryable(&self) -> bool {
+        matches!(
+            self.error,
+            KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+        )
     }
 }
 
@@ -324,7 +392,10 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -374,7 +445,10 @@ impl miette::Diagnostic for Report {
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -394,6 +468,18 @@ impl miette::Diagnostic for Report {
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
+#[error("{message}")]
+#[ts(export)]
+pub struct KclErrorDetails {
+    #[label(collection, "Errors")]
+    pub source_ranges: Vec<SourceRange>,
+    pub backtrace: Vec<super::BacktraceItem>,
+    #[serde(rename = "msg")]
+    pub message: String,
 }
 
 impl KclErrorDetails {
@@ -457,7 +543,15 @@ impl KclError {
     }
 
     pub fn new_engine(details: KclErrorDetails) -> KclError {
-        KclError::Engine { details }
+        if details.message.eq_ignore_ascii_case("internal error") {
+            KclError::EngineInternal { details }
+        } else {
+            KclError::Engine { details }
+        }
+    }
+
+    pub fn new_engine_hangup(details: KclErrorDetails) -> KclError {
+        KclError::EngineHangup { details }
     }
 
     pub fn new_lexical(details: KclErrorDetails) -> KclError {
@@ -490,7 +584,10 @@ impl KclError {
             KclError::ValueAlreadyDefined { .. } => "value already defined",
             KclError::UndefinedValue { .. } => "undefined value",
             KclError::InvalidExpression { .. } => "invalid expression",
+            KclError::MaxCallStack { .. } => "max call stack",
             KclError::Engine { .. } => "engine",
+            KclError::EngineHangup { .. } => "engine hangup",
+            KclError::EngineInternal { .. } => "engine internal",
             KclError::Internal { .. } => "internal",
         }
     }
@@ -508,7 +605,10 @@ impl KclError {
             KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
             KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
             KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
+            KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
+            KclError::EngineHangup { details: e } => e.source_ranges.clone(),
+            KclError::EngineInternal { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
     }
@@ -527,7 +627,10 @@ impl KclError {
             KclError::ValueAlreadyDefined { details: e } => &e.message,
             KclError::UndefinedValue { details: e, .. } => &e.message,
             KclError::InvalidExpression { details: e } => &e.message,
+            KclError::MaxCallStack { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
+            KclError::EngineHangup { details: e } => &e.message,
+            KclError::EngineInternal { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
     }
@@ -545,7 +648,10 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
     }
@@ -564,7 +670,10 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
                     .iter()
@@ -594,7 +703,10 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {
                     item.fn_name = last_fn_name;

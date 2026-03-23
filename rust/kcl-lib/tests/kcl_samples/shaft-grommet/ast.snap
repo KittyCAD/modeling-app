@@ -496,8 +496,6 @@ description: Result of parsing shaft-grommet.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a sketch for the grommet profile on the YZ plane"
         ],
         "start": 0,
@@ -1308,25 +1306,6 @@ description: Result of parsing shaft-grommet.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "8": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Revolve the profile to create the grommet",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1339,8 +1318,6 @@ description: Result of parsing shaft-grommet.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define the profile of the grommet"
         ],
         "start": 0,
@@ -1465,6 +1442,9 @@ description: Result of parsing shaft-grommet.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Revolve the profile to create the grommet"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1488,6 +1468,7 @@ description: Result of parsing shaft-grommet.kcl
         "preComments": [
           "// Shaft Grommet",
           "// Made of slippery plastic, these grommets allow shafts and bearings to spin freely in metal panels. The split construction lets you snap them around shafts you’ve already installed.",
+          "// Categories: Manufacturing",
           "",
           "",
           "// Set units in inches (in)"
@@ -1533,7 +1514,44 @@ description: Result of parsing shaft-grommet.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

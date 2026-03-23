@@ -1,6 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Snap to Grid', () => {
+test.describe('Snap to Grid', { tag: '@desktop' }, () => {
   test('draws a line with snap to grid turned on', async ({
     page,
     homePage,

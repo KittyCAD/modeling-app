@@ -19,8 +19,6 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type { SystemIOActor } from '@src/lib/singletons'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -33,6 +31,8 @@ import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshot
 import type { Project } from '@src/lib/project'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import fsZds from '@src/lib/fs-zds'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -41,7 +41,6 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   kclManager: KclManager
-  rustContext: RustContext
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
@@ -98,15 +97,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            commandProps.kclManager.updateCodeStateEditor(newCode)
-            Promise.all([
-              commandProps.kclManager.writeToFile(),
-              commandProps.kclManager.executeCode(),
-            ])
-              .then(() => {
-                toast.success(`Updated per-file units to ${data.unit}`)
-              })
-              .catch(reportRejection)
+            commandProps.kclManager.updateCodeEditor(newCode, {
+              shouldExecute: true,
+              shouldResetCamera: true,
+            })
+            toast.success(`Updated per-file units to ${data.unit}`)
           }
         } else {
           toast.error(
@@ -162,10 +157,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               )
               return
             }
-            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-              kclManager: commandProps.kclManager,
-              rustContext: commandProps.rustContext,
-            })
+            updateModelingState(
+              newAst,
+              EXECUTION_TYPE_REAL,
+              commandProps.kclManager
+            )
               .then((result) => {
                 if (err(result)) {
                   toast.error(
@@ -207,7 +203,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const providedOptions: { name: string; value: string }[] = []
             const context = commandProps.systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
-            const sep = window.electron?.sep
+            const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(
               commandProps.wasmInstance
             )
@@ -277,10 +273,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          {
-            kclManager: commandProps.kclManager,
-            rustContext: commandProps.rustContext,
-          },
+          commandProps.kclManager,
           {
             focusPath: [pathToNode],
             skipErrorsOnMockExecution: true,
@@ -345,10 +338,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           node: commandProps.kclManager.ast,
           newExpression: value,
         })
-        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
-          rustContext: commandProps.rustContext,
-        }).catch(reportRejection)
+        updateModelingState(
+          newAst,
+          EXECUTION_TYPE_REAL,
+          commandProps.kclManager
+        ).catch(reportRejection)
       },
     },
     {
@@ -444,10 +438,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         // Mutate the variable's value
         variableNode.node.init = value.valueAst
 
-        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
-          rustContext: commandProps.rustContext,
-        }).catch(reportRejection)
+        updateModelingState(
+          newAst,
+          EXECUTION_TYPE_REAL,
+          commandProps.kclManager
+        ).catch(reportRejection)
       },
     },
   ]

@@ -16,6 +16,11 @@ import {
   shouldSwapStartEnd,
   calculateArcSwapState,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  isArcSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -180,9 +185,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           isEditInProgress = true
           // Cache settings to avoid fetching on every mouse move
           if (!cachedSettings) {
-            cachedSettings = await jsAppSettings(
-              context.rustContext.settingsActor
-            )
+            cachedSettings = jsAppSettings(context.rustContext.settingsActor)
           }
           const settings = cachedSettings
 
@@ -255,10 +258,15 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
             ],
             settings
           )
-          self._parent?.send({
+          const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
-            data: { ...result, writeToDisk: false },
-          })
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          }
+          self._parent?.send(sendData)
 
           // Update context with the swapped state
           self.send({
@@ -347,7 +355,7 @@ export function sendResultToParent({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 
@@ -359,17 +367,14 @@ export function sendResultToParent({
     const arcObjId = output.sceneGraphDelta.new_objects.find(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+        return isArcSegment(obj)
       }
     )
 
     if (arcObjId !== undefined) {
       arcId = arcObjId
       const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
-      if (
-        arcObj?.kind.type === 'Segment' &&
-        arcObj.kind.segment.type === 'Arc'
-      ) {
+      if (isArcSegment(arcObj)) {
         // The end point ID is stored in the Arc segment
         arcEndPointId = arcObj.kind.segment.end
       }
@@ -378,13 +383,15 @@ export function sendResultToParent({
 
   // Send result to parent if we have valid data
   if (output.kclSource && output.sceneGraphDelta) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'update sketch outcome',
       data: {
-        kclSource: output.kclSource,
+        sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
       },
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   return {
@@ -419,7 +426,7 @@ export function storeCreatedArcResult({
   // Extract arc ID and end point ID
   const arcObjId = output.sceneGraphDelta.new_objects.find((objId: number) => {
     const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+    return isArcSegment(obj)
   })
 
   let arcId: number | undefined
@@ -427,7 +434,7 @@ export function storeCreatedArcResult({
   if (arcObjId !== undefined) {
     arcId = arcObjId
     const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
-    if (arcObj?.kind.type === 'Segment' && arcObj.kind.segment.type === 'Arc') {
+    if (isArcSegment(arcObj)) {
       arcEndPointId = arcObj.kind.segment.end
     }
   }
@@ -437,8 +444,7 @@ export function storeCreatedArcResult({
   if (arcObjId !== undefined) {
     const arcObj = output.sceneGraphDelta.new_graph.objects[arcObjId]
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc'
     ) {
@@ -471,7 +477,7 @@ export function storeCreatedArcResult({
     const pointIds = output.sceneGraphDelta.new_objects.filter(
       (objId: number) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+        return isPointSegment(obj)
       }
     )
 
@@ -481,10 +487,11 @@ export function storeCreatedArcResult({
 
   // Send draft entities to parent for tracking
   if (entitiesToTrack.segmentIds.length > 0) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'set draft entities',
       data: entitiesToTrack,
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   return {
@@ -556,7 +563,7 @@ export async function createArcActor({
       sketchId,
       segmentCtor,
       'arc-segment',
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result
@@ -621,10 +628,10 @@ export async function finalizeArcActor({
     let startPoint: [number, number] = centerPoint
 
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       'value' in arcObj.kind.segment.ctor.start.x &&
       'value' in arcObj.kind.segment.ctor.start.y
     ) {
@@ -641,8 +648,7 @@ export async function finalizeArcActor({
 
     let previousEnd: [number, number] | undefined
     if (
-      arcObj?.kind.type === 'Segment' &&
-      arcObj.kind.segment.type === 'Arc' &&
+      isArcSegment(arcObj) &&
       arcObj.kind.segment.ctor &&
       arcObj.kind.segment.ctor.type === 'Arc'
     ) {
@@ -736,7 +742,7 @@ export async function finalizeArcActor({
           ctor: segmentCtor,
         },
       ],
-      await jsAppSettings(rustContext.settingsActor)
+      jsAppSettings(rustContext.settingsActor)
     )
 
     return result

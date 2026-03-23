@@ -1,37 +1,27 @@
-import { isCodeTheSame } from '@src/lib/codeEditor'
+import fsZds from '@src/lib/fs-zds'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
-import {
-  useLocation,
-  useNavigate,
-  useNavigation,
-  useRouteLoaderData,
-} from 'react-router-dom'
-
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import {
-  kclManager,
-  engineCommandManager,
-  sceneInfra,
-  settingsActor,
-} from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { useSelector } from '@xstate/react'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  useSignals()
+  const { settings, project } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const loadedProject = project?.projectIORefSignal.value
+  const loadedFile = project?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
@@ -39,10 +29,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
-  const livePathsToWatch = useSelector(
-    kclEditorActor,
-    (state) => state.context.livePathsToWatch
-  )
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -61,8 +47,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   }, [first, navigation, location.pathname])
 
   useEffect(() => {
-    if (!window.electron) return
-    getAppSettingsFilePath(window.electron).then(setSettingsPath).catch(trap)
+    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
   }, [])
 
   useFileSystemWatcher(
@@ -73,52 +58,24 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
 
       // Earlier method, this doesn't hurt but it's not needed anymore..
-      // Try to detect file changes and overwrite the editor
       if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
       }
 
-      const isCurrentFile = loadedProject?.file?.path === path
-      if (isCurrentFile) {
-        if (window.electron) {
-          try {
-            const stat = await window.electron.stat(path)
-            const lastUpdatedMs = stat?.mtimeMs
-            if (kclManager.lastWrite && typeof lastUpdatedMs === 'number') {
-              // If last write happened shortly before the file was updated, it means the file was updated by us
-              // Typically the delay is 2-4 ms, so we allow a 50ms margin after the write and a 2ms margin
-              // before the write (just for inaccuracies for the timestamp).
-              if (
-                kclManager.lastWrite.time - 2 < lastUpdatedMs &&
-                lastUpdatedMs < kclManager.lastWrite.time + 50
-              ) {
-                // Ignore this change event, last update of the file was likely caused by us
-                return
-              }
-            }
-          } catch (e) {
-            console.warn('stat failed for change event', e)
-          }
+      // ZOOKEEPER BEHAVIOR EXCEPTION
+      // If the changes are caused by Zookeeper, ignore. The files are bulk
+      // created, but because they are created one-by-one on disk, the system
+      // races between reading and execution.
+      // The mlEphantManagerMachine will set a special exception in kclManager.
+      // Why not pull the actor context in here? Because this RouteProvider
+      // is very high in the context tree, higher than mlEphant's.
+      if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
 
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST
-          const code = await window.electron.readFile(path, {
-            encoding: 'utf-8',
-          })
-
-          // Don't fire a re-execution if the kclManager already knows about this change,
-          // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
-            kclManager.updateCodeStateEditor(code)
-            await kclManager.executeCode()
-            await resetCameraPosition({
-              sceneInfra,
-              engineCommandManager,
-              settingsActor,
-            })
-          }
-        }
-      } else {
+      // We only react on files other than the currently-executing one here
+      // because the currently-executing one is handled with its own watcher in
+      // KclManager. In future, all files and folders will watch themselves.
+      if (loadedFile?.path !== path) {
         const fileNameWithExtension = getStringAfterLastSeparator(path)
         // Is the file from the change event type imported into the currently opened file
         const isImportedInCurrentFile = kclManager.ast.body.some(
@@ -150,20 +107,20 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    livePathsToWatch
+    kclManager.livePathsToWatch.value
   )
 
   useFileSystemWatcher(
-    async (eventType: string, path: string) => {
+    async (eventType: string) => {
       // If there is a projectPath but it no longer exists it means
       // it was externally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in
       // loadAndValidateSettings trying to recreate files. I do not
       // wish to change the behavior in case anything else uses it.
       // Go home.
-      if (loadedProject?.project?.path) {
-        if (!(await fsManager.exists(loadedProject?.project?.path))) {
-          navigate(PATHS.HOME)
+      if (loadedProject?.path) {
+        if (!(await fsZds.stat(loadedProject.path))) {
+          void navigate(PATHS.HOME)
           return
         }
       }
@@ -175,7 +132,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
       const data = await loadAndValidateSettings(
         kclManager.wasmInstancePromise,
-        loadedProject?.project?.path
+        loadedProject?.path
       )
       settingsActor.send({
         type: 'Set all settings',
@@ -183,7 +140,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         doNotPersist: true,
       })
     },
-    [settingsPath, loadedProject?.project?.path].filter(
+    [settingsPath, loadedProject?.path].filter(
       (x: string | undefined) => x !== undefined
     )
   )

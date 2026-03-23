@@ -1,0 +1,115 @@
+// Field monitor stand
+// Stand for a Feelworld FW760 7 inch Field Monitor
+// Categories: Computer Hardware
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+plateLength = 121
+plateLengthBase = 60
+
+width = 3
+
+plateWidth = 62 + 4
+holeRadius = 4 / 2 // 2.84
+holeDistanceY = 52.1 + 2 * holeRadius
+holeDistanceX = 75.2 + 2 * holeRadius
+
+plateHoleDistanceY1 = plateWidth / 2 + holeDistanceY / 2
+plateHoleDistanceY2 = plateWidth / 2 - (holeDistanceY / 2)
+plateHoleDistanceX1 = plateLength - 21 - 0
+plateHoleDistanceX2 = plateLength - 21 - holeDistanceX
+
+angle = 110deg
+
+// Model the base extrusion of the part
+baseSketch = startSketchOn(YZ)
+bodyProfile = sketch(on = baseSketch) {
+  line1 = line(start = [var -60mm, var 0mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -41.38mm, var 113.7mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -41.38mm, var 113.7mm], end = [var -44.2mm, var 112.68mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -44.2mm, var 112.68mm], end = [var -4.28mm, var 3mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -4.28mm, var 3mm], end = [var -60mm, var 3mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -60mm, var 3mm], end = [var -60mm, var 0mm])
+  coincident([line5.end, line6.start])
+  horizontal(line1)
+}
+
+// Model a supporting gusset on the interior
+gussetProfile = sketch(on = baseSketch) {
+  line1 = line(start = [var -4.28mm, var 3mm], end = [var -19.28mm, var 3mm])
+  line2 = line(start = [var -19.28mm, var 3mm], end = [var -19.28mm, var 44.21mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -19.28mm, var 44.21mm], end = [var -4.28mm, var 3mm])
+  coincident([line2.end, line3.start])
+  horizontal(line1)
+}
+
+region001 = region(segments = [bodyProfile.line1, bodyProfile.line2])
+// Extrude the body of the mount to desired width
+body = extrude(
+  region001,
+  length = plateWidth,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+
+region002 = region(segments = [
+  gussetProfile.line1,
+  gussetProfile.line2
+])
+// Extrude the gusset to desired thickness
+gusset = extrude(region002, length = 2)
+
+// Model the mounting holes
+sketch003 = startSketchOn(body, face = seg01)
+
+// Identify hole positions
+holeCenters = [
+  [
+    plateHoleDistanceX1,
+    plateHoleDistanceY1
+  ],
+  [
+    plateHoleDistanceX1,
+    plateHoleDistanceY2
+  ],
+  [
+    plateHoleDistanceX2,
+    plateHoleDistanceY1
+  ],
+  [
+    plateHoleDistanceX2,
+    plateHoleDistanceY2
+  ]
+]
+
+// Place a hole at each position
+holes = map(
+  holeCenters,
+  f = fn(@pt) {
+    return circle(sketch003, center = pt, radius = holeRadius)
+  },
+)
+
+// Extrude all holes, then subtract
+holeExtrusions = extrude(holes, length = -10, method = NEW)
+subtract = subtract(body, tools = holeExtrusions)
+
+// Fillet the exterior edges
+fillet(
+  subtract,
+  tags = [
+    getCommonEdge(faces = [seg02, capStart001]),
+    getCommonEdge(faces = [seg02, capEnd001]),
+    getCommonEdge(faces = [seg05, capStart001]),
+    getCommonEdge(faces = [seg05, capEnd001])
+  ],
+  radius = 5,
+)
+

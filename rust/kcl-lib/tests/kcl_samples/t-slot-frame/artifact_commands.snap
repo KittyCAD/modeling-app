@@ -502,7 +502,6 @@ description: Artifact commands t-slot-frame.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -589,7 +588,6 @@ description: Artifact commands t-slot-frame.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1218,7 +1216,6 @@ description: Artifact commands t-slot-frame.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1907,7 +1904,6 @@ description: Artifact commands t-slot-frame.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1994,7 +1990,6 @@ description: Artifact commands t-slot-frame.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

@@ -1,0 +1,22 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing contra-rotor.kcl
+---
+{
+  "__mod_contra": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_primary": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_secondary": {
+    "type": "Module",
+    "value": 5
+  },
+  "__mod_tertiary": {
+    "type": "Module",
+    "value": 6
+  }
+}

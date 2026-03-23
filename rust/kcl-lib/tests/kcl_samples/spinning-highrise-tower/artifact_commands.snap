@@ -220,7 +220,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -466,7 +466,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.22745098,
           "g": 0.21176471,
           "b": 0.19215687,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1360,7 +1360,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1377,7 +1377,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1394,7 +1394,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1411,7 +1411,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1428,7 +1428,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1445,7 +1445,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1462,7 +1462,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1479,7 +1479,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1496,7 +1496,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1513,7 +1513,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1530,7 +1530,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1547,7 +1547,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1564,7 +1564,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1581,7 +1581,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1598,7 +1598,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1615,7 +1615,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1632,7 +1632,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.85882354,
           "g": 0.84313726,
           "b": 0.8235294,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2536,7 +2536,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2553,7 +2553,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2570,7 +2570,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2587,7 +2587,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2604,7 +2604,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2621,7 +2621,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2638,7 +2638,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2655,7 +2655,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2672,7 +2672,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2689,7 +2689,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2706,7 +2706,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2723,7 +2723,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2740,7 +2740,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2757,7 +2757,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2774,7 +2774,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2791,7 +2791,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2808,7 +2808,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "r": 0.08235294,
           "g": 0.09411765,
           "b": 0.09803922,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

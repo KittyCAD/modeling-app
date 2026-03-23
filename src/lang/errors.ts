@@ -86,6 +86,17 @@ export function toUtf16(utf8Offset: number, sourceCode: string): number {
 }
 
 /**
+ * Helper to convert a source range of UTF-8 values into a UTF-16 one.
+ */
+export function sourceRangeToUtf16(
+  s: SourceRange,
+  source: string
+): SourceRange {
+  const t = (n: number) => toUtf16(n, source)
+  return [t(s[0]), t(s[1]), t(s[2])]
+}
+
+/**
  * Maps the KCL errors to an array of CodeMirror diagnostics.
  * Currently the diagnostics are all errors, but in the future they could include lints.
  * */

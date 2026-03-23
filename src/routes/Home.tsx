@@ -33,15 +33,6 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import {
-  authActor,
-  billingActor,
-  commandBarActor,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
-import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
@@ -64,7 +55,12 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
+import { useApp, useSingletons } from '@src/lib/boot'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
+import { waitFor } from 'xstate'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -74,14 +70,25 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { kclManager } = useSingletons()
+  const executingPath = useAbsoluteFilePath()
+  const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const apiToken = useToken()
+  const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
-  const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const billingContext = billing.useContext()
+  const hasUnlimitedCredits = billingContext.balance === Infinity
+
+  const projects = useFolders()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+  const sidebarButtonClasses =
+    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -93,29 +100,52 @@ const Home = () => {
         })
         .catch(reportRejection)
     }
-    billingActor.send({ type: BillingTransition.Update, apiToken })
+    billing.send({ type: BillingTransition.Update, apiToken })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const location = useLocation()
-  const settings = useSettings()
-  const onboardingStatus = settings.app.onboardingStatus.current
+  const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
+  const onboardingStatus = settingsValues.app.onboardingStatus.current
+
+  useEffect(() => {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath:
+          settingsValues.app?.projectDirectory?.current,
+      },
+    })
+    void waitFor(systemIOActor, (state) =>
+      state.matches(SystemIOMachineStates.idle)
+    ).then(() => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath:
+            settingsValues.app?.projectDirectory?.current,
+        },
+      })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Create project',
           argDefaultValues: {
-            name: settings.projects.defaultProjectName.current,
+            name: settingsValues.projects.defaultProjectName.current,
           },
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -123,23 +153,32 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
-      commandBarActor.send({
+      const currentProject = settingsActor.getSnapshot().context.currentProject
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Rename project',
+          argDefaultValues: {
+            oldName: currentProject?.name,
+            newName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
-      commandBarActor.send({
+      const currentProject = settingsActor.getSnapshot().context.currentProject
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Delete project',
+          argDefaultValues: {
+            name: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -147,22 +186,22 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
-      authActor.send({ type: 'Log out' })
+      auth.send({ type: 'Log out' })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
     ) {
-      commandBarActor.send({ type: 'Open' })
+      commands.send({ type: 'Open' })
     } else if (data.menuLabel === 'File.Preferences.Theme') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'settings',
@@ -170,7 +209,7 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Add file to project') {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           name: 'add-kcl-file-to-project',
@@ -185,25 +224,20 @@ const Home = () => {
   useEffect(() => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
-  }, [])
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
   useHotkeys(
     isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(PATHS.HOME + PATHS.SETTINGS),
+    () => {
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
+    },
     {
       splitKey: '|',
     }
   )
-  const projects = useFolders()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
-  const sort = searchParams.get('sort_by') ?? 'modified:desc'
-  const sidebarButtonClasses =
-    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
@@ -213,7 +247,7 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settings}
+          settings={settingsValues}
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
@@ -231,7 +265,10 @@ const Home = () => {
                       onboardingStatus,
                       navigate,
                       kclManager,
-                    }).catch(reportRejection)
+                      systemIOActor,
+                      settingsActor,
+                      executingPath,
+                    })
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
                   iconStart={{
@@ -245,7 +282,7 @@ const Home = () => {
                 </ActionButton>
                 <ActionButton
                   Element="button"
-                  onClick={onDismissOnboardingInvite}
+                  onClick={() => onDismissOnboardingInvite(settingsActor)}
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
@@ -261,7 +298,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'projects',
@@ -283,7 +320,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
@@ -313,7 +350,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>
@@ -354,16 +391,17 @@ const Home = () => {
           </ul>
         </aside>
         <ProjectGrid
-          searchResults={searchResults}
+          searchResults={searchResults ?? []}
           projects={projects}
           query={query}
           sort={sort}
+          handleRenameProject={handleRenameProject(systemIOActor)}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
       <StatusBar
         globalItems={[
-          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}
@@ -376,7 +414,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
 }
 
@@ -476,9 +514,13 @@ function HomeHeader({
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   searchResults: Project[]
-  projects: Project[]
+  projects: Project[] | undefined
   query: string
   sort: string
+  handleRenameProject: (
+    e: FormEvent<HTMLFormElement>,
+    project: Project
+  ) => Promise<void>
 }
 
 function ProjectGrid({
@@ -486,13 +528,16 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  handleRenameProject,
   ...rest
 }: ProjectGridProps) {
+  const { systemIOActor } = useApp()
   const state = useSystemIOState()
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ? (
+      {state.matches(SystemIOMachineStates.readingFolders) ||
+      projects === undefined ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
@@ -503,14 +548,17 @@ function ProjectGrid({
                   key={project.name}
                   project={project}
                   handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
             </ul>
           ) : (
-            <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
+            <p
+              data-testid="projects-none"
+              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+            >
               No projects found
-              {projects.length === 0
+              {projects !== undefined && projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
             </p>
@@ -535,35 +583,43 @@ function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-async function handleRenameProject(
-  e: FormEvent<HTMLFormElement>,
-  project: Project
+function handleRenameProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  const { newProjectName } = Object.fromEntries(
-    new FormData(e.target as HTMLFormElement)
-  )
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+    const { newProjectName } = Object.fromEntries(
+      new FormData(e.target as HTMLFormElement)
+    )
 
-  if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-    toast.error('Project names cannot start with a dot (.)')
-    return
-  }
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
 
-  if (newProjectName !== project.name) {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        requestedProjectName: String(newProjectName),
-        projectName: project.name,
-      },
-    })
+    if (newProjectName !== project.name) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+          redirect: false,
+        },
+      })
+    }
   }
 }
 
-async function handleDeleteProject(project: Project) {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.deleteProject,
-    data: { requestedProjectName: project.name },
-  })
+function handleDeleteProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+) {
+  return async function (project: Project) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.deleteProject,
+      data: {
+        requestedProjectName: String(project.name),
+      },
+    })
+  }
 }
 
 export default Home

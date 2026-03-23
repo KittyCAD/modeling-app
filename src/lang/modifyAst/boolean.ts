@@ -3,6 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -33,14 +34,15 @@ export function addUnion({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -87,14 +89,15 @@ export function addIntersect({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph
+    {
+      lastChildLookup: true,
+    }
   )
   if (err(vars)) {
     return vars
@@ -143,15 +146,16 @@ export function addSubtract({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(vars)) {
     return vars
@@ -159,12 +163,14 @@ export function addSubtract({
 
   const toolVars = getVariableExprsFromSelection(
     tools,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (err(toolVars)) {
     return toolVars
@@ -195,6 +201,116 @@ export function addSubtract({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addSplit({
+  ast,
+  artifactGraph,
+  targets,
+  tools,
+  merge,
+  keepTools,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  targets: Selections
+  tools?: Selections
+  merge?: boolean
+  keepTools?: boolean
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // 2. Prepare unlabeled and labeled arguments
+  const vars = getVariableExprsFromSelection(
+    targets,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const hasTools = Boolean(
+    tools &&
+      (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
+  )
+  const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
+  let pathIfNewPipe = vars.pathIfPipe
+
+  if (hasTools && tools) {
+    const toolVars = getVariableExprsFromSelection(
+      tools,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(toolVars)) {
+      return toolVars
+    }
+
+    const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
+    if (toolsExpr === null) {
+      return new Error('No tools provided for split operation')
+    }
+    if (vars.pathIfPipe && toolVars.pathIfPipe) {
+      return new Error(
+        'Cannot use both targets and tools in a split operation with a pipe'
+      )
+    }
+
+    pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+    labeledArgs.push(createLabeledArg('tools', toolsExpr))
+  }
+
+  if (merge !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('merge', createLiteral(merge, wasmInstance))
+    )
+  }
+  if (hasTools && keepTools !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('keepTools', createLiteral(keepTools, wasmInstance))
+    )
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('split', objectsExpr, labeledArgs)
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathIfNewPipe,
+    pathToEdit: mNodeToEdit,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SPLIT,
     wasmInstance,
   })
   if (err(pathToNode)) {

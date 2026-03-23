@@ -7,7 +7,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
+    StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
@@ -28,7 +29,11 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub(crate) use sketch_solve::{normalize_to_solver_distance_unit, solver_numeric_type};
+pub use sketch_transpiler::{
+    pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
+    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution,
+};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -42,15 +47,13 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
+    front::{Object, ObjectId},
     fs::FileManager,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    collections::AhashIndexSet,
-    front::{Number, Object, ObjectId},
-};
+use crate::{collections::AhashIndexSet, front::Number};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -59,6 +62,9 @@ pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
+#[cfg(test)]
+#[cfg(feature = "artifact-graph")]
+mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
 mod import;
@@ -67,13 +73,19 @@ pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
 mod sketch_solve;
+mod sketch_transpiler;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-/// Convenience macro for handling control flow in execution by returning early
-/// if it is some kind of early return or stripping off the control flow
-/// otherwise.
+pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+pub(crate) const SKETCH_OBJECT_META: &str = "meta";
+pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, it's returned as a
+/// `Result::Ok`.
 macro_rules! control_continue {
     ($control_flow:expr) => {{
         let cf = $control_flow;
@@ -87,8 +99,25 @@ macro_rules! control_continue {
 // Expose the macro to other modules.
 pub(crate) use control_continue;
 
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, [`EarlyReturn`] is
+/// used to return it as a `Result::Err`.
+macro_rules! early_return {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Err(EarlyReturn::from(cf));
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use early_return;
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
-pub(crate) enum ControlFlowKind {
+pub enum ControlFlowKind {
     #[default]
     Continue,
     Exit,
@@ -106,7 +135,7 @@ impl ControlFlowKind {
 
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
-pub(crate) struct KclValueControlFlow {
+pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
     value: KclValue,
     pub control: ControlFlowKind,
@@ -139,9 +168,51 @@ impl KclValueControlFlow {
     }
 }
 
+/// A [`KclValueControlFlow`] or an error that needs to be returned early. This
+/// is useful for when functions might encounter either control flow or errors
+/// that need to bubble up early, but these aren't the primary return values of
+/// the function. We can use `EarlyReturn` as the error type in a `Result`.
+///
+/// Normally, you don't construct this directly. Use the `early_return!` macro.
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone)]
+pub(crate) enum EarlyReturn {
+    /// A normal value with control flow.
+    Value(KclValueControlFlow),
+    /// An error that occurred during execution.
+    Error(KclError),
+}
+
+impl From<KclValueControlFlow> for EarlyReturn {
+    fn from(cf: KclValueControlFlow) -> Self {
+        EarlyReturn::Value(cf)
+    }
+}
+
+impl From<KclError> for EarlyReturn {
+    fn from(err: KclError) -> Self {
+        EarlyReturn::Error(err)
+    }
+}
+
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum PreserveMem {
+    Normal,
+    Always,
+}
+
+impl PreserveMem {
+    fn normal(self) -> bool {
+        match self {
+            PreserveMem::Normal => true,
+            PreserveMem::Always => false,
+        }
+    }
 }
 
 /// Outcome of executing a program.  This is used in TS.
@@ -178,10 +249,33 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+impl ExecOutcome {
+    pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+}
+
 /// Configuration for mock execution.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
+    /// specified sketch block will be executed. All other code is ignored.
+    pub sketch_block_id: Option<ObjectId>,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained.
     pub freedom_analysis: bool,
@@ -195,10 +289,27 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
-            freedom_analysis: false,
+            sketch_block_id: None,
+            freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
+    }
+}
+
+impl MockConfig {
+    /// Create a new mock config for sketch mode.
+    pub fn new_sketch_mode(sketch_block_id: ObjectId) -> Self {
+        Self {
+            sketch_block_id: Some(sketch_block_id),
+            ..Default::default()
+        }
+    }
+
+    #[must_use]
+    pub(crate) fn no_freedom_analysis(mut self) -> Self {
+        self.freedom_analysis = false;
+        self
     }
 }
 
@@ -262,6 +373,10 @@ impl TagIdentifier {
             self.info.push((*oe, ot.clone()));
         }
     }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        self.get_cur_info().map(|info| info.geometry.clone())
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -309,8 +424,8 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch the tag is on.
-    pub sketch: uuid::Uuid,
+    /// The geometry the tag is on.
+    pub geometry: Geometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -335,6 +450,12 @@ pub struct Metadata {
 impl From<Metadata> for Vec<SourceRange> {
     fn from(meta: Metadata) -> Self {
         vec![meta.source_range]
+    }
+}
+
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
     }
 }
 
@@ -514,24 +635,27 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+            .commands_ws(kittycad::modeling::CommandsWsParams {
+                api_call_id: None,
+                fps: None,
+                order_independent_transparency: None,
+                post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                pool: None,
+                pr,
+                unlocked_framerate: None,
+                webrtc: Some(false),
+                video_res_width: None,
+                video_res_height: None,
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =
@@ -573,6 +697,29 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
         }
+    }
+
+    /// Create a new mock executor context for WASM LSP servers.
+    /// This is a convenience function that creates a mock engine and FileManager from a FileSystemManager.
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_mock_for_lsp(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
+        use crate::mock_engine;
+
+        let mock_engine = Arc::new(Box::new(
+            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
+        ) as Box<dyn EngineManager>);
+
+        let fs = Arc::new(FileManager::new(fs_manager));
+
+        Ok(ExecutorContext {
+            engine: mock_engine,
+            fs,
+            settings,
+            context_type: ContextType::Mock,
+        })
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -656,7 +803,19 @@ impl ExecutorContext {
 
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
-            .await
+            .await?;
+        // The engine errors out if you toggle OIT with SSAO off.
+        // So ignore OIT settings if SSAO is off.
+        if self.settings.enable_ssao {
+            let cmd_id = exec_state.next_uuid();
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::with_id(exec_state, self, source_range, cmd_id),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
+                )
+                .await?;
+        }
+        Ok(())
     }
 
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -690,15 +849,35 @@ impl ExecutorContext {
         );
 
         let use_prev_memory = mock_config.use_prev_memory;
-        #[cfg(not(feature = "artifact-graph"))]
-        let mut exec_state = ExecState::new(self);
-        #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
-                    *exec_state.mut_stack() = mem.0;
-                    exec_state.global.module_infos = mem.1;
+                    *exec_state.mut_stack() = mem.stack;
+                    exec_state.global.module_infos = mem.module_infos;
+                    #[cfg(feature = "artifact-graph")]
+                    {
+                        let len = mock_config
+                            .sketch_block_id
+                            .map(|sketch_block_id| sketch_block_id.0)
+                            .unwrap_or(0);
+                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+                            exec_state
+                                .global
+                                .root_module_artifacts
+                                .restore_scene_objects(scene_objects);
+                        } else {
+                            let message = format!(
+                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                                mem.scene_objects.len(),
+                                len
+                            );
+                            debug_assert!(false, "{message}");
+                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+                            )));
+                        }
+                    }
                 }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
@@ -710,18 +889,27 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(program, &mut exec_state, true).await?;
+        let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
         // memory, not to the exec_state which is not cached for mock execution.
 
-        let mut mem = exec_state.stack().clone();
+        let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
+        #[cfg(feature = "artifact-graph")]
+        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        #[cfg(not(feature = "artifact-graph"))]
+        let scene_objects = Default::default();
         let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
-        mem.squash_env(result.0);
-        cache::write_old_memory((mem, module_infos)).await;
+        stack.squash_env(result.0);
+        let state = cache::SketchModeState {
+            stack,
+            module_infos,
+            scene_objects,
+        };
+        cache::write_old_memory(state).await;
 
         Ok(outcome)
     }
@@ -879,7 +1067,7 @@ impl ExecutorContext {
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
-                                false,
+                                PreserveMem::Normal,
                             )
                             .await;
 
@@ -894,7 +1082,9 @@ impl ExecutorContext {
                             .await
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -902,7 +1092,9 @@ impl ExecutorContext {
                         let mut exec_state = cached_state.reconstitute_exec_state();
                         exec_state.mut_stack().restore_env(cached_state.main.result_env);
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -916,7 +1108,9 @@ impl ExecutorContext {
                     .await
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                let result = self
+                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .await;
 
                 (program, exec_state, result)
             }
@@ -952,7 +1146,8 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, None, false).await
+        self.run_concurrent(program, exec_state, None, PreserveMem::Normal)
+            .await
     }
 
     /// Perform the execution of a program using a concurrent
@@ -964,7 +1159,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
 
@@ -1029,7 +1224,14 @@ impl ExecutorContext {
                     match repr {
                         ModuleRepr::Kcl(program, _) => {
                             let result = exec_ctxt
-                                .exec_module_from_ast(program, module_id, module_path, exec_state, source_range, false)
+                                .exec_module_from_ast(
+                                    program,
+                                    module_id,
+                                    module_path,
+                                    exec_state,
+                                    source_range,
+                                    PreserveMem::Normal,
+                                )
                                 .await;
 
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
@@ -1241,7 +1443,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -1272,13 +1474,39 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
-
-        if !self.is_mock() {
-            let mut mem = exec_state.stack().deep_clone();
-            mem.restore_env(env_ref);
-            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
+        /// Write the memory of an execution to the cache for reuse in mock
+        /// execution.
+        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+            if ctx.is_mock() {
+                return;
+            }
+            let mut stack = exec_state.stack().deep_clone();
+            stack.restore_env(env_ref);
+            let state = cache::SketchModeState {
+                stack,
+                module_infos: exec_state.global.module_infos.clone(),
+                #[cfg(feature = "artifact-graph")]
+                scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                #[cfg(not(feature = "artifact-graph"))]
+                scene_objects: Default::default(),
+            };
+            cache::write_old_memory(state).await;
         }
+
+        let env_ref = match result {
+            Ok(env_ref) => env_ref,
+            Err((err, env_ref)) => {
+                // Preserve memory on execution failures so follow-up mock
+                // execution can still reuse stable IDs before the error.
+                if let Some(env_ref) = env_ref {
+                    write_old_memory(self, exec_state, env_ref).await;
+                }
+                return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
+            }
+        };
+
+        write_old_memory(self, exec_state, env_ref).await;
+
         let session_data = self.engine.get_session_data().await;
 
         Ok((env_ref, session_data))
@@ -1290,7 +1518,7 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<EnvironmentRef, (KclError, Option<EnvironmentRef>)> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
@@ -1412,11 +1640,13 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                &ModelingCmd::from(mcmd::ZoomToFit {
-                    object_ids: Default::default(),
-                    animated: false,
-                    padding: 0.1,
-                }),
+                &ModelingCmd::from(
+                    mcmd::ZoomToFit::builder()
+                        .object_ids(Default::default())
+                        .animated(false)
+                        .padding(0.1)
+                        .build(),
+                ),
             )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -1427,9 +1657,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                &ModelingCmd::from(mcmd::TakeSnapshot {
-                    format: ImageFormat::Png,
-                }),
+                &ModelingCmd::from(mcmd::TakeSnapshot::builder().format(ImageFormat::Png).build()),
             )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -1455,10 +1683,12 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
-                &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                    entity_ids: vec![],
-                    format,
-                }),
+                &kittycad_modeling_cmds::ModelingCmd::Export(
+                    kittycad_modeling_cmds::Export::builder()
+                        .entity_ids(vec![])
+                        .format(format)
+                        .build(),
+                ),
             )
             .await?;
 
@@ -1479,9 +1709,9 @@ impl ExecutorContext {
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options {
-                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: if deterministic_time {
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {e}"),
@@ -1490,8 +1720,8 @@ impl ExecutorContext {
                         })?)
                     } else {
                         None
-                    },
-                },
+                    })
+                    .build(),
             ))
             .await?;
 
@@ -1513,12 +1743,6 @@ impl ArtifactId {
 
     /// A placeholder artifact ID that will be filled in later.
     pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-
-    /// The constraint artifact ID is a special. They don't need to be
-    /// represented in the artifact graph.
-    pub fn constraint() -> Self {
         Self(Uuid::nil())
     }
 }
@@ -2441,6 +2665,20 @@ test([0, 0])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_max_stack_size_exceeded_error() {
+        let ast = r#"
+fn forever(@n) {
+  return 1 + forever(n)
+}
+
+forever(1)
+"#;
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_doubly_nested_parens() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 4 // inch
@@ -2768,5 +3006,34 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_parameter() {
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5, amount = 2)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        // If the parameter isn't used, there's no warning.
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 0);
     }
 }

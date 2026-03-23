@@ -212,3 +212,102 @@ fn inner_concat(
     };
     KclValue::HomArray { value: new, ty }
 }
+
+pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let start: Option<i64> = args.get_kw_arg_opt("start", &RuntimeType::count(), exec_state)?;
+    let end: Option<i64> = args.get_kw_arg_opt("end", &RuntimeType::count(), exec_state)?;
+
+    if start.is_none() && end.is_none() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Either `start` or `end` must be provided".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let Ok(len) = i64::try_from(array.len()) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Array length {} exceeds maximum supported length", array.len()),
+            vec![args.source_range],
+        )));
+    };
+    let mut computed_start = start.unwrap_or(0);
+    let mut computed_end = end.unwrap_or(len);
+
+    // Negative indices count from the end.
+    if computed_start < 0 {
+        computed_start += len;
+    }
+    if computed_end < 0 {
+        computed_end += len;
+    }
+
+    fn empty_slice(ty: RuntimeType) -> KclValue {
+        KclValue::HomArray { value: Vec::new(), ty }
+    }
+
+    if computed_start < 0 {
+        computed_start = 0;
+    }
+    if computed_start >= len {
+        return Ok(empty_slice(ty));
+    }
+    if computed_end > len {
+        computed_end = len;
+    }
+    if computed_end < 0 {
+        return Ok(empty_slice(ty));
+    }
+
+    if computed_start >= computed_end {
+        return Ok(empty_slice(ty));
+    }
+
+    let Some(sliced) = array.get(computed_start as usize..computed_end as usize) else {
+        let message = "Failed to compute array slice".to_owned();
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message,
+            vec![args.source_range],
+        )));
+    };
+    Ok(KclValue::HomArray {
+        value: sliced.to_vec(),
+        ty,
+    })
+}
+
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
+
+    let (array, original_ty) = match array_value {
+        KclValue::HomArray { value, ty, .. } => (value, ty),
+        KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+        _ => (vec![array_value], RuntimeType::any()),
+    };
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
+        }
+    }
+
+    let ty = infer_flattened_type(original_ty, &flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
+/// Infer the type of a flattened array based on the original type and the
+/// types of the flattened values. Currently, we preserve the original type only
+/// if all flattened values have the same type as the original element type.
+/// Otherwise, we fall back to `any`.
+fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> RuntimeType {
+    for value in values {
+        if !value.has_type(&original_ty) {
+            return RuntimeType::any();
+        };
+    }
+
+    original_ty
+}

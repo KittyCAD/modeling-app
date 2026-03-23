@@ -1,9 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { expect, vi, describe, test } from 'vitest'
-import { ConnectionManager } from '@src/network/connectionManager'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 // Helper function to create callbacks used for spying
 const createCallback = () => {
@@ -12,12 +10,11 @@ const createCallback = () => {
 }
 
 describe('useOnPageExit', () => {
-  test('on hook unmounted with mocked global singletons', () => {
+  test('on hook unmounted with mocked global singletons', async () => {
     const callback = createCallback()
-    const initWasmMock = Promise.resolve({} as ModuleType)
-    const engineCommandManager = new ConnectionManager()
+    const { engineCommandManager, sceneInfra } =
+      await buildTheWorldAndNoEngineConnection(true)
     vi.spyOn(engineCommandManager, 'tearDown')
-    const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
     sceneInfra.camControls.oldCameraState = {
       eye_offset: 1.0,
       fov_y: 1.0,
@@ -29,6 +26,7 @@ describe('useOnPageExit', () => {
       pivot_rotation: { x: 1.0, y: 1.0, z: 1.0, w: 1.0 },
     }
     expect(callback).toHaveBeenCalledTimes(0)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(0)
     const { unmount } = renderHook(() =>
       useOnPageExit({
@@ -39,6 +37,7 @@ describe('useOnPageExit', () => {
     )
     unmount()
     expect(callback).toHaveBeenCalledTimes(1)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(1)
     expect(sceneInfra.camControls.oldCameraState).toBe(undefined)
   })

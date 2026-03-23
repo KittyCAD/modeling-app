@@ -1,5 +1,6 @@
 // Modular Shelf Grid
 // A parametric, grid-based shelving system for layout prototyping and modular storage design.
+// Categories: Maker
 
 // This model generates a configurable number of uniform shelf modules,
 // stacked in a grid defined by row and column counts.

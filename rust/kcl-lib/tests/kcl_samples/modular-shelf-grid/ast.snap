@@ -1121,8 +1121,6 @@ description: Result of parsing modular-shelf-grid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Side Panels ---",
           "// Left and right vertical panels forming module sides."
         ],
@@ -1293,8 +1291,6 @@ description: Result of parsing modular-shelf-grid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Shelf Boards ---",
           "// Two shelves: one at the bottom, one at the top of each module."
         ],
@@ -1948,8 +1944,6 @@ description: Result of parsing modular-shelf-grid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Stack two shelf boards inside the unit (bottom and top)"
         ],
         "start": 0,
@@ -2614,6 +2608,42 @@ description: Result of parsing modular-shelf-grid.kcl
             }
           }
         ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "17": [
           {
             "commentStart": 0,
@@ -2622,7 +2652,17 @@ description: Result of parsing modular-shelf-grid.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "--- Grid of Shelf Modules ---",
               "style": "line"
             }
@@ -2685,6 +2725,18 @@ description: Result of parsing modular-shelf-grid.kcl
           "value": {
             "type": "blockComment",
             "value": "A parametric, grid-based shelving system for layout prototyping and modular storage design.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

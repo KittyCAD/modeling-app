@@ -50,7 +50,7 @@ export fn angleIron(length, thickness, width, miterStart, miterEnd) {
     miterStartTool = extrude(miterStartProfile, length = -width - 2)
       |> translate(x = 0, y = 0, z = 1)
 
-miterStartTool
+    miterStartTool
     subtract(extrudedSolid, tools = miterStartTool)
   } else {
     extrudedSolid
@@ -85,7 +85,7 @@ miterStartTool
     }
     miterEndTool = extrude(miterEndProfile, length = -width - 2)
       |> translate(x = 0, y = 0, z = 1)
-miterEndTool
+    miterEndTool
     subtract(ironWithStartMiter, tools = miterEndTool)
   } else {
     ironWithStartMiter

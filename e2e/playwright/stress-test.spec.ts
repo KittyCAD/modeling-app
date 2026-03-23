@@ -1,7 +1,7 @@
 import { createProject } from '@e2e/playwright/test-utils'
 import { test } from '@e2e/playwright/zoo-test'
 
-test.describe('Stress test', () => {
+test.describe('Stress test', { tag: '@desktop' }, () => {
   test('Create project and load stress test', async ({
     cmdBar,
     scene,

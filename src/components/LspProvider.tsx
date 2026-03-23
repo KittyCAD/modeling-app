@@ -1,5 +1,5 @@
 import type { LanguageSupport } from '@codemirror/language'
-import type { Extension } from '@codemirror/state'
+import { Prec, type Extension } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
@@ -7,7 +7,13 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import React, { createContext, use, useContext, useMemo, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
@@ -21,17 +27,12 @@ import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import {
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { useToken } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -71,11 +72,12 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { auth } = useApp()
+  const { kclManager } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const token = useToken()
+  const token = auth.useToken()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -122,7 +124,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isDesktop() && isKclLspReady && kclLspClient && kclManager.code) {
+    if (!window.electron && isKclLspReady && kclLspClient && kclManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -132,7 +134,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, kclManager.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -143,39 +145,50 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isKclLspReady && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = kcl(
-        {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-          workspaceFolders: getWorkspaceFolders(),
-          client: kclLspClient,
-          processLspNotification: (
-            plugin: LanguageServerPlugin,
-            notification: LSP.NotificationMessage
-          ) => {
-            try {
-              switch (notification.method) {
-                case 'kcl/astUpdated':
-                  // Update the folding ranges, since the AST has changed.
-                  // This is a hack since codemirror does not support async foldService.
-                  // When they do we can delete this.
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.updateFoldingRanges()
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.requestSemanticTokens()
-                  break
-              }
-            } catch (error) {
-              console.error(error)
+      const lsp = kcl({
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+        workspaceFolders: getWorkspaceFolders(),
+        client: kclLspClient,
+        processLspNotification: (
+          plugin: LanguageServerPlugin,
+          notification: LSP.NotificationMessage
+        ) => {
+          try {
+            switch (notification.method) {
+              case 'kcl/astUpdated':
+                // Update the folding ranges, since the AST has changed.
+                // This is a hack since codemirror does not support async foldService.
+                // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.requestSemanticTokens()
+                break
             }
-          },
+          } catch (error) {
+            console.error(error)
+          }
         },
-        { kclManager, sceneEntitiesManager, wasmInstance, rustContext }
-      )
+      })
 
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady, wasmInstance])
+  }, [kclLspClient, isKclLspReady])
+
+  useEffect(() => {
+    // New code to just update the CodeMirror extensions directly.
+    if (kclLSP === null) {
+      return
+    }
+    kclManager.editorView.dispatch({
+      effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
+    })
+    return () =>
+      kclManager.editorView.dispatch({
+        effects: kclLspCompartment.reconfigure(Prec.highest([])),
+      })
+  }, [kclLSP, kclManager.editorView])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -232,10 +245,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         kclManager
       )
 
+      // New code to just update the CodeMirror extensions directly.
+      kclManager.editorView.dispatch({
+        effects: kclAutocompleteCompartment.reconfigure(Prec.highest(lsp)),
+      })
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady])
+  }, [copilotLspClient, isCopilotLspReady, kclManager])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
@@ -261,9 +278,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
+    kclManager.clearGlobalHistory()
 
     if (redirect) {
-      navigate(PATHS.HOME)
+      void navigate(PATHS.HOME)
     }
   }
 

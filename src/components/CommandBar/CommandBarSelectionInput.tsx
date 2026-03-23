@@ -9,16 +9,13 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { Marked } from '@ts-stack/markdown'
+import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -27,20 +24,24 @@ function CommandBarSelectionInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selection'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  executingEditor: KclManager
 }) {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { commands, wasmPromise } = useApp()
+  const engineCommandManager = kclManager.engineCommandManager
+  const wasmInstance = use(wasmPromise)
   const inputRef = useRef<HTMLInputElement>(null)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
-  }, [selection])
+  }, [selection, kclManager.astSignal.value])
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
@@ -66,11 +67,7 @@ function CommandBarSelectionInput({
       toSync(() => {
         const promises = [
           new Promise(() =>
-            kclManager.setSelectionFilterToDefault(
-              sceneEntitiesManager,
-              wasmInstance,
-              selection
-            )
+            kclManager.setSelectionFilterToDefault(wasmInstance, selection)
           ),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
@@ -128,7 +125,7 @@ function CommandBarSelectionInput({
         },
       }) &&
       setHasClearedSelection(true)
-  }, [arg])
+  }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)
@@ -156,17 +153,8 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter &&
-      kclManager.setSelectionFilter(
-        arg.selectionFilter,
-        sceneEntitiesManager,
-        wasmInstance
-      )
-    return () =>
-      kclManager.setSelectionFilterToDefault(
-        sceneEntitiesManager,
-        wasmInstance,
-        selection
-      )
+      kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+    return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])
 
@@ -199,13 +187,24 @@ function CommandBarSelectionInput({
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
+              commands.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}
           value={JSON.stringify(selection || {})}
         />
       </label>
+      {arg.description && (
+        <div
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(arg.description, {
+              gfm: true,
+              breaks: true,
+            }),
+          }}
+        />
+      )}
     </form>
   )
 }

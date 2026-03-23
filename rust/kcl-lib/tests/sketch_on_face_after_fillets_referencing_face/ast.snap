@@ -573,8 +573,6 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 0.25 inch fillet radius"
         ],
         "start": 0,
@@ -1634,8 +1632,6 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch the bracket and extrude with fillets"
         ],
         "start": 0,
@@ -2416,6 +2412,30 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               "style": "line"
             }
           },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
           {
             "commentStart": 0,
             "end": 0,

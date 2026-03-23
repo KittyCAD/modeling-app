@@ -12,7 +12,6 @@ import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
 import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
-  SettingProps,
   SettingsLevel,
   SettingsPaths,
 } from '@src/lib/settings/settingsTypes'
@@ -65,17 +64,15 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
 
   const context = actor.getSnapshot().context
   const isProjectAvailable = context.currentProject !== undefined
-  const settingConfig = getPropertyByPath(context, type) as SettingProps<
-    S['default']
-  >
-  const valueArgPartialConfig = settingConfig['commandConfig']
+  const setting = getPropertyByPath(context, type) as Setting<S['default']>
+  const valueArgPartialConfig = setting.commandConfig
   const shouldHideOnThisLevel =
-    settingConfig?.hideOnLevel === 'user' && !isProjectAvailable
-  const shouldHideOnThisPlatform =
-    settingConfig.hideOnPlatform &&
-    (isDesktop()
-      ? settingConfig.hideOnPlatform === 'desktop'
-      : settingConfig.hideOnPlatform === 'web')
+    setting.hideOnLevel === 'user' && !isProjectAvailable
+  const shouldHideOnThisPlatform = hiddenOnPlatform(
+    setting as Setting<unknown>,
+    isDesktop()
+  )
+
   if (
     !valueArgPartialConfig ||
     shouldHideOnThisLevel ||
@@ -119,7 +116,7 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
     displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), {
       separator: ' ',
     })}`,
-    description: settingConfig.description,
+    description: setting.description,
     groupId: 'settings',
     icon: 'settings',
     needsReview: false,
@@ -139,11 +136,7 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
       }
     },
     args: {
-      level: levelArgConfig(
-        actor,
-        isProjectAvailable,
-        settingConfig.hideOnLevel
-      ),
+      level: levelArgConfig(actor, isProjectAvailable, setting.hideOnLevel),
       value: valueArg,
     },
   }

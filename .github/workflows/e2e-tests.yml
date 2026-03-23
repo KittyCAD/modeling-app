@@ -20,98 +20,57 @@ permissions:
   actions: read
 
 jobs:
-  prepare-wasm:
-    runs-on: namespace-profile-ubuntu-8-cores
+  track-setup:
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v3
-        continue-on-error: true # this step fails when invoked as 'workflow_call'
-        with:
-          filters: |
-            rust:
-              - 'rust/**'
+      - name: Track setup (snapshots)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots
+          CI_STEP: setup
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+      - name: Track setup (web)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          CI_STEP: setup
 
-      - name: Install dependencies
-        run: npm install
+      - name: Track setup (desktop)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:desktop
+          CI_STEP: setup
 
-      - name: Download Wasm cache
-        id: download-wasm
-        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v11
-        continue-on-error: true
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-and-store-wasm.yml
-          branch: main
-          path: rust/kcl-wasm-lib/pkg
-
-      - name: Build Wasm condition
-        id: wasm
-        run: |
-          set -euox pipefail
-          # Build wasm if this is a scheduled run, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install Rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false # Configured below.
-          rustflags: '' # Use .cargo/config.toml
-
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        with:
-          tool: wasm-pack
-
-      - name: Use Rust cache
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "./rust"
-
-      - name: Build Wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: npm run build:wasm
-
-      - name: Upload compiled wasm artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: prepared-wasm
-          path: |
-            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+  build-wasm:
+    needs: [track-setup]
+    uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   snapshots:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
 
     steps:
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -123,7 +82,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -137,8 +96,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -146,8 +105,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -158,7 +116,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -182,7 +140,7 @@ jobs:
           TARGET: web
 
       - name: Upload playwright report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-snapshot-${{ github.sha }}
@@ -205,20 +163,36 @@ jobs:
       - name: Commit changes
         if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
         shell: bash
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
+          echo "${GITHUB_HEAD_REF}"
+          git checkout "${GITHUB_HEAD_REF}"
           git commit --message "Update snapshots" || true
           git push
-          git push origin ${{ github.head_ref }}
+          git push origin "${GITHUB_HEAD_REF}"
+
+      - name: Track teardown (snapshots)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots
+          CI_STEP: teardown
 
   web:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
@@ -233,7 +207,7 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -245,7 +219,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -259,8 +233,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -268,8 +242,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -287,7 +260,7 @@ jobs:
         with:
           shell: bash
           command: npm run test:e2e:web
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 5
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -298,8 +271,8 @@ jobs:
           CI_SUITE: e2e:web
           TARGET: web
 
-      - name: Upload playwright report
-        uses: actions/upload-artifact@v6
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
           name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -308,8 +281,19 @@ jobs:
           retention-days: 30
           overwrite: true
 
+      - name: Track teardown (web)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          CI_STEP: teardown
+
   desktop:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
@@ -361,7 +345,7 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -375,8 +359,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         id: deps-install
@@ -385,8 +369,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/ms-playwright/
+          path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -402,7 +385,7 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
@@ -416,8 +399,8 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 30
-          max_attempts: 9
+          timeout_minutes: 15
+          max_attempts: 5
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -428,8 +411,8 @@ jobs:
           CI_SUITE: e2e:desktop
           TARGET: desktop
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v6
+      - name: Upload test results
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -438,11 +421,85 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - name: Upload playwright report
-        uses: actions/upload-artifact@v6
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+      - name: Track teardown (desktop)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:desktop
+          CI_STEP: teardown
+
+  vercel:
+    name: e2e:web (vercel)
+    runs-on: namespace-profile-ubuntu-8-cores
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download browser cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install browsers
+        run: npm run playwright install --with-deps
+
+      - name: Wait for Vercel
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
+        id: wait-for-vercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 1200 # average build times are 17-18 minutes
+          check_interval: 30
+          vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Check Vercel
+        run: .github/ci-cd-scripts/check-vercel.sh
+        env:
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: npm run test:e2e:web
+        run: npm run test:e2e:web -- --grep=demo --retries=3
+        env:
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          TARGET: web
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && (success() || failure()) }}
+        with:
+          name: playwright-report-vercel-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30

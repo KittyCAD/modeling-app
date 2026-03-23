@@ -21,7 +21,10 @@ use super::{
 use crate::{
     IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::{annotations, types::ArrayLen},
+    execution::{
+        annotations::{self, EXPERIMENTAL},
+        types::ArrayLen,
+    },
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -48,12 +51,27 @@ const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
 const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
+/// Syntactic paren/brace/bracket nesting limit for the token scan.
+const MAX_NESTING_DEPTH: u16 = 512;
+/// Nesting limit for recursive parser calls. This is lower than
+/// `MAX_NESTING_DEPTH` because parser combinators can use much more stack
+/// space.
+const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
+const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
+
+    // Check token nesting before parsing to fail fast on pathological inputs
+    // that could cause stack overflows.
+    if let Some(err) = ParseContext::check_max_nesting(&i) {
+        ParseContext::err(err);
+        let ctxt = ParseContext::take();
+        return (None, ctxt.errors).into();
+    }
 
     let result = match program.parse(i) {
         Ok(result) => Some(result),
@@ -81,6 +99,29 @@ struct ParseContext {
     pub errors: Vec<CompilationError>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Tracks current recursive parser depth so we can reject pathological input
+    // before it risks stack overflows.
+    nesting_depth: u16,
+}
+
+#[derive(Debug)]
+struct NestingGuard {
+    should_decrement: bool,
+}
+
+impl Drop for NestingGuard {
+    fn drop(&mut self) {
+        if !self.should_decrement {
+            return;
+        }
+        // Don't panic in a drop if we're already panicking.
+        if ParseContext::exit_nesting().is_err() && !std::thread::panicking() {
+            debug_assert!(
+                false,
+                "ParseContext should always be present when a NestingGuard is active"
+            );
+        }
+    }
 }
 
 impl ParseContext {
@@ -89,6 +130,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            nesting_depth: 0,
         }
     }
 
@@ -102,6 +144,68 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn enter_nesting(source_range: SourceRange) -> ModalResult<NestingGuard> {
+        CTXT.with_borrow_mut(|ctxt| {
+            // Some parser unit tests call individual parser functions directly
+            // (without `run_parser`), so we skip depth accounting if no context exists.
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Ok(NestingGuard {
+                    should_decrement: false,
+                });
+            };
+
+            // `nesting_depth` counts active recursive parser frames. This limit is
+            // lower than MAX_NESTING_DEPTH because parser combinators can use much
+            // more stack per frame than simple delimiter nesting.
+            if ctxt.nesting_depth >= MAX_RECURSIVE_PARSER_DEPTH {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(source_range, MAX_NESTING_DEPTH_MESSAGE).into(),
+                ));
+            }
+            ctxt.nesting_depth += 1;
+            Ok(NestingGuard { should_decrement: true })
+        })
+    }
+
+    /// Normally, you should use a `NestingGuard`, so you shouldn't need to call
+    /// this directly.
+    ///
+    /// Returns an error if there is no `ParseContext` in thread-local storage.
+    fn exit_nesting() -> Result<(), ()> {
+        CTXT.with_borrow_mut(|ctxt| {
+            let Some(ctxt) = ctxt.as_mut() else {
+                return Err(());
+            };
+            ctxt.nesting_depth = ctxt.nesting_depth.saturating_sub(1);
+            Ok(())
+        })
+    }
+
+    fn check_max_nesting(tokens: &TokenSlice<'_>) -> Option<CompilationError> {
+        let mut depth = 0;
+        for token in tokens.iter() {
+            if token.token_type != TokenType::Brace {
+                continue;
+            }
+            match token.value.as_str() {
+                "(" | "[" | "{" => {
+                    depth += 1;
+                    if depth > MAX_NESTING_DEPTH {
+                        return Some(CompilationError::fatal(
+                            token.as_source_range(),
+                            MAX_NESTING_DEPTH_MESSAGE,
+                        ));
+                    }
+                }
+                ")" | "]" | "}" => {
+                    depth = depth.saturating_sub(1);
+                }
+                _ => {}
+            }
+        }
+        None
     }
 
     fn handle_attribute(attr: &Node<Annotation>) {
@@ -322,30 +426,28 @@ fn count_in(target: char, s: &str) -> usize {
     s.chars().filter(|&c| c == target).count()
 }
 
-/// Matches all four cases of NonCodeValue
+/// Matches all cases of NonCodeValue.
 fn non_code_node(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
-    /// Matches one case of NonCodeValue
-    /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
+    /// Matches one case of NonCodeValue, where an empty line may precede a comment.
     fn non_code_node_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
         let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
+        if has_empty_line {
+            return Ok(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                leading_whitespace.start,
+                leading_whitespace.end,
+                leading_whitespace.module_id,
+            ));
+        }
         non_code_node_no_leading_whitespace
             .verify_map(|node: Node<NonCodeNode>| match node.inner.value {
-                NonCodeValue::BlockComment { value, style } => Some(Node::new(
-                    NonCodeNode {
-                        value: if has_empty_line {
-                            NonCodeValue::NewLineBlockComment { value, style }
-                        } else {
-                            NonCodeValue::BlockComment { value, style }
-                        },
-                        digest: None,
-                    },
-                    leading_whitespace.start,
-                    node.end + 1,
-                    node.module_id,
-                )),
+                NonCodeValue::BlockComment { .. } => Some(node),
                 _ => None,
             })
             .context(expected("a comment or whitespace"))
@@ -458,6 +560,7 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<N
 }
 
 fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let head = expression_but_not_pipe.parse_next(i)?;
     let head_checkpoint = i.checkpoint();
 
@@ -490,7 +593,7 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
             alt((labelled_fn_call, if_expr.map(Expr::IfExpression))),
         ),
         // After the expression.
-        repeat(0.., noncode_just_after_code),
+        repeat(0.., noncode_just_after_pipe_code),
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
         1..,
@@ -511,9 +614,11 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
         }
         values.push(code);
         code_count += 1;
-        for nc in noncode_after {
-            max_noncode_end = nc.end.max(max_noncode_end);
-            non_code_meta.insert(code_count, nc);
+        for nc_group in noncode_after {
+            for nc in nc_group {
+                max_noncode_end = nc.end.max(max_noncode_end);
+                non_code_meta.insert(code_count, nc);
+            }
         }
     }
     Ok(Expr::PipeExpression(Node::boxed(
@@ -795,6 +900,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
 
 /// Parse a KCL operand that can be used with an operator.
 fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
@@ -1122,7 +1228,10 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
         .parse_next(i)
     {
         Ok(expr) => expr,
-        Err(_) => {
+        Err(err) => {
+            if matches!(err, ErrMode::Cut(_)) {
+                return Err(err);
+            }
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     SourceRange::from(sep),
@@ -1519,6 +1628,8 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 //     return x
 // }
 fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
+
     fn return_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -1644,6 +1755,7 @@ fn build_member_expression(object: Expr, mut members: Vec<(Expr, usize, bool)>) 
 /// Find a noncode node which occurs just after a body item,
 /// such that if the noncode item is a comment, it might be an inline comment.
 fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
+    let checkpoint = i.checkpoint();
     let ws = opt(whitespace).parse_next(i)?;
 
     // What is the preceding whitespace like?
@@ -1656,27 +1768,15 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>>
         (false, false)
     };
 
+    if has_empty_line {
+        i.reset(&checkpoint);
+        return Err(ErrMode::Backtrack(ContextError::default()));
+    }
+
     // Look for a non-code node (e.g. comment)
     let nc = non_code_node_no_leading_whitespace
         .map(|nc| {
-            if has_empty_line {
-                // There's an empty line between the body item and the comment,
-                // This means the comment is a NewLineBlockComment!
-                let value = match nc.inner.value {
-                    // Change block comments to inline, as discussed above
-                    NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
-                    // Other variants don't need to change.
-                    x @ NonCodeValue::InlineComment { .. } => x,
-                    x @ NonCodeValue::NewLineBlockComment { .. } => x,
-                    x @ NonCodeValue::NewLine => x,
-                };
-                Node::new(
-                    NonCodeNode { value, ..nc.inner },
-                    nc.start.saturating_sub(1),
-                    nc.end,
-                    nc.module_id,
-                )
-            } else if has_newline {
+            if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
             } else {
@@ -1687,15 +1787,78 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>>
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
                     x @ NonCodeValue::InlineComment { .. } => x,
-                    x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
         })
-        .map(|nc| Node::new(nc.inner, nc.start.saturating_sub(1), nc.end, nc.module_id))
+        .map(|nc| Node::new(nc.inner, nc.start, nc.end, nc.module_id))
         .parse_next(i)?;
     Ok(nc)
+}
+
+/// Find noncode after a pipe expression step, allowing empty lines to be preserved.
+fn noncode_just_after_pipe_code(i: &mut TokenSlice) -> ModalResult<Vec<Node<NonCodeNode>>> {
+    let checkpoint = i.checkpoint();
+    let mut nodes = Vec::new();
+    loop {
+        let ws = opt(whitespace).parse_next(i)?;
+        let (newline_count, ws_start, ws_end, ws_module_id) = if let Some(ref ws) = ws {
+            let newline_count = ws.iter().map(|token| count_in('\n', &token.value)).sum::<usize>();
+            let ws_start = ws.first();
+            let ws_end = ws.last();
+            (
+                newline_count,
+                ws_start.map(|tok| tok.start),
+                ws_end.map(|tok| tok.end),
+                ws_start.map(|tok| tok.module_id),
+            )
+        } else {
+            (0, None, None, None)
+        };
+
+        match non_code_node_no_leading_whitespace.parse_next(i) {
+            Ok(nc) => {
+                for _ in 0..newline_count {
+                    if let (Some(start), Some(end), Some(module_id)) = (ws_start, ws_end, ws_module_id) {
+                        nodes.push(Node::new(
+                            NonCodeNode {
+                                value: NonCodeValue::NewLine,
+                                digest: None,
+                            },
+                            start,
+                            end,
+                            module_id,
+                        ));
+                    }
+                }
+                let value = match nc.inner.value {
+                    NonCodeValue::BlockComment { value, style } if newline_count == 0 => {
+                        NonCodeValue::InlineComment { value, style }
+                    }
+                    x => x,
+                };
+                nodes.push(Node::new(
+                    NonCodeNode { value, ..nc.inner },
+                    nc.start,
+                    nc.end,
+                    nc.module_id,
+                ));
+                continue;
+            }
+            Err(ErrMode::Backtrack(_)) => {
+                break;
+            }
+            Err(e) => return Err(e),
+        }
+    }
+
+    if nodes.is_empty() || peek(pipe_surrounded_by_whitespace).parse_next(i).is_err() {
+        i.reset(&checkpoint);
+        Err(ErrMode::Backtrack(ContextError::default()))
+    } else {
+        Ok(nodes)
+    }
 }
 
 // the large_enum_variant lint below introduces a LOT of code complexity in a
@@ -1850,25 +2013,36 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     let mut end = 0;
     let mut start = leading_whitespace_start;
 
+    trait CommentStart {
+        fn comment_start(&self) -> usize;
+    }
+
+    impl CommentStart for BodyItem {
+        fn comment_start(&self) -> usize {
+            self.start()
+        }
+    }
+
+    impl<T> CommentStart for Node<T> {
+        #[allow(clippy::misnamed_getters)]
+        fn comment_start(&self) -> usize {
+            self.start
+        }
+    }
+
     macro_rules! handle_pending_non_code {
         ($node: ident) => {
             if !pending_non_code.is_empty() {
-                let start = pending_non_code[0].start;
                 let force_disoc = matches!(
                     &pending_non_code.last().unwrap().inner.value,
                     NonCodeValue::NewLine
                 );
                 let mut comments = Vec::new();
+                let mut comment_start = None;
                 for nc in pending_non_code {
                     match nc.inner.value {
                         NonCodeValue::BlockComment { value, style } if !force_disoc => {
-                            comments.push(style.render_comment(&value));
-                        }
-                        NonCodeValue::NewLineBlockComment { value, style } if !force_disoc => {
-                            if comments.is_empty() && nc.start != 0 {
-                                comments.push(String::new());
-                                comments.push(String::new());
-                            }
+                            comment_start.get_or_insert(nc.start);
                             comments.push(style.render_comment(&value));
                         }
                         NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
@@ -1884,6 +2058,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                         }
                     }
                 }
+                let start = comment_start.unwrap_or_else(|| $node.comment_start());
                 $node.set_comments(comments, start);
                 pending_non_code = Vec::new();
             }
@@ -2105,6 +2280,45 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     ))
 }
 
+/// Same as `char::is_ascii_digit`, but accepts an owned `char` instead of a
+/// shared reference.
+fn is_char_ascii_digit(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
+fn is_stdlib_import_path(path_str: &str) -> bool {
+    path_str.starts_with("std") && !path_str.ends_with(".kcl")
+}
+
+fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
+    path_str.split("::").map(str::to_owned).collect()
+}
+
+/// Given an import path, is it a safe identifier? We support Unicode
+/// identifiers.
+fn is_path_safe_identifier(path_str: &str) -> bool {
+    if is_stdlib_import_path(path_str) {
+        // stdlib case
+        let segments = to_stdlib_identifier_segments(path_str);
+        // The rest of the segments will be checked elsewhere to give a better
+        // error message.
+        let Some(name) = segments.last() else {
+            return false;
+        };
+        return !name.starts_with('_')
+            && !name.starts_with(is_char_ascii_digit)
+            && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+    }
+    // Non-stdlib case
+    let typed_path = TypedPath::new(path_str);
+    let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
+        return false;
+    };
+    !name.starts_with('_')
+        && !name.starts_with(is_char_ascii_digit)
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -2115,30 +2329,12 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ));
     }
 
-    if var_name
-        && (path_string.starts_with("_")
-            || path_string.contains('-')
-            || path_string.chars().filter(|c| *c == '.').count() > 1)
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
-        ));
-    }
+    let is_kcl_path = path_string.ends_with(".kcl");
 
-    let path = if path_string.ends_with(".kcl") {
-        if path_string
-            .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    path_range,
-                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
-                )
-                .into(),
-            ));
-        }
-
+    // Check these conditions first so that the error messages are more helpful.
+    // Users should be told about the file location restrictions before the
+    // details of aliasing the identifier.
+    if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -2149,8 +2345,13 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        // Make sure they are not using an absolute path.
-        if path_string.starts_with('/') || path_string.starts_with('\\') {
+        // Make sure they are not using an absolute path. We normalize all paths
+        // to Unix elsewhere, but here, we also check for Windows paths to make
+        // the error more helpful.
+        if path_string.starts_with('/')
+            || path_string.starts_with('\\')
+            || typed_path::TypedPath::derive(&path_string).is_absolute()
+        {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2168,14 +2369,23 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                     .into(),
             ));
         }
+    }
 
+    // This check applies to all file types.
+    if var_name && !is_path_safe_identifier(&path_string) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
+        ));
+    }
+
+    let path = if is_kcl_path {
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std") {
+    } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
-        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+        let segments: Vec<String> = to_stdlib_identifier_segments(&path_string);
 
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
@@ -2364,6 +2574,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
         if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -2787,6 +2998,7 @@ fn require_whitespace(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -3104,6 +3316,7 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
+    let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
             if tys.len() == 1
@@ -3359,11 +3572,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
                 }
+                let mut experimental = false;
                 if let Some(attr) = attr {
+                    if let Some(property) = attr.property(EXPERIMENTAL)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        experimental = value;
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
+                    experimental,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -3700,6 +3920,23 @@ mod tests {
             "Error message is: `{}`",
             err.message,
         );
+    }
+
+    #[test]
+    fn test_if_is_in_comment_again() {
+        let code = r#"x = 4
+e
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is 'e' and then a newline.
+        assert_eq!(code.chars().nth(6), Some('e'));
+        assert!(!ast.in_comment(6));
+        assert_eq!(code.chars().nth(7), Some('\n'));
+        assert!(!ast.in_comment(7));
+        // The whole line should be a comment.
+        assert_eq!(code.chars().nth(8), Some('/'));
+        assert!(ast.in_comment(8));
     }
 
     #[test]
@@ -4066,7 +4303,7 @@ mySk1 = startSketchOn(XY)
                         },
                         digest: None,
                     },
-                    57,
+                    58,
                     79,
                     module_id,
                 ),
@@ -4128,6 +4365,69 @@ mySk1 = startSketchOn(XY)
                 Err(e) => panic!("{e:?}"),
             };
         }
+    }
+
+    #[test]
+    fn test_deeply_nested_parenthesized_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_unary_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x", "-".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[{input}, 0]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_multiple_elements_nested_second() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let mut input = "x".to_owned();
+        for _ in 0..depth {
+            input = format!("[0, {input}]");
+        }
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_object_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "{a=".repeat(depth), "}".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_call_expression() {
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "f(".repeat(depth), ")".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
+    }
+
+    #[test]
+    fn test_deeply_nested_array_expression_with_comments() {
+        // One above the limit to ensure we validate the boundary correctly.
+        let depth = usize::from(MAX_NESTING_DEPTH) + 1;
+        let input = format!("{}x{}", "[/*c*/".repeat(depth), "]".repeat(depth));
+        assert_err_contains(&input, MAX_NESTING_DEPTH_MESSAGE);
     }
 
     #[test]
@@ -4301,7 +4601,7 @@ mySk1 = startSketchOn(XY)
         for (i, (test_program, expected)) in [
             (
                 "//hi",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hi".to_owned(),
@@ -4312,11 +4612,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/*hello*/",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4327,11 +4627,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     9,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/* hello */",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4342,11 +4642,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     11,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/* \nhello */",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4357,12 +4657,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     12,
                     module_id,
-                ),
+                )],
             ),
             (
-                "
-                /* hello */",
-                Node::new(
+                "\n/* hello */",
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4370,51 +4669,69 @@ mySk1 = startSketchOn(XY)
                         },
                         digest: None,
                     },
-                    0,
-                    29,
+                    1,
+                    12,
                     module_id,
-                ),
+                )],
             ),
             (
                 // Empty line with trailing whitespace
-                "
-  
-                /* hello */",
-                Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLineBlockComment {
-                            value: "hello".to_owned(),
-                            style: CommentStyle::Block,
+                "\n  \n/* hello */",
+                vec![
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::NewLine,
+                            digest: None,
                         },
-                        digest: None,
-                    },
-                    0,
-                    32,
-                    module_id,
-                ),
+                        0,
+                        4,
+                        module_id,
+                    ),
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::BlockComment {
+                                value: "hello".to_owned(),
+                                style: CommentStyle::Block,
+                            },
+                            digest: None,
+                        },
+                        4,
+                        15,
+                        module_id,
+                    ),
+                ],
             ),
             (
                 // Empty line, no trailing whitespace
-                "
-
-                /* hello */",
-                Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLineBlockComment {
-                            value: "hello".to_owned(),
-                            style: CommentStyle::Block,
+                "\n\n/* hello */",
+                vec![
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::NewLine,
+                            digest: None,
                         },
-                        digest: None,
-                    },
-                    0,
-                    30,
-                    module_id,
-                ),
+                        0,
+                        2,
+                        module_id,
+                    ),
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::BlockComment {
+                                value: "hello".to_owned(),
+                                style: CommentStyle::Block,
+                            },
+                            digest: None,
+                        },
+                        2,
+                        13,
+                        module_id,
+                    ),
+                ],
             ),
             (
                 r#"/* block
                     comment */"#,
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "block\n                    comment".to_owned(),
@@ -4425,17 +4742,20 @@ mySk1 = startSketchOn(XY)
                     0,
                     39,
                     module_id,
-                ),
+                )],
             ),
         ]
         .into_iter()
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-            let actual = non_code_node.parse(tokens.as_slice());
-            assert!(actual.is_ok(), "could not parse test {i}: {actual:#?}");
-            let actual = actual.unwrap();
-            assert_eq!(actual, expected, "failed test {i}");
+            let mut slice = tokens.as_slice();
+            for (index, expected_node) in expected.into_iter().enumerate() {
+                let actual = non_code_node.parse_next(&mut slice);
+                assert!(actual.is_ok(), "could not parse test {i}.{index}: {actual:#?}");
+                let actual = actual.unwrap();
+                assert_eq!(actual, expected_node, "failed test {i}.{index}");
+            }
         }
     }
 
@@ -4733,7 +5053,11 @@ mySk1 = startSketchOn(XY)
     #[track_caller]
     fn assert_err_contains(p: &str, expected: &str) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs().next().unwrap().message;
+        let err = &result
+            .unwrap_errs()
+            .next()
+            .expect("Expected an error but found none")
+            .message;
         assert!(err.contains(expected), "actual='{err}'");
     }
 
@@ -4946,6 +5270,7 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -4959,6 +5284,7 @@ e
             ),
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -4973,6 +5299,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -4983,6 +5310,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -4998,6 +5326,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5008,6 +5337,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5096,7 +5426,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
             [17, 30],
         );
         assert_err(
@@ -5126,18 +5456,41 @@ e
         assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
         assert_err(
             r#"import "_foo.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 17],
         );
         assert_err(
             r#"import "foo-bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
+        );
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_with_alias() {
+        let code = r#"import "my file.kcl" as myFile"#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_without_alias() {
+        assert_err_contains(
+            r#"import "my file.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
+        );
+    }
+
+    #[test]
+    fn import_kcl_starting_with_name_starting_with_number_without_alias() {
+        assert_err_contains(
+            r#"import "0th.kcl""#,
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
         );
     }
 
@@ -5922,6 +6275,56 @@ bar = 1
                 MustFail { err, was_fatal: false }
             }
         }
+    }
+
+    #[test]
+    fn is_comment_boundary_right() {
+        let program_source = r#"dog = 42
+
+// nice
+"#;
+        let module_id = crate::ModuleId::default();
+        let tokens = crate::parsing::token::lex(program_source, module_id).unwrap();
+        ParseContext::init();
+        let program = match program.parse(tokens.as_slice()) {
+            Ok(x) => x,
+            Err(e) => panic!("could not parse test: {e:?}"),
+        };
+
+        // Find the comment, i.e. `// nice`
+        let comment = program.non_code_meta.non_code_nodes.get(&0).unwrap();
+        let comment = comment
+            .iter()
+            .find(|node| matches!(node.value, NonCodeValue::BlockComment { .. }))
+            .expect("expected a block comment node");
+        assert_eq!(
+            comment.value,
+            NonCodeValue::BlockComment {
+                value: "nice".to_owned(),
+                style: CommentStyle::Line
+            }
+        );
+
+        // The comment should start at the first / in `// nice`,
+        // as that is where the comment actually starts.
+        let comment_starts_at = program_source.as_bytes()[comment.start] as char;
+        let comment_ends_at = program_source.as_bytes()[comment.end] as char;
+        assert_eq!(comment_starts_at, '/');
+        assert_eq!(comment_ends_at, '\n');
+    }
+
+    #[test]
+    fn test_if_is_in_comment() {
+        let code = r#"x = 4
+
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is just char 6, '\n'.
+        // It is not a comment. It is a newline.
+        assert!(!ast.in_comment(6));
+        // The following line should be a comment.
+        assert!(ast.in_comment(7));
     }
 
     #[test]

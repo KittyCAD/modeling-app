@@ -18,8 +18,26 @@ permissions:
   actions: read
 
 jobs:
-  npm-build-wasm:
+  track-setup:
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Track setup
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration:app
+          CI_STEP: setup
+
+  build-wasm:
+    needs: [track-setup]
     uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
@@ -28,8 +46,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
@@ -37,7 +55,7 @@ jobs:
           tool: wasm-pack
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: npm run test:unit
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
@@ -53,14 +71,14 @@ jobs:
 
   npm-test-integration:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
@@ -68,7 +86,7 @@ jobs:
           tool: wasm-pack
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Copy prepared wasm
         run: |
@@ -83,6 +101,16 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
+      - name: Track start
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration:app
+          CI_STEP: start
+
       - name: npm run test:integration
         if: ${{ github.event_name != 'release' }}
         run: |-
@@ -94,4 +122,15 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: integration
+          CI_SUITE: integration:app
+
+      - name: Track teardown
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration:app
+          CI_STEP: teardown

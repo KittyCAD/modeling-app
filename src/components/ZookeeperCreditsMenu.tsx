@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 
-import { billingActor } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import type { BillingContext } from '@src/machines/billingMachine'
 import {
@@ -10,7 +10,6 @@ import {
 } from '@kittycad/react-shared'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useSelector } from '@xstate/react'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -23,8 +22,10 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
           error={props.billingContext.error}
-          credits={props.billingContext.credits}
+          balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}
+          paymentMethods={props.billingContext.paymentMethods}
+          userPaymentBalance={props.billingContext.userPaymentBalance}
         />
         {!props.billingContext.error && (
           <Tooltip
@@ -33,7 +34,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Zookeeper credits
+            Zoo balance
           </Tooltip>
         )}
       </Popover.Button>
@@ -42,8 +43,9 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           upgradeHref={withSiteBaseURL('/design-studio-pricing')}
           upgradeClick={openExternalBrowserIfDesktop()}
           error={props.billingContext.error}
-          credits={props.billingContext.credits}
+          balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}
+          userPaymentBalance={props.billingContext.userPaymentBalance}
         />
       </Popover.Panel>
     </Popover>
@@ -51,8 +53,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
 }
 
 export function ZookeeperCreditsMenu() {
-  const billingContext = useSelector(billingActor, (actor) => {
-    return actor.context
-  })
+  const { billing } = useApp()
+  const billingContext = billing.useContext()
   return <BillingStatusBarItem billingContext={billingContext} />
 }

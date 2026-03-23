@@ -1,6 +1,7 @@
-import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { EntityType, Point2d } from '@kittycad/lib'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -9,13 +10,12 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
-import type { ActorRefFrom } from 'xstate'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { Project } from '@src/lib/project'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -24,7 +24,26 @@ export type DefaultPlaneSelection = {
   id: string
 }
 
-export type NonCodeSelection = Axis | DefaultPlaneSelection
+export type EnginePrimitiveSelection = {
+  type: 'enginePrimitive'
+  entityId: string
+  parentEntityId?: string
+  primitiveIndex: number
+  primitiveType: EntityType
+}
+
+export interface EngineRegionSelection {
+  type: 'region'
+  id: string
+  point: Point2d
+  sketchId: ArtifactId
+}
+
+export type NonCodeSelection =
+  | Axis
+  | DefaultPlaneSelection
+  | EnginePrimitiveSelection
+  | EngineRegionSelection
 
 export interface Selection {
   artifact?: Artifact
@@ -49,6 +68,14 @@ export type SetSelections =
   | {
       selectionType: 'defaultPlaneSelection'
       selection: DefaultPlaneSelection
+    }
+  | {
+      selectionType: 'enginePrimitiveSelection'
+      selection: EnginePrimitiveSelection
+    }
+  | {
+      selectionType: 'engineRegionSelection'
+      selection: EngineRegionSelection
     }
   | {
       selectionType: 'completeSelection'
@@ -182,7 +209,8 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
-  useNewSketchMode?: Setting<boolean>
+  useSketchSolveMode?: Setting<boolean>
+  defaultUnit?: Setting<BaseUnit>
 }
 
 export type SketchTool =
@@ -202,11 +230,12 @@ export type MoveDesc = { line: number; snippet: string }
 export type ModelingMachineInput = {
   kclManager: KclManager
   engineCommandManager: ConnectionManager
-  sceneInfra: SceneInfra
-  sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   machineManager: MachineManager
   wasmInstance: ModuleType
+  commandBarActor: CommandBarActorType
+  fileName?: string
+  projectRef?: { current: Project | undefined }
   store?: Store
 }
 export type ModelingMachineInternalContext = {
@@ -233,8 +262,8 @@ export type ModelingMachineInternalContext = {
   initialSceneGraphDelta: SceneGraphDelta
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
-  kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   sketchSolveToolName: EquipTool | null
+  forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext

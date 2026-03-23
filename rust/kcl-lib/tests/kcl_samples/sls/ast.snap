@@ -1671,8 +1671,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Engine Section",
           "// Outer diameter: 8.4 meters (27.6 feet) — same as the rest of the core stage",
           "// Height (engine section only): approximately 10 meters (33 feet)"
@@ -2420,8 +2418,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Core Stage",
           "// The core stage measures 213 feet (65 meters) long by 28 feet (8.4 meters) in diameter."
         ],
@@ -3457,8 +3453,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ICPS",
           "// Height 13.7, Diameter 5.0"
         ],
@@ -3969,8 +3963,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ESA Service Module",
           "// Height 4, Diameter 4.0"
         ],
@@ -4456,8 +4448,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Orion Crew Module"
         ],
         "start": 0,
@@ -5199,8 +5189,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Antenna Mast"
         ],
         "start": 0,
@@ -5942,8 +5930,6 @@ description: Result of parsing sls.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Solid rocket booster",
           "// The SLS rocket booster is the biggest and most powerful solid propellant booster ever built for flight.",
           "// Height: 54 meters / Diameter: 3.71 meters"
@@ -8914,7 +8900,92 @@ description: Result of parsing sls.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "30": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "34": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "38": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,
@@ -8937,6 +9008,18 @@ description: Result of parsing sls.kcl
           "value": {
             "type": "blockComment",
             "value": "Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Aerospace",
             "style": "line"
           }
         },

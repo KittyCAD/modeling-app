@@ -173,6 +173,7 @@ export function buildCommandArgument<
     displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
+    prepopulate: arg.prepopulate,
     hidden: arg.hidden,
     skip: arg.skip,
     machineActor,
@@ -235,15 +236,25 @@ export function buildCommandArgument<
       validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'vector2d' }
-  } else if (arg.inputType === 'string') {
+  } else if (
+    arg.inputType === 'string' ||
+    arg.inputType === 'color' ||
+    arg.inputType === 'tagDeclarator'
+  ) {
+    const defaultValueFromContext =
+      'defaultValueFromContext' in arg ? arg.defaultValueFromContext : undefined
+
     return {
       inputType: arg.inputType,
-      defaultValue: arg.defaultValueFromContext
-        ? arg.defaultValueFromContext(context)
+      defaultValue: defaultValueFromContext
+        ? (_cmdContext, machineContext) =>
+            defaultValueFromContext(machineContext ?? context)
         : arg.defaultValue,
       validation: arg.validation,
       ...baseCommandArgument,
-    } satisfies CommandArgument<O, T> & { inputType: 'string' }
+    } satisfies CommandArgument<O, T> & {
+      inputType: 'string' | 'color' | 'tagDeclarator'
+    }
   } else {
     return {
       inputType: arg.inputType,

@@ -57,7 +57,7 @@ airflowPattern = startSketchOn(bottomFaceSketch, face = END)
   |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
   |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
   |> xLine(length = fanSize * 3 / 25)
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()])
   |> close()
   |> patternCircular2d(
        instances = 4,

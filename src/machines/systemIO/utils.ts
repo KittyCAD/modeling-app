@@ -1,8 +1,8 @@
 import type { ExecState } from '@src/lang/wasm'
+import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { isDesktop } from '@src/lib/isDesktop'
-import { joinOSPaths } from '@src/lib/paths'
+import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
@@ -11,6 +11,10 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
+import fsZds from '@src/lib/fs-zds'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
+
+export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -26,6 +30,7 @@ export enum SystemIOMachineActors {
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
   renameFolder = 'renameFolder',
   renameFile = 'renameFile',
   deleteFileOrFolder = 'delete file or folder',
@@ -34,7 +39,9 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  moveRecursiveAndNavigate = 'move recursive and navigate',
   copyRecursive = 'copy recursive',
+  moveRecursive = 'move recursive',
   getMlEphantConversations = 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
 }
@@ -53,6 +60,7 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
+  bulkCreateAndDeletingKCLFilesAndNavigateToFile = 'bulk create and deleting kcl files and navigate to file',
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
   renamingFile = 'renamingFile',
@@ -63,6 +71,8 @@ export enum SystemIOMachineStates {
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
   copyingRecursive = 'copying recursive',
+  movingRecursive = 'moving recursive',
+  movingRecursiveAndNavigate = 'moving recursive and navigate',
   gettingMlEphantConversations = 'getting ml-ephant conversations',
   savingMlEphantConversations = 'saving ml-ephant conversations',
 }
@@ -78,6 +88,7 @@ export enum SystemIOMachineEvents {
   navigateToFile = 'navigate to file',
   createProject = 'create project',
   renameProject = 'rename project',
+  done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
   done_deleteProject = donePrefix + 'delete project',
   createKCLFile = 'create kcl file',
@@ -93,6 +104,9 @@ export enum SystemIOMachineEvents {
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
     'bulk create kcl files and navigate to file',
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
+  done_bulkCreateAndDeleteKCLFilesAndNavigateToFile = donePrefix +
+    'bulk create and delete kcl files and navigate to file',
   renameFolder = 'rename folder',
   renameFile = 'rename file',
   deleteFileOrFolder = 'delete file or folder',
@@ -108,6 +122,9 @@ export enum SystemIOMachineEvents {
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
   copyRecursive = 'copy recursive',
+  moveRecursive = 'move recursive',
+  moveRecursiveAndNavigate = 'move recursive and navigate',
+  done_moveRecursiveAndNavigate = donePrefix + 'move recursive and navigate',
   getMlEphantConversations = 'get ml-ephant conversations',
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
@@ -137,11 +154,12 @@ export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
+  app: App
 }
 
 export type SystemIOContext = SystemIOInput & {
   /** Only store folders under the projectDirectory, do not maintain folders outside this directory */
-  folders: Project[]
+  folders?: Project[]
   /** For this machines runtime, this is the default string when creating a project
    * A project is defined by creating a folder at the one level below the working project directory */
   defaultProjectFolderName: string
@@ -167,6 +185,10 @@ export type SystemIOContext = SystemIOInput & {
     project: string
   }
 
+  /** Temporary storage to return to project after renaming */
+  pendingRenamedProjectName?: string
+  lastOperation: any
+
   // A mapping between project id and conversation ids.
   mlEphantConversations?: Map<string, string>
 }
@@ -180,7 +202,7 @@ export type RequestedKCLFile = {
 export const waitForIdleState = async ({
   systemIOActor,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: SystemIOActor
 }) => {
   // Check if already idle before setting up subscription
   if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
@@ -215,18 +237,16 @@ export const determineProjectFilePathFromPrompt = (
 
   let finalPath = promptNameAsDirectory
 
-  if (isDesktop()) {
-    // If it's not a new project, create a subdir in the current one.
-    if (args.existingProjectName) {
-      const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(context, {
-        projectFolderName: args.existingProjectName,
-      })
-      const uniqueSubDirectoryName = getUniqueProjectName(
-        promptNameAsDirectory,
-        firstLevelDirectories
-      )
-      finalPath = joinOSPaths(args.existingProjectName, uniqueSubDirectoryName)
-    }
+  // If it's not a new project, create a subdir in the current one.
+  if (args.existingProjectName) {
+    const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(context, {
+      projectFolderName: args.existingProjectName,
+    })
+    const uniqueSubDirectoryName = getUniqueProjectName(
+      promptNameAsDirectory,
+      firstLevelDirectories
+    )
+    finalPath = joinOSPaths(args.existingProjectName, uniqueSubDirectoryName)
   }
 
   return finalPath
@@ -253,7 +273,7 @@ export const collectProjectFiles = async (args: {
     }
   })
   let basePath = ''
-  if (isDesktop() && args.projectContext?.children) {
+  if (args.projectContext?.children) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
@@ -270,19 +290,14 @@ export const collectProjectFiles = async (args: {
 
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
-          window.electron?.path.relative(
-            basePath,
-            absolutePathToFileNameWithExtension
-          ) ?? ''
+          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
-        const filePromise = window.electron
-          ?.readFile(absolutePathToFileNameWithExtension)
+        const filePromise = fsZds
+          .readFile(absolutePathToFileNameWithExtension)
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
-            const fileType = window.electron?.path.extname(
-              absolutePathToFileNameWithExtension
-            )
+            const fileType = fsZds.extname(absolutePathToFileNameWithExtension)
             if (fileType === FILE_EXT) {
               return {
                 type: 'kcl',
@@ -293,7 +308,7 @@ export const collectProjectFiles = async (args: {
                   execStateNameToIndexMap[absolutePathToFileNameWithExtension],
               }
             }
-            const blob = new Blob([file], {
+            const blob = new Blob([new Uint8Array(file)], {
               type: 'application/octet-stream',
             })
             return {
@@ -316,10 +331,10 @@ export const collectProjectFiles = async (args: {
     }
     recursivelyPushFilePromises(args.projectContext?.children)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
-    const MB20 = 2 ** 20 * 20
-    if (uploadSize > MB20) {
+    const MB64 = 2 ** 20 * 64
+    if (uploadSize > MB64) {
       toast.error(
-        'Your project exceeds 20Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
+        'Your project exceeds 64Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
       )
     }
   }
@@ -353,4 +368,40 @@ export const mlConversationsToJson = (
   convos: SystemIOContext['mlEphantConversations']
 ): string => {
   return JSON.stringify(Object.fromEntries(convos ?? new Map<string, string>()))
+}
+
+export const prepareMlEphantNewFileRequest = ({
+  toolOutput,
+  projectNameCurrentlyOpened,
+  fileFocusedOnInEditor,
+}: MlEphantNewFileRequestProps) => {
+  if (
+    toolOutput.type !== 'text_to_cad' &&
+    toolOutput.type !== 'edit_kcl_code'
+  ) {
+    return
+  }
+  const outputsRecord: Record<string, string> = {
+    ...(toolOutput.outputs ?? {}),
+  }
+  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord).map(
+    ([relativePath, fileContents]) => {
+      return {
+        requestedCode: fileContents,
+        requestedFileName: relativePath,
+        requestedProjectName: projectNameCurrentlyOpened,
+      }
+    }
+  )
+
+  const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+    fileFocusedOnInEditor?.path || '',
+    projectNameCurrentlyOpened
+  )
+
+  return {
+    files: requestedFiles,
+    requestedProjectName: projectNameCurrentlyOpened,
+    requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
+  }
 }

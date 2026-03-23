@@ -61,6 +61,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -92,6 +93,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -119,6 +121,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -149,6 +152,8 @@ description: Variables in memory after executing engine-valve.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 1,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -156,7 +161,6 @@ description: Variables in memory after executing engine-valve.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -245,6 +249,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -276,6 +281,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -303,6 +309,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -334,6 +341,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -361,6 +369,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -391,6 +400,8 @@ description: Variables in memory after executing engine-valve.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "Custom",
+                      "objectId": 1,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -398,7 +409,6 @@ description: Variables in memory after executing engine-valve.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "Custom",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -514,6 +524,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -545,6 +556,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -572,6 +584,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -603,6 +616,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 3,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -630,6 +644,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -661,6 +676,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 2,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -688,6 +704,7 @@ description: Variables in memory after executing engine-valve.kcl
                           }
                         ],
                         "sketch": {
+                          "creatorType": "sketch",
                           "type": "Sketch",
                           "id": "[uuid]",
                           "paths": [
@@ -718,6 +735,8 @@ description: Variables in memory after executing engine-valve.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "Custom",
+                            "objectId": 1,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -725,7 +744,6 @@ description: Variables in memory after executing engine-valve.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "Custom",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -868,6 +886,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -899,6 +918,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -926,6 +946,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -957,6 +978,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 4,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -984,6 +1006,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -1015,6 +1038,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 3,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1042,6 +1066,7 @@ description: Variables in memory after executing engine-valve.kcl
                           }
                         ],
                         "sketch": {
+                          "creatorType": "sketch",
                           "type": "Sketch",
                           "id": "[uuid]",
                           "paths": [
@@ -1073,6 +1098,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 2,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -1100,6 +1126,7 @@ description: Variables in memory after executing engine-valve.kcl
                                 }
                               ],
                               "sketch": {
+                                "creatorType": "sketch",
                                 "type": "Sketch",
                                 "id": "[uuid]",
                                 "paths": [
@@ -1130,6 +1157,8 @@ description: Variables in memory after executing engine-valve.kcl
                                 "on": {
                                   "artifactId": "[uuid]",
                                   "id": "[uuid]",
+                                  "kind": "Custom",
+                                  "objectId": 1,
                                   "origin": {
                                     "x": 0.0,
                                     "y": 0.0,
@@ -1137,7 +1166,6 @@ description: Variables in memory after executing engine-valve.kcl
                                     "units": "mm"
                                   },
                                   "type": "plane",
-                                  "value": "Custom",
                                   "xAxis": {
                                     "x": 1.0,
                                     "y": 0.0,
@@ -1307,6 +1335,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1338,6 +1367,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1365,6 +1395,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1396,6 +1427,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 5,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1423,6 +1455,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -1454,6 +1487,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 4,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1481,6 +1515,7 @@ description: Variables in memory after executing engine-valve.kcl
                           }
                         ],
                         "sketch": {
+                          "creatorType": "sketch",
                           "type": "Sketch",
                           "id": "[uuid]",
                           "paths": [
@@ -1512,6 +1547,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 3,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -1539,6 +1575,7 @@ description: Variables in memory after executing engine-valve.kcl
                                 }
                               ],
                               "sketch": {
+                                "creatorType": "sketch",
                                 "type": "Sketch",
                                 "id": "[uuid]",
                                 "paths": [
@@ -1570,6 +1607,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 2,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -1597,6 +1635,7 @@ description: Variables in memory after executing engine-valve.kcl
                                       }
                                     ],
                                     "sketch": {
+                                      "creatorType": "sketch",
                                       "type": "Sketch",
                                       "id": "[uuid]",
                                       "paths": [
@@ -1627,6 +1666,8 @@ description: Variables in memory after executing engine-valve.kcl
                                       "on": {
                                         "artifactId": "[uuid]",
                                         "id": "[uuid]",
+                                        "kind": "Custom",
+                                        "objectId": 1,
                                         "origin": {
                                           "x": 0.0,
                                           "y": 0.0,
@@ -1634,7 +1675,6 @@ description: Variables in memory after executing engine-valve.kcl
                                           "units": "mm"
                                         },
                                         "type": "plane",
-                                        "value": "Custom",
                                         "xAxis": {
                                           "x": 1.0,
                                           "y": 0.0,
@@ -1831,6 +1871,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1862,6 +1903,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 7,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1889,6 +1931,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1920,6 +1963,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 6,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1947,6 +1991,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -1978,6 +2023,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 5,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -2005,6 +2051,7 @@ description: Variables in memory after executing engine-valve.kcl
                           }
                         ],
                         "sketch": {
+                          "creatorType": "sketch",
                           "type": "Sketch",
                           "id": "[uuid]",
                           "paths": [
@@ -2036,6 +2083,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 4,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -2063,6 +2111,7 @@ description: Variables in memory after executing engine-valve.kcl
                                 }
                               ],
                               "sketch": {
+                                "creatorType": "sketch",
                                 "type": "Sketch",
                                 "id": "[uuid]",
                                 "paths": [
@@ -2094,6 +2143,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 3,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -2121,6 +2171,7 @@ description: Variables in memory after executing engine-valve.kcl
                                       }
                                     ],
                                     "sketch": {
+                                      "creatorType": "sketch",
                                       "type": "Sketch",
                                       "id": "[uuid]",
                                       "paths": [
@@ -2152,6 +2203,7 @@ description: Variables in memory after executing engine-valve.kcl
                                         "type": "face",
                                         "id": "[uuid]",
                                         "artifactId": "[uuid]",
+                                        "objectId": 2,
                                         "value": "end",
                                         "xAxis": {
                                           "x": 1.0,
@@ -2179,6 +2231,7 @@ description: Variables in memory after executing engine-valve.kcl
                                             }
                                           ],
                                           "sketch": {
+                                            "creatorType": "sketch",
                                             "type": "Sketch",
                                             "id": "[uuid]",
                                             "paths": [
@@ -2209,6 +2262,8 @@ description: Variables in memory after executing engine-valve.kcl
                                             "on": {
                                               "artifactId": "[uuid]",
                                               "id": "[uuid]",
+                                              "kind": "Custom",
+                                              "objectId": 1,
                                               "origin": {
                                                 "x": 0.0,
                                                 "y": 0.0,
@@ -2216,7 +2271,6 @@ description: Variables in memory after executing engine-valve.kcl
                                                 "units": "mm"
                                               },
                                               "type": "plane",
-                                              "value": "Custom",
                                               "xAxis": {
                                                 "x": 1.0,
                                                 "y": 0.0,
@@ -2436,10 +2490,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2412,
-            "end": 2418,
+            "commentStart": 2438,
+            "end": 2444,
             "moduleId": 0,
-            "start": 2412,
+            "start": 2438,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2450,10 +2504,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2467,
-            "end": 2477,
+            "commentStart": 2493,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2467,
+            "start": 2493,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2461,6 +2515,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2480,10 +2535,10 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "radius": 2.7,
             "tag": {
-              "commentStart": 2412,
-              "end": 2418,
+              "commentStart": 2438,
+              "end": 2444,
               "moduleId": 0,
-              "start": 2412,
+              "start": 2438,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2499,6 +2554,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 8,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2526,6 +2582,7 @@ description: Variables in memory after executing engine-valve.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2557,6 +2614,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 7,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -2584,6 +2642,7 @@ description: Variables in memory after executing engine-valve.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -2615,6 +2674,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 6,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -2642,6 +2702,7 @@ description: Variables in memory after executing engine-valve.kcl
                           }
                         ],
                         "sketch": {
+                          "creatorType": "sketch",
                           "type": "Sketch",
                           "id": "[uuid]",
                           "paths": [
@@ -2673,6 +2734,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 5,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -2700,6 +2762,7 @@ description: Variables in memory after executing engine-valve.kcl
                                 }
                               ],
                               "sketch": {
+                                "creatorType": "sketch",
                                 "type": "Sketch",
                                 "id": "[uuid]",
                                 "paths": [
@@ -2731,6 +2794,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 4,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -2758,6 +2822,7 @@ description: Variables in memory after executing engine-valve.kcl
                                       }
                                     ],
                                     "sketch": {
+                                      "creatorType": "sketch",
                                       "type": "Sketch",
                                       "id": "[uuid]",
                                       "paths": [
@@ -2789,6 +2854,7 @@ description: Variables in memory after executing engine-valve.kcl
                                         "type": "face",
                                         "id": "[uuid]",
                                         "artifactId": "[uuid]",
+                                        "objectId": 3,
                                         "value": "end",
                                         "xAxis": {
                                           "x": 1.0,
@@ -2816,6 +2882,7 @@ description: Variables in memory after executing engine-valve.kcl
                                             }
                                           ],
                                           "sketch": {
+                                            "creatorType": "sketch",
                                             "type": "Sketch",
                                             "id": "[uuid]",
                                             "paths": [
@@ -2847,6 +2914,7 @@ description: Variables in memory after executing engine-valve.kcl
                                               "type": "face",
                                               "id": "[uuid]",
                                               "artifactId": "[uuid]",
+                                              "objectId": 2,
                                               "value": "end",
                                               "xAxis": {
                                                 "x": 1.0,
@@ -2874,6 +2942,7 @@ description: Variables in memory after executing engine-valve.kcl
                                                   }
                                                 ],
                                                 "sketch": {
+                                                  "creatorType": "sketch",
                                                   "type": "Sketch",
                                                   "id": "[uuid]",
                                                   "paths": [
@@ -2904,6 +2973,8 @@ description: Variables in memory after executing engine-valve.kcl
                                                   "on": {
                                                     "artifactId": "[uuid]",
                                                     "id": "[uuid]",
+                                                    "kind": "Custom",
+                                                    "objectId": 1,
                                                     "origin": {
                                                       "x": 0.0,
                                                       "y": 0.0,
@@ -2911,7 +2982,6 @@ description: Variables in memory after executing engine-valve.kcl
                                                       "units": "mm"
                                                     },
                                                     "type": "plane",
-                                                    "value": "Custom",
                                                     "xAxis": {
                                                       "x": 1.0,
                                                       "y": 0.0,
@@ -3216,10 +3286,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 741,
-            "end": 747,
+            "commentStart": 767,
+            "end": 773,
             "moduleId": 0,
-            "start": 741,
+            "start": 767,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3255,6 +3325,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3307,10 +3378,10 @@ description: Variables in memory after executing engine-valve.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 741,
-              "end": 747,
+              "commentStart": 767,
+              "end": 773,
               "moduleId": 0,
-              "start": 741,
+              "start": 767,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3410,6 +3481,8 @@ description: Variables in memory after executing engine-valve.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3417,7 +3490,6 @@ description: Variables in memory after executing engine-valve.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3483,13 +3555,14 @@ description: Variables in memory after executing engine-valve.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3565,10 +3638,10 @@ description: Variables in memory after executing engine-valve.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 741,
-            "end": 747,
+            "commentStart": 767,
+            "end": 773,
             "moduleId": 0,
-            "start": 741,
+            "start": 767,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3668,6 +3741,8 @@ description: Variables in memory after executing engine-valve.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3675,7 +3750,6 @@ description: Variables in memory after executing engine-valve.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3765,6 +3839,7 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3795,6 +3870,8 @@ description: Variables in memory after executing engine-valve.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3802,7 +3879,6 @@ description: Variables in memory after executing engine-valve.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

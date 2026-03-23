@@ -3,6 +3,7 @@ import type { MouseEventHandler, useMemo } from 'react'
 
 export enum AreaType {
   TTC = 'ttc',
+  Bodies = 'bodies',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Files = 'files',
@@ -31,10 +32,10 @@ export type AreaTypeDefinition = {
   useNotifications?: () => ReturnType<
     typeof useMemo<
       | {
-          value: string | number
-          onClick: MouseEventHandler
-          title?: string
-        }
+        value: string | number
+        onClick: MouseEventHandler
+        title?: string
+      }
       | undefined
     >
   >
@@ -45,6 +46,8 @@ export enum ActionType {
   Export = 'export',
   AddFile = 'addFileToProject',
   Make = 'make',
+  CommandBar = 'openCommandBar',
+  Share = 'share',
 }
 
 export type ActionTypeDefinition = {
@@ -114,7 +117,7 @@ export type PaneLayout = BaseLayout &
     onExpandSize?: number
   }
 export interface Closeable {
-  onClose: () => void
+  onClose: (idOverride?: string) => void
 }
 export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple

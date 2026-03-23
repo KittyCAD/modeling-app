@@ -11,7 +11,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', () => {
+test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
@@ -144,14 +144,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
-        await cmdBar.clickOptionalArgument('length')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
             Profiles: '1 profile',
-            Length: '',
+            Length: '5',
           },
           highlightedHeaderArg: 'length',
           commandName: 'Extrude',
@@ -438,6 +437,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     scene,
     cmdBar,
   }) => {
+    page.on('console', console.log)
+
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -453,10 +454,9 @@ openSketch = startSketchOn(XY)
 
     await homePage.goToModelingScene()
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
       scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
       0.63,
       0.5,
@@ -474,7 +474,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: '',
+        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -511,7 +511,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: '',
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -932,7 +932,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -971,7 +971,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: initialInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'radius',
       })
@@ -983,7 +983,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
@@ -997,7 +997,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
+          CounterClockWise: 'true',
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
@@ -1008,6 +1008,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
+          CounterClockWise: 'false',
         },
         commandName: 'Helix',
       })
@@ -1021,6 +1022,7 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 5,
+          ccw = false,
         )`,
         { shouldNormalise: true }
       )
@@ -1060,7 +1062,7 @@ sketch002 = startSketchOn(plane001)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -2199,8 +2201,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
-extrude001 = extrude(sketch001, length = 30)
-    `
+extrude001 = extrude(sketch001, length = 30)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2214,9 +2215,9 @@ extrude001 = extrude(sketch001, length = 30)
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 5)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const editedShellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 2)'
+      'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2308,6 +2309,72 @@ extrude001 = extrude(sketch001, length = 30)
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(shellDeclaration)
+    })
+  })
+
+  test(`Delete Face point-and-click`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.selectSurface('delete-face')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'faces',
+        currentArgValue: '',
+        headerArguments: {
+          Faces: '',
+        },
+        highlightedHeaderArg: 'faces',
+        commandName: 'Delete Face',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Faces: '1 cap',
+        },
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(deleteDeclaration)
+    })
+
+    await test.step('Delete delete face via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'surface001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(deleteDeclaration)
     })
   })
 
@@ -2565,6 +2632,180 @@ box = extrude(profile, length = 30)`
         activeLines: [expectedTranslateCode],
         highlightedCode: '',
       })
+    })
+  })
+
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()`
+    const blendDeclaration = `blend001 = blend([seg01, seg02])`
+
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await expect(toolbar.selectionStatus).toContainText(/2 segments?/)
+
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 segments',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
+    })
+  })
+
+  test('Flip Surface point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-6.79, 0])
+  |> line(end = [11.46, 10.74])
+  |> line(endAbsolute = [7.24, 0])
+extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
+    const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
+      await toolbar.selectSurface('flip-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'surface',
+        currentArgValue: '',
+        headerArguments: {
+          Surface: '',
+        },
+        highlightedHeaderArg: 'surface',
+        commandName: 'Flip Surface',
+      })
+
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'extrude001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'surface',
+        currentArgValue: '',
+        headerArguments: {
+          Surface: '',
+        },
+        highlightedHeaderArg: 'surface',
+        commandName: 'Flip Surface',
+      })
+    })
+
+    await test.step('Review and submit', async () => {
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Surface: '1 sweep',
+        },
+        commandName: 'Flip Surface',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Verify code was added', async () => {
+      await editor.expectEditor.toContain(flipSurfaceDeclaration)
+    })
+
+    await test.step('Delete flip surface via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'surface001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(flipSurfaceDeclaration)
     })
   })
 
@@ -2875,7 +3116,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '', // True value shows as empty string in header
+              RotateDuplicates: 'true',
             },
           })
         })
@@ -2893,7 +3134,7 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
+              RotateDuplicates: 'true',
               UseOriginal: '',
             },
             highlightedHeaderArg: 'useOriginal',
@@ -2910,8 +3151,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -2949,8 +3190,8 @@ solid001 = extrude(sketch001, length = 5)`
             Axis: 'Y',
             Center: '[5, 0, 0]',
             ArcDegrees: '180',
-            RotateDuplicates: '',
-            // UseOriginal with False value appears as a button in UI, not in header
+            RotateDuplicates: 'true',
+            UseOriginal: 'false',
           },
           highlightedHeaderArg: 'center',
         })
@@ -2968,8 +3209,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 0, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'center',
           })
@@ -2985,8 +3226,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]', // [5, 3+4, 0]
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3003,8 +3244,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3020,9 +3261,10 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
+            reviewValidationError: undefined,
           })
         })
 
@@ -3038,8 +3280,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Y',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'axis',
           })
@@ -3054,8 +3296,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3072,8 +3314,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '180',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'arcDegrees',
           })
@@ -3089,8 +3331,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '',
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3107,8 +3349,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              RotateDuplicates: '', // True and False value appears at this stage
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'true',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'rotateDuplicates',
           })
@@ -3123,8 +3365,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              // UseOriginal with False value appears as a button in UI, not in header
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
           })
         })
@@ -3141,8 +3383,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '', // True and False value appears at this stage
+              RotateDuplicates: 'false',
+              UseOriginal: 'false',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3157,8 +3399,8 @@ solid001 = extrude(sketch001, length = 5)`
               Axis: 'Z',
               Center: '[5, 7, 0]',
               ArcDegrees: '270',
-              // RotateDuplicates with False value appears as a button in UI, not in header
-              UseOriginal: '',
+              RotateDuplicates: 'false',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3340,7 +3582,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '', // True value shows as empty string in header
+              UseOriginal: 'true',
             },
           })
         })
@@ -3354,7 +3596,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3390,7 +3632,7 @@ solid001 = extrude(sketch001, length = 5)`
             Instances: '6',
             Distance: '8',
             Axis: 'Y',
-            UseOriginal: '',
+            UseOriginal: 'true',
           },
           highlightedHeaderArg: 'axis',
         })
@@ -3408,7 +3650,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3424,7 +3666,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '6',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'instances',
           })
@@ -3439,7 +3681,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3455,7 +3697,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '8',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'distance',
           })
@@ -3470,7 +3712,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
           })
         })
@@ -3486,7 +3728,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              UseOriginal: '',
+              UseOriginal: 'true',
             },
             highlightedHeaderArg: 'useOriginal',
           })
@@ -3500,7 +3742,7 @@ solid001 = extrude(sketch001, length = 5)`
               Instances: '4',
               Distance: '12',
               Axis: 'Z',
-              // UseOriginal with False value appears as a button in UI, not in header
+              UseOriginal: 'false',
             },
           })
         })
@@ -4679,9 +4921,17 @@ extrude001 = extrude(profile001, length = 10)`
       await scene.settled(cmdBar)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
-        `hole001 = hole::hole(
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+hole001 = hole::hole(
   extrude001,
-  face = END,
+  face = capEnd001,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),
@@ -4819,7 +5069,7 @@ extrude001 = extrude(profile001, length = 10)`
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,
-  face = END,
+  face = capEnd001,
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 2, diameter = 1),

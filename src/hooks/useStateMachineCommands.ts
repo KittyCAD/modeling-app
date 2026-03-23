@@ -10,7 +10,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { commandBarActor, kclManager } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -44,6 +44,8 @@ export default function useStateMachineCommands<
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
+  const { commands } = useApp()
+  const { kclManager } = useSingletons()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const shouldDisableEngineCommands =
@@ -70,13 +72,13 @@ export default function useStateMachineCommands<
       })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: { commands: newCommands },
     })
 
     return () => {
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: { commands: newCommands },
       })

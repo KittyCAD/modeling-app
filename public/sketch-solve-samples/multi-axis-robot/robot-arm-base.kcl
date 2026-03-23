@@ -1,0 +1,65 @@
+// Robot Arm Base
+
+// Set Units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import Constants
+import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
+
+// Pattern M8 mounting bolts in base
+mountingHoles01 = startSketchOn(XY)
+  |> circle(
+       center = [
+         -basePlateRadius + 1,
+         -basePlateRadius + baseChamfer + 0.5
+       ],
+       radius = 0.4,
+     )
+  |> patternCircular2d(center = [0, 0], instances = 4)
+
+mountingHoles02 = startSketchOn(XY)
+  |> circle(
+       center = [
+         -basePlateRadius + 0.5 + baseChamfer,
+         -basePlateRadius + 1
+       ],
+       radius = 0.4,
+     )
+  |> patternCircular2d(center = [0, 0], instances = 4)
+
+// Base Plate
+sketch004 = sketch(on = XY) {
+  line1 = line(start = [var -5.5in, var -5.5in], end = [var 5.5in, var -5.5in])
+  line2 = line(start = [var 5.5in, var -5.5in], end = [var 5.5in, var 5.5in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 5.5in, var 5.5in], end = [var -5.5in, var 5.5in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -5.5in, var 5.5in], end = [var -5.5in, var -5.5in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch004.line1, sketch004.line2])
+sketch001 = extrude(region001, length = basePlateThickness)
+  |> chamfer(
+       length = baseChamfer,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Base Motor for actuating first joint
+sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
+  circle1 = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+extrude002 = extrude(region002, length = baseHeight - basePlateThickness - 1.5)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
+sketch003 = sketch(on = startSketchOn(extrude002, face = END)) {
+  circle1 = circle(start = [var 0.5in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+extrude003 = extrude(region003, length = 1)
+  |> appearance(color = "#754110", roughness = 90, metalness = 90)
+

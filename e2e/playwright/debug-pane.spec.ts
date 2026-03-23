@@ -11,7 +11,7 @@ function countNewlines(input: string): number {
   return count
 }
 
-test.describe('Debug pane', () => {
+test.describe('Debug pane', { tag: '@desktop' }, () => {
   test('Artifact IDs in the artifact graph are stable across code edits', async ({
     page,
     context,
@@ -19,7 +19,6 @@ test.describe('Debug pane', () => {
   }) => {
     const code = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 0])
-  |> line(end = [1, 1])
   `
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -44,12 +43,6 @@ test.describe('Debug pane', () => {
       // Just expanded the details, making the element taller, so scroll again.
       await tree.getByText('plane').first().scrollIntoViewIfNeeded()
     })
-    // Extract the artifact IDs from the debug artifact graph.
-    const initialSegmentIds = await segment.innerText({ timeout: 5_000 })
-    // The artifact ID should include a UUID.
-    expect(initialSegmentIds).toMatch(
-      /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
-    )
     await test.step('Move cursor to the bottom of the code editor', async () => {
       // Focus on the code editor.
       await u.codeLocator.click()
@@ -59,14 +52,32 @@ test.describe('Debug pane', () => {
         await page.keyboard.press('ArrowDown')
       }
     })
-    await test.step('Enter a comment', async () => {
-      await page.keyboard.type('|> line(end = [2, 2])', { delay: 0 })
+    let lastSegmentText = await segment.innerText()
+    // TODO: if you type all the code at once without delay (or paste it in)
+    // the initial segment artifact ID is different. This appears to be niche bug
+    // that is being sidestepped in this test until https://github.com/KittyCAD/modeling-app/issues/9609 is addressed.
+    await test.step('Enter a line', async () => {
+      await page.keyboard.type('|> line(end = [1, 1])', { delay: 10 })
       // Wait for keyboard input debounce and updated artifact graph.
       await page.waitForTimeout(1000)
     })
-    const newSegmentIds = await segment.innerText()
-    // Strip off the closing bracket.
-    const initialIds = initialSegmentIds.slice(0, initialSegmentIds.length - 1)
-    expect(newSegmentIds.slice(0, initialIds.length)).toEqual(initialIds)
+    await expect(segment).not.toHaveText(lastSegmentText)
+    // The artifact ID should include a UUID.
+    const uuidRegexp =
+      /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
+    await expect(segment).toHaveText(uuidRegexp)
+    const uuid = (await segment.innerText()).match(uuidRegexp)!
+
+    await test.step('Enter another line', async () => {
+      lastSegmentText = await segment.innerText()
+      await page.keyboard.type('\n|> line(end = [2, 2])', { delay: 10 })
+      // Wait for keyboard input debounce and updated artifact graph.
+      await page.waitForTimeout(1000)
+    })
+
+    // Expect the artifact IDs to be changed (by adding another),
+    await expect(segment).not.toHaveText(lastSegmentText)
+    // but still contain the stable first ID.
+    await expect(segment).toContainText(uuid)
   })
 })

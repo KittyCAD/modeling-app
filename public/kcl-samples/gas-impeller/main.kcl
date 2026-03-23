@@ -1,0 +1,50 @@
+// Gas Impeller
+// The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed
+// Categories: Aerospace, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define parameters
+fanHeight = 60
+fanSize = 160
+bladeCount = 9
+bladeThickness = 2
+twistAngle = 65deg
+mountingBore = 8.8
+
+// Model the center of the fan
+fanCenter = startSketchOn(YZ)
+  |> startProfile(at = [mountingBore / 2, 0])
+  |> yLine(length = fanHeight)
+  |> xLine(length = mountingBore / 3)
+  |> tangentialArc(angle = -90deg, radius = mountingBore / 10)
+  |> arc(interiorAbsolute = [fanSize / 3, fanHeight / 5], endAbsolute = [fanSize / 2, fanHeight / 15], tag = $seg01)
+  |> yLine(endAbsolute = 0, tag = $seg02)
+  |> xLine(endAbsolute = profileStartX())
+  |> close()
+  |> revolve(axis = Y)
+
+// Profile the sweep path of the blade design
+bladeProfile = startSketchOn(YZ)
+  |> startProfile(at = segStart(seg01))
+  |> arc(interiorAbsolute = [fanSize / 3, fanHeight / 5], endAbsolute = [fanSize / 2, fanHeight / 15])
+  |> angledLine(angle = 95deg, endAbsoluteY = fanHeight - (fanSize / 16))
+  |> tangentialArc(angle = 85deg, radius = fanSize / 15)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y)
+
+// Create a dart to form the blade
+dart = startSketchOn(XY)
+  |> startProfile(at = [mountingBore / 2, 0])
+  |> angledLine(angle = 0deg, length = fanSize / 2, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = bladeThickness)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg03)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(twistAngle, length = 65)
+
+// Intersect the dart and the blade profile to create a blade, then pattern around the Z axis
+blades = intersect([bladeProfile, dart])
+  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])

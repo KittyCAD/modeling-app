@@ -220,7 +220,9 @@ pub type NodeRefMut<'a, T> = &'a mut Node<T>;
 
 /// A way to abstract over blocks of code.
 pub trait CodeBlock {
-    fn body(&self) -> &[BodyItem];
+    fn body(&self) -> &Vec<BodyItem>;
+    fn body_mut(&mut self) -> &mut Vec<BodyItem>;
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta;
     fn to_source_range(&self) -> SourceRange;
 }
 
@@ -260,8 +262,16 @@ impl From<Node<Block>> for Node<Program> {
 }
 
 impl CodeBlock for Node<Program> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.body
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.body
+    }
+
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta {
+        &mut self.non_code_meta
     }
 
     fn to_source_range(&self) -> SourceRange {
@@ -347,6 +357,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_old_sketch_syntax,
         ];
 
         let mut findings = vec![];
@@ -380,7 +391,7 @@ impl Node<Program> {
                 if let Some(len) = length_units {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
-                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                        Expr::Name(Box::new(Name::new(len.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -396,7 +407,7 @@ impl Node<Program> {
             if let Some(len) = length_units {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
-                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    Expr::Name(Box::new(Name::new(len.to_string()))),
                 );
             }
 
@@ -1328,6 +1339,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1455,8 +1488,16 @@ impl From<Program> for Block {
 }
 
 impl CodeBlock for Node<Block> {
-    fn body(&self) -> &[BodyItem] {
+    fn body(&self) -> &Vec<BodyItem> {
         &self.items
+    }
+
+    fn body_mut(&mut self) -> &mut Vec<BodyItem> {
+        &mut self.items
+    }
+
+    fn non_code_meta_mut(&mut self) -> &mut NonCodeMeta {
+        &mut self.non_code_meta
     }
 
     fn to_source_range(&self) -> SourceRange {
@@ -1654,18 +1695,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
@@ -1717,19 +1756,13 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesn't have a new line above it.
-    /// If it did it would be a `NewLineBlockComment`.
+    /// This is always the case.
     BlockComment {
         value: String,
         style: CommentStyle,
     },
-    /// A block comment that has a new line above it.
-    /// The user explicitly added a new line above the block comment.
-    NewLineBlockComment {
-        value: String,
-        style: CommentStyle,
-    },
     // A new line like `\n\n` NOT a new line like `\n`.
+    // i.e. an empty line, not just the ending of a non-empty line.
     // This is also not a comment.
     NewLine,
 }
@@ -1777,6 +1810,75 @@ impl NonCodeMeta {
                 .filter(|node| node.is_comment())
                 .any(|node| node.contains(pos))
         })
+    }
+
+    /// The source range of a comment node should start at a '/', because both
+    /// styles of comments (// line comments and /* block comments */) start
+    /// with a /.
+    /// If a comment does NOT start with a /, that likely indicates an off-by-one
+    /// error, or some other kindof inaccurate source range. This is bad, because the
+    /// LSP won't offer suggestions if it thinks the user is in a comment.
+    /// So inaccurate comment start/ends could cause disabling autocompletion.
+    pub fn comment_start_is_accurate(&self, str: &[u8]) -> bool {
+        for nodes in self.non_code_nodes.values() {
+            for node in nodes {
+                match node.inner.value {
+                    NonCodeValue::InlineComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::BlockComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::NewLine => {}
+                }
+            }
+        }
+        true
+    }
+
+    /// Split non-code metadata at the given body index. Returns the
+    /// `NonCodeMeta` for `body[..split]` and mutates `self` in place to
+    /// become the metadata for `body[split..]`.
+    ///
+    /// The key convention is that `non_code_nodes[k]` holds comments
+    /// *after* `body[k]` (equivalently, *before* `body[k+1]`).
+    ///
+    /// Keys `0..split-1` go to the left side (they sit between/after
+    /// elements that were all drained). Keys `split..` stay on the
+    /// right side, re-keyed by subtracting `split`.
+    pub fn split_at(&mut self, split: usize) -> NonCodeMeta {
+        // Comments before body[0] belong to the left (extracted) side.
+        let left_start = std::mem::take(&mut self.start_nodes);
+
+        // Partition non_code_nodes by key.
+        let mut left_nodes = BTreeMap::new();
+        let mut right_nodes = BTreeMap::new();
+
+        for (k, v) in std::mem::take(&mut self.non_code_nodes) {
+            if k < split {
+                // After an element that moved to the left side.
+                left_nodes.insert(k, v);
+            } else {
+                // After an element that stays on the right side, re-keyed.
+                right_nodes.insert(k - split, v);
+            }
+        }
+
+        self.start_nodes = Default::default();
+        self.non_code_nodes = right_nodes;
+        self.digest = None;
+
+        NonCodeMeta {
+            non_code_nodes: left_nodes,
+            start_nodes: left_start,
+            digest: None,
+        }
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
@@ -1861,6 +1963,14 @@ impl Annotation {
                 None => props.push(ObjectProperty::new(Identifier::new(label), value)),
             },
             None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
+        }
+    }
+
+    /// Get a property by name. This is O(n) in the number of properties.
+    pub(crate) fn property(&self, name: &str) -> Option<&Node<ObjectProperty>> {
+        match &self.properties {
+            Some(props) => props.iter().find(|p| p.key.name == name),
+            None => None,
         }
     }
 }
@@ -2056,29 +2166,32 @@ impl ImportStatement {
         }
 
         match &self.path {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let name = s.to_string_lossy();
-                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
-                    let name = &name[..name.len() - 9];
-                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
-                    return Some(name[start..].to_owned());
-                }
-
-                let name = s.file_name()?;
-                if name.contains('\\') || name.contains('/') {
-                    return None;
-                }
-
-                // Remove the extension if it exists.
-                let extension = s.extension();
-                Some(if let Some(extension) = extension {
-                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
-                } else {
-                    name
-                })
-            }
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => Self::non_std_module_name(s),
             ImportPath::Std { path } => path.last().cloned(),
         }
+    }
+
+    /// Given the path to a non-std module, extract the module name if possible.
+    pub(crate) fn non_std_module_name(path: &TypedPath) -> Option<String> {
+        let name = path.to_string_lossy();
+        if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+            let name = &name[..name.len() - 9];
+            let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+            return Some(name[start..].to_owned());
+        }
+
+        let name = path.file_name()?;
+        if name.contains('\\') || name.contains('/') {
+            return None;
+        }
+
+        // Remove the extension if it exists.
+        let extension = path.extension();
+        Some(if let Some(extension) = extension {
+            name.trim_end_matches(extension).trim_end_matches('.').to_string()
+        } else {
+            name
+        })
     }
 }
 
@@ -2605,9 +2718,9 @@ impl Node<Identifier> {
 }
 
 impl Identifier {
-    pub fn new(name: &str) -> Node<Self> {
+    pub fn new<S: Into<String>>(name: S) -> Node<Self> {
         Node::no_src(Self {
-            name: name.to_string(),
+            name: name.into(),
             digest: None,
         })
     }
@@ -2654,10 +2767,10 @@ impl Node<Name> {
 }
 
 impl Name {
-    pub fn new(name: &str) -> Node<Self> {
+    pub fn new<S: Into<String>>(name: S) -> Node<Self> {
         Node::no_src(Name {
             name: Node::no_src(Identifier {
-                name: name.to_string(),
+                name: name.into(),
                 digest: None,
             }),
             path: Vec::new(),
@@ -3665,6 +3778,9 @@ impl DefaultParamVal {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
+    /// Whether it's experimental.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub experimental: bool,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -3709,6 +3825,10 @@ impl From<&Parameter> for SourceRange {
         }
         sr
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 fn is_true(b: &bool) -> bool {
@@ -4389,6 +4509,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4409,6 +4530,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4430,6 +4552,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4440,6 +4563,7 @@ cylinder = startSketchOn(-XZ)
                             digest: None,
                         },
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
@@ -4728,5 +4852,113 @@ yoyo = 8
 angle = atan(rise / yoyo)
 "#
         );
+    }
+
+    /// Helper to create a comment NonCodeNode for tests.
+    fn comment_node(text: &str) -> Node<NonCodeNode> {
+        Node::no_src(NonCodeNode {
+            value: NonCodeValue::InlineComment {
+                value: text.to_string(),
+                style: CommentStyle::Line,
+            },
+            digest: None,
+        })
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_empty() {
+        let mut meta = NonCodeMeta::default();
+        let left = meta.split_at(0);
+        assert!(left.is_empty());
+        assert!(meta.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_start_nodes_go_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("before first")],
+            non_code_nodes: BTreeMap::new(),
+            digest: None,
+        };
+        let left = meta.split_at(1);
+        // start_nodes should move to the left side.
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "before first");
+        // Right side should have no start_nodes.
+        assert!(meta.start_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_preserves_boundary_on_left() {
+        // Simulate a pipe with 4 body elements and comments between them.
+        // non_code_nodes: { 0: "after 0", 1: "after 1", 2: "after 2" }
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([
+                (0, vec![comment_node("after 0")]),
+                (1, vec![comment_node("after 1")]),
+                (2, vec![comment_node("after 2")]),
+            ]),
+            digest: None,
+        };
+
+        // Split at index 2: left gets body[0..2], right gets body[2..].
+        let left = meta.split_at(2);
+
+        // Left side:
+        // - start_nodes = original start_nodes
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        // - non_code_nodes: keys 0 and 1 (after body[0] and after body[1])
+        assert_eq!(left.non_code_nodes.len(), 2);
+        assert_eq!(left.non_code_nodes[&0][0].value(), "after 0");
+        assert_eq!(left.non_code_nodes[&1][0].value(), "after 1");
+
+        // Right side:
+        // - no start_nodes
+        assert!(meta.start_nodes.is_empty());
+        // - non_code_nodes: original key 2 re-keyed to 0
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "after 2");
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_all_left() {
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([(0, vec![comment_node("after 0")]), (1, vec![comment_node("after 1")])]),
+            digest: None,
+        };
+
+        // Split at 3 (all 3 body elements go left).
+        let left = meta.split_at(3);
+
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes.len(), 2);
+        assert!(meta.start_nodes.is_empty());
+        assert!(meta.non_code_nodes.is_empty());
+    }
+
+    #[test]
+    fn test_non_code_meta_split_at_one() {
+        // Split at 1: only the first body element goes left.
+        let mut meta = NonCodeMeta {
+            start_nodes: vec![comment_node("start")],
+            non_code_nodes: BTreeMap::from([(0, vec![comment_node("after 0")]), (1, vec![comment_node("after 1")])]),
+            digest: None,
+        };
+
+        let left = meta.split_at(1);
+
+        // Left: start_nodes + key 0 (after the single left element).
+        assert_eq!(left.start_nodes.len(), 1);
+        assert_eq!(left.start_nodes[0].value(), "start");
+        assert_eq!(left.non_code_nodes.len(), 1);
+        assert_eq!(left.non_code_nodes[&0][0].value(), "after 0");
+
+        // Right: no start_nodes, key 1 re-keyed to 0.
+        assert!(meta.start_nodes.is_empty());
+        assert_eq!(meta.non_code_nodes.len(), 1);
+        assert_eq!(meta.non_code_nodes[&0][0].value(), "after 1");
     }
 }

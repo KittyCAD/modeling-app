@@ -4,13 +4,26 @@ import {
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { expect, describe, it, beforeEach, afterEach } from 'vitest'
+import { beforeAll, expect, describe, it, beforeEach, afterEach } from 'vitest'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 // Helper functions within this file to create a project and file entries easier to
 // populate the unit tests
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
+
+// Actual wasmInstance not used by these tests, only when drag and dropping external files,
+// so no real wasmInstance used here as it would make these tests unnecessarily heavier -
+const wasmInstance = {} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {
     name: name,
@@ -49,6 +62,7 @@ describe('ProjectExplorer', () => {
   it('should render no rows', () => {
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -68,6 +82,7 @@ describe('ProjectExplorer', () => {
     project.children = [oneFile]
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -89,6 +104,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFile('main.kcl'), createFile('dog.kcl')]
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -112,6 +128,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFolder('parts')]
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -135,6 +152,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFolder('parts', [mainFile])]
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -154,12 +172,12 @@ describe('ProjectExplorer', () => {
     expect(items[0].innerText).toBe('parts')
   })
   it('should render nested main.kcl file on load since it is the loaded file. All folders above opened.', () => {
-    console.log('test')
     const mainFile = createFile('main.kcl', 'parts/')
     project.children = [createFolder('parts', [mainFile])]
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={mainFile}
         createFilePressed={-1}
@@ -190,6 +208,7 @@ describe('ProjectExplorer', () => {
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={mainFile}
         createFilePressed={-1}
@@ -217,6 +236,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFolder('parts', [mainFile])]
     const { getByText } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -248,6 +268,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFolder('parts', [mainFile])]
     const { getByText } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -285,6 +306,7 @@ describe('ProjectExplorer', () => {
     project.children = [createFolder('parts', [mainFile])]
     const { getByText, rerender } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -314,6 +336,7 @@ describe('ProjectExplorer', () => {
     // collapsePressed since a new time stamp came in!
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -337,6 +360,7 @@ describe('ProjectExplorer', () => {
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     const { rerender } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -358,6 +382,7 @@ describe('ProjectExplorer', () => {
 
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={performance.now()}
@@ -384,6 +409,7 @@ describe('ProjectExplorer', () => {
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     const { rerender } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -405,6 +431,7 @@ describe('ProjectExplorer', () => {
 
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -439,6 +466,7 @@ describe('ProjectExplorer', () => {
 
     const { rerender } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -458,6 +486,7 @@ describe('ProjectExplorer', () => {
     expect(items[0].innerText).toBe('parts')
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={performance.now()}
@@ -477,6 +506,7 @@ describe('ProjectExplorer', () => {
     expect(renameField.innerText).toBe('')
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}
@@ -496,6 +526,7 @@ describe('ProjectExplorer', () => {
     expect(renameField.innerText).toBe('')
     rerender(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={performance.now()}
@@ -529,6 +560,7 @@ describe('ProjectExplorer', () => {
     // file={oneFile} is purposefully mismatched to not open these folders on initialization
     const { getByText } = render(
       <ProjectExplorer
+        wasmInstance={wasmInstance}
         project={project}
         file={oneFile}
         createFilePressed={-1}

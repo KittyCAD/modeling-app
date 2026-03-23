@@ -1,5 +1,6 @@
 // Gridfinity Baseplate With Magnets
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement
+// Categories: Maker
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

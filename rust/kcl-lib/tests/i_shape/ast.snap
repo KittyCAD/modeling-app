@@ -3218,8 +3218,6 @@ description: Result of parsing i_shape.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// At first I thought this was going to be symmetric,",
           "// but I measured intentionally to not be symmetric,",
           "// because your wrist isn't a perfect cylindrical surface"
@@ -4282,6 +4280,18 @@ description: Result of parsing i_shape.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "5": [
           {
             "commentStart": 0,

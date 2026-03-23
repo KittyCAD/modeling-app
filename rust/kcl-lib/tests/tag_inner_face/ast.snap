@@ -1010,7 +1010,17 @@ description: Result of parsing tag_inner_face.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "Uncomment this once Serena's engine PR merges",
               "style": "line"
             }

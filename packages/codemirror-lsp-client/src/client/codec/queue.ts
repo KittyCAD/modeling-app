@@ -28,7 +28,7 @@ export default class Queue<T>
   ): void {
     if (!closed) {
       if (!resolvers.length) Queue.#__add(promises, resolvers)
-      const resolve = resolvers.shift()! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      const resolve = resolvers.shift()!
       resolve(item)
     }
   }
@@ -54,7 +54,7 @@ export default class Queue<T>
 
   dequeue(): Promise<T> {
     if (!this.#promises.length) this.#add()
-    const item = this.#promises.shift()! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    const item = this.#promises.shift()!
     return item
   }
 

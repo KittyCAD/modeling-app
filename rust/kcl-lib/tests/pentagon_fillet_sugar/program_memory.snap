@@ -64,6 +64,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "c",
         "xAxis": {
           "x": 1.0,
@@ -126,6 +127,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -205,6 +207,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -212,7 +216,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -341,6 +344,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "a",
         "xAxis": {
           "x": 1.0,
@@ -403,6 +407,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -482,6 +487,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -489,7 +496,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -632,6 +638,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -711,6 +718,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -718,7 +727,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -801,6 +809,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -839,6 +848,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "a",
           "xAxis": {
             "x": 1.0,
@@ -901,6 +911,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -980,6 +991,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -987,7 +1000,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1133,6 +1145,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1171,6 +1184,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "c",
           "xAxis": {
             "x": 1.0,
@@ -1233,6 +1247,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -1312,6 +1327,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1319,7 +1336,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -1,5 +1,6 @@
 // Wind Turbine Blade
 // A wind turbine blade is a curved airfoil-shaped propeller that captures wind energy and converts it into rotational motion, ultimately driving a generator to produce electricity. These blades are typically made of composite materials like fiberglass or carbon fiber for strength and durability, and are designed to maximize efficiency in capturing the wind's kinetic energy. Most modern wind turbines use root inserts or a T-bolt connection to join the blade to the pitch bearing. The root insert is a metal bushing imbedded within the laminate
+// Categories: Construction
 
 // Set Units
 @settings(defaultLengthUnit = m)

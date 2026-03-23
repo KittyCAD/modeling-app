@@ -371,7 +371,7 @@ description: Artifact commands bottle.kcl
           "r": 0.0,
           "g": 0.47058824,
           "b": 0.7607843,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

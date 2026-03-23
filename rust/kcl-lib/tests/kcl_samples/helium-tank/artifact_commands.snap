@@ -911,6 +911,7 @@ description: Artifact commands helium-tank.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -924,7 +925,7 @@ description: Artifact commands helium-tank.kcl
           "r": 0.6039216,
           "g": 0.27450982,
           "b": 0.09411765,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1747,6 +1748,7 @@ description: Artifact commands helium-tank.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1985,6 +1987,7 @@ description: Artifact commands helium-tank.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1999,6 +2002,7 @@ description: Artifact commands helium-tank.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -2012,7 +2016,7 @@ description: Artifact commands helium-tank.kcl
           "r": 0.8039216,
           "g": 0.015686275,
           "b": 0.015686275,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2318,7 +2322,7 @@ description: Artifact commands helium-tank.kcl
           "r": 0.12941177,
           "g": 0.050980393,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

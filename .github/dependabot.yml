@@ -107,6 +107,40 @@ updates:
     - '*zoo*'
     - '*kittycad*'
 - package-ecosystem: npm
+  directory: /.github/actions/github-release
+  schedule:
+    interval: weekly
+    day: saturday
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+    exclude:
+    - '*kcl*'
+    - '*zoo*'
+    - '*kittycad*'
+- package-ecosystem: npm
   directory: /
   schedule:
     interval: weekly
@@ -175,7 +209,7 @@ updates:
     - '*zoo*'
     - '*kittycad*'
 - package-ecosystem: npm
-  directory: /rust/kcl-language-server
+  directory: /packages/codemirror-lsp-client
   schedule:
     interval: weekly
     day: saturday
@@ -243,41 +277,7 @@ updates:
     - '*zoo*'
     - '*kittycad*'
 - package-ecosystem: npm
-  directory: /packages/codemirror-lsp-client
-  schedule:
-    interval: weekly
-    day: saturday
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-  cooldown:
-    default-days: 7
-    exclude:
-    - '*kcl*'
-    - '*zoo*'
-    - '*kittycad*'
-- package-ecosystem: npm
-  directory: /.github/actions/github-release
+  directory: /rust/kcl-language-server
   schedule:
     interval: weekly
     day: saturday

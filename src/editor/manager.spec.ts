@@ -1,9 +1,13 @@
 import type { Diagnostic } from '@codemirror/lint'
-
-import { expect, describe, it } from 'vitest'
-import { kclManager } from '@src/lib/singletons'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { expect, describe, it, vi } from 'vitest'
+import { App } from '@src/lib/app'
 
 describe('EditorManager Class', () => {
+  const singletons = App.fromProvided({
+    wasmPromise: Promise.resolve({} as ModuleType),
+  }).singletons
+
   describe('makeUniqueDiagnostics', () => {
     it('should filter out duplicated diagnostics', () => {
       const duplicatedDiagnostics: Diagnostic[] = [
@@ -36,7 +40,9 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      const actual = singletons.kclManager.makeUniqueDiagnostics(
+        duplicatedDiagnostics
+      )
       expect(actual).toStrictEqual(expected)
     })
     it('should filter out duplicated diagnostic and keep some original ones', () => {
@@ -76,8 +82,41 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      const actual = singletons.kclManager.makeUniqueDiagnostics(
+        duplicatedDiagnostics
+      )
       expect(actual).toStrictEqual(expected)
+    })
+  })
+
+  describe('updateCodeEditor', () => {
+    it('should write to file when the code is unchanged and shouldWriteToDisk is true', () => {
+      const writeToFileSpy = vi
+        .spyOn(singletons.kclManager, 'writeToFile')
+        .mockResolvedValue(undefined)
+
+      const currentCode = singletons.kclManager.code
+      singletons.kclManager.updateCodeEditor(currentCode, {
+        shouldWriteToDisk: true,
+      })
+
+      expect(writeToFileSpy).toHaveBeenCalledWith(currentCode)
+
+      writeToFileSpy.mockRestore()
+    })
+
+    it('should not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
+      const writeToFileSpy = vi
+        .spyOn(singletons.kclManager, 'writeToFile')
+        .mockResolvedValue(undefined)
+
+      const currentCode = singletons.kclManager.code
+      singletons.kclManager.updateCodeEditor(currentCode, {
+        shouldWriteToDisk: false,
+      })
+
+      expect(writeToFileSpy).not.toHaveBeenCalled()
+      writeToFileSpy.mockRestore()
     })
   })
 })

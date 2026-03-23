@@ -1,11 +1,11 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[133, 158, 0]"]
+    2["Path<br>[133, 158, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
   end
   subgraph path3 [Path]
-    3["Path<br>[164, 270, 0]"]
+    3["Path<br>[164, 270, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     4["Segment<br>[164, 270, 0]"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
@@ -21,7 +21,7 @@ flowchart LR
   end
   1["Plane<br>[110, 127, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  10["Sweep Extrusion<br>[276, 295, 0]"]
+  10["Sweep Extrusion<br>[276, 295, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
   11[Wall]
     %% face_code_ref=Missing NodePath

@@ -3,6 +3,7 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::units::UnitLength;
 use serde::{Deserialize, Serialize};
 
 pub use crate::ExecutorSettings as Settings;
@@ -10,7 +11,9 @@ use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::Numer
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
+    async fn get_project(&self, project: ProjectId) -> Result<Vec<File>>;
     async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
+    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<File>;
     async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
@@ -18,7 +21,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
@@ -78,6 +81,12 @@ pub struct SourceDelta {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
+impl ObjectId {
+    pub fn predecessor(self) -> Option<Self> {
+        self.0.checked_sub(1).map(ObjectId)
+    }
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
@@ -130,6 +139,7 @@ pub enum ObjectKind {
     /// A placeholder for an object that will be solved and replaced later.
     Nil,
     Plane(Plane),
+    Face(Face),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -147,6 +157,13 @@ pub enum ObjectKind {
 pub enum Plane {
     Object(ObjectId),
     Default(PlaneName),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    pub id: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -185,9 +202,23 @@ impl Number {
     pub fn round(&self, digits: u8) -> Self {
         let factor = 10f64.powi(digits as i32);
         let rounded_value = (self.value * factor).round() / factor;
+        // Don't return negative zero.
+        let value = if rounded_value == -0.0 { 0.0 } else { rounded_value };
         Number {
-            value: rounded_value,
+            value,
             units: self.units,
+        }
+    }
+}
+
+impl From<(f64, UnitLength)> for Number {
+    fn from((value, units): (f64, UnitLength)) -> Self {
+        // Direct conversion from UnitLength to NumericSuffix (never panics)
+        // The From<UnitLength> for NumericSuffix impl is in execution::types
+        let units_suffix = NumericSuffix::from(units);
+        Number {
+            value,
+            units: units_suffix,
         }
     }
 }
@@ -211,6 +242,12 @@ impl Error {
     pub fn file_id_in_use(id: FileId, path: &str) -> Self {
         Error {
             msg: format!("File ID already in use: {id:?}, currently used for `{path}`"),
+        }
+    }
+
+    pub fn file_id_not_found(project_id: ProjectId, file_id: FileId) -> Self {
+        Error {
+            msg: format!("File ID not found in project: {file_id:?}, project: {project_id:?}"),
         }
     }
 

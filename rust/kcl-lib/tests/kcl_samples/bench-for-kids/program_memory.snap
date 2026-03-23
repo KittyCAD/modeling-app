@@ -18,10 +18,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1474,
-                "end": 1484,
+                "commentStart": 1495,
+                "end": 1505,
                 "moduleId": 0,
-                "start": 1474,
+                "start": 1495,
                 "type": "TagDeclarator",
                 "value": "legCircle"
               },
@@ -32,10 +32,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1657,
-                "end": 1669,
+                "commentStart": 1678,
+                "end": 1690,
                 "moduleId": 0,
-                "start": 1657,
+                "start": 1678,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -43,6 +43,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -62,10 +63,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.8,
                 "tag": {
-                  "commentStart": 1474,
-                  "end": 1484,
+                  "commentStart": 1495,
+                  "end": 1505,
                   "moduleId": 0,
-                  "start": 1474,
+                  "start": 1495,
                   "type": "TagDeclarator",
                   "value": "legCircle"
                 },
@@ -80,6 +81,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -87,7 +90,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -171,10 +173,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1474,
-                "end": 1484,
+                "commentStart": 1495,
+                "end": 1505,
                 "moduleId": 0,
-                "start": 1474,
+                "start": 1495,
                 "type": "TagDeclarator",
                 "value": "legCircle"
               },
@@ -185,10 +187,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1657,
-                "end": 1669,
+                "commentStart": 1678,
+                "end": 1690,
                 "moduleId": 0,
-                "start": 1657,
+                "start": 1678,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -196,6 +198,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -215,10 +218,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.8,
                 "tag": {
-                  "commentStart": 1474,
-                  "end": 1484,
+                  "commentStart": 1495,
+                  "end": 1505,
                   "moduleId": 0,
-                  "start": 1474,
+                  "start": 1495,
                   "type": "TagDeclarator",
                   "value": "legCircle"
                 },
@@ -233,6 +236,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -240,7 +245,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -324,10 +328,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1474,
-                "end": 1484,
+                "commentStart": 1495,
+                "end": 1505,
                 "moduleId": 0,
-                "start": 1474,
+                "start": 1495,
                 "type": "TagDeclarator",
                 "value": "legCircle"
               },
@@ -338,10 +342,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1657,
-                "end": 1669,
+                "commentStart": 1678,
+                "end": 1690,
                 "moduleId": 0,
-                "start": 1657,
+                "start": 1678,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -349,6 +353,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -368,10 +373,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.8,
                 "tag": {
-                  "commentStart": 1474,
-                  "end": 1484,
+                  "commentStart": 1495,
+                  "end": 1505,
                   "moduleId": 0,
-                  "start": 1474,
+                  "start": 1495,
                   "type": "TagDeclarator",
                   "value": "legCircle"
                 },
@@ -386,6 +391,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -393,7 +400,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -477,10 +483,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1474,
-                "end": 1484,
+                "commentStart": 1495,
+                "end": 1505,
                 "moduleId": 0,
-                "start": 1474,
+                "start": 1495,
                 "type": "TagDeclarator",
                 "value": "legCircle"
               },
@@ -491,10 +497,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1657,
-                "end": 1669,
+                "commentStart": 1678,
+                "end": 1690,
                 "moduleId": 0,
-                "start": 1657,
+                "start": 1678,
                 "type": "TagDeclarator",
                 "value": "legCapStart"
               },
@@ -502,6 +508,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -521,10 +528,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.8,
                 "tag": {
-                  "commentStart": 1474,
-                  "end": 1484,
+                  "commentStart": 1495,
+                  "end": 1505,
                   "moduleId": 0,
-                  "start": 1474,
+                  "start": 1495,
                   "type": "TagDeclarator",
                   "value": "legCircle"
                 },
@@ -539,6 +546,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -546,7 +555,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -668,10 +676,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2876,
-            "end": 2886,
+            "commentStart": 2898,
+            "end": 2908,
             "moduleId": 0,
-            "start": 2876,
+            "start": 2898,
             "type": "TagDeclarator",
             "value": "earCircle"
           },
@@ -682,10 +690,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2950,
-            "end": 2960,
+            "commentStart": 2972,
+            "end": 2982,
             "moduleId": 0,
-            "start": 2950,
+            "start": 2972,
             "type": "TagDeclarator",
             "value": "earCapEnd"
           },
@@ -693,6 +701,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -712,10 +721,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.32,
             "tag": {
-              "commentStart": 2876,
-              "end": 2886,
+              "commentStart": 2898,
+              "end": 2908,
               "moduleId": 0,
-              "start": 2876,
+              "start": 2898,
               "type": "TagDeclarator",
               "value": "earCircle"
             },
@@ -730,6 +739,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -737,7 +748,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -886,10 +896,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 4.32,
           "tag": {
-            "commentStart": 2876,
-            "end": 2886,
+            "commentStart": 2898,
+            "end": 2908,
             "moduleId": 0,
-            "start": 2876,
+            "start": 2898,
             "type": "TagDeclarator",
             "value": "earCircle"
           },
@@ -904,6 +914,8 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -911,7 +923,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -976,13 +987,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1027,10 +1039,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2876,
-                "end": 2886,
+                "commentStart": 2898,
+                "end": 2908,
                 "moduleId": 0,
-                "start": 2876,
+                "start": 2898,
                 "type": "TagDeclarator",
                 "value": "earCircle"
               },
@@ -1041,10 +1053,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2950,
-                "end": 2960,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2950,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1052,6 +1064,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1071,10 +1084,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 2876,
-                  "end": 2886,
+                  "commentStart": 2898,
+                  "end": 2908,
                   "moduleId": 0,
-                  "start": 2876,
+                  "start": 2898,
                   "type": "TagDeclarator",
                   "value": "earCircle"
                 },
@@ -1089,6 +1102,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1096,7 +1111,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1180,10 +1194,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2876,
-                "end": 2886,
+                "commentStart": 2898,
+                "end": 2908,
                 "moduleId": 0,
-                "start": 2876,
+                "start": 2898,
                 "type": "TagDeclarator",
                 "value": "earCircle"
               },
@@ -1194,10 +1208,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2950,
-                "end": 2960,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2950,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1205,6 +1219,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1224,10 +1239,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 2876,
-                  "end": 2886,
+                  "commentStart": 2898,
+                  "end": 2908,
                   "moduleId": 0,
-                  "start": 2876,
+                  "start": 2898,
                   "type": "TagDeclarator",
                   "value": "earCircle"
                 },
@@ -1242,6 +1257,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1249,7 +1266,6 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1335,10 +1351,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1495,
+            "end": 1505,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1495,
             "type": "TagDeclarator",
             "value": "legCircle"
           },
@@ -1349,10 +1365,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1657,
-            "end": 1669,
+            "commentStart": 1678,
+            "end": 1690,
             "moduleId": 0,
-            "start": 1657,
+            "start": 1678,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1360,6 +1376,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1379,10 +1396,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.8,
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1495,
+              "end": 1505,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1495,
               "type": "TagDeclarator",
               "value": "legCircle"
             },
@@ -1397,6 +1414,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1404,7 +1423,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1488,10 +1506,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1495,
+            "end": 1505,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1495,
             "type": "TagDeclarator",
             "value": "legCircle"
           },
@@ -1502,10 +1520,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1657,
-            "end": 1669,
+            "commentStart": 1678,
+            "end": 1690,
             "moduleId": 0,
-            "start": 1657,
+            "start": 1678,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1513,6 +1531,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1532,10 +1551,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.8,
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1495,
+              "end": 1505,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1495,
               "type": "TagDeclarator",
               "value": "legCircle"
             },
@@ -1550,6 +1569,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1557,7 +1578,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1669,10 +1689,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1495,
+            "end": 1505,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1495,
             "type": "TagDeclarator",
             "value": "legCircle"
           },
@@ -1683,10 +1703,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1657,
-            "end": 1669,
+            "commentStart": 1678,
+            "end": 1690,
             "moduleId": 0,
-            "start": 1657,
+            "start": 1678,
             "type": "TagDeclarator",
             "value": "legCapStart"
           },
@@ -1694,6 +1714,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1713,10 +1734,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.8,
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1495,
+              "end": 1505,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1495,
               "type": "TagDeclarator",
               "value": "legCircle"
             },
@@ -1731,6 +1752,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1738,7 +1761,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1834,10 +1856,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 4.8,
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1495,
+            "end": 1505,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1495,
             "type": "TagDeclarator",
             "value": "legCircle"
           },
@@ -1852,6 +1874,8 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1859,7 +1883,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1924,13 +1947,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1974,6 +1998,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2027,6 +2052,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 400.0,
@@ -2034,7 +2061,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2145,6 +2171,8 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 400.0,
@@ -2152,7 +2180,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2198,13 +2225,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 400.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2230,13 +2258,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 400.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2269,10 +2298,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3868,
-            "end": 3879,
+            "commentStart": 3890,
+            "end": 3901,
             "moduleId": 0,
-            "start": 3868,
+            "start": 3890,
             "type": "TagDeclarator",
             "value": "tailCircle"
           },
@@ -2283,10 +2312,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3949,
-            "end": 3962,
+            "commentStart": 3971,
+            "end": 3984,
             "moduleId": 0,
-            "start": 3949,
+            "start": 3971,
             "type": "TagDeclarator",
             "value": "tailCapStart"
           },
@@ -2294,6 +2323,7 @@ description: Variables in memory after executing bench-for-kids.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2313,10 +2343,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 3.8880000000000003,
             "tag": {
-              "commentStart": 3868,
-              "end": 3879,
+              "commentStart": 3890,
+              "end": 3901,
               "moduleId": 0,
-              "start": 3868,
+              "start": 3890,
               "type": "TagDeclarator",
               "value": "tailCircle"
             },
@@ -2331,6 +2361,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 360.0,
@@ -2338,7 +2370,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2452,13 +2483,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 360.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2501,10 +2533,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 3.8880000000000003,
           "tag": {
-            "commentStart": 3868,
-            "end": 3879,
+            "commentStart": 3890,
+            "end": 3901,
             "moduleId": 0,
-            "start": 3868,
+            "start": 3890,
             "type": "TagDeclarator",
             "value": "tailCircle"
           },
@@ -2519,6 +2551,8 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 360.0,
@@ -2526,7 +2560,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2591,13 +2624,14 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 360.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

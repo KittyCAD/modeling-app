@@ -7,7 +7,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing segment overlays', () => {
+test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it', () => {
     /**
      * Clicks on an constrained element
@@ -65,7 +65,7 @@ test.describe('Testing segment overlays', () => {
         })
         await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
-        await expect(
+        expect(
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await constrainedLocator.click()
@@ -86,7 +86,7 @@ test.describe('Testing segment overlays', () => {
         )
         await expect(unconstrainedLocator).toBeVisible()
         await unconstrainedLocator.hover()
-        await expect(
+        expect(
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await unconstrainedLocator.click()
@@ -152,7 +152,7 @@ test.describe('Testing segment overlays', () => {
           `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
         )
         await unconstrainedLocator.hover()
-        await expect(
+        expect(
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await unconstrainedLocator.click()
@@ -179,7 +179,7 @@ test.describe('Testing segment overlays', () => {
         )
         await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
-        await expect(
+        expect(
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await constrainedLocator.click()
@@ -221,7 +221,7 @@ test.describe('Testing segment overlays', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await await scene.settled(cmdBar)
+      await scene.settled(cmdBar)
 
       // wait for execution done
 
