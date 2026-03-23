@@ -99,6 +99,7 @@ import {
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
@@ -147,6 +148,7 @@ import {
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
 } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
@@ -162,7 +164,6 @@ import {
 import type {
   Artifact,
   ArtifactId,
-  CallExpressionKw,
   KclValue,
   PathToNode,
   PipeExpression,
@@ -448,25 +449,6 @@ export type ModelingMachineEvent =
     }
   | { type: 'delete selected' }
 
-function getVariableInitByName(
-  ast: Node<Program>,
-  variableName: string
-): Expr | null {
-  let init: Expr | null = null
-  traverse(ast, {
-    enter: (node) => {
-      if (
-        !init &&
-        node.type === 'VariableDeclaration' &&
-        node.declaration.id.name === variableName
-      ) {
-        init = node.declaration.init
-      }
-    },
-  })
-  return init
-}
-
 function getSketchBlockSegmentVariableNames(
   sketchBlock: Extract<Expr, { type: 'SketchBlock' }>
 ): string[] {
@@ -506,56 +488,46 @@ function findWallSegmentIndexInPath({
     addPathCandidate(sweepArtifact.pathId)
   }
 
-  for (const pathId of candidatePathIds) {
-    const pathArtifact = artifactGraph.get(pathId)
-    if (!pathArtifact || pathArtifact.type !== 'path') continue
+  const matchingCodeRefs = [segmentArtifact.codeRef, wallArtifact.faceCodeRef]
+  const findMatchingIndexInPath = (
+    pathArtifact: Extract<Artifact, { type: 'path' }>
+  ) => {
     const directIndex = pathArtifact.segIds.indexOf(segmentArtifact.id)
     if (directIndex >= 0) return directIndex
+
+    return pathArtifact.segIds.findIndex((segId) => {
+      const candidateSegment = artifactGraph.get(segId)
+      if (!candidateSegment || candidateSegment.type !== 'segment') return false
+      return matchingCodeRefs.some((referenceCodeRef) => {
+        if (
+          JSON.stringify(candidateSegment.codeRef.pathToNode) ===
+          JSON.stringify(referenceCodeRef.pathToNode)
+        ) {
+          return true
+        }
+        return (
+          JSON.stringify(candidateSegment.codeRef.range) ===
+          JSON.stringify(referenceCodeRef.range)
+        )
+      })
+    })
   }
 
   for (const pathId of candidatePathIds) {
     const pathArtifact = artifactGraph.get(pathId)
     if (!pathArtifact || pathArtifact.type !== 'path') continue
-    const matchingIndex = pathArtifact.segIds.findIndex((segId) => {
-      const maybeSegArtifact = artifactGraph.get(segId)
-      if (!maybeSegArtifact || maybeSegArtifact.type !== 'segment') return false
-      if (
-        JSON.stringify(maybeSegArtifact.codeRef.pathToNode) ===
-        JSON.stringify(segmentArtifact.codeRef.pathToNode)
-      ) {
-        return true
-      }
-      return (
-        JSON.stringify(maybeSegArtifact.codeRef.range) ===
-        JSON.stringify(segmentArtifact.codeRef.range)
-      )
-    })
-    if (matchingIndex >= 0) return matchingIndex
+    const matchingIndex = findMatchingIndexInPath(pathArtifact)
+    if (matchingIndex >= 0) {
+      return matchingIndex
+    }
   }
 
   for (const artifact of artifactGraph.values()) {
     if (artifact.type !== 'path') continue
-    const directIndex = artifact.segIds.indexOf(segmentArtifact.id)
-    if (directIndex >= 0) return directIndex
-  }
-
-  for (const artifact of artifactGraph.values()) {
-    if (artifact.type !== 'path') continue
-    const matchingIndex = artifact.segIds.findIndex((segId) => {
-      const maybeSegArtifact = artifactGraph.get(segId)
-      if (!maybeSegArtifact || maybeSegArtifact.type !== 'segment') return false
-      if (
-        JSON.stringify(maybeSegArtifact.codeRef.pathToNode) ===
-        JSON.stringify(segmentArtifact.codeRef.pathToNode)
-      ) {
-        return true
-      }
-      return (
-        JSON.stringify(maybeSegArtifact.codeRef.range) ===
-        JSON.stringify(segmentArtifact.codeRef.range)
-      )
-    })
-    if (matchingIndex >= 0) return matchingIndex
+    const matchingIndex = findMatchingIndexInPath(artifact)
+    if (matchingIndex >= 0) {
+      return matchingIndex
+    }
   }
 
   return null
@@ -618,10 +590,9 @@ function insertFaceOfReferenceForSketchSolveSelection({
         'Could not resolve extrude input expression for selected face'
       )
     }
-    const extrudeInputInit = getVariableInitByName(
-      modifiedAst,
-      extrudeInputExpr.name.name
-    )
+    const extrudeInputInit =
+      getVariableDeclaration(modifiedAst, extrudeInputExpr.name.name)
+        ?.declaration.init ?? null
     const isRegionInput =
       extrudeInputInit !== null &&
       extrudeInputInit.type === 'CallExpressionKw' &&
@@ -638,118 +609,97 @@ function insertFaceOfReferenceForSketchSolveSelection({
             faceTagFromExecState
           )
         : createLocalName(faceTagFromExecState)
-      const faceVarName = findUniqueName(modifiedAst, 'face')
-      const faceOfExpr = createCallExpressionStdLibKw(
-        'faceOf',
-        createLocalName(extrudeVarDec.node.id.name),
-        [createLabeledArg('face', faceExpr)]
-      )
-      const faceDecl = createVariableDeclaration(faceVarName, faceOfExpr)
-      const insertIndex = Number(faceSelection.extrudePathToNode[1]?.[0])
-      if (!Number.isFinite(insertIndex)) {
-        return new Error('Could not determine where to insert faceOf call')
-      }
-      modifiedAst.body.splice(insertIndex + 1, 0, faceDecl)
-      return { modifiedAst }
-    }
-
-    const faceArtifact = artifactGraph.get(faceSelection.faceId)
-    if (!faceArtifact || faceArtifact.type !== 'wall') {
-      return new Error('Could not resolve selected wall face artifact')
-    }
-    const segmentArtifact = artifactGraph.get(faceArtifact.segId)
-    if (!segmentArtifact || segmentArtifact.type !== 'segment') {
-      return new Error('Could not resolve wall segment for selected face')
-    }
-    let segmentPathToNode = segmentArtifact.codeRef.pathToNode
-    let segmentNode = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      segmentPathToNode,
-      wasmInstance
-    )
-    if (err(segmentNode)) {
-      segmentPathToNode = getNodePathFromSourceRange(
-        modifiedAst,
-        segmentArtifact.codeRef.range
-      )
-      segmentNode = getNodeFromPath<CallExpressionKw>(
-        modifiedAst,
-        segmentPathToNode,
-        wasmInstance
-      )
-      if (err(segmentNode)) {
-        return segmentNode
-      }
-    }
-
-    const segmentNodeName = segmentNode.node.callee.name.name
-    if (
-      segmentNodeName in sketchLineHelperMapKw ||
-      segmentNodeName === 'close'
-    ) {
-      const taggedSegment = addTagForSketchOnFace(
-        {
-          pathToNode: segmentPathToNode,
-          node: modifiedAst,
-          wasmInstance,
-        },
-        segmentNodeName,
-        null,
-        wasmInstance
-      )
-      if (err(taggedSegment)) {
-        return taggedSegment
-      }
-      modifiedAst = taggedSegment.modifiedAst
-      const segmentTag = taggedSegment.tag
-      faceExpr = isRegionInput
-        ? createMemberExpression(
-            createMemberExpression(extrudeInputExpr.name.name, 'tags'),
-            segmentTag
-          )
-        : createLocalName(segmentTag)
-    } else if (isRegionInput) {
-      const segmentIndex = findWallSegmentIndexInPath({
-        artifactGraph,
-        wallArtifact: faceArtifact,
-        segmentArtifact,
-      })
-      if (segmentIndex === null) {
-        return new Error('Could not resolve selected wall segment index')
-      }
-
-      const sketchArg = extrudeInputInit.arguments.find(
-        (arg) => arg.label?.name === 'sketch'
-      )?.arg
-      if (!sketchArg || sketchArg.type !== 'Name') {
-        return new Error(
-          'Could not resolve region sketch expression for selected face'
-        )
-      }
-
-      const sketchInit = getVariableInitByName(modifiedAst, sketchArg.name.name)
-      if (!sketchInit || sketchInit.type !== 'SketchBlock') {
-        return new Error(
-          'Could not resolve sketch block used by region for selected face'
-        )
-      }
-      const segmentVariableNames =
-        getSketchBlockSegmentVariableNames(sketchInit)
-      const segmentName = segmentVariableNames[segmentIndex]
-      if (!segmentName) {
-        return new Error(
-          'Could not resolve sketch segment name for selected wall face'
-        )
-      }
-
-      faceExpr = createMemberExpression(
-        createMemberExpression(extrudeInputExpr.name.name, 'tags'),
-        segmentName
-      )
     } else {
-      return new Error(
-        `Could not build wall face reference from "${segmentNodeName}" expression`
-      )
+      const faceArtifact = artifactGraph.get(faceSelection.faceId)
+      if (!faceArtifact || faceArtifact.type !== 'wall') {
+        return new Error('Could not resolve selected wall face artifact')
+      }
+      const segmentArtifact = artifactGraph.get(faceArtifact.segId)
+      if (!segmentArtifact || segmentArtifact.type !== 'segment') {
+        return new Error('Could not resolve wall segment for selected face')
+      }
+
+      let segmentTagResult:
+        | { modifiedAst: Node<Program>; tag: string }
+        | Error = new Error('Could not resolve wall segment for selected face')
+      for (const candidateCodeRef of [
+        segmentArtifact.codeRef,
+        faceArtifact.faceCodeRef,
+      ]) {
+        let tagResult = mutateAstWithTagForSketchSegment(
+          structuredClone(modifiedAst),
+          candidateCodeRef.pathToNode,
+          wasmInstance
+        )
+        if (err(tagResult)) {
+          const pathFromRange = getNodePathFromSourceRange(
+            modifiedAst,
+            candidateCodeRef.range
+          )
+          tagResult = mutateAstWithTagForSketchSegment(
+            structuredClone(modifiedAst),
+            pathFromRange,
+            wasmInstance
+          )
+        }
+        segmentTagResult = tagResult
+        if (!err(tagResult)) {
+          break
+        }
+      }
+
+      if (!err(segmentTagResult)) {
+        modifiedAst = segmentTagResult.modifiedAst
+        const segmentTag = segmentTagResult.tag
+        faceExpr = isRegionInput
+          ? createMemberExpression(
+              createMemberExpression(extrudeInputExpr.name.name, 'tags'),
+              segmentTag
+            )
+          : createLocalName(segmentTag)
+      } else if (isRegionInput) {
+        const segmentIndex = findWallSegmentIndexInPath({
+          artifactGraph,
+          wallArtifact: faceArtifact,
+          segmentArtifact,
+        })
+        if (segmentIndex === null) {
+          return new Error('Could not resolve selected wall segment index')
+        }
+
+        const sketchArg = extrudeInputInit.arguments.find(
+          (arg) => arg.label?.name === 'sketch'
+        )?.arg
+        if (!sketchArg || sketchArg.type !== 'Name') {
+          return new Error(
+            'Could not resolve region sketch expression for selected face'
+          )
+        }
+
+        const sketchInit =
+          getVariableDeclaration(modifiedAst, sketchArg.name.name)?.declaration
+            .init ?? null
+        if (!sketchInit || sketchInit.type !== 'SketchBlock') {
+          return new Error(
+            'Could not resolve sketch block used by region for selected face'
+          )
+        }
+        const segmentVariableNames =
+          getSketchBlockSegmentVariableNames(sketchInit)
+        const segmentName = segmentVariableNames[segmentIndex]
+        if (!segmentName) {
+          return new Error(
+            'Could not resolve sketch segment name for selected wall face'
+          )
+        }
+
+        faceExpr = createMemberExpression(
+          createMemberExpression(extrudeInputExpr.name.name, 'tags'),
+          segmentName
+        )
+      } else {
+        return segmentTagResult
+      }
     }
   }
 
