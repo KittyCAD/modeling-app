@@ -30,12 +30,12 @@ holeRadius = 4 // Radius of the central through-hole
 baseSketch = startSketchOn(XY)
 
 // Auxiliary circle used to produce circular end edges for chamfering
-chamferCircleSketch = sketch(on = XY) {
-  circle1 = arc(start = [var 11mm, var 0mm], end = [var 11mm, var 0mm], center = [var 0mm, var 0mm])
+chamferCircleSketch = sketch(on = baseSketch) {
+  circle1 = circle(start = [var 11mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 // Hex nut exterior profile (regular hexagon, circumscribed about hexCircumscribedRadius)
-hexProfile = sketch(on = XY) {
+hexProfile = sketch(on = baseSketch) {
   line1 = line(start = [var 10mm, var 0mm], end = [var 5mm, var 8.66mm])
   line2 = line(start = [var 5mm, var 8.66mm], end = [var -5mm, var 8.66mm])
   coincident([line1.end, line2.start])
@@ -50,8 +50,8 @@ hexProfile = sketch(on = XY) {
 }
 
 // Central hole sketch (axis-aligned with the nut center)
-holeSketch = sketch(on = XY) {
-  circle1 = arc(start = [var 4mm, var 0mm], end = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+holeSketch = sketch(on = baseSketch) {
+  circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 region001 = region(segments = [hexProfile.line1, hexProfile.line2])

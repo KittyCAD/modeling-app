@@ -19,7 +19,7 @@ boltPitchCircleDiameter = 2.5
 
 // 2D cross-sectional profile of the part that will later be revolved
 antennaCrossSectionSketch = startSketchOn(YZ)
-antennaCrossSectionProfile = sketch(on = YZ) {
+antennaCrossSectionProfile = sketch(on = antennaCrossSectionSketch) {
   line1 = line(start = [var 1.5in, var 0in], end = [var 1.5in, var 0.08in])
   line2 = line(start = [var 1.5in, var 0.08in], end = [var 0.32in, var 0.08in])
   coincident([line1.end, line2.start])

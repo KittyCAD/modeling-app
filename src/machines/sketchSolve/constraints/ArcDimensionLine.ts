@@ -5,7 +5,6 @@ import type {
 import {
   DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_HIT_AREA,
   DISTANCE_CONSTRAINT_LABEL,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -13,8 +12,10 @@ import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   CONSTRAINT_COLOR,
+  updateLabelHitObjects,
   updateLabel,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
+import { isSpriteLabel } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
@@ -47,9 +48,10 @@ export function updateArcDimensionLine(
   const { center, radius, startAngle, sweepAngle: sweep } = renderInput
   const arcLengthPx = (radius * sweep) / scale
 
-  const label = group.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  )!
+  const label = group.children.find(isSpriteLabel)
+  if (!label) {
+    return
+  }
   label.position.set(
     renderInput.labelPosition[0],
     renderInput.labelPosition[1],
@@ -76,11 +78,6 @@ export function updateArcDimensionLine(
       child.visible = showGap
     } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
       child.visible = showArrows
-    } else if (
-      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-      child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
-    ) {
-      child.visible = showGap
     } else {
       child.visible = true
     }
@@ -103,6 +100,20 @@ export function updateArcDimensionLine(
 
   const startPoint = polar2d(center, radius, startAngle)
   const endPoint = polar2d(center, radius, endAngle)
+  group.userData.hitObjects = [
+    {
+      type: 'arc',
+      center,
+      start: startPoint,
+      end: endPoint,
+    },
+  ]
+
+  if (showGap) {
+    updateLabelHitObjects(label)
+  } else {
+    delete label.userData.hitObjects
+  }
 
   const arrows = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW

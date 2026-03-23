@@ -418,6 +418,12 @@ export const mlEphantManagerMachine = setup({
         ? `?conversation_id=${maybeConversationId}&replay=true`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+
+      // Defensive: if there's already an open connection, close it.
+      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        args.input.context.ws?.close()
+      }
+
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
@@ -717,6 +723,11 @@ export const mlEphantManagerMachine = setup({
 }).createMachine({
   initial: S.Await,
   context: mlEphantDefaultContext,
+  exit: (args) => {
+    // Make sure the connection is closed.
+    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    args.context?.ws?.close()
+  },
   states: {
     [S.Await]: {
       on: {

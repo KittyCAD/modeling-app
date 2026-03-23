@@ -2085,6 +2085,31 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::Circle {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: Box::new(UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2125,6 +2150,36 @@ impl Node<MemberExpression> {
                         }
                         .continue_()),
                         SegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Box::new(Segment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
+                                        sketch: segment.sketch.clone(),
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Circle {
                             start,
                             ctor,
                             start_object_id,
@@ -2215,6 +2270,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.into()],
+                            ),
+                            None,
+                        )),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2284,11 +2346,43 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        SegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.into()],
+                            ),
+                            None,
+                        )),
                     },
                 },
                 "center" => match &segment.repr {
                     SegmentRepr::Unsolved { segment } => match &segment.kind {
                         UnsolvedSegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: Box::new(UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                        },
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        UnsolvedSegmentKind::Circle {
                             center,
                             ctor,
                             center_object_id,
@@ -2323,6 +2417,36 @@ impl Node<MemberExpression> {
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            center_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Box::new(Segment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                            freedom: *center_freedom,
+                                        },
+                                        surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
+                                        sketch: segment.sketch.clone(),
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Circle {
                             center,
                             ctor,
                             center_object_id,

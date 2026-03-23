@@ -6,6 +6,13 @@ pushd() { builtin pushd "$@" > /dev/null; }
 # shellcheck disable=SC2120
 popd()  { builtin popd  "$@" > /dev/null; }
 
+target_dir="${CARGO_TARGET_DIR:-target}"
+if [[ "$target_dir" = /* ]]; then
+  transpile_bin="$target_dir/release/transpile"
+else
+  transpile_bin="./rust/$target_dir/release/transpile"
+fi
+
 # Build once before touching the file system.
 pushd rust/
 cargo build --release --bin transpile -p kcl-lib
@@ -35,7 +42,7 @@ for file in "${files[@]}"; do
 
   # Don't use cargo run to avoid the extra output.
   set +e
-  if ./rust/target/release/transpile "public/kcl-samples/$file" > "$out_file"; then
+  if "$transpile_bin" "public/kcl-samples/$file" > "$out_file"; then
     ((succeeded++))
   else
     ((failed++))
