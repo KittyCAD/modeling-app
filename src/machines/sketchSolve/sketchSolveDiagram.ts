@@ -34,7 +34,7 @@ import {
   deleteDraftEntities,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
-  onCameraScaleChange,
+  refreshSketchSolveScale,
   tearDownSketchSolve,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
@@ -201,6 +201,15 @@ export const sketchSolveMachine = setup({
   actions: {
     'initialize intersection plane': initializeIntersectionPlane,
     'initialize initial scene graph': assign(initializeInitialSceneGraph),
+    'register sketch solve scale refresh': ({ self, context }) => {
+      context.sceneInfra.setOnBeforeRender(() => {
+        const snapshot = self.getSnapshot()
+        refreshSketchSolveScale(snapshot.context)
+      })
+    },
+    'clear sketch solve scale refresh': ({ context }) => {
+      context.sceneInfra.setOnBeforeRender(null)
+    },
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': ({ context }) => {
@@ -237,7 +246,6 @@ export const sketchSolveMachine = setup({
     }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
-    'camera scale change': onCameraScaleChange,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -285,7 +293,11 @@ export const sketchSolveMachine = setup({
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
-      actions: ['send unequip to tool', 'send tool unequipped to parent'],
+      actions: [
+        'clear sketch solve scale refresh',
+        'send unequip to tool',
+        'send tool unequipped to parent',
+      ],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
@@ -293,9 +305,6 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
-    },
-    'camera scale change': {
-      actions: 'camera scale change',
     },
     'set draft entities': {
       actions: 'set draft entities',
@@ -927,6 +936,7 @@ export const sketchSolveMachine = setup({
   },
 
   entry: [
+    'register sketch solve scale refresh',
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
