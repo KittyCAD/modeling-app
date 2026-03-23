@@ -1,32 +1,64 @@
 use anyhow::Result;
-use ezpz::{
-    Constraint as SolverConstraint,
-    datatypes::{
-        AngleKind,
-        inputs::{DatumCircularArc, DatumLineSegment, DatumPoint},
-    },
-};
+use ezpz::Constraint as SolverConstraint;
+use ezpz::datatypes::AngleKind;
+use ezpz::datatypes::inputs::DatumCircularArc;
+use ezpz::datatypes::inputs::DatumLineSegment;
+use ezpz::datatypes::inputs::DatumPoint;
 use kittycad_modeling_cmds as kcmc;
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        AbstractSegment, ConstrainablePoint2d, ExecState, KclValue, SegmentRepr, SketchConstraint,
-        SketchConstraintKind, SketchVarId, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
-        normalize_to_solver_distance_unit, solver_numeric_type,
-        types::{ArrayLen, PrimitiveType, RuntimeType},
-    },
-    front::{ArcCtor, CircleCtor, LineCtor, ObjectId, Point2d, PointCtor},
-    std::Args,
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::AbstractSegment;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
-    front::{
-        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Tangent,
-        Vertical,
-    },
-};
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CodeRef;
+use crate::execution::ConstrainablePoint2d;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::SegmentRepr;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::SketchBlockConstraint;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::SketchBlockConstraintType;
+use crate::execution::SketchConstraint;
+use crate::execution::SketchConstraintKind;
+use crate::execution::SketchVarId;
+use crate::execution::UnsolvedExpr;
+use crate::execution::UnsolvedSegment;
+use crate::execution::UnsolvedSegmentKind;
+use crate::execution::normalize_to_solver_distance_unit;
+use crate::execution::solver_numeric_type;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Coincident;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Constraint;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Horizontal;
+use crate::front::LineCtor;
+#[cfg(feature = "artifact-graph")]
+use crate::front::LinesEqualLength;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Object;
+use crate::front::ObjectId;
+#[cfg(feature = "artifact-graph")]
+use crate::front::ObjectKind;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Parallel;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Perpendicular;
+use crate::front::Point2d;
+use crate::front::PointCtor;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Tangent;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Vertical;
+use crate::std::Args;
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;

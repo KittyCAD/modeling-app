@@ -114,7 +114,7 @@ function createArcSegmentObject(
 function createCircleSegmentObject(
   id: number,
   startId: number,
-  centerId: number
+  centerId: number = startId
 ): ApiObject {
   return {
     id,
@@ -122,8 +122,8 @@ function createCircleSegmentObject(
       type: 'Segment',
       segment: {
         type: 'Circle',
-        start: startId,
         center: centerId,
+        start: startId,
         ctor: {
           type: 'Circle',
           start: {
@@ -134,6 +134,7 @@ function createCircleSegmentObject(
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
+          construction: false,
         },
         ctor_applicable: false,
         construction: false,
@@ -394,26 +395,29 @@ describe('deriveSegmentFreedom', () => {
   })
 
   describe('Circle segments', () => {
-    it('should return Fixed when center point is Fixed', () => {
+    it('should return Fixed when start and center points are Fixed', () => {
       const centerPoint = createPointObject(1, 'Fixed')
-      const circle = createCircleSegmentObject(3, 1, 2)
-      const objects = [centerPoint, circle]
+      const startPoint = createPointObject(2, 'Fixed')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Fixed')
     })
 
-    it('should return Free when center point is Free', () => {
-      const centerPoint = createPointObject(1, 'Free')
-      const circle = createCircleSegmentObject(3, 1, 2)
-      const objects = [centerPoint, circle]
+    it('should return Free when either circle point is Free', () => {
+      const centerPoint = createPointObject(1, 'Fixed')
+      const startPoint = createPointObject(2, 'Free')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Free')
     })
 
-    it('should return Conflict when center point is Conflict', () => {
+    it('should return Conflict when either circle point is Conflict', () => {
       const centerPoint = createPointObject(1, 'Conflict')
-      const circle = createCircleSegmentObject(3, 1, 2)
-      const objects = [centerPoint, circle]
+      const startPoint = createPointObject(2, 'Fixed')
+      const circle = createCircleSegmentObject(3, 2, 1)
+      const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Conflict')
     })

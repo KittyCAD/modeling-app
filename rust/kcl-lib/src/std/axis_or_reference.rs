@@ -1,10 +1,12 @@
 //! Types for referencing an axis or edge.
 
 use super::args::TyF64;
-use crate::{
-    execution::{Plane, Sketch, Solid, TagIdentifier},
-    std::{fillet::EdgeReference, sketch::FaceTag},
-};
+use crate::execution::Plane;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::std::fillet::EdgeReference;
+use crate::std::sketch::FaceTag;
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]

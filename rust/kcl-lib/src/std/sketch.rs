@@ -4,43 +4,77 @@ use std::f64;
 
 use anyhow::Result;
 use kcl_error::SourceRange;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
+use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::units::UnitLength;
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use super::{
-    shapes::{get_radius, get_radius_labelled},
-    utils::untype_array,
-};
+use super::shapes::get_radius;
+use super::shapes::get_radius_labelled;
+use super::utils::untype_array;
+use crate::ExecutorContext;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::PlaneKind;
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
-use crate::{
-    ExecutorContext,
-    errors::{KclError, KclErrorDetails},
-    exec::PlaneKind,
-    execution::{
-        BasePath, ExecState, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        EQUAL_POINTS_DIST_EPSILON,
-        args::{Args, TyF64},
-        axis_or_reference::Axis2dOrEdgeReference,
-        faces::{FaceSpecifier, make_face},
-        planes::inner_plane_of,
-        utils::{
-            TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
-        },
-    },
-};
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
+use crate::execution::BasePath;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CodeRef;
+use crate::execution::ExecState;
+use crate::execution::GeoMeta;
+use crate::execution::Geometry;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Point2d;
+use crate::execution::Point3d;
+use crate::execution::ProfileClosed;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::Solid;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::StartSketchOnFace;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::StartSketchOnPlane;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::EQUAL_POINTS_DIST_EPSILON;
+use crate::std::args::Args;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::faces::FaceSpecifier;
+use crate::std::faces::make_face;
+use crate::std::planes::inner_plane_of;
+use crate::std::utils::TangentialArcInfoInput;
+use crate::std::utils::arc_center_and_end;
+use crate::std::utils::get_tangential_arc_to_info;
+use crate::std::utils::get_x_component;
+use crate::std::utils::get_y_component;
+use crate::std::utils::intersection_with_parallel_line;
+use crate::std::utils::point_to_len_unit;
+use crate::std::utils::point_to_mm;
+use crate::std::utils::untyped_point_to_mm;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -2866,10 +2900,9 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        execution::TagIdentifier,
-        std::{sketch::PlaneData, utils::calculate_circle_center},
-    };
+    use crate::execution::TagIdentifier;
+    use crate::std::sketch::PlaneData;
+    use crate::std::utils::calculate_circle_center;
 
     #[test]
     fn test_deserialize_plane_data() {

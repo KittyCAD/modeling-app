@@ -1,13 +1,14 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
-use std::{
-    fs,
-    panic::{AssertUnwindSafe, catch_unwind},
-    path::{Path, PathBuf},
-};
+use std::fs;
+use std::panic::AssertUnwindSafe;
+use std::panic::catch_unwind;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use fnv::FnvHashSet;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use walkdir::WalkDir;
 
 use super::Test;

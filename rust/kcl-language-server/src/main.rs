@@ -2,11 +2,14 @@
 
 #![deny(missing_docs)]
 
-use anyhow::{Result, bail};
+use anyhow::Result;
+use anyhow::bail;
 use clap::Parser;
 use slog::Drain;
-use tower_lsp::{LspService, Server as LspServer};
-use tracing_subscriber::{Layer, prelude::*};
+use tower_lsp::LspService;
+use tower_lsp::Server as LspServer;
+use tracing_subscriber::Layer;
+use tracing_subscriber::prelude::*;
 
 lazy_static::lazy_static! {
 /// Initialize the logger.
@@ -143,10 +146,9 @@ async fn run_cmd(opts: &Opts) -> Result<()> {
                 // "The main process inside the container will receive SIGTERM, and after a grace period,
                 // SIGKILL."
                 // Registering SIGKILL here will panic at runtime, so let's avoid that.
-                use signal_hook::{
-                    consts::{SIGINT, SIGTERM},
-                    iterator::Signals,
-                };
+                use signal_hook::consts::SIGINT;
+                use signal_hook::consts::SIGTERM;
+                use signal_hook::iterator::Signals;
                 let mut signals = Signals::new([SIGINT, SIGTERM])?;
 
                 tokio::spawn(async move {

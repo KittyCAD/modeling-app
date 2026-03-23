@@ -1,23 +1,28 @@
-use std::{
-    panic::{AssertUnwindSafe, catch_unwind},
-    path::{Path, PathBuf},
-};
+use std::panic::AssertUnwindSafe;
+use std::panic::catch_unwind;
+use std::path::Path;
+use std::path::PathBuf;
 
 use indexmap::IndexMap;
 
-use crate::{
-    ExecOutcome, ExecState, ExecutorContext, ModuleId,
-    errors::KclError,
-    exec::KclValue,
-    execution::{EnvironmentRef, ModuleArtifactState},
-    util::{RetryConfig, execute_with_retries},
-    walk::{Node, walk},
-};
+use crate::ExecOutcome;
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::ModuleId;
+use crate::errors::KclError;
+use crate::exec::KclValue;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::ArtifactGraph,
-    modules::{ModulePath, ModuleRepr},
-};
+use crate::execution::ArtifactGraph;
+use crate::execution::EnvironmentRef;
+use crate::execution::ModuleArtifactState;
+#[cfg(feature = "artifact-graph")]
+use crate::modules::ModulePath;
+#[cfg(feature = "artifact-graph")]
+use crate::modules::ModuleRepr;
+use crate::util::RetryConfig;
+use crate::util::execute_with_retries;
+use crate::walk::Node;
+use crate::walk::walk;
 
 mod kcl_samples;
 

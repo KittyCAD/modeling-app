@@ -1,17 +1,29 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
-use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::BodyType;
+use kittycad_modeling_cmds::shared::RelativeTo;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, ProfileClosed, Sketch, Solid, types::RuntimeType},
-    parsing::ast::types::TagNode,
-    std::{Args, extrude::do_post_extrude},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::Helix;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::ProfileClosed;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::extrude::do_post_extrude;
 
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

@@ -2,21 +2,31 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::CutType;
 use kittycad_modeling_cmds as kcmc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::RuntimeType,
-    },
-    parsing::ast::types::TagNode,
-    std::Args,
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::EdgeCut;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::FilletSurface;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
 
 /// A tag or a uuid of an edge.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]

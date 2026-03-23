@@ -1,7 +1,7 @@
-use crate::{
-    SourceRange,
-    parsing::ast::types::{self, NodeRef, NodeRefMut},
-};
+use crate::SourceRange;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::NodeRefMut;
+use crate::parsing::ast::types::{self};
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
 /// file. Tokens we walk through will be one of these.

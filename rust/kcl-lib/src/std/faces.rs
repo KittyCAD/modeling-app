@@ -3,11 +3,15 @@
 use uuid::Uuid;
 
 use super::sketch::FaceTag;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, Face, KclValue, Segment, Solid, types::RuntimeType},
-    std::Args,
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::Face;
+use crate::execution::KclValue;
+use crate::execution::Segment;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
 
 const SEGMENT_MUST_HAVE_TAG_ERROR: &str =
     "Face specifier must have a tag. For sketch block segments, assign the segment to a variable.";

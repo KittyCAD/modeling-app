@@ -1,23 +1,30 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{CutStrategy, CutTypeV2},
-};
-use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::CutStrategy;
+use kcmc::shared::CutTypeV2;
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::RuntimeType,
-    },
-    parsing::ast::types::TagNode,
-    std::{Args, fillet::EdgeReference},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ChamferSurface;
+use crate::execution::EdgeCut;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::fillet::EdgeReference;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
