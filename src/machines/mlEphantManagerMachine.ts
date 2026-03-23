@@ -569,16 +569,15 @@ export const mlEphantManagerMachine = setup({
             }
 
             // As it reads: if it looks like (so yea, a heuristic) we got
-            // disconnected on the last prompt, submit an unrecorded "continue"
-            // prompt.
+            // disconnected on the last prompt, ask ttc to continue
             if (hasBeenInterruptedOnLast(maybeReplayedExchanges)) {
-              const request: Extract<MlCopilotClientMessage, { type: 'user' }> =
-                {
-                  type: 'user',
-                  content: 'we got disconnected, please continue',
-                  // @ts-expect-error
-                  record: false,
-                }
+              const request: Extract<
+                MlCopilotClientMessage,
+                { type: 'system' }
+              > = {
+                type: 'system',
+                command: 'continue',
+              }
 
               ws.send(JSON.stringify(request))
             }
