@@ -58,7 +58,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
-  areArraysEqual,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
