@@ -47,7 +47,7 @@ base = extrude(region001, length = magnetThickness * 1.5)
 
 // create the holder pegs which go into the eyes of the sponge
 sketch003 = sketch(on = startSketchOn(base, face = END)) {
-  circle1 = arc(start = [var 24mm, var 0mm], end = [var 24mm, var 0mm], center = [var 17mm, var 0mm])
+  circle1 = circle(start = [var 24mm, var 0mm], center = [var 17mm, var 0mm])
 }
 region002 = region(segments = [sketch003.circle1])
 holder = extrude(region002, length = spongeThickness - magnetThickness)

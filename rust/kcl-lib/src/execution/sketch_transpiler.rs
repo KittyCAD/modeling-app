@@ -5,23 +5,31 @@ use std::collections::HashMap;
 
 use kcl_error::SourceRange;
 
-use crate::{
-    Program,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecOutcome, ExecutorContext, KclValue, SKETCH_BLOCK_PARAM_ON,
-        geometry::{Path, Sketch},
-    },
-    fmt::format_number_literal,
-    frontend::{
-        api::{Expr, Number},
-        ast_name_expr, create_arc_ast, create_coincident_ast, create_equal_length_ast, create_horizontal_ast,
-        create_line_ast, create_member_expression, create_tangent_ast, create_vertical_ast,
-        sketch::Point2d,
-        to_ast_point2d,
-    },
-    parsing::ast::types as ast,
-};
+use crate::Program;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecOutcome;
+use crate::execution::ExecutorContext;
+use crate::execution::KclValue;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::geometry::Path;
+use crate::execution::geometry::Sketch;
+use crate::fmt::format_number_literal;
+use crate::frontend::api::Expr;
+use crate::frontend::api::Number;
+use crate::frontend::ast_name_expr;
+use crate::frontend::create_arc_ast;
+use crate::frontend::create_circle_ast;
+use crate::frontend::create_coincident_ast;
+use crate::frontend::create_equal_length_ast;
+use crate::frontend::create_horizontal_ast;
+use crate::frontend::create_line_ast;
+use crate::frontend::create_member_expression;
+use crate::frontend::create_tangent_ast;
+use crate::frontend::create_vertical_ast;
+use crate::frontend::sketch::Point2d;
+use crate::frontend::to_ast_point2d;
+use crate::parsing::ast::types as ast;
 
 mod intermediate_var;
 mod region;
@@ -510,15 +518,7 @@ fn transpiler_create_segment_declaration(
         ),
         TranspilerSegment::Circle { name, center, radius } => (
             name.as_str(),
-            create_arc_ast_from_coords(
-                center[0] + radius,
-                center[1],
-                center[0] + radius,
-                center[1],
-                center[0],
-                center[1],
-                units,
-            )?,
+            create_circle_ast_from_coords(center[0] + radius, center[1], center[0], center[1], units)?,
         ),
     };
 
@@ -643,6 +643,39 @@ fn create_arc_ast_from_coords(
     })?;
 
     Ok(create_arc_ast(start_ast, end_ast, center_ast))
+}
+
+/// Create an AST node for a circle call.
+fn create_circle_ast_from_coords(
+    start_x: f64,
+    start_y: f64,
+    center_x: f64,
+    center_y: f64,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::Expr, KclError> {
+    let start_point = Point2d {
+        x: Expr::Var(f64_to_number(start_x, units)),
+        y: Expr::Var(f64_to_number(start_y, units)),
+    };
+    let center_point = Point2d {
+        x: Expr::Var(f64_to_number(center_x, units)),
+        y: Expr::Var(f64_to_number(center_y, units)),
+    };
+
+    let start_ast = to_ast_point2d(&start_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle start point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+    let center_ast = to_ast_point2d(&center_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle center point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    Ok(create_circle_ast(start_ast, center_ast))
 }
 
 // Helper functions below use shared AST creation functions from frontend.rs
@@ -1070,10 +1103,9 @@ fn find_seg_len_reference(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        Program,
-        test_server::{execute_and_snapshot_ast, new_context},
-    };
+    use crate::Program;
+    use crate::test_server::execute_and_snapshot_ast;
+    use crate::test_server::new_context;
 
     async fn transpile_test_sketch(code: &str, variable_name: &str) -> Result<String, KclError> {
         let program = Program::parse_no_errs(code).unwrap();

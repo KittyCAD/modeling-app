@@ -45,16 +45,16 @@ sketch001 = extrude(region001, length = 13.6)
 // Create a short cylindrical foot at each corner of the keyboard
 sketch003 = startSketchOn(sketch001, face = seg04)
 profile001 = sketch(on = sketch003) {
-  circle1 = arc(start = [var 1.15in, var 0.75in], end = [var 1.15in, var 0.75in], center = [var 0.75in, var 0.75in])
+  circle1 = circle(start = [var 1.15in, var 0.75in], center = [var 0.75in, var 0.75in])
 }
 profile003 = sketch(on = sketch003) {
-  circle1 = arc(start = [var 4.8in, var 0.75in], end = [var 4.8in, var 0.75in], center = [var 4.4in, var 0.75in])
+  circle1 = circle(start = [var 4.8in, var 0.75in], center = [var 4.4in, var 0.75in])
 }
 profile004 = sketch(on = sketch003) {
-  circle1 = arc(start = [var 1.13in, var 12.85in], end = [var 1.13in, var 12.85in], center = [var 0.73in, var 12.85in])
+  circle1 = circle(start = [var 1.13in, var 12.85in], center = [var 0.73in, var 12.85in])
 }
 profile005 = sketch(on = sketch003) {
-  circle1 = arc(start = [var 4.8in, var 12.85in], end = [var 4.8in, var 12.85in], center = [var 4.4in, var 12.85in])
+  circle1 = circle(start = [var 4.8in, var 12.85in], center = [var 4.4in, var 12.85in])
 }
 extrude(
   [

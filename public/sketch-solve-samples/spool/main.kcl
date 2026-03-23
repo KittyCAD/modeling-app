@@ -67,7 +67,7 @@ hel01 = helix(
 
 // Sweep and color the coil
 sketch002 = sketch(on = XZ) {
-  circle1 = arc(start = [var 2.5mm, var -77.5mm], end = [var 2.5mm, var -77.5mm], center = [var 0mm, var -77.5mm])
+  circle1 = circle(start = [var 2.5mm, var -77.5mm], center = [var 0mm, var -77.5mm])
 }
 region002 = region(segments = [sketch002.circle1])
 stock = sweep(region002, path = hel01)

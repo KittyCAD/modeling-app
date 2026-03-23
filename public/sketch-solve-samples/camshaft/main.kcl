@@ -95,7 +95,7 @@ fn cylinderPattern(@i) {
 // Extrude a center connecting cylinder shaft through each cam position
 length = (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth) * cylinderCount + supportBearingWidth
 sketch001 = sketch(on = XY) {
-  circle1 = arc(start = [var 0.49in, var 0in], end = [var 0.49in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 0.49in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 centerShaft = extrude(region001, length)

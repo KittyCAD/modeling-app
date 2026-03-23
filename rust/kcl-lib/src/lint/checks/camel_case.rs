@@ -1,13 +1,16 @@
 use anyhow::Result;
 use convert_case::Casing;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lint::rule::{Discovered, Finding, def_finding},
-    parsing::ast::types::{Node as AstNode, ObjectProperty, Program, VariableDeclarator},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::ObjectProperty;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::walk::Node;
 
 def_finding!(
     Z0001,
@@ -94,8 +97,12 @@ pub fn lint_object_properties(decl: Node, prog: &AstNode<Program>) -> Result<Vec
 
 #[cfg(test)]
 mod tests {
-    use super::{Z0001, lint_object_properties, lint_variables};
-    use crate::lint::rule::{assert_finding, test_finding, test_no_finding};
+    use super::Z0001;
+    use super::lint_object_properties;
+    use super::lint_variables;
+    use crate::lint::rule::assert_finding;
+    use crate::lint::rule::test_finding;
+    use crate::lint::rule::test_no_finding;
 
     #[tokio::test]
     async fn z0001_const() {

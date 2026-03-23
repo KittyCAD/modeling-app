@@ -64,13 +64,13 @@ lowerArm = sketch(on = offsetPlane(XZ, offset = fanSize / 2 + 2)) {
 // Create the profile of the mounting wire and sweep along the XZ path
 wireProfile = startSketchOn(offsetPlane(XY, offset = 40 + fanSize / 2))
 sketch001 = sketch(on = wireProfile) {
-  circle1 = arc(start = [var -11mm, var -62mm], end = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
+  circle1 = circle(start = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
 }
 region001 = region(segments = [sketch001.circle1])
 sweepUpperArm = sweep(region001, path = upperArm)
 
 sketch002 = sketch(on = wireProfile) {
-  circle1 = arc(start = [var -11mm, var -62mm], end = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
+  circle1 = circle(start = [var -11mm, var -62mm], center = [var -12mm, var -62mm])
 }
 region002 = region(segments = [sketch002.circle1])
 sweepLowerArm = sweep(region002, path = lowerArm)
@@ -108,13 +108,13 @@ lowerHook = sketch(on = offsetPlane(XY, offset = segEndY(seg08))) {
 // Sweep the wire profile around the hook-shaped segments of the mounting wire
 hookProfile = startSketchOn(offsetPlane(YZ, offset = segEndX(seg07)))
 sketch003 = sketch(on = hookProfile) {
-  circle1 = arc(start = [var -61mm, var 152.65mm], end = [var -61mm, var 152.65mm], center = [var -62mm, var 152.65mm])
+  circle1 = circle(start = [var -61mm, var 152.65mm], center = [var -62mm, var 152.65mm])
 }
 region003 = region(segments = [sketch003.circle1])
 sweepUpperHook = sweep(region003, path = upperHook)
 
 sketch004 = sketch(on = hookProfile) {
-  circle1 = arc(start = [var -61mm, var 47.35mm], end = [var -61mm, var 47.35mm], center = [var -62mm, var 47.35mm])
+  circle1 = circle(start = [var -61mm, var 47.35mm], center = [var -62mm, var 47.35mm])
 }
 region004 = region(segments = [sketch004.circle1])
 sweepLowerHook = sweep(region004, path = lowerHook)

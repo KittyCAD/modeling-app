@@ -7,20 +7,30 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
-use crate::{
-    ExecState, KclError,
-    errors::KclErrorDetails,
-    exec::{KclValue, NumericType, Sketch, UnitType},
-    execution::{
-        AbstractSegment, Segment, SegmentKind, SegmentRepr, SketchSurface, UnsolvedExpr, UnsolvedSegment,
-        UnsolvedSegmentKind,
-        types::{PrimitiveType, RuntimeType},
-    },
-    front::{Freedom, Object},
-    std::args::TyF64,
-};
+use crate::ExecState;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::exec::NumericType;
+use crate::exec::Sketch;
+use crate::exec::UnitType;
+use crate::execution::AbstractSegment;
 #[cfg(feature = "artifact-graph")]
-use crate::{execution::Metadata, front::ObjectKind};
+use crate::execution::Metadata;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SegmentRepr;
+use crate::execution::SketchSurface;
+use crate::execution::UnsolvedExpr;
+use crate::execution::UnsolvedSegment;
+use crate::execution::UnsolvedSegmentKind;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::front::Freedom;
+use crate::front::Object;
+#[cfg(feature = "artifact-graph")]
+use crate::front::ObjectKind;
+use crate::std::args::TyF64;
 
 /// Freedom analysis results from solving a sketch constraint system. The `Vec`
 /// is converted to a set to avoid quadratic runtime.

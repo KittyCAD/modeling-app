@@ -1,18 +1,23 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use anyhow::Result;
 
-use crate::{
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
-    errors::KclErrorDetails,
-    execution::typed_path::TypedPath,
-    modules::{ModulePath, ModuleRepr},
-    parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
-    walk::{Node, Visitable},
-};
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::typed_path::TypedPath;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::walk::Node;
+use crate::walk::Visitable;
 
 /// Specific dependency between two modules. The 0th element of this info
 /// is the "importing" module, the 1st is the "imported" module. The 0th
@@ -241,7 +246,8 @@ pub(crate) async fn import_universe(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parsing::ast::types::{ImportSelector, Program};
+    use crate::parsing::ast::types::ImportSelector;
+    use crate::parsing::ast::types::Program;
 
     macro_rules! kcl {
         ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};

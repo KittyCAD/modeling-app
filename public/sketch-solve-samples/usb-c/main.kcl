@@ -155,7 +155,7 @@ cablePath = sketch(on = XZ) {
 
 // Sweep cable profile along the path and set appearance
 sketch002 = sketch(on = offsetPlane(YZ, offset = -housingLength)) {
-  circle1 = arc(start = [var 1.9mm, var 0mm], end = [var 1.9mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 1.9mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [sketch002.circle1])
 cable = sweep(region005, path = cablePath)

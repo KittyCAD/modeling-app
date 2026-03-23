@@ -1,5 +1,6 @@
 use proc_macro2::Span;
-use quote::{ToTokens, quote};
+use quote::ToTokens;
+use quote::quote;
 
 pub fn do_for_each_example_test(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
     let item: syn::ItemFn = syn::parse2(item).unwrap();

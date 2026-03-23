@@ -1,6 +1,11 @@
-use std::{env, fs::File, io::Read};
+use std::env;
+use std::fs::File;
+use std::io::Read;
 
-use kcl_lib::{ExecState, ExecutorContext, ExecutorSettings, Program};
+use kcl_lib::ExecState;
+use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
+use kcl_lib::Program;
 
 // An extremely simple script, definitely not to be released or used for anything important, but
 // sometimes useful for debugging. It reads in a file specified on the command line and runs it.

@@ -30,7 +30,7 @@ washerSplitWidth = 1
 
 washerSketch = startSketchOn(XY)
 washerRingProfile = sketch(on = washerSketch) {
-  circle1 = arc(start = [var 4mm, var 0mm], end = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 region001 = region(segments = [washerRingProfile.circle1])

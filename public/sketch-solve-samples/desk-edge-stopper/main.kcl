@@ -114,7 +114,7 @@ guardBody = extrude(region001, length = guardLengthAlongDesk)
 // holes
 holeSketch = startSketchOn(guardBody, face = upperFaceOfTheUprofile)
 holeProfile = sketch(on = holeSketch) {
-  circle1 = arc(start = [var -15mm, var 33.33mm], end = [var -15mm, var 33.33mm], center = [var -17mm, var 33.33mm])
+  circle1 = circle(start = [var -15mm, var 33.33mm], center = [var -17mm, var 33.33mm])
 }
 
 // Hole pattern runs along the Y axis of the sketch, which corresponds to the length of the guard along the desk edge. X points into the desk.

@@ -37,10 +37,11 @@ use anyhow::Result;
 pub use args::Args;
 use futures::future::FutureExt;
 
-use crate::{
-    errors::KclError,
-    execution::{ExecState, KclValue, KclValueControlFlow, types::PrimitiveType},
-};
+use crate::errors::KclError;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::types::PrimitiveType;
 
 pub type StdFn =
     fn(

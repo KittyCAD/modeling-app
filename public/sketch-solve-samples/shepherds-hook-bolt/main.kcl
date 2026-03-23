@@ -46,7 +46,7 @@ hookProfileShape = sketch(on = hookProfilePlane) {
 // Create the circular cross-section used for sweeping along the hook path
 hookSectionPlane = offsetPlane(XY, offset = -shankOffset - shankLength)
 hookSectionShape = sketch(on = hookSectionPlane) {
-  circle1 = arc(start = [var 2.5mm, var 0mm], end = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 region001 = region(segments = [hookSectionShape.circle1])
@@ -56,7 +56,7 @@ hookBody = sweep(region001, path = hookProfileShape, sectional = true)
 // Add a cylindrical tip at the hook end
 tipPlane = startSketchOn(hookBody, face = END)
 tipShape = sketch(on = tipPlane) {
-  circle1 = arc(start = [var 14.5mm, var 0mm], end = [var 14.5mm, var 0mm], center = [var 12mm, var 0mm])
+  circle1 = circle(start = [var 14.5mm, var 0mm], center = [var 12mm, var 0mm])
 }
 region002 = region(segments = [tipShape.circle1])
 tipBody = extrude(
