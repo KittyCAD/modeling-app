@@ -133,6 +133,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
+  createMemberExpression,
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
@@ -447,21 +448,6 @@ export type ModelingMachineEvent =
     }
   | { type: 'delete selected' }
 
-function createDotMemberExpression(object: Expr, propertyName: string): Expr {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object,
-    property: createLocalName(propertyName),
-    computed: false,
-  }
-}
-
 function getVariableInitByName(
   ast: Node<Program>,
   variableName: string
@@ -647,11 +633,8 @@ function insertFaceOfReferenceForSketchSolveSelection({
     )
     if (faceTagFromExecState) {
       faceExpr = isRegionInput
-        ? createDotMemberExpression(
-            createDotMemberExpression(
-              createLocalName(extrudeInputExpr.name.name),
-              'tags'
-            ),
+        ? createMemberExpression(
+            createMemberExpression(extrudeInputExpr.name.name, 'tags'),
             faceTagFromExecState
           )
         : createLocalName(faceTagFromExecState)
@@ -720,11 +703,8 @@ function insertFaceOfReferenceForSketchSolveSelection({
       modifiedAst = taggedSegment.modifiedAst
       const segmentTag = taggedSegment.tag
       faceExpr = isRegionInput
-        ? createDotMemberExpression(
-            createDotMemberExpression(
-              createLocalName(extrudeInputExpr.name.name),
-              'tags'
-            ),
+        ? createMemberExpression(
+            createMemberExpression(extrudeInputExpr.name.name, 'tags'),
             segmentTag
           )
         : createLocalName(segmentTag)
@@ -762,11 +742,8 @@ function insertFaceOfReferenceForSketchSolveSelection({
         )
       }
 
-      faceExpr = createDotMemberExpression(
-        createDotMemberExpression(
-          createLocalName(extrudeInputExpr.name.name),
-          'tags'
-        ),
+      faceExpr = createMemberExpression(
+        createMemberExpression(extrudeInputExpr.name.name, 'tags'),
         segmentName
       )
     } else {
