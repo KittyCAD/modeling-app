@@ -1224,19 +1224,27 @@ fn artifacts_to_update(
             else {
                 return Ok(return_arr);
             };
-            // Each key is a segment in the region.
+            // Each key is a segment in the region and each value is the source
+            // segment it came from.
             #[expect(
                 clippy::iter_over_hash_type,
                 reason = "This is bad for deterministic output, especially in tests, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
             )]
-            for segment_id in region_mapping.keys() {
+            for (segment_id, original_segment_id) in region_mapping {
+                let inherited_code_ref = artifacts
+                    .get(&ArtifactId::new(*original_segment_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Segment(segment) => Some(segment.code_ref.clone()),
+                        _ => None,
+                    })
+                    .unwrap_or_else(|| code_ref.clone());
                 return_arr.push(Artifact::Segment(Segment {
                     id: ArtifactId::new(*segment_id),
                     path_id: id,
                     surface_id: None,
                     edge_ids: Vec::new(),
                     edge_cut_id: None,
-                    code_ref: code_ref.clone(),
+                    code_ref: inherited_code_ref,
                     common_surface_ids: Vec::new(),
                 }))
             }
