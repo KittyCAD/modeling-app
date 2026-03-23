@@ -192,7 +192,6 @@ export async function createCircleActor({
         x: { type: 'Var', value: roundOff(startPoint[0]), units },
         y: { type: 'Var', value: roundOff(startPoint[1]), units },
       },
-      construction: null,
     }
 
     return await rustContext.addSegment(

@@ -1,13 +1,13 @@
 ---
 title: "sketch2::circle"
 subtitle: "Function in std::sketch2"
-excerpt: "A circle. The circle segment always has a starting point and sweeps counterclockwise from it."
+excerpt: "Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A circle. The circle segment always has a starting point and sweeps counterclockwise from it.
+Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it.
 
 ```kcl
 sketch2::circle(
@@ -30,6 +30,4 @@ sketch2::circle(
 ### Returns
 
 [`Segment`](/docs/kcl-std/types/std-types-Segment) - A segment of a path in a sketch. It may be a line, arc, or other segment type.
-
-
 

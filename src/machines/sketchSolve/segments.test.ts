@@ -126,12 +126,12 @@ function createCircleSegmentObject(
         start: startId,
         ctor: {
           type: 'Circle',
-          center: {
+          start: {
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          start: {
-            x: { type: 'Var', value: 1, units: 'Mm' },
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
           construction: false,

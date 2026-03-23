@@ -58,7 +58,6 @@ describe('circleToolImpl', () => {
             x: { type: 'Var', value: 30, units: 'Mm' },
             y: { type: 'Var', value: 40, units: 'Mm' },
           },
-          construction: null,
         },
         'circle',
         expect.anything()

@@ -108,8 +108,7 @@ description: Variables in memory after executing sketch_block_circle_simple.kcl
                           "value": 0.0,
                           "units": "Mm"
                         }
-                      },
-                      "construction": null
+                      }
                     },
                     "start_object_id": 2,
                     "center_object_id": 3,

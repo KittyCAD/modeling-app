@@ -303,6 +303,8 @@ pub struct Circle {
 pub struct CircleCtor {
     pub start: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub construction: Option<bool>,
 }
 
