@@ -31,6 +31,7 @@ result
 # rust
 /target
 /public/kcl_wasm_lib_bg.wasm
+/rust/dotnet
 
 # playwright
 e2e/playwright/temp1.png

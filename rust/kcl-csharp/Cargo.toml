@@ -1,0 +1,21 @@
+[package]
+name = "kcl-csharp"
+version = "0.2.134"
+edition = "2024"
+description = "C library for using KCL"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+kcl-lib = { path = "../kcl-lib" }
+kittycad-modeling-cmds = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+serde = { workspace = true }
+
+[build-dependencies]
+csbindgen = "1.9.6"
+
+[lints]
+workspace = true
