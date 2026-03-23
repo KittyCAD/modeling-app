@@ -116,7 +116,7 @@ export class SceneInfra {
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
-  onMouseDownSelection: () => boolean = () => false
+  onMouseDownSelection: (() => boolean) | undefined
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
@@ -201,7 +201,7 @@ export class SceneInfra {
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
-      onMouseDownSelection: () => false,
+      onMouseDownSelection: undefined,
       onMouseEnter: () => {},
       onMouseLeave: () => {},
       onAreaSelectStart: () => {},
@@ -795,15 +795,18 @@ export class SceneInfra {
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
-    const selectedOnMouseDown = this.onMouseDownSelection()
 
-    if (selectedOnMouseDown) {
-      this.selected = {
-        mouseDownVector,
-        object: new Object3D(), // just a dummy, delete this property if sketch 1 is deprecated
-        hasBeenDragged: false,
-      }
+    if (this.onMouseDownSelection) {
+      // function is defined -> we're in new sketch-solve mode
+      this.selected = this.onMouseDownSelection()
+        ? {
+            mouseDownVector,
+            object: new Object3D(), // just a dummy, delete this property if sketch 1 is deprecated
+            hasBeenDragged: false,
+          }
+        : null
     } else {
+      // sketch-v1, this can be deleted if old sketch mode gets deprecated
       const intersect = this.raycastRing()[0]
       if (intersect) {
         const intersectParent = intersect?.object?.parent as Group

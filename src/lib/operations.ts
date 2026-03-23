@@ -2055,6 +2055,14 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Horizontal Constraint',
     icon: 'horizontal',
   },
+  horizontalDistance: {
+    label: 'Horizontal Distance Constraint',
+    icon: 'horizontalDimension',
+  },
+  verticalDistance: {
+    label: 'Vertical Distance Constraint',
+    icon: 'verticalDimension',
+  },
   line: {
     label: 'Line',
     icon: 'line',
