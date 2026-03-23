@@ -1,0 +1,127 @@
+// Sheet Metal Bracket
+// A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.
+// Categories: Construction, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Input bolt pattern dimensions to mount the bracket
+mountingBoltDiameter = 1 / 4
+mountingBoltPatternX = 7
+mountingBoltPatternY = 4
+
+// Input bolt pattern dimensions to mount a component to the bracket
+componentBoltDiameter = 3 / 16
+componentBoltPatternX = 2
+componentBoltPatternY = 3
+
+// Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc.
+hatHeight = 2.5
+bendAngle = 75deg
+thickness = 0.125
+interiorBendRadius = 0.125
+
+// Calculate remaining parameters
+exteriorBendRadius = interiorBendRadius + thickness
+overhang = 3 * mountingBoltDiameter
+flangeLength = 6 * mountingBoltDiameter
+flangeExtrusion = if mountingBoltPatternY > componentBoltPatternY {
+  mountingBoltPatternY + overhang * 2
+} else {
+  componentBoltPatternY + overhang * 2
+}
+
+// Draw the extrusion profile of the sheet metal bracket
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -4.25in, var 0in], end = [var -2.75in, var 0in])
+  arc2 = arc(start = [var -2.75in, var 0in], end = [var -2.51in, var 0.19in], center = [var -2.75in, var 0.25in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -2.51in, var 0.19in], end = [var -1.92in, var 2.38in])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -1.8in, var 2.47in], end = [var -1.92in, var 2.38in], center = [var -1.8in, var 2.34in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -1.8in, var 2.47in], end = [var 1.8in, var 2.47in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var 1.92in, var 2.38in], end = [var 1.8in, var 2.47in], center = [var 1.8in, var 2.34in])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var 1.92in, var 2.38in], end = [var 2.51in, var 0.19in])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var 2.51in, var 0.19in], end = [var 2.75in, var -0in], center = [var 2.75in, var 0.25in])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var 2.75in, var -0in], end = [var 4.25in, var -0in])
+  coincident([arc8.end, line9.start])
+  line10 = line(start = [var 4.25in, var -0in], end = [var 4.25in, var 0.12in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 4.25in, var 0.12in], end = [var 2.75in, var 0.12in])
+  coincident([line10.end, line11.start])
+  arc12 = arc(start = [var 2.63in, var 0.22in], end = [var 2.75in, var 0.12in], center = [var 2.75in, var 0.25in])
+  coincident([line11.end, arc12.end])
+  line13 = line(start = [var 2.63in, var 0.22in], end = [var 2.04in, var 2.41in])
+  coincident([arc12.start, line13.start])
+  arc14 = arc(start = [var 2.04in, var 2.41in], end = [var 1.8in, var 2.59in], center = [var 1.8in, var 2.34in])
+  coincident([line13.end, arc14.start])
+  line15 = line(start = [var 1.8in, var 2.59in], end = [var -1.8in, var 2.59in])
+  coincident([arc14.end, line15.start])
+  arc16 = arc(start = [var -1.8in, var 2.59in], end = [var -2.04in, var 2.41in], center = [var -1.8in, var 2.34in])
+  coincident([line15.end, arc16.start])
+  line17 = line(start = [var -2.04in, var 2.41in], end = [var -2.63in, var 0.22in])
+  coincident([arc16.end, line17.start])
+  arc18 = arc(start = [var -2.75in, var 0.12in], end = [var -2.63in, var 0.22in], center = [var -2.75in, var 0.25in])
+  coincident([line17.end, arc18.end])
+  line19 = line(start = [var -2.75in, var 0.12in], end = [var -4.25in, var 0.12in])
+  coincident([arc18.start, line19.start])
+  line20 = line(start = [var -4.25in, var 0.12in], end = [var -4.25in, var 0in])
+  coincident([line19.end, line20.start])
+  horizontal(arc2)
+  equalLength([arc8, line3])
+  horizontal(line10)
+  vertical(line11)
+  horizontal(arc12)
+  equalLength([arc14, line3])
+  equalLength([arc18, line3])
+  horizontal(line20)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+bracketProfile = extrude(region001, length = flangeExtrusion)
+  |> fillet(
+       radius = flangeLength / 3,
+       tags = [
+         seg03,
+         getOppositeEdge(seg03),
+         seg07,
+         getOppositeEdge(seg07)
+       ],
+     )
+
+// Cut the bolt pattern in the left base flange
+sketch002 = startSketchOn(bracketProfile, face = seg04)
+  |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
+leftFlangeBoltPattern = extrude(sketch002, length = -thickness)
+
+// Cut the bolt pattern in the right base flange
+sketch003 = startSketchOn(bracketProfile, face = seg06)
+  |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
+rightFlangeBoltPattern = extrude(sketch003, length = -thickness)
+
+// Provision the top flange with holes to mount an object
+sketch004 = startSketchOn(bracketProfile, face = holeFace)
+  |> circle(
+       center = [
+         -componentBoltPatternX / 2,
+         -componentBoltPatternY / 2 + flangeExtrusion / 2
+       ],
+       radius = componentBoltDiameter / 2,
+     )
+  |> patternLinear2d(instances = 2, distance = componentBoltPatternX, axis = [1, 0])
+  |> patternLinear2d(instances = 2, distance = componentBoltPatternY, axis = [0, 1])
+topFlangeBoltPattern = extrude(sketch004, length = -thickness)
+
+// Place a hole at the center of the component bolt pattern to reduce mass
+sketch005 = sketch(on = startSketchOn(bracketProfile, face = holeFace)) {
+  circle1 = circle(start = [var 0.75in, var 2.75in], center = [var 0in, var 2.75in])
+}
+region002 = region(segments = [sketch005.circle1])
+centeredHole = extrude(region002, length = -thickness)
+

@@ -1,19 +1,18 @@
 ---
 title: "sketch2::line"
 subtitle: "Function in std::sketch2"
-excerpt: ""
+excerpt: "Create a straight line segment in a sketch."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-
+Create a straight line segment in a sketch.
 
 ```kcl
 sketch2::line(
   start: Point2d,
-  end?: Point2d,
-  midpoint?: Point2d,
+  end: Point2d,
   construction?: bool,
 ): Segment
 ```
@@ -25,8 +24,7 @@ sketch2::line(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | No |
-| `midpoint` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | No |
+| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
 | `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | A boolean value. | No |
 
 ### Returns

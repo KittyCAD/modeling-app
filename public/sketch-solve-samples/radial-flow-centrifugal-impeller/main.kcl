@@ -1,0 +1,98 @@
+// Impeller (Radial-flow)
+// Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
+// Categories: Automotive, Aerospace
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// parameters
+bladeCount = 12 // number of blades
+sweepDeg = 30 // yaw offset between leading and trailing edge
+od = 150 // overall diameter
+hubOd = 40 // hub outside diameter
+boreDia = 30 // shaft hole diameter
+baseThick = 6 // back-plate thickness
+hubHeight = 40 // hub axial length
+bladeRadSpan = 30 // radial blade width
+bladeChord = 35 // axial blade length
+bladeHeight = hubHeight // plate height
+bladeThickness = 3
+rootR = hubOd / 2 + 10
+
+// root rectangle (leading edge)
+leadSketch = startSketchOn(XY)
+leadRect = sketch(on = leadSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
+  line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3mm, var 35mm], end = [var 0mm, var 35mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+
+// tip rectangle (trailing edge, rotated by sweepDeg)
+trailPlane = offsetPlane(XY, offset = bladeHeight) // lift by bladeHeight to give sheet thickness
+trailSketch = startSketchOn(trailPlane)
+trailRect = sketch(on = trailSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
+  line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3mm, var 35mm], end = [var 0mm, var 35mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 35mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+
+// loft one curved blade
+oneBlade = loft([leadRect, trailRect])
+
+// move blade outward so tip reaches outer diameter
+bladeOffset = translate(
+  oneBlade,
+  x = 0,
+  y = rootR,
+  z = 0,
+)
+
+// pattern blades around 360 °
+blades = patternCircular3d(
+  bladeOffset,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  instances = bladeCount,
+  arcDegrees = 360,
+)
+
+// back-plate disk
+diskSketch = startSketchOn(XY)
+diskCircle = sketch(on = diskSketch) {
+  circle1 = circle(start = [var 75mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [diskCircle.circle1])
+backPlate = extrude(region001, length = -baseThick)
+
+// hub solid
+hubSketch = startSketchOn(backPlate, face = END)
+hubCircle = sketch(on = hubSketch) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [hubCircle.circle1])
+hub = extrude(region002, length = hubHeight)
+
+// bore hole
+boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
+boreCircle = sketch(on = boreSketch) {
+  circle1 = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [boreCircle.circle1])
+bore = extrude(region003, length = baseThick * 2 + hubHeight + 5)
+
+// final impeller
+impeller = subtract(hub, tools = [bore])
+

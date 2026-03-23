@@ -110,7 +110,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         )?),
                     };
                     if let Some(m) = m {
-                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
+                        let key = format!("M:{}", &m.qual_name);
+                        let mut dd = DocData::Mod(m);
+                        dd.with_meta(&import.outer_attrs);
+                        result.children.insert(key, dd);
                     }
                 }
                 p => return Err(format!("Unexpected import: `{p}`")),
@@ -265,7 +268,7 @@ impl DocData {
             DocData::Fn(f) => f.properties.experimental,
             DocData::Const(c) => c.properties.experimental,
             DocData::Ty(t) => t.properties.experimental,
-            DocData::Mod(_) => false,
+            DocData::Mod(d) => d.properties.experimental,
         }
     }
 
@@ -453,6 +456,7 @@ pub struct ModData {
     /// The description of the module.
     pub description: Option<String>,
     pub module_name: String,
+    pub properties: Properties,
 
     pub children: IndexMap<String, DocData>,
 }
@@ -472,6 +476,13 @@ impl ModData {
             description: None,
             children: IndexMap::new(),
             module_name,
+            properties: Properties {
+                exported: false,
+                deprecated: false,
+                experimental: false,
+                doc_hidden: false,
+                impl_kind: Default::default(),
+            },
         }
     }
 
@@ -1234,7 +1245,7 @@ impl ApplyMeta for ModData {
     }
 
     fn experimental(&mut self, experimental: bool) {
-        assert!(!experimental);
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {

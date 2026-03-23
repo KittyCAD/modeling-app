@@ -1,0 +1,24 @@
+// Gasket
+// Gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "parameters.kcl"
+
+// Create the base of the gasket
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2.06in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+gasketBase = extrude(region001, length = gasketThickness)
+
+// Extrude a circular hole through the gasket base
+sketch002 = sketch(on = startSketchOn(gasketBase, face = END)) {
+  circle1 = circle(start = [var 1.19in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+extrude(region002, length = -gasketThickness)
+  |> appearance(color = "#d0cb3e")
+

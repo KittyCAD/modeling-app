@@ -13,7 +13,7 @@ height = 10
 sketch = startSketchOn(XY)
 
 // create the profile centered at the origin
-profile = sketch(on = XY) {
+profile = sketch(on = sketch) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])
