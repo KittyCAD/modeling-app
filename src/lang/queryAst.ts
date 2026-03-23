@@ -5,6 +5,7 @@ import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
@@ -1161,24 +1162,6 @@ type VariableDeclarationLookup = {
   deepPath: PathToNode
 }
 
-function createSketchBlockMemberExpression(
-  sketchVariableName: string,
-  propertyName: string
-): Node<MemberExpression> {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object: createLocalName(sketchVariableName),
-    property: createLocalName(propertyName),
-    computed: false,
-  }
-}
-
 function getSketchBlockVariableNameFromPath(
   ast: Node<Program>,
   pathToNode: PathToNode,
@@ -1244,10 +1227,7 @@ function getSketchBlockSegmentMemberExpression(
   }
 
   return {
-    expr: createSketchBlockMemberExpression(
-      sketchVariableName,
-      segmentVariableName
-    ),
+    expr: createMemberExpression(sketchVariableName, segmentVariableName),
     dedupeKey: `${sketchVariableName}.${segmentVariableName}`,
   }
 }
