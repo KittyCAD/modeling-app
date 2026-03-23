@@ -723,6 +723,7 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
         Artifact::Segment(Segment {
             id: shared_id,
             path_id,
+            original_seg_id: None,
             surface_id: None,
             edge_ids: Vec::new(),
             edge_cut_id: None,

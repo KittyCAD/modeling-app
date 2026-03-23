@@ -156,6 +156,8 @@ pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_seg_id: Option<ArtifactId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -619,6 +621,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
+        merge_opt_id(&mut self.original_seg_id, new.original_seg_id);
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
@@ -1157,6 +1160,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
+                original_seg_id: None,
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
@@ -1199,7 +1203,7 @@ fn artifacts_to_update(
                 );
             };
             // Create the path representing the region.
-            let mut region_path = Path {
+            return_arr.push(Artifact::Path(Path {
                 id,
                 plane_id: path.plane_id,
                 seg_ids: Vec::new(),
@@ -1211,7 +1215,7 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
-            };
+            }));
             // If we have a response, we can also create the segments in the
             // region.
             let Some(
@@ -1222,59 +1226,23 @@ fn artifacts_to_update(
                 }),
             ) = response
             else {
-                return_arr.push(Artifact::Path(region_path));
                 return Ok(return_arr);
             };
-            let original_segment_indices: FnvHashMap<ArtifactId, usize> = path
-                .seg_ids
-                .iter()
-                .enumerate()
-                .map(|(index, segment_id)| (*segment_id, index))
-                .collect();
-            let mut mapped_segments: Vec<(ArtifactId, ArtifactId)> = region_mapping
-                .iter()
-                .map(|(segment_id, original_segment_id)| {
-                    (ArtifactId::new(*segment_id), ArtifactId::new(*original_segment_id))
-                })
-                .collect();
-            mapped_segments.sort_by(
-                |(segment_id_a, original_segment_id_a), (segment_id_b, original_segment_id_b)| {
-                    let index_a = original_segment_indices
-                        .get(original_segment_id_a)
-                        .copied()
-                        .unwrap_or(usize::MAX);
-                    let index_b = original_segment_indices
-                        .get(original_segment_id_b)
-                        .copied()
-                        .unwrap_or(usize::MAX);
-                    let seg_a_uuid: Uuid = (*segment_id_a).into();
-                    let seg_b_uuid: Uuid = (*segment_id_b).into();
-                    index_a.cmp(&index_b).then_with(|| seg_a_uuid.cmp(&seg_b_uuid))
-                },
-            );
-            region_path.seg_ids = mapped_segments.iter().map(|(segment_id, _)| *segment_id).collect();
-            return_arr.push(Artifact::Path(region_path));
-            // Each key is a segment in the region and each value is the source
-            // segment it came from.
+            // Each key is a segment in the region and each value is its source
+            // segment in the original path.
             #[expect(
                 clippy::iter_over_hash_type,
                 reason = "This is bad for deterministic output, especially in tests, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
             )]
-            for (segment_id, original_segment_id) in mapped_segments {
-                let inherited_code_ref = artifacts
-                    .get(&original_segment_id)
-                    .and_then(|artifact| match artifact {
-                        Artifact::Segment(segment) => Some(segment.code_ref.clone()),
-                        _ => None,
-                    })
-                    .unwrap_or_else(|| code_ref.clone());
+            for (segment_id, original_segment_id) in region_mapping {
                 return_arr.push(Artifact::Segment(Segment {
-                    id: segment_id,
+                    id: ArtifactId::new(*segment_id),
                     path_id: id,
+                    original_seg_id: Some(ArtifactId::new(*original_segment_id)),
                     surface_id: None,
                     edge_ids: Vec::new(),
                     edge_cut_id: None,
-                    code_ref: inherited_code_ref,
+                    code_ref: code_ref.clone(),
                     common_surface_ids: Vec::new(),
                 }))
             }
@@ -1361,6 +1329,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: edge_id,
                         path_id: path.id,
+                        original_seg_id: None,
                         surface_id: None,
                         edge_ids: Vec::new(),
                         edge_cut_id: None,
