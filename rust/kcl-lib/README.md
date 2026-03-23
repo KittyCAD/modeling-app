@@ -7,13 +7,13 @@ Our language for defining geometry and working with our Geometry Engine efficien
 We've built a lot of tooling to make contributing to KCL easier. If you are interested in contributing a new standard library function to KCL, here is the rough process:
 
 1. Open just the folder in your editor of choice. VS Code, for example, struggles to run rust-analyzer on the entire modeling-app directory because it's such a turducken of TS and Rust code.
-2. Find the definition for similar standard library functions in `./kcl/src/std` and place your new one near it or in the same category file.
+2. Find the definition for similar standard library functions in `rust/kcl-lib/src/std` and place your new one near it or in the same category file.
 3. Add your new code. A new standard library function consists of:
-4. A `pub async` of the actual standard library function in Rust
-5. A doc comment block containing at least one example using your new standard library function (the Rust compiler will error if you don't provide an example our teammates are dope)
-6. A `stdlib` macro providing the name that will need to be written by KCL users to use the function (this is usually a camelCase version of your Rust implementation, which is named with snake_case)
-7. An inner function that is published only to the crate
-8. Add your new standard library function to [the long list of CORE_FNS in mod.rs](https://github.com/KittyCAD/modeling-app/blob/main/rust/kcl-lib/src/std/mod.rs#L42)
+4. An exported standard library function signature in KCL in `rust/kcl-lib/std`
+5. A doc comment block containing at least one example using your new standard library function (the Rust compiler will error if you don't provide an example our teammates are dope). When adding new examples in the KCL docs, you must register each one in `example_tests.rs` under `const TEST_NAMES`, 0-indexed.
+6. A `pub async` of the actual standard library function implementation in Rust in `rust/kcl-lib/src/std`
+7. An inner function that is visible only to the crate
+8. Add your new standard library function to [the long list of std_fn in mod.rs](https://github.com/KittyCAD/modeling-app/blob/main/rust/kcl-lib/src/std/mod.rs#L62)
 9. Get a production Zoo dev token and run `export ZOO_API_TOKEN=your-token-here` in a terminal
 10. Run `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast` to take snapshot tests of your example code running in the engine
 11. Run `just redo-kcl-stdlib-docs` to generate new Markdown documentation for your function that will be used [to generate docs on our website](https://zoo.dev/docs/kcl).
