@@ -14,12 +14,9 @@ import {
   type Group,
   Mesh,
   MeshBasicMaterial,
-  PlaneGeometry,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
-
-const debug_hit_areas = false
 
 const HOVER_COLOR = packRgbToColor(
   SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
@@ -27,7 +24,6 @@ const HOVER_COLOR = packRgbToColor(
 
 export class ConstraintResources {
   arrowGeometry = createArrowGeometry()
-  planeGeometry = new PlaneGeometry(1, 1)
 
   materials = {
     default: {
@@ -60,12 +56,6 @@ export class ConstraintResources {
         worldUnits: false,
       }),
     },
-    hitArea: new MeshBasicMaterial({
-      color: 0x00ff00,
-      transparent: true,
-      opacity: debug_hit_areas ? 0.3 : 0,
-      side: DoubleSide,
-    }),
   }
 
   public updateMaterials(constraintColor: number) {

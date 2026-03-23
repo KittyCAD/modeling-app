@@ -294,6 +294,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
         "module": mod_name_std(&m.module_name),
         "summary": m.summary,
         "description": m.description,
+        "experimental": m.properties.experimental,
         "modules": modules,
         "functions": functions,
         "types": types,
