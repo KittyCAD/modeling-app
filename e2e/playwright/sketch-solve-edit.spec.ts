@@ -384,7 +384,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await circleRadiusClick()
       await waitForCodeChange(page, previousCode)
 
-      await editor.expectEditor.toContain('circle(center = [')
+      await editor.expectEditor.toContain('circle(start = [')
       await expect(pointHandles).toHaveCount(11)
     })
   })
