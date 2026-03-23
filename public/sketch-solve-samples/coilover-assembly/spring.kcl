@@ -15,7 +15,7 @@ helixPath = helix(
 )
 
 sketch001 = sketch(on = XZ) {
-  circle1 = arc(start = [var 25mm, var 0mm], end = [var 25mm, var 0mm], center = [var 22mm, var 0mm])
+  circle1 = circle(start = [var 25mm, var 0mm], center = [var 22mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
 springSketch = sweep(region001, path = helixPath)

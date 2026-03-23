@@ -104,13 +104,13 @@ nose = revolve(region001, axis = X)
 // Hat: brim (thin disk) + crown (short cylinder) merged into one solid
 hatBrimPlane = offsetPlane(XY, offset = zHeadC + rHead)
 sketch001 = sketch(on = hatBrimPlane) {
-  circle1 = arc(start = [var 26mm, var 0mm], end = [var 26mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 26mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [sketch001.circle1])
 hatBrim = extrude(region002, length = hatBrimThk)
 
 sketch002 = sketch(on = startSketchOn(hatBrim, face = END)) {
-  circle1 = arc(start = [var 18mm, var 0mm], end = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [sketch002.circle1])
 hat = extrude(region003, length = hatTopH)
@@ -120,7 +120,7 @@ hat = extrude(region003, length = hatTopH)
 // Right arm: build along +Y using -XZ (normal is +Y)
 armSketchR = startSketchOn(-XZ)
 armCircleR = sketch(on = armSketchR) {
-  circle1 = arc(start = [var 2.5mm, var 0mm], end = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [armCircleR.circle1])
 rightArm = extrude(region004, length = armLen)
@@ -135,7 +135,7 @@ rightArm = extrude(region004, length = armLen)
 // Left arm: build along -Y using XZ (normal is -Y)
 armSketchL = startSketchOn(XZ)
 armCircleL = sketch(on = armSketchL) {
-  circle1 = arc(start = [var 2.5mm, var 0mm], end = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [armCircleL.circle1])
 leftArm = extrude(region005, length = armLen)
@@ -151,7 +151,7 @@ leftArm = extrude(region005, length = armLen)
 armReachY = rMiddle - armEmbed + armLen
 baseR = max([rBottom, armReachY]) + baseMargin
 sketch003 = sketch(on = XY) {
-  circle1 = arc(start = [var 71.8mm, var 0mm], end = [var 71.8mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 71.8mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region006 = region(segments = [sketch003.circle1])
 baseDisk = extrude(region006, length = -baseThk)

@@ -10,7 +10,7 @@ import retainerPlateDia, retainerPlateLength, baseSeatingDia, baseSeatingLength,
 // Retainer Plate
 retainerPlateSketch = startSketchOn(XY)
 retainerPlateProfile = sketch(on = retainerPlateSketch) {
-  circle1 = arc(start = [var 35mm, var 0mm], end = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [retainerPlateProfile.circle1])
 retainerPlateExtrude = extrude(region001, length = retainerPlateLength, tagStart = $capStart001)
@@ -24,7 +24,7 @@ retainerPlateExtrude = extrude(region001, length = retainerPlateLength, tagStart
 // Base seating just below the retainer plate
 baseSeatingSketch = startSketchOn(retainerPlateExtrude, face = START)
 baseSeatingProfile = sketch(on = baseSeatingSketch) {
-  circle1 = arc(start = [var 27.5mm, var 0mm], end = [var 27.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 27.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [baseSeatingProfile.circle1])
 baseSeatingExtrude = extrude(region002, length = baseSeatingLength)
@@ -32,7 +32,7 @@ baseSeatingExtrude = extrude(region002, length = baseSeatingLength)
 // Lower Mount
 lowerMountSketch = startSketchOn(baseSeatingExtrude, face = END)
 lowerMountProfile = sketch(on = lowerMountSketch) {
-  circle1 = arc(start = [var 19mm, var 0mm], end = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [lowerMountProfile.circle1])
 lowerMountExtrude = extrude(region003, length = lowerMountLength, tagEnd = $capEnd001)
@@ -46,7 +46,7 @@ lowerMountExtrude = extrude(region003, length = lowerMountLength, tagEnd = $capE
 // Eye End for Lower Mount
 eyeEndSketch = startSketchOn(lowerMountExtrude, face = END)
 eyeEndProfile = sketch(on = eyeEndSketch) {
-  circle1 = arc(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [eyeEndProfile.circle1])
 eyeEndExtrude = extrude(region004, length = eyeEndMountLength, tagEnd = $capEnd002)
@@ -110,7 +110,7 @@ lowerMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
 eyeEndHolePlane = offsetPlane(XZ, offset = 15)
 eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
 eyeEndHoleProfile = sketch(on = eyeEndHoleSketch) {
-  circle1 = arc(start = [var 6.25mm, var -127mm], end = [var 6.25mm, var -127mm], center = [var 0mm, var -127mm])
+  circle1 = circle(start = [var 6.25mm, var -127mm], center = [var 0mm, var -127mm])
 }
 region006 = region(segments = [eyeEndHoleProfile.circle1])
 eyeEndHoleExtrude = extrude(region006, length = -40)
@@ -119,7 +119,7 @@ lowerMountSolid = subtract([lowerMount], tools = [eyeEndHoleExtrude])
 // Damper body above the retainer plate
 damperBodySketch = startSketchOn(XY)
 damperBodyProfile = sketch(on = damperBodySketch) {
-  circle1 = arc(start = [var 19mm, var 0mm], end = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 19mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region007 = region(segments = [damperBodyProfile.circle1])
 damperBodyExtrude = extrude(region007, length = damperBodyLength)
@@ -127,7 +127,7 @@ damperBodyExtrude = extrude(region007, length = damperBodyLength)
 // Hole for the piston shaft in the damper body
 pistonShaftSketch = startSketchOn(damperBodyExtrude, face = END)
 pistonShaftProfile = sketch(on = pistonShaftSketch) {
-  circle1 = arc(start = [var 5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region008 = region(segments = [pistonShaftProfile.circle1])
 pistonShaftHole = extrude(region008, length = -damperBodyLength)

@@ -120,7 +120,7 @@ topFlangeBoltPattern = extrude(sketch004, length = -thickness)
 
 // Place a hole at the center of the component bolt pattern to reduce mass
 sketch005 = sketch(on = startSketchOn(bracketProfile, face = holeFace)) {
-  circle1 = arc(start = [var 0.75in, var 2.75in], end = [var 0.75in, var 2.75in], center = [var 0in, var 2.75in])
+  circle1 = circle(start = [var 0.75in, var 2.75in], center = [var 0in, var 2.75in])
 }
 region002 = region(segments = [sketch005.circle1])
 centeredHole = extrude(region002, length = -thickness)

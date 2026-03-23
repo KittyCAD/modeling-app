@@ -15,8 +15,8 @@ use crate::{
     fmt::format_number_literal,
     frontend::{
         api::{Expr, Number},
-        ast_name_expr, create_arc_ast, create_coincident_ast, create_equal_length_ast, create_horizontal_ast,
-        create_line_ast, create_member_expression, create_tangent_ast, create_vertical_ast,
+        ast_name_expr, create_arc_ast, create_circle_ast, create_coincident_ast, create_equal_length_ast,
+        create_horizontal_ast, create_line_ast, create_member_expression, create_tangent_ast, create_vertical_ast,
         sketch::Point2d,
         to_ast_point2d,
     },
@@ -510,15 +510,7 @@ fn transpiler_create_segment_declaration(
         ),
         TranspilerSegment::Circle { name, center, radius } => (
             name.as_str(),
-            create_arc_ast_from_coords(
-                center[0] + radius,
-                center[1],
-                center[0] + radius,
-                center[1],
-                center[0],
-                center[1],
-                units,
-            )?,
+            create_circle_ast_from_coords(center[0] + radius, center[1], center[0], center[1], units)?,
         ),
     };
 
@@ -643,6 +635,39 @@ fn create_arc_ast_from_coords(
     })?;
 
     Ok(create_arc_ast(start_ast, end_ast, center_ast))
+}
+
+/// Create an AST node for a circle call.
+fn create_circle_ast_from_coords(
+    start_x: f64,
+    start_y: f64,
+    center_x: f64,
+    center_y: f64,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<ast::Expr, KclError> {
+    let start_point = Point2d {
+        x: Expr::Var(f64_to_number(start_x, units)),
+        y: Expr::Var(f64_to_number(start_y, units)),
+    };
+    let center_point = Point2d {
+        x: Expr::Var(f64_to_number(center_x, units)),
+        y: Expr::Var(f64_to_number(center_y, units)),
+    };
+
+    let start_ast = to_ast_point2d(&start_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle start point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+    let center_ast = to_ast_point2d(&center_point).map_err(|e| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!("Failed to convert circle center point to AST: {}", e),
+            vec![],
+        ))
+    })?;
+
+    Ok(create_circle_ast(start_ast, center_ast))
 }
 
 // Helper functions below use shared AST creation functions from frontend.rs

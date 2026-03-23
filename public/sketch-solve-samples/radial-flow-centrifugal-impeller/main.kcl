@@ -72,7 +72,7 @@ blades = patternCircular3d(
 // back-plate disk
 diskSketch = startSketchOn(XY)
 diskCircle = sketch(on = diskSketch) {
-  circle1 = arc(start = [var 75mm, var 0mm], end = [var 75mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 75mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [diskCircle.circle1])
 backPlate = extrude(region001, length = -baseThick)
@@ -80,7 +80,7 @@ backPlate = extrude(region001, length = -baseThick)
 // hub solid
 hubSketch = startSketchOn(backPlate, face = END)
 hubCircle = sketch(on = hubSketch) {
-  circle1 = arc(start = [var 20mm, var 0mm], end = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [hubCircle.circle1])
 hub = extrude(region002, length = hubHeight)
@@ -88,7 +88,7 @@ hub = extrude(region002, length = hubHeight)
 // bore hole
 boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
 boreCircle = sketch(on = boreSketch) {
-  circle1 = arc(start = [var 15mm, var 0mm], end = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [boreCircle.circle1])
 bore = extrude(region003, length = baseThick * 2 + hubHeight + 5)

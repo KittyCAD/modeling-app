@@ -12,14 +12,14 @@ pipeLength = 6
 
 // Create the pipe base
 sketch001 = sketch(on = XZ) {
-  circle1 = arc(start = [var 1.19in, var 0in], end = [var 1.19in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 1.19in, var 0in], center = [var 0in, var 0in])
 }
 region001 = region(segments = [sketch001.circle1])
 pipeBase = extrude(region001, length = pipeLength)
 
 // Extrude a hole through the length of the pipe
 sketch002 = sketch(on = startSketchOn(pipeBase, face = END)) {
-  circle1 = arc(start = [var 1in, var 0in], end = [var 1in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
 }
 region002 = region(segments = [sketch002.circle1])
 pipe = extrude(region002, length = -pipeLength)

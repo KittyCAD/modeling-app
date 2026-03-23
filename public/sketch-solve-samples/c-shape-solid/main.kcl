@@ -27,7 +27,7 @@ cutGapWidth = 2
 // We begin by sketching two concentric circles: the outer boundary and the hole. Then we subtract the inner one to get a donut-like profile.
 ringSketch = startSketchOn(XY)
 ringProfile = sketch(on = ringSketch) {
-  circle1 = arc(start = [var 10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 region001 = region(segments = [ringProfile.circle1])

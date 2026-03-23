@@ -159,22 +159,22 @@ sinkBodyInside = extrude(region003, length = -sinkDepth)
 
 // tap
 sketch010 = sketch(on = offsetPlane(XY, offset = tableHeight)) {
-  circle1 = arc(start = [var 633.5mm, var 545mm], end = [var 633.5mm, var 545mm], center = [var 593.5mm, var 545mm])
+  circle1 = circle(start = [var 633.5mm, var 545mm], center = [var 593.5mm, var 545mm])
 }
 region004 = region(segments = [sketch010.circle1])
 tapPlate = extrude(region004, length = 5)
 sketch011 = sketch(on = offsetPlane(XY, offset = tableHeight)) {
-  circle1 = arc(start = [var 608.5mm, var 545mm], end = [var 608.5mm, var 545mm], center = [var 593.5mm, var 545mm])
+  circle1 = circle(start = [var 608.5mm, var 545mm], center = [var 593.5mm, var 545mm])
 }
 region005 = region(segments = [sketch011.circle1])
 tapPillar = extrude(region005, length = 170)
 sketch012 = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
-  circle1 = arc(start = [var 603.5mm, var 950mm], end = [var 603.5mm, var 950mm], center = [var 593.5mm, var 950mm])
+  circle1 = circle(start = [var 603.5mm, var 950mm], center = [var 593.5mm, var 950mm])
 }
 region006 = region(segments = [sketch012.circle1])
 tapNose = extrude(region006, length = sinkWidth / 2.5)
 sketch013 = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
-  circle1 = arc(start = [var 597.5mm, var 1000mm], end = [var 597.5mm, var 1000mm], center = [var 593.5mm, var 1000mm])
+  circle1 = circle(start = [var 597.5mm, var 1000mm], center = [var 593.5mm, var 1000mm])
 }
 region007 = region(segments = [sketch013.circle1])
 tapHandle = extrude(region007, length = 70)
@@ -240,7 +240,7 @@ handleProfilePath = sketch(on = handlePlane) {
 }
 handleSectionPlane = startSketchOn(XZ)
 handleProfileSection = sketch(on = handleSectionPlane) {
-  circle1 = arc(start = [var 245.25mm, var 780mm], end = [var 245.25mm, var 780mm], center = [var 243.25mm, var 780mm])
+  circle1 = circle(start = [var 245.25mm, var 780mm], center = [var 243.25mm, var 780mm])
 }
 region008 = region(segments = [handleProfileSection.circle1])
 handleBody = sweep(region008, path = handleProfilePath)

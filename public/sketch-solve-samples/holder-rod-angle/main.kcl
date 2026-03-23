@@ -81,7 +81,7 @@ holder = extrude(
 
 hole_angled_bracket_sketch = startSketchOn(-YZ, face = seg01)
 hole_angled_bracket_profile = sketch(on = hole_angled_bracket_sketch) {
-  circle1 = arc(start = [var -0.88cm, var 2cm], end = [var -0.88cm, var 2cm], center = [var -2cm, var 2cm])
+  circle1 = circle(start = [var -0.88cm, var 2cm], center = [var -2cm, var 2cm])
 }
 region002 = region(segments = [hole_angled_bracket_profile.circle1])
 hole_angled_bracket = extrude(region002, length = -holde_depth)
@@ -146,19 +146,19 @@ extrude001 = extrude(
        ],
      )
 hole_1 = sketch(on = startSketchOn(extrude001, face = START)) {
-  circle1 = arc(start = [var 3.51cm, var -0.25cm], end = [var 3.51cm, var -0.25cm], center = [var 3.29cm, var -0.25cm])
+  circle1 = circle(start = [var 3.51cm, var -0.25cm], center = [var 3.29cm, var -0.25cm])
 }
 
 hole_2 = sketch(on = startSketchOn(extrude001, face = START)) {
-  circle1 = arc(start = [var -2.79cm, var 4.25cm], end = [var -2.79cm, var 4.25cm], center = [var -3.01cm, var 4.25cm])
+  circle1 = circle(start = [var -2.79cm, var 4.25cm], center = [var -3.01cm, var 4.25cm])
 }
 
 hole_3 = sketch(on = startSketchOn(extrude001, face = START)) {
-  circle1 = arc(start = [var -2.79cm, var -0.25cm], end = [var -2.79cm, var -0.25cm], center = [var -3.01cm, var -0.25cm])
+  circle1 = circle(start = [var -2.79cm, var -0.25cm], center = [var -3.01cm, var -0.25cm])
 }
 
 hole_4 = sketch(on = startSketchOn(extrude001, face = START)) {
-  circle1 = arc(start = [var 3.51cm, var 4.25cm], end = [var 3.51cm, var 4.25cm], center = [var 3.29cm, var 4.25cm])
+  circle1 = circle(start = [var 3.51cm, var 4.25cm], center = [var 3.29cm, var 4.25cm])
 }
 
 region004 = region(segments = [hole_1.circle1])

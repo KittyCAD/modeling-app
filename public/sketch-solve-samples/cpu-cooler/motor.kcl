@@ -10,14 +10,14 @@ import * from "parameters.kcl"
 // Model the motor body and stem
 startPlane = offsetPlane(YZ, offset = 4)
 sketch001 = sketch(on = startPlane) {
-  circle1 = arc(start = [var 10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
 motorBody = extrude(region001, length = 17)
   |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
   |> appearance(color = "#021b55")
 sketch002 = sketch(on = offsetPlane(YZ, offset = 21)) {
-  circle1 = arc(start = [var 1mm, var 0mm], end = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [sketch002.circle1])
 motorStem = extrude(region002, length = 3.8)

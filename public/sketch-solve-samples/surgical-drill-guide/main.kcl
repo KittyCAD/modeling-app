@@ -47,14 +47,14 @@ bracket = extrude(
 
 // Create a cut in the bracket to mount the first bit
 sketch002 = sketch(on = XZ) {
-  circle1 = arc(start = [var 15.79mm, var 53.15mm], end = [var 15.79mm, var 53.15mm], center = [var 0mm, var 53.15mm])
+  circle1 = circle(start = [var 15.79mm, var 53.15mm], center = [var 0mm, var 53.15mm])
 }
 region002 = region(segments = [sketch002.circle1])
 bitCut01 = extrude(region002, length = 100)
 
 // Create a cut in the bracket to mount the second bit
 sketch003 = sketch(on = offsetPlane(XY, offset = 35)) {
-  circle1 = arc(start = [var 15.79mm, var 150mm], end = [var 15.79mm, var 150mm], center = [var 0mm, var 150mm])
+  circle1 = circle(start = [var 15.79mm, var 150mm], center = [var 0mm, var 150mm])
 }
 region003 = region(segments = [sketch003.circle1])
 bitCut02 = extrude(region003, length = -100)
@@ -64,14 +64,14 @@ handle = subtract([bracket], tools = union([bitCut01, bitCut02]))
 
 // Model the support for the first drill bit
 sketch004 = sketch(on = offsetPlane(XZ, offset = -segEndX(seg03) - 3)) {
-  circle1 = arc(start = [var 15.79mm, var 53.15mm], end = [var 15.79mm, var 53.15mm], center = [var 0mm, var 53.15mm])
+  circle1 = circle(start = [var 15.79mm, var 53.15mm], center = [var 0mm, var 53.15mm])
 }
 region004 = region(segments = [sketch004.circle1])
 bitSupport01 = extrude(region004, length = -15, symmetric = true)
 
 // Model the stem for the first drill bit
 sketch005 = sketch(on = startSketchOn(bitSupport01, face = END)) {
-  circle1 = arc(start = [var 2mm, var 53.15mm], end = [var 2mm, var 53.15mm], center = [var 0mm, var 53.15mm])
+  circle1 = circle(start = [var 2mm, var 53.15mm], center = [var 0mm, var 53.15mm])
 }
 region005 = region(segments = [sketch005.circle1])
 stem01 = extrude(region005, length = bitLength, tagEnd = $capEnd004)
@@ -84,14 +84,14 @@ stem01 = extrude(region005, length = bitLength, tagEnd = $capEnd004)
 
 // Negative extrude the clearance hole for the first drill bit
 sketch006 = sketch(on = startSketchOn(stem01, face = END)) {
-  circle1 = arc(start = [var 1mm, var 53.15mm], end = [var 1mm, var 53.15mm], center = [var 0mm, var 53.15mm])
+  circle1 = circle(start = [var 1mm, var 53.15mm], center = [var 0mm, var 53.15mm])
 }
 region006 = region(segments = [sketch006.circle1])
 bitClearance01 = extrude(region006, length = -15 - bitLength)
 
 // Model a rotating grip for the first drill bit
 sketch007 = sketch(on = offsetPlane(XZ, offset = -segEndX(seg03) + 16)) {
-  circle1 = arc(start = [var 16.22mm, var 53.15mm], end = [var 16.22mm, var 53.15mm], center = [var 0mm, var 53.15mm])
+  circle1 = circle(start = [var 16.22mm, var 53.15mm], center = [var 0mm, var 53.15mm])
 }
 region007 = region(segments = [sketch007.circle1])
 grip01 = extrude(
@@ -111,14 +111,14 @@ grip01 = extrude(
 
 // Model the support for the second drill bit
 sketch008 = sketch(on = offsetPlane(XY, offset = -2)) {
-  circle1 = arc(start = [var 15.79mm, var 150mm], end = [var 15.79mm, var 150mm], center = [var 0mm, var 150mm])
+  circle1 = circle(start = [var 15.79mm, var 150mm], center = [var 0mm, var 150mm])
 }
 region008 = region(segments = [sketch008.circle1])
 bitSupport02 = extrude(region008, length = 15)
 
 // Model the stem for the second drill bit
 sketch009 = sketch(on = startSketchOn(bitSupport02, face = START)) {
-  circle1 = arc(start = [var 3.2mm, var 150mm], end = [var 3.2mm, var 150mm], center = [var 0mm, var 150mm])
+  circle1 = circle(start = [var 3.2mm, var 150mm], center = [var 0mm, var 150mm])
 }
 region009 = region(segments = [sketch009.circle1])
 stem02 = extrude(region009, length = bitLength, tagEnd = $capEnd003)
@@ -131,14 +131,14 @@ stem02 = extrude(region009, length = bitLength, tagEnd = $capEnd003)
 
 // Negative extrude the clearance hole for the second drill bit
 sketch010 = sketch(on = startSketchOn(stem02, face = END)) {
-  circle1 = arc(start = [var 1.6mm, var 150mm], end = [var 1.6mm, var 150mm], center = [var 0mm, var 150mm])
+  circle1 = circle(start = [var 1.6mm, var 150mm], center = [var 0mm, var 150mm])
 }
 region010 = region(segments = [sketch010.circle1])
 bitClearance02 = extrude(region010, length = -15 - bitLength)
 
 // Model a rotating grip for the second drill bit
 sketch011 = sketch(on = offsetPlane(XY, offset = -3)) {
-  circle1 = arc(start = [var 16.22mm, var 150mm], end = [var 16.22mm, var 150mm], center = [var 0mm, var 150mm])
+  circle1 = circle(start = [var 16.22mm, var 150mm], center = [var 0mm, var 150mm])
 }
 region011 = region(segments = [sketch011.circle1])
 grip02 = extrude(
