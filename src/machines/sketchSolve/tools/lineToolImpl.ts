@@ -16,7 +16,10 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -240,17 +243,13 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       .reverse()
       .find((objId) => {
         const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        if (!obj) return false
-        return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+        return isLineSegment(obj)
       })
 
     let lastLineEndPointId: number | undefined
     if (lineId !== undefined) {
       const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
-      if (
-        lineObj?.kind.type === 'Segment' &&
-        lineObj.kind.segment.type === 'Line'
-      ) {
+      if (isLineSegment(lineObj)) {
         // The end point ID is stored in the Line segment
         lastLineEndPointId = lineObj.kind.segment.end
       }
@@ -288,17 +287,13 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     .reverse()
     .find((objId) => {
       const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-      if (!obj) return false
-      return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+      return isLineSegment(obj)
     })
 
   let lastLineEndPointId: number | undefined
   if (lineId !== undefined && output.sceneGraphDelta) {
     const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
-    if (
-      lineObj?.kind.type === 'Segment' &&
-      lineObj.kind.segment.type === 'Line'
-    ) {
+    if (isLineSegment(lineObj)) {
       // The end point ID is stored in the Line segment
       lastLineEndPointId = lineObj.kind.segment.end
     }
@@ -394,6 +389,7 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
         sourceDelta: context.pendingSketchOutcome.kclSource,
         sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
         debounceEditorUpdate: true,
+        writeToDisk: true,
       },
     }
     self._parent?.send(sendData)

@@ -38,6 +38,10 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -311,8 +315,7 @@ export default class RustContext {
    */
   async sketchExecuteMock(
     version: ApiVersion,
-    sketch: ApiObjectId,
-    settings: DeepPartial<Configuration>
+    sketch: ApiObjectId
   ): Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -324,7 +327,7 @@ export default class RustContext {
         await instance.sketch_execute_mock(
           JSON.stringify(version),
           JSON.stringify(sketch),
-          JSON.stringify(settings)
+          JSON.stringify(jsAppSettings(this.settingsActor))
         )
       return {
         kclSource: result[0],
@@ -401,8 +404,7 @@ export default class RustContext {
   /** Exit sketch mode. */
   async exitSketch(
     version: ApiVersion,
-    sketch: ApiObjectId,
-    settings: DeepPartial<Configuration>
+    sketch: ApiObjectId
   ): Promise<SceneGraphDelta> {
     const instance = await this._checkContextInstance()
 
@@ -410,7 +412,7 @@ export default class RustContext {
       const result: SceneGraphDelta = await instance.exit_sketch(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(settings)
+        JSON.stringify(getSettingsFromActorContext(this.settingsActor))
       )
       return result
     } catch (e: any) {

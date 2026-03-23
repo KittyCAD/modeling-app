@@ -134,6 +134,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import { requestWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -474,16 +475,18 @@ export class File extends EventTarget {
     return this.pathSignal.value
   }
   set path(newPath: string) {
-    if (this.watching) {
+    const wasWatching = this.watching
+    if (wasWatching) {
       this.unwatch()
-
-      // Don't watch empty file paths, that's the whole file system!
-      if (newPath.length > 0) {
-        this.watch()
-      }
     }
 
+    // Set pathSignal before calling this.watch() as it uses the path!
     this.pathSignal.value = newPath
+
+    // Don't watch empty file paths, that's the whole file system!
+    if (wasWatching && newPath.length > 0) {
+      this.watch()
+    }
   }
 
   read() {
@@ -495,6 +498,9 @@ export class File extends EventTarget {
   }
 
   watch() {
+    if (this.watching || this.path.length < 1) {
+      return
+    }
     File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
       this.onWatchEvent.map((f) => f(e, p))
     })
@@ -502,6 +508,9 @@ export class File extends EventTarget {
   }
 
   unwatch() {
+    if (!this.watching) {
+      return
+    }
     File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
     this.watching = false
   }
@@ -707,6 +716,7 @@ export class KclManager extends File {
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
@@ -885,7 +895,6 @@ export class KclManager extends File {
   )
 
   static requestCameraResetAnnotation = Annotation.define<boolean>()
-  static requestSkipWriteToFile = Annotation.define<boolean>()
   static requestSkipExecution = Annotation.define<boolean>()
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
@@ -932,21 +941,8 @@ export class KclManager extends File {
       tr.annotation(KclManager.requestCameraResetAnnotation)
     )
 
-    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestSkipWriteToFile)
-    )
-    const shouldWriteToFile =
-      !this.isBufferMode && notIgnoredUpdate && !hasSkipWriteToFileEffect
-
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
-
-      // We don't want to block on writing to file
-      if (shouldWriteToFile) {
-        // Need to close over `this._currentFilePath`'s value before deferrment,
-        // otherwise the deferred write could have a changed value after rapid navigation
-        void this.writeToFile(newCode)
-      }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
         tr.annotation(KclManager.requestSkipExecution)
@@ -1019,6 +1015,32 @@ export class KclManager extends File {
     1000
   )
 
+  private writeToFileListener = EditorView.updateListener.of((update) => {
+    const hasWriteToFileEffect = update.transactions.some((tr) =>
+      tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
+    )
+    const notIgnoredUpdate =
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
+
+    if (shouldWriteToFile) {
+      // We don't want to block on writing to file
+      void this.writeToFile(update.state.doc.toString())
+    }
+  })
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
@@ -1027,6 +1049,7 @@ export class KclManager extends File {
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
+      this.writeToFileListener,
     ]
   }
   private createEditorView(initialCode = '') {
@@ -1129,6 +1152,8 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
     this.unwatch()
   }
 
@@ -1337,7 +1362,7 @@ export class KclManager extends File {
         })
       )
       if (this.sceneEntitiesManager) {
-        await setSelectionFilterToDefault({
+        setSelectionFilterToDefault({
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this.sceneEntitiesManager,
@@ -2185,14 +2210,19 @@ export class KclManager extends File {
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
-    // If the code hasn't changed, skip the update to preserve cursor position
-    // However, if clearHistory is true, we still need to clear the history
+    // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
+      // However, if clearHistory is true, we still need to clear the history
       if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
+      // And we still want to honor the caller's request to write to disk.
+      this.editorView.dispatch({
+        annotations: [Transaction.addToHistory.of(false)],
+        effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
+      })
       return
     }
 
@@ -2236,13 +2266,11 @@ export class KclManager extends File {
           ? // Separate annotation for only skipping execution, so that we can write without executing
             KclManager.requestSkipExecution.of(true)
           : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
-        KclManager.requestSkipWriteToFile.of(
-          !resolvedOptions.shouldWriteToDisk
-        ),
         KclManager.requestCameraResetAnnotation.of(
           resolvedOptions.shouldResetCamera
         ),
       ],
+      effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
@@ -2252,6 +2280,7 @@ export class KclManager extends File {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
+      clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this.path) {
@@ -2265,17 +2294,23 @@ export class KclManager extends File {
             .then(resolve)
             .then(() => {
               // After a cooldown, start watching this file again on disk.
-              setTimeout(() => {
+              this.timeoutRewatch = setTimeout(() => {
                 this.watch()
+                this.timeoutRewatch = undefined
               }, 1_000)
             })
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-              console.error('error saving file', err)
+              console.warn('error saving file', err)
               toast.error('Error saving file, please check file permissions')
               reject(err)
             })
         }, 1000)
+      }).catch((err: Error) => {
+        if (err.cause === 'ENOENT') {
+          return
+        }
+        return err
       })
     }
   }

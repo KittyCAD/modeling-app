@@ -12,6 +12,8 @@ import {
   SEGMENT_TYPE_POINT,
   SEGMENT_TYPE_ARC,
   ARC_SEGMENT_BODY,
+  POINT_SEGMENT_BODY,
+  POINT_SEGMENT_HIT_AREA,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
@@ -63,8 +65,10 @@ import {
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
   CONSTRAINT_TYPE,
+  getOtherCoincidentIdsByPointId,
   isPointSegment as isPointApiSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -229,11 +233,13 @@ export function createOnDragStartCallback({
 
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
- * Restores visual feedback for point segments after dragging ends.
+ * Restores visual feedback for point segments after dragging ends,
+ * and syncs all necessary state between the frontend and the solver.
  *
  * @param getDraggingPointElement - Getter for the currently dragging point element
  * @param setDraggingPointElement - Setter to clear the dragging point element
  * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
+ * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
   getDraggingPointElement,
@@ -247,17 +253,19 @@ export function createOnDragEndCallback({
     }
     return null
   },
+  onComplete,
 }: {
   getDraggingPointElement: () => HTMLElement | null
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
+  onComplete: () => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
+  return async () => {
     // Restore opacity for point segment if we were dragging one
     const element = getDraggingPointElement()
     if (element) {
@@ -270,6 +278,7 @@ export function createOnDragEndCallback({
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
     setDraggingPointElement(null)
+    await onComplete()
   }
 }
 
@@ -375,12 +384,14 @@ export function createOnMouseEnterCallback({
       return
     }
 
-    // Only highlight segment meshes (lines or arcs), not points or other objects
+    // Highlight segment meshes (lines, arcs, points), not groups or other objects
     const mesh = selected
     if (
       mesh instanceof Mesh &&
       (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-        mesh.userData?.type === ARC_SEGMENT_BODY)
+        mesh.userData?.type === ARC_SEGMENT_BODY ||
+        mesh.userData?.type === POINT_SEGMENT_BODY ||
+        mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
     ) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
@@ -452,7 +463,9 @@ export function createOnMouseLeaveCallback({
       if (
         mesh instanceof Mesh &&
         (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          mesh.userData?.type === ARC_SEGMENT_BODY)
+          mesh.userData?.type === ARC_SEGMENT_BODY ||
+          mesh.userData?.type === POINT_SEGMENT_BODY ||
+          mesh.userData?.type === POINT_SEGMENT_HIT_AREA)
       ) {
         const allSelectedIds = getSelectedIds()
         const draftEntityIds = getDraftEntityIds?.()
@@ -600,6 +613,12 @@ export function createOnDragCallback({
       selected,
       getParentGroup
     )
+    const entitiesCoincidentWithUnderCursor = entityUnderCursorId
+      ? getOtherCoincidentIdsByPointId(
+          entityUnderCursorId,
+          sceneGraphDelta.new_graph
+        )
+      : []
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -615,11 +634,16 @@ export function createOnDragCallback({
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
-      // Collect all IDs to edit (entity under cursor + selectedIds)
+      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
       const idsToEdit = new Set<number>()
       if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
         idsToEdit.add(entityUnderCursorId)
       }
+      entitiesCoincidentWithUnderCursor.forEach((id) => {
+        if (!Number.isNaN(id)) {
+          idsToEdit.add(id)
+        }
+      })
       selectedIds.forEach((id) => {
         if (!Number.isNaN(id)) {
           idsToEdit.add(id)
@@ -1088,11 +1112,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   /**
-   * Helper function to check if a point segment (CSS2DObject) is within the selection box
-   * Returns the segment ID if it should be included, null otherwise
+   * Helper function to check if a point segment is within the selection box.
+   * Uses the point mesh/hit-area world position rather than the hidden CSS2D test handle.
+   * Returns the segment ID if it should be included, null otherwise.
    */
   function checkPointSegmentInBox(
-    css2dObject: CSS2DObject,
+    pointObject: Object3D,
     segmentId: number,
     objects: Array<any>,
     camera: any,
@@ -1112,21 +1137,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return null
       }
 
-      // Get the world position of the CSS2DObject
-      css2dObject.updateMatrixWorld()
+      // Get the world position of the point mesh (or hit area)
+      pointObject.updateMatrixWorld()
       const worldPos = new Vector3()
-      css2dObject.getWorldPosition(worldPos)
+      pointObject.getWorldPosition(worldPos)
 
       // Project to screen space
       const viewportSize = new Vector2(
         renderer.domElement.clientWidth,
         renderer.domElement.clientHeight
       )
-      const projected = worldPos.clone().project(camera)
-      const screenPos = new Vector2(
-        ((projected.x + 1) / 2) * viewportSize.x,
-        ((1 - projected.y) / 2) * viewportSize.y
-      )
+      const screenPos = project3DToScreen(worldPos, camera, viewportSize)
 
       // Check if the point is within the selection box
       if (
@@ -1234,14 +1255,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+      // Check if this group has a point segment mesh/hit area
+      const pointObject = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
+            c.userData?.type === POINT_SEGMENT_BODY)
       )
 
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
+      if (pointObject) {
         const pointId = checkPointSegmentInBox(
-          css2dObject,
+          pointObject,
           segmentId,
           objects,
           camera,
@@ -1398,14 +1422,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a CSS2DObject (point segment)
-      const css2dObject = child.children.find(
-        (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+      // Check if this group has a point segment mesh/hit area
+      const pointObject = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === POINT_SEGMENT_HIT_AREA ||
+            c.userData?.type === POINT_SEGMENT_BODY)
       )
 
-      if (css2dObject && css2dObject instanceof CSS2DObject) {
+      if (pointObject) {
         const pointId = checkPointSegmentInBox(
-          css2dObject,
+          pointObject,
           segmentId,
           objects,
           camera,
@@ -1434,6 +1461,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onDragEnd: createOnDragEndCallback({
       getDraggingPointElement,
       setDraggingPointElement,
+      // Send the last up-to-date state from the frontend to Rust. It doesn't know
+      // about this last feedback loop yet!
+      onComplete: async () => {
+        try {
+          const result = await context.rustContext.sketchExecuteMock(
+            SKETCH_FILE_VERSION,
+            context.sketchId
+          )
+
+          // Send the event to update the sketch outcome
+          self.send({
+            type: 'update sketch outcome',
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          })
+        } catch (err) {
+          console.error('error in onDragEnd sketchExecuteMock', err)
+        }
+      },
     }),
     onDrag: createOnDragCallback({
       getIsSolveInProgress,

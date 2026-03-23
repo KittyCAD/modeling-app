@@ -8,8 +8,8 @@ use crate::{
     errors::KclErrorDetails,
     exec::{KclValue, NumericType, Sketch},
     execution::{
-        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH,
-        Segment, SegmentKind, SketchSurface,
+        BasePath, GeoMeta, Metadata, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META,
+        SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SketchSurface,
         types::{ArrayLen, RuntimeType},
     },
     front::ObjectId,
@@ -32,7 +32,7 @@ pub(crate) async fn create_segments_in_engine(
     segment_tags: &IndexMap<ObjectId, TagNode>,
     ctx: &ExecutorContext,
     exec_state: &mut ExecState,
-    range: SourceRange,
+    sketch_block_range: SourceRange,
 ) -> Result<Option<Sketch>, KclError> {
     let mut outer_sketch: Option<Sketch> = None;
     for segment in segments.iter() {
@@ -51,6 +51,13 @@ pub(crate) async fn create_segments_in_engine(
             SegmentKind::Line { start, .. } => start.clone(),
             SegmentKind::Arc { start, .. } => start.clone(),
         };
+
+        // Get the source range of the segment from its metadata, falling back to the sketch block's.
+        let default_meta = Metadata {
+            source_range: sketch_block_range,
+        };
+        let meta = segment.meta.first().unwrap_or(&default_meta);
+        let range = meta.source_range;
 
         if let Some(sketch) = &mut outer_sketch {
             // TODO: Check if we're within tolerance of the last point. If so,
@@ -94,7 +101,7 @@ pub(crate) async fn create_segments_in_engine(
                 !exec_state.sketch_mode(),
                 exec_state,
                 ctx,
-                range,
+                sketch_block_range,
             )
             .await?;
             outer_sketch = Some(sketch);
@@ -205,7 +212,7 @@ pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     )?;
     let segments = args.get_kw_arg_opt(
         "segments",
-        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Known(2)),
+        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
     let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
@@ -277,12 +284,14 @@ async fn inner_region(
                 )));
             }
             let segments_len = segments.len();
-            let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
-                KclError::new_argument(KclErrorDetails::new(
-                    format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
+            let mut segments = segments.into_iter();
+            let Some(seg0_value) = segments.next() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Expected at least 1 segment to create a region, but got {segments_len}"),
                     vec![args.source_range],
-                ))
-            })?;
+                )));
+            };
+            let seg1_value = segments.next().unwrap_or_else(|| seg0_value.clone());
             let Some(seg0) = seg0_value.into_segment() else {
                 return Err(KclError::new_argument(KclErrorDetails::new(
                     "Expected first segment to be a Segment".to_owned(),

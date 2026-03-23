@@ -12,7 +12,7 @@
         -0
       ],
       "max": [
-        0.03181636333465576,
+        0.03181635960936546,
         0,
         0.004999999888241291
       ]
@@ -31,13 +31,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.03181636333465576,
+        0.03181635960936546,
         0,
         -0
       ],
       "max": [
-        0.03181636333465576,
-        0.03791726380586624,
+        0.03181635960936546,
+        0.03791727125644684,
         0.004999999888241291
       ]
     },
@@ -60,8 +60,8 @@
         -0
       ],
       "max": [
-        0.03181636333465576,
-        0.03791726380586624,
+        0.03181635960936546,
+        0.03791727125644684,
         0.004999999888241291
       ]
     },
@@ -84,8 +84,8 @@
         -0
       ],
       "max": [
-        0.03181636333465576,
-        0.03791726380586624,
+        0.03181635960936546,
+        0.03791727125644684,
         -0
       ]
     },
@@ -108,8 +108,8 @@
         0.004999999888241291
       ],
       "max": [
-        0.03181636333465576,
-        0.03791726380586624,
+        0.03181635960936546,
+        0.03791727125644684,
         0.004999999888241291
       ]
     },
@@ -128,7 +128,7 @@
   "buffers": [
     {
       "byteLength": 576,
-      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAA4FECPQAAAAAK16M7AAAAAAAAgL8AAAAA4FECPQAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAA4FECPQAAAAAAAACAAAAAAAAAgL8AAAAA4FECPQAAAAAK16M7AACAPwAAAAAAAAAA4FECPQAAAAAAAACAAACAPwAAAAAAAAAA4FECPSJPGz0K16M7AACAPwAAAAAAAAAA4FECPSJPGz0K16M7AACAPwAAAAAAAAAA4FECPQAAAAAAAACAAACAPwAAAAAAAAAA4FECPSJPGz0AAACAAACAPwAAAAAAAAAA4FECPSJPGz0K16M7fRtEv7uNJD8AAAAA4FECPSJPGz0AAACAfRtEv7uNJD8AAAAAAAAAAAAAAAAK16M7fRtEv7uNJD8AAAAAAAAAAAAAAAAK16M7fRtEv7uNJD8AAAAA4FECPSJPGz0AAACAfRtEv7uNJD8AAAAAAAAAAAAAAAAAAACAfRtEv7uNJD8AAAAA4FECPSJPGz0AAACAAAAAgAAAAIAAAIC/4FECPQAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/4FECPSJPGz0K16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/4FECPQAAAAAK16M7AAAAAAAAAAAAAIA/"
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAA31ECPQAAAAAK16M7AAAAAAAAgL8AAAAA31ECPQAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAA31ECPQAAAAAAAACAAAAAAAAAgL8AAAAA31ECPQAAAAAK16M7AACAPwAAAAAAAAAA31ECPQAAAAAAAACAAACAPwAAAAAAAAAA31ECPSRPGz0K16M7AACAPwAAAAAAAAAA31ECPSRPGz0K16M7AACAPwAAAAAAAAAA31ECPQAAAAAAAACAAACAPwAAAAAAAAAA31ECPSRPGz0AAACAAACAPwAAAAAAAAAA31ECPSRPGz0K16M7fRtEv7uNJD8AAAAA31ECPSRPGz0AAACAfRtEv7uNJD8AAAAAAAAAAAAAAAAK16M7fRtEv7uNJD8AAAAAAAAAAAAAAAAK16M7fRtEv7uNJD8AAAAA31ECPSRPGz0AAACAfRtEv7uNJD8AAAAAAAAAAAAAAAAAAACAfRtEv7uNJD8AAAAA31ECPSRPGz0AAACAAAAAgAAAAIAAAIC/31ECPQAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/31ECPSRPGz0K16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/31ECPQAAAAAK16M7AAAAAAAAAAAAAIA/"
     }
   ],
   "bufferViews": [
@@ -379,7 +379,7 @@
           "end": 1,
           "t": [
             0,
-            0.03181636343704307
+            0.03181636
           ]
         },
         {
@@ -403,7 +403,7 @@
           "end": 2,
           "t": [
             0,
-            0.03181636343704307
+            0.03181636
           ]
         },
         {
@@ -427,7 +427,7 @@
           "end": 4,
           "t": [
             0,
-            0.03791726542937913
+            0.03791727
           ]
         },
         {
@@ -451,7 +451,7 @@
           "end": 5,
           "t": [
             0,
-            0.03791726542937913
+            0.03791727
           ]
         },
         {
@@ -463,7 +463,7 @@
           "end": 0,
           "t": [
             0,
-            0.04949747468305833
+            0.04949747597506867
           ]
         },
         {
@@ -475,7 +475,7 @@
           "end": 3,
           "t": [
             0,
-            0.04949747468305833
+            0.04949747597506867
           ]
         }
       ],
@@ -486,12 +486,12 @@
           -0
         ],
         [
-          0.03181636343704307,
+          0.03181636,
           0,
           -0
         ],
         [
-          0.03181636343704307,
+          0.03181636,
           0,
           0.005
         ],
@@ -501,13 +501,13 @@
           0.005
         ],
         [
-          0.03181636343704307,
-          0.03791726542937913,
+          0.03181636,
+          0.03791727,
           -0
         ],
         [
-          0.03181636343704307,
-          0.03791726542937913,
+          0.03181636,
+          0.03791727,
           0.005
         ]
       ],
@@ -526,7 +526,7 @@
               1
             ],
             "origin": [
-              0.015908181718521534,
+              0.01590818,
               0,
               0.0025
             ]
@@ -546,8 +546,8 @@
               1
             ],
             "origin": [
-              0.03181636343704307,
-              0.018958632714689557,
+              0.03181636,
+              0.01895863,
               0.0025
             ]
           }
@@ -556,8 +556,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.6427876096865395,
-              0.766044443118978,
+              0.6427876114062825,
+              0.7660444416759422,
               0
             ],
             "yAxis": [
@@ -566,8 +566,8 @@
               -1
             ],
             "origin": [
-              0.015908181718521534,
-              0.018958632714689564,
+              0.01590818,
+              0.01895863,
               0.0025
             ]
           }
@@ -633,7 +633,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
+              0.03181636,
               0,
               -0
             ],
@@ -678,7 +678,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
+              0.03181636,
               0,
               -0
             ],
@@ -693,8 +693,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
-              0.03791726542937913,
+              0.03181636,
+              0.03791727,
               -0
             ],
             "direction": [
@@ -708,7 +708,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
+              0.03181636,
               0,
               0.005
             ],
@@ -723,13 +723,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
-              0.03791726542937913,
+              0.03181636,
+              0.03791727,
               -0
             ],
             "direction": [
-              -0.6427876096865395,
-              -0.7660444431189779,
+              -0.6427875234693896,
+              -0.7660445154637483,
               0
             ]
           }
@@ -738,13 +738,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.03181636343704307,
-              0.03791726542937913,
+              0.03181636,
+              0.03791727,
               0.005
             ],
             "direction": [
-              -0.6427876096865395,
-              -0.7660444431189779,
+              -0.6427875234693896,
+              -0.7660445154637483,
               0
             ]
           }

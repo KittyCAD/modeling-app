@@ -11,6 +11,7 @@ import { roundOff } from '@src/lib/utils'
 import type { Coords2d } from '@src/lang/util'
 import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
+import { isLineSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -26,7 +27,7 @@ function getLineFromDelta(
 ): { lineId: number; startPointId: number; endPointId: number } | Error {
   const lineId = [...sceneGraphDelta.new_objects].reverse().find((objId) => {
     const obj = sceneGraphDelta.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+    return isLineSegment(obj)
   })
 
   if (lineId === undefined) {
@@ -36,10 +37,7 @@ function getLineFromDelta(
   }
 
   const lineObj = sceneGraphDelta.new_graph.objects[lineId]
-  if (
-    lineObj?.kind.type !== 'Segment' ||
-    lineObj.kind.segment.type !== 'Line'
-  ) {
+  if (!isLineSegment(lineObj)) {
     return new Error(
       'Expected Line object in scene graph delta, but did not find one'
     )

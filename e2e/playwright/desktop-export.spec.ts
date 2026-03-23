@@ -133,7 +133,7 @@ test(
       const successToastMessage = page.getByText(`Exported successfully`)
       await page.waitForTimeout(1_000)
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(1)
+      expect(count).toBeGreaterThanOrEqual(1)
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Check for the exported file=
@@ -228,7 +228,7 @@ extrude001 = extrude(profile001, length = 5)`
     const successToastMessage = page.getByText('DXF export completed [TEST]')
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
-    await expect(count).toBeGreaterThanOrEqual(1)
+    expect(count).toBeGreaterThanOrEqual(1)
 
     // Check for the exported DXF file
     const exportFileName = 'sketch001.dxf'
@@ -317,7 +317,7 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     const successToastMessage = page.getByText('DXF export completed [TEST]')
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
-    await expect(count).toBeGreaterThanOrEqual(1)
+    expect(count).toBeGreaterThanOrEqual(1)
 
     // Check for the exported DXF file
     const exportFileName = 'sketch002.dxf'
