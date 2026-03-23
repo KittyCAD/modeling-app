@@ -6,11 +6,7 @@ import type {
   SourceDelta,
   Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  segmentUtilsMap,
-  POINT_SEGMENT_BODY,
-  updateSegmentHover,
-} from '@src/machines/sketchSolve/segments'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import { Group, Mesh } from 'three'
 import type {
@@ -643,27 +639,8 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
     onAreaSelectEnd: () => {},
   })
 
-  // Clear any currently hovered line segment meshes
-  const snapshot = self.getSnapshot()
-  const selectedIds = snapshot.context.selectedIds
-  const draftEntityIds = snapshot.context.draftEntities
-    ? [...snapshot.context.draftEntities.segmentIds]
-    : undefined
   const sketchSegments =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  if (sketchSegments) {
-    sketchSegments.traverse((child) => {
-      if (
-        child instanceof Mesh &&
-        (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
-          child.userData?.type === ARC_SEGMENT_BODY ||
-          child.userData?.type === POINT_SEGMENT_BODY) &&
-        child.userData.isHovered === true
-      ) {
-        updateSegmentHover(child, false, selectedIds, draftEntityIds)
-      }
-    })
-  }
 
   // Clean up selection box if it exists
   const selectionBoxGroup = sketchSegments?.getObjectByName('selectionBox')

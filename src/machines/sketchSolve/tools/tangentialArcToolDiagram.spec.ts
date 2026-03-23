@@ -36,17 +36,17 @@ function createTestMachine(mockActors?: {
     actors: {
       createArc: fromPromise(
         mockActors?.createArc ||
-        (async () => ({
-          kclSource: { text: 'test' } as SourceDelta,
-          sceneGraphDelta: createSceneGraphDelta([], []),
-        }))
+          (async () => ({
+            kclSource: { text: 'test' } as SourceDelta,
+            sceneGraphDelta: createSceneGraphDelta([], []),
+          }))
       ),
       finalizeArc: fromPromise(
         mockActors?.finalizeArc ||
-        (async () => ({
-          kclSource: { text: 'test' } as SourceDelta,
-          sceneGraphDelta: createSceneGraphDelta([], []),
-        }))
+          (async () => ({
+            kclSource: { text: 'test' } as SourceDelta,
+            sceneGraphDelta: createSceneGraphDelta([], []),
+          }))
       ),
     },
   })

@@ -55,21 +55,21 @@ type TangentInfo = {
 export type ToolEvents =
   | BaseToolEvent
   | {
-    type: 'select tangent info'
-    data: TangentInfo
-  }
-  | {
-    type: 'add point'
-    data: Coords2d
-    clickNumber?: 2
-  }
-  | {
-    type: typeof CREATING_ARC | typeof FINALIZING_ARC
-    output: {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
+      type: 'select tangent info'
+      data: TangentInfo
     }
-  }
+  | {
+      type: 'add point'
+      data: Coords2d
+      clickNumber?: 2
+    }
+  | {
+      type: typeof CREATING_ARC | typeof FINALIZING_ARC
+      output: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+      }
+    }
 
 export type ToolContext = {
   tangentInfo?: TangentInfo
@@ -277,15 +277,15 @@ export function resolveTangentInfoFromClick({
   const pointCoords = getPointFromObjects(objects, pointId)
   const tangentDirection = isLineSegment(owner)
     ? getLineTangentDirection({
-      objects,
-      segmentId: ownerId,
-      tangentPointId: pointId,
-    })
+        objects,
+        segmentId: ownerId,
+        tangentPointId: pointId,
+      })
     : getArcTangentDirection({
-      objects,
-      segmentId: ownerId,
-      tangentPointId: pointId,
-    })
+        objects,
+        segmentId: ownerId,
+        tangentPointId: pointId,
+      })
   if (!pointCoords || !tangentDirection) {
     return null
   }
@@ -518,18 +518,18 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         clickNumber: 2,
       })
     },
-    onMouseEnter: () => { },
-    onMouseLeave: () => { },
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
   })
 }
 
 export function removePointListener({ context }: ToolActionArgs) {
   segmentUtilsMap.ArcSegment.removePreviewCircle(context.sceneInfra)
   context.sceneInfra.setCallbacks({
-    onClick: () => { },
-    onMove: () => { },
-    onMouseEnter: () => { },
-    onMouseLeave: () => { },
+    onClick: () => {},
+    onMove: () => {},
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
   })
 }
 
@@ -622,23 +622,23 @@ export async function createArcActor({
   input,
 }: {
   input:
-  | {
-    tangentInfo: TangentInfo
-    rustContext: RustContext
-    kclManager: KclManager
-    sketchId: number
-  }
-  | {
-    error: string
-  }
+    | {
+        tangentInfo: TangentInfo
+        rustContext: RustContext
+        kclManager: KclManager
+        sketchId: number
+      }
+    | {
+        error: string
+      }
 }): Promise<
   | {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
+    }
   | {
-    error: string
-  }
+      error: string
+    }
 > {
   if ('error' in input) {
     return { error: input.error }
@@ -694,25 +694,25 @@ export async function finalizeArcActor({
   input,
 }: {
   input:
-  | {
-    arcId: number
-    endPoint: Coords2d
-    tangentInfo: TangentInfo
-    rustContext: RustContext
-    kclManager: KclManager
-    sketchId: number
-  }
-  | {
-    error: string
-  }
+    | {
+        arcId: number
+        endPoint: Coords2d
+        tangentInfo: TangentInfo
+        rustContext: RustContext
+        kclManager: KclManager
+        sketchId: number
+      }
+    | {
+        error: string
+      }
 }): Promise<
   | {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
+    }
   | {
-    error: string
-  }
+      error: string
+    }
 > {
   if ('error' in input) {
     return { error: input.error }

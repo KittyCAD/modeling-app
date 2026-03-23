@@ -335,7 +335,6 @@ class PointSegment implements SketchEntityUtils {
       })
     )
     pointBody.userData.type = POINT_SEGMENT_BODY
-    //pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
     pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
     pointBody.layers.set(SKETCH_LAYER)
@@ -393,7 +392,7 @@ class PointSegment implements SketchEntityUtils {
     pointBody.position.set(x.value / scale, y.value / scale, 0)
 
     const isSelected = selectedIds.includes(id)
-    const isHovered = hoveredId === id // pointBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     const freedom = args.freedom ?? group.userData.freedom ?? null
 
     group.userData.freedom = freedom
@@ -577,7 +576,7 @@ class LineSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = hoveredId === id //straightSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -933,7 +932,7 @@ class ArcSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = hoveredId === id //arcSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -1042,79 +1041,6 @@ function updateLineMaterial(
     freedom,
   })
   material.color.set(color)
-}
-
-// TODO delete
-/**
- * Updates the hover state of a segment mesh (line, arc, or point)
- */
-export function updateSegmentHover(
-  mesh: Mesh | null,
-  isHovered: boolean,
-  selectedIds: Array<number>,
-  draftEntityIds?: Array<number>
-): void {
-  if (!mesh) {
-    return
-  }
-
-  // Store hover state in userData
-  //mesh.userData.isHovered = isHovered
-
-  // Get the parent group to find the segment ID
-  const group = mesh.parent
-  if (!(group instanceof Group)) {
-    return
-  }
-
-  const segmentId = Number(group.name)
-  if (Number.isNaN(segmentId)) {
-    return
-  }
-
-  const isSelected = selectedIds.includes(segmentId)
-  // Get isDraft from group userData, or determine from draftEntityIds as fallback
-  const isDraft =
-    group.userData.isDraft === true ||
-    draftEntityIds?.includes(segmentId) === true
-  const freedom = group.userData.freedom ?? null
-
-  // Dispatch based on segment body type
-  if (mesh.userData.type === POINT_SEGMENT_BODY) {
-    mesh.renderOrder = isHovered
-      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
-      : POINT_SEGMENT_BODY_RENDER_ORDER
-    segmentUtilsMap.PointSegment.updatePointColors(mesh, {
-      isSelected,
-      isHovered,
-      isDraft,
-      freedom,
-    })
-  } else if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
-    if (mesh instanceof Line2) {
-      segmentUtilsMap.LineSegment.updateLineColors(
-        mesh,
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom
-      )
-    } else {
-      console.error('Straight segment body is not a Line2 anymore', mesh)
-    }
-  } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
-    if (mesh instanceof Line2) {
-      segmentUtilsMap.ArcSegment.updateArcColors(
-        mesh,
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom
-      )
-    } else {
-      console.error('Straight segment body is not a Line2 anymore', mesh)
-    }
-  }
 }
 
 /**
