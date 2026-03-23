@@ -46,6 +46,7 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -929,5 +930,11 @@ export const sketchSolveMachine = setup({
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
+    ({ context }) => toggleSketchExtension(context.kclManager.editorView, true),
+  ],
+
+  exit: [
+    ({ context }) =>
+      toggleSketchExtension(context.kclManager.editorView, false),
   ],
 })
