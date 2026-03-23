@@ -129,9 +129,9 @@ export class SceneInfra {
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
-    onMouseDownSelection?: () => boolean
-    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
-    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
+    onMouseDownSelection?: () => boolean // used by sketch-solve only
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
     onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
     onAreaSelect?: (arg: OnAreaSelectCallbackArgs) => Voidish
     onAreaSelectEnd?: (arg: OnAreaSelectCallbackArgs) => Voidish

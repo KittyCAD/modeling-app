@@ -633,6 +633,7 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
     onAreaSelectStart: () => {},
     onAreaSelect: () => {},
     onAreaSelectEnd: () => {},
+    onMouseDownSelection: () => false,
   })
 
   const sketchSegments =
