@@ -4542,7 +4542,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
-    use create::execution::Artifact;
+    use crate::execution::Artifact;
     use crate::front::Distance;
     use crate::front::Object;
     use crate::front::Plane;
