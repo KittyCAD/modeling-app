@@ -366,6 +366,27 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await editor.expectEditor.toContain('parallel([line1, line2])')
     })
+
+    await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
+      await toolbar.circleBtn.click()
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [circleCenterClick] = scene.makeMouseHelpers(0.75, 0.65, {
+        format: 'ratio',
+      })
+      const [circleRadiusClick] = scene.makeMouseHelpers(0.85, 0.78, {
+        format: 'ratio',
+      })
+
+      await circleCenterClick()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await circleRadiusClick()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('circle(start = [')
+      await expect(pointHandles).toHaveCount(11)
+    })
   })
 
   test('can delete individual constraints and the sketch block from the feature tree', async ({

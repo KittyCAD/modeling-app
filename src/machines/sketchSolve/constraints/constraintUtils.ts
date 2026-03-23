@@ -41,6 +41,31 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
+export function isArcSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
+}
+
+export type ArcSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Arc' } }
+}
+
+export function isCircleSegment(
+  obj: ApiObject | undefined | null
+): obj is CircleSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Circle'
+}
+
+export type CircleSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Circle' } }
+}
+
+export function isArcLikeSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment | CircleSegment {
+  return isArcSegment(obj) || isCircleSegment(obj)
+}
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -72,20 +97,27 @@ export function getLinePoints(
   ] as const
 }
 
-export function isArcSegment(
-  obj: ApiObject | undefined | null
-): obj is ArcSegment {
-  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Arc'
-}
-
-export type ArcSegment = ApiObject & {
-  kind: { type: 'Segment'; segment: { type: 'Arc' } }
-}
-
 export function getArcPoints(
   arcObj: ApiObject | undefined | null,
   objects: ApiObject[]
 ) {
+  if (isCircleSegment(arcObj)) {
+    const centerObj = objects[arcObj.kind.segment.center]
+    const startObj = objects[arcObj.kind.segment.start]
+    if (!isPointSegment(centerObj) || !isPointSegment(startObj)) {
+      return null
+    }
+
+    const start = pointToCoords2d(startObj)
+
+    return {
+      center: pointToCoords2d(centerObj),
+      start,
+      end: start,
+      isCircle: true,
+    }
+  }
+
   if (!isArcSegment(arcObj)) {
     return null
   }
@@ -105,6 +137,7 @@ export function getArcPoints(
     center: pointToCoords2d(centerObj),
     start: pointToCoords2d(startObj),
     end: pointToCoords2d(endObj),
+    isCircle: false,
   }
 }
 
@@ -169,7 +202,7 @@ export function buildTangentConstraintInput(
 
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
-  const arcObjects = selectedObjects.filter(isArcSegment)
+  const arcObjects = selectedObjects.filter(isArcLikeSegment)
 
   if (lineObj && arcObjects.length === 1) {
     // tangent(line, arc)

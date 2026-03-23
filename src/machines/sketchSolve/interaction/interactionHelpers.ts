@@ -7,7 +7,7 @@ import {
   getArcPoints,
   getLinePoints,
   isConstraint,
-  isArcSegment,
+  isArcLikeSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -15,7 +15,13 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
-type ArcPoints = NonNullable<ReturnType<typeof getArcPoints>>
+type ArcPoints = {
+  center: Coords2d
+  start: Coords2d
+  end: Coords2d
+  isCircle?: boolean
+}
+type CirclePoints = Pick<ArcPoints, 'center' | 'start'>
 type LinePoints = {
   type: 'line'
   line: [Coords2d, Coords2d]
@@ -67,6 +73,19 @@ function distanceToArcSegment(point: Coords2d, arc: ArcPoints): number {
   }
 
   return Math.min(distance2d(point, start), distance2d(point, end))
+}
+
+function distanceToCircleSegment(
+  point: Coords2d,
+  circle: CirclePoints
+): number {
+  const { center, start } = circle
+  const radius = distance2d(center, start)
+  if (radius === 0) {
+    return distance2d(point, center)
+  }
+
+  return Math.abs(distance2d(point, center) - radius)
 }
 
 function getAutoHitObjects(line: Line2): LinePoints[] {
@@ -188,10 +207,12 @@ export function findClosestApiObjects(
       return
     }
 
-    if (isArcSegment(apiObject)) {
+    if (isArcLikeSegment(apiObject)) {
       const arcPoints = getArcPoints(apiObject, objects)
       if (arcPoints) {
-        const distance = distanceToArcSegment(mousePosition, arcPoints)
+        const distance = arcPoints.isCircle
+          ? distanceToCircleSegment(mousePosition, arcPoints)
+          : distanceToArcSegment(mousePosition, arcPoints)
         if (distance <= hoverDistance) {
           candidates.push({
             distance,
