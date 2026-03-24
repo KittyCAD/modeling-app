@@ -45,7 +45,7 @@ import { operationsExtension } from '@src/editor/plugins/operations'
 import { executionEffectsExtension } from '@src/editor/plugins/execution'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { writeEffectsExtension } from '@src/editor/plugins/write'
-import { blurOnEscape } from './plugins/blurOnEsc'
+import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
