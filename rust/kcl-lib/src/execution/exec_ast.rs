@@ -3051,6 +3051,19 @@ impl Node<BinaryExpression> {
                         use crate::execution::SketchBlockConstraintType;
                         use crate::front::FixedConstraint;
 
+                        exec_state.push_op(Operation::StdLibCall {
+                            name: match axis {
+                                FixedAxis::X => "fixedX".to_owned(),
+                                FixedAxis::Y => "fixedY".to_owned(),
+                            },
+                            unlabeled_arg: None,
+                            labeled_args: IndexMap::new(),
+                            node_path: NodePath::placeholder(),
+                            source_range: self.as_source_range(),
+                            stdlib_entry_source_range: exec_state.mod_local.stdlib_entry_source_range,
+                            is_error: false,
+                        });
+
                         let constraint_id = exec_state.next_object_id();
                         let constraint = match axis {
                             FixedAxis::X => crate::front::Constraint::FixedX(FixedConstraint {
@@ -3058,7 +3071,7 @@ impl Node<BinaryExpression> {
                                 value: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert fixed x units numeric suffix:", self)
                                 })?,
-                                source: source.clone(),
+                                source,
                             }),
                             FixedAxis::Y => crate::front::Constraint::FixedY(FixedConstraint {
                                 point: point_id,
@@ -4806,6 +4819,35 @@ y = x[0mm + 1]
         );
         assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
         assert!(matches!(actual_operations[1], Operation::GroupEnd));
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fixed_constraints_add_operations() {
+        let ast = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1.start.at[0] == 3
+  line1.start.at[1] == 4
+}
+"#;
+        let out = parse_execute(ast).await.unwrap();
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        assert!(
+            actual_operations
+                .iter()
+                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedX")),
+            "expected fixedX operation, got {actual_operations:#?}"
+        );
+        assert!(
+            actual_operations
+                .iter()
+                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedY")),
+            "expected fixedY operation, got {actual_operations:#?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

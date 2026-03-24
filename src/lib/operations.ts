@@ -2047,17 +2047,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Equal Length Constraint',
     icon: 'equal',
   },
-  fixed: {
-    label: 'Fixed Constraint',
-    icon: 'questionMark',
-  },
   fixedX: {
     label: 'Fixed X Constraint',
-    icon: 'questionMark',
+    icon: 'fixX',
   },
   fixedY: {
     label: 'Fixed Y Constraint',
-    icon: 'questionMark',
+    icon: 'fixY',
   },
   horizontal: {
     label: 'Horizontal Constraint',

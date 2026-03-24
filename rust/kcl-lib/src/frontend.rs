@@ -6688,6 +6688,94 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_multiple_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_fixed(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![
+                    FixedPoint {
+                        point: point0_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    },
+                    FixedPoint {
+                        point: point1_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 4.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 5.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    },
+                ],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point1.at[0] == 2mm
+  point1.at[1] == 3mm
+  point2.at[0] == 4mm
+  point2.at[1] == 5mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            8,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_add_fixed_owned_point() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
