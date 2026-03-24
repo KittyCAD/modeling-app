@@ -3337,69 +3337,168 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                            #[derive(Clone, Copy)]
+                            enum CircularSegmentConstraintTarget {
+                                Arc {
+                                    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
+                                    object_id: ObjectId,
+                                    end: [crate::execution::SketchVarId; 2],
+                                },
+                                Circle {
+                                    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
+                                    object_id: ObjectId,
+                                },
+                            }
+
+                            fn sketch_var_initial_value(
+                                sketch_vars: &[KclValue],
+                                id: crate::execution::SketchVarId,
+                                exec_state: &mut ExecState,
+                                range: SourceRange,
+                            ) -> Result<f64, KclError> {
+                                sketch_vars
+                                    .get(id.0)
+                                    .and_then(KclValue::as_sketch_var)
+                                    .map(|sketch_var| {
+                                        sketch_var
+                                            .initial_value_to_solver_units(
+                                                exec_state,
+                                                range,
+                                                "circle radius initial value",
+                                            )
+                                            .map(|value| value.n)
+                                    })
+                                    .transpose()?
+                                    .ok_or_else(|| {
+                                        internal_err(
+                                            format!("Missing sketch variable initial value for id {}", id.0),
+                                            range,
+                                        )
+                                    })
+                            }
+
                             let range = self.as_source_range();
                             let center = &points[0];
                             let start = &points[1];
-                            // Find the arc segment that has matching center and start to get its end point
                             let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
                                 return Err(internal_err(
                                     "Being inside a sketch block should have already been checked above",
                                     self,
                                 ));
                             };
-                            // Find the arc segment with matching center and start
                             let (constraint_name, is_diameter) = match &constraint.kind {
                                 SketchConstraintKind::Radius { .. } => ("radius", false),
                                 SketchConstraintKind::Diameter { .. } => ("diameter", true),
                                 _ => unreachable!(),
                             };
-                            let arc_segment = sketch_block_state
+                            let sketch_vars = sketch_block_state.sketch_vars.clone();
+                            let target_segment = sketch_block_state
                                 .needed_by_engine
                                 .iter()
-                                .find(|seg| {
-                                    matches!(&seg.kind, UnsolvedSegmentKind::Arc {
+                                .find_map(|seg| match &seg.kind {
+                                    UnsolvedSegmentKind::Arc {
+                                        center_object_id,
+                                        start_object_id,
+                                        end,
+                                        ..
+                                    } if *center_object_id == center.object_id
+                                        && *start_object_id == start.object_id =>
+                                    {
+                                        let (end_x_var, end_y_var) = match (&end[0], &end[1]) {
+                                            (UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)) => {
+                                                (*end_x, *end_y)
+                                            }
+                                            _ => return None,
+                                        };
+                                        Some(CircularSegmentConstraintTarget::Arc {
+                                            object_id: seg.object_id,
+                                            end: [end_x_var, end_y_var],
+                                        })
+                                    }
+                                    UnsolvedSegmentKind::Circle {
                                         center_object_id,
                                         start_object_id,
                                         ..
-                                    } if *center_object_id == center.object_id && *start_object_id == start.object_id)
+                                    } if *center_object_id == center.object_id
+                                        && *start_object_id == start.object_id =>
+                                    {
+                                        Some(CircularSegmentConstraintTarget::Circle {
+                                            object_id: seg.object_id,
+                                        })
+                                    }
+                                    _ => None,
                                 })
                                 .ok_or_else(|| {
                                     internal_err(
-                                        format!("Could not find arc segment for {} constraint", constraint_name),
+                                        format!("Could not find circular segment for {} constraint", constraint_name),
                                         range,
                                     )
                                 })?;
-                            let UnsolvedSegmentKind::Arc { end, .. } = &arc_segment.kind else {
-                                return Err(internal_err("Expected arc segment", range));
-                            };
-                            // Extract end point coordinates
-                            let (end_x_var, end_y_var) = match (&end[0], &end[1]) {
-                                (UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)) => (*end_x, *end_y),
-                                _ => {
-                                    return Err(internal_err(
-                                        "Arc end point must have sketch vars in all coordinates",
-                                        range,
+                            let radius_value = if is_diameter { n.n / 2.0 } else { n.n };
+                            let center_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                center.vars.x.to_constraint_id(range)?,
+                                center.vars.y.to_constraint_id(range)?,
+                            );
+                            let start_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                start.vars.x.to_constraint_id(range)?,
+                                start.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_constraint = match target_segment {
+                                CircularSegmentConstraintTarget::Arc { end, .. } => {
+                                    let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
+                                        center: center_point,
+                                        start: start_point,
+                                        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                            end[0].to_constraint_id(range)?,
+                                            end[1].to_constraint_id(range)?,
+                                        ),
+                                    };
+                                    Constraint::ArcRadius(solver_arc, radius_value)
+                                }
+                                CircularSegmentConstraintTarget::Circle { .. } => {
+                                    let sketch_var_ty = solver_numeric_type(exec_state);
+                                    let start_x =
+                                        sketch_var_initial_value(&sketch_vars, start.vars.x, exec_state, range)?;
+                                    let start_y =
+                                        sketch_var_initial_value(&sketch_vars, start.vars.y, exec_state, range)?;
+                                    let center_x =
+                                        sketch_var_initial_value(&sketch_vars, center.vars.x, exec_state, range)?;
+                                    let center_y =
+                                        sketch_var_initial_value(&sketch_vars, center.vars.y, exec_state, range)?;
+
+                                    // Get the hypotenuse between the two points, the radius
+                                    let radius_initial_value = (start_x - center_x).hypot(start_y - center_y);
+
+                                    let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                        let message =
+                                            "Being inside a sketch block should have already been checked above"
+                                                .to_owned();
+                                        debug_assert!(false, "{}", &message);
+                                        return Err(internal_err(message, self));
+                                    };
+                                    let radius_id = sketch_block_state.next_sketch_var_id();
+                                    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                        value: Box::new(crate::execution::SketchVar {
+                                            id: radius_id,
+                                            initial_value: radius_initial_value,
+                                            ty: sketch_var_ty,
+                                            meta: vec![],
+                                        }),
+                                    });
+                                    let radius =
+                                        ezpz::datatypes::inputs::DatumDistance::new(radius_id.to_constraint_id(range)?);
+                                    let solver_circle = ezpz::datatypes::inputs::DatumCircle {
+                                        center: center_point,
+                                        radius,
+                                    };
+                                    sketch_block_state.solver_constraints.push(Constraint::DistanceVar(
+                                        start_point,
+                                        center_point,
+                                        radius,
                                     ));
+                                    Constraint::CircleRadius(solver_circle, radius_value)
                                 }
                             };
-                            let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
-                                center: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    center.vars.x.to_constraint_id(range)?,
-                                    center.vars.y.to_constraint_id(range)?,
-                                ),
-                                start: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    start.vars.x.to_constraint_id(range)?,
-                                    start.vars.y.to_constraint_id(range)?,
-                                ),
-                                end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    end_x_var.to_constraint_id(range)?,
-                                    end_y_var.to_constraint_id(range)?,
-                                ),
-                            };
-                            // Use ArcRadius constraint from ezpz solver
-                            // Diameter is twice the radius, so we divide by 2 before passing to the solver
-                            let radius_value = if is_diameter { n.n / 2.0 } else { n.n };
-                            let solver_constraint = Constraint::ArcRadius(solver_arc, radius_value);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
@@ -3416,33 +3515,15 @@ impl Node<BinaryExpression> {
                                 use crate::execution::CodeRef;
                                 use crate::execution::SketchBlockConstraint;
                                 use crate::execution::SketchBlockConstraintType;
-                                // Find the arc segment object ID from the sketch block state
-
-                                let arc_object_id = sketch_block_state
-                                    .needed_by_engine
-                                    .iter()
-                                    .find(|seg| {
-                                        matches!(&seg.kind, UnsolvedSegmentKind::Arc {
-                                            center_object_id,
-                                            start_object_id,
-                                            ..
-                                        } if *center_object_id == center.object_id && *start_object_id == start.object_id)
-                                    })
-                                    .map(|seg| seg.object_id)
-                                    .ok_or_else(|| {
-                                        internal_err(
-                                            format!(
-                                                "Could not find arc segment object ID for {} constraint",
-                                                constraint_name
-                                            ),
-                                            range,
-                                        )
-                                    })?;
+                                let segment_object_id = match target_segment {
+                                    CircularSegmentConstraintTarget::Arc { object_id, .. }
+                                    | CircularSegmentConstraintTarget::Circle { object_id } => object_id,
+                                };
 
                                 let constraint = if is_diameter {
                                     use crate::frontend::sketch::Diameter;
                                     crate::front::Constraint::Diameter(Diameter {
-                                        arc: arc_object_id,
+                                        arc: segment_object_id,
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
@@ -3451,7 +3532,7 @@ impl Node<BinaryExpression> {
                                 } else {
                                     use crate::frontend::sketch::Radius;
                                     crate::front::Constraint::Radius(Radius {
-                                        arc: arc_object_id,
+                                        arc: segment_object_id,
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
