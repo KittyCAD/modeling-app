@@ -1456,7 +1456,10 @@ describe('getSelectionTypeDisplayText', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelectionsV2: [
-        { entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' }, codeRef },
+        {
+          entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' },
+          codeRef,
+        },
         { entityRef: { type: 'edge', faces: ['f1', 'f2'] }, codeRef },
         { entityRef: { type: 'solid2d_edge', edge_id: 'e1' }, codeRef },
       ],
