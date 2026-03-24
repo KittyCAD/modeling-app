@@ -11,9 +11,27 @@ import {
   resolveTangentInfoFromClick,
   resolveTangentialArcEndpoints,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it, vi } from 'vitest'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { Group, Mesh } from 'three'
+import { Mesh } from 'three'
+
+function createSketchApiObject({ id }: { id: number }): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      plane: 0,
+      segments: [],
+      constraints: [],
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  }
+}
 
 describe('tangentialArcToolImpl', () => {
   describe('findTangentialArcCenter', () => {
@@ -38,10 +56,11 @@ describe('tangentialArcToolImpl', () => {
     })
   })
 
-  describe('resolveTangentInfoFromClick', () => {
-    it('should resolve point clicks from the selected mesh parent group id', () => {
+  describe('addFirstPointListener', () => {
+    it('should resolve point clicks from mouse position without relying on selected mesh ids', () => {
       const sceneInfra = createMockSceneInfra()
       const send = vi.fn()
+      const sketch = createSketchApiObject({ id: 0 })
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
       if (isPointSegment(p1)) {
@@ -51,7 +70,10 @@ describe('tangentialArcToolImpl', () => {
         p2.kind.segment.owner = 3
       }
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
-      const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
+      const sceneGraphDelta = createSceneGraphDelta(
+        [sketch, p1, p2, line],
+        [0, 1, 2, 3]
+      )
 
       addFirstPointListener({
         self: {
@@ -59,6 +81,7 @@ describe('tangentialArcToolImpl', () => {
           _parent: {
             getSnapshot: () => ({
               context: {
+                sketchId: 0,
                 sketchExecOutcome: {
                   sceneGraphDelta,
                 },
@@ -73,10 +96,7 @@ describe('tangentialArcToolImpl', () => {
 
       const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
       const pointBody = new Mesh()
-      const pointGroup = new Group()
-      pointGroup.name = '1'
-      pointBody.name = 'POINT_SEGMENT_HIT_AREA'
-      pointGroup.add(pointBody)
+      pointBody.userData.type = 'POINT_SEGMENT_BODY'
 
       callbacks.onClick({
         mouseEvent: { which: 1 },
@@ -89,13 +109,15 @@ describe('tangentialArcToolImpl', () => {
       expect(send).toHaveBeenCalledWith({
         type: 'select tangent info',
         data: {
-          segmentId: 3,
-          tangentStart: { id: 1, point: [0, 0] },
+          ownerId: 3,
+          tangentStart: { pointId: 1, position: [0, 0] },
           tangentDirection: [-1, 0],
         },
       })
     })
+  })
 
+  describe('resolveTangentInfoFromClick', () => {
     it('should return null when clicking a line segment directly', () => {
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
@@ -132,13 +154,13 @@ describe('tangentialArcToolImpl', () => {
       })
 
       expect(tangentInfoAtStart).toEqual({
-        segmentId: 3,
-        tangentStart: { id: 1, point: [0, 0] },
+        ownerId: 3,
+        tangentStart: { pointId: 1, position: [0, 0] },
         tangentDirection: [-1, 0],
       })
       expect(tangentInfoAtEnd).toEqual({
-        segmentId: 3,
-        tangentStart: { id: 2, point: [20, 0] },
+        ownerId: 3,
+        tangentStart: { pointId: 2, position: [20, 0] },
         tangentDirection: [1, 0],
       })
     })
@@ -178,13 +200,13 @@ describe('tangentialArcToolImpl', () => {
       })
 
       expect(tangentInfoAtStart).toEqual({
-        segmentId: 4,
-        tangentStart: { id: 2, point: [5, 0] },
+        ownerId: 4,
+        tangentStart: { pointId: 2, position: [5, 0] },
         tangentDirection: [0, -1],
       })
       expect(tangentInfoAtEnd).toEqual({
-        segmentId: 4,
-        tangentStart: { id: 3, point: [0, 5] },
+        ownerId: 4,
+        tangentStart: { pointId: 3, position: [0, 5] },
         tangentDirection: [-1, 0],
       })
       expect(tangentInfoAtCenter).toBeNull()

@@ -66,7 +66,7 @@ redo-sim-tests:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 test:
-    cargo install cargo-nextest
+    cargo install cargo-nextest --locked
     {{cnr}} --workspace --features=artifact-graph
 
 [working-directory: 'kcl-python-bindings']

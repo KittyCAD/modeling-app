@@ -1,13 +1,20 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    Program,
-    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
-};
+use kcl_lib::Program;
+use kcl_lib::front::Error;
+use kcl_lib::front::ExistingSegmentCtor;
+use kcl_lib::front::File;
+use kcl_lib::front::FileId;
+use kcl_lib::front::LifecycleApi;
+use kcl_lib::front::ObjectId;
+use kcl_lib::front::ProjectId;
+use kcl_lib::front::SketchApi;
+use kcl_lib::front::Version;
 use wasm_bindgen::prelude::*;
 
-use crate::{Context, TRUE_BUG};
+use crate::Context;
+use crate::TRUE_BUG;
 
 #[derive(serde::Serialize)]
 struct TrimOutcome {
@@ -496,7 +503,8 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim function from kcl-lib
-        use kcl_lib::front::{Coords2d as Coords2dCore, execute_trim_loop_with_context};
+        use kcl_lib::front::Coords2d as Coords2dCore;
+        use kcl_lib::front::execute_trim_loop_with_context;
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch

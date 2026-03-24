@@ -1,20 +1,29 @@
 use fnv::FnvHashMap;
 use lazy_static::lazy_static;
-use winnow::{
-    LocatingSlice, Stateful,
-    ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat},
-    error::{ContextError, ParseError},
-    prelude::*,
-    stream::{Location, Stream},
-    token::{any, none_of, take_till, take_until, take_while},
-};
+use winnow::LocatingSlice;
+use winnow::Stateful;
+use winnow::ascii::digit1;
+use winnow::ascii::multispace1;
+use winnow::combinator::alt;
+use winnow::combinator::opt;
+use winnow::combinator::peek;
+use winnow::combinator::preceded;
+use winnow::combinator::repeat;
+use winnow::error::ContextError;
+use winnow::error::ParseError;
+use winnow::prelude::*;
+use winnow::stream::Location;
+use winnow::stream::Stream;
+use winnow::token::any;
+use winnow::token::none_of;
+use winnow::token::take_till;
+use winnow::token::take_until;
+use winnow::token::take_while;
 
 use super::TokenStream;
-use crate::{
-    ModuleId,
-    parsing::token::{Token, TokenType},
-};
+use crate::ModuleId;
+use crate::parsing::token::Token;
+use crate::parsing::token::TokenType;
 
 lazy_static! {
     pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {

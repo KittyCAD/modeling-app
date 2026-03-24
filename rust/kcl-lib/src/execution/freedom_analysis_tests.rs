@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
-use crate::{
-    ExecutorContext, ExecutorSettings,
-    engine::conn_mock::EngineConnection,
-    execution::{ContextType, MockConfig},
-    front::{Freedom, ObjectKind},
-    frontend::api::ObjectId,
-};
+use crate::ExecutorContext;
+use crate::ExecutorSettings;
+use crate::engine::conn_mock::EngineConnection;
+use crate::execution::ContextType;
+use crate::execution::MockConfig;
+use crate::front::Freedom;
+use crate::front::ObjectKind;
+use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();

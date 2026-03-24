@@ -4,37 +4,51 @@
 pub mod cache;
 pub mod types;
 
-use std::{
-    borrow::Cow,
-    fmt::Debug,
-    sync::{Arc, RwLock},
-};
+use std::borrow::Cow;
+use std::fmt::Debug;
+use std::sync::Arc;
+use std::sync::RwLock;
 
 use dashmap::DashMap;
-use serde::{Deserialize, Serialize};
-use tower_lsp::{
-    LanguageServer,
-    jsonrpc::{Error, Result},
-    lsp_types::{
-        CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
-        MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
-    },
-};
+use serde::Deserialize;
+use serde::Serialize;
+use tower_lsp::LanguageServer;
+use tower_lsp::jsonrpc::Error;
+use tower_lsp::jsonrpc::Result;
+use tower_lsp::lsp_types::CreateFilesParams;
+use tower_lsp::lsp_types::DeleteFilesParams;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DidChangeConfigurationParams;
+use tower_lsp::lsp_types::DidChangeTextDocumentParams;
+use tower_lsp::lsp_types::DidChangeWatchedFilesParams;
+use tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams;
+use tower_lsp::lsp_types::DidCloseTextDocumentParams;
+use tower_lsp::lsp_types::DidOpenTextDocumentParams;
+use tower_lsp::lsp_types::DidSaveTextDocumentParams;
+use tower_lsp::lsp_types::InitializeParams;
+use tower_lsp::lsp_types::InitializeResult;
+use tower_lsp::lsp_types::InitializedParams;
+use tower_lsp::lsp_types::MessageType;
+use tower_lsp::lsp_types::OneOf;
+use tower_lsp::lsp_types::RenameFilesParams;
+use tower_lsp::lsp_types::ServerCapabilities;
+use tower_lsp::lsp_types::TextDocumentItem;
+use tower_lsp::lsp_types::TextDocumentSyncCapability;
+use tower_lsp::lsp_types::TextDocumentSyncKind;
+use tower_lsp::lsp_types::TextDocumentSyncOptions;
+use tower_lsp::lsp_types::WorkspaceFolder;
+use tower_lsp::lsp_types::WorkspaceFoldersServerCapabilities;
+use tower_lsp::lsp_types::WorkspaceServerCapabilities;
 
-use crate::lsp::{
-    backend::Backend as _,
-    copilot::{
-        cache::CopilotCache,
-        types::{
-            CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
-            CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
-        },
-    },
-};
+use crate::lsp::backend::Backend as _;
+use crate::lsp::copilot::cache::CopilotCache;
+use crate::lsp::copilot::types::CopilotAcceptCompletionParams;
+use crate::lsp::copilot::types::CopilotCompletionResponse;
+use crate::lsp::copilot::types::CopilotCompletionTelemetry;
+use crate::lsp::copilot::types::CopilotEditorInfo;
+use crate::lsp::copilot::types::CopilotLspCompletionParams;
+use crate::lsp::copilot::types::CopilotRejectCompletionParams;
+use crate::lsp::copilot::types::DocParams;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {

@@ -1,22 +1,31 @@
-use std::{fmt, str::FromStr};
+use std::fmt;
+use std::str::FromStr;
 
 use indexmap::IndexMap;
 use regex::Regex;
-use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
-    MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
-};
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::CompletionItemLabelDetails;
+use tower_lsp::lsp_types::Documentation;
+use tower_lsp::lsp_types::InsertTextFormat;
+use tower_lsp::lsp_types::MarkupContent;
+use tower_lsp::lsp_types::MarkupKind;
+use tower_lsp::lsp_types::ParameterInformation;
+use tower_lsp::lsp_types::ParameterLabel;
+use tower_lsp::lsp_types::SignatureHelp;
+use tower_lsp::lsp_types::SignatureInformation;
 
-use crate::{
-    ModuleId,
-    execution::annotations,
-    parsing::{
-        ast::types::{
-            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
-        },
-        token::NumericSuffix,
-    },
-};
+use crate::ModuleId;
+use crate::execution::annotations;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::NumericSuffix;
 
 pub fn walk_prelude() -> ModData {
     visit_module("prelude", "", WalkForNames::All).unwrap()
@@ -110,7 +119,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         )?),
                     };
                     if let Some(m) = m {
-                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
+                        let key = format!("M:{}", &m.qual_name);
+                        let mut dd = DocData::Mod(m);
+                        dd.with_meta(&import.outer_attrs);
+                        result.children.insert(key, dd);
                     }
                 }
                 p => return Err(format!("Unexpected import: `{p}`")),
@@ -265,7 +277,7 @@ impl DocData {
             DocData::Fn(f) => f.properties.experimental,
             DocData::Const(c) => c.properties.experimental,
             DocData::Ty(t) => t.properties.experimental,
-            DocData::Mod(_) => false,
+            DocData::Mod(d) => d.properties.experimental,
         }
     }
 
@@ -453,6 +465,7 @@ pub struct ModData {
     /// The description of the module.
     pub description: Option<String>,
     pub module_name: String,
+    pub properties: Properties,
 
     pub children: IndexMap<String, DocData>,
 }
@@ -472,6 +485,13 @@ impl ModData {
             description: None,
             children: IndexMap::new(),
             module_name,
+            properties: Properties {
+                exported: false,
+                deprecated: false,
+                experimental: false,
+                doc_hidden: false,
+                impl_kind: Default::default(),
+            },
         }
     }
 
@@ -1234,7 +1254,7 @@ impl ApplyMeta for ModData {
     }
 
     fn experimental(&mut self, experimental: bool) {
-        assert!(!experimental);
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1310,9 +1330,11 @@ impl ApplyMeta for ArgData {
 
 #[cfg(test)]
 mod test {
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
+    use std::path::PathBuf;
 
-    use kcl_derive_docs::{for_all_example_test, for_each_example_test};
+    use kcl_derive_docs::for_all_example_test;
+    use kcl_derive_docs::for_each_example_test;
 
     use super::*;
 
