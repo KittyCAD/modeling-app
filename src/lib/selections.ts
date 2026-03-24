@@ -159,12 +159,11 @@ async function resolveSweepParentEntityIdForEdge(
   type SearchNode = {
     id: string
     depth: number
-    via: 'start' | 'parent' | 'child'
+    via: 'start' | 'parent'
   }
   const queue: SearchNode[] = [{ id: entityId, depth: 0, via: 'start' }]
   const visited = new Set<string>()
   const parentCache = new Map<string, string | null>()
-  const childCache = new Map<string, string[] | null>()
   const logSearch = (
     level: 'info' | 'warn',
     message: string,
@@ -194,15 +193,6 @@ async function resolveSweepParentEntityIdForEdge(
     const parent = await getParentEntityIdForEntity(id, engineCommandManager)
     parentCache.set(id, parent ?? null)
     return parent ?? undefined
-  }
-  const fetchChildren = async (id: string): Promise<string[] | undefined> => {
-    if (childCache.has(id)) {
-      const cached = childCache.get(id)
-      return cached ?? undefined
-    }
-    const children = await getChildEntityIdsForEntity(id, engineCommandManager)
-    childCache.set(id, children ?? null)
-    return children ?? undefined
   }
 
   while (queue.length > 0) {
@@ -297,27 +287,6 @@ async function resolveSweepParentEntityIdForEdge(
       logSearch('info', 'no parent entity returned', {
         fromEntityId: node.id,
         depth: node.depth,
-      })
-    }
-
-    const children = await fetchChildren(node.id)
-    if (children && children.length > 0) {
-      logSearch('info', 'enqueue child entities', {
-        fromEntityId: node.id,
-        childCount: children.length,
-        depth: node.depth + 1,
-        hopCount: node.depth + 1,
-      })
-      for (const childId of children) {
-        if (!visited.has(childId)) {
-          queue.push({ id: childId, depth: node.depth + 1, via: 'child' })
-        }
-      }
-    } else {
-      logSearch('info', 'no child entities returned', {
-        fromEntityId: node.id,
-        depth: node.depth,
-        hopCount: node.depth,
       })
     }
   }
