@@ -3549,32 +3549,8 @@ fn sketch_face_of_artifact_ast_expr(
             let solid_name = variable_name_from_code_ref_node_path(ast, &sweep.code_ref).ok_or_else(|| Error {
                 msg: format!("Could not resolve extrude variable for selected wall: {artifact_id:?}"),
             })?;
-            let solid_expr = ast_name_expr(solid_name);
-
-            let region_name = if let ast::Expr::Name(solid_name_expr) = &solid_expr {
-                let solid_name = &solid_name_expr.name.name;
-                if let Some(ast::Definition::Variable(solid_decl)) = ast.get_variable(solid_name)
-                    && let ast::Expr::CallExpressionKw(extrude_call) = &solid_decl.init
-                    && extrude_call.callee.name.name == "extrude"
-                    && let Some(ast::Expr::Name(region_name_expr)) = extrude_call.unlabeled.as_ref()
-                {
-                    let candidate = region_name_expr.name.name.clone();
-                    if let Some(ast::Definition::Variable(region_decl)) = ast.get_variable(&candidate)
-                        && let ast::Expr::CallExpressionKw(region_call) = &region_decl.init
-                        && region_call.callee.name.name == "region"
-                    {
-                        Some(candidate)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-            let face_expr: ast::Expr;
-            if let Some(region_name) = &region_name {
+            let solid_expr = ast_name_expr(solid_name.clone());
+            let face_expr = if let Some(region_name) = region_name_from_extrude_variable(ast, &solid_name) {
                 let source_segment = segment
                     .original_seg_id
                     .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
@@ -3598,20 +3574,20 @@ fn sketch_face_of_artifact_ast_expr(
                         ),
                     });
                 };
-                face_expr = create_member_expression(
+                create_member_expression(
                     create_member_expression(ast_name_expr(region_name.clone()), "tags"),
                     &segment_name_expr.name.name,
-                );
+                )
             } else {
-                face_expr = get_or_insert_ast_reference(
+                get_or_insert_ast_reference(
                     ast,
                     &SourceRef::Simple {
                         range: segment.code_ref.range,
                     },
                     "line",
                     None,
-                )?;
-            }
+                )?
+            };
 
             Ok(create_face_of_ast(solid_expr, face_expr))
         }
@@ -3687,6 +3663,33 @@ fn variable_name_from_code_ref_node_path(
         return None;
     };
     Some(var_decl.declaration.id.name.clone())
+}
+
+#[cfg(feature = "artifact-graph")]
+fn region_name_from_extrude_variable(ast: &ast::Node<ast::Program>, extrude_variable_name: &str) -> Option<String> {
+    let ast::Definition::Variable(extrude_decl) = ast.get_variable(extrude_variable_name)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(extrude_call) = &extrude_decl.init else {
+        return None;
+    };
+    if extrude_call.callee.name.name != "extrude" {
+        return None;
+    }
+    let ast::Expr::Name(region_name_expr) = extrude_call.unlabeled.as_ref()? else {
+        return None;
+    };
+    let candidate = region_name_expr.name.name.clone();
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
