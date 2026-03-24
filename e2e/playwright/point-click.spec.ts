@@ -1760,14 +1760,17 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
 
-    await test.step('Confirm code has edgeRef and angle updated', async () => {
+    await test.step(
+      'Confirm code has sideFaces edge reference payload and angle updated',
+      async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       const code = await editor.getCurrentCode()
-      expect(code).toContain('edgeRef')
+      expect(code).toContain('axis = { sideFaces = [')
       expect(code).toContain('180deg')
       expect(code).not.toContain('axis = getOppositeEdge')
-    })
+      }
+    )
   })
 
   // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in helix
@@ -1849,14 +1852,17 @@ helix001 = helix(
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
 
-    await test.step('Confirm code has edgeRef and radius updated', async () => {
+    await test.step(
+      'Confirm code has sideFaces edge reference payload and radius updated',
+      async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       const code = await editor.getCurrentCode()
-      expect(code).toContain('edgeRef')
+      expect(code).toContain('axis = { sideFaces = [')
       expect(code).toContain('radius = 2')
       expect(code).not.toContain('axis = getOppositeEdge')
-    })
+      }
+    )
   })
 
   test(`Fillet point-and-click delete`, async ({
@@ -2675,7 +2681,7 @@ extrude001 = extrude(profile001, length = 500)`
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)`
-    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = END)`
+    const deleteDeclaration = `surface001 = deleteFace(extrude001, faces = capEnd001)`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
