@@ -1,6 +1,7 @@
 import type {
   ApiConstraint,
   ApiObject,
+  Expr,
   SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
@@ -102,16 +103,24 @@ export function getArcPoints(
   objects: ApiObject[]
 ) {
   if (isCircleSegment(arcObj)) {
-    const centerObj = objects[arcObj.kind.segment.center]
     const startObj = objects[arcObj.kind.segment.start]
-    if (!isPointSegment(centerObj) || !isPointSegment(startObj)) {
+    if (
+      !isPointSegment(startObj) ||
+      arcObj.kind.segment.ctor.type !== 'Circle'
+    ) {
       return null
     }
 
     const start = pointToCoords2d(startObj)
+    const centerX = exprToNumber(arcObj.kind.segment.ctor.center.x)
+    const centerY = exprToNumber(arcObj.kind.segment.ctor.center.y)
+    if (centerX === null || centerY === null) {
+      return null
+    }
+    const center: Coords2d = [centerX, centerY]
 
     return {
-      center: pointToCoords2d(centerObj),
+      center,
       start,
       end: start,
       isCircle: true,
@@ -401,6 +410,10 @@ export function pointToCoords2d(point: PointSegment): Coords2d {
     point.kind.segment.position.x.value,
     point.kind.segment.position.y.value,
   ]
+}
+
+export function exprToNumber(expr: Expr): number | null {
+  return expr.type === 'Number' || expr.type === 'Var' ? expr.value : null
 }
 
 /**

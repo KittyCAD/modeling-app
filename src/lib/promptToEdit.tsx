@@ -167,23 +167,16 @@ But it's also worth bearing in mind that the user may have intended to select th
           })
         }
       }
-      if (artifact?.type === 'sweepEdge') {
+      if (artifact?.type === 'primitiveEdge') {
         prompts.push({
           prompt: `The users main selection is the edge of a general-sweep (that is an extrusion, revolve, sweep or loft).
-it is an ${
-            artifact.subType
-          } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
-and then use the function ${
-            artifact.subType === 'adjacent'
-              ? 'getAdjacentEdge'
-              : 'getOppositeEdge'
-          }
-See later source ranges for more context. about the sweep`,
+To refer to this edge you should add a tag to the segment function in this source range.
+See later source ranges for more context about the sweep`,
           range: convertAppRangeToApiRange(codeRef.range, code),
           file: filePath,
         })
         let sweep = getArtifactOfTypes(
-          { key: artifact.sweepId, types: ['sweep'] },
+          { key: artifact.solidId, types: ['sweep'] },
           artifactGraph
         )
         if (!err(sweep)) {

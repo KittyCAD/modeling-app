@@ -542,7 +542,6 @@ interface OperationProps {
     preferredArtifactType?: Artifact['type']
   ) => void
   size?: 'default' | 'sm'
-  size?: 'default' | 'sm'
 }
 /**
  * A button with an icon, name, and context menu

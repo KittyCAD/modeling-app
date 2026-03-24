@@ -1456,7 +1456,11 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
     )
     if (err(selections)) throw selections
 
-    expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
+    expect(selections.graphSelectionsV2).toHaveLength(1)
+    const resolved = resolveSelectionV2(
+      selections.graphSelectionsV2[0],
+      artifactGraph
+    )
+    expect(resolved?.artifact?.type).toBe('wall')
   })
 })

@@ -401,6 +401,8 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
+      edgeRefactorMetadata: [],
+      directTagFilletMetadata: [],
     },
   }
 }

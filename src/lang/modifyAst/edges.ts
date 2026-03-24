@@ -2525,7 +2525,7 @@ function groupSelectionsByBodyAndAddTags(
             parentId,
             primitiveIndex,
             bodyKeySnippet: bodyKey.slice(0, 80),
-            sweepArtifactType: sweepArtifact.type,
+            sweepArtifactType: (sweepArtifact as Artifact).type,
           }
         )
       }

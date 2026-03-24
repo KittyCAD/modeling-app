@@ -125,13 +125,11 @@ function buildSegmentCtorWithDrag({
     }
   } else if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
-    const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
 
     return {
       type: 'Circle',
       center: newCenter,
-      start: newStart,
-      construction: baseCtor.construction,
+      radius: baseCtor.radius,
     }
   }
 

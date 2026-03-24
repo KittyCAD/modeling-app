@@ -46,6 +46,8 @@ export function createSceneGraphDelta(
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
+      edgeRefactorMetadata: [],
+      directTagFilletMetadata: [],
     },
   }
 }
@@ -181,12 +183,12 @@ export function createArcApiObject({
  */
 export function createCircleApiObject({
   id,
-  center,
   start,
+  radius = 10,
 }: {
   id: number
-  center: number
   start: number
+  radius?: number
 }): ApiObject {
   return {
     id,
@@ -194,22 +196,17 @@ export function createCircleApiObject({
       type: 'Segment',
       segment: {
         type: 'Circle',
-        center,
         start,
+        radius: { value: radius, units: 'Mm' },
         ctor: {
           type: 'Circle',
           center: {
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          start: {
-            x: { type: 'Var', value: 0, units: 'Mm' },
-            y: { type: 'Var', value: 0, units: 'Mm' },
-          },
-          construction: false,
+          radius: { type: 'Var', value: radius, units: 'Mm' },
         },
         ctor_applicable: false,
-        construction: false,
       },
     },
     label: '',

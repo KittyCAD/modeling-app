@@ -7,6 +7,7 @@ import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
+import { resolveSelectionV2 } from '@src/lang/queryAst'
 import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -27,12 +28,20 @@ export async function deleteSelectionPromise({
   }
 }): Promise<Error | undefined> {
   const ast = systemDeps.kclManager.ast
+  const resolvedSelection = resolveSelectionV2(
+    selection,
+    systemDeps.kclManager.artifactGraph
+  )
+  if (!resolvedSelection) {
+    return new Error(deletionErrorMessage)
+  }
+  const artifact = resolvedSelection.artifact
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.
   if (
-    selection.artifact?.type === 'sketchBlock' ||
-    selection.artifact?.type === 'sketchBlockConstraint'
+    artifact?.type === 'sketchBlock' ||
+    artifact?.type === 'sketchBlockConstraint'
   ) {
     let result:
       | {
@@ -42,25 +51,25 @@ export async function deleteSelectionPromise({
       | undefined = undefined
     try {
       const settings = jsAppSettings(systemDeps.rustContext.settingsActor)
-      switch (selection.artifact.type) {
+      switch (artifact.type) {
         case 'sketchBlock':
           result = await systemDeps.rustContext.deleteSketch(
             SKETCH_FILE_VERSION,
-            selection.artifact.sketchId,
+            artifact.sketchId,
             settings
           )
           break
         case 'sketchBlockConstraint':
           result = await systemDeps.rustContext.deleteObjects(
             SKETCH_FILE_VERSION,
-            selection.artifact.sketchId,
-            [selection.artifact.constraintId],
+            artifact.sketchId,
+            [artifact.constraintId],
             [],
             settings
           )
           break
         default: {
-          const _exhaustiveCheck: never = selection.artifact
+          const _exhaustiveCheck: never = artifact
           return new Error('Should never happen at runtime')
         }
       }
@@ -79,7 +88,7 @@ export async function deleteSelectionPromise({
   // AST based deletion, we should stop adding cases in there
   const modifiedAst = await deleteFromSelection(
     ast,
-    selection,
+    resolvedSelection,
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
     await systemDeps.kclManager.wasmInstancePromise,

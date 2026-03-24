@@ -990,7 +990,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: ['segment', 'primitiveEdge', 'edgeCut'],
         multiple: false,
         hidden: (context) =>
           Boolean(context.argumentsToSubmit.nodeToEdit) ||
@@ -1492,7 +1492,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       edge: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['segment', 'primitiveEdge'],
         multiple: false,
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.mode as string),
@@ -1670,12 +1670,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
+        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
         skip: false,
@@ -1740,12 +1735,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
+        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
         skip: false,
@@ -2570,12 +2560,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       edges: {
         inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
+        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
         description: 'Note: Only straight edges are supported now.',

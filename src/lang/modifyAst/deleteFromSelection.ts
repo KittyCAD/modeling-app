@@ -21,6 +21,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getFaceCodeRef,
+  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
@@ -32,7 +33,6 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
@@ -40,7 +40,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
-  selection: Selection,
+  selection: ResolvedGraphSelection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
@@ -156,7 +156,7 @@ export async function deleteFromSelection(
   // Below is all AST-based deletion logic
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    selection?.codeRef?.pathToNode,
+    selection.codeRef.pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )

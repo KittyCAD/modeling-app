@@ -182,16 +182,17 @@ export async function createCircleActor({
   )
 
   try {
+    const radiusValue = Math.hypot(
+      startPoint[0] - centerPoint[0],
+      startPoint[1] - centerPoint[1]
+    )
     const segmentCtor: SegmentCtor = {
       type: 'Circle',
       center: {
         x: { type: 'Var', value: roundOff(centerPoint[0]), units },
         y: { type: 'Var', value: roundOff(centerPoint[1]), units },
       },
-      start: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
-      },
+      radius: { type: 'Var', value: roundOff(radiusValue), units },
     }
 
     return await rustContext.addSegment(

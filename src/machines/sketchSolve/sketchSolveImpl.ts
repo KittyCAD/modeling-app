@@ -274,23 +274,15 @@ export function buildSegmentCtorFromObject(
       end: endPoint,
     }
   } else if (isCircleSegment(obj)) {
-    const centerPoint = getLinkedPoint({
-      objects,
-      pointId: obj.kind.segment.center,
-    })
-    const startPoint = getLinkedPoint({
-      objects,
-      pointId: obj.kind.segment.start,
-    })
-    if (!centerPoint || !startPoint) {
-      console.error('Failed to find linked points for Circle segment', obj)
+    const ctor = obj.kind.segment.ctor
+    if (ctor.type !== 'Circle') {
+      console.error('Failed to find circle ctor for Circle segment', obj)
       return null
     }
     return {
       type: 'Circle',
-      center: centerPoint,
-      start: startPoint,
-      construction: obj.kind.segment.construction,
+      center: ctor.center,
+      radius: ctor.radius,
     }
   }
   return null
@@ -329,11 +321,7 @@ export function updateSegmentGroup({
   let isConstruction = false
   if (objects) {
     const segmentObj = objects[idNum]
-    if (
-      isLineSegment(segmentObj) ||
-      isArcSegment(segmentObj) ||
-      isCircleSegment(segmentObj)
-    ) {
+    if (isLineSegment(segmentObj) || isArcSegment(segmentObj)) {
       isConstruction = segmentObj.kind.segment.construction === true
     }
   }
@@ -432,8 +420,7 @@ function initSegmentGroup({
     if (
       segmentObj?.kind?.type === 'Segment' &&
       (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc' ||
-        segmentObj.kind.segment.type === 'Circle')
+        segmentObj.kind.segment.type === 'Arc')
     ) {
       isConstruction = segmentObj.kind.segment.construction === true
     }

@@ -74,7 +74,7 @@ describe('circleToolImpl', () => {
     it('extracts IDs from scene graph and persists created circles', () => {
       const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
       const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
-      const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
+      const circleObj = createCircleApiObject({ id: 3, start: 2 })
 
       const sceneGraphDelta = createSceneGraphDelta(
         [centerPoint, startPoint, circleObj],

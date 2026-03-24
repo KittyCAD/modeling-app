@@ -902,7 +902,7 @@ sketch003 = startSketchOn(XZ)
         codeBefore.indexOf(lineOfInterest),
         codeBefore.indexOf(lineOfInterest) + lineOfInterest.length
       )
-      const artifact = { type } as Artifact
+      const artifact = { type } as unknown as Artifact
       const newAst = await deleteFromSelection(
         ast,
         {

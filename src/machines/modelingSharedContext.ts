@@ -35,6 +35,8 @@ const dummyInitSketchGraphDelta = Object.freeze({
     artifactGraph: { map: {}, itemCount: 0 },
     filenames: {},
     defaultPlanes: null,
+    edgeRefactorMetadata: [],
+    directTagFilletMetadata: [],
   },
 })
 

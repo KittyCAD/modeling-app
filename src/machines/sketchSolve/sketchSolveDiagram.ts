@@ -42,6 +42,7 @@ import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
+  exprToNumber,
   isArcSegment,
   isCircleSegment,
   isLineSegment,
@@ -426,31 +427,38 @@ export const sketchSolveMachine = setup({
         } else if (currentSelections.length === 1) {
           const first = currentSelections[0]
           if (isArcSegment(first) || isCircleSegment(first)) {
-            // Calculate radius for arc segment from its center and start point
-            const centerPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.center
-              ]
-            const startPoint =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.start
-              ]
-            if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
-              const point1 = {
-                x: centerPoint.kind.segment.position.x,
-                y: centerPoint.kind.segment.position.y,
+            if (isArcSegment(first)) {
+              // Calculate radius for arc segment from center and start point.
+              const centerPoint =
+                context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                  first.kind.segment.center
+                ]
+              const startPoint =
+                context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                  first.kind.segment.start
+                ]
+              if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
+                const point1 = {
+                  x: centerPoint.kind.segment.position.x,
+                  y: centerPoint.kind.segment.position.y,
+                }
+                const point2 = {
+                  x: startPoint.kind.segment.position.x,
+                  y: startPoint.kind.segment.position.y,
+                }
+                const distanceResult = distanceBetweenPoint2DExpr(
+                  point1,
+                  point2,
+                  await context.kclManager.wasmInstancePromise
+                )
+                if (!(distanceResult instanceof Error)) {
+                  distance = roundOff(distanceResult.distance)
+                }
               }
-              const point2 = {
-                x: startPoint.kind.segment.position.x,
-                y: startPoint.kind.segment.position.y,
-              }
-              const distanceResult = distanceBetweenPoint2DExpr(
-                point1,
-                point2,
-                await context.kclManager.wasmInstancePromise
-              )
-              if (!(distanceResult instanceof Error)) {
-                distance = roundOff(distanceResult.distance)
+            } else if (first.kind.segment.ctor.type === 'Circle') {
+              const radius = exprToNumber(first.kind.segment.ctor.radius)
+              if (radius !== null) {
+                distance = roundOff(radius)
               }
             }
             // Apply radius constraint for arc
@@ -658,14 +666,14 @@ export const sketchSolveMachine = setup({
 
           // Get current construction state
           const currentConstruction =
-            isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+            isLineSegment(obj) || isArcSegment(obj)
               ? obj.kind.segment.construction
               : false
 
           // Toggle construction state
           const newConstruction = !currentConstruction
 
-          // Add construction property to Line or Arc ctors
+          // Add construction property to Line or Arc ctors.
           if (baseCtor.type === 'Line') {
             segmentsToEdit.push({
               id,
@@ -675,14 +683,6 @@ export const sketchSolveMachine = setup({
               },
             })
           } else if (baseCtor.type === 'Arc') {
-            segmentsToEdit.push({
-              id,
-              ctor: {
-                ...baseCtor,
-                construction: newConstruction,
-              },
-            })
-          } else if (baseCtor.type === 'Circle') {
             segmentsToEdit.push({
               id,
               ctor: {

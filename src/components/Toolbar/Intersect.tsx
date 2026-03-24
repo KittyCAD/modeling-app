@@ -13,6 +13,7 @@ import {
   resolveSelectionV2,
 } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
@@ -21,7 +22,6 @@ import {
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import {
-  type CodeRef,
   isPathToNode,
   type Expr,
   type Program,
