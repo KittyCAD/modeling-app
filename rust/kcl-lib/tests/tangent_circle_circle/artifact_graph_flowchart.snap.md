@@ -36,7 +36,13 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   17["SketchBlockConstraint Radius<br>[913, 933, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  18["SketchBlockConstraint Tangent<br>[1069, 1092, 0]"]
+  18["SketchBlockConstraint FixedX<br>[984, 1009, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  19["SketchBlockConstraint FixedY<br>[1012, 1037, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  20["SketchBlockConstraint FixedY<br>[1040, 1065, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  21["SketchBlockConstraint Tangent<br>[1069, 1092, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 7

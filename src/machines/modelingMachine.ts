@@ -416,6 +416,7 @@ export type ModelingMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Fixed'
         | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
@@ -6895,6 +6896,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         coincident: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Fixed: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         Tangent: {

@@ -10,7 +10,9 @@ import type {
   ApiConstraint,
   ApiFile,
   ApiFileId,
+  FixedPoint,
   ApiObjectId,
+  Number as ApiNumber,
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
@@ -573,6 +575,35 @@ export default class RustContext {
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add fixed x/y constraints for one or more points in a sketch. */
+  async addFixed(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    points: FixedPoint[],
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] = await instance.add_fixed(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(points),
+        JSON.stringify(settings)
+      )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
       const err = { message: e }
       return Promise.reject(err)
     }

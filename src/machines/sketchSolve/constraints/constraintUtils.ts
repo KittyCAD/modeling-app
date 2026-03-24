@@ -1,5 +1,6 @@
 import type {
   ApiConstraint,
+  FixedPoint,
   ApiObject,
   SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -223,6 +224,31 @@ export function buildTangentConstraintInput(
 
   return null
 }
+
+export function buildFixedConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+): FixedPoint[] | null {
+  if (selectedIds.length === 0) {
+    return null
+  }
+
+  const fixedPoints: FixedPoint[] = []
+  for (const id of selectedIds) {
+    const point = objects[id]
+    if (!isPointSegment(point)) {
+      return null
+    }
+
+    fixedPoints.push({
+      point: point.id,
+      position: point.kind.segment.position,
+    })
+  }
+
+  return fixedPoints
+}
+
 type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
@@ -375,6 +401,17 @@ export function getSelectedTangentConstraintInput(
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
   return buildTangentConstraintInput(selectedIds, objects)
+}
+
+export function getSelectedFixedConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildFixedConstraintInput(selectedIds, objects)
 }
 
 export type SpriteLabel = Sprite & {

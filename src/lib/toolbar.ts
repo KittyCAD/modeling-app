@@ -13,7 +13,10 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getSelectedFixedConstraintInput,
+  getSelectedTangentConstraintInput,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
@@ -1645,6 +1648,26 @@ export const useToolbarConfig = () => {
             title: 'Coincident',
             hotkey: 'C',
             description: 'Constrain points or curves to be coincident',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Fixed',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Fixed',
+              }),
+            icon: 'fix',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedFixedConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedFixedConstraintInput(state) === null
+                ? 'Select exactly one point to lock it in place.'
+                : undefined,
+            title: 'Fixed',
+            hotkey: 'F',
+            description: 'Lock a point to its current x and y position',
             links: [],
             isActive: (state) => false,
           },

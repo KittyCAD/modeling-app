@@ -23,6 +23,8 @@ use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Distance;
+use crate::front::FixedConstraint;
+use crate::front::FixedPoint;
 use crate::front::Freedom;
 use crate::front::LinesEqualLength;
 use crate::front::Parallel;
@@ -80,6 +82,21 @@ struct ArcSizeConstraintParams {
     value: f64,
     units: NumericSuffix,
     constraint_type_name: &'static str,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum FixedAxis {
+    X,
+    Y,
+}
+
+impl FixedAxis {
+    fn index(self) -> usize {
+        match self {
+            Self::X => 0,
+            Self::Y => 1,
+        }
+    }
 }
 
 const POINT_FN: &str = "point";
@@ -734,6 +751,14 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::FixedX(fixed) => {
+                self.add_fixed_constraint(sketch, fixed, FixedAxis::X, &mut new_ast)
+                    .await?
+            }
+            Constraint::FixedY(fixed) => {
+                self.add_fixed_constraint(sketch, fixed, FixedAxis::Y, &mut new_ast)
+                    .await?
+            }
             Constraint::HorizontalDistance(distance) => {
                 self.add_horizontal_distance(sketch, distance, &mut new_ast).await?
             }
@@ -761,6 +786,31 @@ impl SketchApi for FrontendState {
             .await;
 
         // If execution failed, restore the original state to prevent corruption
+        if result.is_err() {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+        }
+
+        result
+    }
+
+    async fn add_fixed(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        points: Vec<FixedPoint>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        let original_program = self.program.clone();
+        let original_scene_graph = self.scene_graph.clone();
+
+        let mut new_ast = self.program.ast.clone();
+        let sketch_block_range = self.add_fixed_constraints(sketch, points, &mut new_ast).await?;
+
+        let result = self
+            .execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
+            .await;
+
         if result.is_err() {
             self.program = original_program;
             self.scene_graph = original_scene_graph;
@@ -955,6 +1005,14 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::FixedX(fixed) => {
+                    self.add_fixed_constraint(sketch, fixed, FixedAxis::X, &mut new_ast)
+                        .await?;
+                }
+                Constraint::FixedY(fixed) => {
+                    self.add_fixed_constraint(sketch, fixed, FixedAxis::Y, &mut new_ast)
+                        .await?;
                 }
                 Constraint::HorizontalDistance(distance) => {
                     self.add_horizontal_distance(sketch, distance, &mut new_ast).await?;
@@ -2647,6 +2705,58 @@ impl FrontendState {
         self.add_arc_size_constraint(sketch, params, new_ast).await
     }
 
+    async fn add_fixed_constraints(
+        &mut self,
+        sketch: ObjectId,
+        points: Vec<FixedPoint>,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let mut sketch_block_range = None;
+
+        for fixed_point in points {
+            let point_ast = self.point_id_to_ast_reference(fixed_point.point, new_ast)?;
+            let fixed_x_ast = create_fixed_constraint_ast(point_ast.clone(), FixedAxis::X, fixed_point.position.x)
+                .map_err(|err| Error { msg: err.to_string() })?;
+            let fixed_y_ast = create_fixed_constraint_ast(point_ast, FixedAxis::Y, fixed_point.position.y)
+                .map_err(|err| Error { msg: err.to_string() })?;
+
+            let (_, _) = self.mutate_ast(
+                new_ast,
+                sketch,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_x_ast },
+            )?;
+            let (range, _) = self.mutate_ast(
+                new_ast,
+                sketch,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_y_ast },
+            )?;
+            sketch_block_range = Some(range);
+        }
+
+        sketch_block_range.ok_or_else(|| Error {
+            msg: "Fixed constraint requires at least one point".to_owned(),
+        })
+    }
+
+    async fn add_fixed_constraint(
+        &mut self,
+        sketch: ObjectId,
+        fixed: FixedConstraint,
+        axis: FixedAxis,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let point_ast = self.point_id_to_ast_reference(fixed.point, new_ast)?;
+        let fixed_ast =
+            create_fixed_constraint_ast(point_ast, axis, fixed.value).map_err(|err| Error { msg: err.to_string() })?;
+
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_arc_size_constraint(
         &mut self,
         sketch: ObjectId,
@@ -3201,6 +3311,22 @@ impl FrontendState {
                     }
                     false
                 }),
+                Constraint::FixedX(fixed) | Constraint::FixedY(fixed) => {
+                    if segment_ids_set.contains(&fixed.point) {
+                        true
+                    } else {
+                        let pt_object = self.scene_graph.objects.get(fixed.point.0);
+                        if let Some(obj) = pt_object
+                            && let ObjectKind::Segment { segment } = &obj.kind
+                            && let Segment::Point(pt) = segment
+                            && let Some(owner_id) = pt.owner
+                        {
+                            segment_ids_set.contains(&owner_id)
+                        } else {
+                            false
+                        }
+                    }
+                }
                 Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
                 Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
                 Constraint::HorizontalDistance(d) => d.points.iter().any(|pt_id| {
@@ -4238,6 +4364,40 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
+/// Create a computed member expression like object[index] (e.g. point.at[0]).
+pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> anyhow::Result<ast::Expr> {
+    Ok(ast::Expr::MemberExpression(Box::new(ast::Node::no_src(
+        ast::MemberExpression {
+            object: object_expr,
+            property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                Number {
+                    value: index as f64,
+                    units: NumericSuffix::None,
+                },
+            )?)))),
+            computed: true,
+            digest: None,
+        },
+    ))))
+}
+
+/// Create an AST node for point.at[index] == value.
+fn create_fixed_constraint_ast(point_expr: ast::Expr, axis: FixedAxis, value: Number) -> anyhow::Result<ast::Expr> {
+    let point_at_expr = create_member_expression(point_expr, POINT_AT_PARAM);
+    let indexed_expr = create_index_expression(point_at_expr, axis.index())?;
+
+    Ok(ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(
+        ast::BinaryExpression {
+            left: indexed_expr.try_into().map_err(|err: String| anyhow::anyhow!(err))?,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                value,
+            )?)))),
+            digest: None,
+        },
+    ))))
+}
+
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -4278,6 +4438,8 @@ mod tests {
     use super::*;
     use crate::engine::PlaneName;
     use crate::front::Distance;
+    use crate::front::FixedConstraint;
+    use crate::front::FixedPoint;
     use crate::front::Object;
     use crate::front::Plane;
     use crate::front::Sketch;
@@ -6342,6 +6504,258 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_fixed_x_single_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let constraint = Constraint::FixedX(FixedConstraint {
+            point: point_id,
+            value: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point1.at[0] == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_fixed_y_single_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let constraint = Constraint::FixedY(FixedConstraint {
+            point: point_id,
+            value: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point1.at[1] == 3mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_standalone_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_fixed(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![FixedPoint {
+                    point: point_id,
+                    position: Point2d {
+                        x: Number {
+                            value: 2.0,
+                            units: NumericSuffix::Mm,
+                        },
+                        y: Number {
+                            value: 3.0,
+                            units: NumericSuffix::Mm,
+                        },
+                    },
+                }],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point1.at[0] == 2mm
+  point1.at[1] == 3mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_owned_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_start_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_fixed(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![FixedPoint {
+                    point: line_start_id,
+                    position: Point2d {
+                        x: Number {
+                            value: 2.0,
+                            units: NumericSuffix::Mm,
+                        },
+                        y: Number {
+                            value: 3.0,
+                            units: NumericSuffix::Mm,
+                        },
+                    },
+                }],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1.start.at[0] == 2mm
+  line1.start.at[1] == 3mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_error_cases() {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -7004,6 +7418,76 @@ sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_exec_fixed_x_creates_constraint_object() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point1.at[0] == 2mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let constraint_object = frontend.scene_graph.objects.get(constraint_id.0).unwrap();
+
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected constraint object, got {:?}", constraint_object.kind);
+        };
+        let Constraint::FixedX(fixed) = constraint else {
+            panic!("expected FixedX constraint, got {:?}", constraint);
+        };
+        assert_eq!(fixed.point, sketch.segments[0]);
+        assert_eq!(fixed.value.value, 2.0);
+        assert_eq!(fixed.value.units, NumericSuffix::Mm);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_exec_fixed_y_creates_constraint_object() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point1.at[1] == 3mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let constraint_object = frontend.scene_graph.objects.get(constraint_id.0).unwrap();
+
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected constraint object, got {:?}", constraint_object.kind);
+        };
+        let Constraint::FixedY(fixed) = constraint else {
+            panic!("expected FixedY constraint, got {:?}", constraint);
+        };
+        assert_eq!(fixed.point, sketch.segments[0]);
+        assert_eq!(fixed.value.value, 3.0);
+        assert_eq!(fixed.value.units, NumericSuffix::Mm);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

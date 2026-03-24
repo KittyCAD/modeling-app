@@ -41,6 +41,7 @@ import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   buildAngleConstraintInput,
+  buildFixedConstraintInput,
   buildTangentConstraintInput,
   isArcSegment,
   isCircleSegment,
@@ -175,6 +176,26 @@ async function addVerticalConstraint(
   self: SolveActionArgs['self']
 ) {
   await addLineOrientationConstraint(context, self, 'Vertical')
+}
+
+async function addFixedConstraint(
+  context: SketchSolveContext,
+  self: SolveActionArgs['self']
+) {
+  const objects =
+    context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+  const fixedInput = buildFixedConstraintInput(context.selectedIds, objects)
+  if (!fixedInput) {
+    return
+  }
+
+  const result = await context.rustContext.addFixed(
+    0,
+    context.sketchId,
+    fixedInput,
+    jsAppSettings(context.kclManager.systemDeps.settings)
+  )
+  sendToolbarConstraintOutcome(self, result)
 }
 
 export const sketchSolveMachine = setup({
@@ -336,6 +357,11 @@ export const sketchSolveMachine = setup({
           jsAppSettings(context.kclManager.systemDeps.settings)
         )
         sendToolbarConstraintOutcome(self, result)
+      },
+    },
+    Fixed: {
+      actions: async ({ self, context }) => {
+        await addFixedConstraint(context, self)
       },
     },
     Tangent: {

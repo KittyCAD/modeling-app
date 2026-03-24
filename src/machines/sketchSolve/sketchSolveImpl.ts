@@ -79,6 +79,7 @@ export type SketchSolveMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Fixed'
         | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
