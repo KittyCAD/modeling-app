@@ -2564,7 +2564,9 @@ impl CallExpressionKw {
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        self.callee.rename(old_name, new_name);
+        if !excluded.contains(&self.callee.name.name.as_str()) {
+            self.callee.rename(old_name, new_name);
+        }
 
         if let Some(unlabeled) = &mut self.unlabeled {
             unlabeled.rename_identifiers(old_name, new_name, excluded);
