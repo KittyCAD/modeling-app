@@ -13,6 +13,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
 import type { Coords2d } from '@src/lang/util'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
+import { clamp } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   findInvisibleConstraintsForSegment,
@@ -266,10 +267,6 @@ function unprojectScreenPosition(
     -((screenY / clientHeight) * 2 - 1),
     projectedZ
   ).unproject(sceneInfra.camControls.camera)
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
 }
 
 function createConstraintBadgeSvgDataUrl(
