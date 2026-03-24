@@ -567,7 +567,7 @@ openSketch = startSketchOn(XY)
       await expect(toolbar.selectionStatus).toContainText('No selection')
       await test.step('Click the edge', async () => {
         await clickOnUpperEdge()
-        await expect(toolbar.selectionStatus).toContainText('1 segment')
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Shift-click the same edge to deselect', async () => {
         await page.keyboard.down('Shift')
@@ -582,16 +582,14 @@ openSketch = startSketchOn(XY)
       await test.step('Select both edges and the face', async () => {
         await test.step('Select the upper edge', async () => {
           await clickOnUpperEdge()
-          await expect(toolbar.selectionStatus).toContainText('1 segment')
+          await expect(toolbar.selectionStatus).toContainText('1 edge')
         })
         await test.step('Select the lower edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges')
         })
         await test.step('Select the face (Shift-click)', async () => {
           await page.keyboard.down('Shift')
@@ -609,16 +607,14 @@ openSketch = startSketchOn(XY)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges')
         })
         await test.step('Deselect the lower edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('1 segment')
+          await expect(toolbar.selectionStatus).toContainText('1 edge')
         })
         await test.step('Deselect the upper edge (Shift-click)', async () => {
           await page.keyboard.down('Shift')
@@ -1348,7 +1344,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'radius',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Radius: '',
         },
         stage: 'arguments',
@@ -1357,7 +1353,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Fillet',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Radius: '5',
         },
         stage: 'review',
@@ -1465,7 +1461,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'radius',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Radius: '',
         },
         stage: 'arguments',
@@ -1474,7 +1470,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Fillet',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Radius: '5',
         },
         stage: 'review',
@@ -1776,7 +1772,7 @@ extrude001 = extrude(profile001, length = 5)
           currentArgKey: 'radius',
           currentArgValue: '5',
           headerArguments: {
-            Selection: '1 sweepEdge',
+            Selection: '1 edge',
             Radius: '',
           },
           stage: 'arguments',
@@ -1787,7 +1783,7 @@ extrude001 = extrude(profile001, length = 5)
         await cmdBar.expectState({
           commandName: 'Fillet',
           headerArguments: {
-            Selection: '1 sweepEdge',
+            Selection: '1 edge',
             Radius: '1000',
           },
           stage: 'review',
@@ -1879,7 +1875,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Length: '',
         },
         stage: 'arguments',
@@ -1891,7 +1887,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         headerArguments: {
-          Selection: '1 segment',
+          Selection: '1 edge',
           Length: '5',
         },
         stage: 'review',
@@ -2001,7 +1997,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Length: '',
         },
         stage: 'arguments',
@@ -2010,7 +2006,7 @@ extrude001 = extrude(sketch001, length = -12)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         headerArguments: {
-          Selection: '1 sweepEdge',
+          Selection: '1 edge',
           Length: '5',
         },
         stage: 'review',
@@ -2239,7 +2235,7 @@ extrude001 = extrude(sketch001, length = 30)`
         currentArgKey: 'thickness',
         currentArgValue: '5',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
           Thickness: '',
         },
         highlightedHeaderArg: 'thickness',
@@ -2249,7 +2245,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
           Thickness: '5',
         },
         commandName: 'Shell',
@@ -2353,7 +2349,7 @@ extrude001 = extrude(sketch001, length = 30)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Faces: '1 cap',
+          Faces: '1 face',
         },
         commandName: 'Delete Face',
       })
@@ -2463,7 +2459,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
           Profiles: '1 profile',
           Angle: '',
           AxisOrEdge: 'Edge',
-          Edge: '1 segment',
+          Edge: '1 edge',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2475,7 +2471,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
           Profiles: '1 profile',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
-          Edge: '1 segment',
+          Edge: '1 edge',
         },
         stage: 'review',
       })
@@ -2554,7 +2550,7 @@ box = extrude(profile, length = 30)`
 
     await test.step('Select an edge first (before opening translate)', async () => {
       await editor.selectText(segmentToSelect)
-      await expect(toolbar.selectionStatus).toContainText('1 segment')
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step('Open translate via context menu and verify coercion', async () => {
@@ -3847,7 +3843,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'tolerance',
             currentArgValue: '0.1mm',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '',
             },
             highlightedHeaderArg: 'tolerance',
@@ -3862,7 +3858,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
             },
           })
@@ -3878,7 +3874,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'precision',
             currentArgValue: '3',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '',
             },
@@ -3892,7 +3888,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
             },
@@ -3908,7 +3904,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePosition',
             currentArgValue: '[0, 0]',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '',
@@ -3924,7 +3920,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3940,7 +3936,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3955,7 +3951,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3972,7 +3968,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontPointSize',
             currentArgValue: '36',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -3989,7 +3985,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4007,7 +4003,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontScale',
             currentArgValue: '1.0',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4025,7 +4021,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Tolerance: '0.1mm',
               Precision: '5',
               FramePosition: '[10, 10]',
@@ -4388,7 +4384,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'name',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: '',
             },
             highlightedHeaderArg: 'name',
@@ -4402,7 +4398,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
             },
           })
@@ -4419,7 +4415,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePosition',
             currentArgValue: '[0, 0]',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '',
             },
@@ -4434,7 +4430,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
             },
@@ -4449,7 +4445,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: '',
@@ -4463,7 +4459,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4479,7 +4475,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontPointSize',
             currentArgValue: '36',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4495,7 +4491,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4512,7 +4508,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontScale',
             currentArgValue: '1.0',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4529,7 +4525,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Datum',
             headerArguments: {
-              Faces: '1 cap',
+              Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
@@ -4809,7 +4805,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '[0, 0]',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '',
           HoleBody: '',
           HoleType: '',
@@ -4824,7 +4820,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: '',
           HoleType: '',
@@ -4839,7 +4835,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '2',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '',
@@ -4856,7 +4852,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '1',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4873,7 +4869,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4890,7 +4886,7 @@ extrude001 = extrude(profile001, length = 10)`
         currentArgValue: '',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
@@ -4905,7 +4901,7 @@ extrude001 = extrude(profile001, length = 10)`
         stage: 'review',
         commandName: 'Hole',
         headerArguments: {
-          Face: '1 cap',
+          Face: '1 face',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
           BlindDepth: '2',
