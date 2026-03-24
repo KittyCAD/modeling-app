@@ -28,6 +28,8 @@ export type InvisibleConstraintDisplayState = {
   hoveredConstraintPreviewPosition: Coords2d | null
 }
 
+const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
+
 export class InvisibleConstraintSpriteBuilder {
   private readonly textureCache = new Map<string, Texture>()
   private readonly textureLoader = new TextureLoader()
@@ -98,21 +100,23 @@ export class InvisibleConstraintSpriteBuilder {
     group.position.copy(position)
 
     const scale = sceneInfra.getClientSceneScaleFactor(group)
-    sprite.scale.setScalar(20 * scale)
+    sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
 
     const texture = this.getTexture(
       obj.kind.constraint.type,
       getConstraintBadgeState(obj.id, selectedIds, hoveredId)
     )
 
-    const material = sprite.material as SpriteMaterial
-    material.map = texture
-    material.needsUpdate = true
+    sprite.material.map = texture
+    sprite.material.needsUpdate = true
     sprite.userData.hitObjects = [
       {
         type: 'screenRect',
         center: [group.position.x, group.position.y, group.position.z],
-        sizePx: [20, 20],
+        sizePx: [
+          INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
+          INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
+        ],
       },
     ]
 
@@ -217,7 +221,7 @@ function getHoverPreviewWorldPosition(
     sceneInfra
   )
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
-  const badgeSize = 20
+  const badgeSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX
   const badgeGap = 4
   const viewportPadding = 4
   const totalRowWidth =
@@ -275,7 +279,7 @@ function createConstraintBadgeSvgDataUrl(
 ) {
   const iconPath = getInvisibleConstraintSpriteIcon(objType)
   const dpr = window.devicePixelRatio || 1
-  const rasterSize = 20 * dpr
+  const rasterSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * dpr
   const borderOpacity =
     badgeState === 'selected' ? 1 : badgeState === 'hovered' ? 0.8 : 0
   const borderStroke =
@@ -287,7 +291,7 @@ function createConstraintBadgeSvgDataUrl(
       xmlns="http://www.w3.org/2000/svg"
       width="${rasterSize}"
       height="${rasterSize}"
-      viewBox="0 0 20 20"
+      viewBox="0 0 ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX} ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX}"
       fill="none"
     >
       <rect
