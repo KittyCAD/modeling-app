@@ -1455,10 +1455,10 @@ describe('getSelectionTypeDisplayText', () => {
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
-      graphSelections: [
-        { artifact: { type: 'segment' } as Artifact, codeRef },
-        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+      graphSelectionsV2: [
+        { entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' }, codeRef },
+        { entityRef: { type: 'edge', faces: ['f1', 'f2'] }, codeRef },
+        { entityRef: { type: 'solid2d_edge', edge_id: 'e1' }, codeRef },
       ],
       otherSelections: [
         {
