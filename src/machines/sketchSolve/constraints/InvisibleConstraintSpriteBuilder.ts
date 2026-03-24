@@ -13,6 +13,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
 import type { Coords2d } from '@src/lang/util'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { clamp } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -101,10 +102,12 @@ export class InvisibleConstraintSpriteBuilder {
 
     const scale = sceneInfra.getClientSceneScaleFactor(group)
     sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
+    const theme = getResolvedTheme(sceneInfra.theme)
 
     const texture = this.getTexture(
       obj.kind.constraint.type,
-      getConstraintBadgeState(obj.id, selectedIds, hoveredId)
+      getConstraintBadgeState(obj.id, selectedIds, hoveredId),
+      theme
     )
 
     sprite.material.map = texture
@@ -125,16 +128,17 @@ export class InvisibleConstraintSpriteBuilder {
 
   private getTexture(
     objType: InvisibleConstraintObject['kind']['constraint']['type'],
-    badgeState: ConstraintBadgeState
+    badgeState: ConstraintBadgeState,
+    theme: Themes
   ) {
-    const key = `${objType}:${badgeState}`
+    const key = `${objType}:${badgeState}:${theme}`
     const cached = this.textureCache.get(key)
     if (cached) {
       return cached
     }
 
     const texture = this.textureLoader.load(
-      createConstraintBadgeSvgDataUrl(objType, badgeState)
+      createConstraintBadgeSvgDataUrl(objType, badgeState, theme)
     )
     texture.colorSpace = SRGBColorSpace
     this.textureCache.set(key, texture)
@@ -275,7 +279,8 @@ function unprojectScreenPosition(
 
 function createConstraintBadgeSvgDataUrl(
   objType: InvisibleConstraintObject['kind']['constraint']['type'],
-  badgeState: ConstraintBadgeState
+  badgeState: ConstraintBadgeState,
+  theme: Themes
 ) {
   const iconPath = getInvisibleConstraintSpriteIcon(objType)
   const dpr = window.devicePixelRatio || 1
@@ -286,6 +291,7 @@ function createConstraintBadgeSvgDataUrl(
     borderOpacity === 0
       ? 'none'
       : `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${borderOpacity})`
+  const iconFill = theme === Themes.Dark ? '#000000' : '#FFFFFF'
   const svg = `
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +310,7 @@ function createConstraintBadgeSvgDataUrl(
         stroke="${borderStroke}"
         stroke-width="1"
       />
-      <path d="${iconPath}" fill="#FFFFFF" />
+      <path d="${iconPath}" fill="${iconFill}" />
     </svg>
   `.trim()
 
