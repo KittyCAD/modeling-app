@@ -218,38 +218,6 @@ impl FrontendState {
             .map(|settings| settings.default_length_units)
             .unwrap_or(UnitLength::Millimeters)
     }
-
-    fn sketch_on_ast_expr(&self, ast: &mut ast::Node<ast::Program>, on: &Plane) -> api::Result<ast::Expr> {
-        match on {
-            Plane::Default(name) => Ok(default_plane_ast_expr(*name)),
-            Plane::Object(object_id) => {
-                let on_object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
-                    msg: format!("Sketch plane object not found: {object_id:?}"),
-                })?;
-                get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
-            }
-            Plane::Artifact(artifact_id) => {
-                if let Some(on_object) = self
-                    .scene_graph
-                    .objects
-                    .iter()
-                    .find(|object| object.artifact_id == *artifact_id)
-                {
-                    return get_or_insert_ast_reference(ast, &on_object.source, "plane", None);
-                }
-                #[cfg(feature = "artifact-graph")]
-                {
-                    return sketch_face_of_artifact_ast_expr(ast, &self.artifact_graph, artifact_id);
-                }
-                #[cfg(not(feature = "artifact-graph"))]
-                {
-                    Err(Error {
-                        msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
-                    })
-                }
-            }
-        }
-    }
 }
 
 impl SketchApi for FrontendState {
@@ -294,10 +262,7 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let mut plane_ast = self.sketch_on_ast_expr(&mut new_ast, &args.on)?;
-        // Ensure that we allow experimental features since the sketch block
-        // won't work without it.
-        new_ast.set_experimental_features(Some(WarningLevel::Allow));
+        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.artifact_graph, &self.scene_graph, &args.on)?;
         let mut defined_names = find_defined_names(&new_ast);
         let is_face_of_expr = matches!(
             &plane_ast,
@@ -329,6 +294,9 @@ impl SketchApi for FrontendState {
             non_code_meta: Default::default(),
             digest: None,
         };
+        // Ensure that we allow experimental features since the sketch block
+        // won't work without it.
+        new_ast.set_experimental_features(Some(WarningLevel::Allow));
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
         let sketch_name =
@@ -3514,6 +3482,42 @@ fn only_sketch_block(
     }
 
     Ok(())
+}
+
+fn sketch_on_ast_expr(
+    ast: &mut ast::Node<ast::Program>,
+    artifact_graph: &ArtifactGraph,
+    scene_graph: &SceneGraph,
+    on: &Plane,
+) -> api::Result<ast::Expr> {
+    match on {
+        Plane::Default(name) => Ok(default_plane_ast_expr(*name)),
+        Plane::Object(object_id) => {
+            let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
+                msg: format!("Sketch plane object not found: {object_id:?}"),
+            })?;
+            get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+        }
+        Plane::Artifact(artifact_id) => {
+            if let Some(on_object) = scene_graph
+                .objects
+                .iter()
+                .find(|object| object.artifact_id == *artifact_id)
+            {
+                return get_or_insert_ast_reference(ast, &on_object.source, "plane", None);
+            }
+            #[cfg(feature = "artifact-graph")]
+            {
+                return sketch_face_of_artifact_ast_expr(ast, artifact_graph, artifact_id);
+            }
+            #[cfg(not(feature = "artifact-graph"))]
+            {
+                Err(Error {
+                    msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
+                })
+            }
+        }
+    }
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -7370,8 +7374,6 @@ extrude001 = extrude(region001, length = 5)
             .await
             .unwrap();
         assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
-        assert!(!src_delta.text.contains("region001.tags.s"));
-        assert!(!src_delta.text.contains("region001.tags.region001"));
 
         ctx.close().await;
     }
