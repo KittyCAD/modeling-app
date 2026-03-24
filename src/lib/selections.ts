@@ -1377,22 +1377,22 @@ export function getSelectionTypeDisplayText(
   )
   if (selectionsByType === 'none') return null
 
-  // Display segment count as "edge(s)" (no leaky segment/sweepEdge artifact types)
-  const edgeCount = selectionsByType.get('segment') ?? 0
-  const entries: [string, number][] = [...selectionsByType.entries()]
-    .filter(([type]) => type !== 'segment')
-    .map(([type, count]) => [type, count] as [string, number])
-  if (edgeCount > 0) {
-    entries.push(['edge', edgeCount])
-  }
+  const semanticSelectionsByType = [...selectionsByType.entries()].reduce(
+    (semanticSelectionsByType, [type, count]) => {
+      const semanticType =
+        type === 'other' ? undefined : getSemanticEntityForSelectionType(type)
+      const displayType = semanticType ?? type
+      semanticSelectionsByType.set(
+        displayType,
+        (semanticSelectionsByType.get(displayType) || 0) + count
+      )
+      return semanticSelectionsByType
+    },
+    new Map<string, number>()
+  )
 
-  return entries
-    .map(
-      ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
-        }`
-    )
+  return [...semanticSelectionsByType.entries()]
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
     .join(', ')
 }
 
@@ -1823,16 +1823,25 @@ const semanticEntityNames: {
   plane: ['defaultPlane'],
 }
 
+function getSemanticEntityForSelectionType(
+  selectionType: CommandSelectionType | 'defaultPlane'
+): string | undefined {
+  for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+    if (entityTypes.includes(selectionType)) {
+      return entity
+    }
+  }
+}
+
 /** Convert selections to a human-readable format */
 export function getSemanticSelectionType(
   selectionType: CommandSelectionType[]
 ) {
-  const semanticSelectionType = new Set()
+  const semanticSelectionType = new Set<string>()
   for (const type of selectionType) {
-    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
-      if (entityTypes.includes(type)) {
-        semanticSelectionType.add(entity)
-      }
+    const semanticType = getSemanticEntityForSelectionType(type)
+    if (semanticType) {
+      semanticSelectionType.add(semanticType)
     }
   }
 
