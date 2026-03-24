@@ -243,10 +243,7 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'update hovered id')
       return {
         hoveredId: event.data.hoveredId,
-        hoveredConstraintPreviewTargetId:
-          event.data.hoveredConstraintPreviewTargetId ?? null,
-        hoveredConstraintPreviewPosition:
-          event.data.hoveredConstraintPreviewPosition ?? null,
+        constraintHoverPopup: event.data.constraintHoverPopup ?? null,
       }
     }),
     'refresh selection styling': refreshSelectionStyling,
@@ -279,8 +276,7 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       hoveredId: null,
-      hoveredConstraintPreviewTargetId: null,
-      hoveredConstraintPreviewPosition: null,
+      constraintHoverPopup: null,
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         sourceDelta: {

@@ -2,6 +2,7 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Coords2d } from '@src/lang/util'
 import { Vector3 } from 'three'
 
 import {
@@ -30,6 +31,12 @@ export type InvisibleConstraint = Extract<
 
 export type InvisibleConstraintObject = ApiObject & {
   kind: { type: 'Constraint'; constraint: InvisibleConstraint }
+}
+
+// Pinned hover-preview state for hidden non-visual constraints.
+export type ConstraintHoverPopup = {
+  segmentId: number
+  position: Coords2d
 }
 
 export function isInvisibleConstraintObject(

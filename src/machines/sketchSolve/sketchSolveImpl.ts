@@ -19,7 +19,6 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
-import type { Coords2d } from '@src/lang/util'
 
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -56,6 +55,7 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { ConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { StateEffect } from '@codemirror/state'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
@@ -105,8 +105,7 @@ export type SketchSolveMachineEvent =
       type: 'update hovered id'
       data: {
         hoveredId: number | null
-        hoveredConstraintPreviewTargetId?: number | null
-        hoveredConstraintPreviewPosition?: Coords2d | null
+        constraintHoverPopup?: ConstraintHoverPopup | null
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -177,8 +176,7 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
-  hoveredConstraintPreviewTargetId: number | null
-  hoveredConstraintPreviewPosition: Coords2d | null
+  constraintHoverPopup: ConstraintHoverPopup | null
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -946,8 +944,7 @@ function getInvisibleConstraintDisplayState(
 ): InvisibleConstraintDisplayState {
   return {
     showNonVisualConstraints: context.showNonVisualConstraints,
-    hoveredConstraintPreviewTargetId: context.hoveredConstraintPreviewTargetId,
-    hoveredConstraintPreviewPosition: context.hoveredConstraintPreviewPosition,
+    constraintHoverPopup: context.constraintHoverPopup,
   }
 }
 

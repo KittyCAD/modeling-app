@@ -11,12 +11,12 @@ import {
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
-import type { Coords2d } from '@src/lang/util'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { clamp } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
+  type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
@@ -25,8 +25,7 @@ import {
 
 export type InvisibleConstraintDisplayState = {
   showNonVisualConstraints: boolean
-  hoveredConstraintPreviewTargetId: number | null
-  hoveredConstraintPreviewPosition: Coords2d | null
+  constraintHoverPopup: ConstraintHoverPopup | null
 }
 
 const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
@@ -163,20 +162,16 @@ function getInvisibleConstraintWorldPosition(
     return naturalPosition
   }
 
-  const { hoveredConstraintPreviewTargetId, hoveredConstraintPreviewPosition } =
-    displayState
-  if (
-    hoveredConstraintPreviewTargetId !== null &&
-    hoveredConstraintPreviewPosition !== null
-  ) {
+  const { constraintHoverPopup } = displayState
+  if (constraintHoverPopup !== null) {
     const hoverPreviewConstraintIds = findInvisibleConstraintsForSegment(
-      objects[hoveredConstraintPreviewTargetId],
+      objects[constraintHoverPopup.segmentId],
       objects
     )
     const hoverPreviewIndex = hoverPreviewConstraintIds.indexOf(obj.id)
     if (hoverPreviewIndex !== -1) {
       return getHoverPreviewWorldPosition(
-        hoveredConstraintPreviewPosition,
+        constraintHoverPopup.position,
         hoverPreviewIndex,
         hoverPreviewConstraintIds.length,
         sceneInfra
@@ -210,14 +205,14 @@ function offsetWorldPosition(
 }
 
 function getHoverPreviewWorldPosition(
-  hoveredConstraintPreviewPosition: Coords2d,
+  constraintHoverPopupPosition: ConstraintHoverPopup['position'],
   hoverPreviewIndex: number,
   hoverPreviewCount: number,
   sceneInfra: SceneInfra
 ) {
   const previewPosition = new Vector3(
-    hoveredConstraintPreviewPosition[0],
-    hoveredConstraintPreviewPosition[1],
+    constraintHoverPopupPosition[0],
+    constraintHoverPopupPosition[1],
     0
   )
   const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(

@@ -82,8 +82,7 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive = false,
   sketchId = 0,
   showNonVisualConstraints = false,
-  hoveredConstraintPreviewTargetId = null,
-  hoveredConstraintPreviewPosition = null,
+  constraintHoverPopup = null,
   getSceneObjectByName,
 }: {
   apiObjects?: ApiObject[]
@@ -91,8 +90,7 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
-  hoveredConstraintPreviewTargetId?: number | null
-  hoveredConstraintPreviewPosition?: [number, number] | null
+  constraintHoverPopup?: { segmentId: number; position: [number, number] } | null
   getSceneObjectByName?: (name: string) => unknown
 }) {
   let callbacks: Record<string, unknown> = {}
@@ -133,8 +131,7 @@ function setUpMoveToolCallbacks({
   const snapshot = {
     context: {
       hoveredId,
-      hoveredConstraintPreviewTargetId,
-      hoveredConstraintPreviewPosition,
+      constraintHoverPopup,
       showNonVisualConstraints,
       selectedIds: [],
       duringAreaSelectIds: [],
@@ -151,13 +148,8 @@ function setUpMoveToolCallbacks({
     send: vi.fn((event: any) => {
       if (event.type === 'update hovered id') {
         snapshot.context.hoveredId = event.data.hoveredId
-        if ('hoveredConstraintPreviewTargetId' in event.data) {
-          snapshot.context.hoveredConstraintPreviewTargetId =
-            event.data.hoveredConstraintPreviewTargetId
-        }
-        if ('hoveredConstraintPreviewPosition' in event.data) {
-          snapshot.context.hoveredConstraintPreviewPosition =
-            event.data.hoveredConstraintPreviewPosition
+        if ('constraintHoverPopup' in event.data) {
+          snapshot.context.constraintHoverPopup = event.data.constraintHoverPopup
         }
       }
       if (event.type === 'update selected ids') {
@@ -1453,8 +1445,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 3,
-        hoveredConstraintPreviewTargetId: 3,
-        hoveredConstraintPreviewPosition: [20, 0],
+        constraintHoverPopup: {
+          segmentId: 3,
+          position: [20, 0],
+        },
       },
     })
   })
@@ -1493,8 +1487,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 1,
-        hoveredConstraintPreviewTargetId: 1,
-        hoveredConstraintPreviewPosition: [10, 20],
+        constraintHoverPopup: {
+          segmentId: 1,
+          position: [10, 20],
+        },
       },
     })
   })
@@ -1527,8 +1523,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: 3,
-          hoveredConstraintPreviewTargetId: 3,
-          hoveredConstraintPreviewPosition: [20, 0],
+          constraintHoverPopup: {
+            segmentId: 3,
+            position: [20, 0],
+          },
         },
       })
 
@@ -1549,8 +1547,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: 3,
-          hoveredConstraintPreviewTargetId: null,
-          hoveredConstraintPreviewPosition: null,
+          constraintHoverPopup: null,
         },
       })
 
@@ -1618,8 +1615,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: 20,
-          hoveredConstraintPreviewTargetId: 3,
-          hoveredConstraintPreviewPosition: [20, 0],
+          constraintHoverPopup: {
+            segmentId: 3,
+            position: [20, 0],
+          },
         },
       })
 
@@ -1638,8 +1637,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: null,
-          hoveredConstraintPreviewTargetId: 3,
-          hoveredConstraintPreviewPosition: [20, 0],
+          constraintHoverPopup: {
+            segmentId: 3,
+            position: [20, 0],
+          },
         },
       })
 
@@ -1652,8 +1653,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: null,
-          hoveredConstraintPreviewTargetId: null,
-          hoveredConstraintPreviewPosition: null,
+          constraintHoverPopup: null,
         },
       })
     } finally {
