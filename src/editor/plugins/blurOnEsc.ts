@@ -9,11 +9,6 @@ export const blurOnEscape = keymap.of([
         return true
       }
       return false
-      if (target.hasFocus) {
-        target.contentDOM.blur()
-        return true
-      }
-      return false
     },
   },
 ])
