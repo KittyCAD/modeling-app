@@ -680,29 +680,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addExtrude({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    // reviewValidation: async (context, modelingActor) => {
+    //   if (!modelingActor) {
+    //     return new Error('modelingMachine not found')
+    //   }
+    //   const { engineCommandManager, kclManager, rustContext } =
+    //     modelingActor.getSnapshot().context
+    //   const hasConnectionRes = hasEngineConnection(engineCommandManager)
+    //   if (err(hasConnectionRes)) {
+    //     return hasConnectionRes
+    //   }
+    //   const modRes = addExtrude({
+    //     ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
+    //     ast: kclManager.ast,
+    //     artifactGraph: kclManager.artifactGraph,
+    //     wasmInstance: await context.wasmInstancePromise,
+    //   })
+    //   if (err(modRes)) return modRes
+    //   const execRes = await mockExecAstAndReportErrors(
+    //     modRes.modifiedAst,
+    //     rustContext
+    //   )
+    //   if (err(execRes)) return execRes
+    // },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
