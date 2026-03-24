@@ -446,7 +446,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
     await page.setBodyDimensions({ width: 1200, height: 800 })
     page.on('console', (msg) => {
       const t = msg.text()
-      if (t.startsWith('PRIMITIVE INDEX DEBUG')) {
+      if (t.startsWith('DEBUG')) {
         // eslint-disable-next-line no-console -- e2e: surface fillet selection / primitive-index path in CI logs
         console.log(t)
       }

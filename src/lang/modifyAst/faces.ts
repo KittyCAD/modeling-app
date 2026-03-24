@@ -837,13 +837,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     }
   }
   if (!parentArtifact) {
-    console.warn(
-      'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId no parent artifact found',
-      {
-        parentEntityId,
-        resolutionAttempt: resolutionSource,
-      }
-    )
     return null
   }
 
@@ -851,15 +844,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     parentArtifact.type === 'sweep' ||
     parentArtifact.type === 'compositeSolid'
   ) {
-    console.info(
-      'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved body artifact',
-      {
-        parentEntityId,
-        artifactId: parentArtifact.id,
-        artifactType: parentArtifact.type,
-        resolutionSource,
-      }
-    )
     return {
       artifact: parentArtifact,
       codeRef: parentArtifact.codeRef,
@@ -872,14 +856,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
       artifactGraph
     )
     if (!err(parentSweep)) {
-      console.info(
-        'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved via path.sweepId',
-        {
-          parentEntityId,
-          pathArtifactId: parentArtifact.id,
-          sweepId: parentArtifact.sweepId,
-        }
-      )
       return {
         artifact: parentSweep as Artifact,
         codeRef: parentSweep.codeRef,
@@ -897,15 +873,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
       artifactGraph
     )
     if (!err(parentSweep)) {
-      console.info(
-        'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved via surface inference',
-        {
-          parentEntityId,
-          surfaceArtifactId: parentArtifact.id,
-          surfaceArtifactType: parentArtifact.type,
-          sweepId: parentSweep.id,
-        }
-      )
       return {
         artifact: parentSweep as Artifact,
         codeRef: parentSweep.codeRef,
@@ -915,25 +882,9 @@ export function getBodySelectionFromPrimitiveParentEntityId(
 
   const parentCodeRefs = getCodeRefsByArtifactId(parentEntityId, artifactGraph)
   if (!parentCodeRefs || parentCodeRefs.length === 0) {
-    console.warn(
-      'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId no code refs for parent artifact',
-      {
-        parentEntityId,
-        artifactType: parentArtifact.type,
-      }
-    )
     return null
   }
 
-  console.info(
-    'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved via codeRef fallback',
-    {
-      parentEntityId,
-      artifactId: parentArtifact.id,
-      artifactType: parentArtifact.type,
-      codeRefPathLength: parentCodeRefs.length,
-    }
-  )
   return {
     artifact: parentArtifact,
     codeRef: parentCodeRefs[parentCodeRefs.length - 1],

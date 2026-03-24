@@ -108,41 +108,7 @@ async function getParentEntityIdForEntity(
   if (!isModelingResponse(parentResponse)) return undefined
   const parentIdResponse = parentResponse.resp.data.modeling_response
   if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
-  const parentId = parentIdResponse.data.entity_id
-  console.info('PRIMITIVE INDEX DEBUG entity_get_parent_id response', {
-    entityId,
-    parentId: parentId ?? null,
-    hasParentId: Boolean(parentId),
-  })
-  return parentId
-}
-
-async function getChildEntityIdsForEntity(
-  entityId: string,
-  engineCommandManager: ConnectionManager
-): Promise<string[] | undefined> {
-  const response = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_all_child_uuids',
-      entity_id: entityId,
-    },
-  })
-  if (!isModelingResponse(response)) return undefined
-  const childResponse = response.resp.data.modeling_response
-  if (childResponse?.type !== 'entity_get_all_child_uuids') return undefined
-  const ids =
-    childResponse.data?.entity_ids ?? childResponse.data?.entityIds ?? []
-  if (!Array.isArray(ids)) return []
-  const childIds = ids.filter(
-    (id): id is string => typeof id === 'string' && id !== ''
-  )
-  console.info('PRIMITIVE INDEX DEBUG entity_get_all_child_uuids response', {
-    entityId,
-    childCount: childIds.length,
-  })
-  return childIds
+  return parentIdResponse.data.entity_id
 }
 
 /**
@@ -164,27 +130,6 @@ async function resolveSweepParentEntityIdForEdge(
   const queue: SearchNode[] = [{ id: entityId, depth: 0, via: 'start' }]
   const visited = new Set<string>()
   const parentCache = new Map<string, string | null>()
-  const logSearch = (
-    level: 'info' | 'warn',
-    message: string,
-    extra?: Record<string, unknown>
-  ) => {
-    const payload = {
-      startEntityId: entityId,
-      ...extra,
-    }
-    const logLine = `PRIMITIVE INDEX DEBUG resolveSweepParentEntityIdForEdge ${message}`
-    if (level === 'warn') {
-      console.warn(logLine, payload)
-    } else {
-      console.info(logLine, payload)
-    }
-  }
-
-  logSearch('info', 'starting sweep/composite search', {
-    startInArtifactGraph: artifactGraph.has(entityId),
-    maxHops: MAX_HOPS,
-  })
   const fetchParent = async (id: string): Promise<string | undefined> => {
     if (parentCache.has(id)) {
       const cached = parentCache.get(id)
@@ -201,21 +146,8 @@ async function resolveSweepParentEntityIdForEdge(
     visited.add(node.id)
 
     const artifact = artifactGraph.get(node.id)
-    logSearch('info', 'visiting entity', {
-      currentEntityId: node.id,
-      depth: node.depth,
-      via: node.via,
-      inArtifactGraph: Boolean(artifact),
-      hopCount: node.depth,
-    })
 
     if (artifact?.type === 'sweep' || artifact?.type === 'compositeSolid') {
-      logSearch('info', 'resolved sweep/composite entity', {
-        resolvedEntityId: artifact.id,
-        resolvedArtifactType: artifact.type,
-        depth: node.depth,
-        via: node.via,
-      })
       return artifact.id
     }
     if (
@@ -226,13 +158,6 @@ async function resolveSweepParentEntityIdForEdge(
     ) {
       const sweep = getSweepFromSuspectedSweepSurface(node.id, artifactGraph)
       if (!err(sweep)) {
-        logSearch('info', 'resolved via surface inference', {
-          resolvedEntityId: sweep.id,
-          sourceEntityId: node.id,
-          sourceArtifactType: artifact.type,
-          depth: node.depth,
-          via: node.via,
-        })
         return sweep.id
       }
     }
@@ -243,58 +168,23 @@ async function resolveSweepParentEntityIdForEdge(
       }
       const sweepId = pathArtifact.sweepId
       if (sweepId && artifactGraph.has(sweepId)) {
-        logSearch('info', 'resolved via path.sweepId', {
-          resolvedEntityId: sweepId,
-          sourceEntityId: node.id,
-          depth: node.depth,
-          via: node.via,
-        })
         return sweepId
       }
       const compositeSolidId = pathArtifact.compositeSolidId
       if (compositeSolidId && artifactGraph.has(compositeSolidId)) {
-        logSearch('info', 'resolved via path.compositeSolidId', {
-          resolvedEntityId: compositeSolidId,
-          sourceEntityId: node.id,
-          depth: node.depth,
-          via: node.via,
-        })
         return compositeSolidId
       }
     }
 
     if (node.depth >= MAX_HOPS) {
-      logSearch('warn', 'hop limit reached for entity', {
-        currentEntityId: node.id,
-        depth: node.depth,
-        maxHops: MAX_HOPS,
-        stopReason: 'max_hops',
-      })
       continue
     }
 
     const parent = await fetchParent(node.id)
     if (parent) {
-      logSearch('info', 'enqueue parent entity', {
-        fromEntityId: node.id,
-        parentEntityId: parent,
-        depth: node.depth + 1,
-        hopCount: node.depth + 1,
-        parentInArtifactGraph: artifactGraph.has(parent),
-      })
       queue.push({ id: parent, depth: node.depth + 1, via: 'parent' })
-    } else {
-      logSearch('info', 'no parent entity returned', {
-        fromEntityId: node.id,
-        depth: node.depth,
-      })
     }
   }
-
-  logSearch('warn', 'exhausted entity graph search without resolution', {
-    visitedCount: visited.size,
-    stopReason: 'queue_exhausted',
-  })
   return undefined
 }
 
@@ -381,11 +271,6 @@ export async function getPrimitiveSelectionForEntity(
     primitive_index: number
     entity_type: EntityType
   }
-  console.info('PRIMITIVE INDEX DEBUG entity_get_primitive_index response', {
-    entityId,
-    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
-    primitiveType: entityGetPrimitiveIndex.entity_type,
-  })
 
   const parentEntityId = await resolveSweepParentEntityIdForEdge(
     entityId,
@@ -393,14 +278,6 @@ export async function getPrimitiveSelectionForEntity(
     artifactGraph
   )
   if (!parentEntityId) return null
-
-  console.info(
-    'PRIMITIVE INDEX DEBUG enginePrimitiveSelection resolved primitive fallback parent',
-    {
-      entityId,
-      parentEntityId,
-    }
-  )
 
   return {
     type: 'enginePrimitive',
