@@ -1285,11 +1285,11 @@ export function getVariableExprsFromSelection(
     if (!resolved) continue
     const { codeRef, artifact } = resolved
 
-    // Cap/wall/edgeCut code refs point at sketch geometry; solids (shell, fillet, …)
-    // must use the parent sweep's variable (e.g. extrude001), not sketch001.
+    // Cap/wall/edgeCut code refs point at sketch geometry; solids (shell, fillet, hole, …)
+    // must use the parent sweep/composite variable (e.g. extrude001), not sketch001.
     let pathToNodeForVariable = codeRef.pathToNode
+    let usesSurfaceParentVariable = false
     if (
-      !lastChildLookup &&
       artifact &&
       (artifact.type === 'cap' ||
         artifact.type === 'wall' ||
@@ -1301,6 +1301,7 @@ export function getVariableExprsFromSelection(
       )
       if (!err(sweep) && sweep.codeRef) {
         pathToNodeForVariable = sweep.codeRef.pathToNode
+        usesSurfaceParentVariable = true
       }
     }
 
@@ -1311,7 +1312,12 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (lastChildLookup && artifact && artifactGraph) {
+    if (
+      lastChildLookup &&
+      artifact &&
+      artifactGraph &&
+      !usesSurfaceParentVariable
+    ) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         artifact,
         artifactGraph
