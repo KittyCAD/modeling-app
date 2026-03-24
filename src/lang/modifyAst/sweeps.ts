@@ -170,7 +170,7 @@ export function addExtrude({
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
-    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
+    toExpr = [createLabeledArg('to', tagResult.exprs[0])]
   }
   const symmetricExpr =
     symmetric !== undefined
@@ -697,6 +697,7 @@ export function getAxisExpressionAndIndex(
       ast,
       edge.graphSelections[0]?.codeRef.range
     )
+    // TODO: might have to look at this one too
     const tagResult = mutateAstWithTagForSketchSegment(
       ast,
       pathToAxisSelection,

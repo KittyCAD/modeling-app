@@ -28,7 +28,6 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
-  Name,
   PathToNode,
   Program,
   VariableDeclarator,
@@ -398,11 +397,11 @@ function buildEdgeExpr(
     ['oppositeAndAdjacentEdges']
   )
   if (err(tagResult)) return tagResult
-  if (tagResult.tags.length !== 1) {
+  if (tagResult.exprs.length !== 1) {
     return new Error('Expected exactly one tag for each blend edge.')
   }
 
-  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
   if (edgeExpr.type === 'Name') {
     return {
       modifiedAst: tagResult.modifiedAst,
@@ -679,10 +678,7 @@ function getTagsExprsFromSelection(
 
     tagsExprs.push(
       createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg(
-          'faces',
-          createArrayExpression(result.tags.map((tag) => createLocalName(tag)))
-        ),
+        createLabeledArg('faces', createArrayExpression(result.exprs)),
       ])
     )
 
@@ -818,10 +814,10 @@ export async function deleteEdgeTreatment(
 }
 
 export function getEdgeTagCall(
-  tag: string,
+  tag: string | Expr,
   artifact: Artifact
-): Node<Name | CallExpressionKw> {
-  let tagCall: Expr = createLocalName(tag)
+): Node<Expr | CallExpressionKw> {
+  let tagCall: Expr = typeof tag === 'string' ? createLocalName(tag) : tag
 
   // Modify the tag based on selectionType
   if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {

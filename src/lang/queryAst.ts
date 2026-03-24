@@ -1883,7 +1883,7 @@ export function getEdgeCutMeta(
   }
 }
 
-function isSketchSegmentCallName(name: string): boolean {
+export function isSketchSegmentCallName(name: string): boolean {
   return name in sketchLineHelperMapKw || name === 'close'
 }
 
