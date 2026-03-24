@@ -103,6 +103,8 @@ export type EdgeRefFromOpArgs = {
 export type RawEdgeRefFromAPI = {
   side_faces?: unknown
   sideFaces?: unknown
+  /** OpenAPI / engine alias for side_faces on edge references */
+  faces?: unknown
   end_faces?: unknown
   endFaces?: unknown
   index?: unknown
@@ -115,12 +117,22 @@ export type RawEdgeRefFromAPI = {
 export type RawVertexRefFromAPI = {
   side_faces?: unknown
   sideFaces?: unknown
+  /** OpenAPI / engine alias for side_faces */
+  faces?: unknown
   index?: unknown
+}
+
+/** When the engine includes topology_fallback on an edge pick, codegen can use edgeId(solid, index) if artifact-graph tags are missing (e.g. shell inner edges). */
+export type EngineTopologyFallback = {
+  parentId: string
+  primitiveIndex: number
 }
 
 export interface SelectionV2 {
   entityRef?: EntityReference
   codeRef?: CodeRef
+  /** From query_entity_type_with_point reference.topology_fallback; not duplicated in otherSelections */
+  engineTopologyFallback?: EngineTopologyFallback
 }
 
 /** Alias for SelectionV2 (legacy name used in lang/lib). */

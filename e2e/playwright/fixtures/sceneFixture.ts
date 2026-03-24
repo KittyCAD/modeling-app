@@ -87,6 +87,8 @@ export class SceneFixture {
    * We've written a lot of tests using hard-coded pixel coordinates.
    * This function translates those to stream-relative ones,
    * or can be used to get stream coordinates by ratio.
+   * (When debugging manually, you can log the ratios yourself via devtools
+   * using this same math.)
    */
   convertPagePositionToStream = async (
     x: number,

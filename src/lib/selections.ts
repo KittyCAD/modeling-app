@@ -82,6 +82,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type {
+  EngineTopologyFallback,
   Selection,
   SelectionV2,
   Selections,
@@ -107,7 +108,221 @@ async function getParentEntityIdForEntity(
   if (!isModelingResponse(parentResponse)) return undefined
   const parentIdResponse = parentResponse.resp.data.modeling_response
   if (parentIdResponse.type !== 'entity_get_parent_id') return undefined
-  return parentIdResponse.data.entity_id
+  const parentId = parentIdResponse.data.entity_id
+  console.info('PRIMITIVE INDEX DEBUG entity_get_parent_id response', {
+    entityId,
+    parentId: parentId ?? null,
+    hasParentId: Boolean(parentId),
+  })
+  return parentId
+}
+
+async function getChildEntityIdsForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<string[] | undefined> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_all_child_uuids',
+      entity_id: entityId,
+    },
+  })
+  if (!isModelingResponse(response)) return undefined
+  const childResponse = response.resp.data.modeling_response
+  if (childResponse?.type !== 'entity_get_all_child_uuids') return undefined
+  const ids =
+    childResponse.data?.entity_ids ?? childResponse.data?.entityIds ?? []
+  if (!Array.isArray(ids)) return []
+  const childIds = ids.filter(
+    (id): id is string => typeof id === 'string' && id !== ''
+  )
+  console.info('PRIMITIVE INDEX DEBUG entity_get_all_child_uuids response', {
+    entityId,
+    childCount: childIds.length,
+  })
+  return childIds
+}
+
+/**
+ * Walk the engine parent chain and artifact graph until we find a sweep (or composite solid)
+ * that `getBodySelectionFromPrimitiveParentEntityId` can use for edgeId codemods.
+ */
+async function resolveSweepParentEntityIdForEdge(
+  entityId: string,
+  engineCommandManager: ConnectionManager,
+  artifactGraph: ArtifactGraph
+): Promise<string | undefined> {
+  if (!entityId) return undefined
+  const MAX_HOPS = 16
+  type SearchNode = { id: string; depth: number; via: 'start' | 'parent' | 'child' }
+  const queue: SearchNode[] = [{ id: entityId, depth: 0, via: 'start' }]
+  const visited = new Set<string>()
+  const parentCache = new Map<string, string | null>()
+  const childCache = new Map<string, string[] | null>()
+  const logSearch = (
+    level: 'info' | 'warn',
+    message: string,
+    extra?: Record<string, unknown>
+  ) => {
+    const payload = {
+      startEntityId: entityId,
+      ...extra,
+    }
+    const logLine = `PRIMITIVE INDEX DEBUG resolveSweepParentEntityIdForEdge ${message}`
+    if (level === 'warn') {
+      console.warn(logLine, payload)
+    } else {
+      console.info(logLine, payload)
+    }
+  }
+
+  logSearch('info', 'starting sweep/composite search', {
+    startInArtifactGraph: artifactGraph.has(entityId),
+    maxHops: MAX_HOPS,
+  })
+  const fetchParent = async (id: string): Promise<string | undefined> => {
+    if (parentCache.has(id)) {
+      const cached = parentCache.get(id)
+      return cached ?? undefined
+    }
+    const parent = await getParentEntityIdForEntity(id, engineCommandManager)
+    parentCache.set(id, parent ?? null)
+    return parent ?? undefined
+  }
+  const fetchChildren = async (id: string): Promise<string[] | undefined> => {
+    if (childCache.has(id)) {
+      const cached = childCache.get(id)
+      return cached ?? undefined
+    }
+    const children = await getChildEntityIdsForEntity(id, engineCommandManager)
+    childCache.set(id, children ?? null)
+    return children ?? undefined
+  }
+
+  while (queue.length > 0) {
+    const node = queue.shift()!
+    if (!node.id || visited.has(node.id)) continue
+    visited.add(node.id)
+
+    const artifact = artifactGraph.get(node.id)
+    logSearch('info', 'visiting entity', {
+      currentEntityId: node.id,
+      depth: node.depth,
+      via: node.via,
+      inArtifactGraph: Boolean(artifact),
+      hopCount: node.depth,
+    })
+
+    if (artifact?.type === 'sweep' || artifact?.type === 'compositeSolid') {
+      logSearch('info', 'resolved sweep/composite entity', {
+        resolvedEntityId: artifact.id,
+        resolvedArtifactType: artifact.type,
+        depth: node.depth,
+        via: node.via,
+      })
+      return artifact.id
+    }
+    if (
+      artifact &&
+      (artifact.type === 'wall' ||
+        artifact.type === 'cap' ||
+        artifact.type === 'edgeCut')
+    ) {
+      const sweep = getSweepFromSuspectedSweepSurface(node.id, artifactGraph)
+      if (!err(sweep)) {
+        logSearch('info', 'resolved via surface inference', {
+          resolvedEntityId: sweep.id,
+          sourceEntityId: node.id,
+          sourceArtifactType: artifact.type,
+          depth: node.depth,
+          via: node.via,
+        })
+        return sweep.id
+      }
+    }
+    if (artifact?.type === 'path') {
+      const pathArtifact = artifact as {
+        sweepId?: string
+        compositeSolidId?: string
+      }
+      const sweepId = pathArtifact.sweepId
+      if (sweepId && artifactGraph.has(sweepId)) {
+        logSearch('info', 'resolved via path.sweepId', {
+          resolvedEntityId: sweepId,
+          sourceEntityId: node.id,
+          depth: node.depth,
+          via: node.via,
+        })
+        return sweepId
+      }
+      const compositeSolidId = pathArtifact.compositeSolidId
+      if (compositeSolidId && artifactGraph.has(compositeSolidId)) {
+        logSearch('info', 'resolved via path.compositeSolidId', {
+          resolvedEntityId: compositeSolidId,
+          sourceEntityId: node.id,
+          depth: node.depth,
+          via: node.via,
+        })
+        return compositeSolidId
+      }
+    }
+
+    if (node.depth >= MAX_HOPS) {
+      logSearch('warn', 'hop limit reached for entity', {
+        currentEntityId: node.id,
+        depth: node.depth,
+        maxHops: MAX_HOPS,
+        stopReason: 'max_hops',
+      })
+      continue
+    }
+
+    const parent = await fetchParent(node.id)
+    if (parent) {
+      logSearch('info', 'enqueue parent entity', {
+        fromEntityId: node.id,
+        parentEntityId: parent,
+        depth: node.depth + 1,
+        hopCount: node.depth + 1,
+        parentInArtifactGraph: artifactGraph.has(parent),
+      })
+      queue.push({ id: parent, depth: node.depth + 1, via: 'parent' })
+    } else {
+      logSearch('info', 'no parent entity returned', {
+        fromEntityId: node.id,
+        depth: node.depth,
+      })
+    }
+
+    const children = await fetchChildren(node.id)
+    if (children && children.length > 0) {
+      logSearch('info', 'enqueue child entities', {
+        fromEntityId: node.id,
+        childCount: children.length,
+        depth: node.depth + 1,
+        hopCount: node.depth + 1,
+      })
+      for (const childId of children) {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, depth: node.depth + 1, via: 'child' })
+        }
+      }
+    } else {
+      logSearch('info', 'no child entities returned', {
+        fromEntityId: node.id,
+        depth: node.depth,
+        hopCount: node.depth,
+      })
+    }
+  }
+
+  logSearch('warn', 'exhausted entity graph search without resolution', {
+    visitedCount: visited.size,
+    stopReason: 'queue_exhausted',
+  })
+  return undefined
 }
 
 async function getRegionQueryPointForRegion(
@@ -168,9 +383,11 @@ async function getEngineRegionSelectionFromEntity(
   }
 }
 
-async function _getPrimitiveSelectionForEntity(
+/** Engine `entity_get_primitive_index` + parent id; used when the artifact graph cannot resolve edge code refs (e.g. shell inner edges). */
+export async function getPrimitiveSelectionForEntity(
   entityId: string,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  artifactGraph: ArtifactGraph
 ): Promise<EnginePrimitiveSelection | null> {
   const websocketResponse = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -191,11 +408,23 @@ async function _getPrimitiveSelectionForEntity(
     primitive_index: number
     entity_type: EntityType
   }
-
-  const parentEntityId = await getParentEntityIdForEntity(
+  console.info('PRIMITIVE INDEX DEBUG entity_get_primitive_index response', {
     entityId,
-    engineCommandManager
+    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
+    primitiveType: entityGetPrimitiveIndex.entity_type,
+  })
+
+  const parentEntityId = await resolveSweepParentEntityIdForEdge(
+    entityId,
+    engineCommandManager,
+    artifactGraph
   )
+  if (!parentEntityId) return null
+
+  console.info('PRIMITIVE INDEX DEBUG enginePrimitiveSelection resolved primitive fallback parent', {
+    entityId,
+    parentEntityId,
+  })
 
   return {
     type: 'enginePrimitive',
@@ -270,7 +499,7 @@ export function normalizeEntityReference(
   if (type === 'edge') {
     const r = raw as RawEdgeRefFromAPI
     // CMS / engine may send side_faces, sideFaces, or faces (OpenAPI EntityReference uses "faces")
-    const sideFacesRaw = r.side_faces ?? r.sideFaces
+    const sideFacesRaw = r.side_faces ?? r.sideFaces ?? r.faces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')
       : []
@@ -303,6 +532,165 @@ export function normalizeEntityReference(
   return null
 }
 
+/** Parse engine reference.topology_fallback (snake or camelCase) for edge codegen fallback. */
+export function engineTopologyFallbackFromReference(
+  reference: unknown
+): EngineTopologyFallback | undefined {
+  if (!reference || typeof reference !== 'object') return undefined
+  const r = reference as Record<string, unknown>
+  const tf = r.topology_fallback ?? r.topologyFallback
+  if (!tf || typeof tf !== 'object') return undefined
+  const t = tf as Record<string, unknown>
+  const parentId = t.parent_id ?? t.parentId
+  const primitiveIndexRaw = t.primitive_index ?? t.primitiveIndex
+  if (typeof parentId !== 'string') return undefined
+  const primitiveIndex =
+    typeof primitiveIndexRaw === 'number'
+      ? primitiveIndexRaw
+      : typeof primitiveIndexRaw === 'string'
+        ? parseInt(primitiveIndexRaw, 10)
+        : NaN
+  if (!Number.isFinite(primitiveIndex)) return undefined
+  return { parentId, primitiveIndex }
+}
+
+/** Normalize topology_fallback whether it came from TS (camelCase) or engine JSON (snake_case). */
+export function getEngineTopologyFallbackNormalized(v2: SelectionV2): {
+  parentId: string
+  primitiveIndex: number
+} | null {
+  const raw =
+    v2.engineTopologyFallback ??
+    (v2 as { engine_topology_fallback?: unknown }).engine_topology_fallback
+  if (!raw || typeof raw !== 'object') return null
+  const o = raw as Record<string, unknown>
+  const parentId =
+    typeof o.parentId === 'string'
+      ? o.parentId
+      : typeof o.parent_id === 'string'
+        ? o.parent_id
+        : ''
+  let primitiveIndex = NaN
+  if (typeof o.primitiveIndex === 'number') primitiveIndex = o.primitiveIndex
+  else if (typeof o.primitiveIndex === 'string')
+    primitiveIndex = parseInt(String(o.primitiveIndex), 10)
+  else if (typeof o.primitive_index === 'number')
+    primitiveIndex = o.primitive_index
+  else if (typeof o.primitive_index === 'string')
+    primitiveIndex = parseInt(String(o.primitive_index), 10)
+  if (!parentId || !Number.isFinite(primitiveIndex)) return null
+  return { parentId, primitiveIndex }
+}
+
+/**
+ * Match command-bar vs live graph rows when merging topology (index alone can mis-pair).
+ */
+function entityReferencesEqualForMerge(
+  a?: EntityReference,
+  b?: EntityReference
+): boolean {
+  if (!a || !b) return false
+  const na = normalizeEntityReference(a)
+  const nb = normalizeEntityReference(b)
+  if (!na || !nb) return false
+  return JSON.stringify(na) === JSON.stringify(nb)
+}
+
+/**
+ * Command-bar submitted args can lose nested fields; overlay live modeling selection topology
+ * for fillet/chamfer review (shell inner edges rely on this).
+ *
+ * Pairs by index first, then by normalized entityRef so review still gets parentId + primitiveIndex
+ * when ordering differs between submitted args and `selectionRanges`.
+ */
+export function mergeEngineTopologyFallbackFromLiveSelection(
+  submitted: Selections | undefined,
+  live: Selections | undefined
+): Selections | undefined {
+  if (!submitted) return submitted
+
+  let graphSelectionsV2 = submitted.graphSelectionsV2
+  let otherSelections = submitted.otherSelections ?? []
+  let changed = false
+
+  if (
+    submitted.graphSelectionsV2?.length &&
+    live?.graphSelectionsV2?.length
+  ) {
+    const mergedGraph = submitted.graphSelectionsV2.map((g, i) => {
+      if (getEngineTopologyFallbackNormalized(g)) {
+        return g
+      }
+
+      const fromLiveSel = (
+        liveG: SelectionV2 | undefined
+      ): SelectionV2 | null => {
+        if (!liveG) return null
+        const n = getEngineTopologyFallbackNormalized(liveG)
+        if (!n) return null
+        return {
+          ...g,
+          engineTopologyFallback: {
+            parentId: n.parentId,
+            primitiveIndex: n.primitiveIndex,
+          },
+        }
+      }
+
+      const byIndex = fromLiveSel(live.graphSelectionsV2[i])
+      if (byIndex) return byIndex
+
+      if (g.entityRef) {
+        for (const candidate of live.graphSelectionsV2) {
+          if (!entityReferencesEqualForMerge(g.entityRef, candidate.entityRef)) {
+            continue
+          }
+          const byRef = fromLiveSel(candidate)
+          if (byRef) return byRef
+        }
+      }
+
+      return g
+    })
+    const graphChanged =
+      mergedGraph.some((g, idx) => g !== submitted.graphSelectionsV2?.[idx]) ||
+      mergedGraph.length !== submitted.graphSelectionsV2.length
+    if (graphChanged) {
+      graphSelectionsV2 = mergedGraph
+      changed = true
+    }
+  }
+
+  if (live?.otherSelections?.length) {
+    const submittedPrimitiveIds = new Set(
+      otherSelections
+        .filter(isEnginePrimitiveSelection)
+        .map((sel) => sel.entityId)
+    )
+    let appended = false
+    for (const candidate of live.otherSelections) {
+      if (!isEnginePrimitiveSelection(candidate)) continue
+      if (submittedPrimitiveIds.has(candidate.entityId)) continue
+      otherSelections = [...otherSelections, candidate]
+      submittedPrimitiveIds.add(candidate.entityId)
+      appended = true
+    }
+    if (appended) {
+      changed = true
+    }
+  }
+
+  if (!changed) {
+    return submitted
+  }
+
+  return {
+    ...submitted,
+    graphSelectionsV2: graphSelectionsV2 ?? submitted.graphSelectionsV2,
+    otherSelections,
+  }
+}
+
 export async function getEventForQueryEntityTypeWithPoint(
   engineEvent: any, // Using any for now since TypeScript types may not be updated yet
   {
@@ -322,6 +710,9 @@ export async function getEventForQueryEntityTypeWithPoint(
         entity_id?: string
       }
     | undefined
+  const clickEntityId =
+    data?.entity_id ??
+    (engineEvent as { entity_id?: string } | undefined)?.entity_id
   const reference = data?.reference ?? engineEvent?.reference
   if (!reference) {
     // No reference - clear selection (clicked in empty space)
@@ -389,6 +780,27 @@ export async function getEventForQueryEntityTypeWithPoint(
       entityRef = {
         type: 'solid2d',
         solid2d_id: entityRef.face_id,
+      }
+    }
+  }
+
+  if (clickEntityId && engineCommandManager) {
+    const primitiveSel = await getPrimitiveSelectionForEntity(
+      clickEntityId,
+      engineCommandManager,
+      artifactGraph
+    )
+    if (
+      primitiveSel &&
+      (primitiveSel.primitiveType === 'edge' ||
+        String(primitiveSel.primitiveType).toLowerCase() === 'edge')
+    ) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'enginePrimitiveSelection',
+          selection: primitiveSel,
+        },
       }
     }
   }
@@ -465,12 +877,43 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  const _artifactByEventId = data?.entity_id
-    ? artifactGraph.get(data.entity_id)
+  const _artifactByEventId = clickEntityId
+    ? artifactGraph.get(clickEntityId)
     : undefined
-  if (!_artifactByEventId && data?.entity_id) {
+  // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
+  // Otherwise region selection wins and we never attach topology_fallback (e.g. shell inner edges).
+  const engineTopologyFallbackEarly =
+    engineTopologyFallbackFromReference(reference)
+  let engineTopologyFallbackResolved = engineTopologyFallbackEarly
+  let topologyResolutionOutcome: 'unchanged' | 'normalized' | null = null
+  if (engineTopologyFallbackEarly && engineCommandManager) {
+    const resolvedParentId = await resolveSweepParentEntityIdForEdge(
+      engineTopologyFallbackEarly.parentId,
+      engineCommandManager,
+      artifactGraph
+    )
+    if (resolvedParentId) {
+      if (resolvedParentId === engineTopologyFallbackEarly.parentId) {
+        topologyResolutionOutcome = 'unchanged'
+      } else {
+        engineTopologyFallbackResolved = {
+          parentId: resolvedParentId,
+          primitiveIndex: engineTopologyFallbackEarly.primitiveIndex,
+        }
+        topologyResolutionOutcome = 'normalized'
+      }
+    }
+  }
+  const skipRegionSelectionForTopologyEdge =
+    entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
+
+  if (
+    !_artifactByEventId &&
+    clickEntityId &&
+    !skipRegionSelectionForTopologyEdge
+  ) {
     const regionSelection = await getEngineRegionSelectionFromEntity(
-      data.entity_id,
+      clickEntityId,
       artifactGraph,
       engineCommandManager
     )
@@ -505,9 +948,32 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // Prefer engine primitive index for solid edge picks when the API supports it.
+  // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
+  // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
   const selection: SelectionV2 = {
     entityRef,
     codeRef: codeRefs?.[0],
+    ...(engineTopologyFallbackResolved
+      ? { engineTopologyFallback: engineTopologyFallbackResolved }
+      : {}),
+  }
+
+  if (
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem('DEBUG_FILLET_SELECTION') === '1' &&
+    engineTopologyFallbackEarly
+  ) {
+    try {
+      console.info('[engine topology fallback resolution]', {
+        rawParentId: engineTopologyFallbackEarly?.parentId ?? null,
+        resolvedParentId: engineTopologyFallbackResolved?.parentId ?? null,
+        primitiveIndex: engineTopologyFallbackResolved?.primitiveIndex ?? null,
+        outcome: topologyResolutionOutcome ?? 'missing-resolution',
+      })
+    } catch {
+      // ignore logging errors (e.g. console not available)
+    }
   }
 
   return {

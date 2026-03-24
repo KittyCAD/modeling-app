@@ -509,7 +509,6 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'primitiveEdge') {
-    console.log({ selection, artifactGraph })
     const path = getArtifactOfTypes(
       { key: selection.artifact.solidId, types: ['path'] },
       artifactGraph

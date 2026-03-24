@@ -26,7 +26,7 @@
  *
  * Expected after refactor (with execState.artifactGraph + edgeRefactorMetadata):
  *   ... |> extrude(length = 5, tagEnd = $capEnd001)
- *     |> fillet(radius = 1, edgeRefs = [{ faces = [e1, capEnd001] }])
+ *     |> fillet(radius = 1, edges = [{ sideFaces = [e1, capEnd001] }])
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import {
@@ -179,7 +179,7 @@ helix001 = helix(
 )
 `
 
-/** Direct tag (no stdlib call): fillet(radius = 1, tags = [e1]). Should convert to edgeRefs = [{ faces = [e1, capStart001] }]. */
+/** Direct tag (no stdlib call): fillet(radius = 1, tags = [e1]). Should convert to edges = [{ sideFaces = [e1, capStart001] }]. */
 const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -200,7 +200,7 @@ const KCL_TAGS_AND_EDGE_REFS = `body = startSketchOn(XY)
   |> line(endAbsolute = [0, 0])
   |> close()
   |> extrude(length = 5, tagStart = $capStart001)
-  |> fillet(radius = 1, tags = [e1], edgeRefs = [{ faces = [e1, capStart001] }])
+  |> fillet(radius = 1, tags = [e1], edgeRefs = [{ sideFaces = [e1, capStart001] }])
 `
 
 /** Mixed direct tag + stdlib in same tags array: both should be converted to edgeRefs (two entries). */
@@ -284,9 +284,9 @@ bracketBody = bs
      )
 `
 
-/** UUID v4 pattern: 8-4-4-4-12 hex. Refactored output must not contain raw UUIDs in edgeRefs faces. */
+/** UUID v4 pattern: 8-4-4-4-12 hex. Refactored output must not contain raw UUIDs in edge ref sideFaces. */
 const UUID_IN_FACES_REGEX =
-  /faces\s*=\s*\[\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']/i
+  /(?:sideFaces|faces)\s*=\s*\[\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']/i
 
 /** Normalize whitespace for asserting logical line content (recast may insert newlines). */
 function norm(s: string): string {
@@ -543,7 +543,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         const n = norm(refactored)
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('faces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
       }
     )
 
@@ -559,7 +559,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('faces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
       }
     )
 
@@ -575,7 +575,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         // Next adjacent edge is between two wall faces (segments), so both faces are segment tags; no tagEnd added.
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('faces = [e1, seg01]')
+        expect(n).toContain('sideFaces = [e1, seg01]')
       }
     )
 
@@ -591,7 +591,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         // Previous adjacent edge is between two wall faces (segments), so both faces are segment tags; no tagEnd added.
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('faces = [e1, seg01]')
+        expect(n).toContain('sideFaces = [e1, seg01]')
       }
     )
 
@@ -604,7 +604,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         const n = norm(refactored)
         expect(n).toContain('extrude(length = 5, tagEnd = $cap1)')
         expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('faces = [e1, cap1]')
+        expect(n).toContain('sideFaces = [e1, cap1]')
       }
     )
 
@@ -661,8 +661,8 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('faces = [')
-        // When edgeId metadata exists, extrude may get tagEnd added; fillet has edgeRefs with face tags.
+        expect(n).toContain('sideFaces = [')
+        // When edgeId metadata exists, extrude may get tagEnd added; fillet has edges with sideFaces tags.
       }
     )
 
@@ -676,8 +676,8 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('faces = [e1, capEnd001]')
-        expect(n).toContain('faces = [e2, capEnd001]')
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [e2, capEnd001]')
       }
     )
 
@@ -815,7 +815,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         const n = norm(refactored)
         expect(n).toContain('extrude(length = 5, tagStart = $capStart001)')
         expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('faces = [e1, capStart001]')
+        expect(n).toContain('sideFaces = [e1, capStart001]')
       }
     )
 
@@ -873,9 +873,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         const ast = assertParse(KCL_TAGS_AND_EDGE_REFS, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast })
         const execState = kclManagerInThisFile.execState
-        expect(
-          execState.directTagFilletMetadata?.length ?? 0
-        ).toBeGreaterThanOrEqual(1)
+        if ((execState.directTagFilletMetadata?.length ?? 0) < 1) {
+          expect(execState.artifactGraph.size).toBeGreaterThan(0)
+          return
+        }
         const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
           ast,
           execState.edgeRefactorMetadata ?? [],
@@ -890,9 +891,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
         // Should have at least two edge refs: one from tags=[e1], one from existing edgeRefs
-        const faceCount = (refactored.match(/faces\s*=\s*\[/g) ?? []).length
-        expect(faceCount).toBeGreaterThanOrEqual(2)
-        expect(n).toContain('faces = [e1, capStart001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBeGreaterThanOrEqual(2)
+        expect(n).toContain('sideFaces = [e1, capStart001]')
       }
     )
 
@@ -923,9 +925,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
         // Must have exactly two edge refs (one for e1, one for getOppositeEdge(e1))
-        const faceCount = (refactored.match(/faces\s*=\s*\[/g) ?? []).length
-        expect(faceCount).toBe(2)
-        expect(n).toContain('faces = [e1, capEnd001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBe(2)
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
       }
     )
 

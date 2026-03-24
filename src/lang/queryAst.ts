@@ -20,6 +20,7 @@ import {
   getEdgeCutConsumedEdgeId,
   getFaceCodeRef,
   getSegmentForEdgeCut,
+  getSweepFromSuspectedSweepSurface,
   type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
@@ -1284,6 +1285,25 @@ export function getVariableExprsFromSelection(
     if (!resolved) continue
     const { codeRef, artifact } = resolved
 
+    // Cap/wall/edgeCut code refs point at sketch geometry; solids (shell, fillet, …)
+    // must use the parent sweep's variable (e.g. extrude001), not sketch001.
+    let pathToNodeForVariable = codeRef.pathToNode
+    if (
+      !lastChildLookup &&
+      artifact &&
+      (artifact.type === 'cap' ||
+        artifact.type === 'wall' ||
+        artifact.type === 'edgeCut')
+    ) {
+      const sweep = getSweepFromSuspectedSweepSurface(
+        artifact.id,
+        artifactGraph
+      )
+      if (!err(sweep) && sweep.codeRef) {
+        pathToNodeForVariable = sweep.codeRef.pathToNode
+      }
+    }
+
     let variable:
       | {
           node: VariableDeclaration
@@ -1311,7 +1331,7 @@ export function getVariableExprsFromSelection(
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
-        codeRef.pathToNode,
+        pathToNodeForVariable,
         wasmInstance,
         'VariableDeclaration'
       )
@@ -1360,7 +1380,7 @@ export function getVariableExprsFromSelection(
     // import case
     const importNodeAndAlias = findImportNodeAndAlias(
       ast,
-      codeRef.pathToNode,
+      pathToNodeForVariable,
       wasmInstance
     )
     if (importNodeAndAlias) {
@@ -1369,9 +1389,9 @@ export function getVariableExprsFromSelection(
     }
 
     // No variable case
-    if (codeRef.pathToNode.length > 0) {
+    if (pathToNodeForVariable.length > 0) {
       exprs.push(createPipeSubstitution())
-      pathIfPipe = codeRef.pathToNode
+      pathIfPipe = pathToNodeForVariable
       continue
     }
 

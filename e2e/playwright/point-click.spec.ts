@@ -2489,8 +2489,19 @@ extrude001 = extrude(sketch001, length = 30)`
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
+    const shellDeclaration2 =
+      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
     const editedShellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
+    const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
+profile001 = startProfile(sketch001, at = [-219, 25])
+  |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 472)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 500)`
+    const secondaryShellClickPoint = { x: 0.4935, y: 0.5159, format: 'ratio' as const }
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2583,6 +2594,74 @@ extrude001 = extrude(sketch001, length = 30)`
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(shellDeclaration)
     })
+    await test.step('Replace modeling code with secondary shell snippet', async () => {
+      await editor.openPane()
+      await editor.replaceCode('', secondaryShellCode)
+      await scene.settled(cmdBar)
+      await editor.closePane()
+    })
+
+    await test.step(
+      'Repeat shell flow on secondary code (pause before selecting face)',
+      async () => {
+        const [clickOnDebugCap] = scene.makeMouseHelpers(
+          secondaryShellClickPoint.x,
+          secondaryShellClickPoint.y,
+          { format: secondaryShellClickPoint.format ?? undefined }
+        )
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'faces',
+          commandName: 'Shell',
+        })
+
+        await clickOnDebugCap()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Faces: '1 face',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+      }
+    )
+
+    await test.step(
+      'Confirm secondary shell code exists without diagnostics',
+      async () => {
+        await editor.openPane()
+        await editor.expectEditor.toContain(shellDeclaration2)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [shellDeclaration2],
+          highlightedCode: '',
+        })
+        await editor.closePane()
+      }
+    )
   })
 
   test(`Delete Face point-and-click`, async ({

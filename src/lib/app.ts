@@ -63,6 +63,12 @@ declare global {
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
+    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
+    enableMousePositionLogs?: () => void
+    enableFillet?: () => void
+    zoomToFit?: () => void
+    /** Dev flag read by fillet debugging paths */
+    _enableFillet?: boolean
   }
 }
 
@@ -369,57 +375,55 @@ export class App implements AppSubsystems {
     })
 
     if (typeof window !== 'undefined') {
-      // ;(window as any).engineCommandManager = engineCommandManager
-      ;(window as any).kclManager = kclManager
-      // ;(window as any).rustContext = rustContext
-      ;(window as any).engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () => {
-        document.addEventListener('mousemove', (e) => {
-          // Find the stream element (same as convertPagePositionToStream uses)
-          const streamElement = document.querySelector(
-            '[data-testid="stream"]'
-          ) as HTMLElement
-          if (!streamElement) {
-            console.log(
-              `pixels: (${e.clientX}, ${e.clientY}) // stream element not found`
-            )
-            return
-          }
-
-          const streamRect = streamElement.getBoundingClientRect()
-
-          // Calculate ratio relative to stream bounding box (same as convertPagePositionToStream)
-          const ratioX = (e.clientX - streamRect.x) / streamRect.width
-          const ratioY = (e.clientY - streamRect.y) / streamRect.height
-
-          console.log(
-            `pixels: (${e.clientX}, ${e.clientY}) // ratio: (${ratioX.toFixed(3)}, ${ratioY.toFixed(3)})`
-          )
-        })
-      }
-      // Accessible for tests mostly
       window.engineCommandManager = kclManager.engineCommandManager
       window.kclManager = kclManager
       window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () =>
-        document.addEventListener('mousemove', (e) =>
-          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-        )
-      ;(window as any).enableFillet = () => {
-        ;(window as any)._enableFillet = true
+
+      /**
+       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
+       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
+       * Adds a document listener per call.
+       */
+      window.enableMousePositionLogs = () => {
+        const onClick = (e: MouseEvent) => {
+          const streamEl = document.querySelector('[data-testid="stream"]')
+          const vw = document.documentElement.clientWidth
+          const vh = document.documentElement.clientHeight
+          if (!streamEl || vw <= 0 || vh <= 0) return
+          const r = streamEl.getBoundingClientRect()
+          if (r.width <= 0 || r.height <= 0) return
+          const cx = e.clientX
+          const cy = e.clientY
+          const ratioX = (cx - r.left) / r.width
+          const ratioY = (cy - r.top) / r.height
+          const pixelX = ratioX * vw
+          const pixelY = ratioY * vh
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
+          )
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { format: 'pixels' })`
+          )
+        }
+        document.addEventListener('click', onClick, true)
       }
-      ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
+
+      window.enableFillet = () => {
+        window._enableFillet = true
+      }
+      window.zoomToFit = () => {
+        void kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
+            object_ids: [],
+            padding: 0.2,
+            animated: false,
           },
         })
+      }
     }
 
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })

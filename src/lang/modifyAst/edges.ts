@@ -60,6 +60,7 @@ import {
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepArtifactFromSelection,
+  getSweepFromSuspectedSweepSurface,
   getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
 import {
@@ -69,9 +70,20 @@ import {
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getEngineTopologyFallbackNormalized,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import { findKwArg } from '@src/lang/util'
+
+/** Set localStorage DEBUG_FILLET_SELECTION=1 for topology / groupSelectionsByBody diagnostics. */
+function debugFilletTopologyLogs(): boolean {
+  return (
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'
+  )
+}
 
 /**
  * Converts a resolved edge selection to an EntityReference with face information.
@@ -1595,19 +1607,41 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
       if (!edgeEntityRef) continue
 
-      // Find a wall or cap face to get the body.
+      // Find a face artifact that ties this edge to a sweep (wall/cap/edgeCut/primitiveFace).
+      // Shell and inner edges may not use only wall/cap in the graph; fall back via sweep surface resolution.
       let faceArtifact: Artifact | undefined
       for (const faceId of edgeEntityRef.side_faces) {
         const a = artifactGraph.get(faceId)
-        if (a && (a.type === 'wall' || a.type === 'cap')) {
+        if (
+          a &&
+          (a.type === 'wall' ||
+            a.type === 'cap' ||
+            a.type === 'edgeCut' ||
+            a.type === 'primitiveFace')
+        ) {
           faceArtifact = a
           break
+        }
+      }
+      if (!faceArtifact) {
+        for (const faceId of edgeEntityRef.side_faces) {
+          const sweepTry = getSweepFromSuspectedSweepSurface(
+            faceId,
+            artifactGraph
+          )
+          if (!err(sweepTry)) {
+            const a = artifactGraph.get(faceId)
+            if (a) {
+              faceArtifact = a
+              break
+            }
+          }
         }
       }
       if (!faceArtifact) continue
 
       const faceCodeRef =
-        getFaceCodeRef(faceArtifact) ??
+        getFaceCodeRef(faceArtifact as Parameters<typeof getFaceCodeRef>[0]) ??
         getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
       if (!faceCodeRef) continue
 
@@ -2321,6 +2355,16 @@ function buildEdgeExpr(
 // Utility functions
 
 /**
+ * User-visible "No edges found in the selection" has four distinct origins in this file (grep `codemod:`):
+ * 1) groupSelectionsByBodyAndAddTags — no body keys (empty selectionsByBody)
+ * 2) groupSelectionsByBodyAndAddTags — body keys existed but no fillet rows produced (empty bodies map)
+ * 3) buildSolidsAndTagsExprs — no tags expression
+ * 4) insertPrimitiveEdgeVariablesAndOffsetPathToNode — tagsExpr empty after edgeId inserts (e.g. blend)
+ *
+ * Fillet review uses addFillet → (1) or (2) only.
+ */
+
+/**
  * Groups selections by body and adds tags to the AST.
  * Must be called BEFORE variable insertion to keep artifactGraph paths valid.
  *
@@ -2357,7 +2401,11 @@ function groupSelectionsByBodyAndAddTags(
   >()
   if (includePrimitiveEdgeIndices) {
     for (const selection of selections.otherSelections) {
-      if (!isEnginePrimitiveSelection(selection) || !selection.parentEntityId) {
+      if (
+        !isEnginePrimitiveSelection(selection) ||
+        !selection.parentEntityId ||
+        selection.primitiveType !== 'edge'
+      ) {
         continue
       }
 
@@ -2389,10 +2437,140 @@ function groupSelectionsByBodyAndAddTags(
         })
       }
     }
+
+    // Same SelectionV2 row as graph edge; topology_fallback supplies primitive index when tags fail.
+    // Shell inner edges often lack wall/cap in the artifact graph — resolveSelectionV2 may fail; use
+    // engineTopologyFallback.parentId to find the sweep body and edgeId(solid, primitiveIndex).
+    for (const v2Sel of selections.graphSelectionsV2) {
+      const topo = getEngineTopologyFallbackNormalized(v2Sel)
+      if (!topo) continue
+      const debugFillet = debugFilletTopologyLogs()
+      if (debugFillet) {
+        console.info(
+          '[groupSelectionsByBodyAndAddTags topology loop] fallback candidate',
+          {
+            parentId: topo.parentId,
+            primitiveIndex: topo.primitiveIndex,
+            hasGraphEntityRef: Boolean(v2Sel.entityRef),
+            hasGraphCodeRefPath: Boolean(v2Sel.codeRef?.pathToNode),
+          }
+        )
+      }
+      const { parentId, primitiveIndex } = topo
+
+      let sweepArtifact: SweepArtifact | null = null
+      let usedParentIdFallback = false
+
+      const resolved = resolveSelectionV2(v2Sel, artifactGraph)
+      if (resolved) {
+        const sweepTry = getSweepArtifactFromSelection(resolved, artifactGraph)
+        if (!err(sweepTry)) {
+          sweepArtifact = sweepTry
+        }
+      }
+
+      if (!sweepArtifact) {
+        const fromParent = getBodySelectionFromPrimitiveParentEntityId(
+          parentId,
+          artifactGraph
+        )
+        if (fromParent?.artifact) {
+          if (fromParent.artifact.type === 'sweep') {
+            sweepArtifact = fromParent.artifact as SweepArtifact
+          } else if (fromParent.artifact.type === 'compositeSolid') {
+            // Shell/boolean body: same codeRef/id wiring as sweep for edgeId(solid, index)
+            sweepArtifact = fromParent.artifact as unknown as SweepArtifact
+          } else {
+            const sweepTry = getSweepArtifactFromSelection(
+              fromParent,
+              artifactGraph
+            )
+            if (!err(sweepTry)) {
+              sweepArtifact = sweepTry
+            }
+          }
+        }
+        if (sweepArtifact) {
+          usedParentIdFallback = true
+        }
+      }
+
+      if (!sweepArtifact) {
+        if (debugFilletTopologyLogs()) {
+          const fp = getBodySelectionFromPrimitiveParentEntityId(
+            parentId,
+            artifactGraph
+          )
+          console.info(
+            '[groupSelectionsByBodyAndAddTags topology loop] skip: no sweepArtifact after resolve + parentId',
+            {
+              parentId,
+              primitiveIndex,
+              fromParentType: fp?.artifact?.type ?? null,
+            }
+          )
+        }
+        continue
+      }
+
+      const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+      const bodySelection: ResolvedGraphSelection = {
+        artifact: sweepArtifact as Artifact,
+        codeRef: sweepArtifact.codeRef,
+      }
+      if (debugFillet) {
+        console.info(
+          '[groupSelectionsByBodyAndAddTags topology loop] assigning primitive indices to body',
+          {
+            parentId,
+            primitiveIndex,
+            bodyKeySnippet: bodyKey.slice(0, 80),
+            sweepArtifactType: sweepArtifact.type,
+          }
+        )
+      }
+      const byBody = primitiveSelectionsByBody.get(bodyKey)
+      if (byBody) {
+        if (!byBody.primitiveIndices.includes(primitiveIndex)) {
+          byBody.primitiveIndices.push(primitiveIndex)
+        }
+      } else {
+        primitiveSelectionsByBody.set(bodyKey, {
+          bodySelection,
+          primitiveIndices: [primitiveIndex],
+        })
+      }
+      if (!selectionsByBody.has(bodyKey)) {
+        selectionsByBody.set(bodyKey, {
+          graphSelectionsV2: [],
+          otherSelections: [],
+        })
+      }
+
+      if (usedParentIdFallback) {
+        console.warn(
+          '[fillet topology fallback] entity_get_parent_id fallback executed — engine should now provide sweep/composite artifacts',
+          {
+            bodyKeySnippet: bodyKey.slice(0, 80),
+            primitiveIndex,
+            parentId,
+          }
+        )
+      } else if (debugFillet) {
+        console.info('[fillet topology fallback]', {
+          bodyKeySnippet: bodyKey.slice(0, 80),
+          primitiveIndex,
+          parentId,
+          usedParentIdFallback,
+        })
+      }
+    }
   }
 
   if (selectionsByBody.size === 0) {
-    return new Error('No edges found in the selection')
+    return new Error(
+      'No edges found in the selection (codemod: groupSelectionsByBodyAndAddTags — no body keys; graph grouping + primitive/topology fallback produced nothing)'
+    )
   }
 
   let modifiedAst = ast
@@ -2419,9 +2597,10 @@ function groupSelectionsByBodyAndAddTags(
           firstResolved,
           artifactGraph
         )
-        if (err(sweep)) return sweep
-        bodySelectionForSolids = {
-          codeRef: sweep.codeRef,
+        if (!err(sweep)) {
+          bodySelectionForSolids = {
+            codeRef: sweep.codeRef,
+          }
         }
       }
     }
@@ -2436,13 +2615,38 @@ function groupSelectionsByBodyAndAddTags(
       : null
     let sweepResult: ReturnType<typeof getSweepArtifactFromSelection>
     if (firstResolved) {
-      sweepResult = getSweepArtifactFromSelection(firstResolved, artifactGraph)
+      const trySweep = getSweepArtifactFromSelection(
+        firstResolved,
+        artifactGraph
+      )
+      if (!err(trySweep)) {
+        sweepResult = trySweep
+      } else {
+        const primitiveBody =
+          primitiveSelectionsByBody.get(bodyKey)?.bodySelection
+        if (primitiveBody?.artifact) {
+          if (primitiveBody.artifact.type === 'sweep') {
+            sweepResult = primitiveBody.artifact as SweepArtifact
+          } else if (primitiveBody.artifact.type === 'compositeSolid') {
+            sweepResult = primitiveBody.artifact as unknown as SweepArtifact
+          } else {
+            sweepResult = getSweepArtifactFromSelection(
+              primitiveBody,
+              artifactGraph
+            )
+          }
+        } else {
+          sweepResult = trySweep
+        }
+      }
     } else {
       const primitiveBody =
         primitiveSelectionsByBody.get(bodyKey)?.bodySelection
       if (!primitiveBody?.artifact) continue
       if (primitiveBody.artifact.type === 'sweep') {
         sweepResult = primitiveBody.artifact as SweepArtifact
+      } else if (primitiveBody.artifact.type === 'compositeSolid') {
+        sweepResult = primitiveBody.artifact as unknown as SweepArtifact
       } else {
         sweepResult = getSweepArtifactFromSelection(
           primitiveBody,
@@ -2476,13 +2680,53 @@ function groupSelectionsByBodyAndAddTags(
 
     const solidsExpr = createVariableExpressionsArray(vars.exprs)
 
-    if (tagsExprs.length === 0) {
-      return new Error('No edges found in the selection')
+    const tagsExprsCombined = [...tagsExprs]
+    const primForBody = primitiveSelectionsByBody.get(bodyKey)
+    if (primForBody?.primitiveIndices.length && solidsExpr) {
+      let insertIndex = modifiedAst.body.length
+      for (const primitiveIndex of primForBody.primitiveIndices) {
+        const edgeIdExpr = createCallExpressionStdLibKw(
+          'edgeId',
+          structuredClone(solidsExpr),
+          [
+            createLabeledArg(
+              'index',
+              createLiteral(primitiveIndex, wasmInstance)
+            ),
+          ]
+        )
+        const edgeVariableName = findUniqueName(
+          modifiedAst,
+          KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+        )
+        const variableIdentifierAst = createLocalName(edgeVariableName)
+        insertVariableAndOffsetPathToNode(
+          {
+            valueAst: edgeIdExpr,
+            valueText: '',
+            valueCalculated: '',
+            variableName: edgeVariableName,
+            variableDeclarationAst: createVariableDeclaration(
+              edgeVariableName,
+              edgeIdExpr
+            ),
+            variableIdentifierAst,
+            insertIndex,
+          },
+          modifiedAst
+        )
+        insertIndex++
+        tagsExprsCombined.push(variableIdentifierAst)
+      }
     }
 
-    const tagsExpr = createVariableExpressionsArray(tagsExprs)
+    if (tagsExprsCombined.length === 0) {
+      continue
+    }
+
+    const tagsExpr = createVariableExpressionsArray(tagsExprsCombined)
     if (!tagsExpr) {
-      return new Error('No edges found in the selection')
+      continue
     }
 
     bodies.set(bodyKey, {
@@ -2490,6 +2734,12 @@ function groupSelectionsByBodyAndAddTags(
       tagsExpr,
       pathIfPipe: vars.pathIfPipe,
     })
+  }
+
+  if (bodies.size === 0) {
+    return new Error(
+      'No edges found in the selection (codemod: groupSelectionsByBodyAndAddTags — had body keys but every body skipped: no tags + no edgeId rows)'
+    )
   }
 
   return { modifiedAst, bodies }
@@ -2511,9 +2761,52 @@ function groupSelectionsByBody(
 
   for (const v2Sel of selections.graphSelectionsV2) {
     const resolved = resolveSelectionV2(v2Sel, artifactGraph)
-    if (!resolved) continue
+    const topologyNormalized = getEngineTopologyFallbackNormalized(v2Sel)
+    const debugFillet = debugFilletTopologyLogs()
+    const rawTopologyCamel =
+      v2Sel.engineTopologyFallback ?? undefined
+    const rawTopologySnake = (
+      v2Sel as { engine_topology_fallback?: unknown }
+    ).engine_topology_fallback
+    if (!resolved) {
+      if (debugFillet) {
+        console.info('[groupSelectionsByBody] v2 iteration', {
+          resolved: false,
+          engineTopologyFallbackCamel: rawTopologyCamel ?? null,
+          engineTopologyFallbackSnake: rawTopologySnake ?? null,
+          topologyNormalized,
+        })
+      }
+      continue
+    }
     const sweepArtifact = getSweepArtifactFromSelection(resolved, artifactGraph)
-    if (err(sweepArtifact)) return sweepArtifact
+    if (debugFillet) {
+      console.info('[groupSelectionsByBody] v2 iteration', {
+        resolved: true,
+        resolvedArtifactType: resolved.artifact?.type,
+        sweepFailed: err(sweepArtifact),
+        engineTopologyFallbackCamel: rawTopologyCamel ?? null,
+        engineTopologyFallbackSnake: rawTopologySnake ?? null,
+        topologyNormalized,
+      })
+    }
+    if (err(sweepArtifact)) {
+      // Shell inner edges: graph may not resolve to a sweep; engineTopologyFallback + edgeId(index) below.
+      // Use normalized fallback so snake_case engine_topology_fallback is honored (same as topology loop).
+      if (topologyNormalized) {
+        if (debugFillet) {
+          console.info(
+            '[groupSelectionsByBody] sweep lookup failed; deferring to topology fallback',
+            {
+              topologyNormalized,
+              codeRefPath: resolved.codeRef.pathToNode,
+            }
+          )
+        }
+        continue
+      }
+      return sweepArtifact
+    }
 
     const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
     if (bodyToV2Selections.has(bodyKey)) {
@@ -2588,7 +2881,9 @@ export function buildSolidsAndTagsExprs(
   )
   const tagsExpr = createVariableExpressionsArray(tagsExprs)
   if (!tagsExpr) {
-    return new Error('No edges found in the selection')
+    return new Error(
+      'No edges found in the selection (codemod: buildSolidsAndTagsExprs — no tags expression after getTagsExprsFromSelection)'
+    )
   }
 
   return { solidsExpr, tagsExpr, pathIfPipe, modifiedAst }
@@ -3071,7 +3366,9 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
 
     const tagsExpr = createVariableExpressionsArray(tagsExprs)
     if (!tagsExpr) {
-      return new Error('No edges found in the selection')
+      return new Error(
+        'No edges found in the selection (codemod: insertPrimitiveEdgeVariablesAndOffsetPathToNode — tagsExpr empty after edgeId inserts)'
+      )
     }
 
     bodyData = {
