@@ -1687,3 +1687,10 @@ export fn blend(
    /// Tagged edges blend the full edge length.
    @edges: [BoundedEdge | TaggedEdge; 2],
 ): Solid {}
+
+/// Stitch multiple surface together into one polysurface
+@(impl = std_rust, feature_tree = true)
+export fn stitch(
+  /// The bodies to stitch
+  @selction: [Solid; 2+],
+): Solid {}

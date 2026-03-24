@@ -15,6 +15,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::exec;
 use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
@@ -309,5 +310,56 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         }],
     };
     //TODO: How do we pass back the two new edge ids that were created?
+    Ok(solid)
+}
+
+/// Stitch multiple surfaces together into one polysurface
+pub async fn stitch(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let selection: Vec<Solid> = args.get_unlabeled_kw_arg("selection", &RuntimeType::solids(), exec_state)?;
+
+    inner_stitch(selection, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_stitch(
+    selection: Vec<Solid>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Solid, KclError> {
+    let body_out_id = exec_state.next_uuid();
+
+    //TODO: do we need this flush?
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &selection)
+        .await?;
+
+    let body_ids = selection.iter().map(|body| body.id).collect();
+    let cmd = mcmd::Solid3dMultiJoin::builder()
+        .object_ids(body_ids)
+        .build();
+
+    exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
+            ModelingCmd::from(cmd),
+        ).await?;
+
+
+    let solid = Solid {
+        id: body_out_id,
+        artifact_id: body_out_id.into(),
+        value: vec![],
+        creator: SolidCreator::Procedural,
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: vec![],
+        units: exec_state.length_unit(),
+        sectional: false,
+        meta: vec![crate::execution::Metadata {
+            source_range: args.source_range,
+        }],
+    };
     Ok(solid)
 }
