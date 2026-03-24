@@ -1,11 +1,10 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
 import { defineExtension, provide, createPlugin } from '@src/lib/extensions'
 import { PATHS } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
-import { useLocation } from 'react-router-dom'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 /** Contributes the telemetry modal routes for both home and file contexts. */
 const telemetryRouteExt = defineExtension({
@@ -20,17 +19,10 @@ const telemetryRouteExt = defineExtension({
  * context through hooks instead of needing `App` on `ExtensionContext`.
  */
 function TelemetryStatusBarItem() {
-  const location = useLocation()
-  const filePath = useAbsoluteFilePath()
-  const href =
-    location.pathname.includes(PATHS.FILE) && filePath
-      ? filePath + PATHS.TELEMETRY + '?tab=project'
-      : PATHS.HOME + PATHS.TELEMETRY
-
   return (
     <ActionButton
       Element="link"
-      to={href}
+      to={makeUrlPathRelative(PATHS.TELEMETRY)}
       className={defaultStatusBarItemClassNames}
       data-testid="telemetry-link"
       aria-label="Telemetry"

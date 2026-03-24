@@ -55,6 +55,7 @@ import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { ExtensionHost } from '@src/lib/extensions'
+import { coreExtensions } from '@src/extensions'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -289,7 +290,7 @@ export class App implements AppSubsystems {
       ),
     }
     const extensionsHost = new ExtensionHost()
-    extensionsHost.configure([])
+    extensionsHost.configure(coreExtensions)
     const extensions = {
       host: extensionsHost,
     }
