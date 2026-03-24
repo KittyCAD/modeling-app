@@ -534,6 +534,17 @@ async fn inner_region(
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
+
+    let mut region_mapping = region_mapping;
+    if args.ctx.no_engine_commands().await && region_mapping.is_empty() {
+        // In mock mode, we need to create fake segment IDs so that tags can be
+        // found.
+        let mut mock_mapping = HashMap::new();
+        for path in &sketch.paths {
+            mock_mapping.insert(exec_state.next_uuid(), path.get_id());
+        }
+        region_mapping = mock_mapping;
+    }
     sketch.region_mapping = region_mapping;
 
     // Early expansion: replace paths and update tags to use region segment IDs.
