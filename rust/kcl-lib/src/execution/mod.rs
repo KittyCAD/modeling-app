@@ -3069,4 +3069,28 @@ answer = inc(5)
         let errors = result.exec_state.errors();
         assert_eq!(errors.len(), 0);
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_arc_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_arc/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_arc_arc_math_only_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_arc_arc_math_only/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_circle_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_circle/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_circle_circle_native_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_circle_circle_native/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
 }
