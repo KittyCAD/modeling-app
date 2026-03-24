@@ -565,10 +565,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     sendHoveredState(self.getSnapshot().context.hoveredId)
   }
 
-  const startConstraintHoverPopup = (
-    segmentId: number,
-    position: Coords2d
-  ) => {
+  const startConstraintHoverPopup = (segmentId: number, position: Coords2d) => {
     clearConstraintHoverPopupTimers()
     constraintHoverPopupState.popup = {
       segmentId,
@@ -735,7 +732,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       ) {
         startConstraintHoverPopup(constraintHoverPopupSegmentId, mousePosition)
       }
-      constraintHoverPopupState.lastHoveredTargetId = constraintHoverPopupSegmentId
+      constraintHoverPopupState.lastHoveredTargetId =
+        constraintHoverPopupSegmentId
 
       if (isHoveringConstraintHoverPopup) {
         if (!constraintHoverPopupState.isHoveringPreview) {

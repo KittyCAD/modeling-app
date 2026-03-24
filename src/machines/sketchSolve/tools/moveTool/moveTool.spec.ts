@@ -90,7 +90,10 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
-  constraintHoverPopup?: { segmentId: number; position: [number, number] } | null
+  constraintHoverPopup?: {
+    segmentId: number
+    position: [number, number]
+  } | null
   getSceneObjectByName?: (name: string) => unknown
 }) {
   let callbacks: Record<string, unknown> = {}
@@ -149,7 +152,8 @@ function setUpMoveToolCallbacks({
       if (event.type === 'update hovered id') {
         snapshot.context.hoveredId = event.data.hoveredId
         if ('constraintHoverPopup' in event.data) {
-          snapshot.context.constraintHoverPopup = event.data.constraintHoverPopup
+          snapshot.context.constraintHoverPopup =
+            event.data.constraintHoverPopup
         }
       }
       if (event.type === 'update selected ids') {
