@@ -3583,89 +3583,24 @@ fn sketch_face_of_artifact_ast_expr(
                         _ => None,
                     })
                     .unwrap_or(segment);
-                let Some(ast::Definition::Variable(region_decl)) = ast.get_variable(region_name) else {
+                let segment_ref = get_or_insert_ast_reference(
+                    ast,
+                    &SourceRef::Simple {
+                        range: source_segment.code_ref.range,
+                    },
+                    "line",
+                    None,
+                )?;
+                let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(Error {
-                        msg: format!("Region variable not found in AST: {region_name}"),
+                        msg: format!(
+                            "Could not resolve source segment reference for selected region wall: {artifact_id:?}"
+                        ),
                     });
-                };
-                let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
-                    return Err(Error {
-                        msg: format!("Region variable is not a call expression: {region_name}"),
-                    });
-                };
-                let Some(sketch_arg) = region_call
-                    .arguments
-                    .iter()
-                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some("sketch"))
-                else {
-                    return Err(Error {
-                        msg: format!("Region call has no sketch argument: {region_name}"),
-                    });
-                };
-                let ast::Expr::Name(sketch_name_expr) = &sketch_arg.arg else {
-                    return Err(Error {
-                        msg: format!("Region sketch argument is not a sketch variable: {region_name}"),
-                    });
-                };
-                let Some(ast::Definition::Variable(sketch_decl)) = ast.get_variable(&sketch_name_expr.name.name) else {
-                    return Err(Error {
-                        msg: format!("Sketch variable not found in AST: {}", sketch_name_expr.name.name),
-                    });
-                };
-                let ast::Expr::SketchBlock(sketch_block) = &sketch_decl.init else {
-                    return Err(Error {
-                        msg: format!("Sketch variable is not a sketch block: {}", sketch_name_expr.name.name),
-                    });
-                };
-                let segment_variables: Vec<(String, SourceRange)> = sketch_block
-                    .body
-                    .items
-                    .iter()
-                    .filter_map(|item| {
-                        let ast::BodyItem::VariableDeclaration(item) = item else {
-                            return None;
-                        };
-                        let ast::Expr::CallExpressionKw(call) = &item.declaration.init else {
-                            return None;
-                        };
-                        if !matches!(call.callee.name.name.as_str(), "line" | "arc" | "circle") {
-                            return None;
-                        }
-                        Some((
-                            item.declaration.id.name.clone(),
-                            SourceRange::from(&item.declaration.init),
-                        ))
-                    })
-                    .collect();
-                if segment_variables.is_empty() {
-                    return Err(Error {
-                        msg: format!("Could not resolve named sketch segments for region {region_name}"),
-                    });
-                }
-                let segment_name = if let Some(candidate) =
-                    variable_name_from_code_ref_node_path(ast, &source_segment.code_ref)
-                    && segment_variables.iter().any(|(name, _)| name == &candidate)
-                {
-                    candidate
-                } else {
-                    let source_range = source_segment.code_ref.range;
-                    segment_variables
-                        .iter()
-                        .find(|(_, segment_range)| {
-                            segment_range.module_id() == source_range.module_id()
-                                && segment_range.start() <= source_range.end()
-                                && source_range.start() <= segment_range.end()
-                        })
-                        .map(|(name, _)| name.clone())
-                        .ok_or_else(|| Error {
-                            msg: format!(
-                                "Could not resolve source segment name for selected region wall: {artifact_id:?}"
-                            ),
-                        })?
                 };
                 face_expr = create_member_expression(
                     create_member_expression(ast_name_expr(region_name.clone()), "tags"),
-                    &segment_name,
+                    &segment_name_expr.name.name,
                 );
             } else {
                 face_expr = get_or_insert_ast_reference(
