@@ -1437,55 +1437,64 @@ fn create_arc_radius_constraint(
             vec![source_range],
         )));
     };
-    match &unsolved.kind {
+    let (center, start, center_object_id, start_object_id, segment_kind_label) = match &unsolved.kind {
         UnsolvedSegmentKind::Arc {
             center,
             start,
             center_object_id,
             start_object_id,
             ..
-        } => {
-            // Extract center and start point coordinates
-            match (&center[0], &center[1], &start[0], &start[1]) {
-                (
-                    UnsolvedExpr::Unknown(center_x),
-                    UnsolvedExpr::Unknown(center_y),
-                    UnsolvedExpr::Unknown(start_x),
-                    UnsolvedExpr::Unknown(start_y),
-                ) => {
-                    // All coordinates are sketch vars. Create constraint.
-                    let sketch_constraint = SketchConstraint {
-                        kind: constraint_kind([
-                            ConstrainablePoint2d {
-                                vars: crate::front::Point2d {
-                                    x: *center_x,
-                                    y: *center_y,
-                                },
-                                object_id: *center_object_id,
-                            },
-                            ConstrainablePoint2d {
-                                vars: crate::front::Point2d {
-                                    x: *start_x,
-                                    y: *start_y,
-                                },
-                                object_id: *start_object_id,
-                            },
-                        ]),
-                        meta: vec![source_range.into()],
-                    };
-                    Ok(sketch_constraint)
-                }
-                _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "unimplemented: {}() arc segment must have all sketch vars in all coordinates",
-                        function_name
-                    ),
-                    vec![source_range],
-                ))),
-            }
+        } => (center, start, *center_object_id, *start_object_id, "arc"),
+        UnsolvedSegmentKind::Circle {
+            center,
+            start,
+            center_object_id,
+            start_object_id,
+            ..
+        } => (center, start, *center_object_id, *start_object_id, "circle"),
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("{}() argument must be an arc or circle segment", function_name),
+                vec![source_range],
+            )));
+        }
+    };
+
+    // Extract center and start point coordinates
+    match (&center[0], &center[1], &start[0], &start[1]) {
+        (
+            UnsolvedExpr::Unknown(center_x),
+            UnsolvedExpr::Unknown(center_y),
+            UnsolvedExpr::Unknown(start_x),
+            UnsolvedExpr::Unknown(start_y),
+        ) => {
+            // All coordinates are sketch vars. Create constraint.
+            let sketch_constraint = SketchConstraint {
+                kind: constraint_kind([
+                    ConstrainablePoint2d {
+                        vars: crate::front::Point2d {
+                            x: *center_x,
+                            y: *center_y,
+                        },
+                        object_id: center_object_id,
+                    },
+                    ConstrainablePoint2d {
+                        vars: crate::front::Point2d {
+                            x: *start_x,
+                            y: *start_y,
+                        },
+                        object_id: start_object_id,
+                    },
+                ]),
+                meta: vec![source_range.into()],
+            };
+            Ok(sketch_constraint)
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("{}() argument must be an arc segment", function_name),
+            format!(
+                "unimplemented: {}() {} segment must have all sketch vars in all coordinates",
+                function_name, segment_kind_label
+            ),
             vec![source_range],
         ))),
     }
@@ -2545,6 +2554,131 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             "line's x and y coordinates of both start and end must be vars".to_owned(),
             vec![args.source_range],
         ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
+    use uuid::Uuid;
+
+    use super::*;
+    use crate::SourceRange;
+    use crate::execution::AbstractSegment;
+    use crate::execution::KclValue;
+    use crate::execution::SegmentRepr;
+    use crate::execution::SketchConstraintKind;
+    use crate::execution::SketchVarId;
+    use crate::execution::UnsolvedSegment;
+    use crate::execution::UnsolvedSegmentKind;
+    use crate::front::CircleCtor;
+    use crate::front::Expr;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+
+    fn literal_expr(value: f64) -> Expr {
+        Expr::Number(Number::from((value, UnitLength::Millimeters)))
+    }
+
+    fn make_circle_segment(
+        center_ids: [SketchVarId; 2],
+        start_ids: [SketchVarId; 2],
+        center_object_id: ObjectId,
+        start_object_id: ObjectId,
+    ) -> KclValue {
+        let segment = UnsolvedSegment {
+            id: Uuid::nil(),
+            object_id: ObjectId(900),
+            kind: UnsolvedSegmentKind::Circle {
+                start: [UnsolvedExpr::Unknown(start_ids[0]), UnsolvedExpr::Unknown(start_ids[1])],
+                center: [
+                    UnsolvedExpr::Unknown(center_ids[0]),
+                    UnsolvedExpr::Unknown(center_ids[1]),
+                ],
+                ctor: Box::new(CircleCtor {
+                    start: Point2d {
+                        x: literal_expr(0.0),
+                        y: literal_expr(0.0),
+                    },
+                    center: Point2d {
+                        x: literal_expr(0.0),
+                        y: literal_expr(0.0),
+                    },
+                    construction: None,
+                }),
+                start_object_id,
+                center_object_id,
+                construction: false,
+            },
+            tag: None,
+            meta: vec![],
+        };
+
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Unsolved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    #[test]
+    fn radius_constraint_accepts_circle_segments() {
+        let center_ids = [SketchVarId(10), SketchVarId(11)];
+        let start_ids = [SketchVarId(12), SketchVarId(13)];
+        let center_object_id = ObjectId(200);
+        let start_object_id = ObjectId(201);
+        let segment_value = make_circle_segment(center_ids, start_ids, center_object_id, start_object_id);
+
+        let constraint = create_arc_radius_constraint(
+            segment_value,
+            |points| SketchConstraintKind::Radius { points },
+            SourceRange::default(),
+        )
+        .expect("radius constraint should accept circles");
+
+        match constraint.kind {
+            SketchConstraintKind::Radius { points } => {
+                assert_eq!(points[0].vars.x, center_ids[0]);
+                assert_eq!(points[0].vars.y, center_ids[1]);
+                assert_eq!(points[0].object_id, center_object_id);
+                assert_eq!(points[1].vars.x, start_ids[0]);
+                assert_eq!(points[1].vars.y, start_ids[1]);
+                assert_eq!(points[1].object_id, start_object_id);
+            }
+            other => panic!("unexpected constraint kind: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn diameter_constraint_accepts_circle_segments() {
+        let center_ids = [SketchVarId(20), SketchVarId(21)];
+        let start_ids = [SketchVarId(22), SketchVarId(23)];
+        let center_object_id = ObjectId(300);
+        let start_object_id = ObjectId(301);
+        let segment_value = make_circle_segment(center_ids, start_ids, center_object_id, start_object_id);
+
+        let constraint = create_arc_radius_constraint(
+            segment_value,
+            |points| SketchConstraintKind::Diameter { points },
+            SourceRange::default(),
+        )
+        .expect("diameter constraint should accept circles");
+
+        match constraint.kind {
+            SketchConstraintKind::Diameter { points } => {
+                assert_eq!(points[0].vars.x, center_ids[0]);
+                assert_eq!(points[0].vars.y, center_ids[1]);
+                assert_eq!(points[0].object_id, center_object_id);
+                assert_eq!(points[1].vars.x, start_ids[0]);
+                assert_eq!(points[1].vars.y, start_ids[1]);
+                assert_eq!(points[1].object_id, start_object_id);
+            }
+            other => panic!("unexpected constraint kind: {other:?}"),
+        }
     }
 }
 
