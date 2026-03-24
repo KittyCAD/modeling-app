@@ -7,7 +7,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createMemberExpression,
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
@@ -21,11 +20,9 @@ import {
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getSelectedPlaneAsNode,
-  getNodeFromPath,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
-  getSketchSegmentName,
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
@@ -42,7 +39,6 @@ import {
   type Expr,
   type PathToNode,
   type Program,
-  type VariableDeclaration,
   type VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
@@ -906,17 +902,6 @@ export function getFacesExprsFromSelection(
     isFaceArtifact(selection.artifact)
   )
   for (const faceSelection of faceSelections) {
-    const regionWallExpr = getRegionWallFaceExpression(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (regionWallExpr) {
-      exprs.push(regionWallExpr)
-      continue
-    }
-
     const res = modifyAstWithTagsForSelection(
       modifiedAst,
       faceSelection,
@@ -927,64 +912,9 @@ export function getFacesExprsFromSelection(
       return res
     }
     modifiedAst = res.modifiedAst
-    const expr = createLocalName(res.tags[0])
-    exprs.push(expr)
+    exprs.push(res.exprs[0])
   }
   return { modifiedAst, exprs }
-}
-
-function getRegionWallFaceExpression(
-  ast: Node<Program>,
-  selection: Selection,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
-): Expr | null {
-  if (selection.artifact?.type !== 'wall') {
-    return null
-  }
-
-  const wallSegment = getArtifactOfTypes(
-    { key: selection.artifact.segId, types: ['segment'] },
-    artifactGraph
-  )
-  if (
-    err(wallSegment) ||
-    !wallSegment.originalSegId ||
-    wallSegment.originalSegId === wallSegment.id
-  ) {
-    return null
-  }
-
-  const regionVarDec = getNodeFromPath<VariableDeclaration>(
-    ast,
-    wallSegment.codeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
-  )
-  if (
-    err(regionVarDec) ||
-    regionVarDec.node.type !== 'VariableDeclaration' ||
-    regionVarDec.node.declaration.init.type !== 'CallExpressionKw' ||
-    regionVarDec.node.declaration.init.callee.name.name !== 'region'
-  ) {
-    return null
-  }
-
-  const wallLineName = getSketchSegmentName(
-    ast,
-    wallSegment.originalSegId,
-    artifactGraph,
-    wasmInstance
-  )
-  if (!wallLineName) {
-    return null
-  }
-
-  const regionName = regionVarDec.node.declaration.id.name
-  return createMemberExpression(
-    createMemberExpression(regionName, 'tags'),
-    wallLineName
-  )
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)
