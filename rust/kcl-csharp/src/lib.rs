@@ -1,3 +1,4 @@
+#![deny(improper_ctypes_definitions)]
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::c_char;
@@ -224,17 +225,91 @@ impl ExportedFile {
 }
 
 #[repr(C)]
+#[derive(Debug)]
+pub struct ErrorInfo {
+    kind: KclErrorKind,
+    msg: *mut c_char,
+}
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KclErrorKind {
+    Lexical,
+    Syntax,
+    Semantic,
+    ImportCycle,
+    Argument,
+    Type,
+    Io,
+    Unexpected,
+    ValueAlreadyDefined,
+    UndefinedValue,
+    InvalidExpression,
+    MaxCallStack,
+    Engine,
+    EngineHangup,
+    EngineInternal,
+    Internal,
+    Setup,
+}
+
+impl From<&KclError> for KclErrorKind {
+    fn from(value: &KclError) -> Self {
+        match value {
+            KclError::Lexical { .. } => Self::Lexical,
+            KclError::Syntax { .. } => Self::Syntax,
+            KclError::Semantic { .. } => Self::Semantic,
+            KclError::ImportCycle { .. } => Self::ImportCycle,
+            KclError::Argument { .. } => Self::Argument,
+            KclError::Type { .. } => Self::Type,
+            KclError::Io { .. } => Self::Io,
+            KclError::Unexpected { .. } => Self::Unexpected,
+            KclError::ValueAlreadyDefined { .. } => Self::ValueAlreadyDefined,
+            KclError::UndefinedValue { .. } => Self::UndefinedValue,
+            KclError::InvalidExpression { .. } => Self::InvalidExpression,
+            KclError::MaxCallStack { .. } => Self::MaxCallStack,
+            KclError::Engine { .. } => Self::Engine,
+            KclError::EngineHangup { .. } => Self::EngineHangup,
+            KclError::EngineInternal { .. } => Self::EngineInternal,
+            KclError::Internal { .. } => Self::Internal,
+        }
+    }
+}
+
+impl ErrorInfo {
+    fn new(kcl_error: &KclError) -> Self {
+        Self {
+            kind: KclErrorKind::from(kcl_error),
+            msg: c_string_into_raw(kcl_error.message()),
+        }
+    }
+    fn new_setup(msg: &str) -> Self {
+        Self {
+            kind: KclErrorKind::Setup,
+            msg: c_string_into_raw(msg),
+        }
+    }
+}
+
+impl From<ErrorInfo> for ExportResult {
+    fn from(error: ErrorInfo) -> Self {
+        Self {
+            error_set: true,
+            error: Box::into_raw(Box::new(error)),
+            exports: Default::default(),
+            exports_len: Default::default(),
+        }
+    }
+}
+
+#[repr(C)]
 #[derive(Default)]
 pub struct ExportResult {
-    /// If true, then `kcl_error` is set, it should be read and handled.
+    /// If true, then `error` is set, it should be read and handled.
     /// `exports` is invalid and should not be read.
-    pub kcl_error_set: bool,
-    pub kcl_error: *mut c_char,
-    /// If true, then `setup_error` is set, it should be read and handled.
-    /// `exports` is invalid and should not be read.
-    pub setup_error_set: bool,
-    pub setup_error: *mut c_char,
-    /// Should only be read if `kcl_error_set` and `setup_error_set` are false.
+    pub error_set: bool,
+    pub error: *mut ErrorInfo,
+    /// Should only be read if `error_set` is false.
     pub exports: *mut ExportedFile,
     pub exports_len: usize,
 }
@@ -248,23 +323,17 @@ impl ExportResult {
                 ..Default::default()
             },
             Err(error) => match error {
-                Error::KclError(kcl_error) => ExportResult {
-                    kcl_error: c_string_into_raw(kcl_error.to_string()),
-                    kcl_error_set: true,
-                    ..Default::default()
-                },
-                Error::Setup(setup_error) => ExportResult {
-                    setup_error: c_string_into_raw(setup_error),
-                    setup_error_set: true,
-                    ..Default::default()
-                },
+                Error::KclError(kcl_error) => ExportResult::from(ErrorInfo::new(&kcl_error)),
+                Error::Setup(setup_error) => ExportResult::from(ErrorInfo::new_setup(&setup_error)),
             },
         }
     }
 
     unsafe fn free(self) {
-        unsafe { free_c_string(self.kcl_error) };
-        unsafe { free_c_string(self.setup_error) };
+        if self.error_set && !self.error.is_null() {
+            let ptr_to_error_info = unsafe { Box::from_raw(self.error as *mut ErrorInfo) };
+            drop(ptr_to_error_info);
+        }
 
         if !self.exports.is_null() {
             let files = unsafe {
