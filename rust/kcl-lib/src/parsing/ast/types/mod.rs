@@ -806,15 +806,9 @@ impl Program {
         let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
         for item in &mut self.body {
             let names_in_this = body_item_defined_names(&*item);
+            let shadowed_here = names_in_this.iter().any(|name| name == old_name);
             let excluded_for_this: Vec<&str> = match item {
-                BodyItem::VariableDeclaration(_) => {
-                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-                    let bindings_from_init = names_in_this.len().saturating_sub(1);
-                    for n in &names_in_this[..bindings_from_init] {
-                        v.push(n.as_str());
-                    }
-                    v
-                }
+                BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
                 _ => {
                     let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
                     for n in &names_in_this {
@@ -825,6 +819,9 @@ impl Program {
             };
             item.rename_identifiers(old_name, new_name, &excluded_for_this);
             excluded_owned.extend(names_in_this);
+            if shadowed_here {
+                break;
+            }
         }
     }
 
@@ -1380,10 +1377,9 @@ impl Expr {
                     identifier.rename(old_name, new_name);
                 }
             }
-            Expr::TagDeclarator(tag) => {
-                if !excluded.contains(&tag.name.as_str()) {
-                    tag.rename(old_name, new_name);
-                }
+            Expr::TagDeclarator(_tag) => {
+                // TagDeclarators introduce new bindings. Renaming other symbols should not
+                // rewrite the tag's identifier, so we intentionally skip them here.
             }
             Expr::BinaryExpression(binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name, excluded);
@@ -3180,6 +3176,7 @@ impl TagDeclarator {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
+    #[allow(dead_code)]
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if self.name == old_name {
             self.name = new_name.to_string();
@@ -5097,6 +5094,82 @@ angle = atan(rise / run)"#;
             r#"rise = 4.5
 yoyo = 8
 angle = atan(rise / yoyo)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_handles_tag_bindings() {
+        let code = r#"BEST = 2
+
+fn foo() {
+  sketch001 = startSketchOn(XY)
+  profile001 = startProfile(sketch001, at = [0, 0])
+    |> xLine(length = BEST)
+    |> yLine(length = BEST, tag = $BEST)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return profile001
+}
+
+foo()
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("BETTER", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"BETTER = 2
+
+fn foo() {
+  sketch001 = startSketchOn(XY)
+  profile001 = startProfile(sketch001, at = [0, 0])
+    |> xLine(length = BETTER)
+    |> yLine(length = BETTER, tag = $BEST)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return profile001
+}
+
+foo()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_stops_after_shadowing() {
+        let code = r#"foo = 1
+
+fn demo(a) {
+  before = foo
+  foo = a
+  after = foo
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("foo_initial", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"foo_initial = 1
+
+fn demo(a) {
+  before = foo_initial
+  foo = a
+  after = foo
+}
 "#
         );
     }
