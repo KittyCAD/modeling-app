@@ -1367,9 +1367,14 @@ export function getSelectionCountByType(
 
 export function getSelectionTypeDisplayText(
   ast: Node<Program>,
-  selection?: Selections
+  selection?: Selections,
+  artifactGraph?: ArtifactGraph
 ): string | null {
-  const selectionsByType = getSelectionCountByType(ast, selection)
+  const selectionsByType = getSelectionCountByType(
+    ast,
+    selection,
+    artifactGraph
+  )
   if (selectionsByType === 'none') return null
 
   // Display segment count as "edge(s)" (no leaky segment/sweepEdge artifact types)

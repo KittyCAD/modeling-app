@@ -187,7 +187,7 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
+      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 profile'
       async function selectBracket() {
         if (selectionType === 'scene') {
           const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -888,7 +888,7 @@ foreign
           currentArgKey: 'variableName',
           currentArgValue: '',
           headerArguments: {
-            Objects: '1 profile',
+            Objects: '1 path',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -898,7 +898,7 @@ foreign
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 profile',
+            Objects: '1 path',
             VariableName: 'clone001',
           },
           commandName: 'Clone',

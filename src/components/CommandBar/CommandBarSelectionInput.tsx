@@ -172,8 +172,11 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
-            ' selected'
+          ? getSelectionTypeDisplayText(
+              kclManager.astSignal.value,
+              selection,
+              kclManager.artifactGraph
+            ) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}

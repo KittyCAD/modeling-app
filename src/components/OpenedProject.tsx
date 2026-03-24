@@ -416,7 +416,8 @@ export function OpenedProject() {
               label:
                 getSelectionTypeDisplayText(
                   kclManager.astSignal.value,
-                  modelingState.context.selectionRanges
+                  modelingState.context.selectionRanges,
+                  kclManager.artifactGraph
                 ) ?? 'No selection',
               toolTip: {
                 children: 'Currently selected geometry',

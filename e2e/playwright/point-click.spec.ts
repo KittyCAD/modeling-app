@@ -1760,17 +1760,14 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
 
-    await test.step(
-      'Confirm code has sideFaces edge reference payload and angle updated',
-      async () => {
+    await test.step('Confirm code has sideFaces edge reference payload and angle updated', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = { sideFaces = [')
       expect(code).toContain('180deg')
       expect(code).not.toContain('axis = getOppositeEdge')
-      }
-    )
+    })
   })
 
   // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in helix
@@ -1852,17 +1849,14 @@ helix001 = helix(
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     })
 
-    await test.step(
-      'Confirm code has sideFaces edge reference payload and radius updated',
-      async () => {
+    await test.step('Confirm code has sideFaces edge reference payload and radius updated', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = { sideFaces = [')
       expect(code).toContain('radius = 2')
       expect(code).not.toContain('axis = getOppositeEdge')
-      }
-    )
+    })
   })
 
   test(`Fillet point-and-click delete`, async ({
