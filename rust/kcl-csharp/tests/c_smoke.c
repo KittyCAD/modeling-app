@@ -22,11 +22,34 @@ typedef struct ExportedFile {
     size_t contents_len;
 } ExportedFile;
 
+typedef enum KclErrorKind {
+    KclErrorKind_Lexical,
+    KclErrorKind_Syntax,
+    KclErrorKind_Semantic,
+    KclErrorKind_ImportCycle,
+    KclErrorKind_Argument,
+    KclErrorKind_Type,
+    KclErrorKind_Io,
+    KclErrorKind_Unexpected,
+    KclErrorKind_ValueAlreadyDefined,
+    KclErrorKind_UndefinedValue,
+    KclErrorKind_InvalidExpression,
+    KclErrorKind_MaxCallStack,
+    KclErrorKind_Engine,
+    KclErrorKind_EngineHangup,
+    KclErrorKind_EngineInternal,
+    KclErrorKind_Internal,
+    KclErrorKind_Setup,
+} KclErrorKind;
+
+typedef struct ErrorInfo {
+    KclErrorKind kind;
+    char *msg;
+} ErrorInfo;
+
 typedef struct ExportResult {
-    bool kcl_error_set;
-    char *kcl_error;
-    bool setup_error_set;
-    char *setup_error;
+    bool error_set;
+    ErrorInfo *error;
     ExportedFile *exports;
     size_t exports_len;
 } ExportResult;
@@ -67,9 +90,54 @@ static const char *SECOND_PROGRAM =
     "  |> close()\n"
     "  |> extrude(length = 8)\n";
 
+static const char *kcl_error_kind_name(KclErrorKind kind) {
+    switch (kind) {
+        case KclErrorKind_Lexical:
+            return "Lexical";
+        case KclErrorKind_Syntax:
+            return "Syntax";
+        case KclErrorKind_Semantic:
+            return "Semantic";
+        case KclErrorKind_ImportCycle:
+            return "ImportCycle";
+        case KclErrorKind_Argument:
+            return "Argument";
+        case KclErrorKind_Type:
+            return "Type";
+        case KclErrorKind_Io:
+            return "Io";
+        case KclErrorKind_Unexpected:
+            return "Unexpected";
+        case KclErrorKind_ValueAlreadyDefined:
+            return "ValueAlreadyDefined";
+        case KclErrorKind_UndefinedValue:
+            return "UndefinedValue";
+        case KclErrorKind_InvalidExpression:
+            return "InvalidExpression";
+        case KclErrorKind_MaxCallStack:
+            return "MaxCallStack";
+        case KclErrorKind_Engine:
+            return "Engine";
+        case KclErrorKind_EngineHangup:
+            return "EngineHangup";
+        case KclErrorKind_EngineInternal:
+            return "EngineInternal";
+        case KclErrorKind_Internal:
+            return "Internal";
+        case KclErrorKind_Setup:
+            return "Setup";
+    }
+
+    return "Unknown";
+}
+
 static size_t total_export_bytes(const ExportResult *result) {
     size_t total = 0;
     size_t i;
+
+    if (result->exports == NULL) {
+        return 0;
+    }
 
     for (i = 0; i < result->exports_len; ++i) {
         total += result->exports[i].contents_len;
@@ -79,13 +147,19 @@ static size_t total_export_bytes(const ExportResult *result) {
 }
 
 static int check_export_result(const char *label, const ExportResult *result) {
-    if (result->setup_error_set) {
-        fprintf(stderr, "%s setup error: %s\n", label, result->setup_error);
-        return 0;
-    }
+    if (result->error_set) {
+        if (result->error == NULL) {
+            fprintf(stderr, "%s returned error_set with a null error pointer\n", label);
+            return 0;
+        }
 
-    if (result->kcl_error_set) {
-        fprintf(stderr, "%s KCL error: %s\n", label, result->kcl_error);
+        fprintf(
+            stderr,
+            "%s %s error: %s\n",
+            label,
+            kcl_error_kind_name(result->error->kind),
+            result->error->msg
+        );
         return 0;
     }
 

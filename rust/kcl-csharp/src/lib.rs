@@ -231,6 +231,12 @@ pub struct ErrorInfo {
     msg: *mut c_char,
 }
 
+impl Drop for ErrorInfo {
+    fn drop(&mut self) {
+        unsafe { free_c_string(self.msg) };
+    }
+}
+
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum KclErrorKind {
