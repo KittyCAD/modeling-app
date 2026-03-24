@@ -138,7 +138,7 @@ export function isInvisibleConstraintRelatedToSegment(
       )
     case 'Tangent':
       return (
-        isLineSegment(object) &&
+        (isLineSegment(object) || isArcLikeSegment(object)) &&
         constraint.kind.constraint.input.includes(object.id)
       )
   }

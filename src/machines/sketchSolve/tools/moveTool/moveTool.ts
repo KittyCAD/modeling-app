@@ -30,8 +30,6 @@ import {
 import {
   getOtherCoincidentIdsByPointId,
   isConstraint,
-  isLineSegment,
-  isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   findInvisibleConstraintsForSegment,
@@ -251,15 +249,6 @@ export function createOnClickCallback({
       })
     }
   }
-}
-
-function isPreviewTarget(obj: ApiObject | null): obj is ApiObject & {
-  kind: {
-    type: 'Segment'
-    segment: { type: 'Line' | 'Point' }
-  }
-} {
-  return isLineSegment(obj) || isPointSegment(obj)
 }
 
 type HoveredConstraintPreview = {
@@ -733,9 +722,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const hoveredApiObject = hoveredObject?.apiObject ?? null
       const hoveredId = hoveredApiObject?.id ?? null
       const lastHoveredId = snapshot.context.hoveredId
-      const hoveredConstraintPreviewTargetId = isPreviewTarget(hoveredApiObject)
-        ? hoveredApiObject.id
-        : null
+      const hoveredConstraintPreviewTargetId =
+        hoveredApiObject !== null && !isConstraint(hoveredApiObject)
+          ? hoveredApiObject.id
+          : null
       const { preview } = hoveredConstraintPreviewState
       const isHoveringHoveredConstraintPreview =
         preview !== null &&
