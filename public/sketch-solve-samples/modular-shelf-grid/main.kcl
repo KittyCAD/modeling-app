@@ -55,7 +55,7 @@ sidePanels = extrude(sidePanelProfile, length = unitHeight)
 // --- Shelf Boards ---
 // Two shelves: one at the bottom, one at the top of each module.
 firstShelfSketch = startSketchOn(basePlane)
-firstShelfProfile = sketch(on = XY) {
+firstShelfProfile = sketch(on = firstShelfSketch) {
   line1 = line(start = [var -0.18m, var 0m], end = [var -0.18m, var -0.4m])
   line2 = line(start = [var -0.18m, var -0.4m], end = [var 0.18m, var -0.4m])
   coincident([line1.end, line2.start])

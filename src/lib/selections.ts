@@ -1474,6 +1474,11 @@ export function findLastRangeStartingBefore(
   return resultIndex
 }
 
+/**
+ * Runs in O(n) time.
+ * TODO: update ArtifactIndex to be an [interval tree](https://en.wikipedia.org/wiki/Interval_tree#cite_note-Schmidt2009-2),
+ * then make this run sub-linear by using that to query for overlaps.
+ */
 function findOverlappingArtifactsFromIndex(
   selection: Selection,
   index: ArtifactIndex
@@ -1487,19 +1492,8 @@ function findOverlappingArtifactsFromIndex(
   const selectionRange = range
   const results: ArtifactEntry[] = []
 
-  // Binary search to find the last range where range[0] < selectionRange[0]
-  // This search does not take into consideration the end range, so it's possible
-  // the index it finds dose not have any overlap (depending on the end range)
-  // but it's main purpose is to act as a starting point for the linear part of the search
-  // so a tiny loss in efficiency is acceptable to keep the code simple
-  const startIndex = findLastRangeStartingBefore(index, selectionRange[0])
-
-  // Check all potential overlaps from the found position
-  for (let i = startIndex; i < index.length; i++) {
+  for (let i = 0; i < index.length; i++) {
     const { range, entry } = index[i]
-    // Stop if we've gone past possible overlaps
-    if (range[0] > selectionRange[1]) break
-
     if (isOverlap(range, selectionRange)) {
       results.push(entry)
     }

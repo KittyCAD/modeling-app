@@ -3,7 +3,8 @@
 //! references.
 use std::ops::ControlFlow;
 
-use crate::{parsing::ast::types as ast, walk::NodeMut};
+use crate::parsing::ast::types as ast;
+use crate::walk::NodeMut;
 
 pub(super) struct TraversalReturn<B, C = ()> {
     pub mutate_body_item: MutateBodyItem,

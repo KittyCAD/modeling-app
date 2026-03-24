@@ -114,7 +114,6 @@ import {
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
-import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -135,6 +134,10 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import {
+  requestCameraReset,
+  requestSkipExecution,
+} from '@src/editor/plugins/execution'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 
 interface ExecuteArgs {
@@ -449,9 +452,6 @@ const PERSIST_CODE_KEY = 'persistCode'
 
 const keymapCompartment = new Compartment()
 
-const editorCodeUpdateAnnotation = Annotation.define<boolean>()
-export const editorCodeUpdateEvent = editorCodeUpdateAnnotation.of(true)
-
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
@@ -476,16 +476,18 @@ export class File extends EventTarget {
     return this.pathSignal.value
   }
   set path(newPath: string) {
-    if (this.watching) {
+    const wasWatching = this.watching
+    if (wasWatching) {
       this.unwatch()
-
-      // Don't watch empty file paths, that's the whole file system!
-      if (newPath.length > 0) {
-        this.watch()
-      }
     }
 
+    // Set pathSignal before calling this.watch() as it uses the path!
     this.pathSignal.value = newPath
+
+    // Don't watch empty file paths, that's the whole file system!
+    if (wasWatching && newPath.length > 0) {
+      this.watch()
+    }
   }
 
   read() {
@@ -497,6 +499,9 @@ export class File extends EventTarget {
   }
 
   watch() {
+    if (this.watching || this.path.length < 1) {
+      return
+    }
     File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
       this.onWatchEvent.map((f) => f(e, p))
     })
@@ -504,6 +509,9 @@ export class File extends EventTarget {
   }
 
   unwatch() {
+    if (!this.watching) {
+      return
+    }
     File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
     this.watching = false
   }
@@ -715,6 +723,7 @@ export class KclManager extends File {
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
@@ -724,7 +733,6 @@ export class KclManager extends File {
     If this value isn't `null`, don't watch for file system writes it was probably us!
    */
   public writingPromise = signal<Promise<unknown> | null>(null)
-  public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
   private _convertToVariableEnabled: boolean = false
@@ -958,9 +966,6 @@ export class KclManager extends File {
     }
   )
 
-  static requestCameraResetAnnotation = Annotation.define<boolean>()
-  static requestSkipExecution = Annotation.define<boolean>()
-
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
@@ -976,40 +981,17 @@ export class KclManager extends File {
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
     const notIgnoredUpdate =
-      this.engineCommandManager.started &&
-      update.docChanged &&
-      update.transactions.some((tr) => {
-        // The old KCL ViewPlugin had checks that seemed to check for
-        // certain events, but really they just set the already-true to true.
-        // Leaving here in case we need to switch to an opt-in listener.
-        // const relevantEvents = [
-        //   tr.isUserEvent('input'),
-        //   tr.isUserEvent('delete'),
-        //   tr.isUserEvent('undo'),
-        //   tr.isUserEvent('redo'),
-        //   tr.isUserEvent('move'),
-        //   tr.annotation(lspRenameEvent.type),
-        //   tr.annotation(lspCodeActionEvent.type),
-        // ]
-        const ignoredEvents = [
-          tr.annotation(editorCodeUpdateEvent.type),
-          tr.annotation(copilotPluginEvent.type),
-          tr.annotation(updateOutsideEditorEvent.type),
-          tr.annotation(hotkeyRegisteredAnnotation),
-        ]
-
-        return !ignoredEvents.some((v) => Boolean(v))
-      })
+      this.engineCommandManager.connection?.connected && update.docChanged
 
     const shouldResetCamera = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestCameraResetAnnotation)
+      tr.effects.some((e) => e.is(requestCameraReset) && e.value)
     )
 
     if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
-        tr.annotation(KclManager.requestSkipExecution)
+        tr.effects.some((e) => e.is(requestSkipExecution) && e.value)
       )
       if (!hasSkipExecutionAnnotation) {
         this.deferredExecution({ newCode, shouldResetCamera })
@@ -1083,8 +1065,6 @@ export class KclManager extends File {
       update.docChanged &&
       update.transactions.some((tr) => {
         const ignoredEvents = [
-          tr.annotation(editorCodeUpdateEvent.type),
-          tr.annotation(copilotPluginEvent.type),
           tr.annotation(updateOutsideEditorEvent.type),
           tr.annotation(hotkeyRegisteredAnnotation),
         ]
@@ -1211,6 +1191,8 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
     this.unwatch()
   }
 
@@ -2074,13 +2056,11 @@ export class KclManager extends File {
     // Clear history
     this.editorView.dispatch({
       effects: [historyCompartment.reconfigure([])],
-      annotations: [editorCodeUpdateEvent],
     })
 
     // Add history back
     this.editorView.dispatch({
       effects: [historyCompartment.reconfigure([history()])],
-      annotations: [editorCodeUpdateEvent],
     })
   }
   clearGlobalHistory() {
@@ -2332,24 +2312,21 @@ export class KclManager extends File {
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
-        !resolvedOptions.shouldExecute && resolvedOptions.shouldWriteToDisk
-          ? // Separate annotation for only skipping execution, so that we can write without executing
-            KclManager.requestSkipExecution.of(true)
-          : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
-        KclManager.requestCameraResetAnnotation.of(
-          resolvedOptions.shouldResetCamera
-        ),
       ],
-      effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
+      effects: [
+        requestSkipExecution.of(!resolvedOptions.shouldExecute),
+        requestCameraReset.of(resolvedOptions.shouldResetCamera),
+        requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+      ],
     })
   }
   async writeToFile(newCode = this.codeSignal.value) {
-    if (this.isBufferMode) return
     if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
+      clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this.path) {
@@ -2363,8 +2340,9 @@ export class KclManager extends File {
             .then(resolve)
             .then(() => {
               // After a cooldown, start watching this file again on disk.
-              setTimeout(() => {
+              this.timeoutRewatch = setTimeout(() => {
                 this.watch()
+                this.timeoutRewatch = undefined
               }, 1_000)
             })
             .catch((err: Error) => {

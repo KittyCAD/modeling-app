@@ -1,0 +1,239 @@
+// Poopy Shoe
+// poop shute for bambu labs printer - optimized for printing.
+// Categories: Maker
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+wallThickness = 0.125
+wallsWidth = 3
+height = 5.125
+filletRadius = 0.050
+backLength = 6
+exitHeight = 1
+frontLength = 7
+
+// Create the curved portion that catches the printer poop
+sketch001 = sketch(on = -YZ) {
+  line1 = line(start = [var 1.5in, var 0in], end = [var 1.56in, var 0in])
+  line2 = line(start = [var 1.56in, var 0in], end = [var 3in, var 2.49in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3in, var 2.49in], end = [var 3in, var 5.13in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3in, var 5.13in], end = [var 2.88in, var 5.13in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.88in, var 5.13in], end = [var 2.88in, var 2.49in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.88in, var 2.49in], end = [var 1.56in, var 0.22in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 1.56in, var 0.22in], end = [var 1.44in, var 0.22in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.44in, var 0.22in], end = [var 0.13in, var 2.49in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 0.13in, var 2.49in], end = [var 0.13in, var 5.13in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.13in, var 5.13in], end = [var 0in, var 5.13in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0in, var 5.13in], end = [var 0in, var 2.49in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0in, var 2.49in], end = [var 1.44in, var 0in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 1.44in, var 0in], end = [var 1.5in, var 0in])
+  coincident([line12.end, line13.start])
+  horizontal(line2)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line8)
+  vertical(line10)
+  horizontal(line11)
+  vertical(line12)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+part001 = revolve(
+  region001,
+  angle = 90deg,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, height + .0001]
+  },
+)
+
+sketch009 = sketch(on = -YZ) {
+  line1 = line(start = [var 1.5in, var 0in], end = [var 1.56in, var 0in])
+  line2 = line(start = [var 1.56in, var 0in], end = [var 3in, var 2.49in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3in, var 2.49in], end = [var 3in, var 5.13in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3in, var 5.13in], end = [var 2.88in, var 5.13in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2.88in, var 5.13in], end = [var 2.88in, var 2.49in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.88in, var 2.49in], end = [var 1.56in, var 0.22in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 1.56in, var 0.22in], end = [var 1.44in, var 0.22in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.44in, var 0.22in], end = [var 0.13in, var 2.49in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 0.13in, var 2.49in], end = [var 0.13in, var 5.13in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.13in, var 5.13in], end = [var 0in, var 5.13in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0in, var 5.13in], end = [var 0in, var 2.49in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0in, var 2.49in], end = [var 1.44in, var 0in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 1.44in, var 0in], end = [var 1.5in, var 0in])
+  coincident([line12.end, line13.start])
+  horizontal(line2)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line8)
+  vertical(line10)
+  horizontal(line11)
+  vertical(line12)
+}
+region002 = region(segments = [sketch009.line1, sketch009.line2])
+sketch002 = extrude(region002, length = backLength - height)
+
+customPlane = {
+  origin = {
+    x = 0,
+    y = -(wallsWidth / 2 - (wallThickness / 2)),
+    z = 0
+  },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 }
+}
+sketch010 = sketch(on = customPlane) {
+  arc1 = arc(start = [var 0in, var 0in], end = [var 4.44in, var 2.56in], center = [var -0in, var 5.13in])
+  line2 = line(start = [var 4.44in, var 2.56in], end = [var 2.96in, var 0in])
+  coincident([arc1.end, line2.start])
+  line3 = line(start = [var 2.96in, var 0in], end = [var 0in, var 0in])
+  coincident([line2.end, line3.start])
+}
+region003 = region(segments = [sketch010.arc1, sketch010.line2])
+sketch003 = extrude(region003, length = wallThickness)
+
+// Create the right side wall of the tub
+sketch011 = sketch(on = startSketchOn(sketch002, face = END)) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var 5.13in])
+  line2 = line(start = [var 0in, var 5.13in], end = [var 0.13in, var 5.13in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.13in, var 5.13in], end = [var 0.13in, var 2.49in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.13in, var 2.49in], end = [var 1.44in, var 0.22in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.44in, var 0.22in], end = [var 1.56in, var 0.22in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 1.56in, var 0.22in], end = [var 2.88in, var 2.49in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 2.88in, var 2.49in], end = [var 2.88in, var 5.13in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 2.88in, var 5.13in], end = [var 3in, var 5.13in])
+  coincident([line7.end, line8.start])
+  arc9 = arc(start = [var 5in, var 3.06in], end = [var 3in, var 5.13in], center = [var 3in, var 3.12in])
+  coincident([line8.end, arc9.end])
+  arc10 = arc(start = [var 5in, var 3.06in], end = [var 7in, var 1in], center = [var 7in, var 3in])
+  coincident([arc9.start, arc10.start])
+  line11 = line(start = [var 7in, var 1in], end = [var 7in, var 0in])
+  coincident([arc10.end, line11.start])
+  line12 = line(start = [var 7in, var 0in], end = [var 0in, var 0in])
+  coincident([line11.end, line12.start])
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line6)
+  vertical(line8)
+  horizontal(arc9)
+  tangent([arc9, arc10])
+  vertical(line12)
+}
+region004 = region(segments = [sketch011.line1, sketch011.line2])
+sketch004 = extrude(region004, length = wallThickness)
+
+customPlane2 = {
+  origin = {
+    x = -1 * (backLength - height + wallsWidth),
+    y = 0,
+    z = 0
+  },
+  xAxis = { x = 0, y = 1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 }
+}
+sketch012 = sketch(on = customPlane2) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var 5.13in])
+  line2 = line(start = [var 0in, var 5.13in], end = [var -3in, var 5.13in])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var -3in, var 5.13in], end = [var -5in, var 3.06in], center = [var -3in, var 3.12in])
+  coincident([line2.end, arc3.start])
+  arc4 = arc(start = [var -7in, var 1in], end = [var -5in, var 3.06in], center = [var -7in, var 3in])
+  coincident([arc3.end, arc4.end])
+  line5 = line(start = [var -7in, var 1in], end = [var -7in, var 0in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var -7in, var 0in], end = [var 0in, var 0in])
+  coincident([line5.end, line6.start])
+  vertical(line2)
+  horizontal(arc3)
+  vertical(line6)
+}
+region005 = region(segments = [sketch012.line1, sketch012.line2])
+sketch005 = extrude(region005, length = wallThickness)
+
+sketch013 = sketch(on = startSketchOn(sketch005, face = seg03)) {
+  line1 = line(start = [var 0in, var -0.88in], end = [var -1in, var -0.88in])
+  line2 = line(start = [var -1in, var -0.88in], end = [var -1in, var -3.88in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -1in, var -3.88in], end = [var 0in, var -3.88in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var -3.88in], end = [var 0in, var -0.88in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region006 = region(segments = [sketch013.line1, sketch013.line2])
+sketch006 = extrude(region006, length = wallThickness)
+
+sketch014 = sketch(on = startSketchOn(sketch004, face = END)) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0.13in, var 0in])
+  line2 = line(start = [var 0.13in, var 0in], end = [var 0.13in, var 5.13in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.13in, var 5.13in], end = [var 0in, var 5.13in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 5.13in], end = [var 0in, var 0in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region007 = region(segments = [sketch014.line1, sketch014.line2])
+sketch007 = extrude(region007, length = wallsWidth - (2 * wallThickness))
+
+customPlane3 = {
+  origin = {
+    x = -1 * (backLength - height + wallsWidth),
+    y = 0,
+    z = wallThickness
+  },
+  xAxis = { x = 0, y = -1, z = 0 },
+  yAxis = { x = 1, y = 0, z = 0 }
+}
+
+sketch015 = sketch(on = customPlane3) {
+  line1 = line(start = [var 0.13in, var 0.13in], end = [var 7in, var 0.13in])
+  line2 = line(start = [var 7in, var 0.13in], end = [var 7in, var 2.88in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 7in, var 2.88in], end = [var 0.13in, var 2.88in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.13in, var 2.88in], end = [var 0.13in, var 0.13in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region008 = region(segments = [sketch015.line1, sketch015.line2])
+sketch008 = extrude(region008, length = -wallThickness)
+

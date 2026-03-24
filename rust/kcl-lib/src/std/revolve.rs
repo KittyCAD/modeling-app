@@ -1,15 +1,14 @@
 //! Standard library revolution surfaces.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{Angle, Opposite},
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{BodyType, Point3d},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::shared::Opposite;
+use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::Point3d;
+use kittycad_modeling_cmds::{self as kcmc};
 
 use super::{
     DEFAULT_TOLERANCE_MM,

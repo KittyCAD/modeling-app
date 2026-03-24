@@ -7,7 +7,8 @@ use kcl_lib::{
 };
 use wasm_bindgen::prelude::*;
 
-use crate::{Context, TRUE_BUG};
+use crate::Context;
+use crate::TRUE_BUG;
 
 #[derive(serde::Serialize)]
 struct TrimOutcome {
@@ -496,7 +497,8 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim function from kcl-lib
-        use kcl_lib::front::{Coords2d as Coords2dCore, execute_trim_loop_with_context};
+        use kcl_lib::front::Coords2d as Coords2dCore;
+        use kcl_lib::front::execute_trim_loop_with_context;
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch

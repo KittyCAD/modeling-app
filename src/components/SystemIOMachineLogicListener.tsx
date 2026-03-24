@@ -188,7 +188,7 @@ export function SystemIOMachineLogicListener() {
 
   const useApplicationProjectDirectory = () => {
     useEffect(() => {
-      if (pathname === PATHS.HOME) {
+      if (pathname === PATHS.HOME || pathname === PATHS.HOME_SETTINGS) {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {

@@ -1,7 +1,8 @@
 //! Wasm interface for our LSP servers.
 
 use futures::stream::TryStreamExt;
-use tower_lsp::{LspService, Server};
+use tower_lsp::LspService;
+use tower_lsp::Server;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -1,38 +1,72 @@
-use std::{
-    cell::Cell,
-    collections::{HashMap, HashSet},
-    ops::ControlFlow,
-};
+use std::cell::Cell;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
-use kcl_error::{CompilationError, SourceRange};
+use kcl_error::CompilationError;
+use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::{
-    ExecOutcome, ExecutorContext, KclError, KclErrorWithOutputs, Program,
-    collections::AhashIndexSet,
-    exec::WarningLevel,
-    execution::{MockConfig, SKETCH_BLOCK_PARAM_ON},
-    fmt::format_number_literal,
-    front::{Angle, ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor, Tangent},
-    frontend::{
-        api::{
-            Error, Expr, FileId, Number, ObjectId, ObjectKind, Plane, ProjectId, SceneGraph, SceneGraphDelta,
-            SourceDelta, SourceRef, Version,
-        },
-        modify::{find_defined_names, next_free_name, next_free_name_with_padding},
-        sketch::{
-            Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
-            SegmentCtor, SketchApi, SketchCtor, Vertical,
-        },
-        traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
-    },
-    parsing::ast::types as ast,
-    pretty::NumericSuffix,
-    std::constraints::LinesAtAngleKind,
-    walk::{NodeMut, Visitable},
-};
+use crate::ExecOutcome;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::KclErrorWithOutputs;
+use crate::Program;
+use crate::collections::AhashIndexSet;
+use crate::exec::WarningLevel;
+use crate::execution::MockConfig;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::fmt::format_number_literal;
+use crate::front::Angle;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Distance;
+use crate::front::Freedom;
+use crate::front::LinesEqualLength;
+use crate::front::Parallel;
+use crate::front::Perpendicular;
+use crate::front::PointCtor;
+use crate::front::Tangent;
+use crate::frontend::api::Error;
+use crate::frontend::api::Expr;
+use crate::frontend::api::FileId;
+use crate::frontend::api::Number;
+use crate::frontend::api::ObjectId;
+use crate::frontend::api::ObjectKind;
+use crate::frontend::api::Plane;
+use crate::frontend::api::ProjectId;
+use crate::frontend::api::SceneGraph;
+use crate::frontend::api::SceneGraphDelta;
+use crate::frontend::api::SourceDelta;
+use crate::frontend::api::SourceRef;
+use crate::frontend::api::Version;
+use crate::frontend::modify::find_defined_names;
+use crate::frontend::modify::next_free_name;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::frontend::sketch::Coincident;
+use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::Diameter;
+use crate::frontend::sketch::ExistingSegmentCtor;
+use crate::frontend::sketch::Horizontal;
+use crate::frontend::sketch::LineCtor;
+use crate::frontend::sketch::Point2d;
+use crate::frontend::sketch::Radius;
+use crate::frontend::sketch::Segment;
+use crate::frontend::sketch::SegmentCtor;
+use crate::frontend::sketch::SketchApi;
+use crate::frontend::sketch::SketchCtor;
+use crate::frontend::sketch::Vertical;
+use crate::frontend::traverse::MutateBodyItem;
+use crate::frontend::traverse::TraversalReturn;
+use crate::frontend::traverse::Visitor;
+use crate::frontend::traverse::dfs_mut;
+use crate::parsing::ast::types as ast;
+use crate::pretty::NumericSuffix;
+use crate::std::constraints::LinesAtAngleKind;
+use crate::walk::NodeMut;
+use crate::walk::Visitable;
 
 pub(crate) mod api;
 pub(crate) mod modify;
@@ -57,6 +91,9 @@ const ARC_FN: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const CIRCLE_FN: &str = "circle";
+const CIRCLE_START_PARAM: &str = "start";
+const CIRCLE_CENTER_PARAM: &str = "center";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -76,6 +113,8 @@ const LINE_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_START: &str = "start";
 const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
+const CIRCLE_PROPERTY_START: &str = "start";
+const CIRCLE_PROPERTY_CENTER: &str = "center";
 
 const CONSTRUCTION_PARAM: &str = "construction";
 
@@ -415,9 +454,7 @@ impl SketchApi for FrontendState {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
             SegmentCtor::Arc(ctor) => self.add_arc(ctx, sketch, ctor).await,
-            _ => Err(Error {
-                msg: format!("segment ctor not implemented yet: {segment:?}"),
-            }),
+            SegmentCtor::Circle(ctor) => self.add_circle(ctx, sketch, ctor).await,
         }
     }
 
@@ -530,6 +567,33 @@ impl SketchApi for FrontendState {
                                 }
                                 continue;
                             }
+                            Segment::Circle(circle) if circle.start == segment_id || circle.center == segment_id => {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Circle(circle_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected circle ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
+                                    if circle.start == segment_id {
+                                        circle_ctor.start = ctor.position;
+                                    } else {
+                                        circle_ctor.center = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
+                                    let mut circle_ctor = circle_ctor.clone();
+                                    if circle.start == segment_id {
+                                        circle_ctor.start = ctor.position;
+                                    } else {
+                                        circle_ctor.center = ctor.position;
+                                    }
+                                    final_edits.insert(owner_id, SegmentCtor::Circle(circle_ctor));
+                                } else {
+                                    return Err(Error {
+                                        msg: format!("Internal: Circle does not have circle ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
                             _ => {}
                         }
                     }
@@ -543,8 +607,8 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Arc(ctor) => {
                     final_edits.insert(segment_id, SegmentCtor::Arc(ctor));
                 }
-                other_ctor => {
-                    final_edits.insert(segment_id, other_ctor);
+                SegmentCtor::Circle(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::Circle(ctor));
                 }
             }
         }
@@ -554,11 +618,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment_id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {ctor:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment_id, ctor)?,
             }
         }
         self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
@@ -590,7 +650,7 @@ impl SketchApi for FrontendState {
                 && let Some(owner_id) = point.owner
                 && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
                 && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
-                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_))
+                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_))
             {
                 // segment is owned -> delete the owner
                 resolved_segment_ids_to_delete.insert(owner_id);
@@ -883,11 +943,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment.id, ctor)?,
             }
         }
 
@@ -980,11 +1036,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
-                _ => {
-                    return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
-                    });
-                }
+                SegmentCtor::Circle(ctor) => self.edit_circle(&mut new_ast, sketch, segment.id, ctor)?,
             }
         }
 
@@ -1527,6 +1579,138 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
+    async fn add_circle(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: CircleCtor,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Create updated KCL source from args.
+        let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let mut arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+        let circle_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
+            unlabeled: None,
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        // Add the circle to the AST of the sketch block.
+        let mut new_ast = self.program.ast.clone();
+        let (sketch_block_range, _) = self.mutate_ast(
+            &mut new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: circle_ast },
+        )?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding circle: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding circle".to_string(),
+            });
+        };
+        let circle_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of circle not found in sketch block: {sketch_block_range:?}; {err:?}"),
+            })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = circle_source_range;
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
+        // Execute.
+        let outcome = ctx
+            .run_mock(
+                &truncated_program,
+                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
+            )
+            .await
+            .map_err(|err| Error {
+                msg: err.error.message().to_owned(),
+            })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&circle_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of circle not found: {circle_source_range:?}"),
+                })?;
+            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
+                msg: format!("Segment not found: {segment_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {segment_object:?}"),
+                });
+            };
+            let Segment::Circle(circle) = segment else {
+                return Err(Error {
+                    msg: format!("Segment is not a circle: {segment:?}"),
+                });
+            };
+            vec![circle.start, circle.center, segment_id]
+        };
+        let src_delta = SourceDelta { text: new_source };
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
     fn edit_point(
         &mut self,
         new_ast: &mut ast::Node<ast::Program>,
@@ -1623,7 +1807,29 @@ impl FrontendState {
                 return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
             }
 
-            // If owner is neither Line nor Arc, allow editing the point directly
+            // Handle Circle owner
+            if let Segment::Circle(circle) = segment {
+                let SegmentCtor::Circle(circle_ctor) = &circle.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have circle ctor: {owner_object:?}"),
+                    });
+                };
+                let mut circle_ctor = circle_ctor.clone();
+                if circle.center == point_id {
+                    circle_ctor.center = ctor.position;
+                } else if circle.start == point_id {
+                    circle_ctor.start = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's circle segment: point={point_id:?}, circle={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_circle(new_ast, sketch_id, owner_id, circle_ctor);
+            }
+
+            // If owner is neither Line, Arc, nor Circle, allow editing the point directly
             // (fall through to the point editing logic below)
         }
 
@@ -1723,6 +1929,54 @@ impl FrontendState {
             AstMutateCommand::EditArc {
                 start: new_start_ast,
                 end: new_end_ast,
+                center: new_center_ast,
+                construction: ctor.construction,
+            },
+        )?;
+        Ok(())
+    }
+
+    fn edit_circle(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        circle: ObjectId,
+        ctor: CircleCtor,
+    ) -> api::Result<()> {
+        // Create updated KCL source from args.
+        let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let new_center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch.segments.iter().find(|o| **o == circle).ok_or_else(|| Error {
+            msg: format!("Circle not found in sketch: circle={circle:?}, sketch={sketch:?}"),
+        })?;
+        // Look up existing circle.
+        let circle_id = circle;
+        let circle_object = self.scene_graph.objects.get(circle_id.0).ok_or_else(|| Error {
+            msg: format!("Circle not found in scene graph: circle={circle:?}"),
+        })?;
+        let ObjectKind::Segment { .. } = &circle_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {circle_object:?}"),
+            });
+        };
+
+        // Modify the circle AST.
+        self.mutate_ast(
+            new_ast,
+            circle_id,
+            AstMutateCommand::EditCircle {
+                start: new_start_ast,
                 center: new_center_ast,
                 construction: ctor.construction,
             },
@@ -2054,6 +2308,20 @@ impl FrontendState {
                     };
                     get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
                 }
+                Segment::Circle(circle) => {
+                    let property = if circle.start == point_id {
+                        CIRCLE_PROPERTY_START
+                    } else if circle.center == point_id {
+                        CIRCLE_PROPERTY_CENTER
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's circle segment: point={point_id:?}, circle={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "circle", Some(property))
+                }
                 _ => Err(Error {
                     msg: format!(
                         "Internal: Owner of point is not a supported segment type for constraints: {owner_segment:?}"
@@ -2100,9 +2368,13 @@ impl FrontendState {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
-            Segment::Arc(_) | Segment::Circle(_) => {
+            Segment::Arc(_) => {
                 // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
+            }
+            Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
             }
         };
 
@@ -2124,9 +2396,13 @@ impl FrontendState {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
-            Segment::Arc(_) | Segment::Circle(_) => {
+            Segment::Arc(_) => {
                 // Reference the segment directly (for point-arc coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
+            }
+            Segment::Circle(_) => {
+                // Reference the segment directly (for point-circle coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
             }
         };
 
@@ -2311,9 +2587,10 @@ impl FrontendState {
         let seg0_ast = match seg0_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
-                    msg: format!("Tangent supports only line/arc segments, got: {seg0_segment:?}"),
+                    msg: format!("Tangent supports only line/arc/circle segments, got: {seg0_segment:?}"),
                 });
             }
         };
@@ -2329,9 +2606,10 @@ impl FrontendState {
         let seg1_ast = match seg1_segment {
             Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?,
             _ => {
                 return Err(Error {
-                    msg: format!("Tangent supports only line/arc segments, got: {seg1_segment:?}"),
+                    msg: format!("Tangent supports only line/arc/circle segments, got: {seg1_segment:?}"),
                 });
             }
         };
@@ -2405,16 +2683,20 @@ impl FrontendState {
                 msg: format!("Object is not a segment: {arc_object:?}"),
             });
         };
-        let Segment::Arc(_) = arc_segment else {
-            return Err(Error {
-                msg: format!(
-                    "{} constraint argument must be an arc segment, got: {arc_segment:?}",
-                    params.constraint_type_name
-                ),
-            });
+        let ref_type = match arc_segment {
+            Segment::Arc(_) => "arc",
+            Segment::Circle(_) => "circle",
+            _ => {
+                return Err(Error {
+                    msg: format!(
+                        "{} constraint argument must be an arc or circle segment, got: {arc_segment:?}",
+                        params.constraint_type_name
+                    ),
+                });
+            }
         };
-        // Reference the arc segment directly
-        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
+        // Reference the arc/circle segment directly
+        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, ref_type, None)?;
 
         // Create the function call.
         let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3294,6 +3576,11 @@ enum AstMutateCommand {
         center: ast::Expr,
         construction: Option<bool>,
     },
+    EditCircle {
+        start: ast::Expr,
+        center: ast::Expr,
+        construction: Option<bool>,
+    },
     EditConstraintValue {
         value: ast::BinaryPart,
     },
@@ -3548,6 +3835,59 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         }
                     } else {
                         // Remove construction kwarg if it exists
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditCircle {
+            start,
+            center,
+            construction,
+        } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != CIRCLE_FN {
+                    return TraversalReturn::new_continue(());
+                }
+                // Update the arguments.
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CIRCLE_START_PARAM) {
+                        labeled_arg.arg = start.clone();
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CIRCLE_CENTER_PARAM) {
+                        labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        if construction_exists {
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
                         call.arguments
                             .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
                     }
@@ -3846,6 +4186,26 @@ pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_as
     })))
 }
 
+/// Create an AST node for circle(start = [...], center = [...])
+pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
+        unlabeled: None,
+        arguments: vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3924,12 +4284,14 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
-    use crate::{
-        engine::PlaneName,
-        front::{Distance, Object, Plane, Sketch, Tangent},
-        frontend::sketch::Vertical,
-        pretty::NumericSuffix,
-    };
+    use crate::engine::PlaneName;
+    use crate::front::Distance;
+    use crate::front::Object;
+    use crate::front::Plane;
+    use crate::front::Sketch;
+    use crate::front::Tangent;
+    use crate::frontend::sketch::Vertical;
+    use crate::pretty::NumericSuffix;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
@@ -4378,6 +4740,241 @@ sketch001 = sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 6);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_circle_edit_circle() {
+        let program = Program::empty();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let sketch_args = SketchCtor {
+            on: Plane::Default(PlaneName::Xy),
+        };
+        let (_src_delta, _scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        // Add a circle segment.
+        let circle_ctor = CircleCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segment = SegmentCtor::Circle(circle_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+"
+        );
+        // The new objects are start, center, and then the circle segment.
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+
+        let circle = *scene_delta.new_objects.last().unwrap();
+
+        // Edit the circle segment.
+        let circle_ctor = CircleCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 3.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 4.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: circle,
+            ctor: SegmentCtor::Circle(circle_ctor),
+        }];
+        let (src_delta, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_circle() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // The sketch should have 3 segments: start point, center point, and the circle.
+        assert_eq!(sketch.segments.len(), 3);
+        let circle_id = sketch.segments[2];
+
+        // Delete the circle.
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![], vec![circle_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+}
+"
+        );
+        let new_sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let new_sketch = expect_sketch(new_sketch_object);
+        assert_eq!(new_sketch.segments.len(), 0);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_circle_via_point() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        // Find the circle segment and its start point.
+        let circle_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    }
+                )
+            })
+            .expect("Expected a circle segment in sketch");
+        let circle_object = &frontend.scene_graph.objects[circle_id.0];
+        let ObjectKind::Segment {
+            segment: Segment::Circle(circle),
+        } = &circle_object.kind
+        else {
+            panic!("Expected circle segment, got: {:?}", circle_object.kind);
+        };
+        let start_point_id = circle.start;
+
+        // Edit the start point via SegmentCtor::Point.
+        let segments = vec![ExistingSegmentCtor {
+            id: start_point_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 7.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle(start = [var 7mm, var 1mm], center = [var 0mm, var 0mm])
+}
+"
+        );
 
         ctx.close().await;
         mock_ctx.close().await;

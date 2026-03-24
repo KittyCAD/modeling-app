@@ -2,23 +2,29 @@
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
-pub use kcl_error::{CompilationError, Severity, Suggestion, Tag};
-use serde::{Deserialize, Serialize};
+pub use kcl_error::CompilationError;
+pub use kcl_error::Severity;
+pub use kcl_error::Suggestion;
+pub use kcl_error::Tag;
+use serde::Deserialize;
+use serde::Serialize;
 use thiserror::Error;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
 
-use crate::{
-    ModuleId, SourceRange,
-    exec::KclValue,
-    execution::DefaultPlanes,
-    lsp::{IntoDiagnostic, ToLspRange},
-    modules::{ModulePath, ModuleSource},
-};
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::exec::KclValue;
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, DirectTagFilletMeta, EdgeRefactorMeta, Operation},
     front::{Number, Object, ObjectId},
 };
+use crate::execution::DefaultPlanes;
+use crate::lsp::IntoDiagnostic;
+use crate::lsp::ToLspRange;
+use crate::modules::ModulePath;
+use crate::modules::ModuleSource;
 
 pub trait IsRetryable {
     /// Returns true if the error is transient and the operation that caused it

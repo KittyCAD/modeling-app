@@ -3,15 +3,16 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::output::ExtrusionFaceInfo;
+use kcmc::shared::ExtrudeReference;
+use kcmc::shared::ExtrusionFaceCapType;
+use kcmc::shared::Opposite;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    ok_response::OkModelingCmdResponse,
-    output::ExtrusionFaceInfo,
-    shared::{ExtrudeReference, ExtrusionFaceCapType, Opposite},
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-};
+use kcmc::websocket::{ModelingCmdReq, OkWebSocketResponseData};
 use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, BodyType, EntityReference, ExtrudeMethod, Point2d},

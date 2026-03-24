@@ -1,13 +1,52 @@
-use sha2::{Digest as DigestTrait, Sha256};
+use sha2::Digest as DigestTrait;
+use sha2::Sha256;
 
-use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
-    BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
-    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralValue, MemberExpression, Name, Node, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
-    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchVar, TagDeclarator,
-    Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
-};
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::AscribedExpression;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Block;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ExpressionStatement;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::FunctionType;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportItem;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::KclNone;
+use crate::parsing::ast::types::LabelledExpression;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::ObjectProperty;
+use crate::parsing::ast::types::Parameter;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::PipeSubstitution;
+use crate::parsing::ast::types::PrimitiveType;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
 
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];

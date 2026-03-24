@@ -1,13 +1,18 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+use std::collections::HashSet;
 
 use kcl_error::SourceRange;
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    front::find_defined_names,
-    frontend::modify::next_free_name_with_padding,
-    parsing::ast::types::{self as ast, CodeBlock, ItemVisibility, LabeledArg, VariableDeclarator, VariableKind},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::front::find_defined_names;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::ast::types::{self as ast};
 
 /// Inserts `region()` calls when extruding a sketch block. This:
 ///

@@ -1462,6 +1462,26 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'pointTool',
           },
           {
+            id: 'circle-center',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'circleTool' },
+                  }),
+            icon: 'circle',
+            status: 'available',
+            title: 'Center circle',
+            description: 'Draw a circle from a center point and radius',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'circleTool',
+          },
+          {
             id: 'arcs',
             array: [
               {

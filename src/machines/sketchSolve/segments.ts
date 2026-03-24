@@ -139,8 +139,7 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
-export const POINT_SEGMENT_HIT_AREA = 'POINT_SEGMENT_HIT_AREA'
-const POINT_SEGMENT_HIT_AREA_RENDER_ORDER = 9
+export const POINT_SEGMENT_RADIUS = 3
 const POINT_SEGMENT_BODY_RENDER_ORDER = 10
 const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
@@ -162,6 +161,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
+  hoveredId: number | null
   isDraft: boolean
   isConstruction: boolean
   freedom?: Freedom | null
@@ -237,8 +237,6 @@ class PointSegmentDOM implements SketchEntityUtils {
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              width: 6px;
-              height: 6px;
               border-radius: 50%;
               display: none;
               background: #ffffff;
@@ -282,6 +280,7 @@ class PointSegmentDOM implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -316,7 +315,7 @@ class PointSegmentDOM implements SketchEntityUtils {
 class PointSegment implements SketchEntityUtils {
   private readonly pointDom = new PointSegmentDOM()
   // TODO don't dispose
-  private readonly circleGeometry = new CircleGeometry(3, 12)
+  private readonly circleGeometry = new CircleGeometry(POINT_SEGMENT_RADIUS, 12)
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
@@ -335,32 +334,10 @@ class PointSegment implements SketchEntityUtils {
         depthTest: false,
       })
     )
-    const pointHitArea = new Mesh(
-      this.circleGeometry,
-      new MeshBasicMaterial({
-        transparent: true,
-        opacity: 0,
-        side: DoubleSide,
-        depthTest: false,
-        depthWrite: false,
-      })
-    )
     pointBody.userData.type = POINT_SEGMENT_BODY
-    pointBody.userData.isHovered = false
     pointBody.name = POINT_SEGMENT_BODY
     pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
     pointBody.layers.set(SKETCH_LAYER)
-    // Visual-only mesh: interaction is handled by POINT_SEGMENT_HIT_AREA.
-    pointBody.raycast = () => {}
-    pointHitArea.userData.type = POINT_SEGMENT_HIT_AREA
-    pointHitArea.userData.isHovered = false
-    pointHitArea.name = POINT_SEGMENT_HIT_AREA
-    pointHitArea.renderOrder = POINT_SEGMENT_HIT_AREA_RENDER_ORDER
-    pointHitArea.layers.set(SKETCH_LAYER)
-    pointHitArea.scale.setScalar(10 / 3)
-
-    // Keep DOM handle first in children array so existing tests still work.
-    segmentGroup.add(pointHitArea)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
 
@@ -371,6 +348,7 @@ class PointSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -384,8 +362,16 @@ class PointSegment implements SketchEntityUtils {
       return new Error('Invalid input type for PointSegment')
     }
 
-    const { input, group, scale, selectedIds, id, isDraft, isConstruction } =
-      args
+    const {
+      input,
+      group,
+      scale,
+      selectedIds,
+      hoveredId,
+      id,
+      isDraft,
+      isConstruction,
+    } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -403,17 +389,10 @@ class PointSegment implements SketchEntityUtils {
       console.error('No point segment body found in group')
       return
     }
-    const pointHitArea = group.children.find(
-      (child) => child.userData?.type === POINT_SEGMENT_HIT_AREA
-    )
-
     pointBody.position.set(x.value / scale, y.value / scale, 0)
-    if (pointHitArea instanceof Mesh) {
-      pointHitArea.position.copy(pointBody.position)
-    }
 
     const isSelected = selectedIds.includes(id)
-    const isHovered = pointBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     const freedom = args.freedom ?? group.userData.freedom ?? null
 
     group.userData.freedom = freedom
@@ -421,6 +400,9 @@ class PointSegment implements SketchEntityUtils {
     group.userData.isConstruction = isConstruction
     group.userData.type = SEGMENT_TYPE_POINT
 
+    pointBody.renderOrder = isHovered
+      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
+      : POINT_SEGMENT_BODY_RENDER_ORDER
     this.updatePointColors(pointBody, {
       isSelected,
       isHovered,
@@ -541,6 +523,7 @@ class LineSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -552,7 +535,15 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, selectedIds, isDraft, isConstruction } = args
+    const {
+      input,
+      group,
+      id,
+      selectedIds,
+      hoveredId,
+      isDraft,
+      isConstruction,
+    } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -585,7 +576,7 @@ class LineSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = straightSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -887,6 +878,7 @@ class ArcSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      hoveredId: null,
       isDraft: args.isDraft,
       isConstruction: args.isConstruction,
       freedom: args.freedom,
@@ -896,7 +888,15 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, selectedIds, isDraft, isConstruction } = args
+    const {
+      input,
+      group,
+      id,
+      selectedIds,
+      hoveredId,
+      isDraft,
+      isConstruction,
+    } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -932,7 +932,7 @@ class ArcSegment implements SketchEntityUtils {
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
-    const isHovered = arcSegmentBody.userData.isHovered === true
+    const isHovered = hoveredId === id
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
@@ -1018,6 +1018,227 @@ class ArcSegment implements SketchEntityUtils {
   }
 }
 
+class CircleSegment implements SketchEntityUtils {
+  private extractCircleData(input: SegmentCtor):
+    | Error
+    | {
+        centerX: number
+        centerY: number
+        startX: number
+        startY: number
+        radius: number
+        startAngle: number
+        endAngle: number
+      } {
+    if (input.type !== 'Circle') {
+      return new Error('Invalid input type for CircleSegment')
+    }
+
+    if (
+      !(
+        hasNumericValue(input.center.x) &&
+        hasNumericValue(input.center.y) &&
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y)
+      )
+    ) {
+      return new Error('Invalid position values for CircleSegment')
+    }
+
+    const centerX = input.center.x.value
+    const centerY = input.center.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const radius = Math.hypot(startX - centerX, startY - centerY)
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
+
+    return {
+      centerX,
+      centerY,
+      startX,
+      startY,
+      radius,
+      startAngle,
+      endAngle: startAngle + Math.PI * 2,
+    }
+  }
+
+  init = (args: CreateSegmentArgs) => {
+    const { input, id } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const segmentGroup = new Group()
+    const geometry = new LineGeometry()
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: args.isConstruction,
+      dashSize: 8,
+      gapSize: 6,
+      worldUnits: false,
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
+    })
+
+    if (args.isConstruction) {
+      const circleCenter = new Vector3(
+        circleData.centerX,
+        circleData.centerY,
+        0
+      )
+      const circleStart = new Vector3(circleData.startX, circleData.startY, 0)
+      setupConstructionArcDashShader(
+        material,
+        circleCenter,
+        circleStart,
+        circleData.startAngle,
+        circleData.endAngle
+      )
+    }
+
+    const mesh = new Line2(geometry, material)
+
+    mesh.userData.type = ARC_SEGMENT_BODY
+    mesh.name = ARC_SEGMENT_BODY
+    segmentGroup.name = id.toString()
+    segmentGroup.userData = {
+      type: SEGMENT_TYPE_ARC,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+    }
+
+    segmentGroup.add(mesh)
+    segmentGroup.userData.freedom = args.freedom ?? null
+
+    this.update({
+      input,
+      theme: args.theme,
+      id,
+      scale: args.scale,
+      group: segmentGroup,
+      selectedIds: [],
+      hoveredId: null,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
+    })
+
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    const {
+      input,
+      group,
+      id,
+      selectedIds,
+      hoveredId,
+      isDraft,
+      isConstruction,
+    } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle, startX, startY } =
+      circleData
+
+    const circleSegmentBody = group.children.find(
+      (child) => child.userData.type === ARC_SEGMENT_BODY
+    )
+    if (!(circleSegmentBody instanceof Line2)) {
+      console.error('No circle segment body found in group')
+      return
+    }
+
+    circleSegmentBody.geometry.setPositions(
+      createArcPositions({
+        center: [centerX, centerY],
+        radius,
+        startAngle,
+        endAngle,
+        ccw: true,
+      })
+    )
+    circleSegmentBody.geometry.computeBoundingSphere()
+    circleSegmentBody.material.linewidth =
+      SEGMENT_WIDTH_PX * window.devicePixelRatio
+
+    const isSelected = selectedIds.includes(id)
+    const isHovered = hoveredId === id
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
+    group.userData.freedom = freedom
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
+
+    if (circleSegmentBody.material instanceof LineMaterial) {
+      circleSegmentBody.material.dashed = isConstruction
+
+      if (constructionChanged) {
+        if (isConstruction) {
+          setupConstructionArcDashShader(
+            circleSegmentBody.material,
+            new Vector3(centerX, centerY, 0),
+            new Vector3(startX, startY, 0),
+            startAngle,
+            endAngle
+          )
+        } else {
+          removeCustomShaderProperties(circleSegmentBody.material)
+        }
+        circleSegmentBody.material.needsUpdate = true
+        const program = getMaterialProgram(circleSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          if (hasProperty(circleSegmentBody.material, 'program')) {
+            circleSegmentBody.material.program = null
+          }
+        }
+      } else if (isConstruction) {
+        const uniforms = getMaterialUniforms(circleSegmentBody.material)
+        if (uniforms) {
+          if (uniforms.uArcCenter) {
+            uniforms.uArcCenter.value = new Vector3(centerX, centerY, 0)
+          }
+          if (uniforms.uArcStart) {
+            uniforms.uArcStart.value = new Vector3(startX, startY, 0)
+          }
+          if (uniforms.uArcStartAngle) {
+            uniforms.uArcStartAngle.value = startAngle
+          }
+          if (uniforms.uArcEndAngle) {
+            uniforms.uArcEndAngle.value = endAngle
+          }
+        }
+      }
+
+      circleSegmentBody.material.worldUnits = false
+      if (!circleSegmentBody.material.resolution) {
+        circleSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        circleSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+    }
+
+    updateLineMaterial(circleSegmentBody.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
+  }
+}
+
 function updateLineMaterial(
   material: LineMaterial,
   {
@@ -1041,84 +1262,6 @@ function updateLineMaterial(
     freedom,
   })
   material.color.set(color)
-}
-
-/**
- * Updates the hover state of a segment mesh (line, arc, or point)
- */
-export function updateSegmentHover(
-  mesh: Mesh | null,
-  isHovered: boolean,
-  selectedIds: Array<number>,
-  draftEntityIds?: Array<number>
-): void {
-  if (!mesh) {
-    return
-  }
-
-  // Store hover state in userData
-  mesh.userData.isHovered = isHovered
-
-  // Get the parent group to find the segment ID
-  const group = mesh.parent
-  if (!(group instanceof Group)) {
-    return
-  }
-
-  const segmentId = Number(group.name)
-  if (Number.isNaN(segmentId)) {
-    return
-  }
-
-  const isSelected = selectedIds.includes(segmentId)
-  // Get isDraft from group userData, or determine from draftEntityIds as fallback
-  const isDraft =
-    group.userData.isDraft === true ||
-    draftEntityIds?.includes(segmentId) === true
-  const freedom = group.userData.freedom ?? null
-
-  // Dispatch based on segment body type
-  if (mesh.userData.type === POINT_SEGMENT_HIT_AREA) {
-    const pointBody = group.children.find(
-      (child) => child.userData?.type === POINT_SEGMENT_BODY
-    )
-    if (pointBody instanceof Mesh) {
-      pointBody.userData.isHovered = isHovered
-      pointBody.renderOrder = isHovered
-        ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
-        : POINT_SEGMENT_BODY_RENDER_ORDER
-      segmentUtilsMap.PointSegment.updatePointColors(pointBody, {
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom,
-      })
-    }
-  } else if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
-    if (mesh instanceof Line2) {
-      segmentUtilsMap.LineSegment.updateLineColors(
-        mesh,
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom
-      )
-    } else {
-      console.error('Straight segment body is not a Line2 anymore', mesh)
-    }
-  } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
-    if (mesh instanceof Line2) {
-      segmentUtilsMap.ArcSegment.updateArcColors(
-        mesh,
-        isSelected,
-        isHovered,
-        isDraft,
-        freedom
-      )
-    } else {
-      console.error('Straight segment body is not a Line2 anymore', mesh)
-    }
-  }
 }
 
 /**
@@ -1200,5 +1343,6 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+  CircleSegment: new CircleSegment(),
   Constraint: new ConstraintBuilder(),
 }

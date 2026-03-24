@@ -1,0 +1,248 @@
+// Utility Sink
+// A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.
+// Categories: Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+tableHeight = 850
+tableWidth = 1200
+tableDepth = 600
+
+profileThickness = 13
+metalThickness = 2
+
+blockCount = 1
+blockWidth = (tableWidth - profileThickness) / blockCount
+blockHeight = tableHeight - metalThickness - 0.5
+blockDepth = tableDepth - profileThickness
+
+blockSubdivisionCount = 2
+blockSubdivisionWidth = blockWidth / blockSubdivisionCount
+
+// Geometry
+floorPlane = startSketchOn(XY)
+
+// legs
+legHeight = blockHeight - profileThickness
+legCount = blockCount + 1
+
+sketch001 = startProfile(floorPlane, at = [0, 0])
+  |> yLine(length = profileThickness)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -profileThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = legCount, distance = blockWidth)
+  |> patternLinear2d(axis = [0, 1], instances = 2, distance = blockDepth)
+legBody = extrude(sketch001, length = legHeight)
+
+// lower belt
+lowerBeltHeightAboveTheFloor = 150
+lowerBeltLengthX = blockWidth - profileThickness
+
+lowerBeltPlane = startSketchOn(offsetPlane(XY, offset = lowerBeltHeightAboveTheFloor))
+sketch002 = startProfile(lowerBeltPlane, at = [profileThickness, 0])
+  |> yLine(length = profileThickness)
+  |> xLine(length = lowerBeltLengthX)
+  |> yLine(length = -profileThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = blockCount, distance = blockWidth)
+  |> patternLinear2d(axis = [0, 1], instances = 2, distance = blockDepth)
+lowerBeltBodyX = extrude(sketch002, length = profileThickness)
+
+lowerBeltLengthY = blockDepth - profileThickness
+sketch003 = startProfile(lowerBeltPlane, at = [0, profileThickness])
+  |> yLine(length = lowerBeltLengthY)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -lowerBeltLengthY)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth - profileThickness)
+lowerBeltBodyY = extrude(sketch003, length = profileThickness)
+
+// pillars
+pillarHeightAboveTheFloor = lowerBeltHeightAboveTheFloor + profileThickness
+pillarPlane = startSketchOn(offsetPlane(XY, offset = pillarHeightAboveTheFloor))
+pillarTotalHeight = blockHeight - profileThickness - pillarHeightAboveTheFloor
+
+sketch004 = startProfile(pillarPlane, at = [blockSubdivisionWidth, 0])
+  |> yLine(length = profileThickness)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -profileThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = blockCount, distance = blockWidth)
+  |> patternLinear2d(axis = [0, 1], instances = 2, distance = blockDepth)
+pillarBody = extrude(sketch004, length = pillarTotalHeight)
+
+// upper belt
+upperBeltPlane = startSketchOn(offsetPlane(XY, offset = blockHeight))
+
+sketch005 = startProfile(upperBeltPlane, at = [0, 0])
+  |> yLine(length = profileThickness)
+  |> xLine(length = tableWidth)
+  |> yLine(length = -profileThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [0, 1], instances = 2, distance = blockDepth)
+upperBeltBodyX = extrude(sketch005, length = -profileThickness)
+
+upperBeltLengthY = blockDepth - profileThickness
+sketch006 = startProfile(upperBeltPlane, at = [0, profileThickness])
+  |> yLine(length = upperBeltLengthY)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -upperBeltLengthY)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth - profileThickness)
+upperBeltBodyY = extrude(sketch006, length = -profileThickness)
+
+// sink
+tableTopPlane = startSketchOn(offsetPlane(XY, offset = tableHeight))
+sketch007 = sketch(on = tableTopPlane) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 600mm])
+  line2 = line(start = [var 0mm, var 600mm], end = [var 1200mm, var 600mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1200mm, var 600mm], end = [var 1200mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1200mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+region001 = region(segments = [sketch007.line1, sketch007.line2])
+tableTopBody = extrude(region001, length = -metalThickness)
+
+sinkCount = blockCount
+sinkWidth = blockWidth / 2
+sinkLength = tableDepth - 150
+sinkDepth = 200
+sinkOffsetFront = 40
+sinkOffsetLeft = (blockWidth - sinkWidth) / 2
+sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
+
+sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
+sketch008 = sketch(on = sinkPlaneOutside) {
+  line1 = line(start = [var -296.75mm, var 40mm], end = [var -296.75mm, var 490mm])
+  line2 = line(start = [var -296.75mm, var 490mm], end = [var -890.25mm, var 490mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -890.25mm, var 490mm], end = [var -890.25mm, var 40mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -890.25mm, var 40mm], end = [var -296.75mm, var 40mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+region002 = region(segments = [sketch008.line1, sketch008.line2])
+sinkBodyOutside = extrude(region002, length = sinkDepth)
+
+sinkPlaneInside = startSketchOn(tableTopBody, face = END)
+sketch009 = sketch(on = sinkPlaneInside) {
+  line1 = line(start = [var 298.75mm, var 42mm], end = [var 298.75mm, var 488mm])
+  line2 = line(start = [var 298.75mm, var 488mm], end = [var 888.25mm, var 488mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 888.25mm, var 488mm], end = [var 888.25mm, var 42mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 888.25mm, var 42mm], end = [var 298.75mm, var 42mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+}
+region003 = region(segments = [sketch009.line1, sketch009.line2])
+sinkBodyInside = extrude(region003, length = -sinkDepth)
+
+// tap
+sketch010 = sketch(on = offsetPlane(XY, offset = tableHeight)) {
+  circle1 = circle(start = [var 633.5mm, var 545mm], center = [var 593.5mm, var 545mm])
+}
+region004 = region(segments = [sketch010.circle1])
+tapPlate = extrude(region004, length = 5)
+sketch011 = sketch(on = offsetPlane(XY, offset = tableHeight)) {
+  circle1 = circle(start = [var 608.5mm, var 545mm], center = [var 593.5mm, var 545mm])
+}
+region005 = region(segments = [sketch011.circle1])
+tapPillar = extrude(region005, length = 170)
+sketch012 = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
+  circle1 = circle(start = [var 603.5mm, var 950mm], center = [var 593.5mm, var 950mm])
+}
+region006 = region(segments = [sketch012.circle1])
+tapNose = extrude(region006, length = sinkWidth / 2.5)
+sketch013 = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
+  circle1 = circle(start = [var 597.5mm, var 1000mm], center = [var 593.5mm, var 1000mm])
+}
+region007 = region(segments = [sketch013.circle1])
+tapHandle = extrude(region007, length = 70)
+
+// door panels
+doorGap = 2
+doorWidth = blockSubdivisionWidth - profileThickness - (doorGap * 2)
+doorStart = profileThickness + doorGap
+doorHeightAboveTheFloor = pillarHeightAboveTheFloor + doorGap
+doorHeight = blockHeight - doorHeightAboveTheFloor - profileThickness - doorGap
+doorCount = blockCount * blockSubdivisionCount
+
+doorPlane = startSketchOn(offsetPlane(XY, offset = doorHeightAboveTheFloor))
+sketch014 = startProfile(doorPlane, at = [doorStart, 0])
+  |> yLine(length = profileThickness)
+  |> xLine(length = doorWidth)
+  |> yLine(length = -profileThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
+doorBody = extrude(sketch014, length = doorHeight)
+  |> patternLinear3d(instances = 2, distance = blockDepth, axis = [0, 1, 0])
+
+// side panels
+panelWidth = blockDepth - profileThickness - (doorGap * 2)
+panelCount = doorCount + 1
+panelSpacing = tableWidth - profileThickness
+sketch015 = startProfile(doorPlane, at = [0, doorStart])
+  |> yLine(length = panelWidth)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -panelWidth)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(axis = [1, 0], instances = 2, distance = panelSpacing)
+panelBody = extrude(sketch015, length = doorHeight)
+
+// handle
+handleDepth = 40
+handleWidth = 120
+handleFillet = 20
+handleHeightAboveTheFloor = 780
+handleOffset = doorStart + doorWidth / 2 - (handleWidth / 2)
+handleLengthSegmentA = handleDepth - handleFillet
+handleLengthSegmentB = handleWidth - (handleFillet * 2)
+
+handlePlane = startSketchOn(offsetPlane(XY, offset = handleHeightAboveTheFloor))
+
+handleProfilePath = sketch(on = handlePlane) {
+  line1 = line(start = [var 243.25mm, var 0mm], end = [var 243.25mm, var -20mm])
+  arc2 = arc(start = [var 243.25mm, var -20mm], end = [var 263.25mm, var -40mm], center = [var 263.25mm, var -20mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 263.25mm, var -40mm], end = [var 343.25mm, var -40mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 343.25mm, var -40mm], end = [var 363.25mm, var -20mm], center = [var 343.25mm, var -20mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 363.25mm, var -20mm], end = [var 363.25mm, var 0mm])
+  coincident([arc4.end, line5.start])
+  vertical(line1)
+  tangent([line1, arc2])
+  horizontal(line3)
+  tangent([line3, arc4])
+  vertical(line5)
+}
+handleSectionPlane = startSketchOn(XZ)
+handleProfileSection = sketch(on = handleSectionPlane) {
+  circle1 = circle(start = [var 245.25mm, var 780mm], center = [var 243.25mm, var 780mm])
+}
+region008 = region(segments = [handleProfileSection.circle1])
+handleBody = sweep(region008, path = handleProfilePath)
+  |> patternLinear3d(axis = [1, 0, 0], instances = doorCount, distance = blockSubdivisionWidth)
+

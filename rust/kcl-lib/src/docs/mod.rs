@@ -8,7 +8,8 @@ pub mod kcl_doc;
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::docs::kcl_doc::{self, DocData};
+    use crate::docs::kcl_doc::DocData;
+    use crate::docs::kcl_doc::{self};
 
     #[test]
     fn get_autocomplete_snippet_line() {

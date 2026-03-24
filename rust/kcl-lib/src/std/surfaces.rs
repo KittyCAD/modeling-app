@@ -3,14 +3,15 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    ok_response::OkModelingCmdResponse,
-    output as mout,
-    shared::{BodyType, FractionOfEdge, SurfaceEdgeReference},
-    websocket::OkWebSocketResponseData,
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::output as mout;
+use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::FractionOfEdge;
+use kittycad_modeling_cmds::shared::SurfaceEdgeReference;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
