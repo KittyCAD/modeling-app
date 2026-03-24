@@ -537,7 +537,7 @@ async fn inner_region(
     sketch.region_mapping = region_mapping;
 
     // Early expansion: replace paths and update tags to use region segment IDs.
-    {
+    if !sketch.region_mapping.is_empty() {
         // Build reverse map: original_seg_id -> Vec<region_seg_id>
         let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
         #[expect(
