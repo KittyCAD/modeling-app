@@ -19,6 +19,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
@@ -57,6 +58,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { StateEffect } from '@codemirror/state'
+import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -101,7 +103,11 @@ export type SketchSolveMachineEvent =
     }
   | {
       type: 'update hovered id'
-      data: { hoveredId: number | null }
+      data: {
+        hoveredId: number | null
+        hoveredConstraintPreviewTargetId?: number | null
+        hoveredConstraintPreviewPosition?: Coords2d | null
+      }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | UpdateSketchOutcomeEvent
@@ -171,6 +177,8 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
+  hoveredConstraintPreviewTargetId: number | null
+  hoveredConstraintPreviewPosition: Coords2d | null
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -593,7 +601,7 @@ export function updateSceneGraphFromDelta({
           context.sceneInfra,
           allSelectedIds,
           context.hoveredId,
-          context.showNonVisualConstraints
+          getInvisibleConstraintDisplayState(context)
         )
       }
       return
@@ -808,7 +816,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           context.sceneInfra,
           allSelectedIds,
           context.hoveredId,
-          context.showNonVisualConstraints
+          getInvisibleConstraintDisplayState(context)
         )
       }
     } else {
@@ -927,10 +935,20 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         context.sceneInfra,
         allSelectedIds,
         context.hoveredId,
-        context.showNonVisualConstraints
+        getInvisibleConstraintDisplayState(context)
       )
     }
   })
+}
+
+function getInvisibleConstraintDisplayState(
+  context: SketchSolveContext
+): InvisibleConstraintDisplayState {
+  return {
+    showNonVisualConstraints: context.showNonVisualConstraints,
+    hoveredConstraintPreviewTargetId: context.hoveredConstraintPreviewTargetId,
+    hoveredConstraintPreviewPosition: context.hoveredConstraintPreviewPosition,
+  }
 }
 
 function getSketchSolveScaleFactor(context: SketchSolveContext): number {

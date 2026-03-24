@@ -7,7 +7,10 @@ import { AngleConstraintBuilder } from '@src/machines/sketchSolve/constraints/An
 import { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
-import { InvisibleConstraintSpriteBuilder } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
+import {
+  InvisibleConstraintSpriteBuilder,
+  type InvisibleConstraintDisplayState,
+} from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
 import {
   type ConstraintObject,
@@ -57,7 +60,7 @@ export class ConstraintBuilder {
     sceneInfra: SceneInfra,
     selectedIds: number[],
     hoveredId: number | null,
-    showNonVisualConstraints: boolean
+    invisibleConstraintDisplayState: InvisibleConstraintDisplayState
   ) {
     // Technically this only needs to be done once per frame, before rendering, not per object.
     const theme = getResolvedTheme(sceneInfra.theme)
@@ -102,7 +105,7 @@ export class ConstraintBuilder {
         sceneInfra,
         selectedIds,
         hoveredId,
-        showNonVisualConstraints
+        invisibleConstraintDisplayState
       )
     }
   }

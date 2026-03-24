@@ -30,7 +30,14 @@ import {
 import {
   getOtherCoincidentIdsByPointId,
   isConstraint,
+  isLineSegment,
+  isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  findInvisibleConstraintsForSegment,
+  isInvisibleConstraintObject,
+  isInvisibleConstraintRelatedToSegment,
+} from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import type {
   OnMoveCallbackArgs,
   SceneInfra,
@@ -240,12 +247,45 @@ export function createOnClickCallback({
       onUpdateSelectedIds({
         selectedIds: closestObject ? [closestObject.apiObject.id] : [],
         duringAreaSelectIds: [],
-        ...(shouldReplaceSelection
-          ? { replaceExistingSelection: true }
-          : {}),
+        ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
       })
     }
   }
+}
+
+function isPreviewTarget(obj: ApiObject | null): obj is ApiObject & {
+  kind: {
+    type: 'Segment'
+    segment: { type: 'Line' | 'Point' }
+  }
+} {
+  return isLineSegment(obj) || isPointSegment(obj)
+}
+
+type HoveredConstraintPreview = {
+  targetId: number
+  position: Coords2d
+}
+
+const HOVERED_CONSTRAINT_PREVIEW_TIMEOUT_MS = 2000
+
+function hasInvisibleConstraintPreviewTarget(
+  object: ApiObject | null,
+  objects: ApiObject[]
+) {
+  return findInvisibleConstraintsForSegment(object, objects).length > 0
+}
+
+function isSameHoveredConstraintPreview(
+  preview: HoveredConstraintPreview | null,
+  targetId: number | null,
+  position: Coords2d | null
+) {
+  return (
+    (preview?.targetId ?? null) === targetId &&
+    preview?.position?.[0] === position?.[0] &&
+    preview?.position?.[1] === position?.[1]
+  )
 }
 
 /**
@@ -447,6 +487,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
+  const hoveredConstraintPreviewState: {
+    lastHoveredTargetId: number | null
+    preview: HoveredConstraintPreview | null
+    isHoveringPreview: boolean
+    previewTimeoutId: ReturnType<typeof setTimeout> | null
+    hideTimeoutId: ReturnType<typeof setTimeout> | null
+  } = {
+    lastHoveredTargetId: null,
+    preview: null,
+    isHoveringPreview: false,
+    previewTimeoutId: null,
+    hideTimeoutId: null,
+  }
 
   // Selection box visual element
   const [getSelectionBoxObject, setSelectionBoxObject] =
@@ -475,6 +528,86 @@ export function setUpOnDragAndSelectionClickCallbacks({
     setVerticalLine,
     getHorizontalLine,
     setHorizontalLine,
+  }
+
+  const clearHoveredConstraintPreviewTimer = (
+    timerKey: 'previewTimeoutId' | 'hideTimeoutId'
+  ) => {
+    const timeoutId = hoveredConstraintPreviewState[timerKey]
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+      hoveredConstraintPreviewState[timerKey] = null
+    }
+  }
+
+  const clearHoveredConstraintPreviewTimers = () => {
+    clearHoveredConstraintPreviewTimer('previewTimeoutId')
+    clearHoveredConstraintPreviewTimer('hideTimeoutId')
+  }
+
+  const getHoveredConstraintPreviewEventData = () => {
+    const snapshot = self.getSnapshot()
+    const { preview } = hoveredConstraintPreviewState
+    const shouldIncludeHoveredConstraintPreview =
+      preview !== null ||
+      snapshot.context.hoveredConstraintPreviewTargetId !== null ||
+      snapshot.context.hoveredConstraintPreviewPosition !== null
+
+    if (!shouldIncludeHoveredConstraintPreview) {
+      return {}
+    }
+
+    return {
+      hoveredConstraintPreviewTargetId: preview?.targetId ?? null,
+      hoveredConstraintPreviewPosition: preview?.position ?? null,
+    }
+  }
+
+  const sendHoveredState = (hoveredId: number | null) => {
+    self.send({
+      type: 'update hovered id',
+      data: {
+        hoveredId,
+        ...getHoveredConstraintPreviewEventData(),
+      },
+    })
+  }
+
+  const clearHoveredConstraintPreview = () => {
+    clearHoveredConstraintPreviewTimers()
+    hoveredConstraintPreviewState.preview = null
+    hoveredConstraintPreviewState.isHoveringPreview = false
+  }
+
+  const hideHoveredConstraintPreview = () => {
+    clearHoveredConstraintPreview()
+    sendHoveredState(self.getSnapshot().context.hoveredId)
+  }
+
+  const startHoveredConstraintPreview = (
+    targetId: number,
+    position: Coords2d
+  ) => {
+    clearHoveredConstraintPreviewTimers()
+    hoveredConstraintPreviewState.preview = {
+      targetId,
+      position,
+    }
+    hoveredConstraintPreviewState.isHoveringPreview = false
+    hoveredConstraintPreviewState.previewTimeoutId = setTimeout(() => {
+      hoveredConstraintPreviewState.previewTimeoutId = null
+      if (!hoveredConstraintPreviewState.isHoveringPreview) {
+        hideHoveredConstraintPreview()
+      }
+    }, HOVERED_CONSTRAINT_PREVIEW_TIMEOUT_MS)
+  }
+
+  const scheduleHoveredConstraintPreviewHide = () => {
+    clearHoveredConstraintPreviewTimer('hideTimeoutId')
+    hoveredConstraintPreviewState.hideTimeoutId = setTimeout(() => {
+      hoveredConstraintPreviewState.hideTimeoutId = null
+      hideHoveredConstraintPreview()
+    }, HOVERED_CONSTRAINT_PREVIEW_TIMEOUT_MS)
   }
 
   context.sceneInfra.setCallbacks({
@@ -597,11 +730,61 @@ export function setUpOnDragAndSelectionClickCallbacks({
         context.sceneInfra
       )
       const hoveredObject: ClosestApiObject | null = closestObjects[0] ?? null
-      const hoveredId = hoveredObject?.apiObject.id || null
+      const hoveredApiObject = hoveredObject?.apiObject ?? null
+      const hoveredId = hoveredApiObject?.id ?? null
       const lastHoveredId = snapshot.context.hoveredId
+      const hoveredConstraintPreviewTargetId = isPreviewTarget(hoveredApiObject)
+        ? hoveredApiObject.id
+        : null
+      const { preview } = hoveredConstraintPreviewState
+      const isHoveringHoveredConstraintPreview =
+        preview !== null &&
+        isInvisibleConstraintObject(hoveredApiObject) &&
+        isInvisibleConstraintRelatedToSegment(
+          hoveredApiObject,
+          apiObjects[preview.targetId]
+        )
+      const previousHoveredConstraintPreviewTargetId =
+        snapshot.context.hoveredConstraintPreviewTargetId
+      const previousHoveredConstraintPreviewPosition =
+        snapshot.context.hoveredConstraintPreviewPosition
 
-      if (hoveredId !== lastHoveredId) {
-        self.send({ type: 'update hovered id', data: { hoveredId } })
+      if (
+        hoveredConstraintPreviewTargetId !==
+          hoveredConstraintPreviewState.lastHoveredTargetId &&
+        hoveredConstraintPreviewTargetId !== null &&
+        preview?.targetId !== hoveredConstraintPreviewTargetId &&
+        !snapshot.context.showNonVisualConstraints &&
+        hasInvisibleConstraintPreviewTarget(hoveredApiObject, apiObjects)
+      ) {
+        startHoveredConstraintPreview(
+          hoveredConstraintPreviewTargetId,
+          mousePosition
+        )
+      }
+      hoveredConstraintPreviewState.lastHoveredTargetId =
+        hoveredConstraintPreviewTargetId
+
+      if (isHoveringHoveredConstraintPreview) {
+        if (!hoveredConstraintPreviewState.isHoveringPreview) {
+          hoveredConstraintPreviewState.isHoveringPreview = true
+          clearHoveredConstraintPreviewTimers()
+        }
+      } else if (hoveredConstraintPreviewState.isHoveringPreview) {
+        hoveredConstraintPreviewState.isHoveringPreview = false
+        scheduleHoveredConstraintPreviewHide()
+      }
+
+      const currentHoveredConstraintPreview =
+        hoveredConstraintPreviewState.preview
+      const hoveredConstraintPreviewChanged = !isSameHoveredConstraintPreview(
+        currentHoveredConstraintPreview,
+        previousHoveredConstraintPreviewTargetId,
+        previousHoveredConstraintPreviewPosition
+      )
+
+      if (hoveredId !== lastHoveredId || hoveredConstraintPreviewChanged) {
+        sendHoveredState(hoveredId)
       }
     },
     onAreaSelectStart: ({ startPoint }) => {

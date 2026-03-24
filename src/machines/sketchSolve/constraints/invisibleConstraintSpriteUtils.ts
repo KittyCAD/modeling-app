@@ -102,6 +102,48 @@ export function getInvisibleConstraintAnchor(
   }
 }
 
+export function findInvisibleConstraintsForSegment(
+  segment: ApiObject | undefined | null,
+  objects: ApiObject[]
+): number[] {
+  return objects
+    .filter(
+      (constraint): constraint is InvisibleConstraintObject =>
+        isInvisibleConstraintObject(constraint) &&
+        isInvisibleConstraintRelatedToSegment(constraint, segment)
+    )
+    .map((constraint) => constraint.id)
+}
+
+export function isInvisibleConstraintRelatedToSegment(
+  constraint: InvisibleConstraintObject,
+  object: ApiObject | undefined | null
+): boolean {
+  switch (constraint.kind.constraint.type) {
+    case 'Coincident':
+      return isPointSegment(object)
+        ? constraint.kind.constraint.segments.includes(object.id)
+        : false
+    case 'Horizontal':
+    case 'Vertical':
+      return (
+        isLineSegment(object) && constraint.kind.constraint.line === object.id
+      )
+    case 'LinesEqualLength':
+    case 'Parallel':
+    case 'Perpendicular':
+      return (
+        isLineSegment(object) &&
+        constraint.kind.constraint.lines.includes(object.id)
+      )
+    case 'Tangent':
+      return (
+        isLineSegment(object) &&
+        constraint.kind.constraint.input.includes(object.id)
+      )
+  }
+}
+
 function getObjectAnchor(
   objectId: number,
   objects: ApiObject[]

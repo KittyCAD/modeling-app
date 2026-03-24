@@ -11,13 +11,21 @@ import {
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
+import type { Coords2d } from '@src/lang/util'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
+  findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
   type InvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+
+export type InvisibleConstraintDisplayState = {
+  showNonVisualConstraints: boolean
+  hoveredConstraintPreviewTargetId: number | null
+  hoveredConstraintPreviewPosition: Coords2d | null
+}
 
 export class InvisibleConstraintSpriteBuilder {
   private readonly textureCache = new Map<string, Texture>()
@@ -54,29 +62,39 @@ export class InvisibleConstraintSpriteBuilder {
     sceneInfra: SceneInfra,
     selectedIds: number[],
     hoveredId: number | null,
-    showNonVisualConstraints: boolean
+    displayState: InvisibleConstraintDisplayState
   ) {
-    if (!showNonVisualConstraints || !isInvisibleConstraintObject(obj)) {
+    if (!isInvisibleConstraintObject(obj)) {
       group.visible = false
       return
     }
 
-    const anchor = getInvisibleConstraintAnchor(obj, objects)
     const sprite = group.children.find((child) => child instanceof Sprite) as
       | Sprite
       | undefined
 
-    if (!anchor || !sprite) {
+    if (!sprite) {
       group.visible = false
       return
     }
 
-    group.position.copy(
-      offsetWorldPosition(anchor, sceneInfra, {
-        x: -15,
-        y: -15,
-      })
+    const isSelected = selectedIds.includes(obj.id)
+    const isHovered = hoveredId === obj.id
+    const position = getInvisibleConstraintWorldPosition(
+      obj,
+      objects,
+      sceneInfra,
+      displayState,
+      isSelected,
+      isHovered
     )
+
+    if (!position) {
+      group.visible = false
+      return
+    }
+
+    group.position.copy(position)
 
     const scale = sceneInfra.getClientSceneScaleFactor(group)
     sprite.scale.setScalar(20 * scale)
@@ -111,7 +129,7 @@ export class InvisibleConstraintSpriteBuilder {
     }
 
     const texture = this.textureLoader.load(
-      createConstraintBadgeSvgDataUrl(objType, badgeState),
+      createConstraintBadgeSvgDataUrl(objType, badgeState)
     )
     texture.colorSpace = SRGBColorSpace
     this.textureCache.set(key, texture)
@@ -119,22 +137,139 @@ export class InvisibleConstraintSpriteBuilder {
   }
 }
 
+function getInvisibleConstraintWorldPosition(
+  obj: InvisibleConstraintObject,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra,
+  displayState: InvisibleConstraintDisplayState,
+  isSelected: boolean,
+  isHovered: boolean
+) {
+  const naturalAnchor = getInvisibleConstraintAnchor(obj, objects)
+  const naturalPosition = naturalAnchor
+    ? offsetWorldPosition(naturalAnchor, sceneInfra, { x: -15, y: -15 })
+    : null
+
+  if (displayState.showNonVisualConstraints) {
+    return naturalPosition
+  }
+
+  const { hoveredConstraintPreviewTargetId, hoveredConstraintPreviewPosition } =
+    displayState
+  if (
+    hoveredConstraintPreviewTargetId !== null &&
+    hoveredConstraintPreviewPosition !== null
+  ) {
+    const hoverPreviewConstraintIds = findInvisibleConstraintsForSegment(
+      objects[hoveredConstraintPreviewTargetId],
+      objects
+    )
+    const hoverPreviewIndex = hoverPreviewConstraintIds.indexOf(obj.id)
+    if (hoverPreviewIndex !== -1) {
+      return getHoverPreviewWorldPosition(
+        hoveredConstraintPreviewPosition,
+        hoverPreviewIndex,
+        hoverPreviewConstraintIds.length,
+        sceneInfra
+      )
+    }
+  }
+
+  if (isSelected || isHovered) {
+    return naturalPosition
+  }
+
+  return null
+}
+
 function offsetWorldPosition(
   worldPosition: Vector3,
   sceneInfra: SceneInfra,
   offsetPx: { x: number; y: number }
 ) {
+  const [screenX, screenY, projectedZ] = projectWorldPositionToScreen(
+    worldPosition,
+    sceneInfra
+  )
+
+  return unprojectScreenPosition(
+    screenX + offsetPx.x,
+    screenY + offsetPx.y,
+    projectedZ,
+    sceneInfra
+  )
+}
+
+function getHoverPreviewWorldPosition(
+  hoveredConstraintPreviewPosition: Coords2d,
+  hoverPreviewIndex: number,
+  hoverPreviewCount: number,
+  sceneInfra: SceneInfra
+) {
+  const previewPosition = new Vector3(
+    hoveredConstraintPreviewPosition[0],
+    hoveredConstraintPreviewPosition[1],
+    0
+  )
+  const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(
+    previewPosition,
+    sceneInfra
+  )
+  const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
+  const badgeSize = 20
+  const badgeGap = 4
+  const viewportPadding = 4
+  const totalRowWidth =
+    hoverPreviewCount * badgeSize +
+    Math.max(hoverPreviewCount - 1, 0) * badgeGap
+  const minStartX = viewportPadding
+  const maxStartX = Math.max(
+    minStartX,
+    clientWidth - viewportPadding - totalRowWidth
+  )
+  const rowStartX = clamp(baseScreenX + 12, minStartX, maxStartX)
+  const centerX =
+    rowStartX + hoverPreviewIndex * (badgeSize + badgeGap) + badgeSize / 2
+  const centerY = clamp(
+    baseScreenY - 12,
+    viewportPadding + badgeSize / 2,
+    clientHeight - viewportPadding - badgeSize / 2
+  )
+
+  return unprojectScreenPosition(centerX, centerY, projectedZ, sceneInfra)
+}
+
+function projectWorldPositionToScreen(
+  worldPosition: Vector3,
+  sceneInfra: SceneInfra
+) {
   const projected = worldPosition.clone().project(sceneInfra.camControls.camera)
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
-  const screenX = (projected.x * 0.5 + 0.5) * clientWidth + offsetPx.x
-  const screenY = (-projected.y * 0.5 + 0.5) * clientHeight + offsetPx.y
+  return [
+    (projected.x * 0.5 + 0.5) * clientWidth,
+    (-projected.y * 0.5 + 0.5) * clientHeight,
+    projected.z,
+  ] as const
+}
+
+function unprojectScreenPosition(
+  screenX: number,
+  screenY: number,
+  projectedZ: number,
+  sceneInfra: SceneInfra
+) {
+  const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
   return new Vector3(
     (screenX / clientWidth) * 2 - 1,
     -((screenY / clientHeight) * 2 - 1),
-    projected.z
+    projectedZ
   ).unproject(sceneInfra.camControls.camera)
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
 }
 
 function createConstraintBadgeSvgDataUrl(

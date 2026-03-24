@@ -32,7 +32,10 @@ type ScreenRectHitObject = {
   center: [number, number, number]
   sizePx: [number, number]
 }
-type HitObject = ({ type: 'arc' } & ArcPoints) | LinePoints | ScreenRectHitObject
+type HitObject =
+  | ({ type: 'arc' } & ArcPoints)
+  | LinePoints
+  | ScreenRectHitObject
 type ConstraintHitObjects = HitObject[] | 'auto'
 
 function distanceToLineSegment(

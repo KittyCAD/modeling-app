@@ -196,12 +196,12 @@ describe('findClosestApiObjects', () => {
     )
 
     expect(result[0]?.apiObject.id).toBe(10)
-    expect(result.findIndex(({ apiObject }) => apiObject.id === 10)).toBeLessThan(
-      result.findIndex(({ apiObject }) => apiObject.id === 4)
-    )
-    expect(result.findIndex(({ apiObject }) => apiObject.id === 10)).toBeLessThan(
-      result.findIndex(({ apiObject }) => apiObject.id === 3)
-    )
+    expect(
+      result.findIndex(({ apiObject }) => apiObject.id === 10)
+    ).toBeLessThan(result.findIndex(({ apiObject }) => apiObject.id === 4))
+    expect(
+      result.findIndex(({ apiObject }) => apiObject.id === 10)
+    ).toBeLessThan(result.findIndex(({ apiObject }) => apiObject.id === 3))
   })
 
   it('filters out candidates that are beyond the threshold', () => {

@@ -5,6 +5,7 @@ import type {
 import { describe, expect, it } from 'vitest'
 
 import {
+  findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
   type InvisibleConstraintObject,
@@ -109,5 +110,59 @@ describe('invisibleConstraintSpriteUtils', () => {
     )
 
     expect(anchor?.toArray()).toEqual([10, 0, 0])
+  })
+
+  it('finds the invisible constraints related to a hovered line', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const otherStart = createPointApiObject({ id: 3, x: 0, y: 10 })
+    const otherEnd = createPointApiObject({ id: 4, x: 10, y: 10 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const otherLine = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const parallel = createConstraintApiObject(20, {
+      type: 'Parallel',
+      lines: [10, 11],
+    })
+    const coincident = createConstraintApiObject(21, {
+      type: 'Coincident',
+      segments: [2, 4],
+    })
+
+    const relatedConstraintIds = findInvisibleConstraintsForSegment(
+      line,
+      createObjectsArray([
+        start,
+        end,
+        otherStart,
+        otherEnd,
+        line,
+        otherLine,
+        parallel,
+        coincident,
+      ])
+    )
+
+    expect(relatedConstraintIds).toEqual([20])
+  })
+
+  it('finds the invisible constraints related to a hovered point', () => {
+    const point = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const otherPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [1, 2],
+    })
+    const horizontal = createConstraintApiObject(21, {
+      type: 'Horizontal',
+      line: 10,
+    })
+
+    const relatedConstraintIds = findInvisibleConstraintsForSegment(
+      point,
+      createObjectsArray([point, otherPoint, line, coincident, horizontal])
+    )
+
+    expect(relatedConstraintIds).toEqual([20])
   })
 })
