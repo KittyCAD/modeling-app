@@ -815,13 +815,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
   artifactGraph: ArtifactGraph
 ): ResolvedGraphSelection | null {
   let parentArtifact = artifactGraph.get(parentEntityId)
-  let resolutionSource:
-    | 'direct'
-    | 'compositeSolidSolidIds'
-    | 'pathSweep'
-    | 'surfaceSweep'
-    | 'codeRefFallback'
-    | 'unknown' = parentArtifact ? 'direct' : 'unknown'
   // Engine topology parent_id may be a constituent sweep id after shell/boolean; the editable
   // body is often a compositeSolid whose solidIds includes that id (graph may not key parentId).
   if (!parentArtifact) {
@@ -830,7 +823,6 @@ export function getBodySelectionFromPrimitiveParentEntityId(
         const solidIds = (artifact as { solidIds?: string[] }).solidIds ?? []
         if (solidIds.includes(parentEntityId)) {
           parentArtifact = artifact
-          resolutionSource = 'compositeSolidSolidIds'
           break
         }
       }
