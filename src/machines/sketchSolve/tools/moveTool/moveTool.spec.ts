@@ -234,10 +234,8 @@ function createPointSegmentGroup({
         y: { type: 'Var', value: 0, units: 'Mm' },
       },
     },
-    theme,
-    scale,
     id: segmentId,
-    isDraft: false,
+    freedom: 'Free',
     isConstruction: false,
   })
   if (result instanceof Group) {

@@ -390,17 +390,11 @@ export function updateSegmentGroup({
  */
 function initSegmentGroup({
   input,
-  theme,
-  scale,
   id,
-  isDraft = false,
   objects,
 }: {
   input: SegmentCtor
-  theme: Themes
-  scale: number
   id: number
-  isDraft?: boolean
   objects: ApiObject[]
 }): Group | Error {
   const segmentObj = objects[id]
@@ -413,40 +407,28 @@ function initSegmentGroup({
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
       input,
-      theme,
-      scale,
       id,
-      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
@@ -574,10 +556,7 @@ export function updateSceneGraphFromDelta({
       }
       const newGroup = initSegmentGroup({
         input: ctor,
-        theme: context.sceneInfra.theme,
-        scale: factor,
         id: obj.id,
-        isDraft: state.draft,
         objects,
       })
       if (newGroup instanceof Error) {

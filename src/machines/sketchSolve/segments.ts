@@ -146,12 +146,9 @@ const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
   input: SegmentCtor
-  theme: Themes
   id: number
-  scale: number
-  isDraft: boolean
   isConstruction: boolean
-  freedom?: Freedom | null
+  freedom: Freedom | null
 }
 
 export type SegmentRenderState = {
@@ -167,7 +164,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   state: SegmentRenderState
-  freedom?: Freedom | null
+  freedom: Freedom | null
 }
 
 /**
