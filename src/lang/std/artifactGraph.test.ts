@@ -129,7 +129,7 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('should coerce edgeCut selection to parent path', () => {
+  it('should coerce edgeCut selection to parent sweep', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
     const path: Artifact = {
@@ -199,7 +199,75 @@ describe('coerceSelectionsToBody', () => {
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
       expect(result.graphSelectionsV2).toHaveLength(1)
-      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([90, 95, 0])
+      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+        type: 'solid3d',
+        solid3d_id: 'sweep-1',
+      })
+      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([100, 200, 0])
+    }
+  })
+
+  it('should coerce codeRef-only segment selection to parent sweep', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const path: Artifact = {
+      type: 'path',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      commonSurfaceIds: [],
+      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+
+    artifactGraph.set('path-1', path)
+    artifactGraph.set('sweep-1', sweep)
+    artifactGraph.set('segment-1', segment)
+
+    const selections: Selections = {
+      graphSelectionsV2: [
+        {
+          codeRef: { range: [10, 20, 0], pathToNode: [] },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+        type: 'solid3d',
+        solid3d_id: 'sweep-1',
+      })
     }
   })
 
@@ -255,6 +323,54 @@ describe('coerceSelectionsToBody', () => {
       expect(entry.codeRef?.range).toEqual([50, 120, 0])
       // Resolved body is kept (sweep has entityRef, so it appears as body selection).
       expect(entry).toHaveProperty('codeRef')
+    }
+  })
+
+  it('should coerce engine primitive edge selection to parent sweep', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [50, 120, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+
+    artifactGraph.set('sweep-1', sweep)
+
+    const selections: Selections = {
+      graphSelectionsV2: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'edge-1',
+          parentEntityId: 'sweep-1',
+          primitiveIndex: 2,
+          primitiveType: 'edge',
+        },
+      ],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.otherSelections).toHaveLength(0)
+      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+        type: 'solid3d',
+        solid3d_id: 'sweep-1',
+      })
     }
   })
 })

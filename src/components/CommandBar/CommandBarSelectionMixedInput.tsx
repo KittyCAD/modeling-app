@@ -9,8 +9,7 @@ import {
   handleSelectionBatch,
 } from '@src/lib/selections'
 import { useApp } from '@src/lib/boot'
-import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
-import { err } from '@src/lib/trap'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   setSelectionFilter,
@@ -42,59 +41,26 @@ export default function CommandBarSelectionMixedInput({
   const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
+  const effectiveSelection = useMemo(
+    () =>
+      coerceSelectionsForBodyOnlySelectionTypes(
+        selection,
+        arg.selectionTypes,
+        kclManager.artifactGraph
+      ) ?? selection,
+    [selection, arg.selectionTypes, kclManager.artifactGraph]
+  )
 
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(
       kclManager.ast,
-      selection,
+      effectiveSelection,
       kclManager.artifactGraph
     )
-  }, [selection, kclManager.ast, kclManager.artifactGraph])
+  }, [effectiveSelection, kclManager.ast, kclManager.artifactGraph])
 
-  // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {
-    // Only run once per component mount
-    if (hasCoercedSelections) return
-
-    // Signal that coercion phase is complete - allows second useEffect to set selection filter
     setHasCoercedSelections(true)
-
-    if (!selection || selection.graphSelectionsV2.length === 0) return
-
-    // Check if this argument only accepts body types (path, sweep, compositeSolid)
-    // These are the artifact types that represent 3D bodies/objects
-    const onlyAcceptsBodies = arg.selectionTypes?.every(
-      (type) => type === 'sweep' || type === 'compositeSolid' || type === 'path'
-    )
-
-    if (!onlyAcceptsBodies) return // Command accepts non-body types
-    if (!arg.machineActor) return // No state machine to update
-
-    const coercedSelections = coerceSelectionsToBody(
-      selection,
-      kclManager.artifactGraph
-    )
-    if (err(coercedSelections)) {
-      return // Coercion failed, skip update
-    }
-
-    // Don't replace selection with empty: e.g. Clone from feature tree has solid2d (import)
-    // which doesn't coerce to a body, so coercion yields []. Preserve original selection.
-    const coercedLen = coercedSelections.graphSelectionsV2?.length ?? 0
-    if (coercedLen === 0) {
-      return
-    }
-
-    // Immediately update the modeling machine state with coerced selection
-    // This needs to happen BEFORE the selection filter is applied
-    arg.machineActor.send({
-      type: 'Set selection',
-      data: {
-        selectionType: 'completeSelection',
-        selection: coercedSelections,
-      },
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
   const isArgRequired =
@@ -105,18 +71,18 @@ export default function CommandBarSelectionMixedInput({
   const canSubmitSelection = useMemo<boolean>(() => {
     // Don't do additional checks if this argument is not required
     if (!isArgRequired) return true
-    if (!selection) return false
-    const isNonZeroRange = selection.graphSelectionsV2.some((sel) => {
+    if (!effectiveSelection) return false
+    const isNonZeroRange = effectiveSelection.graphSelectionsV2.some((sel) => {
       const range = sel.codeRef?.range
       return range != null && range[1] - range[0] !== 0 // Non-zero range is always valid
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
-  }, [selectionsByType, selection, arg, isArgRequired])
+  }, [selectionsByType, effectiveSelection, arg, isArgRequired])
 
   useEffect(() => {
     inputRef.current?.focus()
-  }, [selection, inputRef])
+  }, [effectiveSelection, inputRef])
 
   // Clear selection in UI if needed
   useEffect(() => {
@@ -157,7 +123,7 @@ export default function CommandBarSelectionMixedInput({
         engineCommandManager,
         kclManager,
         sceneEntitiesManager,
-        selectionsToRestore: selection,
+        selectionsToRestore: effectiveSelection,
         handleSelectionBatchFn: handleSelectionBatch,
         wasmInstance,
       })
@@ -169,7 +135,7 @@ export default function CommandBarSelectionMixedInput({
           engineCommandManager,
           kclManager,
           sceneEntitiesManager,
-          selectionsToRestore: selection,
+          selectionsToRestore: effectiveSelection,
           handleSelectionBatchFn: handleSelectionBatch,
           wasmInstance,
         })
@@ -177,7 +143,7 @@ export default function CommandBarSelectionMixedInput({
     }
   }, [
     arg.selectionFilter,
-    selection,
+    effectiveSelection,
     hasCoercedSelections,
     wasmInstance,
     engineCommandManager,
@@ -191,8 +157,8 @@ export default function CommandBarSelectionMixedInput({
   useEffect(() => {
     return () => {
       const resolvedSelection: Selections | undefined = isArgRequired
-        ? selection
-        : selection || {
+        ? effectiveSelection
+        : effectiveSelection || {
             graphSelectionsV2: [],
             otherSelections: [],
           }
@@ -225,8 +191,8 @@ export default function CommandBarSelectionMixedInput({
      * construct an empty selection if it's not required to get it past our validation.
      */
     const resolvedSelection: Selections | undefined = isArgRequired
-      ? selection
-      : selection || {
+      ? effectiveSelection
+      : effectiveSelection || {
           graphSelectionsV2: [],
           otherSelections: [],
         }
@@ -248,12 +214,12 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (selection?.graphSelectionsV2.length ||
-          selection?.otherSelections.length ||
-          selection?.graphSelectionsV2.length)
+        (effectiveSelection?.graphSelectionsV2.length ||
+          effectiveSelection?.otherSelections.length ||
+          effectiveSelection?.graphSelectionsV2.length)
           ? getSelectionTypeDisplayText(
               kclManager.astSignal.value,
-              selection,
+              effectiveSelection,
               kclManager.artifactGraph
             ) + ' selected'
           : 'Select code/objects, or skip'}
@@ -295,7 +261,7 @@ export default function CommandBarSelectionMixedInput({
             }
           }}
           onChange={handleChange}
-          value={JSON.stringify(selection || {})}
+          value={JSON.stringify(effectiveSelection || {})}
         />
       </label>
     </form>

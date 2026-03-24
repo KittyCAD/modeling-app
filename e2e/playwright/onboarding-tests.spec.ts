@@ -22,20 +22,20 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         onboarding_status: '',
       },
     })
-    await page.evaluate(({
-      TEST_SETTINGS_KEY,
-      TEST_SETTINGS_TOML_ONBOARDING_START,
-    }) => {
-      localStorage.setItem(
+    await page.evaluate(
+      ({ TEST_SETTINGS_KEY, TEST_SETTINGS_TOML_ONBOARDING_START }) => {
+        localStorage.setItem(
+          TEST_SETTINGS_KEY,
+          TEST_SETTINGS_TOML_ONBOARDING_START
+        )
+      },
+      {
         TEST_SETTINGS_KEY,
-        TEST_SETTINGS_TOML_ONBOARDING_START
-      )
-    }, {
-      TEST_SETTINGS_KEY,
-      TEST_SETTINGS_TOML_ONBOARDING_START: settingsToToml({
-        settings: TEST_SETTINGS_ONBOARDING_START,
-      }),
-    })
+        TEST_SETTINGS_TOML_ONBOARDING_START: settingsToToml({
+          settings: TEST_SETTINGS_ONBOARDING_START,
+        }),
+      }
+    )
     await page.reload()
 
     const tutorialWelcomeHeading = page.getByText(

@@ -618,216 +618,229 @@ test.describe(
       )
     })
 
-    test(`Insert foreign parts into assembly and delete them`, async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+    test(
+      `Insert foreign parts into assembly and delete them`,
+      { tag: '@skipLocalEngine' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throw new Error('tronApp is missing.')
 
-      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
-      const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
+        const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
+        const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
-      await test.step('Setup parts and expect empty assembly scene', async () => {
-        const projectName = 'assembly'
-        await folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(bracketDir, 'cube.step')
-            ),
-            fsp.copyFile(
-              testsInputPath('cube.sldprt'),
-              path.join(bracketDir, complexPlmFileName)
-            ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-          ])
-        })
-        await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Insert step part as module', async () => {
-        await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          import "cube.step" as cube
-        `,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await scene.settled(cmdBar)
-
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
-
-      await test.step('Insert second foreign part by clicking', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([
-          complexPlmFileName,
-          'cube.step',
-          'main.kcl',
-        ])
-        await toolbar.openFile(complexPlmFileName)
-
-        // Go through the ToastInsert prompt
-        await page.getByText('Insert into my current file').click()
-
-        // Check getPathFilenameInVariableCase output
-        const parsedValueFromFile =
-          await cmdBar.currentArgumentInput.inputValue()
-        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
-
-        // Continue on with the flow
-        await page.keyboard.insertText('cubeSw')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
-          commandName: 'Insert',
-        })
-        await cmdBar.progressCmdBar()
-        await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          import "cube.step" as cube
-          import "${complexPlmFileName}" as cubeSw
-        `,
-          { shouldNormalise: true }
-        )
-        await scene.settled(cmdBar)
-
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
-
-      await test.step('Delete first part using the feature tree', async () => {
-        page.on('console', console.log)
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('cube', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        // Expect only the import statement to be there
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          import "${complexPlmFileName}" as cubeSw
-        `,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Delete second part using the feature tree', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        // Expect empty editor and scene
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(
-          `import "${complexPlmFileName}" as cubeSw`
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-    })
-
-    test('Assembly gets reexecuted when imported models are updated externally', async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
-
-      const projectName = 'assembly'
-
-      await test.step('Setup parts and expect imported model', async () => {
-        await folderSetupFn(async (dir) => {
-          const projectDir = path.join(dir, projectName)
-          await fsp.mkdir(projectDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              executorInputPath('cube.kcl'),
-              path.join(projectDir, 'cube.kcl')
-            ),
-            fsp.copyFile(
-              executorInputPath(
-                path.join('mcmaster-parts', '98017a257-washer.step')
+        await test.step('Setup parts and expect empty assembly scene', async () => {
+          const projectName = 'assembly'
+          await folderSetupFn(async (dir) => {
+            const bracketDir = path.join(dir, projectName)
+            await fsp.mkdir(bracketDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                testsInputPath('cube.step'),
+                path.join(bracketDir, 'cube.step')
               ),
-              path.join(projectDir, 'foreign.step')
-            ),
-            fsp.writeFile(
-              path.join(projectDir, 'main.kcl'),
-              `
+              fsp.copyFile(
+                testsInputPath('cube.sldprt'),
+                path.join(bracketDir, complexPlmFileName)
+              ),
+              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            ])
+          })
+          await homePage.openProject(projectName)
+          await scene.settled(cmdBar)
+        })
+
+        await test.step('Insert step part as module', async () => {
+          await insertPartIntoAssembly(
+            'cube.step',
+            'cube',
+            toolbar,
+            cmdBar,
+            page
+          )
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(
+            `
+          import "cube.step" as cube
+        `,
+            { shouldNormalise: true }
+          )
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await scene.settled(cmdBar)
+
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+        })
+
+        await test.step('Insert second foreign part by clicking', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
+          await toolbar.expectFileTreeState([
+            complexPlmFileName,
+            'cube.step',
+            'main.kcl',
+          ])
+          await toolbar.openFile(complexPlmFileName)
+
+          // Go through the ToastInsert prompt
+          await page.getByText('Insert into my current file').click()
+
+          // Check getPathFilenameInVariableCase output
+          const parsedValueFromFile =
+            await cmdBar.currentArgumentInput.inputValue()
+          expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+
+          // Continue on with the flow
+          await page.keyboard.insertText('cubeSw')
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
+            commandName: 'Insert',
+          })
+          await cmdBar.progressCmdBar()
+          await toolbar.closePane(DefaultLayoutPaneID.Files)
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(
+            `
+          import "cube.step" as cube
+          import "${complexPlmFileName}" as cubeSw
+        `,
+            { shouldNormalise: true }
+          )
+          await scene.settled(cmdBar)
+
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+        })
+
+        await test.step('Delete first part using the feature tree', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          const op = await toolbar.getFeatureTreeOperation('cube', 0)
+          await op.click({ button: 'right' })
+          await page.getByTestId('context-menu-delete').click()
+          await scene.settled(cmdBar)
+          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+          // Expect only the import statement to be there
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.toContain(
+            `
+          import "${complexPlmFileName}" as cubeSw
+        `,
+            { shouldNormalise: true }
+          )
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+        })
+
+        await test.step('Delete second part using the feature tree', async () => {
+          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+          const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+          await op.click({ button: 'right' })
+          await page.getByTestId('context-menu-delete').click()
+          await scene.settled(cmdBar)
+          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+          // Expect empty editor and scene
+          await toolbar.openPane(DefaultLayoutPaneID.Code)
+          await editor.expectEditor.not.toContain(
+            `import "${complexPlmFileName}" as cubeSw`
+          )
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+        })
+      }
+    )
+
+    test(
+      'Assembly gets reexecuted when imported models are updated externally',
+      { tag: '@skipLocalEngine' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) throw new Error('tronApp is missing.')
+
+        const projectName = 'assembly'
+
+        await test.step('Setup parts and expect imported model', async () => {
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                executorInputPath('cube.kcl'),
+                path.join(projectDir, 'cube.kcl')
+              ),
+              fsp.copyFile(
+                executorInputPath(
+                  path.join('mcmaster-parts', '98017a257-washer.step')
+                ),
+                path.join(projectDir, 'foreign.step')
+              ),
+              fsp.writeFile(
+                path.join(projectDir, 'main.kcl'),
+                `
 import "cube.kcl" as cube
 import "foreign.step" as foreign
 cube
 foreign
   |> translate(x = 40, z = 10)`
-            ),
-          ])
+              ),
+            ])
+          })
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.openProject(projectName)
+          await scene.settled(cmdBar)
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
 
-      await test.step('Change imported kcl file and expect change', async () => {
-        await doAndWaitForImageDiff(
-          page,
-          async () => {
+        await test.step('Change imported kcl file and expect change', async () => {
+          await doAndWaitForImageDiff(
+            page,
+            async () => {
+              await folderSetupFn(async (dir) => {
+                // Append appearance to the cube.kcl file
+                await fsp.appendFile(
+                  path.join(dir, projectName, 'cube.kcl'),
+                  `\n  |> appearance(color = "#ff0000")`
+                )
+              })
+              await scene.settled(cmdBar)
+              await toolbar.closePane(DefaultLayoutPaneID.Code)
+            },
+            300
+          )
+        })
+
+        await test.step('Change imported step file and expect change', async () => {
+          // Expect pipe to take over the red cube but leave some space where the washer was
+          await doAndWaitForImageDiff(page, async () => {
             await folderSetupFn(async (dir) => {
-              // Append appearance to the cube.kcl file
-              await fsp.appendFile(
-                path.join(dir, projectName, 'cube.kcl'),
-                `\n  |> appearance(color = "#ff0000")`
+              // Replace the washer with a pipe
+              await fsp.copyFile(
+                executorInputPath(
+                  path.join('mcmaster-parts', '1120t74-pipe.step')
+                ),
+                path.join(dir, projectName, 'foreign.step')
               )
             })
             await scene.settled(cmdBar)
             await toolbar.closePane(DefaultLayoutPaneID.Code)
-          },
-          300
-        )
-      })
-
-      await test.step('Change imported step file and expect change', async () => {
-        // Expect pipe to take over the red cube but leave some space where the washer was
-        await doAndWaitForImageDiff(page, async () => {
-          await folderSetupFn(async (dir) => {
-            // Replace the washer with a pipe
-            await fsp.copyFile(
-              executorInputPath(
-                path.join('mcmaster-parts', '1120t74-pipe.step')
-              ),
-              path.join(dir, projectName, 'foreign.step')
-            )
           })
-          await scene.settled(cmdBar)
-          await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
-      })
-    })
+      }
+    )
 
     test(`Point-and-click clone`, async ({
       folderSetupFn,
