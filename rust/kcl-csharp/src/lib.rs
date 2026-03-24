@@ -24,6 +24,12 @@ struct KclSession {
     ctx: ExecutorContext,
 }
 
+/// Opaque handle to a live KCL session.
+///
+/// Caller requirements:
+/// - Treat this as an opaque pointer returned by `start_session`.
+/// - Keep it alive until exactly one call to `free_session`.
+/// - Do not call `free_session` concurrently with any other use of the same handle.
 pub struct SessionHandle {
     session: Mutex<KclSession>,
 }
@@ -526,6 +532,7 @@ impl From<FileExportFormat> for kcmc::shared::FileExportFormat {
 
 /// Start a KCL session backed by a live engine connection.
 /// Pass `auth_token` as null or an empty string to fall back to the environment.
+/// The returned `session` handle remains valid until exactly one call to `free_session`.
 #[unsafe(no_mangle)]
 pub extern "C" fn start_session(auth_token: *const c_char) -> SessionStartResult {
     let auth_token = match optional_string_from_c_string(auth_token, "auth_token") {
@@ -543,6 +550,11 @@ pub extern "C" fn start_session(auth_token: *const c_char) -> SessionStartResult
 
 /// Run the KCL program in an existing session and export the current scene.
 /// Pass `current_file` as null or an empty string when there is no on-disk file path.
+///
+/// Caller requirements:
+/// - `session` must be a non-null handle returned by `start_session`.
+/// - `session` must remain valid for the entire call.
+/// - Do not call `free_session(session)` until this function has returned.
 #[unsafe(no_mangle)]
 pub extern "C" fn session_run_contents_and_export(
     session: *mut SessionHandle,
@@ -577,6 +589,11 @@ pub extern "C" fn session_run_contents_and_export(
 
 /// Run the KCL file in an existing session and export the current scene.
 /// Input: a filepath to a .kcl file, or a directory containing a `main.kcl`.
+///
+/// Caller requirements:
+/// - `session` must be a non-null handle returned by `start_session`.
+/// - `session` must remain valid for the entire call.
+/// - Do not call `free_session(session)` until this function has returned.
 #[unsafe(no_mangle)]
 pub extern "C" fn session_run_file_and_export(
     session: *mut SessionHandle,
@@ -676,6 +693,12 @@ pub extern "C" fn free_export_result(result: ExportResult) {
 }
 
 /// Close the live engine connection for this session and free the session handle.
+///
+/// Caller requirements:
+/// - Call this exactly once for each successful `start_session` result.
+/// - Do not call this concurrently with `session_run_contents_and_export` or
+///   `session_run_file_and_export` on the same handle.
+/// - After this returns, `session` is invalid and must never be used again.
 #[unsafe(no_mangle)]
 pub extern "C" fn free_session(session: *mut SessionHandle) {
     if session.is_null() {
