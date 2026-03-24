@@ -545,28 +545,20 @@ async fn inner_region(
         }
         region_mapping = mock_mapping;
     }
-    sketch.region_mapping = region_mapping;
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
+    sketch.region_mapping = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
 
     // Early expansion: replace paths and update tags to use region segment IDs.
     {
-        // Build reverse map: original_seg_id -> Vec<region_seg_id>
-        let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
-        #[expect(
-            clippy::iter_over_hash_type,
-            reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
-        )]
-        for (region_id, original_id) in &sketch.region_mapping {
-            reverse.entry(*original_id).or_default().push(*region_id);
-        }
-
         // Replace paths with region-segment paths.
         let mut new_paths = Vec::new();
         for path in &sketch.paths {
-            let original_id = path.get_base().geo_meta.id;
-            if let Some(region_ids) = reverse.get(&original_id) {
+            let original_id = path.get_id();
+            if let Some(region_ids) = sketch.region_mapping.get(&original_id) {
                 for region_id in region_ids {
                     let mut new_path = path.clone();
-                    new_path.get_base_mut().geo_meta.id = *region_id;
+                    new_path.set_id(*region_id);
                     new_paths.push(new_path);
                 }
             }
@@ -580,7 +572,7 @@ async fn inner_region(
                 continue;
             };
             let original_id = info.id;
-            if let Some(region_ids) = reverse.get(&original_id) {
+            if let Some(region_ids) = sketch.region_mapping.get(&original_id) {
                 let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
                 // First entry: update existing info's ID.
                 // Additional entries: clone and push with new IDs.
@@ -606,6 +598,53 @@ async fn inner_region(
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
+}
+
+/// The region mapping returned from the engine maps from region segment ID to
+/// the original sketch segment ID. Create the reverse mapping, i.e. original
+/// sketch segment ID to region segment IDs, where the entries are ordered by
+/// the given original segments.
+///
+/// This runs in O(r + s) where r is the number of segments in the region, and s
+/// is the number of segments in the original sketch. Technically, it's more
+/// complicated since we also sort region segments, but in practice, there
+/// should be very few of these.
+pub(crate) fn build_reverse_region_mapping(
+    region_mapping: &HashMap<Uuid, Uuid>,
+    original_segments: &[Uuid],
+) -> IndexMap<Uuid, Vec<Uuid>> {
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::default();
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice. This function exists to work around that."
+    )]
+    for (region_id, original_id) in region_mapping {
+        reverse.entry(*original_id).or_default().push(*region_id);
+    }
+    // Sort the values so that they're deterministic. The engine uses
+    // UUIDv5s, so the relative order shouldn't change across runs.
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is safe since we're just sorting values."
+    )]
+    for values in reverse.values_mut() {
+        values.sort_unstable();
+    }
+    // Create the order. The region_mapping is unordered, so never use any order
+    // that comes out of it. Use the order of the original segments.
+    let mut ordered = IndexMap::with_capacity(original_segments.len());
+    for original_id in original_segments {
+        let mut region_ids = Vec::new();
+        reverse.entry(*original_id).and_modify(|entry_value| {
+            region_ids = std::mem::take(entry_value);
+        });
+        // Not every original segment will be in the region. Omit those.
+        if !region_ids.is_empty() {
+            ordered.insert(*original_id, region_ids);
+        }
+    }
+    ordered
 }
 
 fn region_from_point(
