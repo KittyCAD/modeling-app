@@ -187,7 +187,7 @@ import {
   updateSelections,
 } from '@src/lib/selections'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
+import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type {
@@ -2949,7 +2949,7 @@ export const modelingMachine = setup({
             sceneEntitiesManager: kclManager.sceneEntitiesManager,
             sceneInfra: kclManager.sceneInfra,
           })
-          if (!err(offsetResult) && offsetResult) {
+          if (!isErr(offsetResult) && offsetResult) {
             result = offsetResult
           }
         }

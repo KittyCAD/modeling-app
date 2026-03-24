@@ -56,7 +56,7 @@ import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -1203,6 +1203,8 @@ export async function getPlaneDataFromSketchBlock(
     return null
   }
 
+  // @pierremtb At the time of writing, this isn't working yet,
+  // so we always go to the next step and treat default planes as offset planes.
   const defaultResult = getDefaultSketchPlaneData(
     sketchBlock.planeId,
     systemDeps
@@ -1216,7 +1218,7 @@ export async function getPlaneDataFromSketchBlock(
     sceneEntitiesManager: systemDeps.sceneEntitiesManager,
     sceneInfra: systemDeps.sceneInfra,
   })
-  if (!err(offsetResult) && offsetResult) {
+  if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
   }
 
@@ -1326,8 +1328,7 @@ export async function getOffsetSketchPlaneData(
       pathToNode: artifact.codeRef.pathToNode,
       negated,
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
     return new Error('Error getting face details')
   }
 }
@@ -1341,7 +1342,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result) || result === false) return result
+  if (isErr(result) || result === false) return result
 
   try {
     sceneInfra.modelingSend({
@@ -1372,7 +1373,7 @@ export async function selectionBodyFace(
     planeOrFaceId,
     systemDeps
   )
-  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+  if (!isErr(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
@@ -1381,7 +1382,7 @@ export async function selectionBodyFace(
     artifact,
     systemDeps
   )
-  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+  if (!isErr(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
 
