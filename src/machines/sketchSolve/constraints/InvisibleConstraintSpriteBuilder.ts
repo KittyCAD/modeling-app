@@ -11,7 +11,7 @@ import {
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
-import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
+import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   getInvisibleConstraintAnchor,
@@ -38,9 +38,9 @@ export class InvisibleConstraintSpriteBuilder {
         transparent: true,
         depthTest: false,
         depthWrite: false,
+        color: 0xffffff,
       })
     )
-    sprite.userData.type = 'INVISIBLE_CONSTRAINT_SPRITE'
     sprite.renderOrder = 100
     group.add(sprite)
 
@@ -52,8 +52,8 @@ export class InvisibleConstraintSpriteBuilder {
     obj: ApiObject,
     objects: ApiObject[],
     sceneInfra: SceneInfra,
-    _selectedIds: number[],
-    _hoveredId: number | null,
+    selectedIds: number[],
+    hoveredId: number | null,
     showNonVisualConstraints: boolean
   ) {
     if (!showNonVisualConstraints || !isInvisibleConstraintObject(obj)) {
@@ -81,34 +81,39 @@ export class InvisibleConstraintSpriteBuilder {
     const scale = sceneInfra.getClientSceneScaleFactor(group)
     sprite.scale.setScalar(20 * scale)
 
-    const texture = this.getTexture(obj.kind.constraint.type)
+    const texture = this.getTexture(
+      obj.kind.constraint.type,
+      getConstraintBadgeState(obj.id, selectedIds, hoveredId)
+    )
 
     const material = sprite.material as SpriteMaterial
     material.map = texture
-    material.color.set(0xffffff)
     material.needsUpdate = true
+    sprite.userData.hitObjects = [
+      {
+        type: 'screenRect',
+        center: [group.position.x, group.position.y, group.position.z],
+        sizePx: [20, 20],
+      },
+    ]
 
     group.visible = true
   }
 
   private getTexture(
-    objType: InvisibleConstraintObject['kind']['constraint']['type']
+    objType: InvisibleConstraintObject['kind']['constraint']['type'],
+    badgeState: ConstraintBadgeState
   ) {
-    const key = objType
+    const key = `${objType}:${badgeState}`
     const cached = this.textureCache.get(key)
     if (cached) {
       return cached
     }
 
     const texture = this.textureLoader.load(
-      createConstraintBadgeSvgDataUrl(objType),
-      (loadedTexture) => {
-        loadedTexture.colorSpace = SRGBColorSpace
-        loadedTexture.needsUpdate = true
-      }
+      createConstraintBadgeSvgDataUrl(objType, badgeState),
     )
     texture.colorSpace = SRGBColorSpace
-    texture.needsUpdate = true
     this.textureCache.set(key, texture)
     return texture
   }
@@ -133,11 +138,18 @@ function offsetWorldPosition(
 }
 
 function createConstraintBadgeSvgDataUrl(
-  objType: InvisibleConstraintObject['kind']['constraint']['type']
+  objType: InvisibleConstraintObject['kind']['constraint']['type'],
+  badgeState: ConstraintBadgeState
 ) {
   const iconPath = getInvisibleConstraintSpriteIcon(objType)
   const dpr = window.devicePixelRatio || 1
   const rasterSize = 20 * dpr
+  const borderOpacity =
+    badgeState === 'selected' ? 1 : badgeState === 'hovered' ? 0.8 : 0
+  const borderStroke =
+    borderOpacity === 0
+      ? 'none'
+      : `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${borderOpacity})`
   const svg = `
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +165,7 @@ function createConstraintBadgeSvgDataUrl(
         height="19"
         rx="2"
         fill="none"
-        stroke="#${SKETCH_SELECTION_COLOR.toString(16).padStart(6, '0')}"
+        stroke="${borderStroke}"
         stroke-width="1"
       />
       <path d="${iconPath}" fill="#FFFFFF" />
@@ -161,6 +173,24 @@ function createConstraintBadgeSvgDataUrl(
   `.trim()
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+}
+
+type ConstraintBadgeState = 'default' | 'hovered' | 'selected'
+
+function getConstraintBadgeState(
+  objId: number,
+  selectedIds: number[],
+  hoveredId: number | null
+): ConstraintBadgeState {
+  if (selectedIds.includes(objId)) {
+    return 'selected'
+  }
+
+  if (hoveredId === objId) {
+    return 'hovered'
+  }
+
+  return 'default'
 }
 
 function getInvisibleConstraintSpriteIcon(

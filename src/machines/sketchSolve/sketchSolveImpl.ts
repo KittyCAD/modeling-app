@@ -93,7 +93,11 @@ export type SketchSolveMachineEvent =
   | { type: 'toggle non-visual constraints' }
   | {
       type: 'update selected ids'
-      data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
+      data: {
+        selectedIds?: Array<number>
+        duringAreaSelectIds?: Array<number>
+        replaceExistingSelection?: boolean
+      }
     }
   | {
       type: 'update hovered id'
@@ -738,6 +742,8 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
     // If empty array is provided, clear the selection
     if (event.data.selectedIds.length === 0) {
       updates.selectedIds = []
+    } else if (event.data.replaceExistingSelection) {
+      updates.selectedIds = event.data.selectedIds
     } else {
       const first = event.data.selectedIds[0]
       if (

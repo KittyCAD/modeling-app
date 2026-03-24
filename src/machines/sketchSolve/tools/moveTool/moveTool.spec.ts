@@ -17,6 +17,7 @@ import type {
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
 function createTestMouseEvent(): MouseEvent {
   return new MouseEvent('click', {
@@ -35,6 +36,40 @@ function createOnClickDeps(objects: ApiObject[] = []) {
       getClientSceneScaleFactor: vi.fn(() => 1),
     } as unknown as SceneInfra,
   }
+}
+
+function createConstraintApiObject({
+  id,
+  type,
+}: {
+  id: number
+  type: 'Distance' | 'Horizontal'
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Constraint',
+      constraint:
+        type === 'Distance'
+          ? {
+              type,
+              points: [1, 2],
+              distance: { value: 10, units: 'Mm' },
+              source: {
+                expr: '10',
+                is_literal: true,
+              },
+            }
+          : {
+              type,
+              line: 3,
+            },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  } as ApiObject
 }
 
 function createDraggedEntityIdGetter(entityId: number | null = null) {
@@ -1272,6 +1307,66 @@ describe('createOnClickCallback', () => {
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [5],
       duringAreaSelectIds: [],
+    })
+  })
+
+  it('should replace the current selection when clicking a constraint', async () => {
+    const sceneInfra = {
+      scene: {
+        getObjectByName: vi.fn((name: string) => {
+          if (name === String(20)) {
+            const group = new Group()
+            group.name = '20'
+            const child = new Group()
+            child.userData.hitObjects = [
+              {
+                type: 'line',
+                line: [
+                  [0, 0],
+                  [20, 0],
+                ],
+              },
+            ]
+            group.add(child)
+            return group
+          }
+
+          if (name === SKETCH_SOLVE_GROUP) {
+            return new Group()
+          }
+
+          return null
+        }),
+      },
+      getClientSceneScaleFactor: vi.fn(() => 1),
+    } as unknown as SceneInfra
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 20, y: 0 })
+    const constraint = createConstraintApiObject({ id: 20, type: 'Distance' })
+
+    const callback = createOnClickCallback({
+      getApiObjects: () => createSceneGraphDelta([pointA, pointB, constraint]).new_graph.objects,
+      sceneInfra,
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(10, 0),
+        threeD: new Vector3(10, 0, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [20],
+      duringAreaSelectIds: [],
+      replaceExistingSelection: true,
     })
   })
 })

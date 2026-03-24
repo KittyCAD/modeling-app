@@ -206,6 +206,7 @@ export function createOnClickCallback({
   onUpdateSelectedIds: (data: {
     selectedIds: Array<number>
     duringAreaSelectIds: Array<number>
+    replaceExistingSelection?: boolean
   }) => void
   onEditConstraint: (constraintId: number) => void
 }): (arg: {
@@ -235,9 +236,13 @@ export function createOnClickCallback({
       // Double clicking on Constraint
       onEditConstraint(closestObject.apiObject.id)
     } else {
+      const shouldReplaceSelection = isConstraint(closestObject?.apiObject)
       onUpdateSelectedIds({
         selectedIds: closestObject ? [closestObject.apiObject.id] : [],
         duringAreaSelectIds: [],
+        ...(shouldReplaceSelection
+          ? { replaceExistingSelection: true }
+          : {}),
       })
     }
   }
@@ -561,6 +566,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       onUpdateSelectedIds: (data: {
         selectedIds: Array<number>
         duringAreaSelectIds: Array<number>
+        replaceExistingSelection?: boolean
       }) => self.send({ type: 'update selected ids', data }),
       onEditConstraint: (constraintId: number) => {
         self.send({

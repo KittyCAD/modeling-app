@@ -53,27 +53,6 @@ export function isInvisibleConstraintObject(
   }
 }
 
-export function getInvisibleConstraintSpriteLabel(
-  type: InvisibleConstraint['type']
-) {
-  switch (type) {
-    case 'Coincident':
-      return 'C'
-    case 'Horizontal':
-      return 'H'
-    case 'Vertical':
-      return 'V'
-    case 'LinesEqualLength':
-      return '='
-    case 'Parallel':
-      return '||'
-    case 'Perpendicular':
-      return '90'
-    case 'Tangent':
-      return 'T'
-  }
-}
-
 export function getInvisibleConstraintAnchor(
   obj: InvisibleConstraintObject,
   objects: ApiObject[]
