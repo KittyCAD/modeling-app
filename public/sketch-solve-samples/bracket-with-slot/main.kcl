@@ -1,0 +1,110 @@
+// Adjustable L‑Bracket
+// a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.
+// Categories: Manufacturing, Automotive, Aerospace, Construction
+
+// default units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// model parameters
+halfBracketWidth = 20
+fastenerHoleDiameter = 12
+countersinkOuterDiameter = 22
+
+uprightTabHoleCenterOffsetFromBend = 50
+slotCenterOffsetFromBend = 150
+
+sheetMetalThickness = 4
+insideBendRadius = 8
+outsideBendRadius = insideBendRadius + sheetMetalThickness
+overallBracketWidth = halfBracketWidth * 2
+
+// outline profile
+outlineSketch = startSketchOn(XZ)
+outlineProfile = sketch(on = outlineSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 70mm])
+  line2 = line(start = [var 0mm, var 70mm], end = [var 4mm, var 70mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4mm, var 70mm], end = [var 4mm, var 4mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4mm, var 4mm], end = [var 170mm, var 4mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 170mm, var 4mm], end = [var 170mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 170mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line5.end, line6.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+}
+
+region001 = region(segments = [
+  outlineProfile.line1,
+  outlineProfile.line2
+])
+// extrude body
+bracketBodySolid = extrude(
+  region001,
+  length = overallBracketWidth,
+  symmetric = true,
+  tagEnd = $capEnd,
+  tagStart = $capStart,
+)
+
+// bend fillets
+insideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg01, seg02]), radius = insideBendRadius)
+outsideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg03, seg04]), radius = outsideBendRadius)
+
+// end rounds
+freeEndCornerFillets = fillet(
+  bracketBodySolid,
+  tags = [
+    getCommonEdge(faces = [seg05, capEnd]),
+    getCommonEdge(faces = [seg05, capStart]),
+    getCommonEdge(faces = [seg06, capEnd]),
+    getCommonEdge(faces = [seg06, capStart])
+  ],
+  radius = halfBracketWidth,
+)
+
+// tab hole
+bracketWithCountersunkHole = hole::hole(
+  bracketBodySolid,
+  face = seg02,
+  cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
+  holeType = hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
+)
+
+// slot sketch
+slotWidth = fastenerHoleDiameter
+slotOverallLength = fastenerHoleDiameter * 3
+slotSketch = startSketchOn(XY)
+slotProfile = sketch(on = slotSketch) {
+  line1 = line(start = [var 150mm, var -6mm], end = [var 114mm, var -6mm])
+  arc2 = arc(start = [var 114mm, var 6mm], end = [var 114mm, var -6mm], center = [var 114mm, var 0mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 114mm, var 6mm], end = [var 150mm, var 6mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 150mm, var -6mm], end = [var 150mm, var 6mm], center = [var 150mm, var -0mm])
+  coincident([line3.end, arc4.end])
+  horizontal(line1)
+}
+
+region002 = region(segments = [slotProfile.line1, slotProfile.arc2])
+// slot cut
+slotCutSolid = extrude(region002, length = sheetMetalThickness)
+
+// boolean cut
+bracketFinished = subtract(bracketWithCountersunkHole, tools = slotCutSolid)
+
+// material appearance
+appearance(
+  [bracketFinished],
+  color = "#c8ff00",
+  roughness = 50,
+  metalness = 0,
+)
+

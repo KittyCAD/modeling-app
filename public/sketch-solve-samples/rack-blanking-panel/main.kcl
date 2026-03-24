@@ -1,0 +1,98 @@
+// Rack Blanking Panel - 1U
+// A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks
+// Categories: Computer Hardware
+
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+width = 19
+height = 1.75
+thickness = .0598 // Gauge 16
+holeOffset = 1 / 3
+wingLength = 1 / 3
+wingOffset = 2 / 3
+wingCutInset = thickness / 2 + 0.00001
+holeDiameter = 3 / 16
+
+baseSketch = startSketchOn(XZ)
+baseProfile = sketch(on = baseSketch) {
+  line1 = line(start = [var 0in, var 0.03in], end = [var 0.67in, var 0.03in])
+  line2 = line(start = [var 0.67in, var 0.03in], end = [var 0.67in, var 0in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.67in, var 0in], end = [var 18.33in, var 0in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 18.33in, var 0in], end = [var 18.33in, var 0.03in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 18.33in, var 0.03in], end = [var 19in, var 0.03in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 19in, var 0.03in], end = [var 19in, var 1.72in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 19in, var 1.72in], end = [var 18.33in, var 1.72in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 18.33in, var 1.72in], end = [var 18.33in, var 1.75in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 18.33in, var 1.75in], end = [var 0.67in, var 1.75in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.67in, var 1.75in], end = [var 0.67in, var 1.72in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0.67in, var 1.72in], end = [var 0in, var 1.72in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0in, var 1.72in], end = [var 0in, var 0.03in])
+  coincident([line11.end, line12.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(line8)
+  horizontal(line9)
+  vertical(line10)
+  horizontal(line11)
+}
+region001 = region(segments = [baseProfile.line1, baseProfile.line2])
+base = extrude(region001, length = thickness, tagStart = $capStart001)
+  |> fillet(
+       radius = thickness / 2,
+       tags = [
+         getCommonEdge(faces = [seg01, capStart001]),
+         getCommonEdge(faces = [seg02, capStart001])
+       ],
+     )
+
+wingSketch = startSketchOn(base, face = END)
+bottomWingProfile = sketch(on = wingSketch) {
+  line1 = line(start = [var 0.67in, var 0in], end = [var 18.33in, var 0in])
+  line2 = line(start = [var 18.33in, var 0in], end = [var 18.33in, var 0.06in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 18.33in, var 0.06in], end = [var 0.67in, var 0.06in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.67in, var 0.06in], end = [var 0.67in, var 0in])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+topWingProfile = sketch(on = wingSketch) {
+  line1 = line(start = [var 0.67in, var 1.69in], end = [var 18.33in, var 1.69in])
+  line2 = line(start = [var 18.33in, var 1.69in], end = [var 18.33in, var 1.75in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 18.33in, var 1.75in], end = [var 0.67in, var 1.75in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.67in, var 1.75in], end = [var 0.67in, var 1.69in])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+}
+region002 = region(segments = [
+  bottomWingProfile.line1,
+  bottomWingProfile.line2
+])
+bottomWing = extrude(region002, length = wingLength)
+region003 = region(segments = [
+  topWingProfile.line1,
+  topWingProfile.line2
+])
+topWing = extrude(region003, length = wingLength)
+

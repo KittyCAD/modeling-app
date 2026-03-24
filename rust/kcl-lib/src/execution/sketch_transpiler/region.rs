@@ -1,13 +1,18 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+use std::collections::HashSet;
 
 use kcl_error::SourceRange;
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    front::find_defined_names,
-    frontend::modify::next_free_name_with_padding,
-    parsing::ast::types::{self as ast, CodeBlock, ItemVisibility, LabeledArg, VariableDeclarator, VariableKind},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::front::find_defined_names;
+use crate::frontend::modify::next_free_name_with_padding;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::ast::types::{self as ast};
 
 /// Inserts `region()` calls when extruding a sketch block. This:
 ///
@@ -33,7 +38,8 @@ pub(super) fn insert(program: &mut ast::Node<ast::Program>) -> Result<(), KclErr
 /// sketch block or not.
 #[derive(Debug, Clone)]
 enum Ty {
-    SketchBlock { seg1: String, seg2: String },
+    // A sketch with a single circle won't have a second segment.
+    SketchBlock { seg1: String, seg2: Option<String> },
     Unknown,
 }
 
@@ -201,7 +207,9 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<Ty, KclEr
                     }
                 }
             }
-            if let Ok([seg1, seg2]) = <[String; 2]>::try_from(vars) {
+            let mut vars = vars.into_iter();
+            if let Some(seg1) = vars.next() {
+                let seg2 = vars.next();
                 Ok(Ty::SketchBlock { seg1, seg2 })
             } else {
                 Ok(Ty::Unknown)
@@ -216,7 +224,7 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<Ty, KclEr
 fn is_unlabeled_sketch_block(
     context: &Context,
     call: &ast::Node<ast::CallExpressionKw>,
-) -> Option<(String, String, String)> {
+) -> Option<(String, String, Option<String>)> {
     let Some(ast::Expr::Name(name)) = &call.unlabeled else {
         return None;
     };
@@ -243,15 +251,16 @@ fn migrate_call(context: &mut Context, node: &mut ast::Node<ast::CallExpressionK
                 context.defined_names.insert(region_name.clone());
 
                 // Create the region call and assign it to the variable.
+                let mut args = vec![name_dot_name_ast(sketch_name.clone(), seg1)];
+                if let Some(seg2) = seg2 {
+                    args.push(name_dot_name_ast(sketch_name, seg2));
+                }
                 let region_call = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
                     "region",
                     None,
                     vec![LabeledArg {
                         label: Some(ast::Identifier::new("segments")),
-                        arg: ast::Expr::ArrayExpression(Box::new(ast::ArrayExpression::new(vec![
-                            name_dot_name_ast(sketch_name.clone(), seg1),
-                            name_dot_name_ast(sketch_name, seg2),
-                        ]))),
+                        arg: ast::Expr::ArrayExpression(Box::new(ast::ArrayExpression::new(args))),
                     }],
                 )));
                 let var_decl = ast::Node::boxed(

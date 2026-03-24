@@ -1,22 +1,33 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
-    ok_response::OkModelingCmdResponse,
-    shared::ExtrusionFaceCapType,
-    websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-};
-use serde::{Serialize, ser::SerializeSeq};
+use kittycad_modeling_cmds::EnableSketchMode;
+use kittycad_modeling_cmds::FaceIsPlanar;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::ExtrusionFaceCapType;
+use kittycad_modeling_cmds::websocket::BatchResponse;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::{self as kcmc};
+use serde::Serialize;
+use serde::ser::SerializeSeq;
 use uuid::Uuid;
 
-use crate::{
-    KclError, ModuleId, NodePath, SourceRange,
-    errors::KclErrorDetails,
-    execution::{ArtifactId, state::ModuleInfoMap},
-    front::{Constraint, ObjectId},
-    modules::ModulePath,
-    parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
-};
+use crate::KclError;
+use crate::ModuleId;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
+use crate::execution::state::ModuleInfoMap;
+use crate::front::Constraint;
+use crate::front::ObjectId;
+use crate::modules::ModulePath;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[cfg(test)]
 mod mermaid_tests;
@@ -203,6 +214,24 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PrimitiveFace {
+    pub id: ArtifactId,
+    pub solid_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PrimitiveEdge {
+    pub id: ArtifactId,
+    pub solid_id: ArtifactId,
+    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -436,6 +465,8 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
+    PrimitiveFace(PrimitiveFace),
+    PrimitiveEdge(PrimitiveEdge),
     PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
@@ -458,6 +489,8 @@ impl Artifact {
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
+            Artifact::PrimitiveFace(a) => a.id,
+            Artifact::PrimitiveEdge(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::SketchBlock(a) => a.id,
@@ -482,6 +515,8 @@ impl Artifact {
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
+            Artifact::PrimitiveEdge(a) => Some(&a.code_ref),
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::SketchBlock(a) => Some(&a.code_ref),
@@ -506,12 +541,14 @@ impl Artifact {
             | Artifact::Path(_)
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
+            | Artifact::PrimitiveEdge(_)
             | Artifact::StartSketchOnFace(_)
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::SketchBlock(_)
             | Artifact::SketchBlockConstraint(_)
             | Artifact::Sweep(_) => None,
+            Artifact::PrimitiveFace(a) => Some(&a.code_ref),
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
             Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
@@ -527,6 +564,8 @@ impl Artifact {
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
+            Artifact::PrimitiveFace(_) => Some(new),
+            Artifact::PrimitiveEdge(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::SketchBlock { .. } => Some(new),
@@ -926,12 +965,23 @@ fn flatten_modeling_command_responses(
 }
 
 fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifact: Artifact) {
+    fn is_primitive_artifact(artifact: &Artifact) -> bool {
+        matches!(artifact, Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_))
+    }
+
     let id = new_artifact.id();
     let Some(old_artifact) = map.get_mut(&id) else {
         // No old artifact exists.  Insert the new one.
         map.insert(id, new_artifact);
         return;
     };
+
+    // Primitive lookups (faceId/edgeId) may resolve to an ID that already has
+    // a richer artifact (for example Segment/Cap/Wall). Keep the existing node
+    // to avoid erasing structural graph links.
+    if is_primitive_artifact(&new_artifact) && !is_primitive_artifact(old_artifact) {
+        return;
+    }
 
     if let Some(replacement) = old_artifact.merge(new_artifact) {
         *old_artifact = replacement;
@@ -1169,6 +1219,28 @@ fn artifacts_to_update(
                 outer_path_id: None,
             }));
             return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dGetFaceUuid(kcmc::Solid3dGetFaceUuid { object_id, .. }) => {
+            let Some(OkModelingCmdResponse::Solid3dGetFaceUuid(face_uuid)) = response else {
+                return Ok(Vec::new());
+            };
+
+            return Ok(vec![Artifact::PrimitiveFace(PrimitiveFace {
+                id: face_uuid.face_id.into(),
+                solid_id: (*object_id).into(),
+                code_ref,
+            })]);
+        }
+        ModelingCmd::Solid3dGetEdgeUuid(kcmc::Solid3dGetEdgeUuid { object_id, .. }) => {
+            let Some(OkModelingCmdResponse::Solid3dGetEdgeUuid(edge_uuid)) = response else {
+                return Ok(Vec::new());
+            };
+
+            return Ok(vec![Artifact::PrimitiveEdge(PrimitiveEdge {
+                id: edge_uuid.edge_id.into(),
+                solid_id: (*object_id).into(),
+                code_ref,
+            })]);
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..

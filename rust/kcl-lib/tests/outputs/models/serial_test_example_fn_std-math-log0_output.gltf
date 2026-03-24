@@ -12,7 +12,7 @@
         -0
       ],
       "max": [
-        0.002861353103071451,
+        0.0028613500762730837,
         0,
         0.004999999888241291
       ]
@@ -31,12 +31,12 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.002861353103071451,
+        0.0028613500762730837,
         0,
         -0
       ],
       "max": [
-        0.00786135345697403,
+        0.007861349731683731,
         0.00800000037997961,
         0.004999999888241291
       ]
@@ -55,12 +55,12 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00213864678516984,
+        -0.002138650044798851,
         0.00800000037997961,
         -0
       ],
       "max": [
-        0.00786135345697403,
+        0.007861349731683731,
         0.00800000037997961,
         0.004999999888241291
       ]
@@ -79,7 +79,7 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00213864678516984,
+        -0.002138650044798851,
         0,
         -0
       ],
@@ -103,12 +103,12 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00213864678516984,
+        -0.002138650044798851,
         0,
         -0
       ],
       "max": [
-        0.00786135345697403,
+        0.007861349731683731,
         0.00800000037997961,
         -0
       ]
@@ -127,12 +127,12 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00213864678516984,
+        -0.002138650044798851,
         0,
         0.004999999888241291
       ],
       "max": [
-        0.00786135345697403,
+        0.007861349731683731,
         0.00800000037997961,
         0.004999999888241291
       ]
@@ -152,7 +152,7 @@
   "buffers": [
     {
       "byteLength": 864,
-      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAAioU7OwAAAAAK16M7AAAAAAAAgL8AAAAAioU7OwAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAAioU7OwAAAAAAAACAAAAAAAAAgL8AAAAAioU7OwAAAAAK16M7axZZPwOuB78AAAAAioU7OwAAAAAAAACAaxZZPwOuB78AAAAA6MwAPG8SAzwK16M7axZZPwOuB78AAAAA6MwAPG8SAzwK16M7axZZPwOuB78AAAAAioU7OwAAAAAAAACAaxZZPwOuB78AAAAA6MwAPG8SAzwAAACAaxZZPwOuB78AAAAA6MwAPG8SAzwK16M7AAAAAAAAgD8AAAAA6MwAPG8SAzwAAACAAAAAAAAAgD8AAAAAiigMu28SAzwK16M7AAAAAAAAgD8AAAAAiigMu28SAzwK16M7AAAAAAAAgD8AAAAA6MwAPG8SAzwAAACAAAAAAAAAgD8AAAAAiigMu28SAzwAAACAAAAAAAAAgD8AAAAAiigMu28SAzwK16M7sVB3v986hL4AAAAAiigMu28SAzwAAACAsVB3v986hL4AAAAAAAAAAAAAAAAK16M7sVB3v986hL4AAAAAAAAAAAAAAAAK16M7sVB3v986hL4AAAAAiigMu28SAzwAAACAsVB3v986hL4AAAAAAAAAAAAAAAAAAACAsVB3v986hL4AAAAAiigMu28SAzwAAACAAAAAgAAAAIAAAIC/6MwAPG8SAzwAAACAAAAAgAAAAIAAAIC/ioU7OwAAAAAAAACAAAAAgAAAAIAAAIC/ioU7OwAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/iigMu28SAzwAAACAAAAAgAAAAIAAAIC/iigMu28SAzwK16M7AAAAAAAAAAAAAIA/ioU7OwAAAAAK16M7AAAAAAAAAAAAAIA/6MwAPG8SAzwK16M7AAAAAAAAAAAAAIA/ioU7OwAAAAAK16M7AAAAAAAAAAAAAIA/iigMu28SAzwK16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/"
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAAfYU7OwAAAAAK16M7AAAAAAAAgL8AAAAAfYU7OwAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAAfYU7OwAAAAAAAACAAAAAAAAAgL8AAAAAfYU7OwAAAAAK16M7axZZPwOuB78AAAAAfYU7OwAAAAAAAACAaxZZPwOuB78AAAAA5MwAPG8SAzwK16M7axZZPwOuB78AAAAA5MwAPG8SAzwK16M7axZZPwOuB78AAAAAfYU7OwAAAAAAAACAaxZZPwOuB78AAAAA5MwAPG8SAzwAAACAaxZZPwOuB78AAAAA5MwAPG8SAzwK16M7AAAAAAAAgD8AAAAA5MwAPG8SAzwAAACAAAAAAAAAgD8AAAAAmCgMu28SAzwK16M7AAAAAAAAgD8AAAAAmCgMu28SAzwK16M7AAAAAAAAgD8AAAAA5MwAPG8SAzwAAACAAAAAAAAAgD8AAAAAmCgMu28SAzwAAACAAAAAAAAAgD8AAAAAmCgMu28SAzwK16M7sVB3v986hL4AAAAAmCgMu28SAzwAAACAsVB3v986hL4AAAAAAAAAAAAAAAAK16M7sVB3v986hL4AAAAAAAAAAAAAAAAK16M7sVB3v986hL4AAAAAmCgMu28SAzwAAACAsVB3v986hL4AAAAAAAAAAAAAAAAAAACAsVB3v986hL4AAAAAmCgMu28SAzwAAACAAAAAgAAAAIAAAIC/5MwAPG8SAzwAAACAAAAAgAAAAIAAAIC/fYU7OwAAAAAAAACAAAAAgAAAAIAAAIC/fYU7OwAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/mCgMu28SAzwAAACAAAAAgAAAAIAAAIC/mCgMu28SAzwK16M7AAAAAAAAAAAAAIA/fYU7OwAAAAAK16M7AAAAAAAAAAAAAIA/5MwAPG8SAzwK16M7AAAAAAAAAAAAAIA/fYU7OwAAAAAK16M7AAAAAAAAAAAAAIA/mCgMu28SAzwK16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/"
     }
   ],
   "bufferViews": [
@@ -454,7 +454,7 @@
           "end": 1,
           "t": [
             0,
-            0.0028613531161467867
+            0.00286135
           ]
         },
         {
@@ -478,7 +478,7 @@
           "end": 2,
           "t": [
             0,
-            0.0028613531161467867
+            0.00286135
           ]
         },
         {
@@ -574,7 +574,7 @@
           "end": 0,
           "t": [
             0,
-            0.008280930533087151
+            0.008280931337868948
           ]
         },
         {
@@ -586,7 +586,7 @@
           "end": 3,
           "t": [
             0,
-            0.008280930533087151
+            0.008280931337868948
           ]
         }
       ],
@@ -597,12 +597,12 @@
           -0
         ],
         [
-          0.0028613531161467867,
+          0.00286135,
           0,
           -0
         ],
         [
-          0.0028613531161467867,
+          0.00286135,
           0,
           0.005
         ],
@@ -612,22 +612,22 @@
           0.005
         ],
         [
-          0.007861353116146786,
+          0.00786135,
           0.008,
           -0
         ],
         [
-          0.007861353116146786,
+          0.00786135,
           0.008,
           0.005
         ],
         [
-          -0.0021386468838532134,
+          -0.00213865,
           0.008,
           -0
         ],
         [
-          -0.0021386468838532134,
+          -0.00213865,
           0.008,
           0.005
         ]
@@ -647,7 +647,7 @@
               1
             ],
             "origin": [
-              0.0014306765580733934,
+              0.00143068,
               0,
               0.0025
             ]
@@ -657,8 +657,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.52999894000318,
-              0.847998304005088,
+              0.5299989418009329,
+              0.8479983028814925,
               0
             ],
             "yAxis": [
@@ -667,8 +667,8 @@
               1
             ],
             "origin": [
-              0.005361353116146788,
-              0.004000000000000001,
+              0.00536135,
+              0.004,
               0.0025
             ]
           }
@@ -687,7 +687,7 @@
               -1
             ],
             "origin": [
-              0.0028613531161467867,
+              0.00286135,
               0.008,
               0.0025
             ]
@@ -697,8 +697,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.2582616621777071,
-              -0.966075004256506,
+              0.25826166120724986,
+              -0.9660750045159392,
               0
             ],
             "yAxis": [
@@ -707,7 +707,7 @@
               1
             ],
             "origin": [
-              -0.0010693234419266067,
+              -0.00106932,
               0.004,
               0.0025
             ]
@@ -774,7 +774,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0028613531161467867,
+              0.00286135,
               0,
               -0
             ],
@@ -819,7 +819,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0028613531161467867,
+              0.00286135,
               0,
               -0
             ],
@@ -834,7 +834,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.007861353116146786,
+              0.00786135,
               0.008,
               -0
             ],
@@ -849,7 +849,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0028613531161467867,
+              0.00286135,
               0,
               0.005
             ],
@@ -864,7 +864,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.007861353116146786,
+              0.00786135,
               0.008,
               -0
             ],
@@ -879,7 +879,7 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0021386468838532134,
+              -0.00213865,
               0.008,
               -0
             ],
@@ -894,7 +894,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.007861353116146786,
+              0.00786135,
               0.008,
               0.005
             ],
@@ -909,13 +909,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0021386468838532134,
+              -0.00213865,
               0.008,
               -0
             ],
             "direction": [
-              0.258261662177707,
-              -0.966075004256506,
+              0.25826201338246696,
+              -0.9660749103685669,
               0
             ]
           }
@@ -924,13 +924,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0021386468838532134,
+              -0.00213865,
               0.008,
               0.005
             ],
             "direction": [
-              0.258261662177707,
-              -0.966075004256506,
+              0.25826201338246696,
+              -0.9660749103685669,
               0
             ]
           }

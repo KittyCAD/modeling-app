@@ -1,27 +1,53 @@
+use std::f64::consts::TAU;
+
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::shared::Angle as KAngle;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
-use crate::{
-    ExecState, ExecutorContext, KclError,
-    errors::KclErrorDetails,
-    exec::{KclValue, NumericType, Sketch},
-    execution::{
-        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH,
-        Segment, SegmentKind, SketchSurface,
-        types::{ArrayLen, RuntimeType},
-    },
-    front::ObjectId,
-    parsing::ast::types::TagNode,
-    std::{
-        Args, CircularDirection,
-        args::{FromKclValue, TyF64},
-        sketch::{StraightLineParams, create_sketch, relative_arc, straight_line},
-        utils::{distance, point_to_len_unit, point_to_mm, untype_point},
-    },
-    std_utils::untyped_point_to_unit,
-};
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::exec::NumericType;
+use crate::exec::Sketch;
+use crate::execution::BasePath;
+use crate::execution::GeoMeta;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SketchSurface;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::front::ObjectId;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::CircularDirection;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::StraightLineParams;
+use crate::std::sketch::create_sketch;
+use crate::std::sketch::relative_arc;
+use crate::std::sketch::straight_line;
+use crate::std::utils::distance;
+use crate::std::utils::point_to_len_unit;
+use crate::std::utils::point_to_mm;
+use crate::std::utils::untype_point;
+use crate::std::utils::untyped_point_to_mm;
+use crate::std_utils::untyped_point_to_unit;
 
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
@@ -32,7 +58,7 @@ pub(crate) async fn create_segments_in_engine(
     segment_tags: &IndexMap<ObjectId, TagNode>,
     ctx: &ExecutorContext,
     exec_state: &mut ExecState,
-    range: SourceRange,
+    sketch_block_range: SourceRange,
 ) -> Result<Option<Sketch>, KclError> {
     let mut outer_sketch: Option<Sketch> = None;
     for segment in segments.iter() {
@@ -50,7 +76,15 @@ pub(crate) async fn create_segments_in_engine(
             }
             SegmentKind::Line { start, .. } => start.clone(),
             SegmentKind::Arc { start, .. } => start.clone(),
+            SegmentKind::Circle { start, .. } => start.clone(),
         };
+
+        // Get the source range of the segment from its metadata, falling back to the sketch block's.
+        let default_meta = Metadata {
+            source_range: sketch_block_range,
+        };
+        let meta = segment.meta.first().unwrap_or(&default_meta);
+        let range = meta.source_range;
 
         if let Some(sketch) = &mut outer_sketch {
             // TODO: Check if we're within tolerance of the last point. If so,
@@ -94,7 +128,7 @@ pub(crate) async fn create_segments_in_engine(
                 !exec_state.sketch_mode(),
                 exec_state,
                 ctx,
-                range,
+                sketch_block_range,
             )
             .await?;
             outer_sketch = Some(sketch);
@@ -184,6 +218,88 @@ pub(crate) async fn create_segments_in_engine(
                 .await?;
                 outer_sketch = Some(sketch);
             }
+            SegmentKind::Circle { start, center, .. } => {
+                let (start, start_ty) = untype_point(start.clone());
+                let Some(start_unit) = start_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Start point of circle must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let (center, center_ty) = untype_point(center.clone());
+                let Some(center_unit) = center_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Center point of circle must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let start_in_center_unit = untyped_point_to_unit(start, start_unit, center_unit);
+                let start_radians =
+                    libm::atan2(start_in_center_unit[1] - center[1], start_in_center_unit[0] - center[0]);
+                let end_radians = start_radians + TAU;
+                let radius_in_center_unit = distance(center, start_in_center_unit);
+
+                let sketch_surface = SketchOrSurface::Sketch(Box::new(sketch.clone())).into_sketch_surface();
+                let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
+                let from = start_in_center_unit;
+                let from_t = [TyF64::new(from[0], center_ty), TyF64::new(from[1], center_ty)];
+
+                let sketch =
+                    crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, ctx, range)
+                        .await?;
+
+                let id = exec_state.next_uuid();
+
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::with_id(exec_state, ctx, range, id),
+                        ModelingCmd::from(
+                            mcmd::ExtendPath::builder()
+                                .path(sketch.id.into())
+                                .segment(PathSegment::Arc {
+                                    start: KAngle::from_radians(start_radians),
+                                    end: KAngle::from_radians(end_radians),
+                                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                                    radius: LengthUnit(
+                                        crate::execution::types::adjust_length(
+                                            units,
+                                            radius_in_center_unit,
+                                            UnitLength::Millimeters,
+                                        )
+                                        .0,
+                                    ),
+                                    relative: false,
+                                })
+                                .build(),
+                        ),
+                    )
+                    .await?;
+
+                let current_path = Path::Circle {
+                    base: BasePath {
+                        from,
+                        to: from,
+                        tag: tag.clone(),
+                        units,
+                        geo_meta: GeoMeta {
+                            id,
+                            metadata: range.into(),
+                        },
+                    },
+                    radius: radius_in_center_unit,
+                    center,
+                    ccw: start_radians < end_radians,
+                };
+
+                let mut new_sketch = sketch;
+                if let Some(tag) = &tag {
+                    new_sketch.add_tag(tag, &current_path, exec_state, None);
+                }
+
+                new_sketch.paths.push(current_path);
+
+                outer_sketch = Some(new_sketch);
+            }
         }
     }
 
@@ -205,7 +321,7 @@ pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     )?;
     let segments = args.get_kw_arg_opt(
         "segments",
-        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Known(2)),
+        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
     let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
@@ -277,12 +393,14 @@ async fn inner_region(
                 )));
             }
             let segments_len = segments.len();
-            let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
-                KclError::new_argument(KclErrorDetails::new(
-                    format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
+            let mut segments = segments.into_iter();
+            let Some(seg0_value) = segments.next() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Expected at least 1 segment to create a region, but got {segments_len}"),
                     vec![args.source_range],
-                ))
-            })?;
+                )));
+            };
+            let seg1_value = segments.next().unwrap_or_else(|| seg0_value.clone());
             let Some(seg0) = seg0_value.into_segment() else {
                 return Err(KclError::new_argument(KclErrorDetails::new(
                     "Expected first segment to be a Segment".to_owned(),

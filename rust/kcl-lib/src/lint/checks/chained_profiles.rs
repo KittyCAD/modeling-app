@@ -3,16 +3,26 @@ use std::collections::HashSet;
 use anyhow::Result;
 use kcl_error::SourceRange;
 
-use crate::{
-    errors::Suggestion,
-    front::{find_defined_names, next_free_name_using_max},
-    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
-    parsing::ast::types::{
-        ArrayExpression, BodyItem, CallExpressionKw, Expr, ItemVisibility, Name, Node as AstNode, PipeExpression,
-        Program, VariableDeclaration, VariableDeclarator, VariableKind,
-    },
-    walk::Node,
-};
+use crate::errors::Suggestion;
+use crate::front::find_defined_names;
+use crate::front::next_free_name_using_max;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::FindingFamily;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+use crate::walk::Node;
 
 def_finding!(
     Z0004,
@@ -340,8 +350,10 @@ fn is_name_extrude_function(name: &Name) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{Z0004, lint_profiles_should_not_be_chained};
-    use crate::lint::rule::{test_finding, test_no_finding};
+    use super::Z0004;
+    use super::lint_profiles_should_not_be_chained;
+    use crate::lint::rule::test_finding;
+    use crate::lint::rule::test_no_finding;
 
     test_finding!(
         z0004_bad_circles_extrude_without_var,

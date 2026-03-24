@@ -1,23 +1,24 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use pretty_assertions::assert_eq;
-use tower_lsp::{
-    LanguageServer,
-    lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
-        SemanticTokenType, TextEdit, WorkspaceEdit,
-    },
-};
+use tower_lsp::LanguageServer;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkspaceEdit;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{
-        LspSuggestion,
-        test_util::{copilot_lsp_server, kcl_lsp_server},
-    },
-    parsing::ast::types::{Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::LspSuggestion;
+use crate::lsp::test_util::copilot_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
@@ -805,9 +806,18 @@ async fn test_arg_label_completions() {
         .map(|cmp| cmp.label)
         .collect();
 
-    assert!(twist_completions.contains("twistAngle"));
-    assert!(twist_completions.contains("twistAngleStep"));
-    assert!(twist_completions.contains("twistCenter"));
+    assert!(
+        twist_completions.contains("twistAngle"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistAngleStep"),
+        "actual: {twist_completions:?}"
+    );
+    assert!(
+        twist_completions.contains("twistCenter"),
+        "actual: {twist_completions:?}"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1017,9 +1027,12 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("startSketchOn"));
-            assert!(value.contains(": Plane | Face"));
-            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+            assert!(value.contains("startSketchOn"), "actual: {value:?}");
+            assert!(value.contains(": Plane | Face"), "actual: {value:?}");
+            assert!(
+                value.contains("Start a new 2-dimensional sketch on a specific"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -1040,7 +1053,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1061,7 +1074,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1082,7 +1095,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -1106,8 +1119,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }
@@ -3993,7 +4009,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number = 42"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4014,7 +4030,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(@x: string): string"));
+            assert!(value.contains("bar(@x: string): string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4035,7 +4051,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("x: string"));
+            assert!(value.contains("x: string"), "actual: {value:?}");
         }
         _ => unreachable!(),
     }
@@ -4059,8 +4075,11 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: Point2d"));
-            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+            assert!(value.contains("end?: Point2d"), "actual: {value:?}");
+            assert!(
+                value.contains("How far away (along the X and Y axes) should this line go?"),
+                "actual: {value:?}"
+            );
         }
         _ => unreachable!(),
     }

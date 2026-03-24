@@ -1,50 +1,109 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
-use ezpz::{Constraint, NonLinearSystemError};
+use ezpz::Constraint;
+use ezpz::NonLinearSystemError;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 
+use crate::CompilationError;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::Sketch;
+use crate::execution::AbstractSegment;
+use crate::execution::BodyType;
+use crate::execution::ControlFlowKind;
+use crate::execution::EarlyReturn;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::ModuleArtifactState;
+use crate::execution::Operation;
+use crate::execution::PreserveMem;
+use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SegmentRepr;
+use crate::execution::SketchConstraintKind;
+use crate::execution::SketchSurface;
+use crate::execution::StatementKind;
+use crate::execution::TagIdentifier;
+use crate::execution::UnsolvedExpr;
+use crate::execution::UnsolvedSegment;
+use crate::execution::UnsolvedSegmentKind;
+use crate::execution::annotations;
+use crate::execution::cad_op::OpKclValue;
+use crate::execution::control_continue;
+use crate::execution::early_return;
+use crate::execution::fn_call::Arg;
+use crate::execution::fn_call::Args;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::KclFunctionSourceParams;
+use crate::execution::kcl_value::TypeDef;
+use crate::execution::memory::SKETCH_PREFIX;
+use crate::execution::memory::{self};
+use crate::execution::sketch_solve::FreedomAnalysis;
+use crate::execution::sketch_solve::Solved;
+use crate::execution::sketch_solve::create_segment_scene_objects;
+use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
+use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
+use crate::execution::sketch_solve::solver_numeric_type;
+use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
+use crate::execution::sketch_solve::substitute_sketch_vars;
+use crate::execution::state::ModuleState;
+use crate::execution::state::SketchBlockState;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
 #[cfg(feature = "artifact-graph")]
-use crate::front::{Object, ObjectKind};
-use crate::{
-    CompilationError, NodePath, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    exec::Sketch,
-    execution::{
-        AbstractSegment, BodyType, ControlFlowKind, EarlyReturn, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem,
-        SKETCH_BLOCK_PARAM_ON, SKETCH_OBJECT_META, SKETCH_OBJECT_META_SKETCH, Segment, SegmentKind, SegmentRepr,
-        SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr, UnsolvedSegment,
-        UnsolvedSegmentKind, annotations,
-        cad_op::OpKclValue,
-        control_continue, early_return,
-        fn_call::{Arg, Args},
-        kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
-        memory::{self, SKETCH_PREFIX},
-        sketch_solve::{
-            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_angle_unit,
-            normalize_to_solver_distance_unit, solver_numeric_type, substitute_sketch_var_in_segment,
-            substitute_sketch_vars,
-        },
-        state::{ModuleState, SketchBlockState},
-        types::{NumericType, PrimitiveType, RuntimeType},
-    },
-    front::{ObjectId, PointCtor},
-    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
-    parsing::ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, CodeBlock, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
-        Type, UnaryExpression, UnaryOperator,
-    },
-    std::{
-        args::{FromKclValue, TyF64},
-        shapes::SketchOrSurface,
-        sketch::ensure_sketch_plane_in_engine,
-        sketch2::create_segments_in_engine,
-    },
-};
+use crate::front::Object;
+use crate::front::ObjectId;
+#[cfg(feature = "artifact-graph")]
+use crate::front::ObjectKind;
+use crate::front::PointCtor;
+use crate::modules::ModuleExecutionOutcome;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::AscribedExpression;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::UnaryOperator;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
+use crate::std::shapes::SketchOrSurface;
+use crate::std::sketch::ensure_sketch_plane_in_engine;
+use crate::std::sketch2::create_segments_in_engine;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -1199,7 +1258,10 @@ impl Node<SketchBlock> {
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
         {
-            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
+            use crate::execution::Artifact;
+            use crate::execution::ArtifactId;
+            use crate::execution::CodeRef;
+            use crate::execution::SketchBlock;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
@@ -2085,6 +2147,31 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::Circle {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: Box::new(UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2115,7 +2202,7 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
-                                        sketch: None,
+                                        sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
@@ -2145,7 +2232,37 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
-                                        sketch: None,
+                                        sketch: segment.sketch.clone(),
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Circle {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Box::new(Segment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
+                                        sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
@@ -2215,6 +2332,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.into()],
+                            ),
+                            None,
+                        )),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2245,7 +2369,7 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
-                                        sketch: None,
+                                        sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
@@ -2275,7 +2399,7 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
-                                        sketch: None,
+                                        sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
@@ -2284,11 +2408,43 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        SegmentKind::Circle { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.into()],
+                            ),
+                            None,
+                        )),
                     },
                 },
                 "center" => match &segment.repr {
                     SegmentRepr::Unsolved { segment } => match &segment.kind {
                         UnsolvedSegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: Box::new(UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                        },
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        UnsolvedSegmentKind::Circle {
                             center,
                             ctor,
                             center_object_id,
@@ -2343,7 +2499,37 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
-                                        sketch: None,
+                                        sketch: segment.sketch.clone(),
+                                        tag: segment.tag.clone(),
+                                        meta: segment.meta.clone(),
+                                    }),
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Circle {
+                            center,
+                            ctor,
+                            center_object_id,
+                            center_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Box::new(Segment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                            freedom: *center_freedom,
+                                        },
+                                        surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
+                                        sketch: segment.sketch.clone(),
                                         tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
@@ -2843,10 +3029,11 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{
-                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
-                                    front::Angle,
-                                };
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Angle;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -2909,10 +3096,11 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{
-                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
-                                    front::Distance,
-                                };
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3026,9 +3214,10 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::execution::{
-                                    Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType,
-                                };
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
                                 // Find the arc segment object ID from the sketch block state
 
                                 let arc_object_id = sketch_block_state
@@ -3126,10 +3315,11 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{
-                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
-                                    front::Distance,
-                                };
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3193,10 +3383,11 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{
-                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
-                                    front::Distance,
-                                };
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -3892,12 +4083,11 @@ mod test {
     use tokio::io::AsyncWriteExt;
 
     use super::*;
-    use crate::{
-        ExecutorSettings,
-        errors::Severity,
-        exec::UnitType,
-        execution::{ContextType, parse_execute},
-    };
+    use crate::ExecutorSettings;
+    use crate::errors::Severity;
+    use crate::exec::UnitType;
+    use crate::execution::ContextType;
+    use crate::execution::parse_execute;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {

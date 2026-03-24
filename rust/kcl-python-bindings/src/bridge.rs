@@ -1,7 +1,9 @@
 //! For creating equivalents to the core kcmc types that support Python.
 use kittycad_modeling_cmds as kcmc;
-use pyo3::{pyclass, pymethods};
-use serde::{Deserialize, Serialize};
+use pyo3::pyclass;
+use pyo3::pymethods;
+use serde::Deserialize;
+use serde::Serialize;
 
 pub mod bounding_box;
 pub mod physical_properties;

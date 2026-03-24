@@ -60,6 +60,7 @@ export enum MlEphantManagerTransitions {
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
@@ -108,6 +109,9 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.Cancel
+    }
+  | {
+      type: MlEphantManagerTransitions.Interrupt
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
@@ -414,6 +418,12 @@ export const mlEphantManagerMachine = setup({
         ? `?conversation_id=${maybeConversationId}&replay=true`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+
+      // Defensive: if there's already an open connection, close it.
+      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        args.input.context.ws?.close()
+      }
+
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
@@ -440,6 +450,12 @@ export const mlEphantManagerMachine = setup({
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
           let devCalledClose = false
+
+          // Any WS protocol messages will trigger the `api` heartbeat update.
+          const pingIntervalId = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return
+            ws.send(JSON.stringify({ type: 'ping' }))
+          }, 4_000)
 
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
@@ -483,6 +499,11 @@ export const mlEphantManagerMachine = setup({
 
             // Ignore the session data
             if ('session_data' in response) {
+              return
+            }
+
+            // Ignore pong
+            if ('pong' in response) {
               return
             }
 
@@ -591,6 +612,7 @@ export const mlEphantManagerMachine = setup({
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
+              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
@@ -680,10 +702,32 @@ export const mlEphantManagerMachine = setup({
 
       return {}
     }),
+    [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
   context: mlEphantDefaultContext,
+  exit: (args) => {
+    // Make sure the connection is closed.
+    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    args.context?.ws?.close()
+  },
   states: {
     [S.Await]: {
       on: {
@@ -883,6 +927,12 @@ export const mlEphantManagerMachine = setup({
                       | TypeVariant<MlCopilotServerMessage>
                       | undefined = ts.find((t) => t in r)
 
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) {
+                      return context
+                    }
+
                     return {
                       conversation,
                       lastMessageId,
@@ -907,6 +957,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
                 MlEphantManagerTransitions.Cancel,
+                MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
                 MlEphantManagerTransitions.AbruptClose,
               ]),
@@ -952,6 +1003,25 @@ export const mlEphantManagerMachine = setup({
                   }
                 },
                 src: MlEphantManagerTransitions.Cancel,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.Interrupt,
                 onDone: {
                   target: S.Await,
                   actions: [],

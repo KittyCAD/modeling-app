@@ -1,22 +1,62 @@
 //! A binary to transpile KCL files with old sketch syntax (startProfile in pipe
 //! expressions) to the new sketch block syntax. This is only a temporary dev
 //! tool before we integrate it into the app.
-use std::{env, fs::File, io::Read, path::PathBuf, process::ExitCode};
+use std::env;
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
+use std::process::ExitCode;
 
-use kcl_lib::{
-    ExecOutcome, ExecutorContext, ExecutorSettings, KclError, KclErrorWithOutputs, Program, TypedPath,
-    exec::{RetryConfig, execute_with_retries},
-    pre_execute_transpile, transpile_all_old_sketches_to_new,
-};
+use kcl_lib::ExecOutcome;
+use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
+use kcl_lib::KclError;
+use kcl_lib::KclErrorWithOutputs;
+use kcl_lib::Program;
+use kcl_lib::TypedPath;
+use kcl_lib::exec::RetryConfig;
+use kcl_lib::exec::execute_with_retries;
+use kcl_lib::pre_execute_transpile;
+use kcl_lib::transpile_all_old_sketches_to_new;
+
+fn print_usage() {
+    eprintln!("Usage: transpile [--no-fail-fast] <filename.kcl>");
+}
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, std::io::Error> {
     let mut args = env::args();
+    // Discard program name.
     args.next();
-    let Some(filename) = args.next() else {
-        eprintln!("Usage: transpile <filename.kcl>");
+
+    // Parse arguments.
+    let mut fail_fast = true;
+    let mut filename = None;
+    for arg in args {
+        match arg.as_ref() {
+            "--help" | "-h" => {
+                print_usage();
+                return Ok(ExitCode::SUCCESS);
+            }
+            "--no-fail-fast" => {
+                fail_fast = false;
+            }
+            _ => {
+                if filename.is_some() {
+                    eprintln!("Error: multiple filenames provided");
+                    print_usage();
+                    return Ok(ExitCode::FAILURE);
+                }
+                filename = Some(arg);
+            }
+        }
+    }
+    let Some(filename) = filename else {
+        print_usage();
         return Ok(ExitCode::FAILURE);
     };
+
+    // Normalize the path.
     let mut path = PathBuf::from(&filename);
     if let Some(ext) = path.extension() {
         if !ext.eq_ignore_ascii_case("kcl") {
@@ -57,7 +97,7 @@ async fn main() -> Result<ExitCode, std::io::Error> {
             .await
             .map_err(|e| e.error)?;
         // Transpile.
-        transpile_all_old_sketches_to_new(&exec_outcome, &mut program)
+        transpile_all_old_sketches_to_new(&exec_outcome, &mut program, fail_fast)
     }
     .await;
 
