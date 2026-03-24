@@ -217,7 +217,7 @@ class PointSegmentDOM implements SketchEntityUtils {
   private createPointHtml(segmentId: number) {
     // Keep only the minimal DOM structure required by tests.
     // The element stays in the DOM for query-based tests but is hidden/inert in production.
-    const [handleDiv, innerCircle] = htmlHelper`
+    const [handleDiv] = htmlHelper`
       <div
           data-segment_id="${String(segmentId)}"
           ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
@@ -229,8 +229,6 @@ class PointSegmentDOM implements SketchEntityUtils {
           "
           >
           <div
-            ${{ key: 'id', value: 'inner-circle' }}
-            data-point-inner-circle="true"
             style="
               position: absolute;
               top: 50%;
@@ -243,7 +241,7 @@ class PointSegmentDOM implements SketchEntityUtils {
           ></div>
         </div>
       `
-    return { handleDiv, innerCircle }
+    return { handleDiv }
   }
 
   init = (args: CreateSegmentArgs) => {
@@ -279,7 +277,7 @@ class PointSegmentDOM implements SketchEntityUtils {
       input,
       group,
       scale,
-      state: { draft, construction },
+      state: { construction },
     } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
@@ -289,11 +287,7 @@ class PointSegmentDOM implements SketchEntityUtils {
     const handle = group.getObjectByName('handle')
     if (handle instanceof CSS2DObject) {
       handle.position.set(x.value / scale, y.value / scale, 0)
-      const el = handle.element
-      const freedom = args.freedom
       group.userData.isConstruction = construction
-      el.dataset.isDraft = String(draft)
-      el.dataset.freedom = freedom ?? ''
     }
   }
 }
@@ -1153,13 +1147,12 @@ function updateLineMaterial(
  *
  * @example
  * ```ts
- * const [outerDiv, innerDiv] = htmlHelper`
+ * const [outerDiv] = htmlHelper`
  *   <div ${{key: 'segment_id', value: '123'}} style="width: 30px;">
- *     <div ${{key: 'id', value: 'inner-circle'}} style="width: 6px;"></div>
+ *     <div style="width: 6px;"></div>
  *   </div>
  * `
  * // outerDiv has data-segment_id="123"
- * // innerDiv has data-id="inner-circle"
  * ```
  *
  * @example
