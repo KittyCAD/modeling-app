@@ -769,14 +769,22 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(ast, selection)
   if (selectionsByType === 'none') return null
 
-  return [...selectionsByType.entries()]
-    .map(
-      // Hack for showing "face" instead of "extrude-wall" in command bar text
-      ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
-        }`
-    )
+  const semanticSelectionsByType = [...selectionsByType.entries()].reduce(
+    (semanticSelectionsByType, [type, count]) => {
+      const semanticType =
+        type === 'other' ? undefined : getSemanticEntityForSelectionType(type)
+      const displayType = semanticType ?? type
+      semanticSelectionsByType.set(
+        displayType,
+        (semanticSelectionsByType.get(displayType) || 0) + count
+      )
+      return semanticSelectionsByType
+    },
+    new Map<string, number>()
+  )
+
+  return [...semanticSelectionsByType.entries()]
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
     .join(', ')
 }
 
@@ -1087,16 +1095,25 @@ const semanticEntityNames: {
   plane: ['defaultPlane'],
 }
 
+function getSemanticEntityForSelectionType(
+  selectionType: CommandSelectionType | 'defaultPlane'
+): string | undefined {
+  for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+    if (entityTypes.includes(selectionType)) {
+      return entity
+    }
+  }
+}
+
 /** Convert selections to a human-readable format */
 export function getSemanticSelectionType(
   selectionType: CommandSelectionType[]
 ) {
-  const semanticSelectionType = new Set()
+  const semanticSelectionType = new Set<string>()
   for (const type of selectionType) {
-    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
-      if (entityTypes.includes(type)) {
-        semanticSelectionType.add(entity)
-      }
+    const semanticType = getSemanticEntityForSelectionType(type)
+    if (semanticType) {
+      semanticSelectionType.add(semanticType)
     }
   }
 
