@@ -342,9 +342,6 @@ export function updateSegmentGroup({
     ? deriveSegmentFreedom(segmentObj, objects)
     : null
 
-  // Store freedom in userData for immediate use (not as a cache - Rust handles that)
-  group.userData.freedom = freedomResult
-
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
       input,
@@ -399,9 +396,6 @@ function initSegmentGroup({
 }): Group | Error {
   const segmentObj = objects[id]
   const isConstruction = isConstructionSegment(segmentObj)
-  const freedomResult: Freedom | null = segmentObj
-    ? deriveSegmentFreedom(segmentObj, objects)
-    : null
 
   let group
   if (input.type === 'Point') {
@@ -409,33 +403,27 @@ function initSegmentGroup({
       input,
       id,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
       input,
       id,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
       input,
       id,
       isConstruction,
-      freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
       input,
       id,
       isConstruction,
-      freedom: freedomResult,
     })
   }
   if (group instanceof Group) {
-    // Store freedom in userData for immediate use (not as a cache - Rust handles that)
-    group.userData.freedom = freedomResult
     return group
   }
   return new Error(`Unknown input type: ${(input as any).type}`)

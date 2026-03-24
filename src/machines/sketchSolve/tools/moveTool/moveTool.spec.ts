@@ -219,8 +219,6 @@ function setUpMoveToolCallbacks({
  */
 function createPointSegmentGroup({
   segmentId,
-  theme = Themes.Dark,
-  scale = 1,
 }: {
   segmentId: number
   theme?: Themes
@@ -235,7 +233,6 @@ function createPointSegmentGroup({
       },
     },
     id: segmentId,
-    freedom: 'Free',
     isConstruction: false,
   })
   if (result instanceof Group) {

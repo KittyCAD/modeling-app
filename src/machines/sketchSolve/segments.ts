@@ -148,7 +148,6 @@ interface CreateSegmentArgs {
   input: SegmentCtor
   id: number
   isConstruction: boolean
-  freedom: Freedom | null
 }
 
 export type SegmentRenderState = {
@@ -269,9 +268,6 @@ class PointSegmentDOM implements SketchEntityUtils {
       segmentGroup.add(cssObject)
       PointSegmentDOM.createdHandleCount += 1
     }
-
-    // Store freedom in userData for later access
-    segmentGroup.userData.freedom = args.freedom ?? null
     return segmentGroup
   }
 
@@ -294,8 +290,7 @@ class PointSegmentDOM implements SketchEntityUtils {
     if (handle instanceof CSS2DObject) {
       handle.position.set(x.value / scale, y.value / scale, 0)
       const el = handle.element
-      const freedom = args.freedom ?? group.userData.freedom ?? null
-      group.userData.freedom = freedom
+      const freedom = args.freedom
       group.userData.isConstruction = construction
       el.dataset.isDraft = String(draft)
       el.dataset.freedom = freedom ?? ''
@@ -360,9 +355,7 @@ class PointSegment implements SketchEntityUtils {
     }
     pointBody.position.set(x.value / scale, y.value / scale, 0)
 
-    const freedom = args.freedom ?? group.userData.freedom ?? null
-
-    group.userData.freedom = freedom
+    const freedom = args.freedom
     group.userData.isConstruction = state.construction
     group.userData.type = SEGMENT_TYPE_POINT
 
@@ -477,10 +470,6 @@ class LineSegment implements SketchEntityUtils {
     }
 
     segmentGroup.add(mesh)
-
-    // Store freedom in userData
-    segmentGroup.userData.freedom = args.freedom ?? null
-
     return segmentGroup
   }
   update(args: UpdateSegmentArgs) {
@@ -519,12 +508,11 @@ class LineSegment implements SketchEntityUtils {
 
     // Update mesh color based on selection
     // Get freedom from args or group userData
-    const freedom = args.freedom ?? group.userData.freedom ?? null
+    const freedom = args.freedom
     // Check previous draft and construction state BEFORE updating it
     const previousIsConstruction = group.userData.isConstruction === true
     const constructionChanged = previousIsConstruction !== state.construction
     // Update userData for consistency
-    group.userData.freedom = freedom
     group.userData.isConstruction = state.construction
 
     if (straightSegmentBody.material instanceof LineMaterial) {
@@ -806,10 +794,6 @@ class ArcSegment implements SketchEntityUtils {
     }
 
     segmentGroup.add(mesh)
-
-    // Store freedom in userData
-    segmentGroup.userData.freedom = args.freedom ?? null
-
     return segmentGroup
   }
 
@@ -849,12 +833,11 @@ class ArcSegment implements SketchEntityUtils {
 
     // Update mesh color based on selection
     // Get freedom from args or group userData
-    const freedom = args.freedom ?? group.userData.freedom ?? null
+    const freedom = args.freedom
     // Check previous draft and construction state BEFORE updating it
     const previousIsConstruction = group.userData.isConstruction === true
     const constructionChanged = previousIsConstruction !== state.construction
     // Update userData for consistency
-    group.userData.freedom = freedom
     group.userData.isConstruction = state.construction
 
     if (arcSegmentBody.material instanceof LineMaterial) {
@@ -1021,9 +1004,7 @@ class CircleSegment implements SketchEntityUtils {
       type: SEGMENT_TYPE_ARC,
       isConstruction: args.isConstruction,
     }
-
     segmentGroup.add(mesh)
-    segmentGroup.userData.freedom = args.freedom ?? null
 
     return segmentGroup
   }
@@ -1059,10 +1040,9 @@ class CircleSegment implements SketchEntityUtils {
     circleSegmentBody.material.linewidth =
       SEGMENT_WIDTH_PX * window.devicePixelRatio
 
-    const freedom = args.freedom ?? group.userData.freedom ?? null
+    const freedom = args.freedom
     const previousIsConstruction = group.userData.isConstruction === true
     const constructionChanged = previousIsConstruction !== state.construction
-    group.userData.freedom = freedom
     group.userData.isConstruction = state.construction
 
     if (circleSegmentBody.material instanceof LineMaterial) {
