@@ -52,9 +52,9 @@ import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import {
   CONSTRAINT_TYPE,
-  isArcSegment,
   isCircleSegment,
   isConstraint,
+  isConstruction as isConstructionSegment,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -330,33 +330,17 @@ export function updateSegmentGroup({
   state: SegmentRenderState
   scale: number
   theme: Themes
-  objects?: Array<ApiObject>
+  objects: ApiObject[]
 }): void {
   const idNum = Number(group.name)
   if (Number.isNaN(idNum)) {
     return
   }
 
-  let isConstruction = false
-  if (objects) {
-    const segmentObj = objects[idNum]
-    if (
-      isLineSegment(segmentObj) ||
-      isArcSegment(segmentObj) ||
-      isCircleSegment(segmentObj)
-    ) {
-      isConstruction = segmentObj.kind.segment.construction === true
-    }
-  }
-
-  // Derive freedom from segment freedom
-  let freedomResult: Freedom | null = null
-  if (objects) {
-    const segmentObj = objects[idNum]
-    if (segmentObj) {
-      freedomResult = deriveSegmentFreedom(segmentObj, objects)
-    }
-  }
+  const segmentObj = objects[idNum]
+  const freedomResult: Freedom | null = segmentObj
+    ? deriveSegmentFreedom(segmentObj, objects)
+    : null
 
   // Store freedom in userData for immediate use (not as a cache - Rust handles that)
   group.userData.freedom = freedomResult
@@ -368,7 +352,6 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
-      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -378,7 +361,6 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
-      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -388,7 +370,6 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
-      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -398,7 +379,6 @@ export function updateSegmentGroup({
       scale,
       group,
       state,
-      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -413,7 +393,7 @@ function initSegmentGroup({
   theme,
   scale,
   id,
-  isDraft,
+  isDraft = false,
   objects,
 }: {
   input: SegmentCtor
@@ -421,31 +401,13 @@ function initSegmentGroup({
   scale: number
   id: number
   isDraft?: boolean
-  objects?: Array<ApiObject>
+  objects: ApiObject[]
 }): Group | Error {
-  // Determine isDraft and isConstruction separately
-  const isDraftValue = isDraft ?? false
-  let isConstruction = false
-  if (objects) {
-    const segmentObj = objects[id]
-    if (
-      segmentObj?.kind?.type === 'Segment' &&
-      (segmentObj.kind.segment.type === 'Line' ||
-        segmentObj.kind.segment.type === 'Arc' ||
-        segmentObj.kind.segment.type === 'Circle')
-    ) {
-      isConstruction = segmentObj.kind.segment.construction === true
-    }
-  }
-
-  // Derive freedom from segment freedom
-  let freedomResult: Freedom | null = null
-  if (objects) {
-    const segmentObj = objects[id]
-    if (segmentObj) {
-      freedomResult = deriveSegmentFreedom(segmentObj, objects)
-    }
-  }
+  const segmentObj = objects[id]
+  const isConstruction = isConstructionSegment(segmentObj)
+  const freedomResult: Freedom | null = segmentObj
+    ? deriveSegmentFreedom(segmentObj, objects)
+    : null
 
   let group
   if (input.type === 'Point') {
@@ -454,7 +416,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft: isDraftValue,
+      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
@@ -464,7 +426,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft: isDraftValue,
+      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
@@ -474,7 +436,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft: isDraftValue,
+      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
@@ -484,7 +446,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft: isDraftValue,
+      isDraft,
       isConstruction,
       freedom: freedomResult,
     })
@@ -603,7 +565,8 @@ export function updateSceneGraphFromDelta({
       duringAreaSelectIds,
       context.hoveredId,
       hoveredSegmentIds,
-      draftEntityIds
+      draftEntityIds,
+      objects
     )
     if (!(group instanceof Group)) {
       if (!ctor) {
@@ -822,7 +785,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
           context.duringAreaSelectIds,
           context.hoveredId,
           hoveredSegmentIds,
-          draftEntityIds
+          draftEntityIds,
+          objects
         ),
         scale: factor,
         theme: context.sceneInfra.theme,
@@ -906,7 +870,8 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         context.duringAreaSelectIds,
         context.hoveredId,
         hoveredSegmentIds,
-        draftEntityIds
+        draftEntityIds,
+        objects
       ),
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
@@ -960,7 +925,8 @@ function getSegmentRenderState(
   duringAreaSelectIds: Array<number>,
   hoveredId: number | null,
   hoveredSegmentIds: Array<number>,
-  draftEntityIds?: Array<number>
+  draftEntityIds: Array<number> | undefined,
+  objects: ApiObject[]
 ): SegmentRenderState {
   return {
     selected:
@@ -968,6 +934,7 @@ function getSegmentRenderState(
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
     draft: draftEntityIds?.includes(segmentId) ?? false,
+    construction: isConstructionSegment(objects[segmentId]),
   }
 }
 

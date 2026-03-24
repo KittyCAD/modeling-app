@@ -158,6 +158,7 @@ export type SegmentRenderState = {
   selected: boolean
   hovered: boolean
   draft: boolean
+  construction: boolean
 }
 
 interface UpdateSegmentArgs {
@@ -166,7 +167,6 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   state: SegmentRenderState
-  isConstruction: boolean
   freedom?: Freedom | null
 }
 
@@ -285,8 +285,8 @@ class PointSegmentDOM implements SketchEntityUtils {
         selected: false,
         hovered: false,
         draft: args.isDraft,
+        construction: args.isConstruction,
       },
-      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
     return segmentGroup
@@ -300,8 +300,7 @@ class PointSegmentDOM implements SketchEntityUtils {
       input,
       group,
       scale,
-      state: { draft },
-      isConstruction,
+      state: { draft, construction },
     } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
@@ -314,8 +313,7 @@ class PointSegmentDOM implements SketchEntityUtils {
       const el = handle.element
       const freedom = args.freedom ?? group.userData.freedom ?? null
       group.userData.freedom = freedom
-      group.userData.isDraft = draft
-      group.userData.isConstruction = isConstruction
+      group.userData.isConstruction = construction
       el.dataset.isDraft = String(draft)
       el.dataset.freedom = freedom ?? ''
     }
@@ -360,8 +358,8 @@ class PointSegment implements SketchEntityUtils {
         selected: false,
         hovered: false,
         draft: args.isDraft,
+        construction: args.isConstruction,
       },
-      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -373,7 +371,7 @@ class PointSegment implements SketchEntityUtils {
       return new Error('Invalid input type for PointSegment')
     }
 
-    const { input, group, scale, state, isConstruction } = args
+    const { input, group, scale, state } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -396,8 +394,7 @@ class PointSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
 
     group.userData.freedom = freedom
-    group.userData.isDraft = state.draft
-    group.userData.isConstruction = isConstruction
+    group.userData.isConstruction = state.construction
     group.userData.type = SEGMENT_TYPE_POINT
 
     pointBody.renderOrder = state.hovered
@@ -507,7 +504,6 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
-      isDraft: args.isDraft,
       isConstruction: args.isConstruction,
     }
 
@@ -525,8 +521,8 @@ class LineSegment implements SketchEntityUtils {
         selected: false,
         hovered: false,
         draft: args.isDraft,
+        construction: args.isConstruction,
       },
-      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -536,7 +532,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, state, isConstruction } = args
+    const { input, group, state } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -571,18 +567,17 @@ class LineSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
     const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== isConstruction
+    const constructionChanged = previousIsConstruction !== state.construction
     // Update userData for consistency
     group.userData.freedom = freedom
-    group.userData.isDraft = state.draft
-    group.userData.isConstruction = isConstruction
+    group.userData.isConstruction = state.construction
 
     if (straightSegmentBody.material instanceof LineMaterial) {
-      straightSegmentBody.material.dashed = isConstruction
+      straightSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
       if (constructionChanged) {
-        if (isConstruction) {
+        if (state.construction) {
           // Switching to construction: set up the custom shader
           const lineStart = new Vector3(
             input.start.x.value,
@@ -608,7 +603,7 @@ class LineSegment implements SketchEntityUtils {
             straightSegmentBody.material.program = null
           }
         }
-      } else if (isConstruction) {
+      } else if (state.construction) {
         // Construction state didn't change but we're in construction mode: just update uniforms
         const lineStart = new Vector3(
           input.start.x.value,
@@ -852,7 +847,6 @@ class ArcSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      isDraft: args.isDraft,
       isConstruction: args.isConstruction,
     }
 
@@ -870,8 +864,8 @@ class ArcSegment implements SketchEntityUtils {
         selected: false,
         hovered: false,
         draft: args.isDraft,
+        construction: args.isConstruction,
       },
-      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -879,7 +873,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, state, isConstruction } = args
+    const { input, group, state } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -917,18 +911,17 @@ class ArcSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous draft and construction state BEFORE updating it
     const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== isConstruction
+    const constructionChanged = previousIsConstruction !== state.construction
     // Update userData for consistency
     group.userData.freedom = freedom
-    group.userData.isDraft = state.draft
-    group.userData.isConstruction = isConstruction
+    group.userData.isConstruction = state.construction
 
     if (arcSegmentBody.material instanceof LineMaterial) {
-      arcSegmentBody.material.dashed = isConstruction
+      arcSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
       if (constructionChanged) {
-        if (isConstruction) {
+        if (state.construction) {
           // Switching to construction: set up the custom shader
           const arcCenter = new Vector3(centerX, centerY, 0)
           const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
@@ -952,7 +945,7 @@ class ArcSegment implements SketchEntityUtils {
             arcSegmentBody.material.program = null
           }
         }
-      } else if (isConstruction) {
+      } else if (state.construction) {
         // Construction state didn't change but we're in construction mode: just update uniforms
         const arcCenter = new Vector3(centerX, centerY, 0)
         const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
@@ -1085,7 +1078,6 @@ class CircleSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      isDraft: args.isDraft,
       isConstruction: args.isConstruction,
     }
 
@@ -1101,8 +1093,8 @@ class CircleSegment implements SketchEntityUtils {
         selected: false,
         hovered: false,
         draft: args.isDraft,
+        construction: args.isConstruction,
       },
-      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -1110,7 +1102,7 @@ class CircleSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, state, isConstruction } = args
+    const { input, group, state } = args
     const circleData = this.extractCircleData(input)
     if (circleData instanceof Error) {
       return circleData
@@ -1142,16 +1134,15 @@ class CircleSegment implements SketchEntityUtils {
 
     const freedom = args.freedom ?? group.userData.freedom ?? null
     const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== isConstruction
+    const constructionChanged = previousIsConstruction !== state.construction
     group.userData.freedom = freedom
-    group.userData.isDraft = state.draft
-    group.userData.isConstruction = isConstruction
+    group.userData.isConstruction = state.construction
 
     if (circleSegmentBody.material instanceof LineMaterial) {
-      circleSegmentBody.material.dashed = isConstruction
+      circleSegmentBody.material.dashed = state.construction
 
       if (constructionChanged) {
-        if (isConstruction) {
+        if (state.construction) {
           setupConstructionArcDashShader(
             circleSegmentBody.material,
             new Vector3(centerX, centerY, 0),
@@ -1169,7 +1160,7 @@ class CircleSegment implements SketchEntityUtils {
             circleSegmentBody.material.program = null
           }
         }
-      } else if (isConstruction) {
+      } else if (state.construction) {
         const uniforms = getMaterialUniforms(circleSegmentBody.material)
         if (uniforms) {
           if (uniforms.uArcCenter) {
