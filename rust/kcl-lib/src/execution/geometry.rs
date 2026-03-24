@@ -48,6 +48,7 @@ use crate::std::Args;
 use crate::std::args::TyF64;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::std::sketch::does_segment_close_sketch;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -927,6 +928,8 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Solved sketch segment.
+    Segment(Box<Segment>),
     /// Face.
     Face(FaceTag),
 }
@@ -941,6 +944,7 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Segment(segment) => Ok(segment.id),
             Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
         }
     }
@@ -948,6 +952,7 @@ impl Extrudable {
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Segment(segment) => segment.sketch.clone(),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
@@ -959,6 +964,7 @@ impl Extrudable {
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Segment(segment) => segment.is_closed(),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
@@ -1133,6 +1139,7 @@ pub enum SolidCreator {
     Face(CreatorFace),
     /// Created procedurally without a sketch.
     Procedural,
+    Segments(Vec<Uuid>),
 }
 
 impl Solid {
@@ -1141,6 +1148,7 @@ impl Solid {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
+            SolidCreator::Segments(_) => None,
         }
     }
 
@@ -1149,6 +1157,7 @@ impl Solid {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
+            SolidCreator::Segments(_) => None,
         }
     }
 
@@ -2130,12 +2139,30 @@ pub struct Segment {
 }
 
 impl Segment {
+    /// Is this considered construction geometry?
     pub fn is_construction(&self) -> bool {
         match &self.kind {
             SegmentKind::Point { .. } => true,
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+        }
+    }
+
+    /// Does the segment form a closed profile?
+    pub fn is_closed(&self) -> ProfileClosed {
+        match &self.kind {
+            SegmentKind::Point { .. } => ProfileClosed::No,
+            SegmentKind::Line { .. } => ProfileClosed::No,
+            SegmentKind::Arc { start, end, .. } => {
+                let start = [start[0].to_mm(), start[1].to_mm()];
+                let end = [end[0].to_mm(), end[1].to_mm()];
+                if does_segment_close_sketch(start, end) {
+                    ProfileClosed::Implicitly
+                } else {
+                    ProfileClosed::No
+                }
+            }
         }
     }
 }
