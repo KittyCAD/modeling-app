@@ -1613,9 +1613,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
                 .engine_topology_fallback
             ),
             engineTopologyFallback: g.engineTopologyFallback ?? null,
-            engine_topology_fallback: (
-              g as { engine_topology_fallback?: unknown }
-            ).engine_topology_fallback ?? null,
+            engine_topology_fallback:
+              (g as { engine_topology_fallback?: unknown })
+                .engine_topology_fallback ?? null,
             normalized: getEngineTopologyFallbackNormalized(g),
           })),
         })
@@ -1630,9 +1630,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ? getEngineTopologyFallbackNormalized(g0)
             : null,
           topologyRaw: g0?.engineTopologyFallback ?? null,
-          topologyRawSnake: (
-            g0 as { engine_topology_fallback?: unknown }
-          ).engine_topology_fallback ?? null,
+          topologyRawSnake:
+            (g0 as { engine_topology_fallback?: unknown })
+              .engine_topology_fallback ?? null,
         }
       )
       const modRes = addFillet({

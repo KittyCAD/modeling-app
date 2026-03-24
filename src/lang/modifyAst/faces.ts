@@ -815,8 +815,13 @@ export function getBodySelectionFromPrimitiveParentEntityId(
   artifactGraph: ArtifactGraph
 ): ResolvedGraphSelection | null {
   let parentArtifact = artifactGraph.get(parentEntityId)
-  let resolutionSource: 'direct' | 'compositeSolidSolidIds' | 'pathSweep' | 'surfaceSweep' | 'codeRefFallback' | 'unknown' =
-    parentArtifact ? 'direct' : 'unknown'
+  let resolutionSource:
+    | 'direct'
+    | 'compositeSolidSolidIds'
+    | 'pathSweep'
+    | 'surfaceSweep'
+    | 'codeRefFallback'
+    | 'unknown' = parentArtifact ? 'direct' : 'unknown'
   // Engine topology parent_id may be a constituent sweep id after shell/boolean; the editable
   // body is often a compositeSolid whose solidIds includes that id (graph may not key parentId).
   if (!parentArtifact) {
@@ -846,12 +851,15 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     parentArtifact.type === 'sweep' ||
     parentArtifact.type === 'compositeSolid'
   ) {
-    console.info('PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved body artifact', {
-      parentEntityId,
-      artifactId: parentArtifact.id,
-      artifactType: parentArtifact.type,
-      resolutionSource,
-    })
+    console.info(
+      'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved body artifact',
+      {
+        parentEntityId,
+        artifactId: parentArtifact.id,
+        artifactType: parentArtifact.type,
+        resolutionSource,
+      }
+    )
     return {
       artifact: parentArtifact,
       codeRef: parentArtifact.codeRef,
@@ -917,12 +925,15 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     return null
   }
 
-  console.info('PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved via codeRef fallback', {
-    parentEntityId,
-    artifactId: parentArtifact.id,
-    artifactType: parentArtifact.type,
-    codeRefPathLength: parentCodeRefs.length,
-  })
+  console.info(
+    'PRIMITIVE INDEX DEBUG getBodySelectionFromPrimitiveParentEntityId resolved via codeRef fallback',
+    {
+      parentEntityId,
+      artifactId: parentArtifact.id,
+      artifactType: parentArtifact.type,
+      codeRefPathLength: parentCodeRefs.length,
+    }
+  )
   return {
     artifact: parentArtifact,
     codeRef: parentCodeRefs[parentCodeRefs.length - 1],

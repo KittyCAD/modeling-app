@@ -2763,11 +2763,9 @@ function groupSelectionsByBody(
     const resolved = resolveSelectionV2(v2Sel, artifactGraph)
     const topologyNormalized = getEngineTopologyFallbackNormalized(v2Sel)
     const debugFillet = debugFilletTopologyLogs()
-    const rawTopologyCamel =
-      v2Sel.engineTopologyFallback ?? undefined
-    const rawTopologySnake = (
-      v2Sel as { engine_topology_fallback?: unknown }
-    ).engine_topology_fallback
+    const rawTopologyCamel = v2Sel.engineTopologyFallback ?? undefined
+    const rawTopologySnake = (v2Sel as { engine_topology_fallback?: unknown })
+      .engine_topology_fallback
     if (!resolved) {
       if (debugFillet) {
         console.info('[groupSelectionsByBody] v2 iteration', {

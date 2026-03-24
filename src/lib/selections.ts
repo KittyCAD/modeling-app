@@ -156,7 +156,11 @@ async function resolveSweepParentEntityIdForEdge(
 ): Promise<string | undefined> {
   if (!entityId) return undefined
   const MAX_HOPS = 16
-  type SearchNode = { id: string; depth: number; via: 'start' | 'parent' | 'child' }
+  type SearchNode = {
+    id: string
+    depth: number
+    via: 'start' | 'parent' | 'child'
+  }
   const queue: SearchNode[] = [{ id: entityId, depth: 0, via: 'start' }]
   const visited = new Set<string>()
   const parentCache = new Map<string, string | null>()
@@ -421,10 +425,13 @@ export async function getPrimitiveSelectionForEntity(
   )
   if (!parentEntityId) return null
 
-  console.info('PRIMITIVE INDEX DEBUG enginePrimitiveSelection resolved primitive fallback parent', {
-    entityId,
-    parentEntityId,
-  })
+  console.info(
+    'PRIMITIVE INDEX DEBUG enginePrimitiveSelection resolved primitive fallback parent',
+    {
+      entityId,
+      parentEntityId,
+    }
+  )
 
   return {
     type: 'enginePrimitive',
@@ -613,10 +620,7 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
   let otherSelections = submitted.otherSelections ?? []
   let changed = false
 
-  if (
-    submitted.graphSelectionsV2?.length &&
-    live?.graphSelectionsV2?.length
-  ) {
+  if (submitted.graphSelectionsV2?.length && live?.graphSelectionsV2?.length) {
     const mergedGraph = submitted.graphSelectionsV2.map((g, i) => {
       if (getEngineTopologyFallbackNormalized(g)) {
         return g
@@ -642,7 +646,9 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
 
       if (g.entityRef) {
         for (const candidate of live.graphSelectionsV2) {
-          if (!entityReferencesEqualForMerge(g.entityRef, candidate.entityRef)) {
+          if (
+            !entityReferencesEqualForMerge(g.entityRef, candidate.entityRef)
+          ) {
             continue
           }
           const byRef = fromLiveSel(candidate)
