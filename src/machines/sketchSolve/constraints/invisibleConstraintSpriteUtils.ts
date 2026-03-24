@@ -110,36 +110,37 @@ export function findInvisibleConstraintsForSegment(
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
         isInvisibleConstraintObject(constraint) &&
-        isInvisibleConstraintRelatedToSegment(constraint, segment)
+        isConstraingSegment(constraint, segment)
     )
     .map((constraint) => constraint.id)
 }
 
-export function isInvisibleConstraintRelatedToSegment(
+// Checks whether a non-visual constraint should preview for a hovered segment.
+export function isConstraingSegment(
   constraint: InvisibleConstraintObject,
-  object: ApiObject | undefined | null
+  segment: ApiObject | undefined | null
 ): boolean {
   switch (constraint.kind.constraint.type) {
     case 'Coincident':
-      return isPointSegment(object)
-        ? constraint.kind.constraint.segments.includes(object.id)
+      return isPointSegment(segment)
+        ? constraint.kind.constraint.segments.includes(segment.id)
         : false
     case 'Horizontal':
     case 'Vertical':
       return (
-        isLineSegment(object) && constraint.kind.constraint.line === object.id
+        isLineSegment(segment) && constraint.kind.constraint.line === segment.id
       )
     case 'LinesEqualLength':
     case 'Parallel':
     case 'Perpendicular':
       return (
-        isLineSegment(object) &&
-        constraint.kind.constraint.lines.includes(object.id)
+        isLineSegment(segment) &&
+        constraint.kind.constraint.lines.includes(segment.id)
       )
     case 'Tangent':
       return (
-        (isLineSegment(object) || isArcLikeSegment(object)) &&
-        constraint.kind.constraint.input.includes(object.id)
+        (isLineSegment(segment) || isArcLikeSegment(segment)) &&
+        constraint.kind.constraint.input.includes(segment.id)
       )
   }
 }

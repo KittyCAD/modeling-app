@@ -34,7 +34,7 @@ import {
 import {
   findInvisibleConstraintsForSegment,
   isInvisibleConstraintObject,
-  isInvisibleConstraintRelatedToSegment,
+  isConstraingSegment,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import type {
   OnMoveCallbackArgs,
@@ -730,10 +730,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const isHoveringHoveredConstraintPreview =
         preview !== null &&
         isInvisibleConstraintObject(hoveredApiObject) &&
-        isInvisibleConstraintRelatedToSegment(
-          hoveredApiObject,
-          apiObjects[preview.targetId]
-        )
+        isConstraingSegment(hoveredApiObject, apiObjects[preview.targetId])
       const previousHoveredConstraintPreviewTargetId =
         snapshot.context.hoveredConstraintPreviewTargetId
       const previousHoveredConstraintPreviewPosition =
