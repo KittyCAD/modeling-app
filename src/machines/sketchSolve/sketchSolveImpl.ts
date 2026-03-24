@@ -557,7 +557,7 @@ export function updateSceneGraphFromDelta({
       }
       return
     }
-    const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+    let group = context.sceneInfra.scene.getObjectByName(String(obj.id))
     const ctor = buildSegmentCtorFromObject(obj, objects)
     const state = getSegmentRenderState(
       obj.id,
@@ -593,9 +593,9 @@ export function updateSceneGraphFromDelta({
         newGroup.layers.set(SKETCH_LAYER)
         sketchSceneGroup.add(newGroup)
       }
-      return
+      group = newGroup
     }
-    if (!ctor) {
+    if (!(group instanceof Group) || !ctor) {
       return
     }
 

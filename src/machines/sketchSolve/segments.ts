@@ -275,20 +275,6 @@ class PointSegmentDOM implements SketchEntityUtils {
 
     // Store freedom in userData for later access
     segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input: args.input,
-      theme: args.theme,
-      scale: args.scale,
-      group: segmentGroup,
-      state: {
-        selected: false,
-        hovered: false,
-        draft: args.isDraft,
-        construction: args.isConstruction,
-      },
-      freedom: args.freedom,
-    })
     return segmentGroup
   }
 
@@ -348,20 +334,6 @@ class PointSegment implements SketchEntityUtils {
     pointBody.layers.set(SKETCH_LAYER)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
-
-    this.update({
-      input: args.input,
-      theme: args.theme,
-      scale: args.scale,
-      group: segmentGroup,
-      state: {
-        selected: false,
-        hovered: false,
-        draft: args.isDraft,
-        construction: args.isConstruction,
-      },
-      freedom: args.freedom,
-    })
 
     return segmentGroup
   }
@@ -511,20 +483,6 @@ class LineSegment implements SketchEntityUtils {
 
     // Store freedom in userData
     segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input: input,
-      theme: args.theme,
-      scale: args.scale,
-      group: segmentGroup,
-      state: {
-        selected: false,
-        hovered: false,
-        draft: args.isDraft,
-        construction: args.isConstruction,
-      },
-      freedom: args.freedom,
-    })
 
     return segmentGroup
   }
@@ -855,20 +813,6 @@ class ArcSegment implements SketchEntityUtils {
     // Store freedom in userData
     segmentGroup.userData.freedom = args.freedom ?? null
 
-    this.update({
-      input: input,
-      theme: args.theme,
-      scale: args.scale,
-      group: segmentGroup,
-      state: {
-        selected: false,
-        hovered: false,
-        draft: args.isDraft,
-        construction: args.isConstruction,
-      },
-      freedom: args.freedom,
-    })
-
     return segmentGroup
   }
 
@@ -1083,20 +1027,6 @@ class CircleSegment implements SketchEntityUtils {
 
     segmentGroup.add(mesh)
     segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input,
-      theme: args.theme,
-      scale: args.scale,
-      group: segmentGroup,
-      state: {
-        selected: false,
-        hovered: false,
-        draft: args.isDraft,
-        construction: args.isConstruction,
-      },
-      freedom: args.freedom,
-    })
 
     return segmentGroup
   }
