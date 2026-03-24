@@ -1,7 +1,8 @@
 //! Types we need for communication with the server.
 
 use ropey::Rope;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 /// Position in a text document expressed as zero-based line and character offset.
 /// A position is between two characters like an 'insert' cursor in a editor.

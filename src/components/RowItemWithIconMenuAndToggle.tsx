@@ -12,6 +12,7 @@ export function RowItemWithIconMenuAndToggle({
   Toggle,
   menuItems,
   isSelected,
+  size = 'default',
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: CustomIconName
@@ -22,6 +23,7 @@ export function RowItemWithIconMenuAndToggle({
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   // The button element has onContextMenu already but the type is too narrow
   onContextMenu?: (e: MouseEvent) => void
+  size?: 'default' | 'sm'
   isSelected?: boolean
 }) {
   const menuRef = useRef(null)
@@ -33,17 +35,19 @@ export function RowItemWithIconMenuAndToggle({
     >
       <button
         {...props}
-        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${props.className}`}
+        className={`reset min-w-[0px] py-0.5 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${props.className}`}
       >
         {icon ? (
           <CustomIcon
             name={icon}
-            className="w-6 h-6 block self-start"
+            className={`${size === 'sm' ? 'w-4 mx-1 h-4' : 'w-6 h-6'} block self-start`}
             aria-hidden
           />
         ) : null}
-        <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
-          <span className="text-sm">{children}</span>
+        <div
+          className={`${size === 'sm' ? 'text-xs' : 'text-sm'} flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline`}
+        >
+          <span>{children}</span>
           {LabelSecondary ?? null}
         </div>
         {Warning ?? null}

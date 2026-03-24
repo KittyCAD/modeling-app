@@ -1,4 +1,6 @@
-use criterion::{Criterion, criterion_group, criterion_main};
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
 
 pub fn bench_digest(c: &mut Criterion) {
     for (name, file) in [

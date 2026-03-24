@@ -8,8 +8,8 @@ import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { Sprite, SpriteMaterial, Texture } from 'three'
-import { Vector3 } from 'three'
+import type { Object3D, SpriteMaterial, Texture } from 'three'
+import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
@@ -51,6 +51,21 @@ export type ArcSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Arc' } }
 }
 
+export function isCircleSegment(
+  obj: ApiObject | undefined | null
+): obj is CircleSegment {
+  return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Circle'
+}
+
+export type CircleSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'Circle' } }
+}
+
+export function isArcLikeSegment(
+  obj: ApiObject | undefined | null
+): obj is ArcSegment | CircleSegment {
+  return isArcSegment(obj) || isCircleSegment(obj)
+}
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -80,6 +95,50 @@ export function getLinePoints(
     pointToCoords2d(pointSegments[0]),
     pointToCoords2d(pointSegments[1]),
   ] as const
+}
+
+export function getArcPoints(
+  arcObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+) {
+  if (isCircleSegment(arcObj)) {
+    const centerObj = objects[arcObj.kind.segment.center]
+    const startObj = objects[arcObj.kind.segment.start]
+    if (!isPointSegment(centerObj) || !isPointSegment(startObj)) {
+      return null
+    }
+
+    const start = pointToCoords2d(startObj)
+
+    return {
+      center: pointToCoords2d(centerObj),
+      start,
+      end: start,
+      isCircle: true,
+    }
+  }
+
+  if (!isArcSegment(arcObj)) {
+    return null
+  }
+
+  const centerObj = objects[arcObj.kind.segment.center]
+  const startObj = objects[arcObj.kind.segment.start]
+  const endObj = objects[arcObj.kind.segment.end]
+  if (
+    !isPointSegment(centerObj) ||
+    !isPointSegment(startObj) ||
+    !isPointSegment(endObj)
+  ) {
+    return null
+  }
+
+  return {
+    center: pointToCoords2d(centerObj),
+    start: pointToCoords2d(startObj),
+    end: pointToCoords2d(endObj),
+    isCircle: false,
+  }
 }
 
 // Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
@@ -143,7 +202,7 @@ export function buildTangentConstraintInput(
 
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
-  const arcObjects = selectedObjects.filter(isArcSegment)
+  const arcObjects = selectedObjects.filter(isArcLikeSegment)
 
   if (lineObj && arcObjects.length === 1) {
     // tangent(line, arc)
@@ -178,7 +237,7 @@ export type ConstraintObject = ApiObject & {
  * Constraint ApiObjects.
  */
 export function isConstraint<C extends ApiConstraint['type']>(
-  obj: ApiObject,
+  obj: ApiObject | undefined,
   targetType?: C
 ): obj is ConstraintObject &
   (C extends undefined
@@ -187,7 +246,7 @@ export function isConstraint<C extends ApiConstraint['type']>(
         kind: { constraint: { type: C } }
       }) {
   return (
-    obj.kind.type === 'Constraint' &&
+    obj?.kind.type === 'Constraint' &&
     (targetType ? obj.kind.constraint.type === targetType : true)
   )
 }
@@ -265,9 +324,7 @@ export function calculateDimensionLabelScreenPosition(
     console.warn(`Constraint group ${constraintId} not found in scene`)
     return
   }
-  const label = constraintGroup.children.find(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-  ) as SpriteLabel | undefined
+  const label = constraintGroup.children.find(isSpriteLabel)
   if (!label) {
     console.warn(`Label not found in constraint group ${constraintId}`)
     return
@@ -331,6 +388,12 @@ export type SpriteLabel = Sprite & {
   material: SpriteMaterial & {
     map: Texture<HTMLCanvasElement>
   }
+}
+
+export function isSpriteLabel(child: Object3D): child is SpriteLabel {
+  return (
+    child instanceof Sprite && child.userData.type === DISTANCE_CONSTRAINT_LABEL
+  )
 }
 
 export function pointToCoords2d(point: PointSegment): Coords2d {

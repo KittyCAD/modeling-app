@@ -4,12 +4,15 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use validator::Validate;
 
-use crate::settings::types::{
-    DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
-};
+use crate::settings::types::DefaultTrue;
+use crate::settings::types::OnboardingStatus;
+use crate::settings::types::ProjectCommandBarSettings;
+use crate::settings::types::ProjectTextEditorSettings;
+use crate::settings::types::is_default;
 
 /// Project specific settings for the app.
 /// These live in `project.toml` in the base of the project directory.
@@ -183,10 +186,14 @@ mod tests {
     use pretty_assertions::assert_eq;
     use serde_json::Value;
 
-    use super::{
-        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings, ProjectConfiguration,
-        ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
-    };
+    use super::NamedView;
+    use super::PerProjectSettings;
+    use super::ProjectAppSettings;
+    use super::ProjectCommandBarSettings;
+    use super::ProjectConfiguration;
+    use super::ProjectMetaSettings;
+    use super::ProjectModelingSettings;
+    use super::ProjectTextEditorSettings;
     use crate::settings::types::UnitLength;
 
     #[test]

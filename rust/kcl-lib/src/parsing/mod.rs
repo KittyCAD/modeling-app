@@ -1,11 +1,11 @@
-use crate::{
-    ModuleId, SourceRange,
-    errors::{CompilationError, KclError, KclErrorDetails},
-    parsing::{
-        ast::types::{Node, Program},
-        token::TokenStream,
-    },
-};
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::CompilationError;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
+use crate::parsing::token::TokenStream;
 
 pub(crate) mod ast;
 mod math;

@@ -124,6 +124,7 @@ layout: manual
 * [**std::sketch2**](/docs/kcl-std/modules/std-sketch2)
   * [`sketch2::angle`](/docs/kcl-std/functions/std-sketch2-angle)
   * [`sketch2::arc`](/docs/kcl-std/functions/std-sketch2-arc)
+  * [`sketch2::circle`](/docs/kcl-std/functions/std-sketch2-circle)
   * [`sketch2::coincident`](/docs/kcl-std/functions/std-sketch2-coincident)
   * [`sketch2::diameter`](/docs/kcl-std/functions/std-sketch2-diameter)
   * [`sketch2::distance`](/docs/kcl-std/functions/std-sketch2-distance)

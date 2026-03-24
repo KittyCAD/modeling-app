@@ -1,22 +1,33 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
-    ok_response::OkModelingCmdResponse,
-    shared::ExtrusionFaceCapType,
-    websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-};
-use serde::{Serialize, ser::SerializeSeq};
+use kittycad_modeling_cmds::EnableSketchMode;
+use kittycad_modeling_cmds::FaceIsPlanar;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::ExtrusionFaceCapType;
+use kittycad_modeling_cmds::websocket::BatchResponse;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::{self as kcmc};
+use serde::Serialize;
+use serde::ser::SerializeSeq;
 use uuid::Uuid;
 
-use crate::{
-    KclError, ModuleId, NodePath, SourceRange,
-    errors::KclErrorDetails,
-    execution::{ArtifactId, state::ModuleInfoMap},
-    front::{Constraint, ObjectId},
-    modules::ModulePath,
-    parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
-};
+use crate::KclError;
+use crate::ModuleId;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
+use crate::execution::state::ModuleInfoMap;
+use crate::front::Constraint;
+use crate::front::ObjectId;
+use crate::modules::ModulePath;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[cfg(test)]
 mod mermaid_tests;

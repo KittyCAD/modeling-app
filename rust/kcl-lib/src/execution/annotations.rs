@@ -2,14 +2,22 @@
 
 use std::str::FromStr;
 
-use kittycad_modeling_cmds::coord::{KITTYCAD, OPENGL, System, VULKAN};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::coord::KITTYCAD;
+use kittycad_modeling_cmds::coord::OPENGL;
+use kittycad_modeling_cmds::coord::System;
+use kittycad_modeling_cmds::coord::VULKAN;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    KclError, SourceRange,
-    errors::{KclErrorDetails, Severity},
-    parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
-};
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::ObjectProperty;
 
 /// Annotations which should cause re-execution if they change.
 pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];

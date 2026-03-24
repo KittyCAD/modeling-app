@@ -3,32 +3,50 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::output::ExtrusionFaceInfo;
+use kcmc::shared::ExtrudeReference;
+use kcmc::shared::ExtrusionFaceCapType;
+use kcmc::shared::Opposite;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    ok_response::OkModelingCmdResponse,
-    output::ExtrusionFaceInfo,
-    shared::{ExtrudeReference, ExtrusionFaceCapType, Opposite},
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{Angle, BodyType, ExtrudeMethod, Point2d},
-};
+use kcmc::websocket::ModelingCmdReq;
+use kcmc::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::ExtrudeMethod;
+use kittycad_modeling_cmds::shared::Point2d;
+use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ArtifactId, CreatorFace, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path,
-        ProfileClosed, Sketch, SketchSurface, Solid, SolidCreator, annotations,
-        types::{ArrayLen, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::TyF64;
+use super::utils::point_to_mm;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
+use crate::execution::CreatorFace;
+use crate::execution::ExecState;
+use crate::execution::Extrudable;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::Solid;
+use crate::execution::SolidCreator;
+use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
