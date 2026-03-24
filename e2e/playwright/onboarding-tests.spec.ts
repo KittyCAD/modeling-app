@@ -1,4 +1,9 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import {
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS_ONBOARDING_START,
+} from '@e2e/playwright/storageStates'
+import { settingsToToml } from '@e2e/playwright/test-utils'
 
 test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
   test('Desktop onboarding flow works', async ({
@@ -17,6 +22,21 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         onboarding_status: '',
       },
     })
+    await page.evaluate(({
+      TEST_SETTINGS_KEY,
+      TEST_SETTINGS_TOML_ONBOARDING_START,
+    }) => {
+      localStorage.setItem(
+        TEST_SETTINGS_KEY,
+        TEST_SETTINGS_TOML_ONBOARDING_START
+      )
+    }, {
+      TEST_SETTINGS_KEY,
+      TEST_SETTINGS_TOML_ONBOARDING_START: settingsToToml({
+        settings: TEST_SETTINGS_ONBOARDING_START,
+      }),
+    })
+    await page.reload()
 
     const tutorialWelcomeHeading = page.getByText(
       'Welcome to Zoo Design Studio'
@@ -41,6 +61,8 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       name: 'Replay onboarding tutorial',
     })
     await test.step('Test initial home page view, showing a tutorial button', async () => {
+      await homePage.expectIsCurrentPage()
+      await homePage.projectsLoaded()
       await expect(homePage.tutorialBtn).toBeVisible()
       await homePage.tutorialBtn.click()
     })
