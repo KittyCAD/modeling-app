@@ -122,6 +122,31 @@ export function findInvisibleConstraintsForSegment(
     .map((constraint) => constraint.id)
 }
 
+export function findSegmentsForInvisibleConstraint(
+  constraint: InvisibleConstraintObject,
+  objects: ApiObject[]
+): number[] {
+  const constrainedIds = (() => {
+    switch (constraint.kind.constraint.type) {
+      case 'Coincident':
+        return constraint.kind.constraint.segments
+      case 'Horizontal':
+      case 'Vertical':
+        return [constraint.kind.constraint.line]
+      case 'LinesEqualLength':
+      case 'Parallel':
+      case 'Perpendicular':
+        return constraint.kind.constraint.lines
+      case 'Tangent':
+        return constraint.kind.constraint.input
+    }
+  })()
+
+  return Array.from(
+    new Set(constrainedIds.filter((id) => objects[id]?.kind.type === 'Segment'))
+  )
+}
+
 // Checks whether a non-visual constraint should preview for a hovered segment.
 export function isConstraingSegment(
   constraint: InvisibleConstraintObject,

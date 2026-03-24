@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   findInvisibleConstraintsForSegment,
+  findSegmentsForInvisibleConstraint,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
   type InvisibleConstraintObject,
@@ -192,5 +193,33 @@ describe('invisibleConstraintSpriteUtils', () => {
     )
 
     expect(relatedConstraintIds).toEqual([20])
+  })
+
+  it('finds constrained segments for a hovered invisible constraint', () => {
+    const center = createPointApiObject({ id: 1, x: 5, y: 5 })
+    const arcStart = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const sharedEnd = createPointApiObject({ id: 3, x: 10, y: 0 })
+    const lineEnd = createPointApiObject({ id: 4, x: 20, y: 0 })
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+    const line = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const tangent = createConstraintApiObject(20, {
+      type: 'Tangent',
+      input: [10, 11],
+    })
+
+    const segmentIds = findSegmentsForInvisibleConstraint(
+      tangent as InvisibleConstraintObject,
+      createObjectsArray([
+        center,
+        arcStart,
+        sharedEnd,
+        lineEnd,
+        arc,
+        line,
+        tangent,
+      ])
+    )
+
+    expect(segmentIds).toEqual([10, 11])
   })
 })
