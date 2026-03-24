@@ -596,9 +596,7 @@ openSketch = startSketchOn(XY)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText(
-            '1 segment, 1 sweepEdge, 1 face'
-          )
+          await expect(toolbar.selectionStatus).toContainText('2 edges, 1 face')
         })
       })
       await test.step('Deselect them one by one', async () => {
@@ -911,7 +909,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 sweepEdge`,
+          Edge: `1 edge`,
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
@@ -924,7 +922,7 @@ extrude001 = extrude(profile001, length = 100)`
         stage: 'review',
         headerArguments: {
           Mode: 'Edge',
-          Edge: `1 sweepEdge`,
+          Edge: `1 edge`,
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
