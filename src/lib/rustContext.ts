@@ -12,7 +12,6 @@ import type {
   ApiFileId,
   FixedPoint,
   ApiObjectId,
-  Number as ApiNumber,
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
