@@ -596,7 +596,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('chamfer001 = chamfer(extrude001')
       expect(newCode).toContain('chamfer002 = chamfer(extrude002')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
