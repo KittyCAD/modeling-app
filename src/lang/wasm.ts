@@ -46,6 +46,7 @@ import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
+import type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -68,6 +69,8 @@ export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 export type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
+export type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
+export type { DirectTagFilletTagEntry } from '@rust/kcl-lib/bindings/DirectTagFilletTagEntry'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
 export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
 export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
@@ -271,17 +274,6 @@ export interface ExecState {
   directTagFilletMetadata: DirectTagFilletMeta[]
 }
 
-export interface DirectTagFilletTagEntry {
-  tagIdentifier: string
-  edgeId: string
-  faceIds: [string, string]
-}
-
-export interface DirectTagFilletMeta {
-  callSourceRange: SourceRange
-  tags: DirectTagFilletTagEntry[]
-}
-
 /**
  * Create an empty ExecState.  This is useful on init to prevent needing an
  * Option.
@@ -299,42 +291,11 @@ export function emptyExecState(): ExecState {
   }
 }
 
-function edgeRefactorMetaFromRust(raw: any): EdgeRefactorMeta {
-  return {
-    edgeId: raw.edgeId ?? raw.edge_id,
-    faceIds: raw.faceIds ?? raw.face_ids,
-    sourceRange: raw.sourceRange ?? raw.source_range,
-    stdlibFn: (raw.stdlibFn ?? raw.stdlib_fn) as EdgeRefactorMeta['stdlibFn'],
-  }
-}
-
-function directTagFilletMetaFromRust(raw: any): DirectTagFilletMeta {
-  const tags = isArray(raw.tags)
-    ? (raw.tags as any[]).map((t: any) => ({
-        tagIdentifier: t.tagIdentifier ?? t.tag_identifier ?? '',
-        edgeId: t.edgeId ?? t.edge_id ?? '',
-        faceIds: (t.faceIds ?? t.face_ids) as [string, string],
-      }))
-    : []
-  return {
-    callSourceRange:
-      raw.callSourceRange ?? raw.call_source_range ?? defaultSourceRange(),
-    tags,
-  }
-}
-
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
   const rawMeta = execOutcome.edgeRefactorMetadata
-  const edgeRefactorMetadata = isArray(rawMeta)
-    ? rawMeta.map(edgeRefactorMetaFromRust)
-    : []
-  const rawDirect =
-    (execOutcome as any).directTagFilletMetadata ??
-    (execOutcome as any).direct_tag_fillet_metadata
-  const directTagFilletMetadata = isArray(rawDirect)
-    ? rawDirect.map(directTagFilletMetaFromRust)
-    : []
+  const edgeRefactorMetadata = isArray(rawMeta) ? rawMeta : []
+  const directTagFilletMetadata = execOutcome.directTagFilletMetadata
 
   return {
     variables: execOutcome.variables,
