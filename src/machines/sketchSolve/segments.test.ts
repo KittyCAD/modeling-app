@@ -119,16 +119,20 @@ function createCircleSegmentObject(id: number, startId: number): ApiObject {
       segment: {
         type: 'Circle',
         start: startId,
-        radius: { value: 10, units: 'Mm' },
+        center: startId,
         ctor: {
           type: 'Circle',
+          start: {
+            x: { type: 'Var', value: 10, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
           center: {
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          radius: { type: 'Var', value: 10, units: 'Mm' },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',

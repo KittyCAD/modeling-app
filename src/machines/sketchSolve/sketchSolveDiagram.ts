@@ -456,8 +456,17 @@ export const sketchSolveMachine = setup({
                 }
               }
             } else if (first.kind.segment.ctor.type === 'Circle') {
-              const radius = exprToNumber(first.kind.segment.ctor.radius)
-              if (radius !== null) {
+              const centerX = exprToNumber(first.kind.segment.ctor.center.x)
+              const centerY = exprToNumber(first.kind.segment.ctor.center.y)
+              const startX = exprToNumber(first.kind.segment.ctor.start.x)
+              const startY = exprToNumber(first.kind.segment.ctor.start.y)
+              if (
+                centerX !== null &&
+                centerY !== null &&
+                startX !== null &&
+                startY !== null
+              ) {
+                const radius = Math.hypot(startX - centerX, startY - centerY)
                 distance = roundOff(radius)
               }
             }

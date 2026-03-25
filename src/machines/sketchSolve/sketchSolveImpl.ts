@@ -279,10 +279,22 @@ export function buildSegmentCtorFromObject(
       console.error('Failed to find circle ctor for Circle segment', obj)
       return null
     }
+    const centerPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.center,
+    })
+    const startPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.start,
+    })
+    if (!centerPoint || !startPoint) {
+      console.error('Failed to find linked points for Circle segment', obj)
+      return null
+    }
     return {
       type: 'Circle',
-      center: ctor.center,
-      radius: ctor.radius,
+      center: centerPoint,
+      start: startPoint,
     }
   }
   return null

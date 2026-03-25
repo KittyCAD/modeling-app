@@ -1038,7 +1038,8 @@ class CircleSegment implements SketchEntityUtils {
       !(
         hasNumericValue(input.center.x) &&
         hasNumericValue(input.center.y) &&
-        hasNumericValue(input.radius)
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y)
       )
     ) {
       return new Error('Invalid position values for CircleSegment')
@@ -1046,10 +1047,10 @@ class CircleSegment implements SketchEntityUtils {
 
     const centerX = input.center.x.value
     const centerY = input.center.y.value
-    const radius = input.radius.value
-    const startX = centerX + radius
-    const startY = centerY
-    const startAngle = 0
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const radius = Math.hypot(startX - centerX, startY - centerY)
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
 
     return {
       centerX,

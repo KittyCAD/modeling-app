@@ -184,10 +184,12 @@ export function createArcApiObject({
 export function createCircleApiObject({
   id,
   start,
+  center = start,
   radius = 10,
 }: {
   id: number
   start: number
+  center?: number
   radius?: number
 }): ApiObject {
   return {
@@ -197,16 +199,20 @@ export function createCircleApiObject({
       segment: {
         type: 'Circle',
         start,
-        radius: { value: radius, units: 'Mm' },
+        center,
         ctor: {
           type: 'Circle',
+          start: {
+            x: { type: 'Var', value: radius, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
           center: {
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          radius: { type: 'Var', value: radius, units: 'Mm' },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
