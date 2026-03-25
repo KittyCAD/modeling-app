@@ -244,7 +244,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_4.kcl
               {
                 "type": "Object",
                 "value": {
-                  "disambiguators": {
+                  "endFaces": {
                     "type": "Array",
                     "value": [
                       {
@@ -254,7 +254,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_4.kcl
                       }
                     ]
                   },
-                  "faces": {
+                  "sideFaces": {
                     "type": "Array",
                     "value": [
                       {

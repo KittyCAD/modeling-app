@@ -194,8 +194,7 @@ description: Operations executed extrude_to_edge_specifier.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::math": [

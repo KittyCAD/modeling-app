@@ -244,7 +244,16 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
               {
                 "type": "Object",
                 "value": {
-                  "faces": {
+                  "index": {
+                    "type": "Number",
+                    "value": 1.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  "sideFaces": {
                     "type": "Array",
                     "value": [
                       {
@@ -258,15 +267,6 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
                         "artifact_id": "[uuid]"
                       }
                     ]
-                  },
-                  "index": {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
                   }
                 }
               }

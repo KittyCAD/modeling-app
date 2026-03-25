@@ -417,11 +417,10 @@ description: Artifact commands face_api_fillet_edge_refs_variant_7.kcl
         "object_id": "[uuid]",
         "edges_references": [
           {
-            "faces": [
+            "side_faces": [
               "[uuid]",
               "[uuid]"
             ],
-            "disambiguators": [],
             "index": 1
           }
         ],
