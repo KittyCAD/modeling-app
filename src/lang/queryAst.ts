@@ -32,6 +32,7 @@ import {
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
+  Artifact,
   ArtifactGraph,
   BinaryExpression,
   CallExpressionKw,
@@ -56,7 +57,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -1288,7 +1289,7 @@ export function getVariableExprsFromSelection(
     // Cap/wall/edgeCut code refs point at sketch geometry; solids (shell, fillet, hole, …)
     // must use the parent sweep/composite variable (e.g. extrude001), not sketch001.
     let pathToNodeForVariable = codeRef.pathToNode
-    let usesSurfaceParentVariable = false
+    let artifactForLastChildLookup = artifact
     if (
       artifact &&
       (artifact.type === 'cap' ||
@@ -1301,7 +1302,10 @@ export function getVariableExprsFromSelection(
       )
       if (!err(sweep) && sweep.codeRef) {
         pathToNodeForVariable = sweep.codeRef.pathToNode
-        usesSurfaceParentVariable = true
+        const sweepArtifact = artifactGraph.get(sweep.id)
+        if (sweepArtifact?.type === 'sweep') {
+          artifactForLastChildLookup = sweepArtifact
+        }
       }
     }
 
@@ -1312,14 +1316,9 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (
-      lastChildLookup &&
-      artifact &&
-      artifactGraph &&
-      !usesSurfaceParentVariable
-    ) {
+    if (lastChildLookup && artifactForLastChildLookup && artifactGraph) {
       const children = findAllChildrenAndOrderByPlaceInCode(
-        artifact,
+        artifactForLastChildLookup,
         artifactGraph
       )
       const lastChildVariable = getLastVariable(
@@ -1329,12 +1328,11 @@ export function getVariableExprsFromSelection(
         artifactTypeFilter,
         nodeToEdit
       )
-      if (!lastChildVariable) {
-        continue
+      if (lastChildVariable) {
+        variable = lastChildVariable.variableDeclaration
       }
-
-      variable = lastChildVariable.variableDeclaration
-    } else {
+    }
+    if (!variable) {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
         pathToNodeForVariable,
