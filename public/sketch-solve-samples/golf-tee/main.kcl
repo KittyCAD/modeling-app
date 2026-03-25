@@ -2,7 +2,7 @@
 // A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // --- Main Dimensions ---
 teeHeight = 70 // total height of the tee
@@ -22,7 +22,7 @@ cupRadius = cupDiameter / 2
 // --- Tee Profile ---
 teeSketch = startSketchOn(YZ)
 
-teeProfile = sketch(on = YZ) {
+teeProfile = sketch(on = teeSketch) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 2.25mm, var 10mm])
   line2 = line(start = [var 2.25mm, var 10mm], end = [var 2.25mm, var 55.4mm])
   coincident([line1.end, line2.start])
@@ -35,6 +35,7 @@ teeProfile = sketch(on = YZ) {
   vertical(line2)
 }
 
+region001 = region(segments = [teeProfile.line1, teeProfile.line2])
 // --- Solid Revolve ---
-golfTee = revolve(teeProfile, axis = Y, angle = 360)
+golfTee = revolve(region001, axis = Y, angle = 360)
 

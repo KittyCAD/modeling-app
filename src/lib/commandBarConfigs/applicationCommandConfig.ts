@@ -16,7 +16,7 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
-import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
@@ -150,6 +150,7 @@ export function createApplicationCommands({
          * inside the systemIOMachine. We can have a fancy model machine that loads
          * KCL samples
          */
+        const error = "The command couldn't be submitted, check the arguments."
         const folders = app.systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
@@ -170,10 +171,18 @@ export function createApplicationCommands({
               isProjectNew,
             })
           }
-        } else if (data.source === 'local' && data.files) {
-          const fileNameWithExtension = getStringAfterLastSeparator(
-            data.files[0].name
-          )
+        } else if (data.source === 'local') {
+          const selectedFilePath = isArray(data.files)
+            ? data.files[0]
+            : data.files
+
+          if (!selectedFilePath) {
+            toast.error(error)
+            return
+          }
+
+          const fileNameWithExtension =
+            getStringAfterLastSeparator(selectedFilePath)
           const fr = new FileReader()
           fr.addEventListener('load', () => {
             app.systemIOActor.send({
@@ -188,9 +197,15 @@ export function createApplicationCommands({
               },
             })
           })
-          fr.readAsText(data.files[0])
+          fsZds
+            .readFile(selectedFilePath)
+            .then((content) => {
+              const blob = new Blob([new Uint8Array(content)])
+              fr.readAsText(blob)
+            })
+            .catch(() => toast.error(error))
         } else {
-          toast.error("The command couldn't be submitted, check the arguments.")
+          toast.error(error)
         }
       }
     },
@@ -293,11 +308,11 @@ export function createApplicationCommands({
         skip: true,
         hidden: false,
         valueSummary: (value) => {
-          return (
-            value.files &&
-            value.files.length > 0 &&
-            fsZds.basename(value.files[0].name)
-          )
+          if (typeof value === 'string') return fsZds.basename(value)
+          if (isArray(value) && typeof value[0] === 'string') {
+            return fsZds.basename(value[0])
+          }
+          return value
         },
         required: (commandContext) =>
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
@@ -457,9 +472,9 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
-          Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+          Locally-running Engines: **ws://localhost:8080/ws/modeling/commands**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/modeling/commands?pr=NUMBER**
+          Other variants: **wss://api.dev.zoo.dev/ws/modeling/commands?pool=LABEL**
         `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
       },
@@ -505,8 +520,8 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Locally-running Zookeeper: **ws://localhost:8080/ws/ml/copilot**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/ml/copilot?pr=NUMBER**
         `.trim(),
         defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },

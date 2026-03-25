@@ -2,53 +2,27 @@
 // The plastic housing that contains the fan and the motor
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Import parameters
 import * from "parameters.kcl"
 
 // Model the housing which holds the motor, the fan, and the mounting provisions
 // Bottom mounting face
-bottomFaceSketch = startSketchOn(XY)
-  |> startProfile(at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = 4))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -60mm, var -60mm], end = [var 60mm, var -60mm])
+  line2 = line(start = [var 60mm, var -60mm], end = [var 60mm, var 60mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 60mm, var 60mm], end = [var -60mm, var 60mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -60mm, var 60mm], end = [var -60mm, var -60mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+bottomFaceSketch = extrude(region001, length = 4)
 
 // Add large openings to the bottom face to allow airflow through the fan
-airflowPattern = startSketchOn(bottomFaceSketch, face = END)
+sketch002 = startSketchOn(bottomFaceSketch, face = END)
   |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
   |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
   |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
@@ -65,78 +39,67 @@ airflowPattern = startSketchOn(bottomFaceSketch, face = END)
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-  |> extrude(length = -4)
+airflowPattern = extrude(sketch002, length = -4)
 
 // Create the middle segment of the fan housing body
 housingMiddleLength = fanSize / 3
 housingMiddleRadius = fanSize / 3 - 1
-bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfile(at = [
-       housingMiddleLength / 2,
-       -housingMiddleLength / 2 - housingMiddleRadius
-     ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> extrude(length = fanHeight - 4 - 4)
+sketch003 = sketch(on = startSketchOn(bottomFaceSketch, face = END)) {
+  arc1 = arc(start = [var 20mm, var -59mm], end = [var 59mm, var -20mm], center = [var 20mm, var -20mm])
+  line2 = line(start = [var 59mm, var -20mm], end = [var 59mm, var 20mm])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 59mm, var 20mm], end = [var 20mm, var 59mm], center = [var 20mm, var 20mm])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 20mm, var 59mm], end = [var -20mm, var 59mm])
+  coincident([arc3.end, line4.start])
+  arc5 = arc(start = [var -20mm, var 59mm], end = [var -59mm, var 20mm], center = [var -20mm, var 20mm])
+  coincident([line4.end, arc5.start])
+  line6 = line(start = [var -59mm, var 20mm], end = [var -59mm, var -20mm])
+  coincident([arc5.end, line6.start])
+  arc7 = arc(start = [var -59mm, var -20mm], end = [var -20mm, var -59mm], center = [var -20mm, var -20mm])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var -20mm, var -59mm], end = [var 20mm, var -59mm])
+  coincident([arc7.end, line8.start])
+  vertical(arc3)
+  horizontal(arc5)
+  vertical(arc7)
+}
+region002 = region(segments = [sketch003.arc1, sketch003.line2])
+bodyMiddle = extrude(region002, length = fanHeight - 4 - 4)
 
 // Cut a hole in the body to accommodate the fan
-bodyFanHole = startSketchOn(bodyMiddle, face = END)
-  |> circle(center = [0, 0], radius = fanSize * 23 / 50)
-  |> extrude(length = -(fanHeight - 4 - 4))
+sketch004 = sketch(on = startSketchOn(bodyMiddle, face = END)) {
+  circle1 = circle(start = [var 55.2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [sketch004.circle1])
+bodyFanHole = extrude(region003, length = -(fanHeight - 4 - 4))
 
 // Top mounting face. Cut a hole in the face to accommodate the fan
 topFaceSketch = startSketchOn(bodyMiddle, face = END)
-topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = fanSize * 23 / 50))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
+sketch005 = sketch(on = topFaceSketch) {
+  line1 = line(start = [var -60mm, var -60mm], end = [var 60mm, var -60mm])
+  line2 = line(start = [var 60mm, var -60mm], end = [var 60mm, var 60mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 60mm, var 60mm], end = [var -60mm, var 60mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -60mm, var 60mm], end = [var -60mm, var -60mm])
+  coincident([line3.end, line4.start])
+}
+region004 = region(segments = [sketch005.line1, sketch005.line2])
+topHoles = extrude(region004, length = 4)
 
 // Create a housing for the electric motor to sit
-motorHousing = startSketchOn(bottomFaceSketch, face = END)
-  |> circle(center = [0, 0], radius = 11.2)
-  |> extrude(length = 16)
+sketch006 = sketch(on = startSketchOn(bottomFaceSketch, face = END)) {
+  circle1 = circle(start = [var 11.2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region005 = region(segments = [sketch006.circle1])
+motorHousing = extrude(region005, length = 16)
 
-startSketchOn(motorHousing, face = END)
-  |> circle(center = [0, 0], radius = 10)
-  |> extrude(length = -16)
+sketch007 = sketch(on = startSketchOn(motorHousing, face = END)) {
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region006 = region(segments = [sketch007.circle1])
+extrude(region006, length = -16)
   |> appearance(color = "#a55e2c")
   |> fillet(
        radius = abs(fanSize - mountingHoleSpacing) / 2,

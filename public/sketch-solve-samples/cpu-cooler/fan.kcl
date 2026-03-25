@@ -2,15 +2,17 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Import parameters
 import * from "parameters.kcl"
 
 // Model the center of the fan
-fanCenter = startSketchOn(YZ)
-  |> circle(center = [0, 0], radius = fanHeight / 2, tag = $centerBend)
-  |> extrude(length = fanHeight)
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+fanCenter = extrude(region001, length = fanHeight)
   |> fillet(radius = 1.5, tags = [getOppositeEdge(centerBend)])
 
 // Create a function for a lofted fan blade cross section that rotates about the center hub of the fan

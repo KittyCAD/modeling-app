@@ -1,10 +1,13 @@
 //! KCL has optional parameters. Their type is [`KclOption`].
 //! If an optional parameter is not given, it will have a value of type [`KclNone`].
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use super::{super::digest::Digest, Node};
-use crate::{execution::KclValue, parsing::ast::types::ConstraintLevel};
+use super::super::digest::Digest;
+use super::Node;
+use crate::execution::KclValue;
+use crate::parsing::ast::types::ConstraintLevel;
 
 const KCL_NONE_ID: &str = "KCL_NONE_ID";
 

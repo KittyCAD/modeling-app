@@ -1,6 +1,10 @@
 use std::collections::HashSet;
 
-use crate::parsing::ast::types::{BinaryPart, BodyItem, CodeBlock, Expr, ImportSelector};
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
 
 /// Find all defined names in the given code block. This ignores names defined
 /// by glob imports.
@@ -163,6 +167,10 @@ pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> any
     next_free_name_using_padding(prefix, taken_names, 0)
 }
 
+pub(crate) fn next_free_name_with_padding(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
+    next_free_name_using_max_and_padding(prefix, taken_names, 999, 3)
+}
+
 pub(super) fn next_free_name_using_padding(
     prefix: &str,
     taken_names: &HashSet<String>,
@@ -210,7 +218,9 @@ fn next_free_name_using_max_and_padding(
 mod tests {
     use std::collections::HashSet;
 
-    use super::{next_free_name, next_free_name_using_max, next_free_name_using_padding};
+    use super::next_free_name;
+    use super::next_free_name_using_max;
+    use super::next_free_name_using_padding;
 
     #[test]
     fn next_free_name_defaults_to_no_padding() {

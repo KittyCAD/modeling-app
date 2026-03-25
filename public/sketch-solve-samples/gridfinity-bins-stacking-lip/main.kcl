@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Define parameters
 binLength = 41.5
@@ -90,16 +90,18 @@ corners = patternCircular3d(
   rotateDuplicates = true,
 )
 
-singleBinFill = startSketchOn(XY)
-  |> startProfile(at = [
-       binBaseLength + binTol,
-       binBaseLength + binTol
-     ])
-  |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
-  |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
-  |> xLine(endAbsolute = profileStartX(%), tag = $line002)
-  |> close(tag = $line003)
-  |> extrude(length = height)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 3.2mm, var 3.2mm], end = [var 38.8mm, var 3.2mm])
+  line2 = line(start = [var 38.8mm, var 3.2mm], end = [var 38.8mm, var 38.8mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 38.8mm, var 38.8mm], end = [var 3.2mm, var 38.8mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3.2mm, var 38.8mm], end = [var 3.2mm, var 3.2mm])
+  coincident([line3.end, line4.start])
+  horizontal(line4)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+singleBinFill = extrude(region001, length = height)
   |> fillet(
        radius = firstStep,
        tags = [
@@ -110,7 +112,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, face = START)
+sketch002 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
@@ -127,7 +129,7 @@ magCutout000 = startSketchOn(singleBinFill, face = START)
        instances = 4,
        rotateDuplicates = true,
      )
-  |> extrude(length = -magDepth)
+magCutout000 = extrude(sketch002, length = -magDepth)
 
 // Create the baseplate by patterning sides
 binSides = patternLinear3d(
@@ -156,13 +158,20 @@ binFill = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfile(at = [0, 0])
-  |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
-  |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
-  |> xLine(endAbsolute = profileStartX(%), tag = $line012)
-  |> close(tag = $line013)
-  |> extrude(length = binHeight * countBinHeight)
+sketch003 = sketch(on = offsetPlane(XY, offset = height)) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 84mm, var 0mm])
+  line2 = line(start = [var 84mm, var 0mm], end = [var 84mm, var 126mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 84mm, var 126mm], end = [var 0mm, var 126mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 126mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region002 = region(segments = [sketch003.line1, sketch003.line2])
+binTop = extrude(region002, length = binHeight * countBinHeight)
   |> fillet(
        radius = cornerRadius,
        tags = [

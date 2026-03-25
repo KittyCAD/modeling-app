@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 // Define shaft parameters
 valvesPerCylinder = 4
@@ -41,13 +41,13 @@ fn lobe(duration, lift) {
     liftY - rn + rn * cos(phi)
   ]
 
-  camProfile = startProfile(camSketch, at = polar(angle = 90 + theta / 2, length = rb))
+  sketch001 = startProfile(camSketch, at = polar(angle = 90 + theta / 2, length = rb))
     |> arc(interiorAbsolute = [0, -rb], endAbsolute = polar(angle = 90 - (theta / 2), length = rb), tag = $baseArc)
     |> tangentialArc(endAbsolute = noseJoin, tag = $rightFlank)
     |> tangentialArc(endAbsolute = [-noseJoin[0], noseJoin[1]], tag = $noseArc)
     |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()], tag = $leftFlank)
     |> close()
-    |> extrude(length = camHeight)
+  camProfile = extrude(sketch001, length = camHeight)
     |> rotate(yaw = intakeCenterline)
 
   return camProfile
@@ -94,9 +94,11 @@ fn cylinderPattern(@i) {
 
 // Extrude a center connecting cylinder shaft through each cam position
 length = (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth) * cylinderCount + supportBearingWidth
-centerShaft = startSketchOn(XY)
-  |> circle(center = [0, 0], diameter = shaftDiameter)
-  |> extrude(length)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 0.49in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+centerShaft = extrude(region001, length)
 
 // Attach a helical timing gear to the base of the camshaft
 fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
@@ -108,7 +110,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
   tipDiameter = pitchDiameter + 2 * module
 
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-  helicalGearSketch = startSketchOn(XY)
+  sketch002 = startSketchOn(XY)
     |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
     |> involuteCircular(
          startDiameter = baseDiameter,
@@ -138,7 +140,12 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> subtract2d(tool = circle(center = [0, 0], diameter = shaftDiameter))
 
     // Compute twist angle so the tooth helix matches helixAngle over the gear height
-    |> extrude(length = gearHeight, twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter), twistAngleStep = 0)
+  helicalGearSketch = extrude(
+         sketch002,
+         length = gearHeight,
+         twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter),
+         twistAngleStep = 0,
+       )
 
   return helicalGearSketch
 }

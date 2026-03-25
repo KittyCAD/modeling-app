@@ -10,13 +10,13 @@ import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive,
 // Create a function to make a the bolt
 export fn bolt() {
   // Create the head of the cap screw
-  boltHead = startSketchOn(XZ)
+  sketch001 = startSketchOn(XZ)
     |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
-    |> extrude(length = -boltHeadLength)
+  boltHead = extrude(sketch001, length = -boltHeadLength)
     |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
   // Define the sketch of the hex pattern on the screw head and extrude into the head
-  hexPatternSketch = startSketchOn(boltHead, face = START)
+  sketch002 = startSketchOn(boltHead, face = START)
     |> startProfile(at = [
          boltHexDrive / 2,
          boltHexFlatLength / 2
@@ -27,12 +27,12 @@ export fn bolt() {
     |> angledLine(angle = 90, length = boltHexFlatLength)
     |> angledLine(angle = 30, length = boltHexFlatLength)
     |> close()
-    |> extrude(length = -boltHeadLength * 0.75)
+  hexPatternSketch = extrude(sketch002, length = -boltHeadLength * 0.75)
 
   // create the body of the bolt
-  boltBody = startSketchOn(boltHead, face = END)
+  sketch003 = startSketchOn(boltHead, face = END)
     |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
-    |> extrude(length = boltLength)
+  boltBody = extrude(sketch003, length = boltLength)
     |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
 
   return boltBody

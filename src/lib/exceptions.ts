@@ -44,7 +44,7 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
             await kclManager.rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(kclManager.rustContext.settingsActor),
+              jsAppSettings(kclManager.rustContext.settingsActor),
               undefined
             )
           } catch (e) {

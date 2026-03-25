@@ -2,12 +2,11 @@
 
 use anyhow::Result;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::typed_path::TypedPath,
-    fs::FileSystem,
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileSystem;
 
 #[derive(Debug, Clone)]
 pub struct FileManager {}

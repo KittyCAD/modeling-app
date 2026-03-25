@@ -3,34 +3,44 @@
 use std::cmp::Ordering;
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
-    websocket::OkWebSocketResponseData,
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{Angle, OriginType, Rotation},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::Transform;
+use kcmc::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::shared::OriginType;
+use kittycad_modeling_cmds::shared::Rotation;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
-use crate::{
-    ExecutorContext, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
-        fn_call::{Arg, Args},
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType},
-    },
-    std::{
-        args::TyF64,
-        axis_or_reference::Axis2dOrPoint2d,
-        shapes::POINT_ZERO_ZERO,
-        utils::{point_3d_to_mm, point_to_mm},
-    },
-};
+use crate::ExecutorContext;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ControlFlowKind;
+use crate::execution::ExecState;
+use crate::execution::Geometries;
+use crate::execution::Geometry;
+use crate::execution::KclObjectFields;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::fn_call::Arg;
+use crate::execution::fn_call::Args;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis2dOrPoint2d;
+use crate::std::shapes::POINT_ZERO_ZERO;
+use crate::std::utils::point_3d_to_mm;
+use crate::std::utils::point_to_mm;
 pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
     TyF64::new(0.0, crate::exec::NumericType::mm()),
     TyF64::new(0.0, crate::exec::NumericType::mm()),
@@ -480,7 +490,8 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::types::{NumericType, PrimitiveType};
+    use crate::execution::types::NumericType;
+    use crate::execution::types::PrimitiveType;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {

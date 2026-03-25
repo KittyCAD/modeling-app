@@ -1,4 +1,3 @@
-import decamelize from 'decamelize'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
@@ -18,6 +17,7 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import {
+  formatSettingsLabel,
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
@@ -90,7 +90,7 @@ export const AllSettingsFields = forwardRef(
                   id={`category-${category}`}
                   className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
                 >
-                  {decamelize(category, { separator: ' ' })}
+                  {formatSettingsLabel(category)}
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
@@ -102,9 +102,7 @@ export const AllSettingsFields = forwardRef(
                       setting[setting.getParentLevel(searchParamTab)]
                     return (
                       <SettingsSection
-                        title={decamelize(settingName, {
-                          separator: ' ',
-                        })}
+                        title={formatSettingsLabel(settingName)}
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`

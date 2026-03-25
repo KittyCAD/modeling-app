@@ -1,9 +1,13 @@
 use serde::Serialize;
 
 #[cfg(feature = "artifact-graph")]
-use super::{BodyItem, Expr};
+use super::BodyItem;
 #[cfg(feature = "artifact-graph")]
-use crate::{SourceRange, execution::ProgramLookup};
+use super::Expr;
+#[cfg(feature = "artifact-graph")]
+use crate::SourceRange;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ProgramLookup;
 
 /// A traversal path through the AST to a node.
 ///

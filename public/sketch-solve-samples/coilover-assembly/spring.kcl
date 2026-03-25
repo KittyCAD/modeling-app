@@ -1,6 +1,8 @@
 // Spring for coilover assembly
 // Spring that sits on top of the retainer plate in the coilover assembly, with a piston shaft running through it. 200 mm long, with a 22 mm radius, and coils at 6 mm thick.
 
+@settings(experimentalFeatures = allow)
+
 import springRadius, springLength, springRevolutions, coilThickness from "parameters.kcl"
 
 helixPath = helix(
@@ -12,8 +14,10 @@ helixPath = helix(
   ccw = false,
 )
 
-springSketch = startSketchOn(XZ)
-  |> circle(center = [springRadius, 0], radius = coilThickness / 2)
-  |> sweep(path = helixPath)
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 25mm, var 0mm], center = [var 22mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+springSketch = sweep(region001, path = helixPath)
   |> appearance(color = "#d78109", roughness = 90, metalness = 50)
 

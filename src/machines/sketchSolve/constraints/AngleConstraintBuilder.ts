@@ -2,10 +2,7 @@ import type {
   Number as ApiNumber,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_HIT_AREA,
-} from '@src/clientSideScene/sceneConstants'
+import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
@@ -84,14 +81,6 @@ function initializeAngleConstraintLines(
   group: Group,
   resources: ConstraintResources
 ) {
-  for (const child of group.children.filter(
-    (child) =>
-      child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
-      child.userData.subtype === DISTANCE_CONSTRAINT_BODY
-  )) {
-    group.remove(child)
-  }
-
   const bodyLines = group.children.filter(
     (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
   ) as Line2[]

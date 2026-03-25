@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Define parameters
 mountingHoleDia = .625
@@ -32,23 +32,30 @@ circles = startSketchOn(XY)
      )
 
 // Create the base of the flange and add the mounting holes
-flangeBase = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = baseDia / 2)
-  |> subtract2d(tool = circles)
-  |> extrude(length = baseThickness)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2.31in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+flangeBase = extrude(region001, length = baseThickness)
 
 // Create the extrusion on the top of the flange base
-topExtrusion = startSketchOn(flangeBase, face = END)
-  |> circle(center = [0, 0], radius = topTotalDiameter / 2)
-  |> extrude(length = topTotalThickness)
+sketch002 = sketch(on = startSketchOn(flangeBase, face = END)) {
+  circle1 = circle(start = [var 1.16in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+topExtrusion = extrude(region002, length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
-bottomExtrusion = startSketchOn(flangeBase, face = START)
-  |> circle(center = [0, 0], radius = bottomTotalDiameter / 2)
-  |> extrude(length = bottomThickness)
+sketch003 = sketch(on = startSketchOn(flangeBase, face = START)) {
+  circle1 = circle(start = [var 1.25in, var 0in], center = [var 0in, var 0in])
+}
+region003 = region(segments = [sketch003.circle1])
+bottomExtrusion = extrude(region003, length = bottomThickness)
 
 // Cut a hole through the entire body
-pipeHole = startSketchOn(topExtrusion, face = END)
-  |> circle(center = [0, 0], radius = pipeDia / 2)
-  |> extrude(length = -(topTotalThickness + baseThickness + bottomThickness))
+sketch004 = sketch(on = startSketchOn(topExtrusion, face = END)) {
+  circle1 = circle(start = [var 0.63in, var 0in], center = [var 0in, var 0in])
+}
+region004 = region(segments = [sketch004.circle1])
+pipeHole = extrude(region004, length = -(topTotalThickness + baseThickness + bottomThickness))
 

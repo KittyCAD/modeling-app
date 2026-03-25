@@ -1,10 +1,10 @@
 pub(crate) mod digest;
 pub mod types;
 
-use crate::{
-    ModuleId,
-    parsing::ast::types::{BinaryPart, BodyItem, Expr},
-};
+use crate::ModuleId;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::Expr;
 
 impl BodyItem {
     pub fn module_id(&self) -> ModuleId {

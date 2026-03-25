@@ -18,6 +18,13 @@ import { isExternalFileDrag } from '@src/components/Explorer/utils'
 
 const noop = () => {}
 
+export interface QueuedMessage {
+  id: string
+  text: string
+  mode: MlCopilotMode
+  attachments: File[]
+}
+
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
@@ -34,6 +41,10 @@ export interface MlEphantConversationProps {
   defaultPrompt?: string
   initialMlCopilotMode?: MlCopilotMode // resolved from project settings
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
+  onSteer: (id: string) => void
 }
 
 const ML_COPILOT_MODE_META = Object.freeze({
@@ -197,6 +208,9 @@ interface MlEphantConversationInputProps {
   hasAlreadySentPrompts: boolean
   initialMlCopilotMode?: MlCopilotMode
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  isProcessing: boolean
+  queue: QueuedMessage[]
+  onRemoveFromQueue: (id: string) => void
 }
 
 export const MlEphantConversationInput = (
@@ -354,9 +368,11 @@ export const MlEphantConversationInput = (
           value={value}
           ref={refDiv}
           placeholder={
-            props.hasAlreadySentPrompts
-              ? ''
-              : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
+            props.isProcessing
+              ? 'Type a follow-up to queue...'
+              : props.hasAlreadySentPrompts
+                ? ''
+                : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
           }
           onKeyDown={(e) => {
             const isOnlyEnter =
@@ -414,21 +430,9 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            {props.hasPromptCompleted ? (
+            {props.isProcessing && (
               <button
-                data-testid="ml-ephant-conversation-input-button"
-                disabled={props.disabled}
-                onClick={onClick}
-                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
-              >
-                <CustomIcon name="arrowShortUp" className="w-5 h-5" />
-                <Tooltip position="top" hoverOnly={true}>
-                  <span>Send</span>
-                </Tooltip>
-              </button>
-            ) : (
-              <button
-                data-testid="ml-ephant-conversation-input-button"
+                data-testid="ml-ephant-conversation-cancel-button"
                 onClick={props.onCancel}
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
@@ -438,6 +442,17 @@ export const MlEphantConversationInput = (
                 </Tooltip>
               </button>
             )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
+            >
+              <CustomIcon name="arrowShortUp" className="w-5 h-5" />
+              <Tooltip position="top" hoverOnly={true}>
+                <span>{props.isProcessing ? 'Queue' : 'Send'}</span>
+              </Tooltip>
+            </button>
           </div>
         </div>
       </div>
@@ -482,30 +497,20 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0) return
-
-    requestAnimationFrame(() => {
-      if (refScroll.current) {
-        refScroll.current.scrollTo({
-          top: refScroll.current.scrollHeight,
-          behavior: 'smooth',
-        })
-      }
+    if (exchangesLength === 0 || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
     })
   }, [exchangesLength])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
-    if (isEndOfStream) {
-      requestAnimationFrame(() => {
-        if (refScroll.current) {
-          refScroll.current.scrollTo({
-            top: refScroll.current.scrollHeight,
-            behavior: 'smooth',
-          })
-        }
-      })
-    }
+    if (!isEndOfStream || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
   }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
@@ -531,7 +536,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false || props.needsReconnect ? (
+              ) : props.isLoading === false &&
+                props.needsReconnect === false ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
                     {exchangeCards}
@@ -549,6 +555,49 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               )}
             </div>
           </div>
+          {props.queue.length > 0 && (
+            <div className="border-t b-4 px-4 py-2 flex flex-col gap-1">
+              <span className="text-xs text-3">Queued</span>
+              {props.queue.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-0.5 text-xs"
+                >
+                  <span className="text-3 shrink-0">{index + 1}.</span>
+                  <span className="truncate min-w-0 flex-1">{msg.text}</span>
+                  {msg.attachments.length > 0 && (
+                    <span className="text-3 shrink-0 flex items-center gap-0.5">
+                      <CustomIcon name="paperclip" className="w-3 h-3" />
+                      {msg.attachments.length}
+                    </span>
+                  )}
+                  <span className="text-3 shrink-0">
+                    {ML_COPILOT_MODE_META[msg.mode].pretty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => props.onSteer(msg.id)}
+                    className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
+                    aria-label={`Send queued message ${index + 1} now`}
+                  >
+                    <CustomIcon name="arrowShortUp" className="w-4 h-4" />
+                    Steer
+                    <Tooltip position="top" hoverOnly={true}>
+                      <span>Interrupt and send this prompt</span>
+                    </Tooltip>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => props.onRemoveFromQueue(msg.id)}
+                    className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
+                    aria-label={`Remove queued message ${index + 1}`}
+                  >
+                    <CustomIcon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
@@ -568,6 +617,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
               }
+              isProcessing={props.isProcessing}
+              queue={props.queue}
+              onRemoveFromQueue={props.onRemoveFromQueue}
             />
           </div>
         </div>

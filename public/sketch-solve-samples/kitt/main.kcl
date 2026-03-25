@@ -2,16 +2,18 @@
 // The beloved KittyCAD mascot in a voxelized style.
 // Categories: Maker
 
+@settings(experimentalFeatures = allow)
+
 // Pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {
-  pixelBoxBody = startSketchOn(kitExtrude, face = extrudeTag)
+  sketch001 = startSketchOn(kitExtrude, face = extrudeTag)
     |> startProfile(at = [positionY, positionZ])
     |> line(end = [0, height])
     |> line(end = [width, 0])
     |> line(end = [0, -height])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> extrude(length = depth)
+  pixelBoxBody = extrude(sketch001, length = depth)
   return pixelBoxBody
 }
 
@@ -21,14 +23,17 @@ kitBodyWidth = 26
 kitBodyHeight = 25
 kitBodyDepth = 18
 
-kitBody = startSketchOn(XZ)
-  |> startProfile(at = [-kitBodyWidth / 2, kitBodyElevation])
-  |> line(end = [0, kitBodyHeight])
-  |> line(end = [kitBodyWidth, 0], tag = $seg01)
-  |> line(end = [0, -kitBodyHeight], tag = $seg02)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = kitBodyDepth)
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -13mm, var 6mm], end = [var -13mm, var 31mm])
+  line2 = line(start = [var -13mm, var 31mm], end = [var 13mm, var 31mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 13mm, var 31mm], end = [var 13mm, var 6mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 13mm, var 6mm], end = [var -13mm, var 6mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+kitBody = extrude(region001, length = kitBodyDepth)
 
 // 2. Kitty Head (Frame of display)
 kitHeadOffset = 1
@@ -54,22 +59,33 @@ kitFaceWidth = kitHeadWidth - 4
 kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3
 kitFaceDepth = 2
 
-kitFace = startSketchOn(kitHead, face = END)
-  |> startProfile(at = [-kitFaceWidth / 2, kitFaceElevation])
-  |> line(end = [0, 1]) // left lower corner up
-  |> line(end = [-1, 0]) // left lower corner left
-  |> line(end = [0, kitFaceHeight]) // left side up
-  |> line(end = [1, 0]) // left upper corner right
-  |> line(end = [0, 1]) // left upper corner up
-  |> line(end = [kitFaceWidth, 0]) // upper side right
-  |> line(end = [0, -1]) // right upper corner down
-  |> line(end = [1, 0]) // right upper corner right
-  |> line(end = [0, -kitFaceHeight]) // right side down
-  |> line(end = [-1, 0]) // right lower corner left
-  |> line(end = [0, -1]) // right lower corner down
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = -kitFaceDepth)
+sketch002 = sketch(on = startSketchOn(kitHead, face = END)) {
+  line1 = line(start = [var -10mm, var 16mm], end = [var -10mm, var 17mm])
+  line2 = line(start = [var -10mm, var 17mm], end = [var -11mm, var 17mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -11mm, var 17mm], end = [var -11mm, var 28mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -11mm, var 28mm], end = [var -10mm, var 28mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -10mm, var 28mm], end = [var -10mm, var 29mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -10mm, var 29mm], end = [var 10mm, var 29mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 10mm, var 29mm], end = [var 10mm, var 28mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 10mm, var 28mm], end = [var 11mm, var 28mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 11mm, var 28mm], end = [var 11mm, var 17mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 11mm, var 17mm], end = [var 10mm, var 17mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 10mm, var 17mm], end = [var 10mm, var 16mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 10mm, var 16mm], end = [var -10mm, var 16mm])
+  coincident([line11.end, line12.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+kitFace = extrude(region002, length = -kitFaceDepth)
 
 // Kitty Face Features:
 // 3.1 Kitty Eyes
@@ -119,22 +135,33 @@ kitRightEye = pixelBox(
   depth = kitEyeDepth,
 )
 kitNoseElevation = kitEyeHeight - 5
-kitNose = startSketchOn(kitFace, face = START)
-  |> startProfile(at = [-2, kitNoseElevation]) // H V
-  |> line(end = [0, 1]) // lower-left up
-  |> line(end = [2, 0]) // lower-left right
-  |> line(end = [0, 2]) // mid-left up
-  |> line(end = [-1, 0]) // upper-left left
-  |> line(end = [0, 1]) // upper-left up
-  |> line(end = [3, 0]) // upper-mid right
-  |> line(end = [0, -1]) // upper-right down
-  |> line(end = [-1, 0]) // upper-right left
-  |> line(end = [0, -2]) // mid-left down
-  |> line(end = [2, 0]) // lower-right right
-  |> line(end = [0, -1]) // lower-right down
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = kitEyeDepth)
+sketch003 = sketch(on = startSketchOn(kitFace, face = START)) {
+  line1 = line(start = [var -2mm, var 18mm], end = [var -2mm, var 19mm])
+  line2 = line(start = [var -2mm, var 19mm], end = [var 0mm, var 19mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0mm, var 19mm], end = [var 0mm, var 21mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 21mm], end = [var -1mm, var 21mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -1mm, var 21mm], end = [var -1mm, var 22mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -1mm, var 22mm], end = [var 2mm, var 22mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 2mm, var 22mm], end = [var 2mm, var 21mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 2mm, var 21mm], end = [var 1mm, var 21mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 1mm, var 21mm], end = [var 1mm, var 19mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 1mm, var 19mm], end = [var 3mm, var 19mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 3mm, var 19mm], end = [var 3mm, var 18mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 3mm, var 18mm], end = [var -2mm, var 18mm])
+  coincident([line11.end, line12.start])
+}
+region003 = region(segments = [sketch003.line1, sketch003.line2])
+kitNose = extrude(region003, length = kitEyeDepth)
 
 // 3.3 Kitty Mouth
 kitMouthOffset = 4

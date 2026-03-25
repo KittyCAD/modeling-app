@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 // Define parameters
 boltSpacing = 5
@@ -21,26 +21,31 @@ d = boltSpacing / 2
 tangentAngle = asin((r1 - r2) / d)
 tangentLength = (r1 - r2) / tan(tangentAngle)
 
-plateBody = startSketchOn(XY)
-  // Use polar coordinates to start the sketch at the tangent point of the larger radius
-  |> startProfile(at = polar(angle = 90deg - tangentAngle, length = r1))
-  |> angledLine(angle = -tangentAngle, length = tangentLength)
-  |> tangentialArc(radius = r2, angle = (tangentAngle - 90deg) * 2)
-  |> angledLine(angle = tangentAngle, length = -tangentLength)
-  |> tangentialArc(radius = r1, angle = -tangentAngle * 2)
-  |> angledLine(angle = -tangentAngle, length = -tangentLength)
-  |> tangentialArc(radius = r2, angle = (tangentAngle - 90deg) * 2)
-  |> angledLine(angle = tangentAngle, length = tangentLength)
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter / 2 * 1.5))
-  |> extrude(length = plateThickness)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.61in, var 1.55in], end = [var 2.77in, var 0.7in])
+  arc2 = arc(start = [var 2.77in, var -0.7in], end = [var 2.77in, var 0.7in], center = [var 2.5in, var -0in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 2.77in, var -0.7in], end = [var 0.61in, var -1.55in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -0.61in, var -1.55in], end = [var 0.61in, var -1.55in], center = [var 0in, var -0in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -0.61in, var -1.55in], end = [var -2.77in, var -0.7in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -2.77in, var 0.7in], end = [var -2.77in, var -0.7in], center = [var -2.5in, var -0in])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -2.77in, var 0.7in], end = [var -0.61in, var 1.55in])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var 0.61in, var 1.55in], end = [var -0.61in, var 1.55in], center = [var -0in, var -0in])
+  coincident([line7.end, arc8.end])
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+plateBody = extrude(region001, length = plateThickness)
 
 // Function to create a countersunk hole
 fn countersink(@holePosition) {
-  startSketchOn(plateBody, face = END)
+  sketch002 = startSketchOn(plateBody, face = END)
     |> circle(center = [holePosition, 0], radius = boltDiameter / 2, tag = $hole01)
-    |> extrude(length = -plateThickness)
+  extrude(sketch002, length = -plateThickness)
     // Use a chamfer to create a 90-degree countersink
     |> chamfer(length = boltDiameter, tags = [hole01])
   return {  }

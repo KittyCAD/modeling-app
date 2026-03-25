@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Define shaft parameters
 hubDiameter = 2in
@@ -14,21 +14,30 @@ webThickness = 10
 stockDiameter = 5
 
 // Sketch the revolved profile of one side of the spool
-spoolBase = startSketchOn(XY)
-  |> startProfile(at = [0, coreDiameter / 2])
-  |> xLine(length = spoolThickness / 2)
-  |> yLine(endAbsolute = spoolDiameter / 2 - webThickness)
-  |> tangentialArc(angle = -270deg, radius = webThickness)
-  |> yLine(endAbsolute = hubDiameter / 2, tag = $seg01)
-  |> xLine(endAbsolute = profileStartX())
-  |> yLine(endAbsolute = profileStartY())
-  |> close()
-  |> revolve(axis = X)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 75mm], end = [var 133.5mm, var 75mm])
+  line2 = line(start = [var 133.5mm, var 75mm], end = [var 133.5mm, var 142.5mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 143.5mm, var 132.5mm], end = [var 133.5mm, var 142.5mm], center = [var 143.5mm, var 142.5mm])
+  coincident([line2.end, arc3.end])
+  line4 = line(start = [var 143.5mm, var 132.5mm], end = [var 143.5mm, var 25.4mm])
+  coincident([arc3.start, line4.start])
+  line5 = line(start = [var 143.5mm, var 25.4mm], end = [var 0mm, var 25.4mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0mm, var 25.4mm], end = [var 0mm, var 75mm])
+  coincident([line5.end, line6.start])
+  horizontal(line2)
+  vertical(arc3)
+  vertical(line5)
+  horizontal(line6)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+spoolBase = revolve(region001, axis = X)
   |> appearance(color = "#010101", metalness = 10, roughness = 70)
 
 // Create a function that draws an indent on the outer faces of the spool
 fn score(radius, length, depth) {
-  scoreFn = startSketchOn(spoolBase, face = seg01)
+  sketch002 = startSketchOn(spoolBase, face = seg01)
     |> startProfile(at = [0, radius])
     |> arc(angleStart = 90deg, angleEnd = 55deg, radius = profileStartY(%))
     |> angledLine(angle = 55deg, length = length)
@@ -36,7 +45,7 @@ fn score(radius, length, depth) {
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
     |> patternCircular2d(instances = 8, center = [0, 0])
-    |> extrude(length = -depth)
+  scoreFn = extrude(sketch002, length = -depth)
 
   return scoreFn
 }
@@ -57,9 +66,11 @@ hel01 = helix(
 )
 
 // Sweep and color the coil
-stock = startSketchOn(XZ)
-  |> circle(center = [0, -(coreDiameter + stockDiameter) / 2], diameter = stockDiameter)
-  |> sweep(path = hel01)
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [var 2.5mm, var -77.5mm], center = [var 0mm, var -77.5mm])
+}
+region002 = region(segments = [sketch002.circle1])
+stock = sweep(region002, path = hel01)
   |> translate(x = -spoolThickness / 2)
   |> appearance(color = "#f2471c", metalness = 70, roughness = 30)
 

@@ -10,6 +10,8 @@ import type {
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
+import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
+import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
 
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
@@ -50,6 +52,8 @@ export function isMlCopilotUserRequest(
 
 export enum MlEphantManagerStates {
   Setup = 'setup',
+  WaitForContinueCheck = 'wait-for-continue-check',
+  ContinueCheck = 'continue-check',
   Ready = 'ready',
   Response = 'response',
   Request = 'request',
@@ -60,6 +64,7 @@ export enum MlEphantManagerTransitions {
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
@@ -100,6 +105,11 @@ export type MlEphantManagerEvents =
       sketch_solve?: boolean // allow Zookeeper to reference experimental docs
     }
   | {
+      type: MlEphantManagerStates.ContinueCheck
+      projectName: string
+      projectFiles: FileMeta[]
+    }
+  | {
       type: MlEphantManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
     }
@@ -108,6 +118,9 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.Cancel
+    }
+  | {
+      type: MlEphantManagerTransitions.Interrupt
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
@@ -322,6 +335,17 @@ function isMlCopilotServerMessage(
   return true
 }
 
+const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
+  const lastExchange = exchanges.slice(-1)[0]
+  const lastResponse = lastExchange?.responses.slice(-1)[0]
+  return (
+    (lastExchange?.responses?.length > 0 &&
+      lastResponse !== undefined &&
+      !('end_of_stream' in lastResponse)) ||
+    lastExchange?.responses?.length === 0
+  )
+}
+
 type XSInput<T> = {
   input: { event: Extract<MlEphantManagerEvents, { type: T }> } & {
     context: MlEphantManagerContext
@@ -414,32 +438,26 @@ export const mlEphantManagerMachine = setup({
         ? `?conversation_id=${maybeConversationId}&replay=true`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+
+      // Defensive: if there's already an open connection, close it.
+      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        args.input.context.ws?.close()
+      }
+
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
-
-      // TODO: Get the server side to instead insert "interrupt"...
-      const addErrorIfInterrupted = (exchanges: Exchange[]) => {
-        const lastExchange = exchanges.slice(-1)[0]
-        const lastResponse = lastExchange?.responses.slice(-1)[0]
-        if (
-          (lastExchange?.responses?.length > 0 &&
-            lastResponse !== undefined &&
-            !('end_of_stream' in lastResponse)) ||
-          lastExchange?.responses?.length === 0
-        ) {
-          lastExchange.responses.push({
-            error: {
-              detail: 'Interrupted',
-            },
-          })
-        }
-      }
 
       let maybeReplayedExchanges: Exchange[] = []
 
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
           let devCalledClose = false
+
+          // Any WS protocol messages will trigger the `api` heartbeat update.
+          const pingIntervalId = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return
+            ws.send(JSON.stringify({ type: 'ping' }))
+          }, 4_000)
 
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
@@ -486,6 +504,11 @@ export const mlEphantManagerMachine = setup({
               return
             }
 
+            // Ignore pong
+            if ('pong' in response) {
+              return
+            }
+
             if (
               'error' in response &&
               (response.error.detail.includes(
@@ -522,8 +545,6 @@ export const mlEphantManagerMachine = setup({
                   'type' in responseReplay &&
                   responseReplay.type === 'user'
                 ) {
-                  addErrorIfInterrupted(maybeReplayedExchanges)
-
                   if (isMlCopilotUserRequest(responseReplay)) {
                     maybeReplayedExchanges.push({
                       request: responseReplay,
@@ -553,8 +574,6 @@ export const mlEphantManagerMachine = setup({
                 }
                 lastExchange.responses.push(responseReplay)
               }
-
-              addErrorIfInterrupted(maybeReplayedExchanges)
             }
 
             // We're only considered setup when a conversation_id is assigned
@@ -571,6 +590,7 @@ export const mlEphantManagerMachine = setup({
                 conversationId: response.conversation_id.conversation_id,
                 ws,
               })
+
               return
             }
 
@@ -591,6 +611,7 @@ export const mlEphantManagerMachine = setup({
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
+              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
@@ -663,6 +684,71 @@ export const mlEphantManagerMachine = setup({
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
+    [MlEphantManagerStates.ContinueCheck]: fromPromise(async function (
+      args: XSInput<MlEphantManagerStates.ContinueCheck>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context, event } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      // If nothing was interrupted move onto the next phase
+      if (!hasBeenInterruptedOnLast(context.conversation?.exchanges)) {
+        return {
+          awaitingResponse: false,
+        }
+      }
+
+      const filesAsByteArrays: Record<string, number[]> = {}
+      const kclFilesMap: KclFileMetaMap = {}
+      const files: KittyCadLibFile[] = []
+
+      event.projectFiles.forEach((file) => {
+        let data: Blob
+        if (file.type === 'other') {
+          data = file.data
+        } else {
+          // file.type === 'kcl'
+          kclFilesMap[file.execStateFileNamesIndex] = file
+          data = new Blob([file.fileContents], { type: 'text/kcl' })
+        }
+        files.push({
+          name: file.relPath,
+          data,
+        })
+      })
+
+      for (let file of files) {
+        filesAsByteArrays[file.name] = Array.from(
+          new Uint8Array(await file.data.arrayBuffer())
+        )
+      }
+
+      const requestProjectContext: Extract<
+        MlCopilotClientMessage,
+        { type: 'project_context' }
+      > = {
+        type: 'project_context',
+        project_name: event.projectName,
+        current_files: filesAsByteArrays,
+      }
+
+      const requestContinue: Extract<
+        MlCopilotClientMessage,
+        { type: 'system' }
+      > = {
+        type: 'system',
+        command: 'continue',
+      }
+
+      context.ws.send(JSON.stringify(requestContinue))
+      context.ws.send(JSON.stringify(requestProjectContext))
+
+      return {
+        awaitingResponse: true,
+      }
+    }),
     [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
       args: XSInput<MlEphantManagerTransitions.Cancel>
     ): Promise<Partial<MlEphantManagerContext>> {
@@ -680,10 +766,32 @@ export const mlEphantManagerMachine = setup({
 
       return {}
     }),
+    [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
   context: mlEphantDefaultContext,
+  exit: (args) => {
+    // Make sure the connection is closed.
+    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    args.context?.ws?.close()
+  },
   states: {
     [S.Await]: {
       on: {
@@ -726,7 +834,7 @@ export const mlEphantManagerMachine = setup({
         },
         src: MlEphantManagerStates.Setup,
         onDone: {
-          target: MlEphantManagerStates.Ready,
+          target: MlEphantManagerStates.WaitForContinueCheck,
           actions: [
             assign(({ event }) => ({
               ...event.output,
@@ -776,6 +884,36 @@ export const mlEphantManagerMachine = setup({
         [MlEphantManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },
+      },
+    },
+    // Must wait because other systems have the data we need for the check.
+    [MlEphantManagerStates.WaitForContinueCheck]: {
+      on: {
+        ...transitions([MlEphantManagerStates.ContinueCheck]),
+      },
+    },
+    [MlEphantManagerStates.ContinueCheck]: {
+      invoke: {
+        input: (args) => {
+          assertEvent(args.event, [MlEphantManagerStates.ContinueCheck])
+
+          return {
+            event: args.event,
+            context: args.context,
+          }
+        },
+        src: MlEphantManagerStates.ContinueCheck,
+        onDone: {
+          target: MlEphantManagerStates.Ready,
+          actions: [
+            assign({
+              awaitingResponse({ event }) {
+                return event.output.awaitingResponse ?? false
+              },
+            }),
+          ],
+        },
+        onError: { target: S.Await, actions: ['toastError'] },
       },
     },
     [MlEphantManagerStates.Ready]: {
@@ -883,6 +1021,12 @@ export const mlEphantManagerMachine = setup({
                       | TypeVariant<MlCopilotServerMessage>
                       | undefined = ts.find((t) => t in r)
 
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) {
+                      return context
+                    }
+
                     return {
                       conversation,
                       lastMessageId,
@@ -907,6 +1051,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
                 MlEphantManagerTransitions.Cancel,
+                MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
                 MlEphantManagerTransitions.AbruptClose,
               ]),
@@ -952,6 +1097,25 @@ export const mlEphantManagerMachine = setup({
                   }
                 },
                 src: MlEphantManagerTransitions.Cancel,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.Interrupt,
                 onDone: {
                   target: S.Await,
                   actions: [],

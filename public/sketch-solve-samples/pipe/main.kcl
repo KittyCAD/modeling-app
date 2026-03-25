@@ -3,7 +3,7 @@
 // Categories: Construction, Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Define parameters
 pipeInnerDiameter = 2.0
@@ -11,13 +11,17 @@ pipeOuterDiameter = 2.375
 pipeLength = 6
 
 // Create the pipe base
-pipeBase = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = pipeOuterDiameter / 2)
-  |> extrude(length = pipeLength)
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 1.19in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+pipeBase = extrude(region001, length = pipeLength)
 
 // Extrude a hole through the length of the pipe
-pipe = startSketchOn(pipeBase, face = END)
-  |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
-  |> extrude(length = -pipeLength)
+sketch002 = sketch(on = startSketchOn(pipeBase, face = END)) {
+  circle1 = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
+}
+region002 = region(segments = [sketch002.circle1])
+pipe = extrude(region002, length = -pipeLength)
   |> appearance(color = "#a24ed0")
 

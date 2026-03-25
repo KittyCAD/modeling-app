@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set Units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Define parameters
 lbumps = 3 // number of bumps long
@@ -27,28 +27,33 @@ assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
 assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
-base = startSketchOn(XY)
-  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
-  |> line(end = [totalWidth, 0])
-  |> line(end = [0, totalLength])
-  |> line(end = [-totalWidth, 0])
-  |> close()
-  |> extrude(length = height)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -7.9in, var -11.9in], end = [var 7.9in, var -11.9in])
+  line2 = line(start = [var 7.9in, var -11.9in], end = [var 7.9in, var 11.9in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 7.9in, var 11.9in], end = [var -7.9in, var 11.9in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -7.9in, var 11.9in], end = [var -7.9in, var -11.9in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+base = extrude(region001, length = height)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
-shellExtrude = startSketchOn(base, face = START)
-  |> startProfile(at = [
-       -(totalWidth / 2 - t),
-       -(totalLength / 2 - t)
-     ])
-  |> line(end = [totalWidth - (2 * t), 0])
-  |> line(end = [0, totalLength - (2 * t)])
-  |> line(end = [-(totalWidth - (2 * t)), 0])
-  |> close()
-  |> extrude(length = -(height - t))
+sketch002 = sketch(on = startSketchOn(base, face = START)) {
+  line1 = line(start = [var -6.4in, var -10.4in], end = [var 6.4in, var -10.4in])
+  line2 = line(start = [var 6.4in, var -10.4in], end = [var 6.4in, var 10.4in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 6.4in, var 10.4in], end = [var -6.4in, var 10.4in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -6.4in, var 10.4in], end = [var -6.4in, var -10.4in])
+  coincident([line3.end, line4.start])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+shellExtrude = extrude(region002, length = -(height - t))
 
 // Create the pegs on the top of the base
-peg = startSketchOn(base, face = END)
+sketch003 = startSketchOn(base, face = END)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2),
@@ -58,10 +63,10 @@ peg = startSketchOn(base, face = END)
      )
   |> patternLinear2d(axis = [1, 0], instances = wbumps, distance = pitch)
   |> patternLinear2d(axis = [0, 1], instances = lbumps, distance = pitch)
-  |> extrude(length = bumpHeight)
+peg = extrude(sketch003, length = bumpHeight)
 
 // Create the pegs on the bottom of the base
-tubePattern = startSketchOn(shellExtrude, face = START)
+sketch004 = startSketchOn(shellExtrude, face = START)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
@@ -71,5 +76,5 @@ tubePattern = startSketchOn(shellExtrude, face = START)
      )
   |> patternLinear2d(axis = [1, 0], instances = wbumps - 1, distance = pitch)
   |> patternLinear2d(axis = [0, 1], instances = lbumps - 1, distance = pitch)
-  |> extrude(length = bumpHeight)
+tubePattern = extrude(sketch004, length = bumpHeight)
 

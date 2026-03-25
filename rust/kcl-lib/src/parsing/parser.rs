@@ -1,46 +1,106 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::BTreeMap};
+use std::cell::RefCell;
+use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
-use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
-    dispatch,
-    error::{ErrMode, StrContext, StrContextValue},
-    prelude::*,
-    stream::Stream,
-    token::{any, none_of, one_of, take_till},
-};
+use winnow::combinator::alt;
+use winnow::combinator::delimited;
+use winnow::combinator::opt;
+use winnow::combinator::peek;
+use winnow::combinator::preceded;
+use winnow::combinator::repeat;
+use winnow::combinator::repeat_till;
+use winnow::combinator::separated;
+use winnow::combinator::separated_pair;
+use winnow::combinator::terminated;
+use winnow::dispatch;
+use winnow::error::ErrMode;
+use winnow::error::StrContext;
+use winnow::error::StrContextValue;
+use winnow::prelude::*;
+use winnow::stream::Stream;
+use winnow::token::any;
+use winnow::token::none_of;
+use winnow::token::one_of;
+use winnow::token::take_till;
 
-use super::{
-    DeprecationKind,
-    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
-    token::{NumericSuffix, RESERVED_WORDS},
-};
-use crate::{
-    IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
-    errors::{CompilationError, Severity, Tag},
-    execution::{
-        annotations::{self, EXPERIMENTAL},
-        types::ArrayLen,
-    },
-    parsing::{
-        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, Block,
-            BodyItem, BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, SketchBlock, SketchVar, TagDeclarator,
-            Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator,
-            VariableKind,
-        },
-        math::BinaryExpressionToken,
-        token::{Token, TokenSlice, TokenType},
-    },
-};
+use super::DeprecationKind;
+use super::ast::types::AscribedExpression;
+use super::ast::types::ImportPath;
+use super::ast::types::LabelledExpression;
+use super::token::NumericSuffix;
+use super::token::RESERVED_WORDS;
+use crate::IMPORT_FILE_EXTENSIONS;
+use crate::MetaSettings;
+use crate::SourceRange;
+use crate::TypedPath;
+use crate::errors::CompilationError;
+use crate::errors::Severity;
+use crate::errors::Tag;
+use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::{self};
+use crate::execution::types::ArrayLen;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Block;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::BoxNode;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ExpressionStatement;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::FunctionType;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportItem;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeList;
+use crate::parsing::ast::types::NonCodeMeta;
+use crate::parsing::ast::types::NonCodeNode;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::ObjectProperty;
+use crate::parsing::ast::types::Parameter;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::PipeSubstitution;
+use crate::parsing::ast::types::PrimitiveType;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
+use crate::parsing::ast::types::Shebang;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableDeclarator;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::math::BinaryExpressionToken;
+use crate::parsing::token::Token;
+use crate::parsing::token::TokenSlice;
+use crate::parsing::token::TokenType;
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -3885,10 +3945,10 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        ModuleId,
-        parsing::ast::types::{BodyItem, Expr, VariableKind},
-    };
+    use crate::ModuleId;
+    use crate::parsing::ast::types::BodyItem;
+    use crate::parsing::ast::types::Expr;
+    use crate::parsing::ast::types::VariableKind;
 
     fn in_ctx<R, F: FnOnce() -> R>(f: F) -> R {
         ParseContext::init();

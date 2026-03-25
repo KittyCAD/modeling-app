@@ -5,7 +5,12 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
+  COOKIE_NAME_PREFIX,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -355,8 +360,14 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  await page.goto('/')
 
+  if (process.env.VERCEL_BASE_URL && token) {
+    // Vercel is external to Playwright, so the token is provided in the URL
+    await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
+    await waitForPageLoad(page)
+  }
+
+  await page.goto('/')
   await waitForPageLoad(page)
   return waitForLspPromise
 }
@@ -500,7 +511,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const buffer = await page.screenshot({
         fullPage: true,
       })
-      const screenshot = await PNG.sync.read(buffer)
+      const screenshot = PNG.sync.read(buffer)
       const pixMultiplier: number = await page.evaluate(
         'window.devicePixelRatio'
       )
@@ -920,11 +931,12 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
+      TOKEN_PERSIST_KEY,
       layoutName,
       layoutPayload,
     }) => {
       localStorage.clear()
-      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(
         layoutName,
@@ -961,6 +973,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
+      TOKEN_PERSIST_KEY,
       layoutName: getLayoutPersistKey(),
       layoutPayload: playwrightLayoutConfig,
     }
@@ -1146,7 +1159,7 @@ export function getPixelRGBs(page: Page) {
     const buffer = await page.screenshot({
       fullPage: true,
     })
-    const screenshot = await PNG.sync.read(buffer)
+    const screenshot = PNG.sync.read(buffer)
     const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
     const allCords: [number, number][] = [[coords.x, coords.y]]
     for (let i = 1; i < radius; i++) {
