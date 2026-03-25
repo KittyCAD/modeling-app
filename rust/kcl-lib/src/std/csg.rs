@@ -268,6 +268,10 @@ pub(crate) async fn inner_imprint(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    eprintln!("Found {} targets:", targets.len());
+    for target in &targets {
+        eprintln!("{}", target.id);
+    }
     let body_out_id = exec_state.next_uuid();
 
     let mut body = targets[0].clone();

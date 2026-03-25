@@ -914,6 +914,22 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "indexing/main.kcl",
+    "multipleFiles": true,
+    "title": "Tesla Front Impact Assembly",
+    "description": "Top-level surface assembly that trims the crash box against the inserted bumper beam and collects the visible Tesla study geometry.",
+    "files": [
+      "bumper-beam-assembly.kcl",
+      "crash-box-assembly.kcl",
+      "crash-box-envelope.kcl",
+      "crash-box-globals.kcl",
+      "crash-box-ribs.kcl",
+      "crash-box-to-car-blade.kcl",
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Fasteners"
     ],

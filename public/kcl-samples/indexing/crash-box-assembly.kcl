@@ -1,0 +1,34 @@
+// Tesla Crash Box Assembly
+// Groups the crash box envelope, crossed ribs, and upper and lower mounting blades into one positioned crash box subassembly.
+
+@settings(defaultLengthUnit = mm)
+
+import "crash-box-envelope.kcl" as crashBoxEnvelope
+import "crash-box-to-car-blade.kcl" as crashBoxToCarBlade
+import crashBoxHorizontalRib, crashBoxVerticalRib from "crash-box-ribs.kcl"
+
+upperBladeTranslateX = -56
+upperBladeTranslateZ = 25
+lowerBladeRotateX = 180deg
+lowerBladeTranslateX = -18
+lowerBladeTranslateZ = -28
+lowerBladeColor = "#ff7b00"
+
+upperBlade = crashBoxToCarBlade
+lowerBlade = clone(crashBoxToCarBlade)
+
+export upperBladePlaced = upperBlade
+  |> translate(x = upperBladeTranslateX, z = upperBladeTranslateZ, global = true)
+
+export lowerBladePlaced = lowerBlade
+  |> rotate(axis = X, angle = lowerBladeRotateX, global = true)
+  |> translate(x = lowerBladeTranslateX, z = lowerBladeTranslateZ, global = true)
+  |> appearance(color = lowerBladeColor)
+
+export crashBoxAssembly = [
+  crashBoxEnvelope,
+  crashBoxVerticalRib,
+  crashBoxHorizontalRib,
+  upperBladePlaced,
+  lowerBladePlaced
+]

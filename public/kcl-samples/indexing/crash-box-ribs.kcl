@@ -1,0 +1,25 @@
+// Tesla Crash Box Ribs
+// Interior vertical and horizontal rib sheets that span the crash box cavity and stiffen the envelope surfaces.
+
+@settings(defaultLengthUnit = mm)
+
+import crashBoxHorizontalRibColor, crashBoxLength, crashBoxVerticalRibColor, halfInnerProfileHeight, halfInnerProfileWidth, horizontalRibLength, verticalRibLength from "crash-box-globals.kcl"
+
+crashBoxVerticalRibProfile = startSketchOn(YZ)
+  |> startProfile(at = [0, halfInnerProfileHeight])
+  |> line(end = [0, -verticalRibLength])
+
+export crashBoxVerticalRib = extrude(crashBoxVerticalRibProfile, length = -crashBoxLength, bodyType = SURFACE)
+  |> appearance(color = crashBoxVerticalRibColor)
+
+crashBoxHorizontalRibProfile = startSketchOn(YZ)
+  |> startProfile(at = [-halfInnerProfileWidth, 0])
+  |> line(end = [horizontalRibLength, 0])
+
+export crashBoxHorizontalRib = extrude(crashBoxHorizontalRibProfile, length = -crashBoxLength, bodyType = SURFACE)
+  |> appearance(color = crashBoxHorizontalRibColor)
+
+crashBoxRibs = [
+  crashBoxVerticalRib,
+  crashBoxHorizontalRib
+]

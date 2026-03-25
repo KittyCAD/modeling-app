@@ -1,0 +1,4 @@
+# Tesla Project Ignore Rules
+# Keeps generated preview output out of versioned project files.
+
+thumbnail.png

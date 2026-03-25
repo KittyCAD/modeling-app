@@ -1,0 +1,334 @@
+// Tesla Bumper Beam Assembly
+// Curved bumper beam surface study with an internal rib and trimming cutter used where the beam intersects the crash box.
+
+@settings(defaultLengthUnit = mm)
+
+import outerProfileHeight, outerProfileWidth from "crash-box-globals.kcl"
+
+beamSectionWidth = 40
+beamSectionHeight = 95
+beamLength = 142
+beamCurvedRadius = 2000
+beamCurvedArcLength = beamLength
+materialThickness = 2
+beamColor = "#2f9d44"
+beamHorizontalRibZ = 0
+beamBoxCutterInset = 8
+beamBoxCutterOverlap = 18
+beamBoxCutterColor = "#3b82f6"
+beamForkCutterGap = 3
+beamForkCutterTipExtension = beamBoxCutterInset + beamForkCutterGap
+beamForkCutterColor = "#ffb000"
+
+maxMaterialThickness = min([beamSectionWidth, beamSectionHeight]) / 2
+assert(
+  materialThickness,
+  isGreaterThanOrEqual = 0,
+  isLessThan = maxMaterialThickness,
+  error = "materialThickness must stay between 0 and less than half of the smaller beam section dimension",
+)
+
+beamHalfWidth = beamSectionWidth / 2
+beamHalfHeight = beamSectionHeight / 2
+beamInnerSectionWidth = beamSectionWidth - (2 * materialThickness)
+beamHalfInnerSectionWidth = beamInnerSectionWidth / 2
+beamCurvedAngle = -(beamCurvedArcLength / beamCurvedRadius): number(rad)
+beamBoxCutterHeight = max([outerProfileHeight, outerProfileWidth]) + 2 * beamBoxCutterOverlap
+beamBoxCutterHalfHeight = beamBoxCutterHeight / 2
+beamBoxCutterX = -beamHalfWidth - beamBoxCutterInset
+beamForkCutterHalfWidth = beamHalfWidth + beamForkCutterGap
+beamForkCutterHalfHeight = beamHalfHeight + beamForkCutterGap
+beamForkCutterBackX = beamForkCutterHalfWidth
+beamForkCutterOpenX = -beamForkCutterHalfWidth - beamForkCutterTipExtension
+
+// ==================================================
+// Real Beam
+// ==================================================
+
+// Straight Beam
+straightBeamProfile = startSketchOn(XZ)
+  |> startProfile(at = [-beamHalfWidth, beamHalfHeight])
+  |> line(end = [beamSectionWidth, 0], tag = $seg03)
+  |> line(end = [0, -beamSectionHeight], tag = $seg01)
+  |> line(end = [-beamSectionWidth, 0], tag = $seg05)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
+  |> close()
+
+straightBeam = extrude(straightBeamProfile, length = beamLength, bodyType = SURFACE)
+
+// Curved Beam
+curvedBeamAxis = {
+  direction = [0, 1],
+  origin = [beamCurvedRadius, 0]
+}
+
+curvedBeamProfile = startSketchOn(XZ)
+  |> startProfile(at = [-beamHalfWidth, beamHalfHeight])
+  |> line(end = [beamSectionWidth, 0], tag = $seg04)
+  |> line(end = [0, -beamSectionHeight], tag = $seg02)
+  |> line(end = [-beamSectionWidth, 0], tag = $seg06)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg08)
+  |> close()
+
+curvedBeam = revolve(
+  curvedBeamProfile,
+  axis = curvedBeamAxis,
+  angle = beamCurvedAngle,
+  bodyType = SURFACE,
+)
+
+curvedBeamPlaced = curvedBeam
+  |> rotate(axis = Z, angle = -22deg, global = true)
+  |> translate(x = 93, y = 453, global = true)
+
+// Blend Surfaces
+beamRightSideBlend = blend([
+  getBoundedEdge(curvedBeamPlaced, edge = getOppositeEdge(seg02)),
+  seg01
+])
+beamTopFaceBlend = blend([
+  getBoundedEdge(curvedBeamPlaced, edge = getOppositeEdge(seg04)),
+  seg03
+])
+beamBottomFaceBlend = blend([
+  getBoundedEdge(curvedBeamPlaced, edge = getOppositeEdge(seg06)),
+  seg05
+])
+beamLeftSideBlend = blend([
+  getBoundedEdge(curvedBeamPlaced, edge = getOppositeEdge(seg08)),
+  seg07
+])
+
+// Internal Rib
+horizontalRibStraightProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       -beamHalfInnerSectionWidth,
+       beamHorizontalRibZ
+     ])
+  |> line(end = [beamInnerSectionWidth, 0], tag = $seg09)
+
+horizontalRibStraight = extrude(horizontalRibStraightProfile, length = beamLength, bodyType = SURFACE)
+
+horizontalRibCurvedProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       -beamHalfInnerSectionWidth,
+       beamHorizontalRibZ
+     ])
+  |> line(end = [beamInnerSectionWidth, 0], tag = $seg10)
+
+horizontalRibCurved = revolve(
+  horizontalRibCurvedProfile,
+  axis = curvedBeamAxis,
+  angle = beamCurvedAngle,
+  bodyType = SURFACE,
+)
+
+horizontalRibCurvedPlaced = horizontalRibCurved
+  |> rotate(axis = Z, angle = -22deg, global = true)
+  |> translate(x = 93, y = 453, global = true)
+
+horizontalRibBlend = blend([
+  getBoundedEdge(horizontalRibCurvedPlaced, edge = getOppositeEdge(seg10)),
+  seg09
+])
+
+beamAssemblySurfaces = [
+  straightBeam,
+  curvedBeamPlaced,
+  horizontalRibStraight,
+  horizontalRibCurvedPlaced,
+  horizontalRibBlend,
+  beamRightSideBlend,
+  beamTopFaceBlend,
+  beamBottomFaceBlend,
+  beamLeftSideBlend
+]
+
+// ==================================================
+// Beam Cutout
+// ==================================================
+
+
+beamCutoutOverallWidth = 243.07 + 32.99
+beamCutoutOverallHeight = 29.09 + 118.24
+beamCutoutCornerRadius = (32.99 + 29.09) / 2
+beamCutoutTopStraightLength = beamCutoutOverallWidth - beamCutoutCornerRadius
+beamCutoutSideStraightLength = beamCutoutOverallHeight - beamCutoutCornerRadius
+beamCutoutExtrudeLength = 200
+
+beamCutoutSketch = startSketchOn(YZ)
+beamCutoutProfile = startProfile(beamCutoutSketch, at = [-275, -5])
+  |> xLine(length = beamCutoutTopStraightLength)
+  |> tangentialArc(end = [
+       beamCutoutCornerRadius,
+       -beamCutoutCornerRadius
+     ])
+  |> yLine(length = -beamCutoutSideStraightLength)
+
+beamCutoutSurface = extrude(
+       beamCutoutProfile,
+       length = beamCutoutExtrudeLength,
+       symmetric = true,
+       bodyType = SURFACE,
+     )
+  |> rotate(axis = Z, angle = -22deg, global = true)
+
+beamCutoutResult = split(beamAssemblySurfaces, tools = [beamCutoutSurface])
+
+beamCutout = [
+  beamCutoutResult[0],
+  beamCutoutResult[2],
+  beamCutoutResult[3],
+  beamCutoutResult[4],
+  beamCutoutResult[5],
+  beamCutoutResult[6],
+  beamCutoutResult[7],
+  beamCutoutResult[8],
+  beamCutoutResult[10]
+]
+
+hide([
+  beamCutoutResult[1],
+  beamCutoutResult[9],
+  beamCutoutResult[11]
+])
+
+// ==================================================
+// Beam Assembly
+// ==================================================
+
+
+export bumperBeamAssembly = appearance(beamCutout, color = beamColor)
+
+// ==================================================
+// Box Tip Cutter
+// ==================================================
+
+
+beamBoxCutterStraightProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       beamBoxCutterX,
+       beamBoxCutterHalfHeight
+     ])
+  |> line(end = [0, -beamBoxCutterHeight], tag = $beamBoxCutterStraightEdge)
+
+beamBoxCutterStraight = extrude(beamBoxCutterStraightProfile, length = beamLength, bodyType = SURFACE)
+
+beamBoxCutterCurvedProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       beamBoxCutterX,
+       beamBoxCutterHalfHeight
+     ])
+  |> line(end = [0, -beamBoxCutterHeight], tag = $beamBoxCutterCurvedEdge)
+
+beamBoxCutterCurved = revolve(
+  beamBoxCutterCurvedProfile,
+  axis = curvedBeamAxis,
+  angle = beamCurvedAngle,
+  bodyType = SURFACE,
+)
+
+beamBoxCutterCurvedPlaced = beamBoxCutterCurved
+  |> rotate(axis = Z, angle = -22deg, global = true)
+  |> translate(x = 93, y = 453, global = true)
+
+export bumperBeamBoxCutter = blend([
+       getBoundedEdge(beamBoxCutterCurvedPlaced, edge = getOppositeEdge(beamBoxCutterCurvedEdge)),
+       beamBoxCutterStraightEdge
+     ])
+  |> appearance(color = beamBoxCutterColor, opacity = 55)
+
+hiddenBeamBoxCutterConstruction = hide([
+  beamBoxCutterStraight,
+  beamBoxCutterCurvedPlaced
+])
+
+// ==================================================
+// Box Fork Cutter
+// ==================================================
+
+
+beamForkCutterStraightProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       beamForkCutterOpenX,
+       beamForkCutterHalfHeight
+     ])
+  |> line(
+       end = [
+         beamForkCutterBackX - beamForkCutterOpenX,
+         0
+       ],
+       tag = $beamForkCutterTopStraightEdge,
+     )
+  |> line(end = [0, -2 * beamForkCutterHalfHeight], tag = $beamForkCutterBackStraightEdge)
+  |> line(
+       end = [
+         beamForkCutterOpenX - beamForkCutterBackX,
+         0
+       ],
+       tag = $beamForkCutterBottomStraightEdge,
+     )
+
+beamForkCutterStraight = extrude(beamForkCutterStraightProfile, length = beamLength, bodyType = SURFACE)
+
+beamForkCutterCurvedProfile = startSketchOn(XZ)
+  |> startProfile(at = [
+       beamForkCutterOpenX,
+       beamForkCutterHalfHeight
+     ])
+  |> line(
+       end = [
+         beamForkCutterBackX - beamForkCutterOpenX,
+         0
+       ],
+       tag = $beamForkCutterTopCurvedEdge,
+     )
+  |> line(end = [0, -2 * beamForkCutterHalfHeight], tag = $beamForkCutterBackCurvedEdge)
+  |> line(
+       end = [
+         beamForkCutterOpenX - beamForkCutterBackX,
+         0
+       ],
+       tag = $beamForkCutterBottomCurvedEdge,
+     )
+
+beamForkCutterCurved = revolve(
+  beamForkCutterCurvedProfile,
+  axis = curvedBeamAxis,
+  angle = beamCurvedAngle,
+  bodyType = SURFACE,
+)
+
+beamForkCutterCurvedPlaced = beamForkCutterCurved
+  |> rotate(axis = Z, angle = -22deg, global = true)
+  |> translate(x = 93, y = 453, global = true)
+
+beamForkCutterTopBlend = blend([
+  getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterTopCurvedEdge)),
+  beamForkCutterTopStraightEdge
+])
+
+beamForkCutterBackBlend = blend([
+  getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterBackCurvedEdge)),
+  beamForkCutterBackStraightEdge
+])
+
+beamForkCutterBottomBlend = blend([
+  getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterBottomCurvedEdge)),
+  beamForkCutterBottomStraightEdge
+])
+
+hiddenBeamForkCutterConstruction = hide([
+  beamForkCutterStraight,
+  beamForkCutterCurvedPlaced
+])
+
+export bumperBeamForkCutter = appearance(
+  [
+    beamForkCutterTopBlend,
+    beamForkCutterBackBlend,
+    beamForkCutterBottomBlend
+  ],
+  color = beamForkCutterColor,
+  opacity = 55,
+)

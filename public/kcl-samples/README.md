@@ -160,6 +160,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![holder-rod-angle](screenshots/holder-rod-angle.png)](holder-rod-angle/main.kcl)
 #### [i-beam](i-beam/main.kcl) ([screenshot](screenshots/i-beam.png))
 [![i-beam](screenshots/i-beam.png)](i-beam/main.kcl)
+#### [indexing](indexing/main.kcl) ([screenshot](screenshots/indexing.png))
+[![indexing](screenshots/indexing.png)](indexing/main.kcl)
 #### [inner-thread](inner-thread/main.kcl) ([screenshot](screenshots/inner-thread.png))
 [![inner-thread](screenshots/inner-thread.png)](inner-thread/main.kcl)
 #### [keyboard](keyboard/main.kcl) ([screenshot](screenshots/keyboard.png))

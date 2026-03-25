@@ -1,0 +1,387 @@
+// Tesla Front Impact Assembly
+// Top-level surface assembly that trims the crash box against the inserted bumper beam and collects the visible Tesla study geometry.
+
+// Surface-modeling project. Keep crash-box envelope, ribs, and blades as SURFACE geometry, and do not replace rib sheets with closed-profile solid extrudes unless explicitly needed.
+
+// ==================================================
+// Imports
+// ==================================================
+
+@settings(defaultLengthUnit = mm)
+
+import bumperBeamAssembly, bumperBeamBoxCutter, bumperBeamForkCutter from "bumper-beam-assembly.kcl"
+import upperBladePlaced, lowerBladePlaced from "crash-box-assembly.kcl"
+import crashBoxEnvelope from "crash-box-envelope.kcl"
+import crashBoxHorizontalRib, crashBoxVerticalRib from "crash-box-ribs.kcl"
+import crashBoxEnvelopeColor, crashBoxHorizontalRibColor, crashBoxLength, crashBoxVerticalRibColor from "crash-box-globals.kcl"
+
+// ==================================================
+// Beam Placement Setup
+// ==================================================
+
+
+beamInsertionDepth = 100
+beamTargetX = beamInsertionDepth - crashBoxLength
+beamTargetY = 0
+beamTranslateZ = 0
+beamRotateZ = 24deg
+beamMidpointRotatedX = -53
+beamMidpointRotatedY = 235.772
+
+beamTranslateX = beamTargetX - beamMidpointRotatedX
+beamTranslateY = beamTargetY - beamMidpointRotatedY
+
+// ==================================================
+// Placed Beam And Cutters
+// ==================================================
+
+
+bumperBeamAssemblyPlaced = bumperBeamAssembly
+  |> rotate(axis = Z, angle = beamRotateZ, global = true)
+  |> translate(
+       x = beamTranslateX,
+       y = beamTranslateY,
+       z = beamTranslateZ,
+       global = true,
+     )
+
+bumperBeamBoxCutterPlaced = bumperBeamBoxCutter
+  |> rotate(axis = Z, angle = beamRotateZ, global = true)
+  |> translate(
+       x = beamTranslateX,
+       y = beamTranslateY,
+       z = beamTranslateZ,
+       global = true,
+     )
+
+bumperBeamForkCutterPlaced = bumperBeamForkCutter
+  |> rotate(axis = Z, angle = beamRotateZ, global = true)
+  |> translate(
+       x = beamTranslateX,
+       y = beamTranslateY,
+       z = beamTranslateZ,
+       global = true,
+     )
+
+// ==================================================
+// Crash Box Tip Trim
+// ==================================================
+
+
+tipTrimCrashBoxTargets = split(
+  [
+    crashBoxEnvelope,
+    crashBoxVerticalRib,
+    crashBoxHorizontalRib
+  ],
+  tools = [bumperBeamBoxCutterPlaced],
+)
+
+// The beam-derived cutter trims the shell and both ribs in one pass.
+// split() returns each target as [cutOffTip, keptSection], so the kept pieces land at 1, 3, and 5.
+tipTrimmedCrashBoxEnvelope = tipTrimCrashBoxTargets[1]
+  |> appearance(color = crashBoxEnvelopeColor)
+
+tipTrimmedCrashBoxVerticalRib = tipTrimCrashBoxTargets[3]
+  |> appearance(color = crashBoxVerticalRibColor)
+
+tipTrimmedCrashBoxHorizontalRib = tipTrimCrashBoxTargets[5]
+  |> appearance(color = crashBoxHorizontalRibColor)
+
+// Keep the removed nose fragments hidden rather than deleted so the cut remains easy to inspect or reuse later.
+hiddenCrashBoxTips = hide([
+  tipTrimCrashBoxTargets[0],
+  tipTrimCrashBoxTargets[2],
+  tipTrimCrashBoxTargets[4]
+])
+
+// ==================================================
+// Crash Box Fork Trim
+// ==================================================
+
+
+forkTrimCrashBoxTargets = split(
+  [
+    tipTrimmedCrashBoxEnvelope,
+    tipTrimmedCrashBoxVerticalRib,
+    tipTrimmedCrashBoxHorizontalRib
+  ],
+  tools = [bumperBeamForkCutterPlaced],
+)
+
+// The fork cutter returns a different fragment order than the tip trim.
+// The kept shell and rib pieces land at 1, 2, and 4.
+forkTrimmedCrashBoxEnvelope = forkTrimCrashBoxTargets[4]
+  |> appearance(color = crashBoxEnvelopeColor)
+
+forkTrimmedCrashBoxVerticalRib = forkTrimCrashBoxTargets[2]
+  |> appearance(color = crashBoxVerticalRibColor)
+
+forkTrimmedCrashBoxHorizontalRib = forkTrimCrashBoxTargets[1]
+  |> appearance(color = crashBoxHorizontalRibColor)
+
+hiddenForkCutouts = hide([
+  forkTrimCrashBoxTargets[0],
+  forkTrimCrashBoxTargets[3],
+  forkTrimCrashBoxTargets[5],
+  forkTrimCrashBoxTargets[6]
+])
+
+// ==================================================
+// Beam-To-Crash-Box Holes
+// ==================================================
+
+
+holeToolRadius = 7
+holeToolLength = 150
+holeToolStartZ = -holeToolLength / 2
+holeToolLeadX = beamTargetX - 5
+holeToolTrailX = holeToolLeadX + 12
+distanceBetweenHoles = 55
+holeToolColor = "#ffd24a"
+holeToolOpacity = 65
+
+// Keep these as separate surface sleeves so the future punch operation can reuse the same centers.
+leadHoleToolProfile = startSketchOn(XY)
+  |> circle(
+       center = [
+         holeToolLeadX,
+         distanceBetweenHoles / 2
+       ],
+       radius = holeToolRadius,
+     )
+
+trailHoleToolProfile = startSketchOn(XY)
+  |> circle(
+       center = [
+         holeToolTrailX,
+         -distanceBetweenHoles / 2
+       ],
+       radius = holeToolRadius,
+     )
+
+trailHoleToolCylinders = extrude(
+       [
+         trailHoleToolProfile,
+         leadHoleToolProfile
+       ],
+       length = holeToolLength,
+       symmetric = true,
+       bodyType = SURFACE,
+     )
+  // |> translate(z = holeToolStartZ, global = true)
+  |> appearance(color = holeToolColor, opacity = holeToolOpacity)
+
+bodiesWithPunchedHoles = split(
+  [
+    forkTrimmedCrashBoxEnvelope,
+    bumperBeamAssemblyPlaced
+  ],
+  tools = [trailHoleToolCylinders],
+)
+
+punchedBeamBodies = [
+  bodiesWithPunchedHoles[0],
+  // left blend
+  bodiesWithPunchedHoles[1],
+  // right blend
+  bodiesWithPunchedHoles[2],
+  // middle rib
+  bodiesWithPunchedHoles[4],
+  // left rib
+  bodiesWithPunchedHoles[5],
+  // right rib
+  bodiesWithPunchedHoles[6],
+  // bottom blend
+  bodiesWithPunchedHoles[9],
+  // beam end curvy
+  bodiesWithPunchedHoles[10],
+  // beam end straight
+  bodiesWithPunchedHoles[11],
+  // top blend
+]
+
+punchedBoxBody = bodiesWithPunchedHoles[14] // box
+
+
+otherHidden = hide([
+  upperBladePlaced,
+  lowerBladePlaced,
+  punchedBoxBody,
+  forkTrimmedCrashBoxVerticalRib,
+  forkTrimmedCrashBoxHorizontalRib
+])
+
+hiddenHoleCutOuts = hide([
+  bodiesWithPunchedHoles[0],
+  // left blend
+  // bodiesWithPunchedHoles[1], // right blend
+  bodiesWithPunchedHoles[2],
+  // middle rib
+  bodiesWithPunchedHoles[3],
+  // hole beam rib
+  bodiesWithPunchedHoles[4],
+  // left rib
+  bodiesWithPunchedHoles[5],
+  // right rib
+  bodiesWithPunchedHoles[6],
+  // bottom blend
+  bodiesWithPunchedHoles[7],
+  // beam hole bottom 1
+  bodiesWithPunchedHoles[8],
+  // beam hole bottom 2
+  bodiesWithPunchedHoles[9],
+  // beam end curvy
+  bodiesWithPunchedHoles[10],
+  // beam right
+  bodiesWithPunchedHoles[11],
+  // beam top
+  bodiesWithPunchedHoles[12],
+  // beam hole top 1
+  bodiesWithPunchedHoles[13],
+  // beam hole top 2
+  bodiesWithPunchedHoles[14],
+  // box
+  bodiesWithPunchedHoles[15],
+  // box hole 1
+  bodiesWithPunchedHoles[16],
+  // box hole 2
+  bodiesWithPunchedHoles[17],
+  // box hole 3
+  bodiesWithPunchedHoles[18],
+  // box hole 4
+])
+
+// // ==================================================
+// // Box Hole Bosses
+// // ==================================================
+
+
+// boxHoleBossBoxHalfHeight = 112 / 2
+// boxHoleBossDiameter = 33
+// boxHoleBossHeight = 4
+// boxHoleBossCylinderLength = boxHoleBossHeight
+// boxHoleBossColor = "#ff6b6b"
+// boxHoleBossOpacity = 75
+// leadHoleCenter = [
+// holeToolLeadX,
+// distanceBetweenHoles / 2,
+// ]
+// trailHoleCenter = [
+// holeToolTrailX,
+// -distanceBetweenHoles / 2,
+// ]
+// topBoxHoleBossPlane = offsetPlane(XY, offset = boxHoleBossBoxHalfHeight)
+// bottomBoxHoleBossPlane = offsetPlane(XY, offset = -boxHoleBossBoxHalfHeight)
+
+
+// topLeadBoxHoleBossProfile = startSketchOn(topBoxHoleBossPlane)
+// |> circle(center = leadHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// topTrailBoxHoleBossProfile = startSketchOn(topBoxHoleBossPlane)
+// |> circle(center = trailHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// bottomLeadBoxHoleBossProfile = startSketchOn(bottomBoxHoleBossPlane)
+// |> circle(center = leadHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// bottomTrailBoxHoleBossProfile = startSketchOn(bottomBoxHoleBossPlane)
+// |> circle(center = trailHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// topBoxHoleBossCylinders = extrude(
+// [
+// topLeadBoxHoleBossProfile,
+// topTrailBoxHoleBossProfile,
+// ],
+// length = -boxHoleBossCylinderLength,
+// symmetric = true,
+// bodyType = SURFACE,
+// )
+// |> appearance(color = boxHoleBossColor, opacity = boxHoleBossOpacity)
+
+
+// bottomBoxHoleBossCylinders = extrude(
+// [
+// bottomLeadBoxHoleBossProfile,
+// bottomTrailBoxHoleBossProfile,
+// ],
+// length = boxHoleBossCylinderLength,
+// symmetric = true,
+// bodyType = SURFACE,
+// )
+// |> appearance(color = boxHoleBossColor, opacity = boxHoleBossOpacity)
+
+
+// boxHoleBossSplitBodies = split([punchedBoxBody], tools = [topBoxHoleBossCylinders, bottomBoxHoleBossCylinders])
+
+
+// boxHoleBossBox = boxHoleBossSplitBodies[0]
+
+
+// topBoxHoleBossCaps = [
+// boxHoleBossSplitBodies[1],
+// boxHoleBossSplitBodies[2],
+// ]
+// |> translate(z = -boxHoleBossCylinderLength, global = true)
+
+
+// bottomBoxHoleBossCaps = [
+// boxHoleBossSplitBodies[3],
+// boxHoleBossSplitBodies[4],
+// ]
+// |> translate(z = boxHoleBossCylinderLength, global = true)
+
+
+// // hiddenBoxHoleBossSplitBodies = hide([
+// //   boxHoleBossSplitBodies[0], // box
+// //   boxHoleBossSplitBodies[1], // top hole 1
+// //   boxHoleBossSplitBodies[2], // top hole 2
+// //   boxHoleBossSplitBodies[3], // bottom hole 1
+// //   boxHoleBossSplitBodies[4], // bottom hole 2
+// // ])
+
+
+// // ==================================================
+// // Box Hole Boss Bridge Cylinders
+// // ==================================================
+
+
+// topLeadBoxHoleBossBridgeProfile = startSketchOn(topBoxHoleBossPlane)
+// |> circle(center = leadHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// topTrailBoxHoleBossBridgeProfile = startSketchOn(topBoxHoleBossPlane)
+// |> circle(center = trailHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// bottomLeadBoxHoleBossBridgeProfile = startSketchOn(bottomBoxHoleBossPlane)
+// |> circle(center = leadHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// bottomTrailBoxHoleBossBridgeProfile = startSketchOn(bottomBoxHoleBossPlane)
+// |> circle(center = trailHoleCenter, diameter = boxHoleBossDiameter)
+
+
+// topBoxHoleBossBridgeCylinders = extrude(
+// [
+// topLeadBoxHoleBossBridgeProfile,
+// topTrailBoxHoleBossBridgeProfile,
+// ],
+// length = -boxHoleBossCylinderLength,
+// bodyType = SURFACE,
+// )
+// |> appearance(color = crashBoxEnvelopeColor)
+
+
+// bottomBoxHoleBossBridgeCylinders = extrude(
+// [
+// bottomLeadBoxHoleBossBridgeProfile,
+// bottomTrailBoxHoleBossBridgeProfile,
+// ],
+// length = boxHoleBossCylinderLength,
+// bodyType = SURFACE,
+// )
+// |> appearance(color = crashBoxEnvelopeColor)

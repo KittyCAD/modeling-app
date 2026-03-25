@@ -1,0 +1,32 @@
+// Tesla Crash Box To Car Blade
+// Looped mounting blade surface that extends from the crash box toward the vehicle-side attachment structure.
+
+@settings(defaultLengthUnit = mm)
+
+import materialThickness, outerProfileWidth from "crash-box-globals.kcl"
+
+loopRadius = 10
+exitRadius = 10
+tailLength = 80
+bladeColor = "#ef5b2a"
+bladeWidth = outerProfileWidth - (2 * materialThickness)
+
+loopStartOffset = loopRadius / sqrt(2)
+loopStartAngle = -45deg
+loopEndAngle = -360deg
+exitStartAngle = 180deg
+exitEndAngle = 270deg
+
+crashBoxToCarBladeProfile = startSketchOn(XZ)
+  |> startProfile(at = [loopStartOffset, -loopStartOffset])
+  |> arc(angleStart = loopStartAngle, angleEnd = loopEndAngle, radius = loopRadius)
+  |> arc(angleStart = exitStartAngle, angleEnd = exitEndAngle, radius = exitRadius)
+  |> xLine(length = tailLength)
+
+crashBoxToCarBlade = extrude(
+       crashBoxToCarBladeProfile,
+       length = bladeWidth,
+       symmetric = true,
+       bodyType = SURFACE,
+     )
+  |> appearance(color = bladeColor)

@@ -1,0 +1,21 @@
+@settings(defaultLengthUnit = mm)
+
+import crashBoxEnvelopeColor, crashBoxLength, cornerRadius, halfOuterProfileHeight, halfOuterProfileWidth, straightHeight, straightWidth from "crash-box-globals.kcl"
+
+crashBoxEnvelopeProfile = startSketchOn(YZ)
+  |> startProfile(at = [
+       -halfOuterProfileWidth + cornerRadius,
+       halfOuterProfileHeight
+     ])
+  |> line(end = [straightWidth, 0])
+  |> tangentialArc(end = [cornerRadius, -cornerRadius])
+  |> line(end = [0, -straightHeight])
+  |> tangentialArc(end = [-cornerRadius, -cornerRadius])
+  |> line(end = [-straightWidth, 0])
+  |> tangentialArc(end = [-cornerRadius, cornerRadius])
+  |> line(end = [0, straightHeight])
+  |> tangentialArc(end = [cornerRadius, cornerRadius])
+  |> close()
+
+export crashBoxEnvelope = extrude(crashBoxEnvelopeProfile, length = -crashBoxLength, bodyType = SURFACE)
+  |> appearance(color = crashBoxEnvelopeColor)

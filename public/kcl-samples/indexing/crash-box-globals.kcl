@@ -1,0 +1,40 @@
+// Tesla Crash Box Globals
+// Shared crash box dimensions, material thickness values, derived profile measurements, and display colors for the assembly.
+
+@settings(defaultLengthUnit = mm)
+
+export outerProfileWidth = 112
+export outerProfileHeight = 112
+export cornerRadius = 5
+export crashBoxLength = 500
+export materialThickness = 2
+
+export crashBoxEnvelopeColor = "#7a3ff2"
+export crashBoxVerticalRibColor = "#7a3ff2"
+export crashBoxHorizontalRibColor = "#2f6df6"
+
+export maxCornerRadius = min([outerProfileWidth, outerProfileHeight]) / 2
+export maxMaterialThickness = min([outerProfileWidth, outerProfileHeight]) / 2
+assert(
+  cornerRadius,
+  isGreaterThanOrEqual = 0,
+  isLessThanOrEqual = maxCornerRadius,
+  error = "cornerRadius must stay between 0 and half of the smaller outer profile dimension",
+)
+assert(
+  materialThickness,
+  isGreaterThanOrEqual = 0,
+  isLessThan = maxMaterialThickness,
+  error = "materialThickness must stay between 0 and less than half of the smaller outer profile dimension",
+)
+
+export halfOuterProfileWidth = outerProfileWidth / 2
+export halfOuterProfileHeight = outerProfileHeight / 2
+export innerProfileWidth = outerProfileWidth - (2 * materialThickness)
+export innerProfileHeight = outerProfileHeight - (2 * materialThickness)
+export halfInnerProfileWidth = innerProfileWidth / 2
+export halfInnerProfileHeight = innerProfileHeight / 2
+export straightWidth = outerProfileWidth - (2 * cornerRadius)
+export straightHeight = outerProfileHeight - (2 * cornerRadius)
+export verticalRibLength = innerProfileHeight
+export horizontalRibLength = innerProfileWidth
