@@ -273,12 +273,7 @@ class PointSegmentDOM implements SketchEntityUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const {
-      input,
-      group,
-      scale,
-      state: { construction },
-    } = args
+    const { input, group, scale } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -287,7 +282,6 @@ class PointSegmentDOM implements SketchEntityUtils {
     const handle = group.getObjectByName('handle')
     if (handle instanceof CSS2DObject) {
       handle.position.set(x.value / scale, y.value / scale, 0)
-      group.userData.isConstruction = construction
     }
   }
 }
@@ -350,7 +344,6 @@ class PointSegment implements SketchEntityUtils {
     pointBody.position.set(x.value / scale, y.value / scale, 0)
 
     const freedom = args.freedom
-    group.userData.isConstruction = state.construction
     group.userData.type = SEGMENT_TYPE_POINT
 
     pointBody.renderOrder = state.hovered
@@ -460,7 +453,6 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
-      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
@@ -500,16 +492,11 @@ class LineSegment implements SketchEntityUtils {
     ])
     geometry.computeBoundingSphere()
 
-    // Update mesh color based on selection
-    // Get freedom from args or group userData
     const freedom = args.freedom
-    // Check previous draft and construction state BEFORE updating it
-    const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== state.construction
-    // Update userData for consistency
-    group.userData.isConstruction = state.construction
 
     if (straightSegmentBody.material instanceof LineMaterial) {
+      const previousIsConstruction = straightSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
       straightSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
@@ -784,7 +771,6 @@ class ArcSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
@@ -825,16 +811,11 @@ class ArcSegment implements SketchEntityUtils {
     arcSegmentBody.material.linewidth =
       SEGMENT_WIDTH_PX * window.devicePixelRatio
 
-    // Update mesh color based on selection
-    // Get freedom from args or group userData
     const freedom = args.freedom
-    // Check previous draft and construction state BEFORE updating it
-    const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== state.construction
-    // Update userData for consistency
-    group.userData.isConstruction = state.construction
 
     if (arcSegmentBody.material instanceof LineMaterial) {
+      const previousIsConstruction = arcSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
       arcSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
@@ -996,7 +977,6 @@ class CircleSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      isConstruction: args.isConstruction,
     }
     segmentGroup.add(mesh)
 
@@ -1035,11 +1015,10 @@ class CircleSegment implements SketchEntityUtils {
       SEGMENT_WIDTH_PX * window.devicePixelRatio
 
     const freedom = args.freedom
-    const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== state.construction
-    group.userData.isConstruction = state.construction
 
     if (circleSegmentBody.material instanceof LineMaterial) {
+      const previousIsConstruction = circleSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
       circleSegmentBody.material.dashed = state.construction
 
       if (constructionChanged) {
