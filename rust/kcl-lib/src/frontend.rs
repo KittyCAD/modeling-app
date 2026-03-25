@@ -3508,7 +3508,7 @@ fn sketch_on_ast_expr(
             }
             #[cfg(feature = "artifact-graph")]
             {
-                return sketch_face_of_artifact_ast_expr(ast, artifact_graph, artifact_id);
+                sketch_face_of_artifact_ast_expr(ast, artifact_graph, artifact_id)
             }
             #[cfg(not(feature = "artifact-graph"))]
             {
@@ -3579,7 +3579,7 @@ fn sketch_face_of_artifact_ast_expr(
                     });
                 };
                 create_member_expression(
-                    create_member_expression(ast_name_expr(region_name.clone()), "tags"),
+                    create_member_expression(ast_name_expr(region_name), "tags"),
                     &segment_name_expr.name.name,
                 )
             } else {
