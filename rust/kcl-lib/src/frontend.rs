@@ -7275,65 +7275,6 @@ face = faceOf(cube, face = side)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_sketch_on_face_artifact_simple() {
-        let initial_source = "\
-@settings(experimentalFeatures = allow)
-
-len = 2mm
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [len, 0], tag = $side)
-  |> line(end = [0, len])
-  |> line(end = [-len, 0])
-  |> line(end = [0, -len])
-  |> close()
-  |> extrude(length = len)
-
-face = faceOf(cube, face = side)
-";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
-        let mut frontend = FrontendState::new();
-
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        let version = Version(0);
-
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let face_object = find_first_face_object(&frontend.scene_graph).unwrap();
-        let face_id = face_object.id;
-        let face_artifact_id = face_object.artifact_id.clone();
-
-        let sketch_args = SketchCtor {
-            on: Plane::Artifact(face_artifact_id.clone()),
-        };
-        let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
-            .await
-            .unwrap();
-        assert_eq!(sketch_id, ObjectId(2));
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
-        let sketch_object = &scene_delta.new_graph.objects[2];
-        assert_eq!(sketch_object.id, ObjectId(2));
-        assert_eq!(
-            sketch_object.kind,
-            ObjectKind::Sketch(Sketch {
-                args: SketchCtor {
-                    on: Plane::Artifact(face_artifact_id),
-                },
-                plane: face_id,
-                segments: vec![],
-                constraints: vec![],
-            })
-        );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
-
-        ctx.close().await;
-        mock_ctx.close().await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_wall_artifact_from_region_extrude() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)

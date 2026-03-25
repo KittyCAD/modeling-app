@@ -28,6 +28,7 @@ use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
+use crate::std::sketch2::build_reverse_region_mapping;
 
 #[cfg(test)]
 mod mermaid_tests;
@@ -1239,23 +1240,23 @@ fn artifacts_to_update(
             else {
                 return Ok(return_arr);
             };
-            // Each key is a segment in the region and each value is its source
-            // segment in the original path.
-            #[expect(
-                clippy::iter_over_hash_type,
-                reason = "This is bad for deterministic output, especially in tests, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice."
-            )]
-            for (segment_id, original_segment_id) in region_mapping {
-                return_arr.push(Artifact::Segment(Segment {
-                    id: ArtifactId::new(*segment_id),
-                    path_id: id,
-                    original_seg_id: Some(ArtifactId::new(*original_segment_id)),
-                    surface_id: None,
-                    edge_ids: Vec::new(),
-                    edge_cut_id: None,
-                    code_ref: code_ref.clone(),
-                    common_surface_ids: Vec::new(),
-                }))
+            // Each key is a segment in the region. The value is the segment in
+            // the original path. Build the reverse mapping.
+            let original_segment_ids = path.seg_ids.iter().map(|p| p.0).collect::<Vec<_>>();
+            let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
+            for (original_segment_id, region_segment_ids) in reverse.iter() {
+                for segment_id in region_segment_ids {
+                    return_arr.push(Artifact::Segment(Segment {
+                        id: ArtifactId::new(*segment_id),
+                        path_id: id,
+                        original_seg_id: Some(ArtifactId::new(*original_segment_id)),
+                        surface_id: None,
+                        edge_ids: Vec::new(),
+                        edge_cut_id: None,
+                        code_ref: code_ref.clone(),
+                        common_surface_ids: Vec::new(),
+                    }))
+                }
             }
             return Ok(return_arr);
         }
