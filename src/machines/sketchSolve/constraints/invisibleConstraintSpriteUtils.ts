@@ -117,7 +117,7 @@ export function findInvisibleConstraintsForSegment(
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
         isInvisibleConstraintObject(constraint) &&
-        isConstraingSegment(constraint, segment)
+        isConstrainingSegment(constraint, segment)
     )
     .map((constraint) => constraint.id)
 }
@@ -147,8 +147,9 @@ export function findSegmentsForInvisibleConstraint(
   )
 }
 
-// Checks whether a non-visual constraint should preview for a hovered segment.
-export function isConstraingSegment(
+// Returns if the given non-visual constraint is constraining the given segment.
+// If yes, the constraint is shown when hovering the segment.
+export function isConstrainingSegment(
   constraint: InvisibleConstraintObject,
   segment: ApiObject | undefined | null
 ): boolean {

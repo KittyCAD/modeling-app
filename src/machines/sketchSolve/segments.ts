@@ -495,7 +495,8 @@ class LineSegment implements SketchEntityUtils {
     const freedom = args.freedom
 
     if (straightSegmentBody.material instanceof LineMaterial) {
-      const previousIsConstruction = straightSegmentBody.material.dashed === true
+      const previousIsConstruction =
+        straightSegmentBody.material.dashed === true
       const constructionChanged = previousIsConstruction !== state.construction
       straightSegmentBody.material.dashed = state.construction
 

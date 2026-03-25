@@ -35,7 +35,7 @@ import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
   isInvisibleConstraintObject,
-  isConstraingSegment,
+  isConstrainingSegment,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import type {
   OnMoveCallbackArgs,
@@ -719,7 +719,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const isHoveringConstraintHoverPopup =
         popup !== null &&
         isInvisibleConstraintObject(hoveredApiObject) &&
-        isConstraingSegment(hoveredApiObject, apiObjects[popup.segmentId])
+        isConstrainingSegment(hoveredApiObject, apiObjects[popup.segmentId])
       const previousConstraintHoverPopup = snapshot.context.constraintHoverPopup
 
       if (
