@@ -160,6 +160,54 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "fixedX",
+      "unlabeledArg": null,
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixedY",
+      "unlabeledArg": null,
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "coincident",
       "unlabeledArg": {
         "value": {
@@ -513,6 +561,54 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
           "sourceRange": []
         }
       },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixedX",
+      "unlabeledArg": null,
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixedY",
+      "unlabeledArg": null,
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
