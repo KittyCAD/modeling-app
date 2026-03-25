@@ -685,6 +685,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const getConstraintHoverPopups = () =>
     constraintHoverPopupState.entries.map((entry) => entry.popup)
 
+  const getConstraintHoverPopupEntry = (segmentId: number) =>
+    constraintHoverPopupState.entries.find(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+
   const removeConstraintHoverPopup = (segmentId: number) => {
     const index = constraintHoverPopupState.entries.findIndex(
       (entry) => entry.popup.segmentId === segmentId
@@ -914,6 +919,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         constraintHoverPopupSegmentId !==
           constraintHoverPopupState.lastHoveredTargetId &&
         constraintHoverPopupSegmentId !== null &&
+        // If this segment already has a visible popup, keep that popup pinned where it is.
+        !getConstraintHoverPopupEntry(constraintHoverPopupSegmentId) &&
         !snapshot.context.showNonVisualConstraints &&
         hasInvisibleConstraintPreviewTarget(hoveredApiObject, apiObjects)
       ) {

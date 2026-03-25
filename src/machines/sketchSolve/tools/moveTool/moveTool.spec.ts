@@ -1683,7 +1683,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
     })
   })
 
-  it('should reposition an existing popup instead of duplicating it for the same segment', () => {
+  it('should keep an existing popup in place when hovering the same segment again', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -1723,12 +1723,12 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 3,
-        constraintHoverPopups: [{ segmentId: 3, position: [25, 0] }],
+        constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
       },
     })
   })
 
-  it('should move a revisited popup to the end so newer popups render on top', () => {
+  it('should keep a revisited popup stable while newer popups stay on top', () => {
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
     const lineEnd = createPointApiObject({ id: 2, x: 40, y: 0 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -1792,8 +1792,8 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       data: {
         hoveredId: 3,
         constraintHoverPopups: [
+          { segmentId: 3, position: [20, 0] },
           { segmentId: 10, position: [60, 20] },
-          { segmentId: 3, position: [25, 0] },
         ],
       },
     })
