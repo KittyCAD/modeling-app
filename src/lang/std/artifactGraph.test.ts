@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
+  getArtifactFromRange,
   getSweepArtifactFromSelection,
   type Artifact,
   type ResolvedGraphSelection,
@@ -89,6 +90,86 @@ describe('getSweepArtifactFromSelection', () => {
   // sweepEdge was removed from the artifact graph / selectionsV2; edgeCut now resolves via
   // segment or via entityRef (edge). A test for edge selection → sweep could use an edge
   // entityRef payload instead of the legacy edgeCut -> sweepEdge chain.
+})
+
+describe('getArtifactFromRange', () => {
+  it('prefers the requested sketchBlock over a same-range path match', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const range: [number, number, number] = [10, 40, 0]
+
+    const path: Artifact = {
+      type: 'path',
+      id: 'path-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+    }
+
+    const sketchBlock = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathIds: ['path-1'],
+      planeId: 'plane-1',
+      mode: 'sketch',
+      sketchId: 1,
+    } as Artifact
+
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sketchBlock.id, sketchBlock)
+
+    expect(getArtifactFromRange(range, artifactGraph, 'sketchBlock')).toEqual(
+      sketchBlock
+    )
+  })
+
+  it('prefers sketchBlock over a same-range path match without a preferred type', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const range: [number, number, number] = [10, 40, 0]
+
+    const path: Artifact = {
+      type: 'path',
+      id: 'path-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+    }
+
+    const sketchBlock = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef: {
+        range,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathIds: ['path-1'],
+      planeId: 'plane-1',
+      mode: 'sketch',
+      sketchId: 1,
+    } as Artifact
+
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sketchBlock.id, sketchBlock)
+
+    expect(getArtifactFromRange(range, artifactGraph)).toEqual(sketchBlock)
+  })
 })
 
 describe('coerceSelectionsToBody', () => {

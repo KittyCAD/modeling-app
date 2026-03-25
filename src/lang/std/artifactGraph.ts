@@ -886,6 +886,7 @@ export function getArtifactFromRange(
   preferredType?: Artifact['type']
 ): Artifact | null {
   let firstCandidate: Artifact | null = null
+  let favoredCandidate: Artifact | null = null
   let preferredMatch: Artifact | null = null
   for (const artifact of artifactGraph.values()) {
     const codeRef = getFaceCodeRef(artifact)
@@ -896,18 +897,21 @@ export function getArtifactFromRange(
         if (preferredType && artifact.type === preferredType) {
           preferredMatch = artifact
         }
-        // Favor sketch block, then helix/path (for feature tree selection), then first match
+        // Favor explicit preferredType first, then sketchBlock, then helix/path, then first match.
         if (artifact.type === 'sketchBlock') {
-          return artifact
-        }
-        if (artifact.type === 'helix' || artifact.type === 'path') {
-          return artifact
+          favoredCandidate = artifact
+        } else if (
+          (artifact.type === 'helix' || artifact.type === 'path') &&
+          favoredCandidate == null
+        ) {
+          favoredCandidate = favoredCandidate ?? artifact
         }
         firstCandidate = firstCandidate ?? artifact
       }
     }
   }
   if (preferredMatch) return preferredMatch
+  if (favoredCandidate) return favoredCandidate
   // When preferredType is set (e.g. 'helix' from feature tree) but no exact match, try containment either way
   if (preferredType) {
     for (const artifact of artifactGraph.values()) {

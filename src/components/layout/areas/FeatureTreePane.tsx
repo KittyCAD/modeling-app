@@ -613,10 +613,12 @@ const OperationItem = ({
           return
         }
         const preferredType =
-          item.type === 'StdLibCall' &&
-          (item as { name?: string }).name?.toLowerCase() === 'helix'
-            ? 'helix'
-            : undefined
+          item.type === 'SketchSolve'
+            ? 'sketchBlock'
+            : item.type === 'StdLibCall' &&
+                (item as { name?: string }).name?.toLowerCase() === 'helix'
+              ? 'helix'
+              : undefined
         onSelect(sourceRangeFromRust(item.sourceRange), preferredType)
       }
     },
@@ -632,7 +634,8 @@ const OperationItem = ({
       const artifact =
         getArtifactFromRange(
           item.sourceRange,
-          systemDeps.kclManager.artifactGraph
+          systemDeps.kclManager.artifactGraph,
+          item.type === 'SketchSolve' ? 'sketchBlock' : undefined
         ) ??
         (item.type === 'StdLibCall'
           ? (findOperationArtifact(item, systemDeps.kclManager.artifactGraph) ??
@@ -1082,7 +1085,7 @@ const OperationItem = ({
       onContextMenu={() => {
         void selectOperation()
       }}
-      onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      onDoubleClick={sketchNoFace ? undefined : enterEditFlow}
       isSelected={isSelected}
       errors={errors}
       disabled={!enabled}
