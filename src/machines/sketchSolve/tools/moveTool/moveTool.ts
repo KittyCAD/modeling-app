@@ -6,7 +6,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
-import { type Object3D, type Vector3, type Group, Vector2 } from 'three'
+import { Group, type Object3D, Vector2, Vector3 } from 'three'
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -37,6 +37,7 @@ import {
   isInvisibleConstraintObject,
   isConstrainingSegment,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import type {
   OnMoveCallbackArgs,
   SceneInfra,
@@ -45,6 +46,7 @@ import type { Coords2d } from '@src/lang/util'
 import type { ClosestApiObject } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 
 /**
@@ -154,10 +156,12 @@ export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
   setDraggedEntityId,
   getHoveredId,
+  dismissConstraintHoverPopup,
 }: {
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
   setDraggedEntityId: (entityId: number | null) => void
   getHoveredId: () => number | null
+  dismissConstraintHoverPopup: () => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -165,6 +169,7 @@ export function createOnDragStartCallback({
   intersects: Array<any>
 }) => void | Promise<void> {
   return ({ intersectionPoint }) => {
+    dismissConstraintHoverPopup()
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
     setDraggedEntityId(getHoveredId())
   }
@@ -223,9 +228,10 @@ export function createOnClickCallback({
 }) => Promise<void> {
   return async ({ mouseEvent, intersectionPoint }) => {
     let closestObject: ClosestApiObject | undefined
+    let mousePosition: Coords2d | undefined
 
     if (intersectionPoint) {
-      const mousePosition = [
+      mousePosition = [
         intersectionPoint.twoD.x,
         intersectionPoint.twoD.y,
       ] as Coords2d
@@ -243,6 +249,18 @@ export function createOnClickCallback({
       onEditConstraint(closestObject.apiObject.id)
     } else {
       const shouldReplaceSelection = isConstraint(closestObject?.apiObject)
+      if (
+        mousePosition &&
+        closestObject &&
+        isInvisibleConstraintObject(closestObject.apiObject)
+      ) {
+        pinSelectedInvisibleConstraintPopup(
+          closestObject.apiObject.id,
+          mousePosition,
+          getApiObjects(),
+          sceneInfra
+        )
+      }
       onUpdateSelectedIds({
         selectedIds: closestObject ? [closestObject.apiObject.id] : [],
         duringAreaSelectIds: [],
@@ -252,7 +270,146 @@ export function createOnClickCallback({
   }
 }
 
+type ScreenRectHitObject = {
+  type: 'screenRect'
+  center: [number, number, number]
+  sizePx: [number, number]
+}
+
+function isScreenRectHitObject(
+  hitObject: unknown
+): hitObject is ScreenRectHitObject {
+  return (
+    typeof hitObject === 'object' &&
+    hitObject !== null &&
+    'type' in hitObject &&
+    hitObject.type === 'screenRect' &&
+    'center' in hitObject &&
+    Array.isArray(hitObject.center) &&
+    hitObject.center.length === 3
+  )
+}
+
+function pinSelectedInvisibleConstraintPopup(
+  constraintId: number,
+  mousePosition: Coords2d,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+) {
+  const camera = sceneInfra.camControls?.camera
+  const rendererElement = sceneInfra.renderer?.domElement
+  if (!camera || !rendererElement) {
+    return
+  }
+
+  const constraintGroup = sceneInfra.scene.getObjectByName(String(constraintId))
+  if (!(constraintGroup instanceof Group) || !constraintGroup.visible) {
+    return
+  }
+
+  const sketchSolveGroupObject =
+    sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSolveGroup =
+    sketchSolveGroupObject instanceof Group ? sketchSolveGroupObject : null
+  const viewportSize = new Vector2(
+    rendererElement.clientWidth,
+    rendererElement.clientHeight
+  )
+  const mouseScreenPosition = projectSketchPointToScreen(
+    [mousePosition[0], mousePosition[1], 0],
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+  const closestPopup = findClosestConstraintHoverPopup(
+    constraintGroup,
+    mouseScreenPosition,
+    camera,
+    viewportSize,
+    sketchSolveGroup
+  )
+
+  if (closestPopup) {
+    const relatedConstraintIds = findInvisibleConstraintsForSegment(
+      objects[closestPopup.segmentId],
+      objects
+    )
+    relatedConstraintIds.forEach((relatedConstraintId) => {
+      const relatedConstraintGroup = sceneInfra.scene.getObjectByName(
+        String(relatedConstraintId)
+      )
+      if (!(relatedConstraintGroup instanceof Group)) {
+        return
+      }
+
+      relatedConstraintGroup.userData.selectedInvisibleConstraintPopup = {
+        ownerConstraintId: constraintId,
+        segmentId: closestPopup.segmentId,
+        position: closestPopup.position,
+      }
+    })
+  }
+}
+
+function findClosestConstraintHoverPopup(
+  constraintGroup: Group,
+  mouseScreenPosition: Vector2,
+  camera: Parameters<typeof project3DToScreen>[1],
+  viewportSize: Vector2,
+  sketchSolveGroup: Group | null
+): ConstraintHoverPopup | null {
+  let closestPopup: ConstraintHoverPopup | null = null
+  let closestDistance = Number.POSITIVE_INFINITY
+
+  constraintGroup.traverse((child) => {
+    const hitObjects = child.userData.hitObjects
+    const popup = child.userData.constraintHoverPopup
+    if (!Array.isArray(hitObjects) || !isConstraintHoverPopup(popup)) {
+      return
+    }
+
+    hitObjects.forEach((hitObject) => {
+      if (!isScreenRectHitObject(hitObject)) {
+        return
+      }
+
+      const hitScreenPosition = projectSketchPointToScreen(
+        hitObject.center,
+        camera,
+        viewportSize,
+        sketchSolveGroup
+      )
+      const distance = mouseScreenPosition.distanceTo(hitScreenPosition)
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closestPopup = popup
+      }
+    })
+  })
+
+  return closestPopup
+}
+
+function projectSketchPointToScreen(
+  point: [number, number, number],
+  camera: Parameters<typeof project3DToScreen>[1],
+  viewportSize: Vector2,
+  sketchSolveGroup: Group | null
+) {
+  const worldPoint = new Vector3(point[0], point[1], point[2])
+  if (sketchSolveGroup) {
+    sketchSolveGroup.localToWorld(worldPoint)
+  }
+
+  return project3DToScreen(worldPoint, camera, viewportSize)
+}
+
 const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
+
+type ConstraintHoverPopupEntry = {
+  popup: ConstraintHoverPopup
+  hideTimeoutId: ReturnType<typeof setTimeout> | null
+}
 
 function hasInvisibleConstraintPreviewTarget(
   object: ApiObject | null,
@@ -261,14 +418,20 @@ function hasInvisibleConstraintPreviewTarget(
   return findInvisibleConstraintsForSegment(object, objects).length > 0
 }
 
-function isSameConstraintHoverPopup(
-  popup: ConstraintHoverPopup | null,
-  previousPopup: ConstraintHoverPopup | null
+function areSameConstraintHoverPopups(
+  popups: ConstraintHoverPopup[],
+  previousPopups: ConstraintHoverPopup[]
 ) {
   return (
-    (popup?.segmentId ?? null) === (previousPopup?.segmentId ?? null) &&
-    popup?.position?.[0] === previousPopup?.position?.[0] &&
-    popup?.position?.[1] === previousPopup?.position?.[1]
+    popups.length === previousPopups.length &&
+    popups.every((popup, index) => {
+      const previousPopup = previousPopups[index]
+      return (
+        popup.segmentId === previousPopup?.segmentId &&
+        popup.position[0] === previousPopup?.position?.[0] &&
+        popup.position[1] === previousPopup?.position?.[1]
+      )
+    })
   )
 }
 
@@ -473,16 +636,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
   )
   const constraintHoverPopupState: {
     lastHoveredTargetId: number | null
-    popup: ConstraintHoverPopup | null
-    isHoveringPreview: boolean
-    previewTimeoutId: ReturnType<typeof setTimeout> | null
-    hideTimeoutId: ReturnType<typeof setTimeout> | null
+    entries: ConstraintHoverPopupEntry[]
   } = {
     lastHoveredTargetId: null,
-    popup: null,
-    isHoveringPreview: false,
-    previewTimeoutId: null,
-    hideTimeoutId: null,
+    entries: [],
   }
 
   // Selection box visual element
@@ -515,32 +672,52 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const clearConstraintHoverPopupTimer = (
-    timerKey: 'previewTimeoutId' | 'hideTimeoutId'
+    entry: ConstraintHoverPopupEntry,
+    timerKey: 'hideTimeoutId'
   ) => {
-    const timeoutId = constraintHoverPopupState[timerKey]
+    const timeoutId = entry[timerKey]
     if (timeoutId !== null) {
       clearTimeout(timeoutId)
-      constraintHoverPopupState[timerKey] = null
+      entry[timerKey] = null
     }
   }
 
-  const clearConstraintHoverPopupTimers = () => {
-    clearConstraintHoverPopupTimer('previewTimeoutId')
-    clearConstraintHoverPopupTimer('hideTimeoutId')
+  const getConstraintHoverPopups = () =>
+    constraintHoverPopupState.entries.map((entry) => entry.popup)
+
+  const getConstraintHoverPopupEntry = (segmentId: number) =>
+    constraintHoverPopupState.entries.find(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+
+  const removeConstraintHoverPopup = (segmentId: number) => {
+    const index = constraintHoverPopupState.entries.findIndex(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+    if (index === -1) {
+      return false
+    }
+
+    const [entry] = constraintHoverPopupState.entries.splice(index, 1)
+    if (entry) {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    }
+
+    return true
   }
 
   const getConstraintHoverPopupEventData = () => {
     const snapshot = self.getSnapshot()
-    const { popup } = constraintHoverPopupState
+    const popups = getConstraintHoverPopups()
     const shouldIncludeConstraintHoverPopup =
-      popup !== null || snapshot.context.constraintHoverPopup !== null
+      popups.length > 0 || snapshot.context.constraintHoverPopups.length > 0
 
     if (!shouldIncludeConstraintHoverPopup) {
       return {}
     }
 
     return {
-      constraintHoverPopup: popup,
+      constraintHoverPopups: popups,
     }
   }
 
@@ -554,37 +731,56 @@ export function setUpOnDragAndSelectionClickCallbacks({
     })
   }
 
-  const clearConstraintHoverPopup = () => {
-    clearConstraintHoverPopupTimers()
-    constraintHoverPopupState.popup = null
-    constraintHoverPopupState.isHoveringPreview = false
+  const clearConstraintHoverPopups = () => {
+    constraintHoverPopupState.entries.forEach((entry) => {
+      clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    })
+    constraintHoverPopupState.entries = []
   }
 
-  const hideConstraintHoverPopup = () => {
-    clearConstraintHoverPopup()
-    sendHoveredState(self.getSnapshot().context.hoveredId)
+  const hideConstraintHoverPopup = (segmentId: number) => {
+    if (removeConstraintHoverPopup(segmentId)) {
+      sendHoveredState(self.getSnapshot().context.hoveredId)
+    }
+  }
+
+  const dismissConstraintHoverPopupOnDragStart = () => {
+    const snapshot = self.getSnapshot()
+    const hadConstraintHoverPopup =
+      constraintHoverPopupState.entries.length > 0 ||
+      snapshot.context.constraintHoverPopups.length > 0
+
+    clearConstraintHoverPopups()
+    constraintHoverPopupState.lastHoveredTargetId = null
+
+    if (hadConstraintHoverPopup) {
+      sendHoveredState(snapshot.context.hoveredId)
+    }
   }
 
   const startConstraintHoverPopup = (segmentId: number, position: Coords2d) => {
-    clearConstraintHoverPopupTimers()
-    constraintHoverPopupState.popup = {
-      segmentId,
-      position,
+    const existingIndex = constraintHoverPopupState.entries.findIndex(
+      (entry) => entry.popup.segmentId === segmentId
+    )
+    const entry = (existingIndex === -1
+      ? null
+      : constraintHoverPopupState.entries.splice(existingIndex, 1)[0]) ?? {
+      popup: { segmentId, position },
+      hideTimeoutId: null,
     }
-    constraintHoverPopupState.isHoveringPreview = false
-    constraintHoverPopupState.previewTimeoutId = setTimeout(() => {
-      constraintHoverPopupState.previewTimeoutId = null
-      if (!constraintHoverPopupState.isHoveringPreview) {
-        hideConstraintHoverPopup()
-      }
-    }, CONSTRAINT_HOVER_POPUP_TIMEOUT_MS)
+
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    entry.popup = { segmentId, position }
+    constraintHoverPopupState.entries.push(entry)
   }
 
-  const scheduleConstraintHoverPopupHide = () => {
-    clearConstraintHoverPopupTimer('hideTimeoutId')
-    constraintHoverPopupState.hideTimeoutId = setTimeout(() => {
-      constraintHoverPopupState.hideTimeoutId = null
-      hideConstraintHoverPopup()
+  const scheduleConstraintHoverPopupHide = (
+    entry: ConstraintHoverPopupEntry
+  ) => {
+    clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+    entry.hideTimeoutId = setTimeout(() => {
+      entry.hideTimeoutId = null
+      hideConstraintHoverPopup(entry.popup.segmentId)
     }, CONSTRAINT_HOVER_POPUP_TIMEOUT_MS)
   }
 
@@ -593,6 +789,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
       getHoveredId: () => self.getSnapshot().context.hoveredId,
+      dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
       setDraggedEntityId,
@@ -715,18 +912,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
         hoveredApiObject !== null && !isConstraint(hoveredApiObject)
           ? hoveredApiObject.id
           : null
-      const { popup } = constraintHoverPopupState
-      const isHoveringConstraintHoverPopup =
-        popup !== null &&
-        isInvisibleConstraintObject(hoveredApiObject) &&
-        isConstrainingSegment(hoveredApiObject, apiObjects[popup.segmentId])
-      const previousConstraintHoverPopup = snapshot.context.constraintHoverPopup
+      const previousConstraintHoverPopups =
+        snapshot.context.constraintHoverPopups
 
       if (
         constraintHoverPopupSegmentId !==
           constraintHoverPopupState.lastHoveredTargetId &&
         constraintHoverPopupSegmentId !== null &&
-        popup?.segmentId !== constraintHoverPopupSegmentId &&
         !snapshot.context.showNonVisualConstraints &&
         hasInvisibleConstraintPreviewTarget(hoveredApiObject, apiObjects)
       ) {
@@ -735,23 +927,30 @@ export function setUpOnDragAndSelectionClickCallbacks({
       constraintHoverPopupState.lastHoveredTargetId =
         constraintHoverPopupSegmentId
 
-      if (isHoveringConstraintHoverPopup) {
-        if (!constraintHoverPopupState.isHoveringPreview) {
-          constraintHoverPopupState.isHoveringPreview = true
-          clearConstraintHoverPopupTimers()
-        }
-      } else if (constraintHoverPopupState.isHoveringPreview) {
-        constraintHoverPopupState.isHoveringPreview = false
-        scheduleConstraintHoverPopupHide()
-      }
+      constraintHoverPopupState.entries.forEach((entry) => {
+        const isHoveringSourceSegment =
+          constraintHoverPopupSegmentId === entry.popup.segmentId
+        const isHoveringConstraintHoverPopup =
+          isInvisibleConstraintObject(hoveredApiObject) &&
+          isConstrainingSegment(
+            hoveredApiObject,
+            apiObjects[entry.popup.segmentId]
+          )
 
-      const currentConstraintHoverPopup = constraintHoverPopupState.popup
-      const constraintHoverPopupChanged = !isSameConstraintHoverPopup(
-        currentConstraintHoverPopup,
-        previousConstraintHoverPopup
+        if (isHoveringSourceSegment || isHoveringConstraintHoverPopup) {
+          clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
+        } else if (entry.hideTimeoutId === null) {
+          scheduleConstraintHoverPopupHide(entry)
+        }
+      })
+
+      const currentConstraintHoverPopups = getConstraintHoverPopups()
+      const constraintHoverPopupsChanged = !areSameConstraintHoverPopups(
+        currentConstraintHoverPopups,
+        previousConstraintHoverPopups
       )
 
-      if (hoveredId !== lastHoveredId || constraintHoverPopupChanged) {
+      if (hoveredId !== lastHoveredId || constraintHoverPopupsChanged) {
         sendHoveredState(hoveredId)
       }
     },

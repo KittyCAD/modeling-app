@@ -1,9 +1,9 @@
+import type { Texture } from 'three'
 import {
   Group,
   SRGBColorSpace,
   Sprite,
   SpriteMaterial,
-  Texture,
   TextureLoader,
   Vector3,
 } from 'three'
@@ -13,7 +13,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
-import { clamp } from '@src/lib/utils'
+import { clamp, isArray } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type ConstraintHoverPopup,
@@ -25,10 +25,24 @@ import {
 
 export type InvisibleConstraintDisplayState = {
   showNonVisualConstraints: boolean
-  constraintHoverPopup: ConstraintHoverPopup | null
+  constraintHoverPopups: ConstraintHoverPopup[]
 }
 
 const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
+const INVISIBLE_CONSTRAINT_RENDER_ORDER = 100
+const CONSTRAINT_HOVER_POPUP_KEY = 'constraintHoverPopup'
+const SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY =
+  'selectedInvisibleConstraintPopup'
+
+type InvisibleConstraintWorldPosition = {
+  position: Vector3
+  renderOrder: number
+  popup?: ConstraintHoverPopup
+}
+
+type SelectedInvisibleConstraintPopup = ConstraintHoverPopup & {
+  ownerConstraintId: number
+}
 
 export class InvisibleConstraintSpriteBuilder {
   private readonly textureCache = new Map<string, Texture>()
@@ -52,7 +66,7 @@ export class InvisibleConstraintSpriteBuilder {
         color: 0xffffff,
       })
     )
-    sprite.renderOrder = 100
+    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
     group.add(sprite)
 
     return group
@@ -72,18 +86,17 @@ export class InvisibleConstraintSpriteBuilder {
       return
     }
 
-    const sprite = group.children.find((child) => child instanceof Sprite) as
-      | Sprite
-      | undefined
-
-    if (!sprite) {
-      group.visible = false
-      return
+    const selectedPopup = getSelectedInvisibleConstraintPopup(group)
+    if (
+      selectedPopup &&
+      !selectedIds.includes(selectedPopup.ownerConstraintId)
+    ) {
+      clearSelectedInvisibleConstraintPopup(group)
     }
-
     const isSelected = selectedIds.includes(obj.id)
     const isHovered = hoveredId === obj.id
-    const position = getInvisibleConstraintWorldPosition(
+    const positions = getInvisibleConstraintWorldPositions(
+      group,
       obj,
       objects,
       sceneInfra,
@@ -92,35 +105,44 @@ export class InvisibleConstraintSpriteBuilder {
       isHovered
     )
 
-    if (!position) {
+    if (positions.length === 0) {
       group.visible = false
       return
     }
 
-    group.position.copy(position)
-
-    const scale = sceneInfra.getClientSceneScaleFactor(group)
-    sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
     const theme = getResolvedTheme(sceneInfra.theme)
-
     const texture = this.getTexture(
       obj.kind.constraint.type,
       getConstraintBadgeState(obj.id, selectedIds, hoveredId),
       theme
     )
+    const sprites = syncSprites(group, positions.length)
+    const scale = sceneInfra.getClientSceneScaleFactor(group)
+    group.position.set(0, 0, 0)
 
-    sprite.material.map = texture
-    sprite.material.needsUpdate = true
-    sprite.userData.hitObjects = [
-      {
-        type: 'screenRect',
-        center: [group.position.x, group.position.y, group.position.z],
-        sizePx: [
-          INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-          INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-        ],
-      },
-    ]
+    sprites.forEach((sprite, index) => {
+      const { position, renderOrder, popup } = positions[index]
+      sprite.position.copy(position)
+      sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
+      sprite.renderOrder = renderOrder
+      sprite.material.map = texture
+      sprite.material.needsUpdate = true
+      if (popup) {
+        sprite.userData[CONSTRAINT_HOVER_POPUP_KEY] = popup
+      } else {
+        delete sprite.userData[CONSTRAINT_HOVER_POPUP_KEY]
+      }
+      sprite.userData.hitObjects = [
+        {
+          type: 'screenRect',
+          center: [position.x, position.y, position.z],
+          sizePx: [
+            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
+            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
+          ],
+        },
+      ]
+    })
 
     group.visible = true
   }
@@ -145,45 +167,176 @@ export class InvisibleConstraintSpriteBuilder {
   }
 }
 
-function getInvisibleConstraintWorldPosition(
+function syncSprites(group: Group, count: number): Sprite[] {
+  const sprites = group.children.filter(
+    (child): child is Sprite => child instanceof Sprite
+  )
+
+  while (sprites.length < count) {
+    const sprite = new Sprite(
+      new SpriteMaterial({
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+        color: 0xffffff,
+      })
+    )
+    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
+    group.add(sprite)
+    sprites.push(sprite)
+  }
+
+  while (sprites.length > count) {
+    const sprite = sprites.pop()
+    if (sprite) {
+      group.remove(sprite)
+    }
+  }
+
+  return sprites
+}
+
+function getInvisibleConstraintWorldPositions(
+  group: Group,
   obj: InvisibleConstraintObject,
   objects: ApiObject[],
   sceneInfra: SceneInfra,
   displayState: InvisibleConstraintDisplayState,
   isSelected: boolean,
   isHovered: boolean
-) {
+): InvisibleConstraintWorldPosition[] {
+  // Start from the anchor geometry-derived anchor, then offset it by 15px
   const naturalAnchor = getInvisibleConstraintAnchor(obj, objects)
   const naturalPosition = naturalAnchor
     ? offsetWorldPosition(naturalAnchor, sceneInfra, { x: -15, y: -15 })
     : null
 
+  // Global toggle: show hidden constraints at their anchored position.
   if (displayState.showNonVisualConstraints) {
     return naturalPosition
+      ? [
+          {
+            position: naturalPosition,
+            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+          },
+        ]
+      : []
   }
 
-  const { constraintHoverPopup } = displayState
-  if (constraintHoverPopup !== null) {
-    const hoverPreviewConstraintIds = findInvisibleConstraintsForSegment(
-      objects[constraintHoverPopup.segmentId],
-      objects
-    )
-    const hoverPreviewIndex = hoverPreviewConstraintIds.indexOf(obj.id)
-    if (hoverPreviewIndex !== -1) {
-      return getHoverPreviewWorldPosition(
-        constraintHoverPopup.position,
-        hoverPreviewIndex,
-        hoverPreviewConstraintIds.length,
+  const previewPositions = displayState.constraintHoverPopups.flatMap(
+    (popup, popupIndex) => {
+      return getConstraintHoverPopupPositions(
+        popup,
+        popupIndex,
+        obj.id,
+        objects,
         sceneInfra
       )
     }
+  )
+  const selectedPopup = getSelectedInvisibleConstraintPopup(group)
+  const selectedPopupPositions =
+    selectedPopup &&
+    !displayState.constraintHoverPopups.some(
+      (popup) => popup.segmentId === selectedPopup.segmentId
+    )
+      ? getConstraintHoverPopupPositions(
+          selectedPopup,
+          displayState.constraintHoverPopups.length,
+          obj.id,
+          objects,
+          sceneInfra
+        ).map((position) => ({
+          ...position,
+          renderOrder:
+            INVISIBLE_CONSTRAINT_RENDER_ORDER +
+            displayState.constraintHoverPopups.length +
+            1,
+        }))
+      : []
+
+  if (previewPositions.length > 0 || selectedPopupPositions.length > 0) {
+    return [...previewPositions, ...selectedPopupPositions]
   }
 
+  // Outside preview mode, keep directly selected or hovered constraints visible.
   if (isSelected || isHovered) {
     return naturalPosition
+      ? [
+          {
+            position: naturalPosition,
+            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+          },
+        ]
+      : []
   }
 
-  return null
+  return []
+}
+
+function getConstraintHoverPopupPositions(
+  popup: ConstraintHoverPopup,
+  popupIndex: number,
+  objId: number,
+  objects: ApiObject[],
+  sceneInfra: SceneInfra
+): InvisibleConstraintWorldPosition[] {
+  // Hover previews ignore the anchor and lay related badges out near the cursor.
+  const hoverPreviewConstraintIds = findInvisibleConstraintsForSegment(
+    objects[popup.segmentId],
+    objects
+  )
+  const hoverPreviewIndex = hoverPreviewConstraintIds.indexOf(objId)
+  return hoverPreviewIndex === -1
+    ? []
+    : [
+        {
+          position: getHoverPreviewWorldPosition(
+            popup.position,
+            hoverPreviewIndex,
+            hoverPreviewConstraintIds.length,
+            sceneInfra
+          ),
+          renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER + popupIndex + 1,
+          popup,
+        },
+      ]
+}
+
+function getSelectedInvisibleConstraintPopup(
+  group: Group
+): SelectedInvisibleConstraintPopup | null {
+  const popup = group.userData[SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY]
+  return isSelectedInvisibleConstraintPopup(popup) ? popup : null
+}
+
+function clearSelectedInvisibleConstraintPopup(group: Group) {
+  delete group.userData[SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY]
+}
+
+export function isConstraintHoverPopup(
+  popup: unknown
+): popup is ConstraintHoverPopup {
+  return (
+    typeof popup === 'object' &&
+    popup !== null &&
+    'segmentId' in popup &&
+    typeof popup.segmentId === 'number' &&
+    'position' in popup &&
+    isArray(popup.position) &&
+    popup.position.length === 2 &&
+    popup.position.every((value) => typeof value === 'number')
+  )
+}
+
+function isSelectedInvisibleConstraintPopup(
+  popup: unknown
+): popup is SelectedInvisibleConstraintPopup {
+  return (
+    isConstraintHoverPopup(popup) &&
+    'ownerConstraintId' in popup &&
+    typeof popup.ownerConstraintId === 'number'
+  )
 }
 
 function offsetWorldPosition(
@@ -280,12 +433,15 @@ function createConstraintBadgeSvgDataUrl(
   const iconPath = getInvisibleConstraintSpriteIcon(objType)
   const dpr = window.devicePixelRatio || 1
   const rasterSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * dpr
-  const borderOpacity =
-    badgeState === 'selected' ? 1 : badgeState === 'hovered' ? 0.8 : 0
-  const borderStroke =
-    borderOpacity === 0
-      ? 'none'
-      : `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${borderOpacity})`
+  const hasBorder = badgeState !== 'default'
+  const borderStroke = hasBorder
+    ? `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${
+        badgeState === 'hovered' ? 0.8 : 1
+      })`
+    : 'none'
+  const borderWidth = hasBorder ? 1 : 0
+  const rectInset = hasBorder ? 0.5 : 0
+  const badgeFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
   const iconFill = theme === Themes.Dark ? '#000000' : '#FFFFFF'
   const svg = `
     <svg
@@ -296,14 +452,14 @@ function createConstraintBadgeSvgDataUrl(
       fill="none"
     >
       <rect
-        x="0.5"
-        y="0.5"
-        width="19"
-        height="19"
+        x="${rectInset}"
+        y="${rectInset}"
+        width="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
+        height="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
         rx="2"
-        fill="none"
+        fill="${badgeFill}"
         stroke="${borderStroke}"
-        stroke-width="1"
+        stroke-width="${borderWidth}"
       />
       <path d="${iconPath}" fill="${iconFill}" />
     </svg>

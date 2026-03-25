@@ -82,7 +82,7 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive = false,
   sketchId = 0,
   showNonVisualConstraints = false,
-  constraintHoverPopup = null,
+  constraintHoverPopups = [],
   getSceneObjectByName,
 }: {
   apiObjects?: ApiObject[]
@@ -90,10 +90,10 @@ function setUpMoveToolCallbacks({
   isAreaSelectActive?: boolean
   sketchId?: number
   showNonVisualConstraints?: boolean
-  constraintHoverPopup?: {
+  constraintHoverPopups?: Array<{
     segmentId: number
     position: [number, number]
-  } | null
+  }>
   getSceneObjectByName?: (name: string) => unknown
 }) {
   let callbacks: Record<string, unknown> = {}
@@ -134,7 +134,7 @@ function setUpMoveToolCallbacks({
   const snapshot = {
     context: {
       hoveredId,
-      constraintHoverPopup,
+      constraintHoverPopups,
       showNonVisualConstraints,
       selectedIds: [],
       duringAreaSelectIds: [],
@@ -151,9 +151,9 @@ function setUpMoveToolCallbacks({
     send: vi.fn((event: any) => {
       if (event.type === 'update hovered id') {
         snapshot.context.hoveredId = event.data.hoveredId
-        if ('constraintHoverPopup' in event.data) {
-          snapshot.context.constraintHoverPopup =
-            event.data.constraintHoverPopup
+        if ('constraintHoverPopups' in event.data) {
+          snapshot.context.constraintHoverPopups =
+            event.data.constraintHoverPopups
         }
       }
       if (event.type === 'update selected ids') {
@@ -185,6 +185,9 @@ function setUpMoveToolCallbacks({
   if (typeof callbacks.onMove !== 'function') {
     throw new Error('Move tool did not register an onMove callback')
   }
+  if (typeof callbacks.onDragStart !== 'function') {
+    throw new Error('Move tool did not register an onDragStart callback')
+  }
   if (typeof callbacks.onAreaSelect !== 'function') {
     throw new Error('Move tool did not register an onAreaSelect callback')
   }
@@ -201,6 +204,12 @@ function setUpMoveToolCallbacks({
     }) => Promise<void>,
     onMove: callbacks.onMove as (args: {
       intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+    }) => void,
+    onDragStart: callbacks.onDragStart as (args: {
+      intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+      mouseEvent: MouseEvent
+      intersects: Array<unknown>
+      selected?: Group
     }) => void,
     onAreaSelect: callbacks.onAreaSelect as (args: {
       startPoint: { twoD: Vector2; threeD: Vector3 }
@@ -242,15 +251,17 @@ function createPointSegmentGroup({
 }
 
 describe('createOnDragStartCallback', () => {
-  it('should track the drag start position and dragged entity id', () => {
+  it('should track the drag start position, dragged entity id, and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
     const setDraggedEntityId = vi.fn()
     const getHoveredId = vi.fn(() => 13)
+    const dismissConstraintHoverPopup = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggedEntityId,
       getHoveredId,
+      dismissConstraintHoverPopup,
     })
 
     const intersectionPoint = {
@@ -265,6 +276,7 @@ describe('createOnDragStartCallback', () => {
       intersects: [],
     })
 
+    expect(dismissConstraintHoverPopup).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
       expect.objectContaining({ x: 10, y: 20 })
@@ -1394,6 +1406,124 @@ describe('createOnClickCallback', () => {
       replaceExistingSelection: true,
     })
   })
+
+  it('should pin an invisible constraint selection to the clicked popup group', async () => {
+    const camera = new OrthographicCamera(0, 100, 100, 0, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    camera.updateProjectionMatrix()
+    camera.updateMatrixWorld()
+
+    const constraintGroup = new Group()
+    constraintGroup.name = '20'
+    constraintGroup.visible = true
+    const relatedConstraintGroup = new Group()
+    relatedConstraintGroup.name = '21'
+    const badge = new Group()
+    badge.userData.constraintHoverPopup = {
+      segmentId: 3,
+      position: [60, 20],
+    }
+    badge.userData.hitObjects = [
+      {
+        type: 'screenRect',
+        center: [60, 20, 0],
+        sizePx: [20, 20],
+      },
+    ]
+    constraintGroup.add(badge)
+
+    const sceneInfra = {
+      scene: {
+        getObjectByName: vi.fn((name: string) => {
+          if (name === String(20)) {
+            return constraintGroup
+          }
+          if (name === String(21)) {
+            return relatedConstraintGroup
+          }
+
+          return null
+        }),
+      },
+      camControls: { camera },
+      renderer: {
+        domElement: {
+          clientWidth: 100,
+          clientHeight: 100,
+        },
+      },
+      getClientSceneScaleFactor: vi.fn(() => 1),
+    } as unknown as SceneInfra
+    const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const pointC = createPointApiObject({ id: 4, x: 0, y: 20 })
+    const pointD = createPointApiObject({ id: 5, x: 40, y: 20 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const otherLine = createLineApiObject({ id: 6, start: 4, end: 5 })
+    const constraint = createConstraintApiObject({ id: 20, type: 'Horizontal' })
+    const relatedConstraint = {
+      id: 21,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Parallel',
+          lines: [3, 6],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+
+    const callback = createOnClickCallback({
+      getApiObjects: () =>
+        createSceneGraphDelta([
+          pointA,
+          pointB,
+          pointC,
+          pointD,
+          line,
+          otherLine,
+          constraint,
+          relatedConstraint,
+        ]).new_graph.objects,
+      sceneInfra,
+      onUpdateSelectedIds,
+      onEditConstraint,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersectionPoint: {
+        twoD: new Vector2(60, 20),
+        threeD: new Vector3(60, 20, 0),
+      },
+      intersects: [],
+    })
+
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [20],
+      duringAreaSelectIds: [],
+      replaceExistingSelection: true,
+    })
+    expect(constraintGroup.userData.selectedInvisibleConstraintPopup).toEqual({
+      ownerConstraintId: 20,
+      segmentId: 3,
+      position: [60, 20],
+    })
+    expect(
+      relatedConstraintGroup.userData.selectedInvisibleConstraintPopup
+    ).toEqual({
+      ownerConstraintId: 20,
+      segmentId: 3,
+      position: [60, 20],
+    })
+  })
 })
 
 describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
@@ -1444,10 +1574,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 3,
-        constraintHoverPopup: {
-          segmentId: 3,
-          position: [20, 0],
-        },
+        constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
       },
     })
   })
@@ -1486,15 +1613,193 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
       type: 'update hovered id',
       data: {
         hoveredId: 1,
-        constraintHoverPopup: {
-          segmentId: 1,
-          position: [10, 20],
-        },
+        constraintHoverPopups: [{ segmentId: 1, position: [10, 20] }],
       },
     })
   })
 
-  it('should pin the preview for 2 seconds without following the mouse', () => {
+  it('should keep existing popups while showing a new popup for another segment', () => {
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
+    const point = createPointApiObject({ id: 10, x: 60, y: 20 })
+    const otherPoint = createPointApiObject({ id: 11, x: 70, y: 20 })
+    const coincidentConstraint = {
+      id: 21,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [10, 11],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [
+        lineStart,
+        lineEnd,
+        line,
+        horizontalConstraint,
+        point,
+        otherPoint,
+        coincidentConstraint,
+      ],
+      showNonVisualConstraints: false,
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+    send.mockClear()
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(60, 20),
+        threeD: new Vector3(60, 20, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 10,
+        constraintHoverPopups: [
+          { segmentId: 3, position: [20, 0] },
+          { segmentId: 10, position: [60, 20] },
+        ],
+      },
+    })
+  })
+
+  it('should reposition an existing popup instead of duplicating it for the same segment', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
+
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line, horizontalConstraint],
+      showNonVisualConstraints: false,
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(200, 200),
+        threeD: new Vector3(200, 200, 0),
+      },
+    })
+    send.mockClear()
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(25, 0),
+        threeD: new Vector3(25, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 3,
+        constraintHoverPopups: [{ segmentId: 3, position: [25, 0] }],
+      },
+    })
+  })
+
+  it('should move a revisited popup to the end so newer popups render on top', () => {
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
+    const point = createPointApiObject({ id: 10, x: 60, y: 20 })
+    const otherPoint = createPointApiObject({ id: 11, x: 70, y: 20 })
+    const coincidentConstraint = {
+      id: 21,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [10, 11],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+
+    const { onMove, send } = setUpMoveToolCallbacks({
+      apiObjects: [
+        lineStart,
+        lineEnd,
+        line,
+        horizontalConstraint,
+        point,
+        otherPoint,
+        coincidentConstraint,
+      ],
+      showNonVisualConstraints: false,
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(60, 20),
+        threeD: new Vector3(60, 20, 0),
+      },
+    })
+    send.mockClear()
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(25, 0),
+        threeD: new Vector3(25, 0, 0),
+      },
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 3,
+        constraintHoverPopups: [
+          { segmentId: 10, position: [60, 20] },
+          { segmentId: 3, position: [25, 0] },
+        ],
+      },
+    })
+  })
+
+  it('should only start hiding the preview after leaving the segment', () => {
     vi.useFakeTimers()
 
     try {
@@ -1522,10 +1827,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: 3,
-          constraintHoverPopup: {
-            segmentId: 3,
-            position: [20, 0],
-          },
+          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
         },
       })
 
@@ -1542,24 +1844,35 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
 
       vi.advanceTimersByTime(2000)
 
+      expect(send).not.toHaveBeenCalled()
+
+      onMove({
+        intersectionPoint: {
+          twoD: new Vector2(200, 200),
+          threeD: new Vector3(200, 200, 0),
+        },
+      })
+
       expect(send).toHaveBeenCalledWith({
         type: 'update hovered id',
         data: {
-          hoveredId: 3,
-          constraintHoverPopup: null,
+          hoveredId: null,
+          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
         },
       })
 
       send.mockClear()
+      vi.advanceTimersByTime(1999)
+      expect(send).not.toHaveBeenCalled()
+      vi.advanceTimersByTime(1)
 
-      onMove({
-        intersectionPoint: {
-          twoD: new Vector2(26, 0),
-          threeD: new Vector3(26, 0, 0),
+      expect(send).toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: {
+          hoveredId: null,
+          constraintHoverPopups: [],
         },
       })
-
-      expect(send).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()
     }
@@ -1614,10 +1927,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: 20,
-          constraintHoverPopup: {
-            segmentId: 3,
-            position: [20, 0],
-          },
+          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
         },
       })
 
@@ -1636,10 +1946,7 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: null,
-          constraintHoverPopup: {
-            segmentId: 3,
-            position: [20, 0],
-          },
+          constraintHoverPopups: [{ segmentId: 3, position: [20, 0] }],
         },
       })
 
@@ -1652,12 +1959,54 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'update hovered id',
         data: {
           hoveredId: null,
-          constraintHoverPopup: null,
+          constraintHoverPopups: [],
         },
       })
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('should clear the constraint hover popup when dragging starts', () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 20,
+      type: 'Horizontal',
+    })
+
+    const { onMove, onDragStart, send } = setUpMoveToolCallbacks({
+      apiObjects: [start, end, line, horizontalConstraint],
+      showNonVisualConstraints: false,
+    })
+
+    onMove({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+    })
+
+    send.mockClear()
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(20, 0),
+        threeD: new Vector3(20, 0, 0),
+      },
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+      selected: undefined,
+    })
+
+    expect(send).toHaveBeenCalledWith({
+      type: 'update hovered id',
+      data: {
+        hoveredId: 3,
+        constraintHoverPopups: [],
+      },
+    })
   })
 
   it('should clear the hovered id when moving away from the hovered segment', () => {

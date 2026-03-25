@@ -61,6 +61,8 @@ export function isInvisibleConstraintObject(
   }
 }
 
+// Returns the (sketch space) position of a non-visual anchor determined by the segments
+// the constraint is constraining.
 export function getInvisibleConstraintAnchor(
   obj: InvisibleConstraintObject,
   objects: ApiObject[]

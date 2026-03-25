@@ -112,7 +112,7 @@ export type SketchSolveMachineEvent =
       type: 'update hovered id'
       data: {
         hoveredId: number | null
-        constraintHoverPopup?: ConstraintHoverPopup | null
+        constraintHoverPopups?: ConstraintHoverPopup[]
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -183,7 +183,7 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
-  constraintHoverPopup: ConstraintHoverPopup | null
+  constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -872,7 +872,7 @@ function getInvisibleConstraintDisplayState(
 ): InvisibleConstraintDisplayState {
   return {
     showNonVisualConstraints: context.showNonVisualConstraints,
-    constraintHoverPopup: context.constraintHoverPopup,
+    constraintHoverPopups: context.constraintHoverPopups,
   }
 }
 
