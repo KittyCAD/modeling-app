@@ -436,7 +436,7 @@ export function getEngineTopologyFallbackNormalized(v2: SelectionV2): {
 }
 
 /**
- * Match command-bar vs live graph rows when merging topology (index alone can mis-pair).
+ * Match command-bar vs live graph rows when merging topology (index alone can pair incorrectly).
  */
 function entityReferencesEqualForMerge(
   a?: EntityReference,
