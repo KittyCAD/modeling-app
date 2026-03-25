@@ -269,8 +269,8 @@ pub(crate) async fn inner_imprint(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     eprintln!("Found {} targets:", targets.len());
-    for target in &targets {
-        eprintln!("{}", target.id);
+    for (i, target) in targets.iter().enumerate() {
+        eprintln!("{:2}: {}", i, target.id);
     }
     let body_out_id = exec_state.next_uuid();
 
@@ -321,10 +321,11 @@ pub(crate) async fn inner_imprint(
     };
 
     // If we have more solids, set those as well.
-    for extra_solid_id in boolean_resp.extra_solid_ids {
+    for (i, extra_solid_id) in boolean_resp.extra_solid_ids.into_iter().enumerate() {
         if extra_solid_id == body_out_id {
             continue;
         }
+        eprintln!("Post-split body {i:2}: {extra_solid_id}");
         let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
         new_solids.push(new_solid);
