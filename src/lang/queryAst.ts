@@ -1491,11 +1491,16 @@ export function retrieveSelectionsFromOpArg(
     }
 
     const codeRef = codeRefs[0]
+    const resolvedArtifactId = artifact.id
     const pathId =
       artifact.type === 'segment'
         ? (artifact as SegmentArtifact).pathId
         : undefined
-    const entityRef = artifactToEntityRef(artifact.type, artifactId, pathId)
+    const entityRef = artifactToEntityRef(
+      artifact.type,
+      resolvedArtifactId,
+      pathId
+    )
     graphSelectionsV2.push({ entityRef, codeRef })
   }
 

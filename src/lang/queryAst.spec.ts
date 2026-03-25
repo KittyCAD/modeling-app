@@ -1449,7 +1449,6 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
       throw new Error('Extrude operation not found')
     }
 
-    console.log('op.unlabeledArg', op.unlabeledArg)
     const selections = retrieveSelectionsFromOpArg(
       op.unlabeledArg,
       artifactGraph
