@@ -7604,4 +7604,131 @@ sketch2 = sketch(on = XY) {
         ctx.close().await;
         mock_ctx.close().await;
     }
+
+    /// Regression test: entering sketch mode on a sketch whose region is
+    /// extruded, editing a segment, then exiting sketch mode should not
+    /// produce an engine error from Solid3dGetAdjacencyInfo.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_with_region_extrude_then_exit() {
+        let source = "\
+@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+";
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        // Initial engine execution.
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        let SetProgramOutcome::Success { .. } = outcome else {
+            panic!("Expected successful execution, got: {outcome:?}");
+        };
+
+        // Find the sketch object so we can enter sketch mode.
+        let sketch_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| matches!(obj.kind, ObjectKind::Sketch(_)).then_some(obj.id))
+            .expect("Expected a sketch object");
+
+        // Enter sketch mode (mock execution of truncated program).
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+
+        // Find a line segment to edit.
+        let line_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| {
+                if let ObjectKind::Segment { segment } = &obj.kind {
+                    if matches!(segment, Segment::Line(_)) {
+                        return Some(obj.id);
+                    }
+                }
+                None
+            })
+            .expect("Expected a line segment object");
+
+        // Edit the segment: move one endpoint slightly.
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 11.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: line_id,
+            ctor: SegmentCtor::Line(line_ctor),
+        }];
+        frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        // After editing, do a mock execute (like sketch_execute_mock in the
+        // WASM API / TS code).
+        frontend
+            .execute_mock(&mock_ctx, version, sketch_id)
+            .await
+            .unwrap();
+
+        // Exit sketch mode. This triggers a full engine re-execution via
+        // run_with_caching.
+        frontend
+            .exit_sketch(&ctx, version, sketch_id)
+            .await
+            .expect("exit_sketch should not fail with an engine error");
+
+        // After exiting, the TypeScript code re-parses the source and calls
+        // execute(), which is run_with_caching with a freshly parsed program.
+        // This matters because a fresh parse produces new AST digests, causing
+        // the cache to detect a change and trigger a real re-execution.
+        let source = source_from_ast(&frontend.program.ast);
+        let reparsed_program = Program::parse(&source).unwrap().0.unwrap();
+        ctx.run_with_caching(reparsed_program)
+            .await
+            .expect("engine re-execution after exit_sketch should not fail");
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
 }
