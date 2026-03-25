@@ -536,7 +536,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false || props.needsReconnect ? (
+              ) : props.isLoading === false &&
+                props.needsReconnect === false ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
                     {exchangeCards}
