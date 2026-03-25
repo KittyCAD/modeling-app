@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints pipe-manifold.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "chamfer uses 'tags'; prefer edgeRefs",
+    "pos": [
+      1009,
+      1303,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  }
+]

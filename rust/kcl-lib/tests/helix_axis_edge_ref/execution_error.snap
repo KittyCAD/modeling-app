@@ -4,11 +4,17 @@ description: Error from executing helix_axis_edge_ref.kcl
 ---
 KCL Engine error
 
-  × engine: Please send `{ headers: { Authorization: "Bearer <token>" } }`
-  │ over this websocket.
-   ╭─[1:1]
- 1 │ // Helix with axis as edge reference object (sideFaces) instead of Axis3d or Edge.
-   · ▲
-   · ╰── main
- 2 │ sketch001 = startSketchOn(XY)
-   ╰────
+  × engine: missing field `edge_id`
+    ╭─[1:1]
+  1 │ ╭─▶ // Helix with axis as edge reference object (sideFaces) instead of Axis3d or Edge.
+  2 │ │   sketch001 = startSketchOn(XY)
+  3 │ │   profile001 = startProfile(sketch001, at = [-8.31, 7.18])
+  4 │ │     |> angledLine(angle = 0deg, length = 18.32, tag = $rectangleSegmentA001)
+  5 │ │     |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 16.23)
+  6 │ │     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  7 │ │     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  8 │ │     |> close()
+  9 │ │   extrude001 = extrude(profile001, length = 5, tagStart = $capStart001)
+ 10 │ ├─▶ he = helix(axis = { sideFaces = [seg01, capStart001] }, length = 50mm, revolutions = 10, angleStart = 0deg, radius = 2mm)
+    · ╰──── tests/helix_axis_edge_ref/input.kcl
+    ╰────

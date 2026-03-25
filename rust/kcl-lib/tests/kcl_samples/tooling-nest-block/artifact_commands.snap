@@ -356,6 +356,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -510,6 +519,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -676,6 +694,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -830,6 +857,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -996,6 +1032,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -1156,6 +1201,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -1310,6 +1364,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -1476,6 +1539,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -1630,6 +1702,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -1796,6 +1877,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -1950,6 +2040,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -2116,6 +2215,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -2270,6 +2378,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -2436,6 +2553,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -2590,6 +2716,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -2756,6 +2891,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -2916,6 +3060,15 @@ description: Artifact commands tooling-nest-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -3070,6 +3223,15 @@ description: Artifact commands tooling-nest-block.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {

@@ -4,11 +4,83 @@ description: Error from executing face_api_fillet_chamfer_tags_and_edge_refs.kcl
 ---
 KCL Engine error
 
-  × engine: Please send `{ headers: { Authorization: "Bearer <token>" } }`
-  │ over this websocket.
-   ╭─[1:1]
- 1 │ // Simulation test: fillet and chamfer with both tags and edgeRefs (merge behavior).
-   · ▲
-   · ╰── main
- 2 │ // Verifies that when both are provided, edges from tags and edgeRefs are all applied.
-   ╰────
+  × engine: unknown variant `solid3d_cut_edge_references`, expected one of
+  │ `engine_util_evaluate_path`, `start_path`, `move_path_pen`, `extend_path`,
+  │ `extrude`, `extrude_to_reference`, `twist_extrude`, `sweep`, `revolve`,
+  │ `solid3d_shell_face`, `solid3d_join`, `surface_blend`,
+  │ `solid3d_get_edge_uuid`, `solid3d_get_face_uuid`, `solid3d_get_body_type`,
+  │ `revolve_about_edge`, `loft`, `close_path`, `camera_drag_start`,
+  │ `camera_drag_move`, `camera_drag_end`, `default_camera_get_settings`,
+  │ `default_camera_get_view`, `default_camera_set_view`,
+  │ `default_camera_look_at`, `default_camera_perspective_settings`,
+  │ `default_camera_zoom`, `export2d`, `export3d`, `export`,
+  │ `entity_get_parent_id`, `entity_get_num_children`,
+  │ `entity_get_child_uuid`, `entity_get_index`, `entity_get_primitive_index`,
+  │ `entity_delete_children`, `entity_get_all_child_uuids`,
+  │ `entity_get_sketch_paths`, `entity_get_distance`, `entity_clone`,
+  │ `entity_linear_pattern_transform`, `entity_linear_pattern`,
+  │ `entity_circular_pattern`, `entity_make_helix`,
+  │ `entity_make_helix_from_params`, `entity_make_helix_from_edge`,
+  │ `entity_mirror`, `entity_mirror_across_edge`, `select_with_point`,
+  │ `select_add`, `select_remove`, `scene_clear_all`, `select_replace`,
+  │ `highlight_set_entity`, `highlight_set_entities`, `new_annotation`,
+  │ `update_annotation`, `edge_lines_visible`, `object_visible`,
+  │ `object_bring_to_front`, `object_set_material_params_pbr`,
+  │ `get_entity_type`, `solid3d_get_all_edge_faces`, `solid3d_flip`,
+  │ `solid3d_flip_face`, `solid2d_add_hole`, `solid3d_get_all_opposite_edges`,
+  │ `solid3d_get_opposite_edge`, `solid3d_get_next_adjacent_edge`,
+  │ `solid3d_get_prev_adjacent_edge`, `solid3d_get_common_edge`,
+  │ `solid3d_fillet_edge`, `solid3d_cut_edges`, `face_is_planar`,
+  │ `face_get_position`, `face_get_center`, `face_get_gradient`,
+  │ `send_object`, `entity_set_opacity`, `entity_fade`, `make_plane`,
+  │ `plane_set_color`, `set_tool`, `mouse_move`, `mouse_click`,
+  │ `sketch_mode_disable`, `get_sketch_mode_plane`, `curve_set_constraint`,
+  │ `enable_sketch_mode`, `enable_dry_run`, `disable_dry_run`,
+  │ `set_background_color`, `set_current_tool_properties`,
+  │ `set_default_system_properties`, `curve_get_type`,
+  │ `curve_get_control_points`, `project_entity_to_plane`,
+  │ `project_points_to_plane`, `take_snapshot`, `make_axes_gizmo`,
+  │ `path_get_info`, `path_get_curve_uuids_for_vertices`,
+  │ `path_get_curve_uuid`, `path_get_vertex_uuids`,
+  │ `path_get_sketch_target_uuid`, `handle_mouse_drag_start`,
+  │ `handle_mouse_drag_move`, `handle_mouse_drag_end`, `remove_scene_objects`,
+  │ `plane_intersect_and_project`, `curve_get_end_points`,
+  │ `reconfigure_stream`, `import_files`, `set_scene_units`, `mass`,
+  │ `density`, `volume`, `center_of_mass`, `surface_area`,
+  │ `default_camera_focus_on`, `set_selection_type`, `set_selection_filter`,
+  │ `scene_get_entity_ids`, `default_camera_set_orthographic`,
+  │ `default_camera_set_perspective`, `default_camera_center_to_selection`,
+  │ `default_camera_center_to_scene`, `zoom_to_fit`, `orient_to_face`,
+  │ `view_isometric`, `solid3d_get_extrusion_face_info`,
+  │ `solid3d_get_adjacency_info`, `select_clear`, `select_get`,
+  │ `get_num_objects`, `set_object_transform`, `boolean_union`,
+  │ `boolean_intersection`, `boolean_subtract`, `boolean_imprint`,
+  │ `make_offset_path`, `add_hole_from_offset`, `set_grid_reference_plane`,
+  │ `set_grid_scale`, `set_grid_auto_scale`,
+  │ `set_order_independent_transparency`, `create_region`,
+  │ `create_region_from_query_point`, `region_get_query_point`,
+  │ `select_region_from_point`, `bounding_box`, `offset_surface`,
+  │ `closest_edge`
+    ╭─[1:1]
+  1 │ ╭─▶ // Simulation test: fillet and chamfer with both tags and edgeRefs (merge behavior).
+  2 │ │   // Verifies that when both are provided, edges from tags and edgeRefs are all applied.
+  3 │ │   
+  4 │ │   body = startSketchOn(XY)
+  5 │ │   yo = startProfile(body, at = [0, 0])
+  6 │ │     |> line(endAbsolute = [10, 0], tag = $e1)
+  7 │ │     |> line(endAbsolute = [10, 10])
+  8 │ │     |> line(endAbsolute = [0, 10])
+  9 │ │     |> line(endAbsolute = [0, 0])
+ 10 │ │     |> close()
+ 11 │ │     |> extrude(length = 5, tagEnd = $capEnd001)
+ 12 │ │     |> fillet(radius = 1, tags = [e1], edgeRefs = [{ sideFaces = [e1, capEnd001] }])
+ 13 │ │   yo2 = startProfile(body, at = [15, 0])
+ 14 │ │     |> line(endAbsolute = [20, 0], tag = $e2)
+ 15 │ │     |> line(endAbsolute = [20, 10])
+ 16 │ │     |> line(endAbsolute = [15, 10])
+ 17 │ │     |> line(endAbsolute = [15, 0])
+ 18 │ │     |> close()
+ 19 │ │     |> extrude(length = 5, tagEnd = $capEnd002)
+ 20 │ ├─▶   |> chamfer(length = 1, tags = [e2], edgeRefs = [{ sideFaces = [e2, capEnd002] }])
+    · ╰──── tests/face_api_fillet_chamfer_tags_and_edge_refs/input.kcl
+    ╰────

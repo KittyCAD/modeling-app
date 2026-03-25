@@ -183,6 +183,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
@@ -477,6 +486,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
@@ -641,6 +659,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -665,6 +692,15 @@ description: Artifact commands coilover-assembly.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -1664,6 +1700,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
@@ -1958,6 +2003,15 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
@@ -2116,6 +2170,15 @@ description: Artifact commands coilover-assembly.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {

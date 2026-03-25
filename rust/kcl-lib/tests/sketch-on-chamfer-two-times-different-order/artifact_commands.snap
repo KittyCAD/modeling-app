@@ -214,6 +214,15 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_fillet_edge",
         "object_id": "[uuid]",
         "edge_id": null,
@@ -242,6 +251,24 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
@@ -258,6 +285,15 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {

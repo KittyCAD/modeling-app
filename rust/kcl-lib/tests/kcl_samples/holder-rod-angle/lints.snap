@@ -602,5 +602,158 @@ description: Lints holder-rod-angle.kcl
         0
       ]
     }
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edgeRefs",
+    "pos": [
+      766,
+      1092,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edgeRefs",
+    "pos": [
+      3512,
+      3586,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edgeRefs",
+    "pos": [
+      3592,
+      3666,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edgeRefs",
+    "pos": [
+      3672,
+      3746,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edgeRefs",
+    "pos": [
+      3752,
+      3868,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "chamfer uses 'tags'; prefer edgeRefs",
+    "pos": [
+      5245,
+      5371,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "chamfer uses 'tags'; prefer edgeRefs",
+    "pos": [
+      5438,
+      5564,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "chamfer uses 'tags'; prefer edgeRefs",
+    "pos": [
+      5631,
+      5757,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edgeRefs/edgeRef over tags/axis in fillet/chamfer/revolve/helic",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helic, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edgeRefs' (fillet/chamfer), 'edgeRef' (revolve/helic), or edge specifier (extrude 'to') with { sideFaces: [tag1, tag2] }. The auto-fix will convert.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "chamfer uses 'tags'; prefer edgeRefs",
+    "pos": [
+      5824,
+      5950,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
   }
 ]
