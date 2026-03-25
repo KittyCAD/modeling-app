@@ -536,6 +536,12 @@ fn extract_variable_ids_from_constraint(constraint: &ezpz::Constraint, variable_
             extract_ids_from_line(line0, variable_set);
             extract_ids_from_line(line1, variable_set);
         }
+        ezpz::Constraint::CircleRadius(circle, _) => {
+            extract_ids_from_circle(circle, variable_set);
+        }
+        ezpz::Constraint::ArcRadius(arc, _) => {
+            extract_ids_from_arc(arc, variable_set);
+        }
         _ => {
             // This catch-all exists to allow ezpz to add new constraint variants
             // If we hit this in a debug build, we should add explicit handling for the new variant.
