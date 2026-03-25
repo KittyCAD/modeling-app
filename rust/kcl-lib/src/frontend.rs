@@ -262,7 +262,10 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
+        #[cfg(feature = "artifact-graph")]
         let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.artifact_graph, &self.scene_graph, &args.on)?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
         let mut defined_names = find_defined_names(&new_ast);
         let is_face_of_expr = matches!(
             &plane_ast,
@@ -3486,7 +3489,7 @@ fn only_sketch_block(
 
 fn sketch_on_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    artifact_graph: &ArtifactGraph,
+    #[cfg(feature = "artifact-graph")] artifact_graph: &ArtifactGraph,
     scene_graph: &SceneGraph,
     on: &Plane,
 ) -> api::Result<ast::Expr> {
