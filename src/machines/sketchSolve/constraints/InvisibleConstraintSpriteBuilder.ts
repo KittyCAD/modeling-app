@@ -223,8 +223,14 @@ function getInvisibleConstraintWorldPositions(
       : []
   }
 
+  const selectedPopup = getSelectedInvisibleConstraintPopup(group)
   const previewPositions = displayState.constraintHoverPopups.flatMap(
     (popup, popupIndex) => {
+      if (selectedPopup && popup.segmentId === selectedPopup.segmentId) {
+        // Keep the pinned selected popup stable instead of replacing it with a new hover position.
+        return []
+      }
+
       return getConstraintHoverPopupPositions(
         popup,
         popupIndex,
@@ -234,26 +240,21 @@ function getInvisibleConstraintWorldPositions(
       )
     }
   )
-  const selectedPopup = getSelectedInvisibleConstraintPopup(group)
-  const selectedPopupPositions =
-    selectedPopup &&
-    !displayState.constraintHoverPopups.some(
-      (popup) => popup.segmentId === selectedPopup.segmentId
-    )
-      ? getConstraintHoverPopupPositions(
-          selectedPopup,
-          displayState.constraintHoverPopups.length,
-          obj.id,
-          objects,
-          sceneInfra
-        ).map((position) => ({
-          ...position,
-          renderOrder:
-            INVISIBLE_CONSTRAINT_RENDER_ORDER +
-            displayState.constraintHoverPopups.length +
-            1,
-        }))
-      : []
+  const selectedPopupPositions = selectedPopup
+    ? getConstraintHoverPopupPositions(
+        selectedPopup,
+        displayState.constraintHoverPopups.length,
+        obj.id,
+        objects,
+        sceneInfra
+      ).map((position) => ({
+        ...position,
+        renderOrder:
+          INVISIBLE_CONSTRAINT_RENDER_ORDER +
+          displayState.constraintHoverPopups.length +
+          1,
+      }))
+    : []
 
   if (previewPositions.length > 0 || selectedPopupPositions.length > 0) {
     return [...previewPositions, ...selectedPopupPositions]
