@@ -98,6 +98,7 @@ use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::math::BinaryExpressionToken;
+use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
 use crate::parsing::token::TokenSlice;
 use crate::parsing::token::TokenType;
@@ -524,7 +525,7 @@ fn outer_annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
 
 fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
-    let name = opt(binding_name).parse_next(i)?;
+    let name = opt(identifier).parse_next(i)?;
     let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
@@ -1670,7 +1671,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let name = opt(binding_name).parse_next(i)?;
+    let name = opt(nameable_identifier).parse_next(i)?;
     ignore_whitespace(i);
     let mut result = function_decl.parse_next(i)?;
     // Make the function expression aware of its name.
@@ -2587,7 +2588,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = preceded(
         (whitespace, import_as_keyword, whitespace),
-        identifier.context(expected("an identifier")),
+        nameable_identifier.context(expected("an identifier")),
     )
     .parse_next(i)?;
 
@@ -2697,7 +2698,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
         require_whitespace(i)?;
     }
 
-    let id = binding_name
+    let id = nameable_identifier
         .context(expected(
             "an identifier, which becomes name you're binding the value to",
         ))
@@ -2923,6 +2924,10 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
         .parse_next(i)
 }
 
+fn is_safe_binding_name(name: &str) -> bool {
+    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
+}
+
 fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = identifier.parse_next(i)?;
 
@@ -2935,6 +2940,11 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         ParseContext::err(CompilationError::err(
             SourceRange::new(result.start, result.end, result.module_id),
             format!("{desc} cannot be referred to, only declared."),
+        ));
+    } else if !is_safe_binding_name(&result.name) {
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(result.start, result.end, result.module_id),
+            format!("`{}` is a reserved name and cannot be defined.", &result.name),
         ));
     }
 
@@ -2992,16 +3002,23 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         match token.token_type {
             TokenType::Word => {
-                Ok(Node::new(
-                    TagDeclarator {
-                        // We subtract 1 from the start because the tag starts with a `$`.
-                        name: token.value,
-                        digest: None,
-                    },
-                    token.start - 1,
-                    token.end,
-                    token.module_id,
-                ))
+                if is_safe_binding_name(&token.value) {
+                    Ok(Node::new(
+                        TagDeclarator {
+                            // We subtract 1 from the start because the tag starts with a `$`.
+                            name: token.value,
+                            digest: None,
+                        },
+                        token.start - 1,
+                        token.end,
+                        token.module_id,
+                    ))
+                } else {
+                    Err(CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("Cannot use a reserved name for a tag: {}", token.value.as_str()),
+                    ))
+                }
             }
             TokenType::Number => Err(CompilationError::fatal(
                 token.as_source_range(),
@@ -3688,13 +3705,6 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
     Ok(())
 }
 
-/// Introduce a new name, which binds some value.
-fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
-    identifier
-        .context(expected("an identifier, which will be the name of some value"))
-        .parse_next(i)
-}
-
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
     let expr = fn_call_or_sketch_block.parse_next(i)?;
 
@@ -3997,6 +4007,34 @@ e
         // The whole line should be a comment.
         assert_eq!(code.chars().nth(8), Some('/'));
         assert!(ast.in_comment(8));
+    }
+
+    #[test]
+    fn reserved_sketch_block_words() {
+        for word in crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS.iter().sorted() {
+            let code = format!(
+                "sketch() {{
+  {word} = 5
+}}"
+            );
+            let result = crate::parsing::top_level_parse(code.as_str());
+            assert!(
+                !result.is_ok(),
+                "Expected a parse error for reserved sketch block word `{word}`, but got none",
+            );
+        }
+    }
+
+    #[test]
+    fn double_underscore_prefix_in_sketch_block() {
+        let code = "sketch() {
+  __foo = 5
+}";
+        let result = crate::parsing::top_level_parse(code);
+        assert!(
+            !result.is_ok(),
+            "Expected a parse error for double underscore prefix, but got none",
+        );
     }
 
     #[test]
