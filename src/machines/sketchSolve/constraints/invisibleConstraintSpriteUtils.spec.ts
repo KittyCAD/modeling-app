@@ -65,7 +65,7 @@ describe('invisibleConstraintSpriteUtils', () => {
     ).toBe(false)
   })
 
-  it('anchors a parallel constraint at the average of its line midpoints', () => {
+  it('anchors a parallel constraint farther past the first line midpoint', () => {
     const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
     const p2 = createPointApiObject({ id: 2, x: 10, y: 0 })
     const p3 = createPointApiObject({ id: 3, x: 0, y: 10 })
@@ -82,7 +82,7 @@ describe('invisibleConstraintSpriteUtils', () => {
       createObjectsArray([p1, p2, p3, p4, line1, line2, constraint])
     )
 
-    expect(anchor?.toArray()).toEqual([5, 7.5, 0])
+    expect(anchor?.toArray()).toEqual([7, 0, 0])
   })
 
   it('anchors a tangent constraint at the shared endpoint when one exists', () => {

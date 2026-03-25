@@ -3,6 +3,7 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import {
@@ -87,12 +88,20 @@ export function getInvisibleConstraintAnchor(
     case 'Vertical':
       return getLineAnchor(constraint.line, objects)
     case 'LinesEqualLength':
-    case 'Parallel':
     case 'Perpendicular':
       return averageVectors(
         constraint.lines
           .map((lineId) => getLineAnchor(lineId, objects))
           .filter(isVector3)
+      )
+    case 'Parallel':
+      return (
+        getLineAnchor(constraint.lines[0], objects, 0.7) ??
+        averageVectors(
+          constraint.lines
+            .map((lineId) => getLineAnchor(lineId, objects))
+            .filter(isVector3)
+        )
       )
     case 'Tangent': {
       const sharedPoint = getSharedEndpointAnchor(constraint.input, objects)
@@ -204,17 +213,18 @@ function getObjectAnchor(
   return null
 }
 
-function getLineAnchor(lineId: number, objects: ApiObject[]): Vector3 | null {
+function getLineAnchor(
+  lineId: number,
+  objects: ApiObject[],
+  positionAlongLine = 0.5
+): Vector3 | null {
   const linePoints = getLinePoints(objects[lineId], objects)
   if (!linePoints) {
     return null
   }
 
-  return new Vector3(
-    (linePoints[0][0] + linePoints[1][0]) * 0.5,
-    (linePoints[0][1] + linePoints[1][1]) * 0.5,
-    0
-  )
+  const anchor = lerp2d(linePoints[0], linePoints[1], positionAlongLine)
+  return new Vector3(anchor[0], anchor[1], 0)
 }
 
 function getSharedEndpointAnchor(
