@@ -16,11 +16,22 @@ use crate::ModuleId;
 use crate::SourceRange;
 use crate::exec::KclValue;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{ArtifactCommand, ArtifactGraph, DirectTagFilletMeta, EdgeRefactorMeta, Operation},
-    front::{Number, Object, ObjectId},
-};
+use crate::execution::ArtifactCommand;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::DirectTagFilletMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Operation;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Number;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Object;
+#[cfg(feature = "artifact-graph")]
+use crate::front::ObjectId;
 use crate::lsp::IntoDiagnostic;
 use crate::lsp::ToLspRange;
 use crate::modules::ModulePath;

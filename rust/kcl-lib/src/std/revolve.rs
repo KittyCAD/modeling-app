@@ -10,16 +10,21 @@ use kittycad_modeling_cmds::shared::BodyType;
 use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::{self as kcmc};
 
-use super::{
-    DEFAULT_TOLERANCE_MM,
-    args::{FromKclValue, TyF64},
-};
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
-    parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
-};
+use super::DEFAULT_TOLERANCE_MM;
+use super::args::FromKclValue;
+use super::args::TyF64;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::extrude::do_post_extrude;
 
 extern crate nalgebra_glm as glm;
 

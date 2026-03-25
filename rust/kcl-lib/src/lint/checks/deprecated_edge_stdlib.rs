@@ -4,12 +4,16 @@
 
 use anyhow::Result;
 
-use crate::{
-    SourceRange,
-    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
-    parsing::ast::types::{CallExpressionKw, Expr, Node as AstNode, Program},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::FindingFamily;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 def_finding!(
     Z0006,
@@ -141,7 +145,8 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
 
 #[cfg(test)]
 mod tests {
-    use super::{Z0006, lint_deprecated_edge_stdlib_in_fillet_chamfer};
+    use super::Z0006;
+    use super::lint_deprecated_edge_stdlib_in_fillet_chamfer;
 
     #[test]
     fn detects_get_opposite_edge_in_fillet_tags() {

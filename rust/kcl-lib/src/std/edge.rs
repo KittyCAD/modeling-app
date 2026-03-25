@@ -6,20 +6,30 @@ use kcmc::each_cmd as mcmd;
 use kcmc::ok_response::OkModelingCmdResponse;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds as kcmc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
-};
+use crate::execution::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorStdlibFn;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
+use crate::std::sketch::FaceTag;
 
 /// Tag or UUID for use in an unresolved edge specifier (resolved to face UUIDs in blend).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, ts_rs::TS)]

@@ -8,20 +8,28 @@ use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{EdgeRefactorMeta, EdgeRefactorStdlibFn};
+use crate::execution::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorStdlibFn;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeoMeta;
+use crate::execution::Geometry;
+use crate::execution::Metadata;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::std::Args;
+use crate::std::args::TyF64;
 #[cfg(feature = "artifact-graph")]
 use crate::std::edge;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{
-        ExecState, ExtrudeSurface, GeoMeta, Geometry, Metadata, ModelingCmdMeta, Solid, TagEngineInfo, TagIdentifier,
-        types::RuntimeType,
-    },
-    parsing::ast::types::TagDeclarator,
-    std::{Args, args::TyF64},
-};
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

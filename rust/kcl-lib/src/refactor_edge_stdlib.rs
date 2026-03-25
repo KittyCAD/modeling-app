@@ -10,10 +10,25 @@ use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::EdgeRefactorMeta;
 #[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::{
-    ArrayExpression, BinaryPart, CallExpressionKw, Expr, Identifier, Literal, LiteralValue, ObjectExpression,
-    ObjectProperty, Program,
-};
+use crate::parsing::ast::types::ArrayExpression;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::BinaryPart;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::CallExpressionKw;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Expr;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Identifier;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Literal;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::LiteralValue;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::ObjectExpression;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::ObjectProperty;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::Program;
 
 const DEPRECATED_EDGE_STDLIB: &[&str] = &[
     "getOppositeEdge",

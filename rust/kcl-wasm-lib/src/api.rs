@@ -1,10 +1,19 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    AstProgram, EdgeRefactorMeta, FormatOptions, Program,
-    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
-};
+use kcl_lib::AstProgram;
+use kcl_lib::EdgeRefactorMeta;
+use kcl_lib::FormatOptions;
+use kcl_lib::Program;
+use kcl_lib::front::Error;
+use kcl_lib::front::ExistingSegmentCtor;
+use kcl_lib::front::File;
+use kcl_lib::front::FileId;
+use kcl_lib::front::LifecycleApi;
+use kcl_lib::front::ObjectId;
+use kcl_lib::front::ProjectId;
+use kcl_lib::front::SketchApi;
+use kcl_lib::front::Version;
 use wasm_bindgen::prelude::*;
 
 use crate::Context;

@@ -55,11 +55,17 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+#[cfg(feature = "artifact-graph")]
+pub use state::DirectTagFilletMeta;
+#[cfg(feature = "artifact-graph")]
+pub use state::DirectTagFilletTagEntry;
+#[cfg(feature = "artifact-graph")]
+pub use state::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
-#[cfg(feature = "artifact-graph")]
-pub use state::{DirectTagFilletMeta, DirectTagFilletTagEntry, EdgeRefactorMeta, EdgeRefactorStdlibFn};
 use uuid::Uuid;
 
 use crate::CompilationError;

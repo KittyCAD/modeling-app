@@ -91,25 +91,44 @@ pub mod walk;
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{AsyncTasks, EngineManager, EngineStats};
-pub use errors::{
-    BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
-    ReportWithOutputs,
-};
+pub use engine::AsyncTasks;
+pub use engine::EngineManager;
+pub use engine::EngineStats;
+pub use errors::BacktraceItem;
+pub use errors::CompilationError;
+pub use errors::ConnectionError;
+pub use errors::ExecError;
+pub use errors::KclError;
+pub use errors::KclErrorWithOutputs;
+pub use errors::Report;
+pub use errors::ReportWithOutputs;
 #[cfg(feature = "artifact-graph")]
 pub use execution::EdgeRefactorMeta;
-pub use execution::{
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
-    clear_mem_cache, pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
-    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
-};
+pub use execution::ExecOutcome;
+pub use execution::ExecState;
+pub use execution::ExecutorContext;
+pub use execution::ExecutorSettings;
+pub use execution::MetaSettings;
+pub use execution::MockConfig;
+pub use execution::Point2d;
+pub use execution::bust_cache;
+pub use execution::clear_mem_cache;
+pub use execution::pre_execute_transpile;
+pub use execution::transpile_all_old_sketches_to_new;
+pub use execution::transpile_old_sketch_to_new;
+pub use execution::transpile_old_sketch_to_new_ast;
+pub use execution::transpile_old_sketch_to_new_with_execution;
+pub use execution::typed_path::TypedPath;
 pub use kcl_error::SourceRange;
 pub use lsp::ToLspRange;
 pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;
 pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use modules::ModuleId;
-pub use parsing::ast::types::{FormatOptions, NodePath, Program as AstProgram, Step as NodePathStep};
+pub use parsing::ast::types::FormatOptions;
+pub use parsing::ast::types::NodePath;
+pub use parsing::ast::types::Program as AstProgram;
+pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
 pub use settings::types::Configuration;
 pub use settings::types::project::ProjectConfiguration;
