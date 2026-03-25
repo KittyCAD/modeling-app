@@ -55,7 +55,6 @@ import {
   isCircleSegment,
   isConstraint,
   isConstruction as isConstructionSegment,
-  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {

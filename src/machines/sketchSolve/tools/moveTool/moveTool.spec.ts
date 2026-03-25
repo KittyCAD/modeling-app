@@ -8,7 +8,7 @@ import {
   createOnDragEndCallback,
 } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import { Themes } from '@src/lib/theme'
+import type { Themes } from '@src/lib/theme'
 import type {
   ApiObject,
   SceneGraphDelta,

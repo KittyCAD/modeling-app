@@ -5,7 +5,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
+import { isArray, roundOff } from '@src/lib/utils'
 import { Group, type Object3D, Vector2, Vector3 } from 'three'
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -285,7 +285,7 @@ function isScreenRectHitObject(
     'type' in hitObject &&
     hitObject.type === 'screenRect' &&
     'center' in hitObject &&
-    Array.isArray(hitObject.center) &&
+    isArray(hitObject.center) &&
     hitObject.center.length === 3
   )
 }
@@ -364,7 +364,7 @@ function findClosestConstraintHoverPopup(
   constraintGroup.traverse((child) => {
     const hitObjects = child.userData.hitObjects
     const popup = child.userData.constraintHoverPopup
-    if (!Array.isArray(hitObjects) || !isConstraintHoverPopup(popup)) {
+    if (!isArray(hitObjects) || !isConstraintHoverPopup(popup)) {
       return
     }
 
@@ -684,11 +684,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   const getConstraintHoverPopups = () =>
     constraintHoverPopupState.entries.map((entry) => entry.popup)
-
-  const getConstraintHoverPopupEntry = (segmentId: number) =>
-    constraintHoverPopupState.entries.find(
-      (entry) => entry.popup.segmentId === segmentId
-    )
 
   const removeConstraintHoverPopup = (segmentId: number) => {
     const index = constraintHoverPopupState.entries.findIndex(
