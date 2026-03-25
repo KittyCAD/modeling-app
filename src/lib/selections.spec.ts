@@ -6,7 +6,7 @@ import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
@@ -1412,11 +1412,11 @@ describe('findLastRangeStartingBefore', () => {
 describe('getSelectionTypeDisplayText', () => {
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
-      graphSelections: [
-        { artifact: { type: 'wall' } as Artifact, codeRef },
-        { artifact: { type: 'cap' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+    const selection: Selections = {
+      graphSelectionsV2: [
+        { entityRef: { type: 'face', face_id: 'wall-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'cap-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'primitive-face-1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1428,15 +1428,15 @@ describe('getSelectionTypeDisplayText', () => {
       ],
     }
 
-    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '4 faces'
-    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe('4 faces')
   })
 
   test('coalesces profile-like selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
-      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+    const selection: Selections = {
+      graphSelectionsV2: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'solid2d-1' }, codeRef },
+      ],
       otherSelections: [
         {
           type: 'region',
@@ -1447,9 +1447,7 @@ describe('getSelectionTypeDisplayText', () => {
       ],
     }
 
-    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '2 profiles'
-    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe('2 profiles')
   })
 
   test('coalesces edge-like selections under edge', () => {

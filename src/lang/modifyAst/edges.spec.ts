@@ -223,7 +223,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('fillet(')
       expect(newCode).toContain('radius = 1')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -277,7 +277,7 @@ extrude001 = extrude(profile001, length = 5)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain('fillet(')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       expect(newCode.includes('tagEnd') || newCode.includes('tagStart')).toBe(
         true
       )
@@ -359,7 +359,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('fillet001 = fillet(extrude001')
       expect(newCode).toContain('fillet002 = fillet(extrude002')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
@@ -460,7 +460,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('chamfer(')
       expect(newCode).toContain('length = 1')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -514,7 +514,7 @@ extrude001 = extrude(profile001, length = 5)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain('chamfer(')
-      expect(newCode).toContain('edgeRefs')
+      expect(newCode).toContain('edges = [{')
       expect(newCode.includes('tagEnd') || newCode.includes('tagStart')).toBe(
         true
       )

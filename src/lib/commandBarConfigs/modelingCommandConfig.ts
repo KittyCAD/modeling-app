@@ -1670,7 +1670,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+          'edgeCut',
+        ],
         multiple: true,
         required: true,
         skip: false,
@@ -1735,7 +1740,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
+        selectionTypes: [
+          'segment',
+          'primitiveEdge',
+          'enginePrimitiveEdge',
+          'edgeCut',
+        ],
         multiple: true,
         required: true,
         skip: false,

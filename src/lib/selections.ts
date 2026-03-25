@@ -1276,10 +1276,10 @@ export function getSelectionCountByType(
   artifactGraph?: ArtifactGraph
 ): SelectionCountsByType | 'none' {
   const selectionsByType: SelectionCountsByType = new Map()
-  if (
-    !selection ||
-    (!selection.graphSelectionsV2.length && !selection.otherSelections.length)
-  )
+  const graphSelectionsV2 = selection?.graphSelectionsV2 ?? []
+  const otherSelections = selection?.otherSelections ?? []
+
+  if (!selection || (!graphSelectionsV2.length && !otherSelections.length))
     return 'none'
 
   function incrementOrInitializeSelectionType(type: ResolvedSelectionType) {
@@ -1287,7 +1287,7 @@ export function getSelectionCountByType(
     selectionsByType.set(type, count + 1)
   }
 
-  selection.otherSelections.forEach((sel) => {
+  otherSelections.forEach((sel) => {
     if (typeof sel === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(sel)) {
@@ -1303,7 +1303,7 @@ export function getSelectionCountByType(
     }
   })
 
-  selection.graphSelectionsV2.forEach((v2Selection) => {
+  graphSelectionsV2.forEach((v2Selection) => {
     if (v2Selection.entityRef) {
       // solid2d_edge first: may be helix (count as path) or segment curve (count as segment)
       if (v2Selection.entityRef.type === 'solid2d_edge') {
