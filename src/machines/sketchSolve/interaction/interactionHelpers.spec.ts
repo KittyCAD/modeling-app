@@ -148,6 +148,20 @@ describe('findClosestApiObjects', () => {
     expect(result[1]?.apiObject.id).toBe(3)
   })
 
+  it('prefers the higher id for coincident point candidates', () => {
+    const pointA = createPointApiObject({ id: 4, x: 20, y: 2 })
+    const pointB = createPointApiObject({ id: 8, x: 20 + 1e-9, y: 2 + 1e-9 })
+
+    const result = findClosestApiObjects(
+      [20, 2],
+      createObjectsArray([pointA, pointB]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(8)
+    expect(result[1]?.apiObject.id).toBe(4)
+  })
+
   it('prioritizes visible non-visual constraints over overlapping points and lines', () => {
     const sceneInfra = createMockSceneInfra()
     const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)

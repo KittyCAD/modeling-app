@@ -329,16 +329,34 @@ export function findClosestApiObjects(
   return candidates.sort((a, b) => {
     const aPriority = getApiObjectSelectionPriority(a.apiObject)
     const bPriority = getApiObjectSelectionPriority(b.apiObject)
-    return aPriority - bPriority || a.distance - b.distance
+    const priorityDiff = aPriority - bPriority
+    if (priorityDiff !== 0) {
+      // Take the segment with the higher priority
+      return priorityDiff
+    }
+
+    // If both segments are points and they are at the same distance, find the one with a higher id.
+    // This is to avoid flickering between 2 coincident points.
+    if (
+      isPointSegment(a.apiObject) &&
+      isPointSegment(b.apiObject) &&
+      Math.abs(a.distance - b.distance) < 1e-8
+    ) {
+      return b.apiObject.id - a.apiObject.id
+    }
+    return a.distance - b.distance
   })
 }
 
 function getApiObjectSelectionPriority(apiObject: ApiObject) {
   if (isInvisibleConstraintObject(apiObject)) {
+    // Invisible constraints take precedence over everything
     return 0
   }
 
   if (isPointSegment(apiObject)) {
+    // Points take precedence over lines, this is to prefer selecting the point when hovering near the end of a line.
+    // (We could also only take precedence if the point is owned by a line..)
     return 1
   }
 
