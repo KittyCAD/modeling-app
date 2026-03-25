@@ -472,9 +472,9 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
-          Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+          Locally-running Engines: **ws://localhost:8080/ws/modeling/commands**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/modeling/commands?pr=NUMBER**
+          Other variants: **wss://api.dev.zoo.dev/ws/modeling/commands?pool=LABEL**
         `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
       },
@@ -520,8 +520,8 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Locally-running Zookeeper: **ws://localhost:8080/ws/ml/copilot**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/ml/copilot?pr=NUMBER**
         `.trim(),
         defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },

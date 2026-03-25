@@ -99,7 +99,12 @@ function CommandComboBox({
                 <CustomIcon name={option.icon} className="w-5 h-5" />
               )}
               <div className="flex-grow flex flex-col">
-                <p className="my-0 leading-tight">
+                <p
+                  className={
+                    'my-0 leading-tight' +
+                    (option.groupId === 'settings' ? ' capitalize' : '')
+                  }
+                >
                   {option.displayName || option.name}{' '}
                 </p>
                 {option.description && (
