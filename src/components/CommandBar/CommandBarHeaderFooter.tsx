@@ -115,7 +115,12 @@ function CommandBarHeaderFooter({
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              <span data-testid="command-name">
+              <span
+                data-testid="command-name"
+                className={
+                  selectedCommand.groupId === 'settings' ? 'capitalize' : ''
+                }
+              >
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
