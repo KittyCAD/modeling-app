@@ -3938,7 +3938,6 @@ export const modelingMachine = setup({
           input.kclManager,
           {
             focusPath: [pathToNode],
-            skipErrorsOnMockExecution: true,
           }
         )
       }

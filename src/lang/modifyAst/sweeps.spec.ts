@@ -968,6 +968,58 @@ sweep001 = sweep(region001, path = profile001)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a sweep call from a sketch region selection and sketch solve segment as path', async () => {
+      const code = `${triangleRegion}
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var -0.01mm, var 0.02mm], end = [var -0.03mm, var 1.65mm])
+  arc1 = arc(start = [var 0.28mm, var 2.48mm], end = [var -0.03mm, var 1.65mm], center = [var 1.2mm, var 1.67mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const sketch = artifactGraph
+        .values()
+        .find((s) => s.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'region',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
+            sketchId: sketch!.id,
+          },
+        ],
+      }
+      const pathArtifacts = [...artifactGraph.values()]
+        .filter((s) => s.type === 'segment')
+        .slice(-2)
+      const path = createSelectionFromArtifacts(
+        [pathArtifacts[0]],
+        artifactGraph
+      )
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(point = [1mm, 1mm], sketch = s)
+sweep001 = sweep(region001, path = sketch002.line1)`
+      )
+      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit a sweep call from a sketch region selection', async () => {
       const code = `${triangleRegion}
 sketch001 = startSketchOn(XZ)
