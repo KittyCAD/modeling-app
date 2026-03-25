@@ -535,7 +535,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2460,7 +2460,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.181"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#786bc4888b13b550e536ead19231d8f557ce6d9a"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#75799ae4ebf639361415542204f913ec2aa67062"
 dependencies = [
  "anyhow",
  "bon",
@@ -2488,7 +2488,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#786bc4888b13b550e536ead19231d8f557ce6d9a"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#75799ae4ebf639361415542204f913ec2aa67062"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2499,7 +2499,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#786bc4888b13b550e536ead19231d8f557ce6d9a"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#75799ae4ebf639361415542204f913ec2aa67062"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2940,7 +2940,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -4010,7 +4010,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4686,7 +4686,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
