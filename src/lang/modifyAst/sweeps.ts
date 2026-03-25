@@ -697,7 +697,6 @@ export function getAxisExpressionAndIndex(
       ast,
       edge.graphSelections[0]?.codeRef.range
     )
-    // TODO: might have to look at this one too
     const tagResult = mutateAstWithTagForSketchSegment(
       ast,
       pathToAxisSelection,
