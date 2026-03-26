@@ -471,7 +471,7 @@ sketch001 = sketch(on = XY) {
     })
   })
 
-  test('can extrude a sketch regions', async ({
+  test('can extrude sketch regions', async ({
     page,
     context,
     homePage,
@@ -548,7 +548,7 @@ sketch001 = sketch(on = XZ) {
       await cmdBar.submit()
     })
 
-    await test.step('Expect extruded code and no error', async () => {
+    await test.step('Expect extrusion', async () => {
       await scene.settled(cmdBar)
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
