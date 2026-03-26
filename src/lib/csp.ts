@@ -112,7 +112,7 @@ const buildCsp = (domain?: string) => {
       "img-src * blob: data: 'unsafe-inline'",
       `connect-src ${connectSources.join(' ')}`,
       "object-src 'none'",
-      "media-src 'self' file: blob:;",
+      "media-src 'self'",
       CSP_SCRIPT_SRC,
     ].join('; ') + ';'
   )
