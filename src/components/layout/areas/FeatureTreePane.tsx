@@ -11,6 +11,7 @@ import {
   findOperationArtifact,
   findOperationPlaneArtifact,
   isOffsetPlane,
+  type StdLibCallOp,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
@@ -619,19 +620,87 @@ const OperationItem = ({
           item.sourceRange,
           systemDeps.kclManager.artifactGraph
         ) ?? undefined
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
-        operation: item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+
+      void selectOperation()
+        .then(async () => {
+          const op = item as {
+            type: string
+            name?: string
+            sourceRange?: unknown
+          }
+          const needsZ0006FixBeforeEdit =
+            op.type === 'StdLibCall' &&
+            (op.name === 'fillet' ||
+              op.name === 'chamfer' ||
+              op.name === 'revolve' ||
+              op.name === 'helix')
+
+          let operationToEdit: typeof item = item
+          if (needsZ0006FixBeforeEdit) {
+            const applied =
+              await systemDeps.kclManager.applyZ0006FixBeforeEdit()
+            if (applied) {
+              const nextOp =
+                systemDeps.kclManager.lastSuccessfulOperations.find(
+                  (candidate: Operation) =>
+                    candidate.type === 'StdLibCall' &&
+                    (candidate as { name?: string }).name === op.name
+                )
+              if (nextOp) {
+                operationToEdit = nextOp as typeof item
+              }
+            }
+          }
+
+          const opToEdit = operationToEdit as {
+            sourceRange?: unknown
+            type?: string
+          }
+          const artifactForEdit =
+            operationToEdit !== item
+              ? (() => {
+                  if (
+                    opToEdit.sourceRange != null &&
+                    isArray(opToEdit.sourceRange) &&
+                    opToEdit.sourceRange.length >= 2
+                  ) {
+                    const sr = opToEdit.sourceRange as number[]
+                    const range: SourceRange = [sr[0], sr[1], sr[2] ?? 0]
+                    const fromRange = getArtifactFromRange(
+                      range,
+                      systemDeps.kclManager.artifactGraph
+                    )
+                    if (fromRange) return fromRange
+                  }
+                  if (opToEdit.type === 'StdLibCall') {
+                    return (
+                      findOperationArtifact(
+                        operationToEdit as StdLibCallOp,
+                        systemDeps.kclManager.artifactGraph
+                      ) ?? undefined
+                    )
+                  }
+                  return undefined
+                })()
+              : artifact
+
+          return prepareEditCommand({
+            artifactGraph: systemDeps.kclManager.artifactGraph,
+            code: systemDeps.kclManager.code,
+            commandBarActor,
+            operation: operationToEdit,
+            rustContext: systemDeps.rustContext,
+            artifact: artifactForEdit,
+          })
+        })
+        .catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
   }, [
     item,
     commandBarActor,
+    selectOperation,
     systemDeps.kclManager.artifactGraph,
+    systemDeps.kclManager,
     systemDeps.kclManager.code,
     systemDeps.rustContext,
   ])

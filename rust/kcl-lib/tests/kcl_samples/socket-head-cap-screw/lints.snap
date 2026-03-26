@@ -1,0 +1,40 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints socket-head-cap-screw.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      823,
+      889,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or 'to' in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      1596,
+      1655,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  }
+]

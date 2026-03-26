@@ -14,6 +14,10 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::KclValue;
@@ -135,6 +139,17 @@ async fn inner_get_opposite_edge(
 
     let edge_id = opposite_edge.edge;
 
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
+        && let [a, b] = face_ids.as_slice()
+    {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids: [*a, *b],
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetOppositeEdge,
+        });
+    }
     Ok(edge_id)
 }
 
@@ -193,6 +208,17 @@ async fn inner_get_next_adjacent_edge(
         ))
     })?;
 
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
+        && let [a, b] = face_ids.as_slice()
+    {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids: [*a, *b],
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+        });
+    }
     Ok(edge_id)
 }
 
@@ -250,6 +276,17 @@ async fn inner_get_previous_adjacent_edge(
         ))
     })?;
 
+    #[cfg(feature = "artifact-graph")]
+    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
+        && let [a, b] = face_ids.as_slice()
+    {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids: [*a, *b],
+            source_range: args.source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+        });
+    }
     Ok(edge_id)
 }
 
@@ -357,6 +394,13 @@ async fn inner_get_common_edge(
         ))
     })?;
 
+    #[cfg(feature = "artifact-graph")]
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id,
+        face_ids: [first_face_id, second_face_id],
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
+    });
     Ok(edge_id)
 }
 

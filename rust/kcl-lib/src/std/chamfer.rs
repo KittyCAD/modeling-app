@@ -49,6 +49,34 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         let tags_with_source = tags_result.unwrap();
         super::fillet::validate_unique(&tags_with_source)?;
         let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+        #[cfg(feature = "artifact-graph")]
+        {
+            let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+            for edge_ref in &tags {
+                if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, &args)
+                    && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                    && let [a, b] = face_ids.as_slice()
+                {
+                    let tag_identifier = match edge_ref {
+                        EdgeReference::Tag(t) => t.value.clone(),
+                        EdgeReference::Uuid(_) => String::new(),
+                    };
+                    if !tag_identifier.is_empty() {
+                        tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                            tag_identifier,
+                            edge_id,
+                            face_ids: [*a, *b],
+                        });
+                    }
+                }
+            }
+            if !tag_entries.is_empty() {
+                exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
+                    call_source_range: args.source_range,
+                    tags: tag_entries,
+                });
+            }
+        }
         let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
         let edge_refs_parsed =
             super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
@@ -166,6 +194,37 @@ async fn inner_chamfer(
     };
 
     let mut solid = solid.clone();
+    #[cfg(feature = "artifact-graph")]
+    {
+        let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+        for edge_ref in &tags {
+            let edge_id = match edge_ref {
+                EdgeReference::Uuid(u) => *u,
+                EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
+            };
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                && let [a, b] = face_ids.as_slice()
+            {
+                let tag_identifier = match edge_ref {
+                    EdgeReference::Tag(t) => t.value.clone(),
+                    EdgeReference::Uuid(_) => String::new(),
+                };
+                if !tag_identifier.is_empty() {
+                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                        tag_identifier,
+                        edge_id,
+                        face_ids: [*a, *b],
+                    });
+                }
+            }
+        }
+        if !tag_entries.is_empty() {
+            exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
+                call_source_range: args.source_range,
+                tags: tag_entries,
+            });
+        }
+    }
     for edge_tag in tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
