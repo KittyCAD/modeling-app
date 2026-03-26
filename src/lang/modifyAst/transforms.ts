@@ -14,6 +14,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getVariableExprsFromSelection,
+  resolveSelectionV2,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
@@ -460,8 +461,11 @@ export function addHide({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled arguments
-  // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = objects.graphSelections[0].artifact?.type !== 'helix'
+  const firstResolved =
+    objects.graphSelectionsV2[0] != null
+      ? resolveSelectionV2(objects.graphSelectionsV2[0], artifactGraph)
+      : null
+  const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(
     objects,
     artifactGraph,

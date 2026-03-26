@@ -3,7 +3,10 @@ import type { KclManager } from '@src/lang/KclManager'
 import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  CodeRef,
+  ResolvedGraphSelection,
+} from '@src/lang/std/artifactGraph'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
@@ -60,35 +63,30 @@ const createSelectionWithFirstMatchingArtifact = async (
   })
 
   // get first artifact of this type
+  if (allArtifactsOfType.length === 0) {
+    return new Error(`No artifacts of type ${artifactType} found`)
+  }
   const firstArtifactsOfType = allArtifactsOfType[0][1]
   if (!firstArtifactsOfType) {
     return new Error(`No artifacts of type ${artifactType} found`)
   }
 
-  // get codeRef
-  let codeRef = null
+  // get codeRef (segment and edgeCut have codeRef; sweepEdge removed from artifact graph)
+  let codeRef: CodeRef | null = null
 
   if (firstArtifactsOfType.type === 'segment') {
     codeRef = firstArtifactsOfType.codeRef
-  } else if (firstArtifactsOfType.type === 'sweepEdge') {
-    // find the parent segment
-    const segment = [...artifactGraph].filter(([, artifact]) => {
-      if (artifact.id !== firstArtifactsOfType.segId) return false
-      return true
-    })
-    if ('codeRef' in segment[0][1]) {
-      codeRef = segment[0][1].codeRef
-    }
+  } else if (firstArtifactsOfType.type === 'edgeCut') {
+    codeRef = (firstArtifactsOfType as { codeRef: CodeRef }).codeRef
   }
 
   if (!codeRef) {
     return new Error('No codeRef found for artifact')
   }
 
-  // Create selection from found artifact
-  const selection: Selection = {
+  const selection: ResolvedGraphSelection = {
+    codeRef,
     artifact: firstArtifactsOfType,
-    codeRef: codeRef,
   }
 
   return { selection }
@@ -167,7 +165,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
     // TODO: Add handling for VERTEX selections
 
-    // Handle EDGE selections (commonEdge approach)
+    // Handle EDGE selections (commonEdge approach). Segment and edgeCut are supported;
+    // sweepEdge was removed from the artifact graph (reference-first Face API / selectionsV2).
     it('should tag a segment and capStart using commonEdge approach', async () => {
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
@@ -200,70 +199,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tagStart = $capStart001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
     }, 5_000)
-    it('should tag 2 segments using commonEdge approach', async () => {
-      const { ast, artifactGraph } = await executeCode(
-        basicExampleCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      // Find an edge artifact
-      const selectionResult = await createSelectionWithFirstMatchingArtifact(
-        artifactGraph,
-        'sweepEdge', // segment // sweepEdge // edgeCutEdge
-        'adjacent' // adjacent // opposite
-      )
-      if (err(selectionResult)) return selectionResult
-      const { selection } = selectionResult
-
-      // Apply tagging
-      const result = modifyAstWithTagsForSelection(
-        ast,
-        selection,
-        artifactGraph,
-        instanceInThisFile
-      )
-      if (err(result)) return result
-      const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instanceInThisFile)
-
-      // Verify results
-      expect(tags.length).toBe(2) // Should add two tags
-      expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $seg02')
-      expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
-    it('should tag a segment and capEnd using commonEdge approach', async () => {
-      const { ast, artifactGraph } = await executeCode(
-        basicExampleCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      // Find an edge artifact
-      const selectionResult = await createSelectionWithFirstMatchingArtifact(
-        artifactGraph,
-        'sweepEdge', // segment // sweepEdge // edgeCutEdge
-        'opposite' // adjacent // opposite
-      )
-      if (err(selectionResult)) return selectionResult
-      const { selection } = selectionResult
-
-      // Apply tagging
-      const result = modifyAstWithTagsForSelection(
-        ast,
-        selection,
-        artifactGraph,
-        instanceInThisFile
-      )
-      if (err(result)) return result
-      const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instanceInThisFile)
-
-      // Verify results
-      expect(tags.length).toBe(2) // Should add two tags
-      expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tagEnd = $capEnd001')
-      expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
       const { ast, artifactGraph } = await executeCode(
@@ -276,69 +211,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         'segment' // segment // sweepEdge // edgeCutEdge
         // adjacent // opposite
-      )
-      if (err(selectionResult)) return selectionResult
-      const { selection } = selectionResult
-
-      // Apply tagging
-      const result = modifyAstWithTagsForSelection(
-        ast,
-        selection,
-        artifactGraph,
-        instanceInThisFile,
-        ['oppositeAndAdjacentEdges']
-      )
-      if (err(result)) return result
-      const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instanceInThisFile)
-
-      // Verify results
-      expect(tags.length).toBe(1) // Should add one tag
-      expect(newCode).toContain('tag = $seg01')
-      expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
-    it('should tag a segment using legacy oppositeAndAdjacentEdges approach for adjacent edge selection', async () => {
-      const { ast, artifactGraph } = await executeCode(
-        basicExampleCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      // Find an edge artifact
-      const selectionResult = await createSelectionWithFirstMatchingArtifact(
-        artifactGraph,
-        'sweepEdge', // segment // sweepEdge // edgeCutEdge
-        'adjacent' // adjacent // opposite
-      )
-      if (err(selectionResult)) return selectionResult
-      const { selection } = selectionResult
-      // Apply tagging
-      const result = modifyAstWithTagsForSelection(
-        ast,
-        selection,
-        artifactGraph,
-        instanceInThisFile,
-        ['oppositeAndAdjacentEdges']
-      )
-      if (err(result)) return result
-      const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instanceInThisFile)
-
-      // Verify results
-      expect(tags.length).toBe(1) // Should add one tag
-      expect(newCode).toContain('tag = $seg01')
-      expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
-    it('should tag a segment using legacy oppositeAndAdjacentEdges approach for opposite edge selection', async () => {
-      const { ast, artifactGraph } = await executeCode(
-        basicExampleCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      // Find an edge artifact
-      const selectionResult = await createSelectionWithFirstMatchingArtifact(
-        artifactGraph,
-        'sweepEdge', // segment // sweepEdge // edgeCutEdge
-        'opposite' // adjacent // opposite
       )
       if (err(selectionResult)) return selectionResult
       const { selection } = selectionResult

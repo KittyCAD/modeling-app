@@ -16,6 +16,7 @@ import {
   type Identifier,
   type LabeledArg,
   type Literal,
+  type MemberExpression,
   type NumericSuffix,
   type ObjectExpression,
   type PipeExpression,
@@ -139,6 +140,26 @@ export function createName(path: [string], name: string): Node<Name> {
     abs_path: false,
     path: path.map(createIdentifier),
     name: createIdentifier(name),
+  }
+}
+
+/** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
+export function createMemberExpression(
+  object: Expr,
+  propertyName: string
+): Node<MemberExpression> {
+  return {
+    type: 'MemberExpression',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+
+    object,
+    property: createLocalName(propertyName),
+    computed: false,
   }
 }
 

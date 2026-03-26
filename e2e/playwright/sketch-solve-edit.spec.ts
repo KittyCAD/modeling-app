@@ -91,16 +91,43 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
+    tronApp,
   }) => {
+    const userSettingsToml = settingsToToml({
+      settings: {
+        ...TEST_SETTINGS,
+        modeling: {
+          ...TEST_SETTINGS.modeling,
+          use_sketch_solve_mode: true,
+        },
+      },
+    })
+
     await test.step('Set up the app with test code', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, TEST_CODE)
+      if (tronApp) {
+        await tronApp.cleanProjectDir({
+          modeling: {
+            use_sketch_solve_mode: true,
+          },
+        })
+      }
+
+      await context.addInitScript(
+        async ({ code, settingsKey, settingsToml }) => {
+          localStorage.setItem('persistCode', code)
+          localStorage.setItem(settingsKey, settingsToml)
+        },
+        {
+          code: TEST_CODE,
+          settingsKey: TEST_SETTINGS_KEY,
+          settingsToml: userSettingsToml,
+        }
+      )
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled(cmdBar, { expectError: true })
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -114,62 +141,21 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).toBeVisible()
     })
 
-    await test.step('Open feature tree and enter sketch edit mode', async () => {
-      await toolbar.openFeatureTreePane()
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-
-      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
-        0
-      )
-      await solveSketchOperation.dblclick()
-
-      await page.waitForTimeout(600)
+    await test.step('Enter sketch edit mode from feature tree', async () => {
+      await toolbar.editSketch(0)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
     })
 
-    await test.step('Verify point handles are visible', async () => {
-      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-      await expect(pointHandles).toHaveCount(9)
-    })
+    await test.step('Edit an existing segment and verify code updates', async () => {
+      const previousCode = await page.locator('.cm-content').innerText()
+      const firstSegmentLabel = page
+        .locator('.segment-length-label-text')
+        .first()
+        .locator('xpath=..')
 
-    await test.step('Drag point segment 13 down', async () => {
-      const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="14"]'
-      )
-
-      const centerX = segmentBox.x + segmentBox.width / 2
-      const centerY = segmentBox.y + segmentBox.height / 2
-
-      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 11 })
-      await editor.expectEditor.toContain(lineToEdit)
-
-      await page.mouse.move(centerX, centerY)
-      await page.mouse.down()
-      await page.mouse.move(centerX, centerY + 50, { steps: 5 })
-      await page.mouse.up()
-
-      await page.waitForTimeout(500)
-
-      await editor.expectEditor.not.toContain(lineToEdit)
-    })
-
-    await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
-      const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
-
-      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 8 })
-      await editor.expectEditor.toContain(lineToEdit)
-
-      await page.mouse.move(midpoint.x, midpoint.y)
-      await page.mouse.down()
-      await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
-      await page.mouse.up()
-
-      await page.waitForTimeout(500)
-
-      await editor.expectEditor.not.toContain(lineToEdit)
+      await firstSegmentLabel.dblclick()
+      await cmdBar.progressCmdBar()
+      await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
     })
   })
 

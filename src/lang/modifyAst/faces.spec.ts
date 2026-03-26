@@ -27,7 +27,11 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getEdgeCutMeta } from '@src/lang/queryAst'
+import {
+  artifactToEntityRef,
+  getEdgeCutMeta,
+  resolveSelectionV2,
+} from '@src/lang/queryAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
@@ -510,7 +514,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const wall = getWalls(artifactGraph, 1).graphSelections[0]
+      const wall = getWalls(artifactGraph, 1).graphSelectionsV2[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const innerFace: NonCodeSelection = {
         entityId: 'irrelevant-for-this-test',
@@ -520,7 +524,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         type: 'enginePrimitive',
       }
       const faces: Selections = {
-        graphSelections: [wall],
+        graphSelectionsV2: [wall],
         otherSelections: [innerFace],
       }
       const result = addDeleteFace({
@@ -985,20 +989,26 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       )
       if (err(selections)) throw selections
 
-      expect(selections.solids.graphSelections).toHaveLength(1)
-      const solid = selections.solids.graphSelections[0]
-      if (!solid.artifact) {
+      expect(selections.solids.graphSelectionsV2).toHaveLength(1)
+      const solidResolved = resolveSelectionV2(
+        selections.solids.graphSelectionsV2[0],
+        artifactGraph
+      )
+      if (!solidResolved?.artifact) {
         throw new Error('Artifact not found in the selection')
       }
-      expect(solid.artifact.type).toEqual('sweep')
+      expect(solidResolved.artifact.type).toEqual('sweep')
 
-      expect(selections.faces.graphSelections).toHaveLength(1)
-      const face = selections.faces.graphSelections[0]
-      if (!face.artifact || face.artifact.type !== 'cap') {
+      expect(selections.faces.graphSelectionsV2).toHaveLength(1)
+      const faceResolved = resolveSelectionV2(
+        selections.faces.graphSelectionsV2[0],
+        artifactGraph
+      )
+      if (!faceResolved?.artifact || faceResolved.artifact.type !== 'cap') {
         throw new Error('Artifact not found in the selection')
       }
-      expect(face.artifact.subType).toEqual('end')
-      expect(face.artifact.sweepId).toEqual(solid.artifact.id)
+      expect(faceResolved.artifact.subType).toEqual('end')
+      expect(faceResolved.artifact.sweepId).toEqual(solidResolved.artifact.id)
     })
 
     it('should find the sweeps and faces of complex shell', async () => {
@@ -1029,16 +1039,28 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       )
       if (err(selections)) throw selections
 
-      expect(selections.solids.graphSelections).toHaveLength(2)
-      expect(selections.solids.graphSelections[0].artifact!.id).toEqual(
-        lastTwoSweeps[0].id
-      )
-      expect(selections.solids.graphSelections[1].artifact!.id).toEqual(
-        lastTwoSweeps[1].id
-      )
-      expect(selections.faces.graphSelections).toHaveLength(2)
-      expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
-      expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+      expect(selections.solids.graphSelectionsV2).toHaveLength(2)
+      expect(
+        resolveSelectionV2(
+          selections.solids.graphSelectionsV2[0],
+          artifactGraph
+        )?.artifact?.id
+      ).toEqual(lastTwoSweeps[0].id)
+      expect(
+        resolveSelectionV2(
+          selections.solids.graphSelectionsV2[1],
+          artifactGraph
+        )?.artifact?.id
+      ).toEqual(lastTwoSweeps[1].id)
+      expect(selections.faces.graphSelectionsV2).toHaveLength(2)
+      expect(
+        resolveSelectionV2(selections.faces.graphSelectionsV2[0], artifactGraph)
+          ?.artifact?.type
+      ).toEqual('cap')
+      expect(
+        resolveSelectionV2(selections.faces.graphSelectionsV2[1], artifactGraph)
+          ?.artifact?.type
+      ).toEqual('cap')
     })
   })
 
@@ -1059,11 +1081,14 @@ plane002 = offsetPlane(plane001, offset = 2)`
         artifactGraph
       )
       if (err(selections)) throw selections
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('plane')
+      expect(selections.graphSelectionsV2).toHaveLength(1)
+      const firstResolved = resolveSelectionV2(
+        selections.graphSelectionsV2[0],
+        artifactGraph
+      )
+      expect(firstResolved?.artifact?.type).toEqual('plane')
       expect(
-        (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
-          .pathToNode[1][0]
+        (firstResolved?.artifact as PlaneArtifact)?.codeRef.pathToNode[1][0]
       ).toEqual(0)
     })
 
@@ -1084,12 +1109,18 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       if (err(selections)) throw selections
 
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('cap')
+      expect(selections.graphSelectionsV2).toHaveLength(1)
+      expect(
+        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+          ?.artifact?.type
+      ).toEqual('cap')
       const cap = [...artifactGraph.values()].find(
         (a) => a.type === 'cap' && a.subType === 'end'
       )
-      expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
+      expect(
+        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+          ?.artifact?.id
+      ).toEqual(cap!.id)
     })
 
     it('should find an offset plane on a chamfer face', async () => {
@@ -1107,8 +1138,11 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       if (err(selections)) throw selections
 
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
+      expect(selections.graphSelectionsV2).toHaveLength(1)
+      expect(
+        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+          ?.artifact?.type
+      ).toEqual('edgeCut')
     })
   })
 
@@ -1130,7 +1164,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           throw id
         }
         const plane: Selections = {
-          graphSelections: [],
+          graphSelectionsV2: [],
           otherSelections: [{ name, id }],
         }
         const result = addOffsetPlane({
@@ -1190,9 +1224,9 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         (a) => a.type === 'plane'
       )
       const plane: Selections = {
-        graphSelections: [
+        graphSelectionsV2: [
           {
-            artifact,
+            entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,
           },
         ],
@@ -1400,6 +1434,10 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
   })
 
   describe('Testing getEdgeCutMeta', () => {
+    // getEdgeCutMeta returns the segment tag name and type so we can build face refs (e.g. planeOf(..., face = seg01)).
+    // subType 'opposite'|'adjacent' referred to how the face appears in KCL (getOppositeEdge(tag), getNextAdjacentEdge(tag));
+    // that required artifact graph data we no longer store (see artifact.rs Solid3dGetAdjacencyInfo duplicate Walls).
+    // We only assert the still-supported output: type and tagName. subType is 'base' when we resolve via segment.
     it('should find the edge cut meta info on a wall-cap chamfer', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
@@ -1416,7 +1454,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
-      expect(result?.subType).toEqual('opposite')
       expect(result?.tagName).toEqual('seg01')
     })
 
@@ -1436,7 +1473,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
-      expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')
     })
   })

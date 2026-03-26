@@ -4,7 +4,6 @@ description = "KittyCAD Language wasm bindings"
 license = "MIT"
 version = "0.1.135"
 edition = "2024"
-repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
 
 [lib]

@@ -201,7 +201,8 @@ function CommandBarHeaderFooter({
                           arg.inputType === 'selectionMixed') ? (
                           getSelectionTypeDisplayText(
                             project.executingEditor.value.astSignal.value,
-                            argValue as Selections
+                            argValue as Selections,
+                            project.executingEditor.value.artifactGraph
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (

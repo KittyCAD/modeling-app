@@ -389,12 +389,14 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
 
     await test.step('On an extrude face should *not* work', async () => {
-      // Tooltip is getting in the way of clicking, so I'm first closing the pane
       await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(1000)
       await editor.replaceCode('91', '90')
       await page.waitForTimeout(2000)
-      await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      const sketchOnFaceBtn = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchOnFaceBtn.scrollIntoViewIfNeeded()
+      await sketchOnFaceBtn.dblclick()
 
       await expect(
         toolbar.exitSketchBtn,

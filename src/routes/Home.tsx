@@ -283,7 +283,7 @@ const Home = () => {
                 <ActionButton
                   Element="button"
                   onClick={() => onDismissOnboardingInvite(settingsActor)}
-                  className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
+                  className={`${sidebarButtonClasses} invisible pointer-events-none group-hover:visible group-hover:pointer-events-auto flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
                     bgClassName: '!bg-transparent rounded-sm',

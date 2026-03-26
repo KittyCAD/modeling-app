@@ -33,8 +33,6 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
-  createTagDeclarator,
-  findUniqueName,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
@@ -43,11 +41,11 @@ import {
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'
+import { addTagKw } from '@src/lang/std/sketchTaggingHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
-  AddTagInfo,
   ArrayItemInput,
   ConstrainInfo,
   CreatedSketchExprResult,
@@ -92,9 +90,10 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import type { Coords2d } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+export { addTagForSketchOnFace } from '@src/lang/std/sketchTaggingHelpers'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -3757,246 +3756,8 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
-/** Used to add tags to edge cut expressions (chamfer or fillet calls).
- * Both chamfers and fillets use identical tagging logic.
- *
- * However things get complicated in situations like:
- * ```ts
- * |> chamfer(
- *     length = 1,
- *     tags = [tag1, tagOfInterest],
- *   )
- * ```
- * Because tag declarator is not allowed on edge cuts with more than one tag,
- * They must be pulled apart into separate calls:
- * ```ts
- * |> chamfer(
- *     length = 1,
- *     tags = [tag1],
- *   )
- * |> chamfer(
- *     length = 1,
- *     tags = [tagOfInterest],
- *   , tag = $newTagDeclarator)
- * ```
- */
-function addTagToEdgeCut(
-  tagInfo: AddTagInfo,
-  edgeCutMeta: EdgeCutInfo,
-  wasmInstance: ModuleType
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-    }
-  | Error {
-  const _node = structuredClone(tagInfo.node)
-  let pipeIndex = 0
-  for (let i = 0; i < tagInfo.pathToNode.length; i++) {
-    if (tagInfo.pathToNode[i][1] === 'PipeExpression') {
-      pipeIndex = Number(tagInfo.pathToNode[i + 1][0])
-      break
-    }
-  }
-  const pipeExpr = getNodeFromPath<PipeExpression>(
-    _node,
-    tagInfo.pathToNode,
-    wasmInstance,
-    'PipeExpression'
-  )
-  const variableDec = getNodeFromPath<VariableDeclarator>(
-    _node,
-    tagInfo.pathToNode,
-    wasmInstance,
-    'VariableDeclarator'
-  )
-  if (err(pipeExpr)) return pipeExpr
-  if (err(variableDec)) return variableDec
-  const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
-
-  const callExpr = isPipeExpression
-    ? pipeExpr.node.body[pipeIndex]
-    : variableDec.node.init
-  if (callExpr.type !== 'CallExpressionKw')
-    return new Error('no chamfer call Expr')
-  const inputTags = findKwArg('tags', callExpr)
-  if (!inputTags) return new Error('no tags property')
-  if (inputTags.type !== 'ArrayExpression')
-    return new Error('tags should be an array expression')
-
-  const isChamferBreakUpNeeded = inputTags.elements.length > 1
-  if (!isChamferBreakUpNeeded) {
-    return addTagKw()(tagInfo)
-  }
-
-  // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
-  // so that it can have a tag declarator added.
-  const tagIndexToPullOut = inputTags.elements.findIndex((tag) => {
-    // e.g. chamfer(tags: [tagOfInterest, tag2])
-    //                       ^^^^^^^^^^^^^
-    const elementMatchesBaseTagType =
-      edgeCutMeta?.subType === 'base' &&
-      tag.type === 'Name' &&
-      tag.name.name === edgeCutMeta.tagName
-    if (elementMatchesBaseTagType) return true
-
-    // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
-    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    const tagMatchesOppositeTagType =
-      edgeCutMeta?.subType === 'opposite' &&
-      tag.type === 'CallExpressionKw' &&
-      tag.callee.name.name === 'getOppositeEdge' &&
-      tag.unlabeled?.type === 'Name' &&
-      tag.unlabeled.name.name === edgeCutMeta.tagName
-    if (tagMatchesOppositeTagType) return true
-
-    // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
-    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    const tagMatchesAdjacentTagType =
-      edgeCutMeta?.subType === 'adjacent' &&
-      tag.type === 'CallExpressionKw' &&
-      (tag.callee.name.name === 'getNextAdjacentEdge' ||
-        tag.callee.name.name === 'getPrevAdjacentEdge') &&
-      tag.unlabeled?.type === 'Name' &&
-      tag.unlabeled.name.name === edgeCutMeta.tagName
-    if (tagMatchesAdjacentTagType) return true
-    return false
-  })
-  if (tagIndexToPullOut === -1) return new Error('tag not found')
-  // get the tag we're pulling out
-  const tagToPullOut = inputTags.elements[tagIndexToPullOut]
-  // and remove it from the original chamfer call
-  // [pullOutTag, tag2] to [tag2]
-  inputTags.elements.splice(tagIndexToPullOut, 1)
-
-  // get the length of the chamfer we're breaking up, as the new chamfer will have the same length
-  const chamferLength = findKwArg('length', callExpr)
-  if (!chamferLength) return new Error('no chamfer length')
-  const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
-  const solid3dIdentifierUsedInOriginalChamfer = callExpr.unlabeled
-  const solid = isPipeExpression ? null : solid3dIdentifierUsedInOriginalChamfer
-  const newExpressionToInsert = createCallExpressionStdLibKw('chamfer', solid, [
-    createLabeledArg('length', chamferLength),
-    // single tag to add to the new chamfer call
-    createLabeledArg('tags', createArrayExpression([tagToPullOut])),
-    createLabeledArg('tag', tagDec),
-  ])
-
-  // insert the new chamfer call with the tag declarator, add it above the original
-  // alternatively we could use `pipeIndex + 1` to insert it below the original
-  if (isPipeExpression) {
-    pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
-  } else {
-    callExpr.unlabeled = null // defaults to pipe substitution
-    variableDec.node.init = createPipeExpression([
-      newExpressionToInsert,
-      callExpr,
-    ])
-  }
-  return {
-    modifiedAst: _node,
-    tag: tagDec.value,
-  }
-}
-
-export function addTagForSketchOnFace(
-  tagInfo: AddTagInfo,
-  expressionName: string,
-  edgeCutMeta: EdgeCutInfo | null,
-  wasmInstance: ModuleType
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-    }
-  | Error {
-  if (expressionName === 'close') {
-    return addTagKw()(tagInfo)
-  }
-  if (expressionName === 'chamfer' || expressionName === 'fillet') {
-    if (edgeCutMeta === null) {
-      return new Error(
-        'Cannot add tag to edge cut because no edge cut was provided'
-      )
-    }
-    return addTagToEdgeCut(tagInfo, edgeCutMeta, wasmInstance)
-  }
-  if (expressionName in sketchLineHelperMapKw) {
-    const { addTag } = sketchLineHelperMapKw[expressionName]
-    return addTag(tagInfo)
-  }
-  return new Error(`"${expressionName}" is not a sketch line helper`)
-}
-
 function isAngleLiteral(lineArgument: Expr): boolean {
   return isLiteralArrayOrStatic(lineArgument)
-}
-
-type addTagFn = (
-  a: AddTagInfo
-) => { modifiedAst: Node<Program>; tag: string } | Error
-
-function addTagKw(): addTagFn {
-  return ({ node, pathToNode, wasmInstance }) => {
-    const _node = { ...node }
-    // We have to allow for the possibility that the path is actually to a call expression.
-    // That's because if the parser reads something like `close()`, it doesn't know if this
-    // is a keyword or positional call.
-    // In fact, even something like `close(%)` could be either (because we allow 1 unlabeled
-    // starting param).
-    const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
-      _node,
-      pathToNode,
-      wasmInstance,
-      ['CallExpressionKw']
-    )
-    if (err(callExpr)) return callExpr
-
-    // If the original node is a call expression, we'll need to change it to a call with keyword args.
-    const primaryCallExp: CallExpressionKw = callExpr.node
-    const tagArg = findKwArg(ARG_TAG, primaryCallExp)
-    const tagDeclarator =
-      tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
-    const isTagExisting = !!tagArg
-    if (!isTagExisting) {
-      const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
-      if (primaryCallExp.arguments === undefined) {
-        primaryCallExp.arguments = []
-      }
-      primaryCallExp.arguments.push(labeledArg)
-    }
-
-    // If we changed the node, we must replace the old node with the new node in the AST.
-    const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
-    if (mustReplaceNode) {
-      getNodeFromPath(
-        _node,
-        pathToNode,
-        wasmInstance,
-        ['CallExpressionKw'],
-        false,
-        false,
-        {
-          ...primaryCallExp,
-          start: callExpr.node.start,
-          end: callExpr.node.end,
-          moduleId: callExpr.node.moduleId,
-          outerAttrs: callExpr.node.outerAttrs,
-          commentStart: callExpr.node.start,
-        }
-      )
-    }
-
-    if ('value' in tagDeclarator) {
-      // Now TypeScript knows tagDeclarator has a value property
-      return {
-        modifiedAst: _node,
-        tag: String(tagDeclarator.value),
-      }
-    } else {
-      return new Error('Unable to assign tag without value')
-    }
-  }
 }
 
 export function getYComponent(
