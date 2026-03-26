@@ -556,23 +556,21 @@ sketch001 = sketch(on = XZ) {
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
       )
-      // TODO: enable in https://github.com/KittyCAD/modeling-app/pull/10547
-      // await expect(
-      //   page.locator('.cm-lint-marker-error').first()
-      // ).not.toBeInViewport()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeInViewport()
     })
 
-    // TODO: enable in https://github.com/KittyCAD/modeling-app/pull/10547
-    // await test.step('Start sketch and click center face', async () => {
-    //   await toolbar.startSketchPlaneSelection()
-    //   await clickCenter()
-    //   await page.waitForTimeout(1000) // Wait for unavoidable camera animation
+    await test.step('Start sketch and click center face', async () => {
+      await toolbar.startSketchPlaneSelection()
+      await clickCenter()
+      await page.waitForTimeout(1000) // Wait for unavoidable camera animation
 
-    //   await expect(toolbar.exitSketchBtn).toBeEnabled()
-    //   await editor.expectEditor.toContain(
-    //     /faceOf\(extrude001, face = region001\.tags\./
-    //   )
-    //   await editor.expectEditor.toContain('sketch002 = sketch(on = ')
-    // })
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.expectEditor.toContain(
+        /faceOf\(extrude001, face = region001\.tags\./
+      )
+      await editor.expectEditor.toContain('sketch002 = sketch(on = ')
+    })
   })
 })
