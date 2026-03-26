@@ -471,7 +471,7 @@ sketch001 = sketch(on = XY) {
     })
   })
 
-  test('can extrude a sketch region then sketch on face', async ({
+  test('can extrude a sketch regions', async ({
     page,
     context,
     homePage,
