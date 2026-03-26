@@ -58,11 +58,11 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, JsError> {
+pub fn format_number_literal(value: f64, suffix_json: &str, decimals: Option<usize>) -> Result<String, JsError> {
     console_error_panic_hook::set_once();
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
-    kcl_lib::pretty::format_number_literal(value, suffix).map_err(JsError::from)
+    kcl_lib::pretty::format_number_literal(value, suffix, decimals).map_err(JsError::from)
 }
 
 #[wasm_bindgen]

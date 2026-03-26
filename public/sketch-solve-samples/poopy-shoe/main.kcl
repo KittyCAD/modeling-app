@@ -108,7 +108,7 @@ customPlane = {
   yAxis = { x = 0, y = 0, z = 1 }
 }
 sketch010 = sketch(on = customPlane) {
-  arc1 = arc(start = [var 0in, var 0in], end = [var 4.44in, var 2.56in], center = [var -0in, var 5.13in])
+  arc1 = arc(start = [var 0in, var 0in], end = [var 4.44in, var 2.56in], center = [var 0in, var 5.13in])
   line2 = line(start = [var 4.44in, var 2.56in], end = [var 2.96in, var 0in])
   coincident([arc1.end, line2.start])
   line3 = line(start = [var 2.96in, var 0in], end = [var 0in, var 0in])

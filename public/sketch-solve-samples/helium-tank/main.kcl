@@ -94,7 +94,7 @@ valve = union([valveBody, valvePort])
 // Sketch the offset profile of the mounting bracket
 bracketOffsetProfile = sketch(on = offsetPlane(XY, offset = tankHeight * 0.67)) {
   line1 = line(start = [var 0in, var 4.63in], end = [var -0.1in, var 4.63in])
-  arc2 = arc(start = [var -0.1in, var 4.63in], end = [var -2.75in, var 3.79in], center = [var -0.1in, var -0in])
+  arc2 = arc(start = [var -0.1in, var 4.63in], end = [var -2.75in, var 3.79in], center = [var -0.1in, var 0in])
   coincident([line1.end, arc2.start])
   arc3 = arc(start = [var -2.95in, var 3.91in], end = [var -2.75in, var 3.79in], center = [var -2.82in, var 3.89in])
   coincident([arc2.end, arc3.end])
@@ -113,7 +113,7 @@ bracketOffsetProfile = sketch(on = offsetPlane(XY, offset = tankHeight * 0.67)) 
 // Sketch the outer perimeter of the offset bracket, then subtract the inner offset to create a constant thickness sheet metal hoop
 sketch003 = sketch(on = offsetPlane(XY, offset = tankHeight * 0.67)) {
   line1 = line(start = [var 0in, var 4.5in], end = [var -0.1in, var 4.5in])
-  arc2 = arc(start = [var -0.1in, var 4.5in], end = [var -2.68in, var 3.69in], center = [var -0.1in, var -0in])
+  arc2 = arc(start = [var -0.1in, var 4.5in], end = [var -2.68in, var 3.69in], center = [var -0.1in, var 0in])
   coincident([line1.end, arc2.start])
   arc3 = arc(start = [var -3.07in, var 3.93in], end = [var -2.68in, var 3.69in], center = [var -2.82in, var 3.89in])
   coincident([arc2.end, arc3.end])

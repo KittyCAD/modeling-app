@@ -29,7 +29,7 @@ sketch001 = sketch(on = YZ) {
   coincident([line5.end, line6.start])
   line7 = line(start = [var -36.69mm, var 50.05mm], end = [var -11.69mm, var 6.75mm])
   coincident([line6.end, line7.start])
-  arc8 = arc(start = [var -11.69mm, var 6.75mm], end = [var 0mm, var 0mm], center = [var -0mm, var 13.5mm])
+  arc8 = arc(start = [var -11.69mm, var 6.75mm], end = [var 0mm, var 0mm], center = [var 0mm, var 13.5mm])
   coincident([line7.end, arc8.start])
   horizontal(line2)
   vertical(line3)
