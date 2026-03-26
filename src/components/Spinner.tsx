@@ -5,9 +5,9 @@ export const Spinner = (props: SVGProps<SVGSVGElement>) => {
     <svg
       data-testid="spinner"
       viewBox="0 0 10 10"
-      className={'w-8 h-8'}
+      className={`w-8 h-8 animate-spin origin-center`}
       {...props}
-    >
+      >
       <circle
         cx="5"
         cy="5"
@@ -15,7 +15,6 @@ export const Spinner = (props: SVGProps<SVGSVGElement>) => {
         stroke="currentColor"
         fill="none"
         strokeDasharray="4, 4"
-        className="animate-spin origin-center"
       />
     </svg>
   )

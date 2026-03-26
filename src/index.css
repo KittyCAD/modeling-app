@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes billing-spinner-svg-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Temporary billing spinner override for @kittycad/react-shared. */
+[data-testid="billing-remaining"] [data-testid="spinner"] {
+  animation: billing-spinner-svg-rotate 1s linear infinite;
+  transform-origin: center;
+}
+
+[data-testid="billing-remaining"] [data-testid="spinner"] circle {
+  animation: none !important;
+}
+
 button,
 input,
 select,

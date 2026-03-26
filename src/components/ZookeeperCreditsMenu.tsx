@@ -13,6 +13,10 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
+  // Temporary profiling override: keep the compact billing widget in its
+  // loading state so the status-bar spinner is always visible.
+  const forcedLoadingBalance = undefined
+
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -22,7 +26,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
           error={props.billingContext.error}
-          balance={props.billingContext.balance}
+          balance={forcedLoadingBalance}
           allowance={props.billingContext.allowance}
           paymentMethods={props.billingContext.paymentMethods}
           userPaymentBalance={props.billingContext.userPaymentBalance}
