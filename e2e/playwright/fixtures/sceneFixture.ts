@@ -88,7 +88,7 @@ export class SceneFixture {
    * This function translates those to stream-relative ones,
    * or can be used to get stream coordinates by ratio.
    * (When debugging manually, you can log the ratios yourself via devtools
-   * using this same math.)
+   * using this same math, run `enableMousePositionLogs()` in the console.)
    */
   convertPagePositionToStream = async (
     x: number,

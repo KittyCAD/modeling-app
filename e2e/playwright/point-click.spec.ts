@@ -1220,23 +1220,14 @@ profile001 = ${circleCode}`
         stage: 'arguments',
       })
       await cmdBar.progressCmdBar()
-      await expect
-        .poll(async () => {
-          const s = await cmdBar.getState()
-          return (
-            s.stage === 'review' &&
-            s.commandName === 'Sweep' &&
-            s.headerArguments?.Profiles === '1 profile'
-          )
-        })
-        .toBe(true)
-      const stateAfterPath = await cmdBar.getState()
-      expect(stateAfterPath.stage).toBe('review')
-      if (stateAfterPath.stage === 'review') {
-        expect(['1 path', '1 edge']).toContain(
-          stateAfterPath.headerArguments?.Path
-        )
-      }
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Profiles: '1 profile',
+          Path: '1 helix',
+        },
+        stage: 'review',
+      })
       await cmdBar.progressCmdBar(true)
       await editor.expectEditor.toContain(sweepDeclaration)
     })
@@ -1593,7 +1584,6 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     })
   })
 
-  // Requires engine connection (VITE_KITTYCAD_WEBSOCKET_URL) so execution records edgeRefactorMetadata
   test('Should automatically fix fillet kwargs that are incompatible with P&C upon edit', async ({
     context,
     page,
@@ -1684,7 +1674,6 @@ myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edges = [
     })
   })
 
-  // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in revolve
   test('Should automatically fix revolve axis that is incompatible with P&C upon edit', async ({
     context,
     page,
@@ -1769,7 +1758,6 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
     })
   })
 
-  // Requires engine so execution records edgeRefactorMetadata for getOppositeEdge in helix
   test('Should automatically fix helix axis that is incompatible with P&C upon edit', async ({
     context,
     page,
@@ -2191,7 +2179,6 @@ extrude001 = extrude(sketch001, length = -12)
         0
       )
       await operationButton.dblclick({ button: 'left' })
-      await page.waitForTimeout(500)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         currentArgKey: 'length',

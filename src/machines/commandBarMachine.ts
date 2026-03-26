@@ -523,26 +523,12 @@ export const commandBarMachine = setup({
           input.selectedCommand?.needsReview &&
           input.selectedCommand.reviewValidation
         ) {
-          console.info(
-            '[CommandBar validateArguments] running reviewValidation',
-            {
-              description: input.selectedCommand.description,
-            }
-          )
           const result = await input.selectedCommand.reviewValidation(
             input,
             input.selectedCommand?.machineActor
           )
           if (err(result)) {
             reviewValidationError = result.message
-            console.info(
-              '[CommandBar validateArguments] reviewValidation failed',
-              result.message
-            )
-          } else {
-            console.info(
-              '[CommandBar validateArguments] reviewValidation ok (no error string)'
-            )
           }
         }
 

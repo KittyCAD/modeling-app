@@ -1083,6 +1083,20 @@ export class CameraControls {
     const isOrtho = cameraProjection === 'orthographic' ? true : false
 
     if (this.oldCameraState) {
+      // Leave a log to know when this desyncs
+      console.log(`restoring camera projection setting:${cameraProjection}`)
+      console.log(
+        `oldCameraState projection:${isOrtho ? 'orthographic' : 'perspective'}, ortho_scaled_enabled:${this.oldCameraState.ortho_scale_enabled}`
+      )
+
+      if (this.oldCameraState.is_ortho !== isOrtho) {
+        console.log(
+          'oldCameraState is_ortho desynced',
+          this.oldCameraState.is_ortho,
+          isOrtho
+        )
+      }
+
       this.oldCameraState.is_ortho = isOrtho
       // Always keep this enabled!
       this.oldCameraState.ortho_scale_enabled = true

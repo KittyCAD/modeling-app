@@ -439,18 +439,9 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
   }) => {
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
-      // Enables [fillet review debug] logs in modelingCommandConfig (submitted vs live selection)
-      localStorage.setItem('DEBUG_FILLET_SELECTION', '1')
     }, innerShellCode)
 
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    page.on('console', (msg) => {
-      const t = msg.text()
-      if (t.startsWith('DEBUG')) {
-        // eslint-disable-next-line no-console -- e2e: surface fillet selection / primitive-index path in CI logs
-        console.log(t)
-      }
-    })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
