@@ -1332,7 +1332,6 @@ pub(crate) async fn create_sketch(
         paths: vec![],
         inner_paths: vec![],
         units,
-        region_mapping: Default::default(),
         mirror: Default::default(),
         clone: Default::default(),
         meta: vec![source_range.into()],
