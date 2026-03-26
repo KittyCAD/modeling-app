@@ -21,6 +21,10 @@ use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
 #[cfg(feature = "artifact-graph")]
+use crate::execution::DirectTagFilletMeta;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::EdgeRefactorMeta;
+#[cfg(feature = "artifact-graph")]
 use crate::execution::Operation;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Number;
@@ -205,9 +209,9 @@ pub struct KclErrorWithOutputs {
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     #[cfg(feature = "artifact-graph")]
-    pub edge_refactor_metadata: Vec<crate::execution::EdgeRefactorMeta>,
+    pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
     #[cfg(feature = "artifact-graph")]
-    pub direct_tag_fillet_metadata: Vec<crate::execution::DirectTagFilletMeta>,
+    pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -226,8 +230,8 @@ impl KclErrorWithOutputs {
         #[cfg(feature = "artifact-graph")] scene_objects: Vec<Object>,
         #[cfg(feature = "artifact-graph")] source_range_to_object: BTreeMap<SourceRange, ObjectId>,
         #[cfg(feature = "artifact-graph")] var_solutions: Vec<(SourceRange, Number)>,
-        #[cfg(feature = "artifact-graph")] edge_refactor_metadata: Vec<crate::execution::EdgeRefactorMeta>,
-        #[cfg(feature = "artifact-graph")] direct_tag_fillet_metadata: Vec<crate::execution::DirectTagFilletMeta>,
+        #[cfg(feature = "artifact-graph")] edge_refactor_metadata: Vec<EdgeRefactorMeta>,
+        #[cfg(feature = "artifact-graph")] direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,

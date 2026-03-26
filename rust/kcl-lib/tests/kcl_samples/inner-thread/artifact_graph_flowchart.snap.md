@@ -7,25 +7,25 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     4[Solid2d]
   end
-  subgraph path12 [Path]
-    12["Path<br>[244, 300, 0]<br>Consumed: true"]
+  subgraph path10 [Path]
+    10["Path<br>[244, 300, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    13["Segment<br>[244, 300, 0]"]
+    11["Segment<br>[244, 300, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    14[Solid2d]
+    12[Solid2d]
   end
-  subgraph path22 [Path]
-    22["Path<br>[382, 526, 0]<br>Consumed: true"]
+  subgraph path18 [Path]
+    18["Path<br>[382, 526, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    23["Segment<br>[382, 526, 0]"]
+    19["Segment<br>[382, 526, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    24["Segment<br>[382, 526, 0]"]
+    20["Segment<br>[382, 526, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    25["Segment<br>[382, 526, 0]"]
+    21["Segment<br>[382, 526, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    26["Segment<br>[382, 526, 0]"]
+    22["Segment<br>[382, 526, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    27[Solid2d]
+    23[Solid2d]
   end
   1["Plane<br>[137, 154, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
@@ -37,136 +37,78 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   8["Cap End"]
     %% face_code_ref=Missing NodePath
-  9["SweepEdge Opposite"]
-  10["SweepEdge Adjacent"]
-  11["Plane<br>[251, 268, 0]"]
+  9["Plane<br>[251, 268, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
-  15["Sweep Extrusion<br>[306, 326, 0]<br>Consumed: true"]
+  13["Sweep Extrusion<br>[306, 326, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  16[Wall]
+  14[Wall]
     %% face_code_ref=Missing NodePath
-  17["Cap Start"]
+  15["Cap Start"]
     %% face_code_ref=Missing NodePath
-  18["Cap End"]
+  16["Cap End"]
     %% face_code_ref=Missing NodePath
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["Plane<br>[395, 412, 0]"]
+  17["Plane<br>[395, 412, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  28["Helix<br>[541, 663, 0]: Consumed: true"]
+  24["Helix<br>[541, 663, 0]: Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  29["Sweep Sweep<br>[674, 714, 0]<br>Consumed: true"]
+  25["Sweep Sweep<br>[674, 714, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  30[Wall]
+  26[Wall]
     %% face_code_ref=Missing NodePath
-  31[Wall]
+  27[Wall]
     %% face_code_ref=Missing NodePath
-  32[Wall]
+  28[Wall]
     %% face_code_ref=Missing NodePath
-  33[Wall]
+  29[Wall]
     %% face_code_ref=Missing NodePath
-  34["Cap Start"]
+  30["Cap Start"]
     %% face_code_ref=Missing NodePath
-  35["Cap Start"]
+  31["Cap Start"]
     %% face_code_ref=Missing NodePath
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["SweepEdge Opposite"]
-  39["SweepEdge Adjacent"]
-  40["SweepEdge Opposite"]
-  41["SweepEdge Adjacent"]
-  42["SweepEdge Opposite"]
-  43["SweepEdge Adjacent"]
-  44["CompositeSolid Subtract<br>[716, 766, 0]<br>Consumed: false"]
+  32["CompositeSolid Subtract<br>[716, 766, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
   1 --- 2
   2 --- 3
   2 --- 4
   2 ---- 5
-  2 --- 44
+  2 --- 32
   3 --- 6
   3 x--> 7
-  3 --- 9
-  3 --- 10
   5 --- 6
   5 --- 7
   5 --- 8
-  5 --- 9
-  5 --- 10
-  6 --- 9
-  6 --- 10
-  9 <--x 8
-  11 --- 12
-  12 --- 13
-  12 --- 14
-  12 ---- 15
-  12 <--x 28
-  12 --- 44
+  9 --- 10
+  10 --- 11
+  10 --- 12
+  10 ---- 13
+  10 <--x 24
+  10 --- 32
+  11 --- 14
+  11 x--> 15
+  13 --- 14
+  13 --- 15
   13 --- 16
-  13 x--> 17
-  13 --- 19
-  13 --- 20
-  15 --- 16
-  15 --- 17
-  15 --- 18
-  15 --- 19
-  15 --- 20
-  16 --- 19
-  16 --- 20
-  19 <--x 18
-  21 --- 22
-  22 --- 23
-  22 --- 24
-  22 --- 25
-  22 --- 26
-  22 --- 27
-  22 ---- 29
-  22 --- 44
-  23 --- 30
-  23 x--> 34
-  23 --- 36
-  23 --- 37
-  24 --- 31
-  24 x--> 34
-  24 --- 38
-  24 --- 39
-  25 --- 32
-  25 x--> 34
-  25 --- 40
-  25 --- 41
-  26 --- 33
-  26 x--> 34
-  26 --- 42
-  26 --- 43
-  28 --- 29
-  29 --- 30
-  29 --- 31
-  29 --- 32
-  29 --- 33
-  29 --- 34
-  29 --- 35
-  29 --- 36
-  29 --- 37
-  29 --- 38
-  29 --- 39
-  29 --- 40
-  29 --- 41
-  29 --- 42
-  29 --- 43
-  30 --- 36
-  30 --- 37
-  39 <--x 30
-  31 --- 38
-  31 --- 39
-  41 <--x 31
-  32 --- 40
-  32 --- 41
-  43 <--x 32
-  37 <--x 33
-  33 --- 42
-  33 --- 43
-  36 <--x 35
-  38 <--x 35
-  40 <--x 35
-  42 <--x 35
+  17 --- 18
+  18 --- 19
+  18 --- 20
+  18 --- 21
+  18 --- 22
+  18 --- 23
+  18 ---- 25
+  18 --- 32
+  19 --- 26
+  19 x--> 30
+  20 --- 27
+  20 x--> 30
+  21 --- 28
+  21 x--> 30
+  22 --- 29
+  22 x--> 30
+  24 --- 25
+  25 --- 26
+  25 --- 27
+  25 --- 28
+  25 --- 29
+  25 --- 30
+  25 --- 31
 ```

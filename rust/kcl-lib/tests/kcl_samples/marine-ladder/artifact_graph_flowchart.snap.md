@@ -17,12 +17,12 @@ flowchart LR
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     9[Solid2d]
   end
-  subgraph path17 [Path]
-    17["Path<br>[1584, 1634, 0]<br>Consumed: true"]
+  subgraph path15 [Path]
+    15["Path<br>[1584, 1634, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    18["Segment<br>[1584, 1634, 0]"]
+    16["Segment<br>[1584, 1634, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    19[Solid2d]
+    17[Solid2d]
   end
   1["Plane<br>[937, 954, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -36,20 +36,16 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   13["Cap End"]
     %% face_code_ref=Missing NodePath
-  14["SweepEdge Opposite"]
-  15["SweepEdge Adjacent"]
-  16["Plane<br>[1536, 1578, 0]"]
+  14["Plane<br>[1536, 1578, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  20["Sweep Extrusion<br>[1649, 1691, 0]<br>Consumed: false"]
+  18["Sweep Extrusion<br>[1649, 1691, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  21[Wall]
+  19[Wall]
     %% face_code_ref=Missing NodePath
-  22["Cap Start"]
+  20["Cap Start"]
     %% face_code_ref=Missing NodePath
-  23["Cap End"]
+  21["Cap End"]
     %% face_code_ref=Missing NodePath
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -61,30 +57,16 @@ flowchart LR
   7 ---- 10
   8 --- 11
   8 x--> 12
-  8 --- 14
-  8 --- 15
   10 --- 11
   10 --- 12
   10 --- 13
-  10 --- 14
-  10 --- 15
-  11 --- 14
-  11 --- 15
-  14 <--x 13
-  16 --- 17
-  17 --- 18
-  17 --- 19
-  17 ---- 20
+  14 --- 15
+  15 --- 16
+  15 --- 17
+  15 ---- 18
+  16 --- 19
+  16 x--> 20
+  18 --- 19
+  18 --- 20
   18 --- 21
-  18 x--> 22
-  18 --- 24
-  18 --- 25
-  20 --- 21
-  20 --- 22
-  20 --- 23
-  20 --- 24
-  20 --- 25
-  21 --- 24
-  21 --- 25
-  24 <--x 23
 ```
