@@ -1,0 +1,141 @@
+// Starlink Mini Bracket
+// Bracket for holding a starlink device
+// Categories: Maker
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+// Define parameters
+cutoutEdgeLength = 2
+cutoutWidth = 0.52
+cutoutAngleBase = 8 // degrees
+cutoutAngleSide = 14 // degrees
+cutoutDepth = 1
+cutoutBaseDepth = 0.1
+totalWidth = 1.25
+blockEdgeLength = 0.5
+FLIP = 0
+
+sketch007 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 2.5in, var 0in])
+  line2 = line(start = [var 2.5in, var 0in], end = [var 2.5in, var 0.5in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.5in, var 0.5in], end = [var 0.5in, var 0.5in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.5in, var 0.5in], end = [var 0.5in, var 2.5in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.5in, var 2.5in], end = [var 0in, var 2.5in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0in, var 2.5in], end = [var 0in, var 0in])
+  coincident([line5.end, line6.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  vertical(line5)
+  horizontal(line6)
+}
+region001 = region(segments = [sketch007.line1, sketch007.line2])
+sketch001 = extrude(region001, length = totalWidth)
+
+sketch008 = sketch(on = startSketchOn(sketch001, face = seg01)) {
+  line1 = line(start = [var 0.5in, var 0in], end = [var 1.6in, var 0in])
+  line2 = line(start = [var 1.6in, var 0in], end = [var 1.6in, var 0.23in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.6in, var 0.23in], end = [var 0.6in, var 0.37in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.6in, var 0.37in], end = [var 0.6in, var 0.89in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.6in, var 0.89in], end = [var 1.6in, var 0.89in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 1.6in, var 0.89in], end = [var 1.6in, var 1.25in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 1.6in, var 1.25in], end = [var 0.5in, var 1.25in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 0.5in, var 1.25in], end = [var 0.5in, var 0in])
+  coincident([line7.end, line8.start])
+  horizontal(line2)
+  vertical(line3)
+  vertical(line5)
+  vertical(line7)
+  horizontal(line8)
+}
+region002 = region(segments = [sketch008.line1, sketch008.line2])
+sketch002 = extrude(region002, length = -1 * cutoutEdgeLength)
+
+sketch009 = sketch(on = startSketchOn(sketch001, face = seg02)) {
+  line1 = line(start = [var -0.5in, var 0in], end = [var -1.6in, var 0in])
+  line2 = line(start = [var -1.6in, var 0in], end = [var -1.6in, var 0.12in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -1.6in, var 0.12in], end = [var -0.6in, var 0.37in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.6in, var 0.37in], end = [var -0.6in, var 0.89in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.6in, var 0.89in], end = [var -1.6in, var 0.89in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -1.6in, var 0.89in], end = [var -1.6in, var 1.25in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -1.6in, var 1.25in], end = [var -0.5in, var 1.25in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -0.5in, var 1.25in], end = [var -0.5in, var 0in])
+  coincident([line7.end, line8.start])
+  horizontal(line2)
+  vertical(line3)
+  vertical(line5)
+  vertical(line7)
+  horizontal(line8)
+}
+region003 = region(segments = [sketch009.line1, sketch009.line2])
+sketch003 = extrude(region003, length = -1 * cutoutEdgeLength)
+
+barrelD = 0.700
+barrelL = 1.10
+nRidges = 36
+barrelC = 1.25 / 2 // guess
+holeD = 0.253
+ridgeHeight = 1.1135 - barrelL
+ridgeWidth = 0.042
+
+sketch010 = sketch(on = XY) {
+  arc1 = arc(start = [var -0.63in, var -0.28in], end = [var -0.98in, var -0.63in], center = [var -0.63in, var -0.63in])
+  line2 = line(start = [var -0.63in, var -0.28in], end = [var 0in, var -0.28in])
+  coincident([arc1.start, line2.start])
+  line3 = line(start = [var 0in, var -0.28in], end = [var 0in, var -0.98in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var -0.98in], end = [var -0.63in, var -0.98in])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var -0.97in, var -0.63in], end = [var -0.63in, var -0.98in], center = [var -0.62in, var -0.63in])
+  coincident([line4.end, arc5.end])
+  horizontal(line3)
+  vertical(line4)
+  horizontal(arc5)
+}
+region004 = region(segments = [sketch010.arc1, sketch010.line2])
+sketch004 = extrude(region004, length = barrelL)
+sketch011 = sketch(on = startSketchOn(sketch004, face = START)) {
+  circle1 = circle(start = [var 0.75in, var -0.63in], center = [var 0.63in, var -0.63in])
+}
+region005 = region(segments = [sketch011.circle1])
+sketch005 = extrude(region005, length = -1 * barrelL)
+
+ridgePlane = offsetPlane(YZ, offset = -(barrelC + holeD / 2))
+
+sketch012 = sketch(on = ridgePlane) {
+  line1 = line(start = [var -0.63in, var 1.1in], end = [var -0.6in, var 1.1in])
+  line2 = line(start = [var -0.6in, var 1.1in], end = [var -0.63in, var 1.11in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.63in, var 1.11in], end = [var -0.65in, var 1.1in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.65in, var 1.1in], end = [var -0.63in, var 1.1in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+}
+region006 = region(segments = [sketch012.line1, sketch012.line2])
+sketch006 = extrude(region006, length = -((barrelD - holeD) / 2 - .003))
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, barrelL],
+       center = [-barrelC, -totalWidth / 2, barrelL],
+       instances = nRidges,
+       rotateDuplicates = true,
+     )
+
