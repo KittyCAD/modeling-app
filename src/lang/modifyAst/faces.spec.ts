@@ -514,7 +514,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const wall = getWalls(artifactGraph, 1).graphSelectionsV2[0]
+      const wall = getWalls(artifactGraph, 1).graphSelections[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const innerFace: NonCodeSelection = {
         entityId: 'irrelevant-for-this-test',
@@ -524,7 +524,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         type: 'enginePrimitive',
       }
       const faces: Selections = {
-        graphSelectionsV2: [wall],
+        graphSelections: [wall],
         otherSelections: [innerFace],
       }
       const result = addDeleteFace({
@@ -989,9 +989,9 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       )
       if (err(selections)) throw selections
 
-      expect(selections.solids.graphSelectionsV2).toHaveLength(1)
+      expect(selections.solids.graphSelections).toHaveLength(1)
       const solidResolved = resolveSelectionV2(
-        selections.solids.graphSelectionsV2[0],
+        selections.solids.graphSelections[0],
         artifactGraph
       )
       if (!solidResolved?.artifact) {
@@ -999,9 +999,9 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       }
       expect(solidResolved.artifact.type).toEqual('sweep')
 
-      expect(selections.faces.graphSelectionsV2).toHaveLength(1)
+      expect(selections.faces.graphSelections).toHaveLength(1)
       const faceResolved = resolveSelectionV2(
-        selections.faces.graphSelectionsV2[0],
+        selections.faces.graphSelections[0],
         artifactGraph
       )
       if (!faceResolved?.artifact || faceResolved.artifact.type !== 'cap') {
@@ -1039,26 +1039,22 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       )
       if (err(selections)) throw selections
 
-      expect(selections.solids.graphSelectionsV2).toHaveLength(2)
+      expect(selections.solids.graphSelections).toHaveLength(2)
       expect(
-        resolveSelectionV2(
-          selections.solids.graphSelectionsV2[0],
-          artifactGraph
-        )?.artifact?.id
+        resolveSelectionV2(selections.solids.graphSelections[0], artifactGraph)
+          ?.artifact?.id
       ).toEqual(lastTwoSweeps[0].id)
       expect(
-        resolveSelectionV2(
-          selections.solids.graphSelectionsV2[1],
-          artifactGraph
-        )?.artifact?.id
+        resolveSelectionV2(selections.solids.graphSelections[1], artifactGraph)
+          ?.artifact?.id
       ).toEqual(lastTwoSweeps[1].id)
-      expect(selections.faces.graphSelectionsV2).toHaveLength(2)
+      expect(selections.faces.graphSelections).toHaveLength(2)
       expect(
-        resolveSelectionV2(selections.faces.graphSelectionsV2[0], artifactGraph)
+        resolveSelectionV2(selections.faces.graphSelections[0], artifactGraph)
           ?.artifact?.type
       ).toEqual('cap')
       expect(
-        resolveSelectionV2(selections.faces.graphSelectionsV2[1], artifactGraph)
+        resolveSelectionV2(selections.faces.graphSelections[1], artifactGraph)
           ?.artifact?.type
       ).toEqual('cap')
     })
@@ -1081,9 +1077,9 @@ plane002 = offsetPlane(plane001, offset = 2)`
         artifactGraph
       )
       if (err(selections)) throw selections
-      expect(selections.graphSelectionsV2).toHaveLength(1)
+      expect(selections.graphSelections).toHaveLength(1)
       const firstResolved = resolveSelectionV2(
-        selections.graphSelectionsV2[0],
+        selections.graphSelections[0],
         artifactGraph
       )
       expect(firstResolved?.artifact?.type).toEqual('plane')
@@ -1109,16 +1105,16 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       if (err(selections)) throw selections
 
-      expect(selections.graphSelectionsV2).toHaveLength(1)
+      expect(selections.graphSelections).toHaveLength(1)
       expect(
-        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
           ?.artifact?.type
       ).toEqual('cap')
       const cap = [...artifactGraph.values()].find(
         (a) => a.type === 'cap' && a.subType === 'end'
       )
       expect(
-        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
           ?.artifact?.id
       ).toEqual(cap!.id)
     })
@@ -1138,9 +1134,9 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       if (err(selections)) throw selections
 
-      expect(selections.graphSelectionsV2).toHaveLength(1)
+      expect(selections.graphSelections).toHaveLength(1)
       expect(
-        resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+        resolveSelectionV2(selections.graphSelections[0], artifactGraph)
           ?.artifact?.type
       ).toEqual('edgeCut')
     })
@@ -1164,7 +1160,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           throw id
         }
         const plane: Selections = {
-          graphSelectionsV2: [],
+          graphSelections: [],
           otherSelections: [{ name, id }],
         }
         const result = addOffsetPlane({
@@ -1224,7 +1220,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         (a) => a.type === 'plane'
       )
       const plane: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,

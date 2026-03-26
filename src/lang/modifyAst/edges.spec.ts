@@ -122,7 +122,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> flipSurface()`
 
   // SelectionV2 / Face API: sweepEdge was removed from the artifact graph. Edge selection is now
-  // segment (or edgeCut for chamfer/fillet face). addFillet/addChamfer accept graphSelectionsV2
+  // segment (or edgeCut for chamfer/fillet face). addFillet/addChamfer accept graphSelections
   // with entityRef.type === 'edge' (faces array). Tests that relied on sweepEdge are obsolete.
   // New coverage: addFillet/addChamfer with edge selection built from segment + getCommonFacesForEdge
   // (see "should add a basic fillet call with edge selection (selectionV2)" below).
@@ -145,7 +145,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
         type: 'enginePrimitive',
       }
       const selection: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [primitiveEdge],
       }
 
@@ -197,7 +197,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
       expect(codeRefs?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -251,7 +251,7 @@ extrude001 = extrude(profile001, length = 5)`
       const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
       expect(codeRefs?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -326,7 +326,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       expect(codeRefs1?.length).toBeGreaterThan(0)
       expect(codeRefs2?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -382,7 +382,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
         type: 'enginePrimitive',
       }
       const selection: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [primitiveEdge],
       }
 
@@ -434,7 +434,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
       expect(codeRefs?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -488,7 +488,7 @@ extrude001 = extrude(profile001, length = 5)`
       const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
       expect(codeRefs?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -563,7 +563,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       expect(codeRefs1?.length).toBeGreaterThan(0)
       expect(codeRefs2?.length).toBeGreaterThan(0)
       const selection: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: {
               type: 'edge',
@@ -664,7 +664,7 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       ]
 
       const edges: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: primitiveEdgeSelections,
       }
 
@@ -769,8 +769,8 @@ chamfer001 = chamfer(
         code
       )
 
-      expect(selections.graphSelectionsV2).toHaveLength(2)
-      for (const v2 of selections.graphSelectionsV2) {
+      expect(selections.graphSelections).toHaveLength(2)
+      for (const v2 of selections.graphSelections) {
         expect(v2.entityRef).toBeDefined()
         expect(['segment', 'edge']).toContain(v2.entityRef?.type)
         expect(v2.codeRef).toBeDefined()
@@ -1143,6 +1143,7 @@ revolve001 = revolve(
               type: 'edgeCut',
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
+              consumedEdgeId: 'mock-consumed-edge-id',
               edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,
@@ -1208,6 +1209,7 @@ revolve001 = revolve(`
               type: 'edgeCut',
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
+              consumedEdgeId: 'mock-consumed-edge-id',
               edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,

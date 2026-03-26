@@ -311,7 +311,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     )
     if ('error' in graphSelections) return { reason: graphSelections.error }
     to = {
-      graphSelectionsV2: graphSelections.map((s) =>
+      graphSelections: graphSelections.map((s) =>
         s.artifact
           ? {
               entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
@@ -637,7 +637,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
     if (!entityRef) return null
     return {
-      graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
+      graphSelections: [{ entityRef, codeRef: codeRefs[0] }],
       otherSelections: [],
     }
   }
@@ -671,7 +671,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   // Fallback: when op has edges/edgeRefs but tag names didn't resolve (no artifact_id), build edge
   // selection from edgeCut so addFillet keeps edges and correct faces (e.g. seg01, capStart001)
   if (
-    selection.graphSelectionsV2.length === 0 &&
+    selection.graphSelections.length === 0 &&
     (operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs) &&
     artifact?.type === 'edgeCut'
   ) {
@@ -702,7 +702,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
             : segResult.commonSurfaceIds.slice(0, 2)
           if (faceIds.length >= 2) {
             selection = {
-              graphSelectionsV2: [
+              graphSelections: [
                 {
                   entityRef: { type: 'edge', side_faces: faceIds },
                   codeRef: codeRefResult,
@@ -717,7 +717,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   }
 
   // Fallback: if tags/edges gave no selection but we have the fillet's edge artifact, use it
-  if (!err(selection) && selection.graphSelectionsV2.length === 0) {
+  if (!err(selection) && selection.graphSelections.length === 0) {
     const fromArtifact = buildSelectionFromArtifact()
     if (fromArtifact) selection = fromArtifact
   }
@@ -1073,7 +1073,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     }
 
     plane = {
-      graphSelectionsV2: [],
+      graphSelections: [],
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
@@ -1192,7 +1192,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   const path = {
-    graphSelectionsV2: [
+    graphSelections: [
       {
         entityRef: artifactToEntityRef(
           trajectoryArtifact.type,
@@ -1878,7 +1878,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 
   const faces = {
-    graphSelectionsV2: graphSelections.map((s) =>
+    graphSelections: graphSelections.map((s) =>
       s.artifact
         ? {
             entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
@@ -1955,7 +1955,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 
   const faces = {
-    graphSelectionsV2: graphSelections.map((s) =>
+    graphSelections: graphSelections.map((s) =>
       s.artifact
         ? {
             entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),

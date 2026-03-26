@@ -258,7 +258,7 @@ extrude002 = extrude(seg01, length = 3)`)
         .values()
         .find((a) => a.type === 'sketchBlock')
       const sketches: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [
           {
             type: 'region',
@@ -902,7 +902,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         .values()
         .find((s) => s.type === 'sketchBlock')
       const sketches: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [
           {
             type: 'region',
@@ -1138,7 +1138,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(2)
+      expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
         artifactGraph,
@@ -1177,7 +1177,7 @@ t = sketch(on = plane001) {
         (s) => s.type === 'sketchBlock'
       )
       const sketches: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [
           {
             type: 'region',
@@ -1275,7 +1275,7 @@ loft001 = loft([region001, region002])`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(2)
+      expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
         artifactGraph,
@@ -1305,7 +1305,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(2)
+      expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
         artifactGraph,
@@ -1338,7 +1338,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(2)
+      expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
         ast,
         artifactGraph,
@@ -1362,7 +1362,7 @@ loft001 = loft([profile001, profile002])`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(2)
+      expect(sketches.graphSelections).toHaveLength(2)
       const vDegree = await getKclCommandValue(
         '3',
         instanceInThisFile,
@@ -1397,7 +1397,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(1)
+      expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '10',
         instanceInThisFile,
@@ -1431,7 +1431,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         .values()
         .find((s) => s.type === 'sketchBlock')
       const sketches: Selections = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [
           {
             type: 'region',
@@ -1507,7 +1507,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(1)
+      expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '10',
         instanceInThisFile,
@@ -1543,7 +1543,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(1)
+      expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '10',
         instanceInThisFile,
@@ -1578,7 +1578,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      expect(sketches.graphSelectionsV2).toHaveLength(1)
+      expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '10',
         instanceInThisFile,
@@ -1754,7 +1754,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
           instanceInThisFile,
           rustContextInThisFile
         )
-      expect(sketches.graphSelectionsV2).toHaveLength(1)
+      expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
         '20',
         instanceInThisFile,
@@ -1915,7 +1915,7 @@ helix001 = helix(
       )
       expect(result.axisOrEdge).toEqual('Edge')
       expect(result.edge).toBeDefined()
-      expect(result.edge!.graphSelectionsV2[0].codeRef).toEqual(segId!.codeRef)
+      expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
       expect(result.axis).toBeUndefined()
     })
   })

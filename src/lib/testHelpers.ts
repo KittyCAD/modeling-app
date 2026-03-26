@@ -75,7 +75,7 @@ export function createSelectionFromArtifacts(
   artifacts: Artifact[],
   artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelectionsV2 = artifacts.flatMap((artifact) => {
+  const graphSelections = artifacts.flatMap((artifact) => {
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       return []
@@ -88,7 +88,7 @@ export function createSelectionFromArtifacts(
     ]
   })
   return {
-    graphSelectionsV2,
+    graphSelections,
     otherSelections: [],
   }
 }
@@ -97,7 +97,7 @@ export function createSelectionFromPathArtifact(
   artifacts: (Artifact & { codeRef: CodeRef })[],
   artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelectionsV2 = artifacts.map((artifact) => {
+  const graphSelections = artifacts.map((artifact) => {
     let id: string | undefined
     for (const [k, a] of artifactGraph) {
       if (a === artifact) {
@@ -112,7 +112,7 @@ export function createSelectionFromPathArtifact(
     }
   })
   return {
-    graphSelectionsV2,
+    graphSelections,
     otherSelections: [],
   }
 }

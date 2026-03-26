@@ -1566,9 +1566,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           context.argumentsToSubmit as ModelingCommandSchema['Fillet']
         ).selection
         const other = submitted?.otherSelections
-        const g0 = submitted?.graphSelectionsV2?.[0]
+        const g0 = submitted?.graphSelections?.[0]
         console.info('[fillet review debug]', {
-          submittedGraph: submitted?.graphSelectionsV2?.length ?? 0,
+          submittedGraph: submitted?.graphSelections?.length ?? 0,
           engineTopologyFallback: g0?.engineTopologyFallback,
           submittedOther: other?.length ?? 0,
           submittedOtherKinds: other?.map((s) => {
@@ -1584,7 +1584,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             }
             return { kind: 'unknown' as const }
           }),
-          liveGraph: live?.graphSelectionsV2?.length ?? 0,
+          liveGraph: live?.graphSelections?.length ?? 0,
           liveOther: live?.otherSelections?.length ?? 0,
         })
       }
@@ -1597,13 +1597,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         liveSel
       )
       const sel = selectionForFillet ?? filletArgs.selection
-      const g0 = sel?.graphSelectionsV2?.[0]
+      const g0 = sel?.graphSelections?.[0]
       if (
         typeof localStorage !== 'undefined' &&
         localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'
       ) {
         console.info('[fillet review debug post-merge]', {
-          graphSelectionsV2: sel?.graphSelectionsV2?.map((g, i) => ({
+          graphSelections: sel?.graphSelections?.map((g, i) => ({
             i,
             entityRefType: g.entityRef?.type,
             hasCodeRefPath: Boolean(g.codeRef?.pathToNode),
@@ -1624,7 +1624,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       console.info(
         '[Fillet reviewValidation] about to call addFillet codemod',
         {
-          graphSelectionsV2: sel?.graphSelectionsV2?.length ?? 0,
+          graphSelections: sel?.graphSelections?.length ?? 0,
           otherSelections: sel?.otherSelections?.length ?? 0,
           topologyNormalized: g0
             ? getEngineTopologyFallbackNormalized(g0)

@@ -37,7 +37,7 @@ export function useConvertToVariable(
     const meta = isNodeSafeToReplace(
       parsed,
       range ??
-        context.selectionRanges.graphSelectionsV2?.[0]?.codeRef?.range ??
+        context.selectionRanges.graphSelections?.[0]?.codeRef?.range ??
         defaultRange,
       wasmInstance
     )
@@ -46,7 +46,7 @@ export function useConvertToVariable(
     const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Name'
     const isOnlyOneSelection =
-      !!range || context.selectionRanges.graphSelectionsV2.length === 1
+      !!range || context.selectionRanges.graphSelections.length === 1
 
     setEnabled(canReplace && isOnlyOneSelection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -62,7 +62,7 @@ export function useConvertToVariable(
       })
 
       const selRange =
-        context.selectionRanges.graphSelectionsV2[0]?.codeRef?.range
+        context.selectionRanges.graphSelections[0]?.codeRef?.range
       const rangeToUse: SourceRange = range ?? selRange ?? [0, 0, 0]
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =
         moveValueIntoNewVariable(

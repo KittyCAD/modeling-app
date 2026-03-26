@@ -1413,7 +1413,7 @@ describe('getSelectionTypeDisplayText', () => {
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         { entityRef: { type: 'face', face_id: 'wall-1' }, codeRef },
         { entityRef: { type: 'face', face_id: 'cap-1' }, codeRef },
         { entityRef: { type: 'face', face_id: 'primitive-face-1' }, codeRef },
@@ -1434,7 +1434,7 @@ describe('getSelectionTypeDisplayText', () => {
   test('coalesces profile-like selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         { entityRef: { type: 'solid2d', solid2d_id: 'solid2d-1' }, codeRef },
       ],
       otherSelections: [
@@ -1453,7 +1453,7 @@ describe('getSelectionTypeDisplayText', () => {
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' },
           codeRef,

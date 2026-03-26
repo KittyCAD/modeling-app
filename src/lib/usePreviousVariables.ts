@@ -18,7 +18,7 @@ export function usePreviousVariables({
 }) {
   const { context } = useModelingContext()
   const selectionFromContext =
-    context.selectionRanges.graphSelectionsV2[0]?.codeRef?.range
+    context.selectionRanges.graphSelections[0]?.codeRef?.range
   const selectionRange = useMemo(
     (): [number, number, number] =>
       selectionFromContext

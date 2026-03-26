@@ -438,7 +438,7 @@ function PromptToEditPrompt() {
         name: 'Prompt-to-edit',
         argDefaultValues: {
           selection: {
-            graphSelectionsV2: [],
+            graphSelections: [],
             otherSelections: [],
           } satisfies Selections,
           prompt,

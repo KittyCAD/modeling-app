@@ -57,7 +57,7 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
         (n) => n.type === 'path'
       )
       const surface: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,

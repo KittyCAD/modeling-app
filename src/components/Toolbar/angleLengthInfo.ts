@@ -24,7 +24,7 @@ export function angleLengthInfo({
       enabled: boolean
     }
   | Error {
-  const nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) =>
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
     getNodeFromPath<Expr>(
       kclManager.ast,
       codeRef?.pathToNode ?? [],
@@ -50,7 +50,7 @@ export function angleLengthInfo({
     wasmInstance
   )
   const enabled =
-    selectionRanges.graphSelectionsV2.length <= 1 &&
+    selectionRanges.graphSelections.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }

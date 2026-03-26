@@ -51,7 +51,6 @@ import type {
   EdgeRefFromOpArgs,
   EntityReference,
   Selection,
-  SelectionV2,
   Selections,
   EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
@@ -1537,7 +1536,7 @@ export function refactorDirectTagFilletToEdgeRefs(
 
 /**
  * Groups edge selections by body and creates edgeRefs expressions.
- * Uses graphSelectionsV2 if available, otherwise converts graphSelections to EntityReferences.
+ * Uses graphSelections if available, otherwise converts graphSelections to EntityReferences.
  */
 function groupSelectionsByBodyAndCreateEdgeRefs(
   selections: Selections,
@@ -1569,7 +1568,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     }
   >()
 
-  const v2Selections = selections.graphSelectionsV2 || []
+  const v2Selections = selections.graphSelections || []
   const hasV2Selections = v2Selections.length > 0
 
   if (hasV2Selections) {
@@ -1687,7 +1686,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
       // Build solids expression
       const solids: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef('sweep', bodyData.sweepArtifact.id),
             codeRef: bodyData.sweepArtifact.codeRef,
@@ -1728,9 +1727,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       // Check if we have V2 selections for this body
       const v2ForBody = v2Selections.filter((sel) => {
         if (!sel.entityRef || sel.entityRef.type !== 'edge') return false
-        return bodySelections.graphSelectionsV2.some(
-          (bs: SelectionV2) =>
-            bs.codeRef?.pathToNode === sel.codeRef?.pathToNode
+        return bodySelections.graphSelections.some(
+          (bs: Selection) => bs.codeRef?.pathToNode === sel.codeRef?.pathToNode
         )
       })
 
@@ -1755,7 +1753,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         }
       } else {
         // Resolve V2 selections and convert to EntityReferences
-        for (const v2Sel of bodySelections.graphSelectionsV2) {
+        for (const v2Sel of bodySelections.graphSelections) {
           const resolved = resolveSelectionV2(v2Sel, artifactGraph)
           if (!resolved?.artifact) continue
           const entityRef = edgeSelectionToEntityReference(
@@ -1787,14 +1785,14 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       }
 
       // Build solids expression (same as in groupSelectionsByBodyAndAddTags)
-      const firstResolved = bodySelections.graphSelectionsV2[0]
-        ? resolveSelectionV2(bodySelections.graphSelectionsV2[0], artifactGraph)
+      const firstResolved = bodySelections.graphSelections[0]
+        ? resolveSelectionV2(bodySelections.graphSelections[0], artifactGraph)
         : null
       if (!firstResolved) continue
       const sweep = getSweepArtifactFromSelection(firstResolved, artifactGraph)
       if (err(sweep)) continue
       const solids: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef('sweep', sweep.id),
             codeRef: sweep.codeRef,
@@ -2234,7 +2232,7 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [
-    ...edges.graphSelectionsV2,
+    ...edges.graphSelections,
     ...edges.otherSelections.filter(
       (selection): selection is EnginePrimitiveSelection =>
         isEnginePrimitiveSelection(selection) &&
@@ -2297,7 +2295,7 @@ function buildEdgeExpr(
     }
   }
 
-  const graphEdgeSelection = edgeSelection as SelectionV2
+  const graphEdgeSelection = edgeSelection as Selection
   const resolved = resolveSelectionV2(graphEdgeSelection, artifactGraph)
   const edgeArtifact = resolved?.artifact
   if (
@@ -2340,7 +2338,7 @@ function buildEdgeExpr(
 
   const sourceSurfaceVars = getVariableExprsFromSelection(
     {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef('sweep', sourceSurfaceArtifact.id),
           codeRef: sourceSurfaceArtifact.codeRef,
@@ -2451,7 +2449,7 @@ function groupSelectionsByBodyAndAddTags(
 
       if (!selectionsByBody.has(bodyKey)) {
         selectionsByBody.set(bodyKey, {
-          graphSelectionsV2: [],
+          graphSelections: [],
           otherSelections: [],
         })
       }
@@ -2460,7 +2458,7 @@ function groupSelectionsByBodyAndAddTags(
     // Same SelectionV2 row as graph edge; topology_fallback supplies primitive index when tags fail.
     // Shell inner edges often lack wall/cap in the artifact graph — resolveSelectionV2 may fail; use
     // engineTopologyFallback.parentId to find the sweep body and edgeId(solid, primitiveIndex).
-    for (const v2Sel of selections.graphSelectionsV2) {
+    for (const v2Sel of selections.graphSelections) {
       const topo = getEngineTopologyFallbackNormalized(v2Sel)
       if (!topo) continue
       const debugFillet = debugFilletTopologyLogs()
@@ -2561,7 +2559,7 @@ function groupSelectionsByBodyAndAddTags(
       }
       if (!selectionsByBody.has(bodyKey)) {
         selectionsByBody.set(bodyKey, {
-          graphSelectionsV2: [],
+          graphSelections: [],
           otherSelections: [],
         })
       }
@@ -2606,9 +2604,9 @@ function groupSelectionsByBodyAndAddTags(
     modifiedAst = taggedAst
 
     let bodySelectionForSolids: Selection | undefined
-    if (bodySelections.graphSelectionsV2.length > 0) {
+    if (bodySelections.graphSelections.length > 0) {
       const firstResolved = resolveSelectionV2(
-        bodySelections.graphSelectionsV2[0],
+        bodySelections.graphSelections[0],
         artifactGraph
       )
       if (firstResolved) {
@@ -2629,8 +2627,8 @@ function groupSelectionsByBodyAndAddTags(
     }
 
     // Build solids expression: use V2 selection or, when only engine primitive edges, body from primitive
-    const firstResolved = bodySelections.graphSelectionsV2[0]
-      ? resolveSelectionV2(bodySelections.graphSelectionsV2[0], artifactGraph)
+    const firstResolved = bodySelections.graphSelections[0]
+      ? resolveSelectionV2(bodySelections.graphSelections[0], artifactGraph)
       : null
     let sweepResult: ReturnType<typeof getSweepArtifactFromSelection>
     if (firstResolved) {
@@ -2676,7 +2674,7 @@ function groupSelectionsByBodyAndAddTags(
     if (err(sweepResult)) continue
     const sweep = sweepResult
     const solids: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef('sweep', sweep.id),
           codeRef: sweep.codeRef,
@@ -2776,9 +2774,9 @@ function groupSelectionsByBody(
   selections: Selections,
   artifactGraph: ArtifactGraph
 ): Map<string, Selections> | Error {
-  const bodyToV2Selections = new Map<string, SelectionV2[]>()
+  const bodyToV2Selections = new Map<string, Selection[]>()
 
-  for (const v2Sel of selections.graphSelectionsV2) {
+  for (const v2Sel of selections.graphSelections) {
     const resolved = resolveSelectionV2(v2Sel, artifactGraph)
     const topologyNormalized = getEngineTopologyFallbackNormalized(v2Sel)
     const debugFillet = debugFilletTopologyLogs()
@@ -2836,7 +2834,7 @@ function groupSelectionsByBody(
   const result = new Map<string, Selections>()
   for (const [bodyKey, v2Sels] of bodyToV2Selections.entries()) {
     result.set(bodyKey, {
-      graphSelectionsV2: v2Sels,
+      graphSelections: v2Sels,
       otherSelections: [],
     })
   }
@@ -2853,7 +2851,7 @@ export function buildSolidsAndTagsExprs(
   solidsCount = 1
 ) {
   const solids: Selections = {
-    graphSelectionsV2: faces.graphSelectionsV2.flatMap((f: SelectionV2) => {
+    graphSelections: faces.graphSelections.flatMap((f: Selection) => {
       const resolved = resolveSelectionV2(f, artifactGraph)
       if (!resolved?.artifact) return []
       const sweep = getSweepArtifactFromSelection(resolved, artifactGraph)
@@ -2914,7 +2912,7 @@ function getTagsExprsFromSelection(
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
-  for (const v2Sel of edges.graphSelectionsV2) {
+  for (const v2Sel of edges.graphSelections) {
     const resolved = resolveSelectionV2(v2Sel, artifactGraph)
     if (!resolved) continue
     const result = modifyAstWithTagsForSelection(
@@ -2954,7 +2952,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     typeof tagsArg.value !== 'object' ||
     !('type' in tagsArg.value)
   ) {
-    return { graphSelectionsV2: [], otherSelections: [] }
+    return { graphSelections: [], otherSelections: [] }
   }
   const tagValues: OpKclValue[] = []
   if (tagsArg.value.type === 'Array') {
@@ -2963,7 +2961,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     tagValues.push(tagsArg.value)
   }
 
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
   for (const v of tagValues) {
     if (v == null || typeof v !== 'object' || !('type' in v)) {
       console.warn(
@@ -3005,10 +3003,10 @@ export function retrieveEdgeSelectionsFromOpArgs(
         : undefined
     const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
     if (!entityRef) continue
-    graphSelectionsV2.push({ entityRef, codeRef: codeRefs[0] })
+    graphSelections.push({ entityRef, codeRef: codeRefs[0] })
   }
 
-  return { graphSelectionsV2, otherSelections: [] }
+  return { graphSelections, otherSelections: [] }
 }
 
 /**
@@ -3069,7 +3067,7 @@ function findEdgeArtifactFromFaceIds(
  * Retrieves edge selections from edgeRefs argument (new API).
  * Used for edit flows when reading existing fillet calls with edgeRefs.
  * Parses edgeRefs array of objects with "sideFaces" array (UUID or TagIdentifier refs)
- * and resolves each to graphSelectionsV2 for the command bar edit flow.
+ * and resolves each to graphSelections for the command bar edit flow.
  */
 export function retrieveEdgeSelectionsFromEdgeRefs(
   edgeRefsArg: OpArg,
@@ -3079,7 +3077,7 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
     return new Error('edgeRefs argument is not an array')
   }
   const edgeRefItems = edgeRefsArg.value.value
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
 
   for (const item of edgeRefItems) {
     if (item.type !== 'Object' || !item.value) continue
@@ -3100,10 +3098,10 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
     const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
     if (!codeRefs?.length) continue
     const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
-    graphSelectionsV2.push({ entityRef, codeRef: codeRefs[0] })
+    graphSelections.push({ entityRef, codeRef: codeRefs[0] })
   }
 
-  return { graphSelectionsV2, otherSelections: [] }
+  return { graphSelections, otherSelections: [] }
 }
 
 /**
@@ -3143,7 +3141,7 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   }
   const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
   return {
-    graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
+    graphSelections: [{ entityRef, codeRef: codeRefs[0] }],
     otherSelections: [],
   }
 }
@@ -3326,7 +3324,7 @@ function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       if (!entityRef) continue
       const vars = getVariableExprsFromSelection(
         {
-          graphSelectionsV2: [
+          graphSelections: [
             { entityRef, codeRef: primitiveData.bodySelection.codeRef },
           ],
           otherSelections: [],

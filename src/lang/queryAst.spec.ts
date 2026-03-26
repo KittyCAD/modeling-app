@@ -888,7 +888,7 @@ describe('Testing getSelectedPlaneId', () => {
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelectionsV2: [],
+      graphSelections: [],
     }
 
     const result = getSelectedPlaneId(selections)
@@ -905,7 +905,7 @@ describe('Testing getSelectedPlaneId', () => {
     }
     const selections: Selections = {
       otherSelections: [],
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: { type: 'plane', plane_id: 'offset-plane-id' },
           codeRef,
@@ -939,7 +939,7 @@ describe('Testing getSelectedPlaneId', () => {
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: { type: 'plane', plane_id: mockPlaneArtifact.id },
           codeRef: mockPlaneArtifact.codeRef,
@@ -954,7 +954,7 @@ describe('Testing getSelectedPlaneId', () => {
   it('should return null when no plane is selected', () => {
     const selections: Selections = {
       otherSelections: ['x-axis'],
-      graphSelectionsV2: [
+      graphSelections: [
         {
           codeRef: {
             range: [0, 10, 0] as [number, number, number],
@@ -974,7 +974,7 @@ describe('Testing getSelectedPlaneId', () => {
   it('should return null when selection is empty', () => {
     const selections: Selections = {
       otherSelections: [],
-      graphSelectionsV2: [],
+      graphSelections: [],
     }
 
     const result = getSelectedPlaneId(selections)
@@ -1004,7 +1004,7 @@ plane001 = offsetPlane(YZ, offset = 10)
           id: 'default-plane-xy-id',
         },
       ],
-      graphSelectionsV2: [],
+      graphSelections: [],
     }
 
     const result = getSelectedPlaneAsNode(
@@ -1038,7 +1038,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
@@ -1078,7 +1078,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
@@ -1114,7 +1114,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
@@ -1160,7 +1160,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: artifacts.map((a) => ({
+      graphSelections: artifacts.map((a) => ({
         entityRef: artifactToEntityRef(a.type, a.id),
         codeRef: a.codeRef,
       })),
@@ -1205,7 +1205,7 @@ profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: artifacts.map((a) => ({
+      graphSelections: artifacts.map((a) => ({
         entityRef: artifactToEntityRef(a.type, a.id),
         codeRef: a.codeRef,
       })),
@@ -1255,7 +1255,7 @@ extrude001 = extrude(profile001, length = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
@@ -1310,8 +1310,8 @@ extrude001 = extrude(profile001, length = 1)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelectionsV2).toHaveLength(1)
-    const selection = selections.graphSelectionsV2[0]
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
     const resolved = resolveSelectionV2(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
@@ -1342,8 +1342,8 @@ extrude002 = extrude(capEnd001, length = 5)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelectionsV2).toHaveLength(1)
-    const selection = selections.graphSelectionsV2[0]
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
     const resolved = resolveSelectionV2(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
@@ -1374,22 +1374,22 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelectionsV2).toHaveLength(2)
+    expect(selections.graphSelections).toHaveLength(2)
     if (
-      !resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
+      !resolveSelectionV2(selections.graphSelections[0], artifactGraph)
         ?.artifact ||
-      !resolveSelectionV2(selections.graphSelectionsV2[1], artifactGraph)
+      !resolveSelectionV2(selections.graphSelections[1], artifactGraph)
         ?.artifact
     ) {
       throw new Error('Artifact not found in the selection')
     }
     expect(
-      resolveSelectionV2(selections.graphSelectionsV2[0], artifactGraph)
-        ?.artifact?.type
+      resolveSelectionV2(selections.graphSelections[0], artifactGraph)?.artifact
+        ?.type
     ).toEqual('path')
     expect(
-      resolveSelectionV2(selections.graphSelectionsV2[1], artifactGraph)
-        ?.artifact?.type
+      resolveSelectionV2(selections.graphSelections[1], artifactGraph)?.artifact
+        ?.type
     ).toEqual('path')
   })
 
@@ -1419,8 +1419,8 @@ appearance(extrude001, color = '#FF0000')`
       artifactGraph
     )
     if (err(selections)) throw selections
-    expect(selections.graphSelectionsV2).toHaveLength(1)
-    const selection = selections.graphSelectionsV2[0]
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
     const resolved = resolveSelectionV2(selection, artifactGraph)
     if (!resolved?.artifact) {
       throw new Error('Artifact not found in the selection')
@@ -1455,9 +1455,9 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
     )
     if (err(selections)) throw selections
 
-    expect(selections.graphSelectionsV2).toHaveLength(1)
+    expect(selections.graphSelections).toHaveLength(1)
     const resolved = resolveSelectionV2(
-      selections.graphSelectionsV2[0],
+      selections.graphSelections[0],
       artifactGraph
     )
     expect(resolved?.artifact?.type).toBe('wall')

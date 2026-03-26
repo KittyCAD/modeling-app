@@ -84,7 +84,6 @@ import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type {
   EngineTopologyFallback,
   Selection,
-  SelectionV2,
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import { artifactToEntityRef, resolveSelectionV2 } from '@src/lang/queryAst'
@@ -408,7 +407,7 @@ export function engineTopologyFallbackFromReference(
 }
 
 /** Normalize topology_fallback whether it came from TS (camelCase) or engine JSON (snake_case). */
-export function getEngineTopologyFallbackNormalized(v2: SelectionV2): {
+export function getEngineTopologyFallbackNormalized(v2: Selection): {
   parentId: string
   primitiveIndex: number
 } | null {
@@ -462,19 +461,17 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
 ): Selections | undefined {
   if (!submitted) return submitted
 
-  let graphSelectionsV2 = submitted.graphSelectionsV2
+  let graphSelections = submitted.graphSelections
   let otherSelections = submitted.otherSelections ?? []
   let changed = false
 
-  if (submitted.graphSelectionsV2?.length && live?.graphSelectionsV2?.length) {
-    const mergedGraph = submitted.graphSelectionsV2.map((g, i) => {
+  if (submitted.graphSelections?.length && live?.graphSelections?.length) {
+    const mergedGraph = submitted.graphSelections.map((g, i) => {
       if (getEngineTopologyFallbackNormalized(g)) {
         return g
       }
 
-      const fromLiveSel = (
-        liveG: SelectionV2 | undefined
-      ): SelectionV2 | null => {
+      const fromLiveSel = (liveG: Selection | undefined): Selection | null => {
         if (!liveG) return null
         const n = getEngineTopologyFallbackNormalized(liveG)
         if (!n) return null
@@ -487,11 +484,11 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
         }
       }
 
-      const byIndex = fromLiveSel(live.graphSelectionsV2[i])
+      const byIndex = fromLiveSel(live.graphSelections[i])
       if (byIndex) return byIndex
 
       if (g.entityRef) {
-        for (const candidate of live.graphSelectionsV2) {
+        for (const candidate of live.graphSelections) {
           if (
             !entityReferencesEqualForMerge(g.entityRef, candidate.entityRef)
           ) {
@@ -505,10 +502,10 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
       return g
     })
     const graphChanged =
-      mergedGraph.some((g, idx) => g !== submitted.graphSelectionsV2?.[idx]) ||
-      mergedGraph.length !== submitted.graphSelectionsV2.length
+      mergedGraph.some((g, idx) => g !== submitted.graphSelections?.[idx]) ||
+      mergedGraph.length !== submitted.graphSelections.length
     if (graphChanged) {
-      graphSelectionsV2 = mergedGraph
+      graphSelections = mergedGraph
       changed = true
     }
   }
@@ -538,7 +535,7 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
 
   return {
     ...submitted,
-    graphSelectionsV2: graphSelectionsV2 ?? submitted.graphSelectionsV2,
+    graphSelections: graphSelections ?? submitted.graphSelections,
     otherSelections,
   }
 }
@@ -803,7 +800,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Prefer engine primitive index for solid edge picks when the API supports it.
   // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
   // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
-  const selection: SelectionV2 = {
+  const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
     ...(engineTopologyFallbackResolved
@@ -945,14 +942,14 @@ export function handleSelectionBatch({
 
   let engineEvents: WebSocketRequest[] = []
 
-  const entityReferences: EntityReference[] = selections.graphSelectionsV2
+  const entityReferences: EntityReference[] = selections.graphSelections
     .map((v2Sel) => v2Sel.entityRef)
     .filter((ref): ref is EntityReference => ref !== undefined)
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
   } else {
-    for (const s of selections.graphSelectionsV2) {
+    for (const s of selections.graphSelections) {
       const codeRef = s.codeRef
       if (!codeRef) continue
       const entityId =
@@ -989,14 +986,14 @@ export function handleSelectionBatch({
     )
   }
 
-  selections.graphSelectionsV2.forEach(({ codeRef }) => {
+  selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef?.range?.[1]) {
       const safeEnd = Math.min(codeRef.range[1], code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
 
-  const totalSelections = selections.graphSelectionsV2.length
+  const totalSelections = selections.graphSelections.length
   if (ranges.length)
     return {
       engineEvents,
@@ -1005,7 +1002,7 @@ export function handleSelectionBatch({
         totalSelections > 0 ? totalSelections - 1 : 0
       ),
       updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.graphSelectionsV2, ast, systemDeps),
+        updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
 
   return {
@@ -1015,7 +1012,7 @@ export function handleSelectionBatch({
     ),
     engineEvents,
     updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.graphSelectionsV2, ast, systemDeps),
+      updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
   }
 }
 
@@ -1049,11 +1046,11 @@ export function processCodeMirrorRanges({
   engineEvents: WebSocketRequest[]
 } {
   const isChange =
-    codeMirrorRanges.length !== selectionRanges?.graphSelectionsV2?.length ||
+    codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
       return (
-        from !== selectionRanges.graphSelectionsV2[i]?.codeRef?.range[0] ||
-        to !== selectionRanges.graphSelectionsV2[i]?.codeRef?.range[1]
+        from !== selectionRanges.graphSelections[i]?.codeRef?.range[0] ||
+        to !== selectionRanges.graphSelections[i]?.codeRef?.range[1]
       )
     })
 
@@ -1076,7 +1073,7 @@ export function processCodeMirrorRanges({
     artifactGraph,
     artifactIndex
   )
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     const pathToNode = getNodePathFromSourceRange(ast, range)
     const codeRef = { range, pathToNode }
@@ -1089,14 +1086,14 @@ export function processCodeMirrorRanges({
         console.warn('Could not find valid pathToNode, found:', pathToNode)
         continue
       }
-      graphSelectionsV2.push({ codeRef })
+      graphSelections.push({ codeRef })
       continue
     }
     const artifact = artifactGraph.get(id)
     const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
     const resolvedCodeRef = codeRefs?.[0] ?? codeRef
     if (artifact) {
-      graphSelectionsV2.push({
+      graphSelections.push({
         entityRef: artifactToEntityRef(
           artifact.type,
           id,
@@ -1107,7 +1104,7 @@ export function processCodeMirrorRanges({
         codeRef: resolvedCodeRef,
       })
     } else {
-      graphSelectionsV2.push({ codeRef: resolvedCodeRef })
+      graphSelections.push({ codeRef: resolvedCodeRef })
     }
   }
 
@@ -1120,7 +1117,7 @@ export function processCodeMirrorRanges({
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
           otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
-          graphSelectionsV2,
+          graphSelections,
         },
       },
     },
@@ -1276,10 +1273,10 @@ export function getSelectionCountByType(
   artifactGraph?: ArtifactGraph
 ): SelectionCountsByType | 'none' {
   const selectionsByType: SelectionCountsByType = new Map()
-  const graphSelectionsV2 = selection?.graphSelectionsV2 ?? []
+  const graphSelections = selection?.graphSelections ?? []
   const otherSelections = selection?.otherSelections ?? []
 
-  if (!selection || (!graphSelectionsV2.length && !otherSelections.length))
+  if (!selection || (!graphSelections.length && !otherSelections.length))
     return 'none'
 
   function incrementOrInitializeSelectionType(type: ResolvedSelectionType) {
@@ -1303,7 +1300,7 @@ export function getSelectionCountByType(
     }
   })
 
-  graphSelectionsV2.forEach((v2Selection) => {
+  graphSelections.forEach((v2Selection) => {
     if (v2Selection.entityRef) {
       // solid2d_edge first: may be helix (count as path) or segment curve (count as segment)
       if (v2Selection.entityRef.type === 'solid2d_edge') {
@@ -1753,8 +1750,8 @@ export function updateSelections(
   if (err(ast)) return ast
 
   const newSelections = Object.entries(pathToNodeMap)
-    .map(([index, pathToNode]): SelectionV2 | undefined => {
-      const previousV2 = prevSelectionRanges.graphSelectionsV2[Number(index)]
+    .map(([index, pathToNode]): Selection | undefined => {
+      const previousV2 = prevSelectionRanges.graphSelections[Number(index)]
       const previousResolved =
         previousV2 != null
           ? resolveSelectionV2(previousV2, artifactGraph)
@@ -1790,9 +1787,9 @@ export function updateSelections(
       const entityRef = artifactToEntityRef(artifact.type, artifactId, pathId)
       return { entityRef, codeRef }
     })
-    .filter((x?: SelectionV2) => x !== undefined)
+    .filter((x?: Selection) => x !== undefined)
 
-  const pathToNodeBasedSelections: SelectionV2[] = []
+  const pathToNodeBasedSelections: Selection[] = []
   for (const pathToNode of Object.values(pathToNodeMap)) {
     const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
@@ -1805,7 +1802,7 @@ export function updateSelections(
   }
 
   return {
-    graphSelectionsV2:
+    graphSelections:
       newSelections.length >= pathToNodeBasedSelections.length
         ? newSelections
         : pathToNodeBasedSelections,
@@ -2211,7 +2208,7 @@ export function selectAllInCurrentSketch(
   artifactGraph: ArtifactGraph,
   sceneEntitiesManager: SceneEntities
 ): Selections {
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
 
   Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNodeStr) => {
     for (const [artifactId, artifact] of artifactGraph) {
@@ -2219,7 +2216,7 @@ export function selectAllInCurrentSketch(
       const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
       if (!codeRefs?.length) continue
       if (JSON.stringify(codeRefs[0].pathToNode) !== pathToNodeStr) continue
-      graphSelectionsV2.push({
+      graphSelections.push({
         entityRef: artifactToEntityRef(
           artifact.type,
           artifactId,
@@ -2234,7 +2231,7 @@ export function selectAllInCurrentSketch(
   })
 
   return {
-    graphSelectionsV2,
+    graphSelections,
     otherSelections: [],
   }
 }

@@ -254,7 +254,7 @@ export function addSplit({
 
   const hasTools = Boolean(
     tools &&
-      ((tools.graphSelectionsV2?.length ?? 0) > 0 ||
+      ((tools.graphSelections?.length ?? 0) > 0 ||
         (tools.otherSelections?.length ?? 0) > 0)
   )
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []

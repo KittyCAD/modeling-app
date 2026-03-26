@@ -67,7 +67,6 @@ import type {
   EntityReference,
   Selection,
   Selections,
-  SelectionV2,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -685,8 +684,8 @@ export function artifactIsPlaneWithPaths(
   selectionRanges: Selections,
   artifactGraph: ArtifactGraph
 ) {
-  if (selectionRanges.graphSelectionsV2.length === 0) return false
-  const first = selectionRanges.graphSelectionsV2[0]
+  if (selectionRanges.graphSelections.length === 0) return false
+  const first = selectionRanges.graphSelections[0]
   const resolved = resolveSelectionV2(first, artifactGraph)
   if (!resolved?.artifact) return false
   const artifact = resolved.artifact
@@ -701,8 +700,8 @@ export function isSingleCursorInPipe(
   selectionRanges: Selections,
   ast: Program
 ) {
-  if (selectionRanges.graphSelectionsV2.length !== 1) return false
-  const selection = selectionRanges.graphSelectionsV2[0]
+  if (selectionRanges.graphSelections.length !== 1) return false
+  const selection = selectionRanges.graphSelections[0]
   const codeRef = selection?.codeRef
   const range = codeRef?.range ?? [0, 0, 0]
   const pathToNode = getNodePathFromSourceRange(ast, range)
@@ -957,7 +956,7 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
 
 export function isCursorInFunctionDefinition(
   ast: Node<Program>,
-  selectionRanges: SelectionV2,
+  selectionRanges: Selection,
   wasmInstance: ModuleType
 ): boolean {
   if (ast.body.length === 0) return false
@@ -1169,7 +1168,7 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
 }
 
 /** Compare two SelectionV2s (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
-export function selectionV2Equals(a: SelectionV2, b: SelectionV2): boolean {
+export function selectionV2Equals(a: Selection, b: Selection): boolean {
   if (a.entityRef && b.entityRef)
     return entityRefEquals(a.entityRef, b.entityRef)
   const aRange = a.codeRef?.range
@@ -1180,7 +1179,7 @@ export function selectionV2Equals(a: SelectionV2, b: SelectionV2): boolean {
 
 /** Resolve SelectionV2 to codeRef and optional artifact for use in getVariableExprsFromSelection */
 export function resolveSelectionV2(
-  s: SelectionV2,
+  s: Selection,
   artifactGraph: ArtifactGraph | undefined
 ): { codeRef: CodeRef; artifact?: Artifact } | null {
   const codeRef =
@@ -1281,7 +1280,7 @@ export function getVariableExprsFromSelection(
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
-  for (const s of selection.graphSelectionsV2) {
+  for (const s of selection.graphSelections) {
     const resolved = resolveSelectionV2(s, artifactGraph)
     if (!resolved) continue
     const { codeRef, artifact } = resolved
@@ -1454,7 +1453,7 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
     let artifact = artifactGraph.get(artifactId)
     if (!artifact) {
@@ -1499,15 +1498,15 @@ export function retrieveSelectionsFromOpArg(
       resolvedArtifactId,
       pathId
     )
-    graphSelectionsV2.push({ entityRef, codeRef })
+    graphSelections.push({ entityRef, codeRef })
   }
 
-  if (graphSelectionsV2.length === 0) {
+  if (graphSelections.length === 0) {
     return error
   }
 
   return {
-    graphSelectionsV2,
+    graphSelections: graphSelections,
     otherSelections: [],
   }
 }
@@ -1676,7 +1675,7 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
     return defaultPlane.id
   }
 
-  const planeSelection = selectionRanges.graphSelectionsV2.find(
+  const planeSelection = selectionRanges.graphSelections.find(
     (s) => s.entityRef?.type === 'plane'
   )
   if (planeSelection?.entityRef?.type === 'plane') {
@@ -1698,7 +1697,7 @@ export function getSelectedSketchTarget(
   }
 
   // Try to find an offset plane or face (wall/cap); entityRef has plane_id or face_id
-  const planeSelection = selectionRanges.graphSelectionsV2.find((s) => {
+  const planeSelection = selectionRanges.graphSelections.find((s) => {
     const t = s.entityRef?.type
     return t === 'plane' || t === 'face'
   })
@@ -1728,7 +1727,7 @@ export function getSelectedPlaneAsNode(
     return createLiteral(defaultPlane.name.toUpperCase(), wasmInstance)
   }
 
-  const offsetPlane = selection.graphSelectionsV2.find(
+  const offsetPlane = selection.graphSelections.find(
     (s) => s.entityRef?.type === 'plane'
   )
   if (offsetPlane?.entityRef?.type === 'plane') {

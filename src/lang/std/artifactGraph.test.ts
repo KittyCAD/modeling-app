@@ -193,7 +193,7 @@ describe('coerceSelectionsToBody', () => {
     // Path is not an EntityReference the engine returns; use codeRef-only selection.
     // Coerce passes through codeRef-only as-is (no artifact to resolve to body).
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           codeRef: { range: [0, 100, 0], pathToNode: [] },
         },
@@ -205,8 +205,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelectionsV2).toHaveLength(1)
-      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([0, 100, 0])
+      expect(result.graphSelections).toHaveLength(1)
+      expect(result.graphSelections[0].codeRef?.range).toEqual([0, 100, 0])
     }
   })
 
@@ -267,7 +267,7 @@ describe('coerceSelectionsToBody', () => {
     // Edge-cut is not an EntityReference the engine returns; use codeRef-only selection.
     // Coerce passes through codeRef-only as-is.
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           codeRef: { range: [90, 95, 0], pathToNode: [] },
         },
@@ -279,12 +279,12 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelectionsV2).toHaveLength(1)
-      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+      expect(result.graphSelections).toHaveLength(1)
+      expect(result.graphSelections[0].entityRef).toEqual({
         type: 'solid3d',
         solid3d_id: 'sweep-1',
       })
-      expect(result.graphSelectionsV2[0].codeRef?.range).toEqual([100, 200, 0])
+      expect(result.graphSelections[0].codeRef?.range).toEqual([100, 200, 0])
     }
   })
 
@@ -323,6 +323,7 @@ describe('coerceSelectionsToBody', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
+      edgeIds: [],
       commonSurfaceIds: [],
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
@@ -332,7 +333,7 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('segment-1', segment)
 
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           codeRef: { range: [10, 20, 0], pathToNode: [] },
         },
@@ -344,8 +345,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelectionsV2).toHaveLength(1)
-      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+      expect(result.graphSelections).toHaveLength(1)
+      expect(result.graphSelections[0].entityRef).toEqual({
         type: 'solid3d',
         solid3d_id: 'sweep-1',
       })
@@ -387,7 +388,7 @@ describe('coerceSelectionsToBody', () => {
 
     // Selection that resolves to sweep (body); should remain as body selection.
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           codeRef: { range: [50, 120, 0], pathToNode: [] },
         },
@@ -399,8 +400,8 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelectionsV2).toHaveLength(1)
-      const entry = result.graphSelectionsV2[0]
+      expect(result.graphSelections).toHaveLength(1)
+      const entry = result.graphSelections[0]
       expect(entry.codeRef?.range).toEqual([50, 120, 0])
       // Resolved body is kept (sweep has entityRef, so it appears as body selection).
       expect(entry).toHaveProperty('codeRef')
@@ -430,7 +431,7 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('sweep-1', sweep)
 
     const selections: Selections = {
-      graphSelectionsV2: [],
+      graphSelections: [],
       otherSelections: [
         {
           type: 'enginePrimitive',
@@ -446,9 +447,9 @@ describe('coerceSelectionsToBody', () => {
 
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
-      expect(result.graphSelectionsV2).toHaveLength(1)
+      expect(result.graphSelections).toHaveLength(1)
       expect(result.otherSelections).toHaveLength(0)
-      expect(result.graphSelectionsV2[0].entityRef).toEqual({
+      expect(result.graphSelections[0].entityRef).toEqual({
         type: 'solid3d',
         solid3d_id: 'sweep-1',
       })

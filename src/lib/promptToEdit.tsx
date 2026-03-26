@@ -104,7 +104,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: SourceRangePrompt[] = selections.graphSelectionsV2.flatMap(
+  const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
     (selV2) => {
       const selection = resolveSelectionV2(selV2, artifactGraph)
       const artifact = selection?.artifact

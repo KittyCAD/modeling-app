@@ -61,7 +61,7 @@ const Toolbar_ = memo(
       if (
         isCursorInFunctionDefinition(
           kclManager.ast,
-          props.context.selectionRanges.graphSelectionsV2[0],
+          props.context.selectionRanges.graphSelections[0],
           wasmInstance
         )
       )

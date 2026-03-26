@@ -1107,7 +1107,7 @@ export function isSketchBlockSelected(
   selectionRanges: Selections,
   artifactGraph: ArtifactGraph
 ): boolean {
-  const first = selectionRanges.graphSelectionsV2[0]
+  const first = selectionRanges.graphSelections[0]
   if (!first) return false
   const resolved = resolveSelectionV2(first, artifactGraph)
   const artifact = resolved?.artifact
