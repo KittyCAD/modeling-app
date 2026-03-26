@@ -114,6 +114,81 @@ export interface AppSubsystems {
   layout: AppLayoutSystem
 }
 
+let rustContextCallId = 0
+
+function createLoggedRustContext(rustContext: RustContext): RustContext {
+  const wrappedMethods = new Map<PropertyKey, unknown>()
+
+  return new Proxy(rustContext, {
+    get(target, prop) {
+      const value = Reflect.get(target, prop, target)
+
+      if (typeof value !== 'function') {
+        return value
+      }
+
+      if (wrappedMethods.has(prop)) {
+        return wrappedMethods.get(prop)
+      }
+
+      const wrapped = (...args: unknown[]) => {
+        const callId = ++rustContextCallId
+        const methodName = String(prop)
+        const start = performance.now()
+
+        console.debug(`[app.rustContext#${callId}] ${methodName} start`)
+
+        try {
+          const result = value.apply(target, args)
+
+          if (result && typeof result.then === 'function') {
+            return result
+              .then((resolvedValue: unknown) => {
+                const durationMs = performance.now() - start
+                console.debug(`[app.rustContext#${callId}] ${methodName} end`, {
+                  durationMs,
+                })
+                return resolvedValue
+              })
+              .catch((error: unknown) => {
+                const durationMs = performance.now() - start
+                console.error(
+                  `[app.rustContext#${callId}] ${methodName} error`,
+                  {
+                    durationMs,
+                    error,
+                  }
+                )
+                // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+                throw error
+              })
+          }
+
+          const durationMs = performance.now() - start
+          console.debug(`[app.rustContext#${callId}] ${methodName} end`, {
+            durationMs,
+          })
+          return result
+        } catch (error) {
+          const durationMs = performance.now() - start
+          console.error(`[app.rustContext#${callId}] ${methodName} error`, {
+            durationMs,
+            error,
+          })
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw error
+        }
+      }
+
+      wrappedMethods.set(prop, wrapped)
+      return wrapped
+    },
+    set(target, prop, value) {
+      return Reflect.set(target, prop, value, target)
+    },
+  })
+}
+
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
   get project() {
@@ -247,10 +322,8 @@ export class App implements AppSubsystems {
     const engineCommandManager = new ConnectionManager({
       settingsActor,
     })
-    const rustContext = new RustContext(
-      wasmPromise,
-      engineCommandManager,
-      settingsActor
+    const rustContext = createLoggedRustContext(
+      new RustContext(wasmPromise, engineCommandManager, settingsActor)
     )
 
     const billingActor = createActor(billingMachine, {
