@@ -113,15 +113,16 @@ async function addAxisDistanceConstraint(
         x: second.kind.segment.position.x,
         y: second.kind.segment.position.y,
       }
-      // Calculate distance: axis === 'horizontal' ? x2 - x1 : y2 - y1 (preserve sign)
-      if (axis === 'horizontal') {
-        const x1 = point1.x.value
-        const x2 = point2.x.value
-        distance = roundOff(x2 - x1)
+      const signedDistance =
+        axis === 'horizontal'
+          ? roundOff(point2.x.value - point1.x.value)
+          : roundOff(point2.y.value - point1.y.value)
+
+      if (signedDistance < 0) {
+        segmentsToConstrain = [segmentsToConstrain[1], segmentsToConstrain[0]]
+        distance = -signedDistance
       } else {
-        const y1 = point1.y.value
-        const y2 = point2.y.value
-        distance = roundOff(y2 - y1)
+        distance = signedDistance
       }
     }
   }
