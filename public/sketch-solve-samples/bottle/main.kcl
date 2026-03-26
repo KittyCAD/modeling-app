@@ -1,0 +1,41 @@
+// Bottle
+// A simple bottle with a hollow, watertight interior
+// Categories: Maker
+
+// Set Units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Input dimensions to define the bottle
+bottleWidth = 80
+bottleLength = 125
+bottleHeight = 220
+neckDepth = 18
+neckDiameter = 45
+wallThickness = 4
+
+// Create a rounded body for the bottle
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -62.5mm, var 0mm], end = [var -62.5mm, var 26.67mm])
+  arc2 = arc(start = [var 62.5mm, var 26.67mm], end = [var -62.5mm, var 26.67mm], center = [var 0mm, var -113.15mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 62.5mm, var 26.67mm], end = [var 62.5mm, var 0mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 62.5mm, var 0mm], end = [var -62.5mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(arc2)
+  vertical(line4)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+bottleBody = extrude(region001, length = bottleHeight - neckDepth)
+
+// Create a neck centered at the top of the bottle
+sketch002 = sketch(on = startSketchOn(bottleBody, face = END)) {
+  circle1 = circle(start = [var 22.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch002.circle1])
+bottleNeck = extrude(region002, length = neckDepth)
+
+// Define a shell operation so that the entire body and neck are hollow, with only the top face opened
+bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
+  |> appearance(color = "#0078c2")
+
