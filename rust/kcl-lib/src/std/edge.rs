@@ -26,7 +26,7 @@ use crate::std::fillet::EdgeReference;
 use crate::std::sketch::FaceTag;
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
-fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
+pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
     let all_infos = tag.get_all_cur_info();
     if all_infos.len() > 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(

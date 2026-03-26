@@ -131,10 +131,13 @@ async fn inner_fillet(
     let edge_ids = tags
         .into_iter()
         .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
-        .collect::<Result<Vec<_>, _>>()?
-        .into_iter()
-        .flatten()
-        .collect::<Vec<_>>();
+        .try_fold(Vec::new(), |mut acc, item| match item {
+            Ok(ids) => {
+                acc.extend(ids);
+                Ok(acc)
+            }
+            Err(e) => Err(e),
+        })?;
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
