@@ -275,6 +275,7 @@ pub struct ExecOutcome {
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
+    /// TODO: Rename this since it's confusing that it contains warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
@@ -299,6 +300,11 @@ impl ExecOutcome {
             let _ = id;
             None
         }
+    }
+
+    /// Returns all fatal and non-fatal errors. Warnings are not included.
+    pub fn actual_errors(&self) -> impl Iterator<Item = &CompilationError> {
+        self.errors.iter().filter(|error| error.is_err())
     }
 }
 
