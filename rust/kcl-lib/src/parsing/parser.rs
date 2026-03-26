@@ -2924,7 +2924,7 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
         .parse_next(i)
 }
 
-fn is_safe_binding_name(name: &str) -> bool {
+fn is_safe_sketch_block_binding_name(name: &str) -> bool {
     !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
 }
 
@@ -2941,7 +2941,7 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
             SourceRange::new(result.start, result.end, result.module_id),
             format!("{desc} cannot be referred to, only declared."),
         ));
-    } else if !is_safe_binding_name(&result.name) {
+    } else if !is_safe_sketch_block_binding_name(&result.name) {
         ParseContext::err(CompilationError::err(
             SourceRange::new(result.start, result.end, result.module_id),
             format!("`{}` is a reserved name and cannot be defined.", &result.name),
@@ -3002,7 +3002,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         match token.token_type {
             TokenType::Word => {
-                if is_safe_binding_name(&token.value) {
+                if is_safe_sketch_block_binding_name(&token.value) {
                     Ok(Node::new(
                         TagDeclarator {
                             // We subtract 1 from the start because the tag starts with a `$`.
