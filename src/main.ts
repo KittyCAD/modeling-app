@@ -340,7 +340,7 @@ app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
 
-  registerFileProtocolCsp()
+  // registerFileProtocolCsp()
 
   // Create the mainWindow
   mainWindow = createWindow()
