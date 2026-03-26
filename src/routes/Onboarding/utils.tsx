@@ -410,7 +410,7 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
       className="group relative flex w-full min-w-[11rem] cursor-pointer hover:cursor-pointer flex-col items-center bg-transparent p-0 text-default outline-none focus-visible:ring-2 focus-visible:ring-primary border-none"
     >
       <div
-        className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
+        className={`w-full border border-chalkboard-50 py-2 text-center text-3xl font-semibold leading-none tracking-tight transition-colors dark:border-chalkboard-80 group-hover:bg-chalkboard-20 dark:group-hover:bg-chalkboard-120 ${hoverToneClasses}`}
       >
         {props.title}
       </div>
