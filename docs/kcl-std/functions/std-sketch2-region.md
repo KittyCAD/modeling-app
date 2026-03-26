@@ -60,7 +60,7 @@ triangle = sketch(on = XY) {
 }
 
 r = region(point = [0.5mm, 0.5mm], sketch = triangle)
-// extrude(r, length = 5)
+extrude(r, length = 5)
 
 ```
 
@@ -96,7 +96,7 @@ trapezoid = sketch(on = XY) {
 }
 
 r = region(point = [1mm, 1mm], sketch = trapezoid)
-// extrude(r, length = 3)
+extrude(r, length = 3)
 
 ```
 
@@ -125,7 +125,7 @@ s = sketch(on = XY) {
 }
 
 r = region(point = s.arc1.center)
-// extrude(r, length = 2)
+extrude(r, length = 2)
 
 ```
 
