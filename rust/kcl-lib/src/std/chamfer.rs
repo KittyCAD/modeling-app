@@ -117,44 +117,42 @@ async fn inner_chamfer(
 
     let mut solid = solid.clone();
     for edge_tag in tags {
-        let edge_id = match edge_tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
-        };
+        let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
+        for edge_id in edge_ids {
+            let id = exec_state.next_uuid();
+            exec_state
+                .batch_end_cmd(
+                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                    ModelingCmd::from(
+                        mcmd::Solid3dCutEdges::builder()
+                            .edge_ids(vec![edge_id])
+                            .extra_face_ids(vec![])
+                            .strategy(strategy)
+                            .object_id(solid.id)
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            .cut_type(cut_type)
+                            .build(),
+                    ),
+                )
+                .await?;
 
-        let id = exec_state.next_uuid();
-        exec_state
-            .batch_end_cmd(
-                ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(
-                    mcmd::Solid3dCutEdges::builder()
-                        .edge_ids(vec![edge_id])
-                        .extra_face_ids(vec![])
-                        .strategy(strategy)
-                        .object_id(solid.id)
-                        .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
-                        .cut_type(cut_type)
-                        .build(),
-                ),
-            )
-            .await?;
+            solid.edge_cuts.push(EdgeCut::Chamfer {
+                id,
+                edge_id,
+                length: length.clone(),
+                tag: Box::new(tag.clone()),
+            });
 
-        solid.edge_cuts.push(EdgeCut::Chamfer {
-            id,
-            edge_id,
-            length: length.clone(),
-            tag: Box::new(tag.clone()),
-        });
-
-        if let Some(ref tag) = tag {
-            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                face_id: id,
-                tag: Some(tag.clone()),
-                geo_meta: GeoMeta {
-                    id,
-                    metadata: args.source_range.into(),
-                },
-            }));
+            if let Some(ref tag) = tag {
+                solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                    face_id: id,
+                    tag: Some(tag.clone()),
+                    geo_meta: GeoMeta {
+                        id,
+                        metadata: args.source_range.into(),
+                    },
+                }));
+            }
         }
     }
 
