@@ -3002,23 +3002,22 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         match token.token_type {
             TokenType::Word => {
-                if is_safe_sketch_block_binding_name(&token.value) {
-                    Ok(Node::new(
-                        TagDeclarator {
-                            // We subtract 1 from the start because the tag starts with a `$`.
-                            name: token.value,
-                            digest: None,
-                        },
-                        token.start - 1,
-                        token.end,
-                        token.module_id,
-                    ))
-                } else {
-                    Err(CompilationError::fatal(
-                        token.as_source_range(),
+                if !is_safe_sketch_block_binding_name(&token.value) {
+                    ParseContext::err(CompilationError::err(
+                        SourceRange::new(token.start - 1, token.end, token.module_id),
                         format!("Cannot use a reserved name for a tag: {}", token.value.as_str()),
-                    ))
+                    ));
                 }
+                Ok(Node::new(
+                    TagDeclarator {
+                        // We subtract 1 from the start because the tag starts with a `$`.
+                        name: token.value,
+                        digest: None,
+                    },
+                    token.start - 1,
+                    token.end,
+                    token.module_id,
+                ))
             }
             TokenType::Number => Err(CompilationError::fatal(
                 token.as_source_range(),
