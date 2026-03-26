@@ -102,8 +102,10 @@ export class DistanceConstraintBuilder {
   }
 }
 
-export function getDistanceEndPoints(obj: DistanceConstraint, objects: ApiObject[]) {
-
+export function getDistanceEndPoints(
+  obj: DistanceConstraint,
+  objects: ApiObject[]
+) {
   const constraint = obj.kind.constraint
   const [p1Id, p2Id] = constraint.points
   const p1Obj = objects[p1Id]
@@ -125,8 +127,7 @@ function getDirections(
   p2: Vector3,
   scale: number
 ) {
-  const constraintType =
-    obj.kind.type === 'Constraint' ? obj.kind.constraint.type : 'Distance'
+  const constraintType = obj.kind.constraint.type
 
   // Perpendicular direction for offset
   let perp: Vector3
@@ -155,12 +156,9 @@ function getDirections(
       SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
     start = new Vector3(offsetX, p1.y, 0)
     end = new Vector3(offsetX, p2.y, 0)
-  } else {
-    if (
-      obj.kind.type === 'Constraint' &&
-      obj.kind.constraint.type === 'Distance' &&
-      obj.kind.constraint.distance.value === 0
-    ) {
+  } else if (constraintType === 'Distance') {
+    if (obj.kind.constraint.distance.value === 0) {
+      // zero length distance
       const isLeft = (p1.x + p2.x) / 2 < 0
       axis = new Vector3(0, 1, 0)
       perp = new Vector3(isLeft ? -1 : 1, 0, 0)
@@ -181,6 +179,9 @@ function getDirections(
       start = p1.clone().add(offset)
       end = p2.clone().add(offset)
     }
+  } else {
+    console.warn('Unhandled constraint type', constraintType)
+    start = end = perp = new Vector3()
   }
 
   return { start, end, perp }
