@@ -1,0 +1,124 @@
+// J3 Robot Arm
+
+// Set Units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+import plane002, axisJ2, axisJ3C, axisJ4, axisJ2ArmLength, axisJ3CArmLength, axisJ3CArmWidth, axisJ3CArmThickness from "globals.kcl"
+
+// Create Body of J3 Robot Arm
+sketch017 = sketch(on = plane002) {
+  arc1 = arc(start = [var -8.53in, var 38.98in], end = [var -9.18in, var 35.28in], center = [var -8.85in, var 37.13in])
+  line2 = line(start = [var -9.18in, var 35.28in], end = [var 10.52in, var 31.81in])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 11.17in, var 35.5in], end = [var 10.52in, var 31.81in], center = [var 10.84in, var 33.66in])
+  coincident([line2.end, arc3.end])
+  line4 = line(start = [var 11.17in, var 35.5in], end = [var -8.53in, var 38.98in])
+  coincident([arc3.start, line4.start])
+}
+region001 = region(segments = [sketch017.arc1, sketch017.line2])
+extrude017 = extrude(region001, length = axisJ3CArmThickness)
+
+sketch018 = sketch(on = startSketchOn(extrude017, face = END)) {
+  circle1 = circle(start = [var -7in, var 37.13in], center = [var -8.85in, var 37.13in])
+}
+
+region002 = region(segments = [sketch018.circle1])
+extrude018 = extrude(region002, length = 0.15)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge6)])
+
+// Draw Bolt Pattern on J3 Robot Arm
+sketch019 = startSketchOn(extrude018, face = END)
+  |> circle(
+       center = [
+         1.75 + (axisJ2ArmLength - 1) * cos(axisJ2),
+         8 + (axisJ2ArmLength - 1.5) * sin(axisJ2)
+       ],
+       radius = 0.2,
+     )
+  |> patternCircular2d(
+       center = [
+         1.75 + axisJ2ArmLength * cos(axisJ2),
+         8 + axisJ2ArmLength * sin(axisJ2)
+       ],
+       instances = 8,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+extrude019 = extrude(sketch019, length = 0.15)
+
+// On the J3 Robot Arm Body, Create Mounting Clevis for Grabber Claw
+sketch020 = sketch(on = startSketchOn(extrude017, face = START)) {
+  circle1 = circle(start = [var -8.97in, var 33.66in], center = [var -10.84in, var 33.66in])
+}
+region003 = region(segments = [sketch020.circle1])
+extrude020 = extrude(region003, length = -0.5, method = NEW)
+
+sketch021 = sketch(on = startSketchOn(extrude017, face = END)) {
+  circle1 = circle(start = [var 12.71in, var 33.66in], center = [var 10.84in, var 33.66in])
+}
+
+region004 = region(segments = [sketch021.circle1])
+extrude021 = extrude(region004, length = -0.5, method = NEW)
+
+// Define Grabber Claw Constants
+grabberLength = 7
+
+sketch022 = sketch(on = startSketchOn(extrude021, face = START)) {
+  circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
+}
+
+region005 = region(segments = [sketch022.circle1])
+extrude022 = extrude(region005, length = -0.01)
+
+// Build Upper Claw Finger
+sketch023 = sketch(on = startSketchOn(extrude022, face = START)) {
+  line1 = line(start = [var 10.84in, var 33.66in], end = [var 12.57in, var 33.35in])
+  arc2 = arc(start = [var 16.55in, var 32.65in], end = [var 12.57in, var 33.35in], center = [var 14.35in, var 31.85in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 16.55in, var 32.65in], end = [var 17.7in, var 32.45in])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 17.7in, var 32.45in], end = [var 16.64in, var 34.15in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 16.64in, var 34.15in], end = [var 14.9in, var 35.15in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 14.9in, var 35.15in], end = [var 12.61in, var 34.74in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 12.61in, var 34.74in], end = [var 10.84in, var 33.66in])
+  coincident([line6.end, line7.start])
+}
+
+region006 = region(segments = [sketch023.line1, sketch023.arc2])
+extrude023 = extrude(region006, length = -1.5, method = NEW)
+
+// Build Lower Claw Finger
+sketch024 = sketch(on = startSketchOn(extrude022, face = START)) {
+  line1 = line(start = [var 10.84in, var 33.66in], end = [var 12.57in, var 33.35in])
+  arc2 = arc(start = [var 12.57in, var 33.35in], end = [var 16.55in, var 32.65in], center = [var 14.76in, var 34.15in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 16.55in, var 32.65in], end = [var 17.7in, var 32.45in])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var 17.7in, var 32.45in], end = [var 16.12in, var 31.22in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 16.12in, var 31.22in], end = [var 14.15in, var 30.87in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 14.15in, var 30.87in], end = [var 12.13in, var 32.04in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 12.13in, var 32.04in], end = [var 10.84in, var 33.66in])
+  coincident([line6.end, line7.start])
+}
+
+region007 = region(segments = [sketch024.line1, sketch024.arc2])
+extrude024 = extrude(region007, length = -1.5, method = NEW)
+appearance(
+  [
+    extrude020,
+    extrude021,
+    extrude023,
+    extrude024
+  ],
+  color = "#6572b3",
+  metalness = 90,
+  roughness = 90,
+)
+
