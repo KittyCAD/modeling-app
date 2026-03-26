@@ -97,9 +97,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    // Primary kwarg is "edges"; accept "edgeRefs" for backward compatibility.
-    let edge_refs: Option<Vec<KclValue>> =
-        args.get_kw_arg_opt_any_key(&["edges", "edgeRefs"], &RuntimeType::any_array(), exec_state)?;
+    let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags_result = args.kw_arg_edge_array_and_source("tags");
 
     let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());

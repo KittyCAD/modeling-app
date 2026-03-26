@@ -178,15 +178,15 @@ export fn helix(
   revolutions: number(_),
   /// Start angle.
   angleStart: number(Angle),
+  /// Axis to use for the helix. Can be an Axis3d, an Edge, or an edge reference object
+  /// (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) when not using a cylinder.
+  @(includeInSnippet = true)
+  axis?: Axis3d | Edge | any,
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
   /// Radius of the helix.
   @(includeInSnippet = true)
   radius?: number(Length),
-  /// Axis to use for the helix. Can be an Axis3d, an Edge, or an edge reference object
-  /// (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) when not using a cylinder.
-  @(includeInSnippet = true)
-  axis?: Axis3d | Edge | any,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
   @(includeInSnippet = true)
   length?: number(Length),
@@ -682,4 +682,3 @@ export fn edgeId(
   /// Query the edge closest to this point. Uses absolute global coordinates.
   closestTo?: Point3d,
 ): Edge {}
-

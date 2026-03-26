@@ -75,8 +75,6 @@ export fn fillet(
   /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
   /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
   edges?: [any],
-  /// Edge references (legacy). Use `edges` instead.
-  edgeRefs?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
@@ -184,8 +182,6 @@ export fn chamfer(
   /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
   /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
   edges?: [any],
-  /// Edge references (legacy). Use `edges` instead.
-  edgeRefs?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
   /// the first and second face are both given by `length`.

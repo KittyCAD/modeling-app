@@ -8,16 +8,18 @@ layout: manual
 Blend two surfaces together. Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or tagged edges to use the full edge span.
 
 ```kcl
-blend(@edges: [BoundedEdge | TaggedEdge; 2]): Solid
+blend(@edges: [BoundedEdge | TaggedEdge | any; 2]): Solid
 ```
 
 Or blend the full edges directly with tagged edges (no `getBoundedEdge`):
+
+You can also pass edge specifier objects instead of tagged edges or bounded edges:
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 2] | The two edges that will be blended. Tagged edges blend the full edge length. | Yes |
+| `edges` | [[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`any`](/docs/kcl-std/types/std-types-any); 2] | The two edges that will be blended. Tagged edges blend the full edge length. Edge specifier objects: `{ sideFaces = [...], endFaces? = [...], index? = 0 }`. | Yes |
 
 ### Returns
 
@@ -93,6 +95,36 @@ blend([
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+blend([
+  {
+    sideFaces = [seg01],
+    endFaces = [seg02, rectangleSegmentA002],
+    index = 0
+  },
+  {
+    sideFaces = [seg03],
+    endFaces = [seg04, rectangleSegmentA001],
+    index = 1
+  }
+])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the blend function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

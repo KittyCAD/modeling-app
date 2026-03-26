@@ -38,12 +38,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    // Primary kwarg is "edges"; accept "edgeRefs" and "edge_refs" for backward compatibility.
-    let edge_refs = args.get_kw_arg_opt_any_key(
-        &["edges", "edgeRefs", "edge_refs"],
-        &RuntimeType::any_array(),
-        exec_state,
-    )?;
+    let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags_result = args.kw_arg_edge_array_and_source_any_key(&["tags", "Tags"]);
 
     let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());

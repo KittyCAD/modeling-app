@@ -166,25 +166,6 @@ impl Args {
         self.get_kw_arg(label, ty, exec_state).map(Some)
     }
 
-    /// Try to get a keyword argument using the first matching key from a list.
-    /// Useful when the same argument may appear under different names (e.g. camelCase vs snake_case).
-    pub(crate) fn get_kw_arg_opt_any_key<T>(
-        &self,
-        keys: &[&str],
-        ty: &RuntimeType,
-        exec_state: &mut ExecState,
-    ) -> Result<Option<T>, KclError>
-    where
-        T: for<'a> FromKclValue<'a>,
-    {
-        for key in keys {
-            if let Some(v) = self.get_kw_arg_opt(key, ty, exec_state)? {
-                return Ok(Some(v));
-            }
-        }
-        Ok(None)
-    }
-
     pub(crate) fn get_kw_arg<T>(&self, label: &str, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<T, KclError>
     where
         T: for<'a> FromKclValue<'a>,

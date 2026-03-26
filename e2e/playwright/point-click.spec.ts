@@ -937,7 +937,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [capEnd001, seg01] },
+          axis = { sideFaces = [seg01, capEnd001] },
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -1010,7 +1010,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [capEnd001, seg01] },
+          axis = { sideFaces = [seg01, capEnd001] },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
