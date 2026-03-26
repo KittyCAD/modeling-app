@@ -1,0 +1,590 @@
+client:733 [vite] connecting...
+client:827 [vite] connected.
+installHook.js:1 Ignoring Event: localhost
+overrideMethod @ installHook.js:1
+s @ script.tagged-events.js:1
+e @ script.tagged-events.js:1
+p @ script.tagged-events.js:1
+(anonymous) @ script.tagged-events.js:1
+(anonymous) @ script.tagged-events.js:1
+authMachine.ts:55 Initial persisted token
+authMachine.ts:56 (index)01(index)010'cookie'false1'api token'trueArray(2)
+installHook.js:1 No `HydrateFallback` element provided to render during initial hydration
+overrideMethod @ installHook.js:1
+warning @ react-router-dom.js:670
+warningOnce @ react-router-dom.js:6629
+(anonymous) @ react-router-dom.js:6377
+_renderMatches @ react-router-dom.js:6366
+useRoutesImpl @ react-router-dom.js:6135
+DataRoutes @ react-router-dom.js:6995
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+updateSimpleMemoComponent @ react-dom_client.js:19304
+updateMemoComponent @ react-dom_client.js:19258
+beginWork @ react-dom_client.js:20826
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23806
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<DataRoutes>
+exports.createElement @ chunk-SH3WEEH3.js:1251
+RouterProvider @ react-router-dom.js:6963
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23806
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<RouterProvider>
+exports.createElement @ chunk-SH3WEEH3.js:1251
+RouterProvider2 @ react-router-dom.js:13529
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23806
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<RouterProvider2>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+Router @ Router.tsx:162
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23806
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<Router>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+mountAppToReact @ index.tsx:118
+launchApp @ index.tsx:28
+(anonymous) @ index.tsx:20
+desktop.ts:909 async () => {
+  let environmentFilePath = await getEnvironmentFilePath();
+  console.log(readEnvironmentFile);
+  try {
+    await fsZds.stat(environmentFilePath);
+    const environment = await fsZds.re…
+env.ts:47 updating environment: dev.zoo.dev
+authMachine.ts:316 Token used for authentication
+authMachine.ts:317 (index)01(index)010'api token'trueArray(1)
+app.ts:139 [app.rustContext#1] sendUpdateFile start
+app.ts:148 [app.rustContext#1] sendUpdateFile end {durationMs: 0.20000001788139343}
+app.ts:139 [app.rustContext#2] sendOpenProject start
+app.ts:148 [app.rustContext#2] sendOpenProject end {durationMs: 12.399999976158142}durationMs: 12.399999976158142[[Prototype]]: Object
+installHook.js:1 attempting to resize stream before it is ready
+overrideMethod @ installHook.js:1
+(anonymous) @ useOnPageResize.tsx:35
+react_stack_bottom_frame @ react-dom_client.js:30607
+runWithFiberInDEV @ react-dom_client.js:13037
+commitHookEffectListMount @ react-dom_client.js:21451
+commitHookPassiveMountEffects @ react-dom_client.js:21505
+reconnectPassiveEffects @ react-dom_client.js:23313
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+commitPassiveMountOnFiber @ react-dom_client.js:23213
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23181
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23095
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23095
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23106
+flushPassiveEffects @ react-dom_client.js:25190
+flushPendingEffects @ react-dom_client.js:25128
+performSyncWorkOnRoot @ react-dom_client.js:25554
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js:25454
+flushSpawnedWork @ react-dom_client.js:25107
+commitRoot @ react-dom_client.js:24844
+commitRootWhenReady @ react-dom_client.js:24056
+performWorkOnRoot @ react-dom_client.js:23990
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<ConnectionStream>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+ModelingArea @ defaultAreaLibrary.tsx:27
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<ModelingArea>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+LayoutNode @ components.tsx:234
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<LayoutNode>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+(anonymous) @ components.tsx:332
+SplitLayoutContents @ components.tsx:317
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<SplitLayoutContents>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+SplitLayout @ components.tsx:247
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<SplitLayout>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+LayoutNode @ components.tsx:224
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13037
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+<LayoutNode>
+exports.jsxDEV @ react_jsx-dev-runtime.js:274
+LayoutRootNode2 @ components.tsx:200
+react_stack_bottom_frame @ react-dom_client.js:30549
+renderWithHooks @ react-dom_client.js:17694
+updateFunctionComponent @ react-dom_client.js:19515
+beginWork @ react-dom_client.js:20565
+runWithFiberInDEV @ react-dom_client.js:13039
+performUnitOfWork @ react-dom_client.js:24601
+workLoopSync @ react-dom_client.js:24464
+renderRootSync @ react-dom_client.js:24448
+performWorkOnRoot @ react-dom_client.js:23841
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+react-dom_client.js:306 [Violation] 'message' handler took 231ms
+react-dom_client.js:25567 [Violation] 'setTimeout' handler took 67ms
+GizmoRenderer.ts:297 [Violation] 'requestAnimationFrame' handler took 78ms
+websocketConnection.ts:182 API Call ID: 0bc6d3ba-5a93-4476-9d4a-aa55d5775b5c
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+worker.ts:74 Worker: WASM module loaded kcl {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker kcl
+worker.ts:54 start kcl lsp
+kcl_wasm_lib.js:2615 Created mock executor context for LSP code actions
+installHook.js:1 ICE candidate returned an error: 701: STUN host lookup received error. for stun:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478
+overrideMethod @ installHook.js:1
+onIceCandidateError @ peerConnection.ts:140
+installHook.js:1 ICE candidate returned an error: 701: TURN host lookup received error. for turn:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478?transport=udp
+overrideMethod @ installHook.js:1
+onIceCandidateError @ peerConnection.ts:140
+worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker copilot
+worker.ts:40 starting copilot lsp
+kcClient.ts:21  GET https://api.dev.zoo.dev/user/org 404 (Not Found)
+injectedFetch @ kcClient.ts:21
+get_user_org @ @kittycad_react-shared.js:26038
+fetchBilling @ @kittycad_react-shared.js:26272
+getBillingInfo @ @kittycad_react-shared.js:26314
+await in getBillingInfo
+(anonymous) @ billingMachine.ts:75
+start @ xstate-actors.development.esm.js:790
+start @ raise-cb04d847.development.esm.js:889
+(anonymous) @ raise-cb04d847.development.esm.js:1280
+update @ raise-cb04d847.development.esm.js:671
+_process @ raise-cb04d847.development.esm.js:934
+flush @ raise-cb04d847.development.esm.js:43
+enqueue @ raise-cb04d847.development.esm.js:35
+_send @ raise-cb04d847.development.esm.js:1040
+_relay @ raise-cb04d847.development.esm.js:442
+send @ raise-cb04d847.development.esm.js:1052
+(anonymous) @ OpenedProject.tsx:213
+react_stack_bottom_frame @ react-dom_client.js:30607
+runWithFiberInDEV @ react-dom_client.js:13037
+commitHookEffectListMount @ react-dom_client.js:21451
+commitHookPassiveMountEffects @ react-dom_client.js:21505
+reconnectPassiveEffects @ react-dom_client.js:23313
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23357
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+reconnectPassiveEffects @ react-dom_client.js:23305
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js:23280
+commitPassiveMountOnFiber @ react-dom_client.js:23213
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23181
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23095
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23095
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23073
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23241
+recursivelyTraversePassiveMountEffects @ react-dom_client.js:23050
+commitPassiveMountOnFiber @ react-dom_client.js:23106
+flushPassiveEffects @ react-dom_client.js:25190
+flushPendingEffects @ react-dom_client.js:25128
+performSyncWorkOnRoot @ react-dom_client.js:25554
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js:25454
+flushSpawnedWork @ react-dom_client.js:25107
+commitRoot @ react-dom_client.js:24844
+commitRootWhenReady @ react-dom_client.js:24056
+performWorkOnRoot @ react-dom_client.js:23990
+performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
+performWorkUntilDeadline @ react-dom_client.js:326
+installHook.js:1 Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead.
+overrideMethod @ installHook.js:1
+(anonymous) @ react-dom_client.js:25403
+runWithFiberInDEV @ react-dom_client.js:13037
+warnAboutUpdateOnNotYetMountedFiberInDEV @ react-dom_client.js:25402
+getRootForUpdatedFiber @ react-dom_client.js:15574
+enqueueConcurrentHookUpdate @ react-dom_client.js:15550
+dispatchSetStateInternal @ react-dom_client.js:18872
+dispatchSetState @ react-dom_client.js:18843
+initializedCallback @ LspProvider.tsx:223
+start @ jsonrpc.ts:175
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+worker.ts:74 Worker: WASM module loaded kcl {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker kcl
+worker.ts:54 start kcl lsp
+kcl_wasm_lib.js:2615 Created mock executor context for LSP code actions
+worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker copilot
+worker.ts:40 starting copilot lsp
+app.ts:139 [app.rustContext#3] sendResponse start
+app.ts:148 [app.rustContext#3] sendResponse end {durationMs: 7.200000017881393}
+app.ts:139 [app.rustContext#4] sendResponse start
+app.ts:148 [app.rustContext#4] sendResponse end {durationMs: 0.5999999940395355}
+app.ts:139 [app.rustContext#5] sendResponse start
+app.ts:148 [app.rustContext#5] sendResponse end {durationMs: 0.699999988079071}
+app.ts:139 [app.rustContext#6] sendResponse start
+app.ts:148 [app.rustContext#6] sendResponse end {durationMs: 0.5999999940395355}
+app.ts:139 [app.rustContext#7] sendResponse start
+app.ts:148 [app.rustContext#7] sendResponse end {durationMs: 3.5999999940395355}
+app.ts:139 [app.rustContext#8] sendResponse start
+app.ts:148 [app.rustContext#8] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:139 [app.rustContext#9] sendResponse start
+app.ts:148 [app.rustContext#9] sendResponse end {durationMs: 0.30000001192092896}
+app.ts:139 [app.rustContext#10] clearSceneAndBustCache start
+app.ts:139 [app.rustContext#11] sendResponse start
+app.ts:148 [app.rustContext#11] sendResponse end {durationMs: 0.7999999821186066}
+app.ts:139 [app.rustContext#12] sendResponse start
+app.ts:148 [app.rustContext#12] sendResponse end {durationMs: 2.600000023841858}
+app.ts:139 [app.rustContext#13] sendResponse start
+app.ts:148 [app.rustContext#13] sendResponse end {durationMs: 0.7999999821186066}
+kcl_wasm_lib.js:3514 [Violation] 'message' handler took 351ms
+app.ts:139 [app.rustContext#14] sendResponse start
+app.ts:148 [app.rustContext#14] sendResponse end {durationMs: 1}
+app.ts:148 [app.rustContext#10] clearSceneAndBustCache end {durationMs: 716.8000000119209}
+app.ts:139 [app.rustContext#15] execute start
+app.ts:139 [app.rustContext#16] sendResponse start
+app.ts:148 [app.rustContext#16] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:139 [app.rustContext#17] sendResponse start
+app.ts:148 [app.rustContext#17] sendResponse end {durationMs: 0.20000001788139343}
+app.ts:139 [app.rustContext#18] sendResponse start
+app.ts:148 [app.rustContext#18] sendResponse end {durationMs: 0.30000001192092896}
+app.ts:139 [app.rustContext#19] sendResponse start
+app.ts:148 [app.rustContext#19] sendResponse end {durationMs: 0.5}
+app.ts:139 [app.rustContext#20] sendResponse start
+app.ts:148 [app.rustContext#20] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:139 [app.rustContext#21] sendResponse start
+app.ts:148 [app.rustContext#21] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:139 [app.rustContext#22] sendResponse start
+app.ts:148 [app.rustContext#22] sendResponse end {durationMs: 0.30000001192092896}
+kcl_wasm_lib.js:3514 [Violation] 'message' handler took 324ms
+app.ts:139 [app.rustContext#23] sendResponse start
+app.ts:148 [app.rustContext#23] sendResponse end {durationMs: 0.5}
+app.ts:139 [app.rustContext#24] sendResponse start
+app.ts:148 [app.rustContext#24] sendResponse end {durationMs: 2.2000000178813934}
+lsp.ts:1201 [lsp] [window/logMessage] kcl {message: 'updating from disk `/` failed: engine: KclErrorDet…g from response from javascript: `JsValue([])`" }', type: 2}
+app.ts:139 [app.rustContext#25] sendResponse start
+app.ts:148 [app.rustContext#25] sendResponse end {durationMs: 2}
+app.ts:139 [app.rustContext#26] sendResponse start
+app.ts:148 [app.rustContext#26] sendResponse end {durationMs: 2.5}
+installHook.js:1 [app.rustContext#15] execute error {durationMs: 935.1999999880791, error: KCLError: engine: Entity found but it was of the wrong type
+No such edge exists, cannot retrieve ad…}
+overrideMethod @ installHook.js:1
+(anonymous) @ app.ts:155
+Promise.catch
+wrapped @ app.ts:153
+executeAst @ langHelpers.ts:79
+executeAst @ KclManager.ts:1309
+executeCode @ KclManager.ts:1492
+await in executeCode
+setupSceneAndExecuteCodeAfterOpenedEngineConnection @ useTryConnect.tsx:148
+await in setupSceneAndExecuteCodeAfterOpenedEngineConnection
+attempt @ useTryConnect.tsx:240
+app.ts:139 [app.rustContext#27] sendResponse start
+app.ts:148 [app.rustContext#27] sendResponse end {durationMs: 0.5}
+app.ts:139 [app.rustContext#28] sendResponse start
+app.ts:148 [app.rustContext#28] sendResponse end {durationMs: 0.09999999403953552}
+app.ts:139 [app.rustContext#29] sendResponse start
+app.ts:148 [app.rustContext#29] sendResponse end {durationMs: 0.20000001788139343}
+app.ts:139 [app.rustContext#30] sendResponse start
+app.ts:148 [app.rustContext#30] sendResponse end {durationMs: 0.3999999761581421}
+app.ts:139 [app.rustContext#31] sendResponse start
+app.ts:148 [app.rustContext#31] sendResponse end {durationMs: 1.2000000178813934}
+app.ts:139 [app.rustContext#32] sendResponse start
+app.ts:148 [app.rustContext#32] sendResponse end {durationMs: 0.800000011920929}
+react-dom_client.js:25567 [Violation] 'setTimeout' handler took 50ms
+app.ts:139 [app.rustContext#33] sendResponse start
+app.ts:148 [app.rustContext#33] sendResponse end {durationMs: 0.800000011920929}
+installHook.js:1 attempting initiateConnectionExclusive after 3 seconds
+overrideMethod @ installHook.js:1
+(anonymous) @ peerConnection.ts:71
