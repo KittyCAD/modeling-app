@@ -144,6 +144,8 @@ pub enum ObjectKind {
     Nil,
     Plane(Plane),
     Face(Face),
+    Wall(Wall),
+    Cap(Cap),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -169,6 +171,29 @@ pub enum Plane {
 #[serde(rename_all = "camelCase")]
 pub struct Face {
     pub id: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiWall")]
+#[serde(rename_all = "camelCase")]
+pub struct Wall {
+    pub id: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCap")]
+#[serde(rename_all = "camelCase")]
+pub struct Cap {
+    pub id: ObjectId,
+    pub kind: CapKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapKind")]
+#[serde(rename_all = "camelCase")]
+pub enum CapKind {
+    Start,
+    End,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

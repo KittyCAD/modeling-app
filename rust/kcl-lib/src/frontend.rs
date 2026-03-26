@@ -13,8 +13,6 @@ use crate::ExecOutcome;
 use crate::ExecutorContext;
 use crate::KclError;
 use crate::KclErrorWithOutputs;
-#[cfg(feature = "artifact-graph")]
-use crate::NodePathStep;
 use crate::Program;
 use crate::collections::AhashIndexSet;
 use crate::exec::WarningLevel;
@@ -174,8 +172,6 @@ pub enum SetProgramOutcome {
 pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
-    #[cfg(feature = "artifact-graph")]
-    artifact_graph: ArtifactGraph,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
@@ -199,8 +195,6 @@ impl FrontendState {
                 settings: Default::default(),
                 sketch_mode: Default::default(),
             },
-            #[cfg(feature = "artifact-graph")]
-            artifact_graph: Default::default(),
             point_freedom_cache: HashMap::new(),
         }
     }
@@ -262,9 +256,6 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        #[cfg(feature = "artifact-graph")]
-        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.artifact_graph, &self.scene_graph, &args.on)?;
-        #[cfg(not(feature = "artifact-graph"))]
         let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
         let mut defined_names = find_defined_names(&new_ast);
         let is_face_of_expr = matches!(
@@ -344,7 +335,16 @@ impl SketchApi for FrontendState {
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
-        let Some(sketch_id) = self.scene_graph.objects.last().map(|object| object.id) else {
+        let Some(sketch_id) = self
+            .scene_graph
+            .objects
+            .iter()
+            .filter_map(|object| match object.kind {
+                ObjectKind::Sketch(_) => Some(object.id),
+                _ => None,
+            })
+            .max_by_key(|id| id.0)
+        else {
             return Err(Error {
                 msg: "No objects in scene graph after adding sketch".to_owned(),
             });
@@ -3298,8 +3298,7 @@ impl FrontendState {
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
-            self.artifact_graph = outcome.artifact_graph.clone();
-            let new_objects = std::mem::take(&mut outcome.scene_objects);
+            let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
             if freedom_analysis_ran {
                 // When freedom analysis ran, replace the cache entirely with new values
@@ -3313,6 +3312,7 @@ impl FrontendState {
                         self.point_freedom_cache.insert(new_obj.id, point.freedom);
                     }
                 }
+                add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
                 // Objects are already correct from the analysis, just use them as-is
                 self.scene_graph.objects = new_objects;
             } else {
@@ -3373,6 +3373,7 @@ impl FrontendState {
                     updated_objects.push(obj);
                 }
 
+                add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
                 self.scene_graph.objects = updated_objects;
             }
             outcome
@@ -3495,7 +3496,6 @@ fn only_sketch_block(
 
 fn sketch_on_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    #[cfg(feature = "artifact-graph")] artifact_graph: &ArtifactGraph,
     scene_graph: &SceneGraph,
     on: &Plane,
 ) -> api::Result<ast::Expr> {
@@ -3508,82 +3508,63 @@ fn sketch_on_ast_expr(
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
         Plane::Artifact(artifact_id) => {
-            if let Some(on_object) = scene_graph
+            let on_object = scene_graph
                 .objects
                 .iter()
                 .find(|object| object.artifact_id == *artifact_id)
-            {
-                return get_or_insert_ast_reference(ast, &on_object.source, "plane", None);
-            }
+                .ok_or_else(|| Error {
+                    msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
+                })?;
             #[cfg(feature = "artifact-graph")]
             {
-                sketch_face_of_artifact_ast_expr(ast, artifact_graph, artifact_id)
+                if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
+                    return Ok(face_expr);
+                }
             }
-            #[cfg(not(feature = "artifact-graph"))]
-            {
-                Err(Error {
-                    msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
-                })
-            }
+            get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
     }
 }
 
 #[cfg(feature = "artifact-graph")]
-fn sketch_face_of_artifact_ast_expr(
+fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    artifact_graph: &ArtifactGraph,
-    artifact_id: &crate::execution::ArtifactId,
-) -> api::Result<ast::Expr> {
-    let artifact = artifact_graph.get(artifact_id).ok_or_else(|| Error {
-        msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
-    })?;
+    on_object: &crate::front::Object,
+) -> api::Result<Option<ast::Expr>> {
+    let SourceRef::BackTrace { ranges } = &on_object.source else {
+        return Ok(None);
+    };
 
-    match artifact {
-        Artifact::Wall(wall) => {
-            let segment = artifact_graph
-                .get(&wall.seg_id)
-                .and_then(|artifact| match artifact {
-                    Artifact::Segment(segment) => Some(segment),
-                    _ => None,
-                })
-                .ok_or_else(|| Error {
-                    msg: format!("Could not resolve wall segment for sketch plane artifact: {artifact_id:?}"),
-                })?;
-            let sweep = artifact_graph
-                .get(&wall.sweep_id)
-                .and_then(|artifact| match artifact {
-                    Artifact::Sweep(sweep) => Some(sweep),
-                    _ => None,
-                })
-                .ok_or_else(|| Error {
-                    msg: format!("Could not resolve wall sweep for sketch plane artifact: {artifact_id:?}"),
-                })?;
-            let solid_name = variable_name_from_code_ref_node_path(ast, &sweep.code_ref).ok_or_else(|| Error {
-                msg: format!("Could not resolve extrude variable for selected wall: {artifact_id:?}"),
-            })?;
+    match &on_object.kind {
+        ObjectKind::Wall(_) => {
+            if ranges.len() != 2 {
+                return Err(Error {
+                    msg: format!(
+                        "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            }
+            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[0] }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve extrude reference for selected wall: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_name = solid_name_expr.name.name.clone();
             let solid_expr = ast_name_expr(solid_name.clone());
+            let segment_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[1] }, "line", None)?;
+
             let face_expr = if let Some(region_name) = region_name_from_extrude_variable(ast, &solid_name) {
-                let source_segment = segment
-                    .original_seg_id
-                    .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
-                    .and_then(|artifact| match artifact {
-                        Artifact::Segment(segment) => Some(segment),
-                        _ => None,
-                    })
-                    .unwrap_or(segment);
-                let segment_ref = get_or_insert_ast_reference(
-                    ast,
-                    &SourceRef::Simple {
-                        range: source_segment.code_ref.range,
-                    },
-                    "line",
-                    None,
-                )?;
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(Error {
                         msg: format!(
-                            "Could not resolve source segment reference for selected region wall: {artifact_id:?}"
+                            "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
+                            on_object.artifact_id
                         ),
                     });
                 };
@@ -3592,41 +3573,119 @@ fn sketch_face_of_artifact_ast_expr(
                     &segment_name_expr.name.name,
                 )
             } else {
-                get_or_insert_ast_reference(
-                    ast,
-                    &SourceRef::Simple {
-                        range: segment.code_ref.range,
-                    },
-                    "line",
-                    None,
-                )?
+                segment_ref
             };
 
-            Ok(create_face_of_ast(solid_expr, face_expr))
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
         }
-        Artifact::Cap(cap) => {
-            let sweep = artifact_graph
-                .get(&cap.sweep_id)
-                .and_then(|artifact| match artifact {
+        ObjectKind::Cap(cap) => {
+            if ranges.len() != 1 {
+                return Err(Error {
+                    msg: format!(
+                        "Expected cap source metadata to have 1 range, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            }
+            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[0] }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve extrude reference for selected cap: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            let face_expr = match cap.kind {
+                crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
+                crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
+            };
+
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
+        }
+        _ => Ok(None),
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
+    let mut existing_artifact_ids = scene_objects
+        .iter()
+        .map(|object| object.artifact_id)
+        .collect::<HashSet<_>>();
+
+    for artifact in artifact_graph.values() {
+        match artifact {
+            Artifact::Wall(wall) => {
+                if existing_artifact_ids.contains(&wall.id) {
+                    continue;
+                }
+
+                let Some(segment) = artifact_graph.get(&wall.seg_id).and_then(|artifact| match artifact {
+                    Artifact::Segment(segment) => Some(segment),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let Some(sweep) = artifact_graph.get(&wall.sweep_id).and_then(|artifact| match artifact {
                     Artifact::Sweep(sweep) => Some(sweep),
                     _ => None,
-                })
-                .ok_or_else(|| Error {
-                    msg: format!("Could not resolve cap sweep for sketch plane artifact: {artifact_id:?}"),
-                })?;
-            let solid_name = variable_name_from_code_ref_node_path(ast, &sweep.code_ref).ok_or_else(|| Error {
-                msg: format!("Could not resolve extrude variable for selected cap: {artifact_id:?}"),
-            })?;
-            let solid_expr = ast_name_expr(solid_name);
-            let face_expr = match cap.sub_type {
-                CapSubType::Start => ast_name_expr("START".to_owned()),
-                CapSubType::End => ast_name_expr("END".to_owned()),
-            };
-            Ok(create_face_of_ast(solid_expr, face_expr))
+                }) else {
+                    continue;
+                };
+                let source_segment = segment
+                    .original_seg_id
+                    .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Segment(segment) => Some(segment),
+                        _ => None,
+                    })
+                    .unwrap_or(segment);
+                let id = ObjectId(scene_objects.len());
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Wall(crate::frontend::api::Wall { id }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: wall.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range, source_segment.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(wall.id);
+            }
+            Artifact::Cap(cap) => {
+                if existing_artifact_ids.contains(&cap.id) {
+                    continue;
+                }
+
+                let Some(sweep) = artifact_graph.get(&cap.sweep_id).and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let id = ObjectId(scene_objects.len());
+                let kind = match cap.sub_type {
+                    CapSubType::Start => crate::frontend::api::CapKind::Start,
+                    CapSubType::End => crate::frontend::api::CapKind::End,
+                };
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: cap.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(cap.id);
+            }
+            _ => {}
         }
-        _ => Err(Error {
-            msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
-        }),
     }
 }
 
@@ -3662,20 +3721,6 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
         digest: None,
         non_code_meta: Default::default(),
     })))
-}
-
-#[cfg(feature = "artifact-graph")]
-fn variable_name_from_code_ref_node_path(
-    ast: &ast::Node<ast::Program>,
-    code_ref: &crate::execution::CodeRef,
-) -> Option<String> {
-    let NodePathStep::ProgramBodyItem { index } = code_ref.node_path.steps.first()? else {
-        return None;
-    };
-    let ast::BodyItem::VariableDeclaration(var_decl) = ast.body.get(*index)? else {
-        return None;
-    };
-    Some(var_decl.declaration.id.name.clone())
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -4495,7 +4540,6 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
-    use crate::execution::Artifact;
     use crate::front::Distance;
     use crate::front::Object;
     use crate::front::Plane;
@@ -4517,6 +4561,15 @@ mod tests {
         for object in &scene_graph.objects {
             if let ObjectKind::Face(_) = &object.kind {
                 return Some(object);
+            }
+        }
+        None
+    }
+
+    fn find_first_wall_face_artifact_id(scene_graph: &SceneGraph) -> Option<crate::execution::ArtifactId> {
+        for object in &scene_graph.objects {
+            if matches!(&object.kind, ObjectKind::Wall(_)) {
+                return Some(object.artifact_id);
             }
         }
         None
@@ -7277,7 +7330,7 @@ face = faceOf(cube, face = side)
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -7304,17 +7357,8 @@ extrude001 = extrude(region001, length = 5)
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_artifact_id = frontend
-            .artifact_graph
-            .values()
-            .find_map(|artifact| {
-                if let Artifact::Wall(wall) = artifact {
-                    Some(wall.id)
-                } else {
-                    None
-                }
-            })
-            .expect("expected a wall artifact");
+        let wall_artifact_id =
+            find_first_wall_face_artifact_id(&frontend.scene_graph).expect("expected a wall artifact");
 
         let sketch_args = SketchCtor {
             on: Plane::Artifact(wall_artifact_id),
@@ -7359,17 +7403,8 @@ extrude001 = extrude(region001, length = 5)
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_artifact_id = frontend
-            .artifact_graph
-            .values()
-            .find_map(|artifact| {
-                if let Artifact::Wall(wall) = artifact {
-                    Some(wall.id)
-                } else {
-                    None
-                }
-            })
-            .expect("expected a wall artifact");
+        let wall_artifact_id =
+            find_first_wall_face_artifact_id(&frontend.scene_graph).expect("expected a wall artifact");
 
         let sketch_args = SketchCtor {
             on: Plane::Artifact(wall_artifact_id),
@@ -7462,7 +7497,7 @@ sketch001 = sketch(on = plane) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 9);
 
         let plane_object = scene_delta.new_graph.objects.get(plane_id.0).unwrap();
         assert_eq!(plane_object.id, plane_id);
@@ -7789,7 +7824,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 23, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 29, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //
