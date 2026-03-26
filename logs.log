@@ -1,5 +1,4 @@
 client:733 [vite] connecting...
-client:827 [vite] connected.
 installHook.js:1 Ignoring Event: localhost
 overrideMethod @ installHook.js:1
 s @ script.tagged-events.js:1
@@ -7,6 +6,7 @@ e @ script.tagged-events.js:1
 p @ script.tagged-events.js:1
 (anonymous) @ script.tagged-events.js:1
 (anonymous) @ script.tagged-events.js:1
+client:827 [vite] connected.
 authMachine.ts:55 Initial persisted token
 authMachine.ts:56 (index)01(index)010'cookie'false1'api token'trueArray(2)
 installHook.js:1 No `HydrateFallback` element provided to render during initial hydration
@@ -87,9 +87,9 @@ env.ts:47 updating environment: dev.zoo.dev
 authMachine.ts:316 Token used for authentication
 authMachine.ts:317 (index)01(index)010'api token'trueArray(1)
 app.ts:139 [app.rustContext#1] sendUpdateFile start
-app.ts:148 [app.rustContext#1] sendUpdateFile end {durationMs: 0.20000001788139343}
+app.ts:148 [app.rustContext#1] sendUpdateFile end {durationMs: 0.19999998807907104}
 app.ts:139 [app.rustContext#2] sendOpenProject start
-app.ts:148 [app.rustContext#2] sendOpenProject end {durationMs: 12.399999976158142}durationMs: 12.399999976158142[[Prototype]]: Object
+app.ts:148 [app.rustContext#2] sendOpenProject end {durationMs: 11.900000005960464}
 installHook.js:1 attempting to resize stream before it is ready
 overrideMethod @ installHook.js:1
 (anonymous) @ useOnPageResize.tsx:35
@@ -327,33 +327,10 @@ renderRootSync @ react-dom_client.js:24448
 performWorkOnRoot @ react-dom_client.js:23841
 performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
 performWorkUntilDeadline @ react-dom_client.js:326
-react-dom_client.js:306 [Violation] 'message' handler took 231ms
-react-dom_client.js:25567 [Violation] 'setTimeout' handler took 67ms
+react-dom_client.js:306 [Violation] 'message' handler took 254ms
 GizmoRenderer.ts:297 [Violation] 'requestAnimationFrame' handler took 78ms
-websocketConnection.ts:182 API Call ID: 0bc6d3ba-5a93-4476-9d4a-aa55d5775b5c
-kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
-__wbg_init @ kcl_wasm_lib.js:3718
-initialise @ worker.ts:31
-await in initialise
-onmessage @ worker.ts:72
-kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
-__wbg_init @ kcl_wasm_lib.js:3718
-initialise @ worker.ts:31
-await in initialise
-onmessage @ worker.ts:72
-worker.ts:74 Worker: WASM module loaded kcl {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
-worker.ts:80 Starting worker kcl
-worker.ts:54 start kcl lsp
-kcl_wasm_lib.js:2615 Created mock executor context for LSP code actions
-installHook.js:1 ICE candidate returned an error: 701: STUN host lookup received error. for stun:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478
-overrideMethod @ installHook.js:1
-onIceCandidateError @ peerConnection.ts:140
-installHook.js:1 ICE candidate returned an error: 701: TURN host lookup received error. for turn:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478?transport=udp
-overrideMethod @ installHook.js:1
-onIceCandidateError @ peerConnection.ts:140
-worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
-worker.ts:80 Starting worker copilot
-worker.ts:40 starting copilot lsp
+react-dom_client.js:25567 [Violation] 'setTimeout' handler took 65ms
+websocketConnection.ts:182 API Call ID: fde4940b-feb1-47d6-a050-8328f37d9319
 kcClient.ts:21  GET https://api.dev.zoo.dev/user/org 404 (Not Found)
 injectedFetch @ kcClient.ts:21
 get_user_org @ @kittycad_react-shared.js:26038
@@ -479,6 +456,29 @@ commitRootWhenReady @ react-dom_client.js:24056
 performWorkOnRoot @ react-dom_client.js:23990
 performWorkOnRootViaSchedulerTask @ react-dom_client.js:25545
 performWorkUntilDeadline @ react-dom_client.js:326
+installHook.js:1 ICE candidate returned an error: 701: STUN host lookup received error. for stun:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478
+overrideMethod @ installHook.js:1
+onIceCandidateError @ peerConnection.ts:140
+installHook.js:1 ICE candidate returned an error: 701: TURN host lookup received error. for turn:k8s-stunner-gateway-94f1ca3fd0-78ea8509707b5436.elb.us-east-1.amazonaws.com:3478?transport=udp
+overrideMethod @ installHook.js:1
+onIceCandidateError @ peerConnection.ts:140
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+kcl_wasm_lib.js:3718 using deprecated parameters for the initialization function; pass a single object instead
+__wbg_init @ kcl_wasm_lib.js:3718
+initialise @ worker.ts:31
+await in initialise
+onmessage @ worker.ts:72
+worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker copilot
+worker.ts:40 starting copilot lsp
+worker.ts:74 Worker: WASM module loaded kcl {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker kcl
+worker.ts:54 start kcl lsp
+kcl_wasm_lib.js:2615 Created mock executor context for LSP code actions
 installHook.js:1 Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead.
 overrideMethod @ installHook.js:1
 (anonymous) @ react-dom_client.js:25403
@@ -500,91 +500,81 @@ __wbg_init @ kcl_wasm_lib.js:3718
 initialise @ worker.ts:31
 await in initialise
 onmessage @ worker.ts:72
+worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
+worker.ts:80 Starting worker copilot
+worker.ts:40 starting copilot lsp
 worker.ts:74 Worker: WASM module loaded kcl {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
 worker.ts:80 Starting worker kcl
 worker.ts:54 start kcl lsp
 kcl_wasm_lib.js:2615 Created mock executor context for LSP code actions
-worker.ts:74 Worker: WASM module loaded copilot {memory: Memory(63), __wbg_lspserverconfig_free: ƒ, lsp_run_copilot: ƒ, lsp_run_kcl: ƒ, lspserverconfig_new: ƒ, …}
-worker.ts:80 Starting worker copilot
-worker.ts:40 starting copilot lsp
 app.ts:139 [app.rustContext#3] sendResponse start
-app.ts:148 [app.rustContext#3] sendResponse end {durationMs: 7.200000017881393}
+app.ts:148 [app.rustContext#3] sendResponse end {durationMs: 7.299999982118607}
 app.ts:139 [app.rustContext#4] sendResponse start
-app.ts:148 [app.rustContext#4] sendResponse end {durationMs: 0.5999999940395355}
+app.ts:148 [app.rustContext#4] sendResponse end {durationMs: 0.7000000178813934}
 app.ts:139 [app.rustContext#5] sendResponse start
-app.ts:148 [app.rustContext#5] sendResponse end {durationMs: 0.699999988079071}
+app.ts:148 [app.rustContext#5] sendResponse end {durationMs: 0.6000000238418579}
 app.ts:139 [app.rustContext#6] sendResponse start
-app.ts:148 [app.rustContext#6] sendResponse end {durationMs: 0.5999999940395355}
+app.ts:148 [app.rustContext#6] sendResponse end {durationMs: 0.6000000238418579}
 app.ts:139 [app.rustContext#7] sendResponse start
-app.ts:148 [app.rustContext#7] sendResponse end {durationMs: 3.5999999940395355}
+app.ts:148 [app.rustContext#7] sendResponse end {durationMs: 3.7999999821186066}
 app.ts:139 [app.rustContext#8] sendResponse start
-app.ts:148 [app.rustContext#8] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:148 [app.rustContext#8] sendResponse end {durationMs: 0.5}
 app.ts:139 [app.rustContext#9] sendResponse start
-app.ts:148 [app.rustContext#9] sendResponse end {durationMs: 0.30000001192092896}
+app.ts:148 [app.rustContext#9] sendResponse end {durationMs: 0.5}
 app.ts:139 [app.rustContext#10] clearSceneAndBustCache start
 app.ts:139 [app.rustContext#11] sendResponse start
-app.ts:148 [app.rustContext#11] sendResponse end {durationMs: 0.7999999821186066}
+app.ts:148 [app.rustContext#11] sendResponse end {durationMs: 0.7000000178813934}
 app.ts:139 [app.rustContext#12] sendResponse start
 app.ts:148 [app.rustContext#12] sendResponse end {durationMs: 2.600000023841858}
 app.ts:139 [app.rustContext#13] sendResponse start
 app.ts:148 [app.rustContext#13] sendResponse end {durationMs: 0.7999999821186066}
-kcl_wasm_lib.js:3514 [Violation] 'message' handler took 351ms
+kcl_wasm_lib.js:3514 [Violation] 'message' handler took 358ms
 app.ts:139 [app.rustContext#14] sendResponse start
 app.ts:148 [app.rustContext#14] sendResponse end {durationMs: 1}
-app.ts:148 [app.rustContext#10] clearSceneAndBustCache end {durationMs: 716.8000000119209}
+app.ts:148 [app.rustContext#10] clearSceneAndBustCache end {durationMs: 740.3000000119209}
 app.ts:139 [app.rustContext#15] execute start
 app.ts:139 [app.rustContext#16] sendResponse start
 app.ts:148 [app.rustContext#16] sendResponse end {durationMs: 0.4000000059604645}
 app.ts:139 [app.rustContext#17] sendResponse start
-app.ts:148 [app.rustContext#17] sendResponse end {durationMs: 0.20000001788139343}
+app.ts:148 [app.rustContext#17] sendResponse end {durationMs: 0.19999998807907104}
 app.ts:139 [app.rustContext#18] sendResponse start
-app.ts:148 [app.rustContext#18] sendResponse end {durationMs: 0.30000001192092896}
+app.ts:148 [app.rustContext#18] sendResponse end {durationMs: 0.20000001788139343}
 app.ts:139 [app.rustContext#19] sendResponse start
-app.ts:148 [app.rustContext#19] sendResponse end {durationMs: 0.5}
+app.ts:148 [app.rustContext#19] sendResponse end {durationMs: 0.699999988079071}
 app.ts:139 [app.rustContext#20] sendResponse start
 app.ts:148 [app.rustContext#20] sendResponse end {durationMs: 0.4000000059604645}
 app.ts:139 [app.rustContext#21] sendResponse start
-app.ts:148 [app.rustContext#21] sendResponse end {durationMs: 0.4000000059604645}
+app.ts:148 [app.rustContext#21] sendResponse end {durationMs: 0.5999999940395355}
 app.ts:139 [app.rustContext#22] sendResponse start
-app.ts:148 [app.rustContext#22] sendResponse end {durationMs: 0.30000001192092896}
-kcl_wasm_lib.js:3514 [Violation] 'message' handler took 324ms
+app.ts:148 [app.rustContext#22] sendResponse end {durationMs: 1.800000011920929}
+kcl_wasm_lib.js:3514 [Violation] 'message' handler took 327ms
 app.ts:139 [app.rustContext#23] sendResponse start
 app.ts:148 [app.rustContext#23] sendResponse end {durationMs: 0.5}
 app.ts:139 [app.rustContext#24] sendResponse start
-app.ts:148 [app.rustContext#24] sendResponse end {durationMs: 2.2000000178813934}
+app.ts:148 [app.rustContext#24] sendResponse end {durationMs: 2.0999999940395355}
 lsp.ts:1201 [lsp] [window/logMessage] kcl {message: 'updating from disk `/` failed: engine: KclErrorDet…g from response from javascript: `JsValue([])`" }', type: 2}
 app.ts:139 [app.rustContext#25] sendResponse start
-app.ts:148 [app.rustContext#25] sendResponse end {durationMs: 2}
+app.ts:148 [app.rustContext#25] sendResponse end {durationMs: 2.899999976158142}
 app.ts:139 [app.rustContext#26] sendResponse start
-app.ts:148 [app.rustContext#26] sendResponse end {durationMs: 2.5}
-installHook.js:1 [app.rustContext#15] execute error {durationMs: 935.1999999880791, error: KCLError: engine: Entity found but it was of the wrong type
-No such edge exists, cannot retrieve ad…}
-overrideMethod @ installHook.js:1
-(anonymous) @ app.ts:155
-Promise.catch
-wrapped @ app.ts:153
-executeAst @ langHelpers.ts:79
-executeAst @ KclManager.ts:1309
-executeCode @ KclManager.ts:1492
-await in executeCode
-setupSceneAndExecuteCodeAfterOpenedEngineConnection @ useTryConnect.tsx:148
-await in setupSceneAndExecuteCodeAfterOpenedEngineConnection
-attempt @ useTryConnect.tsx:240
-app.ts:139 [app.rustContext#27] sendResponse start
-app.ts:148 [app.rustContext#27] sendResponse end {durationMs: 0.5}
+app.ts:148 [app.rustContext#26] sendResponse end {durationMs: 2.9000000059604645}
+app.ts:148 [app.rustContext#15] execute end {durationMs: 877.7000000178814}
+app.ts:139 [app.rustContext#27] waitForAllEngineCommands start
 app.ts:139 [app.rustContext#28] sendResponse start
-app.ts:148 [app.rustContext#28] sendResponse end {durationMs: 0.09999999403953552}
+app.ts:148 [app.rustContext#28] sendResponse end {durationMs: 0.5}
 app.ts:139 [app.rustContext#29] sendResponse start
-app.ts:148 [app.rustContext#29] sendResponse end {durationMs: 0.20000001788139343}
+app.ts:148 [app.rustContext#29] sendResponse end {durationMs: 0.4000000059604645}
 app.ts:139 [app.rustContext#30] sendResponse start
-app.ts:148 [app.rustContext#30] sendResponse end {durationMs: 0.3999999761581421}
+app.ts:148 [app.rustContext#27] waitForAllEngineCommands end {durationMs: 81.90000000596046}
+app.ts:148 [app.rustContext#30] sendResponse end {durationMs: 0.5}
 app.ts:139 [app.rustContext#31] sendResponse start
-app.ts:148 [app.rustContext#31] sendResponse end {durationMs: 1.2000000178813934}
+app.ts:148 [app.rustContext#31] sendResponse end {durationMs: 0.5999999940395355}
 app.ts:139 [app.rustContext#32] sendResponse start
-app.ts:148 [app.rustContext#32] sendResponse end {durationMs: 0.800000011920929}
-react-dom_client.js:25567 [Violation] 'setTimeout' handler took 50ms
+app.ts:148 [app.rustContext#32] sendResponse end {durationMs: 0.8999999761581421}
 app.ts:139 [app.rustContext#33] sendResponse start
 app.ts:148 [app.rustContext#33] sendResponse end {durationMs: 0.800000011920929}
+react-dom_client.js:25567 [Violation] 'setTimeout' handler took 51ms
+app.ts:139 [app.rustContext#34] sendResponse start
+app.ts:148 [app.rustContext#34] sendResponse end {durationMs: 0.5999999940395355}
 installHook.js:1 attempting initiateConnectionExclusive after 3 seconds
 overrideMethod @ installHook.js:1
 (anonymous) @ peerConnection.ts:71
