@@ -164,11 +164,12 @@ export function isConstrainingSegment(
   constraint: InvisibleConstraintObject,
   segment: ApiObject | undefined | null
 ): boolean {
+  if (!segment) {
+    return false
+  }
   switch (constraint.kind.constraint.type) {
     case 'Coincident':
-      return isPointSegment(segment)
-        ? constraint.kind.constraint.segments.includes(segment.id)
-        : false
+      return constraint.kind.constraint.segments.includes(segment.id)
     case 'Horizontal':
     case 'Vertical':
       return (

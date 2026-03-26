@@ -411,13 +411,6 @@ type ConstraintHoverPopupEntry = {
   hideTimeoutId: ReturnType<typeof setTimeout> | null
 }
 
-function hasInvisibleConstraintPreviewTarget(
-  object: ApiObject | null,
-  objects: ApiObject[]
-) {
-  return findInvisibleConstraintsForSegment(object, objects).length > 0
-}
-
 function areSameConstraintHoverPopups(
   popups: ConstraintHoverPopup[],
   previousPopups: ConstraintHoverPopup[]
@@ -922,7 +915,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         // If this segment already has a visible popup, keep that popup pinned where it is.
         !getConstraintHoverPopupEntry(constraintHoverPopupSegmentId) &&
         !snapshot.context.showNonVisualConstraints &&
-        hasInvisibleConstraintPreviewTarget(hoveredApiObject, apiObjects)
+        findInvisibleConstraintsForSegment(hoveredApiObject, apiObjects)
+          .length > 0
       ) {
         startConstraintHoverPopup(constraintHoverPopupSegmentId, mousePosition)
       }
