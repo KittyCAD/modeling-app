@@ -44,33 +44,17 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   21[Wall]
     %% face_code_ref=Missing NodePath
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["Sweep Extrusion<br>[1035, 1087, 0]<br>Consumed: false"]
+  22["Sweep Extrusion<br>[1035, 1087, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  31[Wall]
+  23[Wall]
     %% face_code_ref=Missing NodePath
-  32[Wall]
+  24[Wall]
     %% face_code_ref=Missing NodePath
-  33[Wall]
+  25[Wall]
     %% face_code_ref=Missing NodePath
-  34[Wall]
+  26[Wall]
     %% face_code_ref=Missing NodePath
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
-  39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
-  41["SweepEdge Opposite"]
-  42["SweepEdge Adjacent"]
-  43["Sweep Blend<br>[1100, 1297, 0]<br>Consumed: false"]
+  27["Sweep Blend<br>[1100, 1297, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -80,22 +64,14 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 17
-  2 <---x 43
+  2 <---x 27
   3 --- 18
   3 x--> 19
-  3 --- 22
-  3 --- 23
   4 --- 19
   4 x--> 20
   4 x--> 21
-  4 --- 24
-  4 --- 25
   5 --- 20
-  5 --- 26
-  5 --- 27
   6 --- 21
-  6 --- 28
-  6 --- 29
   9 --- 10
   10 --- 11
   10 --- 12
@@ -103,75 +79,21 @@ flowchart LR
   10 --- 14
   10 --- 15
   10 --- 16
-  10 ---- 30
-  10 <---x 43
-  11 --- 31
-  11 x--> 32
-  11 --- 35
-  11 --- 36
-  12 --- 32
-  12 x--> 33
-  12 x--> 34
-  12 --- 37
-  12 --- 38
-  13 --- 33
-  13 --- 39
-  13 --- 40
-  14 --- 34
-  14 --- 41
-  14 --- 42
+  10 ---- 22
+  10 <---x 27
+  11 --- 23
+  11 x--> 24
+  12 --- 24
+  12 x--> 25
+  12 x--> 26
+  13 --- 25
+  14 --- 26
   17 --- 18
   17 --- 19
   17 --- 20
   17 --- 21
-  17 --- 22
-  17 --- 23
-  17 --- 24
-  17 --- 25
-  17 --- 26
-  17 --- 27
-  17 --- 28
-  17 --- 29
-  18 --- 22
-  18 --- 23
-  29 <--x 18
-  22 <--x 19
-  23 <--x 19
-  19 x--> 24
-  19 --- 25
-  24 <--x 20
-  25 <--x 20
-  20 x--> 26
-  20 --- 27
-  24 <--x 21
-  27 <--x 21
-  21 x--> 28
-  21 --- 29
-  30 --- 31
-  30 --- 32
-  30 --- 33
-  30 --- 34
-  30 --- 35
-  30 --- 36
-  30 --- 37
-  30 --- 38
-  30 --- 39
-  30 --- 40
-  30 --- 41
-  30 --- 42
-  31 --- 35
-  31 --- 36
-  42 <--x 31
-  35 <--x 32
-  36 <--x 32
-  32 x--> 37
-  32 --- 38
-  37 <--x 33
-  38 <--x 33
-  33 x--> 39
-  33 --- 40
-  37 <--x 34
-  40 <--x 34
-  34 x--> 41
-  34 --- 42
+  22 --- 23
+  22 --- 24
+  22 --- 25
+  22 --- 26
 ```

@@ -9,4 +9,3 @@ myExtrude = extrude(sk, length = 5, tagEnd = $yo)
 yodawg = getCommonEdge(faces = [hi, yoyo])
 fillet(myExtrude, radius = 0.5, edges = [{ sideFaces = [hi, yoyo] }])
 
-
