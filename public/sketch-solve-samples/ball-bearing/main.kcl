@@ -1,0 +1,92 @@
+// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+// Categories: Manufacturing, Automotive, Aerospace
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+outsideDiameter = 1.625
+sphereDia = 0.25
+shaftDia = 0.75
+overallThickness = 0.313
+wallThickness = 0.100
+overHangLength = .3
+nBalls = 10
+chainWidth = sphereDia / 2
+chainThickness = sphereDia / 8
+linkDiameter = sphereDia / 4
+
+// Sketch the inside bearing piece
+insideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2)) {
+  circle1 = circle(start = [var 0.48in, var 0in], center = [var 0in, var 0in])
+}
+
+region001 = region(segments = [insideWallSketch.circle1])
+// Extrude the inside bearing piece
+insideWall = extrude(region001, length = overallThickness)
+
+// Create the sketch of one of the balls
+ballsSketch = sketch(on = XY) {
+  arc1 = arc(start = [var 0.73in, var 0in], end = [var 0.48in, var 0in], center = [var 0.6in, var 0in])
+  line2 = line(start = [var 0.73in, var 0in], end = [var 0.48in, var 0in])
+  coincident([arc1.start, line2.start])
+}
+
+region002 = region(segments = [ballsSketch.arc1, ballsSketch.line2])
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve(region002, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = sketch(on = XY) {
+  arc1 = arc(start = [var 0.66in, var 0.11in], end = [var 0.54in, var 0.11in], center = [var 0.6in, var 0in])
+  line2 = line(start = [var 0.66in, var 0.11in], end = [var 0.66in, var 0.14in])
+  coincident([arc1.start, line2.start])
+  line3 = line(start = [var 0.66in, var 0.14in], end = [var 0.54in, var 0.14in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.54in, var 0.14in], end = [var 0.54in, var 0.11in])
+  coincident([line3.end, line4.start])
+}
+
+region003 = region(segments = [chainSketch.arc1, chainSketch.line2])
+// Revolve the chain sketch
+chainHead = revolve(region003, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360deg,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.63in, var 0in], center = [var 0.6in, var 0in])
+}
+
+region004 = region(segments = [linkSketch.circle1])
+// Revolve the link sketch
+linkRevolve = revolve(region004, axis = Y, angle = 360deg / nBalls)
+  |> patternCircular3d(
+       arcDegrees = 360deg,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the outside walls
+outsideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2)) {
+  circle1 = circle(start = [var 0.81in, var 0in], center = [var 0in, var 0in])
+}
+
+region005 = region(segments = [outsideWallSketch.circle1])
+outsideWall = extrude(region005, length = overallThickness)
+
