@@ -1,21 +1,25 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::websocket::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
-use crate::{
-    SourceRange,
-    engine::{AsyncTasks, EngineStats},
-    errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator},
-};
+use crate::SourceRange;
+use crate::engine::AsyncTasks;
+use crate::engine::EngineStats;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::DefaultPlanes;
+use crate::execution::IdGenerator;
 
 #[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
 extern "C" {

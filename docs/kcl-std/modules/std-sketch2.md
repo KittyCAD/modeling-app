@@ -5,6 +5,8 @@ excerpt: "Functions for sketch mode 2.0 (constraints version) "
 layout: manual
 ---
 
+**WARNING:** This module is experimental and may change or be removed.
+
 Functions for sketch mode 2.0 (constraints version) 
 
 
@@ -12,8 +14,10 @@ Functions for sketch mode 2.0 (constraints version)
 
 ## Functions and constants
 
+* [`sketch2::ORIGIN`](/docs/kcl-std/consts/std-sketch2-ORIGIN)
 * [`sketch2::angle`](/docs/kcl-std/functions/std-sketch2-angle)
 * [`sketch2::arc`](/docs/kcl-std/functions/std-sketch2-arc)
+* [`sketch2::circle`](/docs/kcl-std/functions/std-sketch2-circle)
 * [`sketch2::coincident`](/docs/kcl-std/functions/std-sketch2-coincident)
 * [`sketch2::diameter`](/docs/kcl-std/functions/std-sketch2-diameter)
 * [`sketch2::distance`](/docs/kcl-std/functions/std-sketch2-distance)

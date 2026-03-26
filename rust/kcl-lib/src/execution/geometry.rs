@@ -1,35 +1,53 @@
-use std::{
-    f64::consts::TAU,
-    ops::{Add, AddAssign, Mul, Sub, SubAssign},
-};
+use std::f64::consts::TAU;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Mul;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{
-    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
-};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::{self as kcmc};
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    engine::{DEFAULT_PLANE_INFO, PlaneName},
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
-        normalize_to_solver_distance_unit,
-        types::{NumericType, adjust_length},
-    },
-    front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
-    parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{
-        Args,
-        args::TyF64,
-        sketch::{FaceTag, PlaneData},
-    },
-};
+use crate::engine::DEFAULT_PLANE_INFO;
+use crate::engine::PlaneName;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::ArtifactId;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Metadata;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::normalize_to_solver_distance_unit;
+use crate::execution::types::NumericType;
+use crate::execution::types::adjust_length;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Freedom;
+use crate::front::LineCtor;
+use crate::front::ObjectId;
+use crate::front::PointCtor;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::FaceTag;
+use crate::std::sketch::PlaneData;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -2082,6 +2100,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    Circle {
+        start: UnsolvedPoint2dExpr,
+        center: UnsolvedPoint2dExpr,
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        construction: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2109,6 +2135,7 @@ impl Segment {
             SegmentKind::Point { .. } => true,
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
+            SegmentKind::Circle { construction, .. } => *construction,
         }
     }
 }
@@ -2147,6 +2174,18 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    Circle {
+        start: [TyF64; 2],
+        center: [TyF64; 2],
+        ctor: Box<CircleCtor>,
+        start_object_id: ObjectId,
+        center_object_id: ObjectId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
         construction: bool,

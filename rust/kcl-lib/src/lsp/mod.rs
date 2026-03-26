@@ -9,13 +9,17 @@ pub mod test_util;
 mod tests;
 pub mod util;
 
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag, Position, Range};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
+use tower_lsp::lsp_types::DiagnosticTag;
+use tower_lsp::lsp_types::Position;
+use tower_lsp::lsp_types::Range;
 pub use util::IntoDiagnostic;
 
-use crate::{
-    CompilationError,
-    errors::{Severity, Suggestion, Tag},
-};
+use crate::CompilationError;
+use crate::errors::Severity;
+use crate::errors::Suggestion;
+use crate::errors::Tag;
 
 impl IntoDiagnostic for CompilationError {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {

@@ -319,6 +319,28 @@ export const MlEphantConversationPane = (props: {
 
         const { context } = mlEphantManagerActorSnapshot
 
+        if (
+          mlEphantManagerActorSnapshot.matches(
+            MlEphantManagerStates.WaitForContinueCheck
+          ) &&
+          props.theProject !== undefined
+        ) {
+          let project: Project = props.theProject
+
+          void collectProjectFiles({
+            selectedFileContents: props.kclManager.code,
+            fileNames: props.kclManager.execState.filenames,
+            projectContext: project,
+          }).then((projectFiles) => {
+            props.mlEphantManagerActor.send({
+              type: MlEphantManagerStates.ContinueCheck,
+              projectName: project.name,
+              projectFiles,
+            })
+          })
+          return
+        }
+
         if (isProcessing) {
           return
         }

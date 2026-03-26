@@ -10,6 +10,7 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
@@ -1405,5 +1406,72 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+describe('getSelectionTypeDisplayText', () => {
+  test('coalesces face-like selections under face', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        { artifact: { type: 'wall' } as Artifact, codeRef },
+        { artifact: { type: 'cap' } as Artifact, codeRef },
+        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+      ],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'entity-1',
+          primitiveIndex: 0,
+          primitiveType: 'face',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '4 faces'
+    )
+  })
+
+  test('coalesces profile-like selections under profile', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+      otherSelections: [
+        {
+          type: 'region',
+          id: 'region-1',
+          point: { x: 0, y: 0 },
+          sketchId: 'sketch-1',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '2 profiles'
+    )
+  })
+
+  test('coalesces edge-like selections under edge', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        { artifact: { type: 'segment' } as Artifact, codeRef },
+        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
+        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+      ],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'entity-2',
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        } as any,
+      ],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '4 edges'
+    )
   })
 })

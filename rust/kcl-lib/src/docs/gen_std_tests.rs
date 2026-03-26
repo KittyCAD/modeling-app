@@ -1,15 +1,22 @@
-use std::{collections::HashMap, fs, path::Path};
+use std::collections::HashMap;
+use std::fs;
+use std::path::Path;
 
 use anyhow::Result;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::{
-    ConnectionError, ExecutorContext,
-    errors::ExecErrorWithState,
-    util::{RetryConfig, execute_with_retries},
-};
+use super::kcl_doc::ConstData;
+use super::kcl_doc::DocData;
+use super::kcl_doc::ExampleProperties;
+use super::kcl_doc::FnData;
+use super::kcl_doc::ModData;
+use super::kcl_doc::TyData;
+use crate::ConnectionError;
+use crate::ExecutorContext;
+use crate::errors::ExecErrorWithState;
+use crate::util::RetryConfig;
+use crate::util::execute_with_retries;
 
 mod type_formatter;
 
@@ -294,6 +301,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
         "module": mod_name_std(&m.module_name),
         "summary": m.summary,
         "description": m.description,
+        "experimental": m.properties.experimental,
         "modules": modules,
         "functions": functions,
         "types": types,

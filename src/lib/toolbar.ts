@@ -13,6 +13,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
@@ -1459,7 +1460,7 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'pointTool',
           },
           {
-            id: 'center-arc',
+            id: 'circle-center',
             onClick: ({ modelingSend, isActive }) =>
               isActive
                 ? modelingSend({
@@ -1467,17 +1468,83 @@ export const useToolbarConfig = () => {
                   })
                 : modelingSend({
                     type: 'equip tool',
-                    data: { tool: 'centerArcTool' },
+                    data: { tool: 'circleTool' },
                   }),
-            icon: 'arcCenter',
+            icon: 'circle',
             status: 'available',
-            title: 'Center Arc',
-            hotkey: 'A',
-            description: 'Draw an arc by center and two endpoints',
+            title: 'Center circle',
+            description: 'Draw a circle from a center point and radius',
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'centerArcTool',
+              state.context.sketchSolveToolName === 'circleTool',
+          },
+          {
+            id: 'arcs',
+            array: [
+              {
+                id: 'center-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'centerArcTool' },
+                      }),
+                icon: 'arcCenter',
+                status: 'available',
+                title: 'Center Arc',
+                hotkey: 'A',
+                description: 'Draw an arc by center and two endpoints',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'centerArcTool',
+              },
+              {
+                id: 'three-point-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'threePointArcTool' },
+                      }),
+                icon: 'arc',
+                status: 'available',
+                title: '3-Point Arc',
+                description: 'Draw an arc from start, end, and a third point',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'threePointArcTool',
+              },
+              {
+                id: 'tangential-arc',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'tangentialArcTool' },
+                      }),
+                icon: 'tangent',
+                status: 'available',
+                title: 'Tangential Arc',
+                hotkey: 'Shift+A',
+                description: 'Draw an arc tangent to an existing line endpoint',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'tangentialArcTool',
+              },
+            ],
           },
           {
             id: 'trim',
@@ -1578,6 +1645,27 @@ export const useToolbarConfig = () => {
             title: 'Coincident',
             hotkey: 'C',
             description: 'Constrain points or curves to be coincident',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Tangent',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Tangent',
+              }),
+            icon: 'tangent',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedTangentConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedTangentConstraintInput(state) === null
+                ? 'Select a line and an arc, or two arcs, to add a tangent constraint.'
+                : undefined,
+            title: 'Tangent',
+            hotkey: 'Shift+T',
+            description:
+              'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
             links: [],
             isActive: (state) => false,
           },

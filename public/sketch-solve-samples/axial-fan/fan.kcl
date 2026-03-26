@@ -1,0 +1,90 @@
+// Fan
+// Spinning axial fan that moves airflow
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Model the center hub of the fan
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 25mm], end = [var -13.5mm, var 25mm])
+  arc2 = arc(start = [var -13.5mm, var 25mm], end = [var -15mm, var 23.5mm], center = [var -13.5mm, var 23.5mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -15mm, var 23.5mm], end = [var -15mm, var 4.5mm])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var -15mm, var 4.5mm], end = [var -13mm, var 4.5mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -13mm, var 4.5mm], end = [var -13mm, var 20mm])
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var -12mm, var 21mm], end = [var -13mm, var 20mm], center = [var -12mm, var 20mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -12mm, var 21mm], end = [var -1mm, var 21mm])
+  coincident([arc6.start, line7.start])
+  line8 = line(start = [var -1mm, var 21mm], end = [var -1mm, var 23mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -1mm, var 23mm], end = [var -1.15mm, var 23mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var -1.15mm, var 23mm], end = [var -1mm, var 23.6mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -1mm, var 23.6mm], end = [var 0mm, var 23.6mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0mm, var 23.6mm], end = [var 0mm, var 25mm])
+  coincident([line11.end, line12.start])
+  horizontal(arc2)
+  vertical(line4)
+  horizontal(line5)
+  vertical(arc6)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
+  horizontal(line12)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+fanCenter = revolve(
+       region001,
+       axis = {
+         direction = [0.0, 1.0],
+         origin = [0.0, 0.0]
+       },
+     )
+  |> appearance(color = "#f3e2d8")
+
+// Define blade construction
+bladeBaseZ = 4.5
+bladeLengthZ = fanHeight - 2 - bladeBaseZ
+bladeRootAngle = 50deg
+bladeOuterR = fanSize * 22 / 50
+bladeInnerR = 15
+bladeTwist = -bladeRootAngle
+
+// Base planform sketch for one blade (on XY at bladeBaseZ)
+bladeBase = sketch(on = offsetPlane(XY, offset = bladeBaseZ)) {
+  arc1 = arc(start = [var 9.64mm, var 11.49mm], end = [var 6.58mm, var 13.48mm], center = [var 0mm, var 0mm])
+  arc2 = arc(start = [var 45.73mm, var 26.4mm], end = [var 6.58mm, var 13.48mm], center = [var 37.74mm, var -15.19mm])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var 47.46mm, var 23.15mm], end = [var 45.73mm, var 26.4mm], center = [var 0mm, var 0mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var 47.46mm, var 23.15mm], end = [var 9.64mm, var 11.49mm], center = [var 38.79mm, var -15.9mm])
+  coincident([arc3.start, arc4.start])
+}
+
+region002 = region(segments = [bladeBase.arc1, bladeBase.arc2])
+// Create the twisted blade solid and pattern
+twistedBlade = extrude(
+       region002,
+       length = bladeLengthZ,
+       twistAngle = bladeTwist,
+       twistAngleStep = 12deg,
+       twistCenter = [0, 0],
+     )
+  |> appearance(color = "#f3e2d8")
+  |> patternCircular3d(
+       instances = 9,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+

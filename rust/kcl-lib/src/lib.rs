@@ -89,51 +89,77 @@ pub mod walk;
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{AsyncTasks, EngineManager, EngineStats};
-pub use errors::{
-    BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
-    ReportWithOutputs,
-};
-pub use execution::{
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
-    clear_mem_cache, pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
-    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
-};
+pub use engine::AsyncTasks;
+pub use engine::EngineManager;
+pub use engine::EngineStats;
+pub use errors::BacktraceItem;
+pub use errors::CompilationError;
+pub use errors::ConnectionError;
+pub use errors::ExecError;
+pub use errors::KclError;
+pub use errors::KclErrorWithOutputs;
+pub use errors::Report;
+pub use errors::ReportWithOutputs;
+pub use execution::ExecOutcome;
+pub use execution::ExecState;
+pub use execution::ExecutorContext;
+pub use execution::ExecutorSettings;
+pub use execution::MetaSettings;
+pub use execution::MockConfig;
+pub use execution::Point2d;
+pub use execution::bust_cache;
+pub use execution::clear_mem_cache;
+pub use execution::pre_execute_transpile;
+pub use execution::transpile_all_old_sketches_to_new;
+pub use execution::transpile_old_sketch_to_new;
+pub use execution::transpile_old_sketch_to_new_ast;
+pub use execution::transpile_old_sketch_to_new_with_execution;
+pub use execution::typed_path::TypedPath;
 pub use kcl_error::SourceRange;
-pub use lsp::{
-    ToLspRange,
-    copilot::Backend as CopilotLspBackend,
-    kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
-};
+pub use lsp::ToLspRange;
+pub use lsp::copilot::Backend as CopilotLspBackend;
+pub use lsp::kcl::Backend as KclLspBackend;
+pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use modules::ModuleId;
-pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
+pub use parsing::ast::types::FormatOptions;
+pub use parsing::ast::types::NodePath;
+pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
-pub use settings::types::{Configuration, project::ProjectConfiguration};
+pub use settings::types::Configuration;
+pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
-pub use unparser::{recast_dir, walk_dir};
+pub use unparser::recast_dir;
+#[cfg(not(target_arch = "wasm32"))]
+pub use unparser::walk_dir;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
     #[cfg(feature = "artifact-graph")]
-    pub use crate::execution::{ArtifactCommand, Operation};
-    pub use crate::{
-        execution::{
-            DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
-            annotations::WarningLevel,
-            types::{NumericType, UnitType},
-        },
-        util::{RetryConfig, execute_with_retries},
-    };
+    pub use crate::execution::ArtifactCommand;
+    pub use crate::execution::DefaultPlanes;
+    pub use crate::execution::IdGenerator;
+    pub use crate::execution::KclValue;
+    #[cfg(feature = "artifact-graph")]
+    pub use crate::execution::Operation;
+    pub use crate::execution::PlaneKind;
+    pub use crate::execution::Sketch;
+    pub use crate::execution::annotations::WarningLevel;
+    pub use crate::execution::types::NumericType;
+    pub use crate::execution::types::UnitType;
+    pub use crate::util::RetryConfig;
+    pub use crate::util::execute_with_retries;
 }
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_engine {
-    pub use crate::{
-        coredump::wasm::{CoreDumpManager, CoreDumper},
-        engine::conn_wasm::{EngineCommandManager, EngineConnection, ResponseContext},
-        fs::wasm::{FileManager, FileSystemManager},
-    };
+    pub use crate::coredump::wasm::CoreDumpManager;
+    pub use crate::coredump::wasm::CoreDumper;
+    pub use crate::engine::conn_wasm::EngineCommandManager;
+    pub use crate::engine::conn_wasm::EngineConnection;
+    pub use crate::engine::conn_wasm::ResponseContext;
+    pub use crate::fs::wasm::FileManager;
+    pub use crate::fs::wasm::FileSystemManager;
 }
 
 pub mod mock_engine {
@@ -146,20 +172,22 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{
-        TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm, untyped_point_to_unit,
-    };
+    pub use crate::std::utils::TangentialArcInfoInput;
+    pub use crate::std::utils::get_tangential_arc_to_info;
+    pub use crate::std::utils::is_points_ccw_wasm;
+    pub use crate::std::utils::untyped_point_to_unit;
 }
 
 pub mod pretty {
-    pub use crate::{
-        fmt::{format_number_literal, format_number_value, human_display_number},
-        parsing::token::NumericSuffix,
-    };
+    pub use crate::fmt::format_number_literal;
+    pub use crate::fmt::format_number_value;
+    pub use crate::fmt::human_display_number;
+    pub use crate::parsing::token::NumericSuffix;
 }
 
 pub mod front {
-    pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
+    pub(crate) use crate::frontend::modify::find_defined_names;
+    pub(crate) use crate::frontend::modify::next_free_name_using_max;
     // Re-export trim module items
     pub use crate::frontend::{
         FrontendState, SetProgramOutcome,
@@ -170,8 +198,7 @@ pub mod front {
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent, TangentArcCtor,
-            Vertical,
+            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
         },
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
@@ -186,11 +213,14 @@ pub mod front {
 
 #[cfg(feature = "cli")]
 use clap::ValueEnum;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::exec::WarningLevel;
 #[allow(unused_imports)]
-use crate::log::{log, logln};
+use crate::log::log;
+#[allow(unused_imports)]
+use crate::log::logln;
 
 lazy_static::lazy_static! {
 

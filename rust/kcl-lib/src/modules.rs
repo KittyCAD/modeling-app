@@ -2,16 +2,22 @@ use std::fmt;
 
 use anyhow::Result;
 pub use kcl_error::ModuleId;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
-    fs::{FileManager, FileSystem},
-    parsing::ast::types::{ImportPath, Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::EnvironmentRef;
+use crate::execution::ModuleArtifactState;
+use crate::execution::PreImportedGeometry;
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileManager;
+use crate::fs::FileSystem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ModuleLoader {

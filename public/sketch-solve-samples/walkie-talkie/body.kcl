@@ -1,0 +1,92 @@
+// Walkie Talkie Body
+// The main body of the walkie talkie assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import height, width, thickness, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight from "parameters.kcl"
+
+// Sketch and extrude the body of the walkie talkie
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -1.25in, var 2in], end = [var 1.25in, var 2in])
+  line2 = line(start = [var 1.25in, var 2in], end = [var 1.25in, var -2in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.25in, var -2in], end = [var -1.25in, var -2in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.25in, var -2in], end = [var -1.25in, var 2in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+body = extrude(region001, length = thickness)
+  |> chamfer(
+       length = chamferLength,
+       tags = [
+         getNextAdjacentEdge(chamfer1),
+         getNextAdjacentEdge(chamfer2),
+         getNextAdjacentEdge(chamfer3),
+         getNextAdjacentEdge(chamfer4)
+       ],
+     )
+
+// Cut out the indentation for the case
+caseIndentSketch = sketch(on = startSketchOn(body, face = END)) {
+  line1 = line(start = [var -1.13in, var 1.63in], end = [var -0.88in, var 1.88in])
+  line2 = line(start = [var -0.88in, var 1.88in], end = [var 0.88in, var 1.88in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 1.88in], end = [var 1.13in, var 1.63in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.13in, var 1.63in], end = [var 1.13in, var -1.63in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.13in, var -1.63in], end = [var 0.88in, var -1.88in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.88in, var -1.88in], end = [var -0.88in, var -1.88in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -0.88in, var -1.88in], end = [var -1.13in, var -1.63in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -1.13in, var -1.63in], end = [var -1.13in, var 1.63in])
+  coincident([line7.end, line8.start])
+}
+region002 = region(segments = [
+  caseIndentSketch.line1,
+  caseIndentSketch.line2
+])
+extrude002 = extrude(region002, length = -0.0625)
+
+// Create the pocket for the screen
+screenCutout = sketch(on = startSketchOn(extrude002, face = START)) {
+  line1 = line(start = [var -0.88in, var 1.25in], end = [var 0.88in, var 1.25in])
+  line2 = line(start = [var 0.88in, var 1.25in], end = [var 0.88in, var 0.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 0.25in], end = [var -0.88in, var 0.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.88in, var 0.25in], end = [var -0.88in, var 1.25in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+region003 = region(segments = [screenCutout.line1, screenCutout.line2])
+extrude003 = extrude(region003, length = screenDepth)
+
+// Create the speaker box
+speakerBox = sketch(on = startSketchOn(extrude002, face = START)) {
+  line1 = line(start = [var -0.63in, var -0.13in], end = [var 0.63in, var -0.13in])
+  line2 = line(start = [var 0.63in, var -0.13in], end = [var 0.63in, var -1.38in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.63in, var -1.38in], end = [var -0.63in, var -1.38in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.63in, var -1.38in], end = [var -0.63in, var -0.13in])
+  coincident([line3.end, line4.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+}
+
+region004 = region(segments = [speakerBox.line1, speakerBox.line2])
+extrude(region004, length = -.5)
+  |> appearance(color = "#277bb0")
+

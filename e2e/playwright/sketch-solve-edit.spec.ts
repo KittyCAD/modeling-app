@@ -366,6 +366,27 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await editor.expectEditor.toContain('parallel([line1, line2])')
     })
+
+    await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
+      await toolbar.circleBtn.click()
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [circleCenterClick] = scene.makeMouseHelpers(0.75, 0.65, {
+        format: 'ratio',
+      })
+      const [circleRadiusClick] = scene.makeMouseHelpers(0.85, 0.78, {
+        format: 'ratio',
+      })
+
+      await circleCenterClick()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await circleRadiusClick()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('circle(start = [')
+      await expect(pointHandles).toHaveCount(11)
+    })
   })
 
   test('can delete individual constraints and the sketch block from the feature tree', async ({
@@ -380,7 +401,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Set up the app with test code', async () => {
       const code = `@settings(experimentalFeatures = allow)
 
-sketch(on = XY) {
+sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
@@ -402,7 +423,7 @@ sketch(on = XY) {
         timeout: 10000,
       })
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
+        'sketch001',
         0
       )
       await solveSketchOperation.dblclick()
@@ -414,34 +435,144 @@ sketch(on = XY) {
     })
 
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await page.waitForTimeout(1000)
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await page.waitForTimeout(1000)
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(
         'coincident([line2.start, line1.end])'
       )
     })
 
     await test.step('Delete sketch block from feature tree and verify code updates', async () => {
-      const op = await toolbar.getFeatureTreeOperation('Solve Sketch', 0)
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch(on')
     })
+  })
+
+  test('can extrude sketch regions', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const code = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.05mm, var -1.99mm], end = [var 2.1mm, var -1.99mm])
+  line2 = line(start = [var 2.1mm, var -1.99mm], end = [var 2.1mm, var 2.23mm])
+  line3 = line(start = [var 2.1mm, var 2.23mm], end = [var -2.05mm, var 2.23mm])
+  line4 = line(start = [var -2.05mm, var 2.23mm], end = [var -2.05mm, var -1.99mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}`
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
+      format: 'ratio',
+    })
+
+    await test.step('Set up scene with a closed sketch block', async () => {
+      await context.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, code)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
+    })
+
+    await test.step('Extrude region by clicking center', async () => {
+      await toolbar.extrudeButton.click()
+      await clickCenter()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        commandName: 'Extrude',
+        headerArguments: {
+          Profiles: '',
+          Length: '5',
+        },
+        highlightedHeaderArg: 'Profiles',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        commandName: 'Extrude',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '5',
+        },
+        highlightedHeaderArg: 'length',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Extrude',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '5',
+        },
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Expect extrusion', async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(
+        'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
+      )
+      await editor.expectEditor.toContain(
+        'extrude001 = extrude(region001, length = 5)'
+      )
+      // TODO: enable in https://github.com/KittyCAD/modeling-app/pull/10547
+      // await expect(
+      //   page.locator('.cm-lint-marker-error').first()
+      // ).not.toBeInViewport()
+    })
+
+    // TODO: enable in https://github.com/KittyCAD/modeling-app/pull/10547
+    // await test.step('Start sketch and click center face', async () => {
+    //   await toolbar.startSketchPlaneSelection()
+    //   await clickCenter()
+    //   await page.waitForTimeout(1000) // Wait for unavoidable camera animation
+
+    //   await expect(toolbar.exitSketchBtn).toBeEnabled()
+    //   await editor.expectEditor.toContain(
+    //     /faceOf\(extrude001, face = region001\.tags\./
+    //   )
+    //   await editor.expectEditor.toContain('sketch002 = sketch(on = ')
+    // })
   })
 })
