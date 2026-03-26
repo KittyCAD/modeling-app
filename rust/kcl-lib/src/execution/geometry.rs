@@ -1768,21 +1768,21 @@ impl Path {
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
-    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+    pub fn get_base_mut(&mut self) -> &mut BasePath {
         match self {
-            Path::ToPoint { base } => Some(base),
-            Path::Horizontal { base, .. } => Some(base),
-            Path::AngledLineTo { base, .. } => Some(base),
-            Path::Base { base } => Some(base),
-            Path::TangentialArcTo { base, .. } => Some(base),
-            Path::TangentialArc { base, .. } => Some(base),
-            Path::Circle { base, .. } => Some(base),
-            Path::CircleThreePoint { base, .. } => Some(base),
-            Path::Arc { base, .. } => Some(base),
-            Path::ArcThreePoint { base, .. } => Some(base),
-            Path::Ellipse { base, .. } => Some(base),
-            Path::Conic { base, .. } => Some(base),
-            Path::Bezier { base, .. } => Some(base),
+            Path::ToPoint { base } => base,
+            Path::Horizontal { base, .. } => base,
+            Path::AngledLineTo { base, .. } => base,
+            Path::Base { base } => base,
+            Path::TangentialArcTo { base, .. } => base,
+            Path::TangentialArc { base, .. } => base,
+            Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
+            Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
+            Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 

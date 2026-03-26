@@ -28,6 +28,7 @@ use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
+use crate::std::sketch2::build_reverse_region_mapping;
 
 #[cfg(test)]
 mod mermaid_tests;
@@ -1205,6 +1206,7 @@ fn artifacts_to_update(
                     "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
             };
+            // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
                 plane_id: path.plane_id,
@@ -1213,11 +1215,40 @@ fn artifacts_to_update(
                 sweep_id: None,
                 trajectory_sweep_id: None,
                 solid2d_id: None,
-                code_ref,
+                code_ref: code_ref.clone(),
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
             }));
+            // If we have a response, we can also create the segments in the
+            // region.
+            let Some(
+                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion { region_mapping, .. })
+                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
+                    region_mapping,
+                    ..
+                }),
+            ) = response
+            else {
+                return Ok(return_arr);
+            };
+            // Each key is a segment in the region. The value is the segment in
+            // the original path. Build the reverse mapping.
+            let original_segment_ids = path.seg_ids.iter().map(|p| p.0).collect::<Vec<_>>();
+            let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
+            for region_segment_ids in reverse.values() {
+                for segment_id in region_segment_ids {
+                    return_arr.push(Artifact::Segment(Segment {
+                        id: ArtifactId::new(*segment_id),
+                        path_id: id,
+                        surface_id: None,
+                        edge_ids: Vec::new(),
+                        edge_cut_id: None,
+                        code_ref: code_ref.clone(),
+                        common_surface_ids: Vec::new(),
+                    }))
+                }
+            }
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetFaceUuid(kcmc::Solid3dGetFaceUuid { object_id, .. }) => {

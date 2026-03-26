@@ -86,23 +86,6 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "sourceRange": []
           },
           "from": [
-            3.394380782855422,
-            0.3233908142344787
-          ],
-          "tag": null,
-          "to": [
-            3.394380782855383,
-            0.32339081423467236
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
             3.394380782855383,
             0.32339081423467236
           ],
@@ -117,23 +100,6 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
           "to": [
             1.586666666243411,
             4.808218489067258
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.586666666243411,
-            4.808218489067258
-          ],
-          "tag": null,
-          "to": [
-            1.586666666243411,
-            4.8082184890674515
           ],
           "type": "ToPoint",
           "units": "mm"
