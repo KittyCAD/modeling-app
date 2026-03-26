@@ -38,7 +38,7 @@ mod tests {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"fillet(radius = ${0:10})"#);
+        assert_eq!(snippet, r#"fillet(radius = ${0:10}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]
@@ -82,7 +82,7 @@ mod tests {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"revolve()"#);
+        assert_eq!(snippet, r#"revolve(axis = ${0:X})"#);
     }
 
     #[test]
