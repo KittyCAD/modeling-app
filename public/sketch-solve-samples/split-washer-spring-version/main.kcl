@@ -63,7 +63,7 @@ washerSectionSketch = startSketchOn(XZ)
 // We position the start of the rectangle at the washerHoleRadius, so it aligns with the helix guide.
 
 
-washerSectionProfile = sketch(on = XZ) {
+washerSectionProfile = sketch(on = washerSectionSketch) {
   line1 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 1mm])
   line2 = line(start = [var 2mm, var 1mm], end = [var 4mm, var 1mm])
   coincident([line1.end, line2.start])

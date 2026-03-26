@@ -5,22 +5,51 @@ use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
-use crate::{
-    CompilationError, KclError, ModuleId, SourceRange,
-    errors::KclErrorDetails,
-    execution::{
-        AbstractSegment, BoundedEdge, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry,
-        GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata, Plane, Segment, SegmentRepr, Sketch,
-        SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier, UnsolvedExpr,
-        annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
-        TagNode, Type,
-    },
-    std::{StdFnProps, args::TyF64},
-};
+use crate::CompilationError;
+use crate::KclError;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::AbstractSegment;
+use crate::execution::BoundedEdge;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecState;
+use crate::execution::Face;
+use crate::execution::GdtAnnotation;
+use crate::execution::Geometry;
+use crate::execution::GeometryWithImportedGeometry;
+use crate::execution::Helix;
+use crate::execution::ImportedGeometry;
+use crate::execution::Metadata;
+use crate::execution::Plane;
+use crate::execution::Segment;
+use crate::execution::SegmentRepr;
+use crate::execution::Sketch;
+use crate::execution::SketchConstraint;
+use crate::execution::SketchVar;
+use crate::execution::SketchVarId;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::UnsolvedExpr;
+use crate::execution::annotations::FnAttrs;
+use crate::execution::annotations::SETTINGS;
+use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
+use crate::execution::annotations::{self};
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::KclNone;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TagNode;
+use crate::parsing::ast::types::Type;
+use crate::std::StdFnProps;
+use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 

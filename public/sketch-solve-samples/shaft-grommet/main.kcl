@@ -18,7 +18,7 @@ overallHeight = forMaterialThickness + flangeHeight * 2
 grommetProfileSketch = startSketchOn(YZ)
 
 // Define the profile of the grommet
-grommetProfile = sketch(on = YZ) {
+grommetProfile = sketch(on = grommetProfileSketch) {
   line1 = line(start = [var 0.06in, var 0in], end = [var 0.06in, var 0.16in])
   line2 = line(start = [var 0.06in, var 0.16in], end = [var 0.13in, var 0.16in])
   coincident([line1.end, line2.start])

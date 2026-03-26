@@ -1,13 +1,13 @@
 ---
 title: "sketch2::point"
 subtitle: "Function in std::sketch2"
-excerpt: ""
+excerpt: "Create a point in a sketch."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-
+Create a point in a sketch.
 
 ```kcl
 sketch2::point(at: Point2d): Segment

@@ -1,0 +1,59 @@
+// Secondary Shaft Module
+// Offset shaft with gear placements
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Revolve the secondary shaft
+sketch001 = sketch(on = offsetPlane(YZ, offset = 392)) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 426.83mm, var 0mm])
+  line2 = line(start = [var 426.83mm, var 0mm], end = [var 426.83mm, var -40mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 426.83mm, var -40mm], end = [var 419.76mm, var -47.07mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 419.76mm, var -47.07mm], end = [var 50mm, var -47.07mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 50mm, var -47.07mm], end = [var 50mm, var -80mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 50mm, var -80mm], end = [var -350mm, var -80mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -350mm, var -80mm], end = [var -350mm, var -50mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -350mm, var -50mm], end = [var -430mm, var -50mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -430mm, var -50mm], end = [var -434.24mm, var -45.76mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var -434.24mm, var -45.76mm], end = [var -434.24mm, var 0mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -434.24mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line10.end, line11.start])
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(line8)
+  horizontal(line9)
+  vertical(line11)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+secondaryShaft = revolve(
+       region001,
+       axis = {
+         direction = [1, 0],
+         origin = [392, 0]
+       },
+     )
+
+// Build and position the gears for the secondary shaft
+helicalGear(nTeeth = 16, helixAngle = -25deg, bore = 160)
+  |> translate(x = 392)
+  |> rotate(pitch = 3)
+
+helicalGear(nTeeth = 14, helixAngle = -25deg, bore = 160)
+  |> translate(y = -200, x = 392)
+

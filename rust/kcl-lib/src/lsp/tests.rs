@@ -1,23 +1,24 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use pretty_assertions::assert_eq;
-use tower_lsp::{
-    LanguageServer,
-    lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
-        SemanticTokenType, TextEdit, WorkspaceEdit,
-    },
-};
+use tower_lsp::LanguageServer;
+use tower_lsp::lsp_types::CodeActionKind;
+use tower_lsp::lsp_types::CodeActionOrCommand;
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::PrepareRenameResponse;
+use tower_lsp::lsp_types::SemanticTokenModifier;
+use tower_lsp::lsp_types::SemanticTokenType;
+use tower_lsp::lsp_types::TextEdit;
+use tower_lsp::lsp_types::WorkspaceEdit;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{
-        LspSuggestion,
-        test_util::{copilot_lsp_server, kcl_lsp_server},
-    },
-    parsing::ast::types::{Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::LspSuggestion;
+use crate::lsp::test_util::copilot_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {

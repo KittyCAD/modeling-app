@@ -23,6 +23,8 @@ describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 1))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 0))
   testBothOrders(topLevelRange(0, 5), topLevelRange(-2, -1), false)
+  testBothOrders(topLevelRange(0, 10), topLevelRange(3, 6))
+  testBothOrders(topLevelRange(0, 10), topLevelRange(0, 10))
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {

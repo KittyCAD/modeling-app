@@ -1,7 +1,6 @@
-use crate::frontend::{
-    api::ObjectId,
-    trim::{Coords2d, execute_trim_flow},
-};
+use crate::frontend::api::ObjectId;
+use crate::frontend::trim::Coords2d;
+use crate::frontend::trim::execute_trim_flow;
 
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
@@ -933,7 +932,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   coincident([arc2.end, arc1])
 }
 "#;
@@ -958,7 +957,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   coincident([arc2.start, arc1])
 }
 "#;
@@ -1142,7 +1141,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc9 = arc(start = [var -5.65mm, var 6.91mm], end = [var -6.44mm, var 5.46mm], center = [var -0.29mm, var 3.06mm])
-  arc2 = arc(start = [var -7.46mm, var 5.88mm], end = [var -4.37mm, var 6.8mm], center = [var -6.24mm, var 7.42mm])
+  arc2 = arc(start = [var -7.46mm, var 5.88mm], end = [var -4.36mm, var 6.8mm], center = [var -6.24mm, var 7.42mm])
   line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.84mm, var 3.83mm])
   line6 = line(start = [var -7.47mm, var 2.46mm], end = [var -6.1mm, var 2.49mm])
   arc1 = arc(start = [var -6.84mm, var 3.83mm], end = [var -6.86mm, var 2.47mm], center = [var -0.29mm, var 3.06mm])
@@ -1269,9 +1268,9 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
-  arc2 = arc(start = [var -4.58mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
+  arc2 = arc(start = [var -4.59mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
   line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
-  arc3 = arc(start = [var -4.58mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
+  arc3 = arc(start = [var -4.59mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
   coincident([arc1.end, line1.end])
   coincident([arc3.start, arc2.start])
 }
@@ -1685,12 +1684,12 @@ sketch(on = YZ) {
     let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arcToSplit = arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
+  arcToSplit = arc(start = [var 11.07mm, var 1.06mm], end = [var 3.54mm, var 5.27mm], center = [var 0.67mm, var -8.71mm])
   line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
   line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
-  lineCoincidentWithArcCen = line(start = [var 0.75mm, var -8.72mm], end = [var 11.5mm, var -7.5mm])
-  line4 = line(start = [var 11.03mm, var 1.02mm], end = [var 13.3mm, var 6.85mm])
-  line5 = line(start = [var 7.38mm, var 3.8mm], end = [var 10mm, var 8mm])
+  lineCoincidentWithArcCen = line(start = [var 0.67mm, var -8.71mm], end = [var 11.5mm, var -7.5mm])
+  line4 = line(start = [var 11.07mm, var 1.06mm], end = [var 13.27mm, var 6.82mm])
+  line5 = line(start = [var 7.64mm, var 3.74mm], end = [var 10mm, var 8mm])
   coincident([line5.start, arcToSplit])
   coincident([line4.start, arcToSplit.start])
   coincident([
@@ -1698,9 +1697,9 @@ sketch(on = YZ) {
     arcToSplit.center
   ])
   distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = line(start = [var -0.87mm, var -6.87mm], end = [var 2.91mm, var -11.19mm])
+  line3 = line(start = [var -0.92mm, var -6.92mm], end = [var 2.89mm, var -11.21mm])
   coincident([arcToSplit.center, line3])
-  arc1 = arc(start = [var -5.75mm, var 3.97mm], end = [var -10.28mm, var 0.32mm], center = [var 0.75mm, var -8.72mm])
+  arc1 = arc(start = [var -5.76mm, var 4.08mm], end = [var -10.37mm, var 0.39mm], center = [var 0.67mm, var -8.71mm])
   coincident([arcToSplit.end, line2])
   coincident([arc1.start, line1])
   coincident([
@@ -2125,7 +2124,10 @@ sketch(on = YZ) {
 
 // Helper function to get objects from KCL code (similar to getSceneGraphDeltaFromKcl in TypeScript)
 async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Object> {
-    use crate::{ExecutorContext, Program, execution::MockConfig, frontend::FrontendState};
+    use crate::ExecutorContext;
+    use crate::Program;
+    use crate::execution::MockConfig;
+    use crate::frontend::FrontendState;
 
     // Parse KCL code
     let parse_result = Program::parse(kcl_code).expect("Failed to parse KCL");
@@ -2196,7 +2198,9 @@ mod get_trim_spawn_terminations_tests {
     use kittycad_modeling_cmds::units::UnitLength;
 
     use super::*;
-    use crate::frontend::trim::{Coords2d, TrimTermination, get_trim_spawn_terminations};
+    use crate::frontend::trim::Coords2d;
+    use crate::frontend::trim::TrimTermination;
+    use crate::frontend::trim::get_trim_spawn_terminations;
 
     #[tokio::test]
     async fn test_line_segment_intersection_terminations() {
@@ -2525,7 +2529,7 @@ sketch(on = YZ) {
         } = result.left_side
         {
             assert!((trim_termination_coords.x - (-0.36700307305406205)).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.966675365647721).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.9668103031831037).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(9));
             assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(6));
         }
@@ -2536,8 +2540,8 @@ sketch(on = YZ) {
             other_segment_point_id,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - (-4.178878101257838)).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.447749604872991).abs() < 1e-5);
+            assert!((trim_termination_coords.x - (-4.178914525037132)).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.4478569077378745).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(12));
             assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(11));
         }

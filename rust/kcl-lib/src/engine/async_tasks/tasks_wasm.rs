@@ -1,12 +1,12 @@
 //! This module contains the wasm-specific `AsyncTasks` struct, which is used to manage a set of asynchronous
 //! tasks.
 
-use std::sync::{
-    Arc,
-    atomic::{AtomicUsize, Ordering},
-};
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
-use tokio::sync::{Notify, mpsc};
+use tokio::sync::Notify;
+use tokio::sync::mpsc;
 
 use crate::errors::KclError;
 
