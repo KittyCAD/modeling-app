@@ -22,18 +22,18 @@ pub enum FormatNumericSuffixError {
 }
 
 /// For UI code generation, format a number with a suffix. The result must parse
-/// as a literal. If it can't be done, returns an error.
-///
+/// as a literal. If it can't be done, returns an error. `decimals` defaults to 2
+//
 /// This is used by TS.
 pub fn format_number_literal(
     value: f64,
     suffix: NumericSuffix,
     decimals: Option<usize>,
 ) -> Result<String, FormatNumericSuffixError> {
-    // Format to `d` decimal places maximum (default 2, matching TypeScript roundOff function)
+    // Format to `d` decimal places maximum (matching TypeScript roundOff function)
     let d = decimals.unwrap_or(2);
     // Round first to ensure we don't have floating point precision issues
-    let factor = 10_f64.powf(d as f64);
+    let factor = 10_f64.powi(d as i32);
     let rounded = (value * factor).round() / factor;
     // Format with up to `d` decimal places, removing trailing zeros
     let formatted = if rounded.fract().abs() < 1e-10 {
