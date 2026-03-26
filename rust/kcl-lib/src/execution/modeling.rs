@@ -16,6 +16,90 @@ use crate::exec::KclValue;
 use crate::execution::Solid;
 use crate::std::Args;
 
+#[cfg(target_arch = "wasm32")]
+fn log_modeling_cmd(label: &str, id: Uuid, cmd: &ModelingCmd) {
+    let serialized = serde_json::to_value(cmd).ok();
+    let cmd_type = serialized
+        .as_ref()
+        .and_then(extract_variant_name_from_json)
+        .unwrap_or_else(|| "unknown".to_owned());
+    let payload = serialized
+        .as_ref()
+        .and_then(filter_interesting_json)
+        .map(|value| serde_json::to_string(&value).unwrap_or_else(|_| "null".to_owned()))
+        .unwrap_or_else(|| "null".to_owned());
+
+    web_sys::console::log_1(
+        &format!("[wasm modeling] label={label} cmd_id={id} type={cmd_type} payload={payload}").into(),
+    );
+}
+
+#[cfg(target_arch = "wasm32")]
+fn extract_variant_name_from_json(value: &serde_json::Value) -> Option<String> {
+    match value {
+        serde_json::Value::Object(map) if map.get("type").is_some() => map.get("type")?.as_str().map(ToOwned::to_owned),
+        serde_json::Value::Object(map) => map.keys().next().cloned(),
+        _ => None,
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+fn filter_interesting_json(value: &serde_json::Value) -> Option<serde_json::Value> {
+    match value {
+        serde_json::Value::Object(map) => {
+            let entries = map
+                .iter()
+                .filter_map(|(key, child)| {
+                    if is_interesting_json_key(key) {
+                        Some((key.clone(), child.clone()))
+                    } else {
+                        filter_interesting_json(child).map(|nested| (key.clone(), nested))
+                    }
+                })
+                .collect::<serde_json::Map<String, serde_json::Value>>();
+
+            if entries.is_empty() {
+                None
+            } else {
+                Some(serde_json::Value::Object(entries))
+            }
+        }
+        serde_json::Value::Array(items) => {
+            let filtered = items
+                .iter()
+                .filter_map(filter_interesting_json)
+                .collect::<Vec<serde_json::Value>>();
+
+            if filtered.is_empty() {
+                None
+            } else {
+                Some(serde_json::Value::Array(filtered))
+            }
+        }
+        _ => None,
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+fn is_interesting_json_key(key: &str) -> bool {
+    matches!(
+        key,
+        "id" | "ids"
+            | "cmd_id"
+            | "request_id"
+            | "object_id"
+            | "edge_id"
+            | "face_id"
+            | "face_ids"
+            | "curve_id"
+            | "entity_id"
+            | "solid_id"
+            | "sketch_id"
+            | "target"
+    ) || key.ends_with("_id")
+        || key.ends_with("_ids")
+}
+
 /// Context and metadata needed to send a single modeling command.
 ///
 /// Many functions consume Self so that the command ID isn't accidentally reused
@@ -89,6 +173,8 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
+        #[cfg(target_arch = "wasm32")]
+        log_modeling_cmd("batch", id, &cmd);
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
@@ -107,6 +193,10 @@ impl ExecState {
     ) -> Result<(), KclError> {
         if self.is_in_sketch_block() {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        #[cfg(target_arch = "wasm32")]
+        for cmd_req in cmds {
+            log_modeling_cmd("batch_prebuilt", *cmd_req.cmd_id.as_ref(), &cmd_req.cmd);
         }
         #[cfg(feature = "artifact-graph")]
         for cmd_req in cmds {
@@ -131,6 +221,8 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
+        #[cfg(target_arch = "wasm32")]
+        log_modeling_cmd("batch_end", id, &cmd);
         // TODO: The order of the tracking of these doesn't match the order that
         // they're sent to the engine.
         #[cfg(feature = "artifact-graph")]
@@ -152,6 +244,8 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
+        #[cfg(target_arch = "wasm32")]
+        log_modeling_cmd("send", id, &cmd);
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
@@ -172,6 +266,8 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
+        #[cfg(target_arch = "wasm32")]
+        log_modeling_cmd("async_send", id, cmd);
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,

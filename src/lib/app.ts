@@ -1,7 +1,7 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type {
@@ -115,6 +115,118 @@ export interface AppSubsystems {
 }
 
 let rustContextCallId = 0
+const INTERESTING_ENGINE_KEYS = new Set([
+  'id',
+  'ids',
+  'cmd_id',
+  'cmdId',
+  'request_id',
+  'requestId',
+  'object_id',
+  'objectId',
+  'edge_id',
+  'edgeId',
+  'face_id',
+  'faceId',
+  'face_ids',
+  'faceIds',
+  'curve_id',
+  'curveId',
+  'entity_id',
+  'entityId',
+  'solid_id',
+  'solidId',
+  'sketch_id',
+  'sketchId',
+  'target',
+])
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function getVariantName(value: unknown): string | undefined {
+  if (!isRecord(value)) {
+    return
+  }
+
+  if (typeof value.type === 'string') {
+    return value.type
+  }
+
+  const keys = Object.keys(value)
+  if (keys.length === 1) {
+    return keys[0]
+  }
+}
+
+function collectInterestingFields(value: unknown, depth = 0): unknown {
+  if (depth > 6 || value === null || value === undefined) {
+    return
+  }
+
+  if (isArray(value)) {
+    const filtered = value
+      .map((item) => collectInterestingFields(item, depth + 1))
+      .filter((item) => item !== undefined)
+    return filtered.length > 0 ? filtered : undefined
+  }
+
+  if (!isRecord(value)) {
+    return
+  }
+
+  const entries = Object.entries(value).flatMap(([key, childValue]) => {
+    if (
+      INTERESTING_ENGINE_KEYS.has(key) ||
+      key.endsWith('_id') ||
+      key.endsWith('_ids')
+    ) {
+      return [[key, childValue] as const]
+    }
+
+    const nested = collectInterestingFields(childValue, depth + 1)
+    return nested === undefined ? [] : [[key, nested] as const]
+  })
+
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined
+}
+
+function summarizeSendResponseArg(response: unknown) {
+  if (!isRecord(response)) {
+    return
+  }
+
+  const resp = isRecord(response.resp) ? response.resp : undefined
+  const modeling =
+    resp &&
+    (isRecord(resp.modeling_response)
+      ? resp.modeling_response
+      : isRecord(resp.modelingResponse)
+        ? resp.modelingResponse
+        : undefined)
+  const batch =
+    resp &&
+    (isRecord(resp.responses)
+      ? resp.responses
+      : isRecord(resp.modelingBatch)
+        ? resp.modelingBatch
+        : undefined)
+
+  return {
+    success: response.success,
+    requestId: response.request_id ?? response.requestId,
+    responseType: getVariantName(resp),
+    modelingResponseType: getVariantName(modeling),
+    payload: collectInterestingFields(modeling ?? batch ?? resp ?? response),
+  }
+}
+
+function summarizeRustContextMethodCall(methodName: string, args: unknown[]) {
+  if (methodName === 'sendResponse') {
+    return summarizeSendResponseArg(args[0])
+  }
+}
 
 function createLoggedRustContext(rustContext: RustContext): RustContext {
   const wrappedMethods = new Map<PropertyKey, unknown>()
@@ -135,8 +247,12 @@ function createLoggedRustContext(rustContext: RustContext): RustContext {
         const callId = ++rustContextCallId
         const methodName = String(prop)
         const start = performance.now()
+        const details = summarizeRustContextMethodCall(methodName, args)
 
-        console.debug(`[app.rustContext#${callId}] ${methodName} start`)
+        console.debug(
+          `[app.rustContext#${callId}] ${methodName} start`,
+          details
+        )
 
         try {
           const result = value.apply(target, args)
@@ -147,6 +263,7 @@ function createLoggedRustContext(rustContext: RustContext): RustContext {
                 const durationMs = performance.now() - start
                 console.debug(`[app.rustContext#${callId}] ${methodName} end`, {
                   durationMs,
+                  details,
                 })
                 return resolvedValue
               })
@@ -156,6 +273,7 @@ function createLoggedRustContext(rustContext: RustContext): RustContext {
                   `[app.rustContext#${callId}] ${methodName} error`,
                   {
                     durationMs,
+                    details,
                     error,
                   }
                 )
@@ -167,12 +285,14 @@ function createLoggedRustContext(rustContext: RustContext): RustContext {
           const durationMs = performance.now() - start
           console.debug(`[app.rustContext#${callId}] ${methodName} end`, {
             durationMs,
+            details,
           })
           return result
         } catch (error) {
           const durationMs = performance.now() - start
           console.error(`[app.rustContext#${callId}] ${methodName} error`, {
             durationMs,
+            details,
             error,
           })
           // eslint-disable-next-line suggest-no-throw/suggest-no-throw
