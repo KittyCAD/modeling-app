@@ -1,0 +1,200 @@
+// Brake Caliper
+// Brake calipers are used to squeeze the brake pads against the rotor, causing larger and larger amounts of friction depending on how hard the brakes are pressed.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Define a start plane though the center of the brake rotor discs
+caliperPlane = offsetPlane(XZ, offset = tBell - hBellAboveDiscFace - tDiscHalf - (tVent / 2))
+
+// Create a cutout of the brake rotor shape
+sketch001 = sketch(on = caliperPlane) {
+  circle1 = circle(start = [var 154.94in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch001.circle1])
+sketch003 = extrude(region001, length = 2 * tDiscHalf + tVent + 0.2, symmetric = true)
+
+// Sketch a brake caliper profile using the rotor diameter as a guide
+sketch002 = sketch(on = caliperPlane) {
+  line1 = line(start = [var -4.29in, var 0in], end = [var -4.29in, var 0.6in])
+  line2 = line(start = [var -4.29in, var 0.6in], end = [var -4.5in, var 0.81in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -4.5in, var 0.81in], end = [var -4.5in, var 1.11in])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var -4.5in, var 1.11in], end = [var -4.5in, var 1.51in], center = [var -4.5in, var 1.31in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -4.5in, var 1.51in], end = [var -4.1in, var 2.2in])
+  coincident([arc4.end, line5.start])
+  line6 = line(start = [var -4.1in, var 2.2in], end = [var -4.1in, var 3.54in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -4.1in, var 3.54in], end = [var -4.53in, var 4.28in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var -4.53in, var 4.28in], end = [var -4.84in, var 4.32in], center = [var -4.7in, var 4.18in])
+  coincident([line7.end, arc8.start])
+  arc9 = arc(start = [var -4.84in, var 4.32in], end = [var -6.24in, var 2.13in], center = [var -0.6in, var 0.08in])
+  coincident([arc8.end, arc9.start])
+  line10 = line(start = [var -6.24in, var 2.13in], end = [var -6.24in, var 1.83in])
+  coincident([arc9.end, line10.start])
+  arc11 = arc(start = [var -6.44in, var 1.63in], end = [var -6.24in, var 1.83in], center = [var -6.44in, var 1.83in])
+  coincident([line10.end, arc11.end])
+  arc12 = arc(start = [var -6.44in, var 1.63in], end = [var -6.44in, var 1.23in], center = [var -6.44in, var 1.43in])
+  coincident([arc11.start, arc12.start])
+  arc13 = arc(start = [var -6.26in, var 0.93in], end = [var -6.44in, var 1.23in], center = [var -6.44in, var 1.03in])
+  coincident([arc12.end, arc13.end])
+  line14 = line(start = [var -6.26in, var 0.93in], end = [var -6.5in, var 0.61in])
+  coincident([arc13.start, line14.start])
+  line15 = line(start = [var -6.5in, var 0.61in], end = [var -6.5in, var 0in])
+  coincident([line14.end, line15.start])
+  line16 = line(start = [var -6.5in, var 0in], end = [var -4.29in, var 0in])
+  coincident([line15.end, line16.start])
+  vertical(line2)
+  vertical(arc4)
+  vertical(line7)
+  tangent([arc8, arc9])
+  radius(arc9) == 6in
+  vertical(arc11)
+  tangent([arc11, arc12])
+  radius(arc12) == 0.2in
+  radius(arc13) == 0.2in
+  vertical(line16)
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+baseSketch = extrude(region002, length = caliperThickness * 5 / 6, symmetric = true)
+
+  // Cut the rotor opening from the caliper
+  |> subtract(tools = sketch003)
+
+  // Add a bright appearance to the caliper
+  |> appearance(color = "#ce0909")
+
+// Draw a profile for the outer piece on the brake caliper
+sketch004 = sketch(on = startSketchOn(baseSketch, face = END)) {
+  line1 = line(start = [var -4.29in, var 0in], end = [var -4.29in, var 0.6in])
+  line2 = line(start = [var -4.29in, var 0.6in], end = [var -4.5in, var 0.81in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -4.5in, var 0.81in], end = [var -4.5in, var 1.11in])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var -4.5in, var 1.11in], end = [var -4.5in, var 1.51in], center = [var -4.5in, var 1.31in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -4.5in, var 1.51in], end = [var -4.26in, var 1.93in])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -4.26in, var 1.93in], end = [var -4.26in, var 2.13in], center = [var -4.43in, var 2.03in])
+  coincident([line5.end, arc6.start])
+  arc7 = arc(start = [var -4.33in, var 2.32in], end = [var -4.26in, var 2.13in], center = [var -3.74in, var 2.43in])
+  coincident([arc6.end, arc7.end])
+  line8 = line(start = [var -4.33in, var 2.32in], end = [var -4.47in, var 3.11in])
+  coincident([arc7.start, line8.start])
+  line9 = line(start = [var -4.47in, var 3.11in], end = [var -5.07in, var 3.11in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var -5.07in, var 3.11in], end = [var -5.37in, var 2.59in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -5.37in, var 2.59in], end = [var -5.58in, var 1.41in])
+  coincident([line10.end, line11.start])
+  arc12 = arc(start = [var -5.66in, var 1.28in], end = [var -5.58in, var 1.41in], center = [var -5.77in, var 1.44in])
+  coincident([line11.end, arc12.end])
+  arc13 = arc(start = [var -5.66in, var 1.28in], end = [var -5.71in, var 1in], center = [var -5.54in, var 1.12in])
+  coincident([arc12.start, arc13.start])
+  arc14 = arc(start = [var -5.67in, var 0.89in], end = [var -5.71in, var 1in], center = [var -5.87in, var 0.89in])
+  coincident([arc13.end, arc14.end])
+  line15 = line(start = [var -5.67in, var 0.89in], end = [var -5.67in, var 0in])
+  coincident([arc14.start, line15.start])
+  line16 = line(start = [var -5.67in, var 0in], end = [var -4.29in, var 0in])
+  coincident([line15.end, line16.start])
+  vertical(line2)
+  vertical(arc4)
+  radius(arc7) == 0.6in
+  horizontal(line10)
+  tangent([arc12, arc13])
+  radius(arc13) == 0.2in
+  radius(arc14) == 0.2in
+  vertical(line16)
+}
+region003 = region(segments = [sketch004.line1, sketch004.line2])
+outerSketch = extrude(region003, length = caliperThickness / 6)
+
+// Create two nubs on the caliper outer face
+nubSketch = startSketchOn(outerSketch, face = END)
+nub01 = sketch(on = nubSketch) {
+  circle1 = circle(start = [var -4.38in, var 1.31in], center = [var -4.5in, var 1.31in])
+}
+nub02 = sketch(on = nubSketch) {
+  circle1 = circle(start = [var -4.38in, var -1.31in], center = [var -4.5in, var -1.31in])
+}
+nubs = extrude([nub01, nub02], length = -0.05)
+
+// Draw a ZOO logo on the caliper outer
+// Define a function to draw the ZOO "Z"
+fn zLogo(surface, origin, fontSize, depth) {
+  sketch005 = surface
+    |> startProfile(at = [0 + origin[0], 0.15 + origin[1]])
+    |> yLine(length = -0.15)
+    |> xLine(length = 0.15)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.3 + origin[0], tag = $seg1)
+    |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
+    |> xLine(length = 0.63)
+    |> yLine(length = 0.225)
+    |> xLine(length = -0.57)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.93 + origin[0])
+    |> yLine(length = 0.15)
+    |> xLine(length = -0.15)
+    |> angledLine(angle = 47.15, length = -segLen(seg1), tag = $seg2)
+    |> yLine(length = segLen(seg3))
+    |> xLine(endAbsolute = 0 + origin[0])
+    |> yLine(length = -0.225)
+    |> angledLineThatIntersects(angle = 0, intersectTag = seg2, offset = 0)
+    |> close()
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+  zSketch = extrude(sketch005, length = depth)
+
+  return zSketch
+}
+
+// Define a function to draw the ZOO "O"
+fn oLogo(surface, origin, fontSize, depth) {
+  sketch005 = surface
+    |> startProfile(at = [.788 + origin[0], .921 + origin[1]])
+    |> arc(angleStart = 47.15 + 6, angleEnd = 47.15 - 6 + 180, radius = .525)
+    |> angledLine(angle = 47.15, length = .24)
+    |> arc(angleStart = 47.15 - 11 + 180, angleEnd = 47.15 + 11, radius = .288)
+    |> close(%)
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+  otagSketch = extrude(sketch005, length = depth)
+
+  sketch006 = surface
+    |> startProfile(at = [.16 + origin[0], .079 + origin[1]])
+    |> arc(angleStart = 47.15 + 6 - 180, angleEnd = 47.15 - 6, radius = .525)
+    |> angledLine(angle = 47.15, length = -.24)
+    |> arc(angleStart = 47.15 - 11, angleEnd = 47.15 + 11 - 180, radius = .288)
+    |> close(%)
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+  oouterSketch = extrude(sketch006, length = depth)
+  return [otagSketch, oouterSketch]
+}
+
+// Create each letter using the letter functions
+z = zLogo(
+  surface = startSketchOn(outerSketch, face = END),
+  origin = [-1.57, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
+
+o = oLogo(
+  surface = startSketchOn(outerSketch, face = END),
+  origin = [-0.545, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
+oo = oLogo(
+  surface = startSketchOn(outerSketch, face = END),
+  origin = [0.585, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
+

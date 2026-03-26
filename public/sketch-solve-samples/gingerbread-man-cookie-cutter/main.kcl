@@ -1,0 +1,44 @@
+// Gingerbread Man Cookie Cutter
+// A gingerbread man cookie cutter is a charming kitchen tool designed in the iconic silhouette of a little person. Typically crafted from metal (often tin or stainless steel) or durable plastic, this cookie cutter features the distinctive outline of a stylized human figure with a round head, a simple torso, and extended arms and legs. The cutter's edges are sharp enough to cleanly slice through cookie dough but blunt enough to be handled safely.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+origin2D = [0, 0]
+thickness = 100
+wallThickness = 10
+
+// create a sketch for the body of the gingerbread man
+sketch = startSketchOn(XY)
+
+// create the body
+sketch001 = sketch(on = sketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
+  arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -170mm, var -53mm], end = [var -77mm, var 57mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var -77mm, var 57mm], end = [var -77mm, var 213mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -77mm, var 213mm], end = [var -187mm, var 130mm])
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var -232mm, var 195mm], end = [var -187mm, var 130mm], center = [var -210.83mm, var 161.58mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -232mm, var 195mm], end = [var -108mm, var 290mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -59mm, var 312mm], end = [var -108mm, var 290mm], center = [var -36.89mm, var 197.18mm])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -59mm, var 312mm], end = [var -59mm, var 335mm])
+  coincident([arc8.start, line9.start])
+  arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var 0mm, var 549mm], end = [var 0mm, var 0mm])
+  coincident([arc10.start, line11.start])
+  vertical(line4)
+  vertical(line9)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+cutter = extrude(region001, length = thickness)
+  |> shell(thickness = wallThickness, faces = [START, END])
+

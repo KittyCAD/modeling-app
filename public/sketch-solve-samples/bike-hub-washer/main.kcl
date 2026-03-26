@@ -1,0 +1,68 @@
+// Bike hub washer
+// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.
+// Categories: Automotive
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+radius = 29
+radius_inner = 22
+ring_width = 7
+ring_height = 7.5
+
+top_height = 7
+top_rim_width = 1.2
+top_inset = 3
+
+bottom_inner_rim_width = 2
+bottom_outer_rim_width = 3
+bottom_edge = 1
+bottom_height = 2
+bottom_extrusion_width = 2
+
+inside_ring_width = 3
+
+assert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)
+
+sketch001 = startSketchOn(XZ)
+profile001 = sketch(on = sketch001) {
+  line1 = line(start = [var 7.8mm, var 0mm], end = [var 9.8mm, var 0mm])
+  line2 = line(start = [var 9.8mm, var 0mm], end = [var 9.8mm, var -2mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 9.8mm, var -2mm], end = [var 11.8mm, var -2mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 11.8mm, var -2mm], end = [var 11.8mm, var 0mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 11.8mm, var 0mm], end = [var 14.5mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 14.5mm, var 0mm], end = [var 14.5mm, var 1mm])
+  coincident([line5.end, line6.start])
+  arc7 = arc(start = [var 11mm, var 7.5mm], end = [var 14.5mm, var 1mm], center = [var 30.3mm, var 13.7mm])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var 11mm, var 7.5mm], end = [var 9.8mm, var 7.5mm])
+  coincident([arc7.start, line8.start])
+  line9 = line(start = [var 9.8mm, var 7.5mm], end = [var 9.8mm, var 4.5mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 9.8mm, var 4.5mm], end = [var 7.8mm, var 4.5mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 7.8mm, var 4.5mm], end = [var 7.8mm, var 0mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 7.8mm, var 0mm], end = [var 10.8mm, var 0mm])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 10.8mm, var 0mm], end = [var 7.8mm, var 0mm])
+  coincident([line12.end, line13.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line8)
+  vertical(line9)
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line12)
+}
+region001 = region(segments = [profile001.line1, profile001.line2])
+revolve001 = revolve(region001, angle = 360deg, axis = Y)
+sketch002 = startSketchOn(-XZ)
+
