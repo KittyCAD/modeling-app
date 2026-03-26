@@ -1,0 +1,329 @@
+// Saturn V Rocket
+// Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
+// Categories: Aerospace, Maker
+
+@settings(defaultLengthUnit = m, experimentalFeatures = allow)
+
+r1 = 4.5 // baseRadiusStage1
+r2 = 3.2 // baseRadiusUpperStage
+
+
+// ----------------------------
+// --- Engine Nozzles (x4) ---
+// ----------------------------
+// Created with revolve profiles to model conic nozzles; cloned and rotated to form quad layout
+
+
+nozzleSketch = startSketchOn(YZ)
+nozzleProfile = sketch(on = nozzleSketch) {
+  line1 = line(start = [var -0.1m, var 0m], end = [var -0.1m, var 9m])
+  line2 = line(start = [var -0.1m, var 9m], end = [var -2.1m, var 0m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -2.1m, var 0m], end = [var -0.1m, var 0m])
+  coincident([line2.end, line3.start])
+  vertical(line1)
+}
+region001 = region(segments = [
+  nozzleProfile.line1,
+  nozzleProfile.line2
+])
+nozzle1 = revolve(region001, angle = 360, axis = Y)
+  |> translate(x = -r1, y = 0, z = 0)
+  |> appearance(%, color = "#292929")
+nozzle2 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+nozzle3 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+nozzle4 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+
+// ------------------------------------
+// --- Nozzle Hoods (Alternating) ---
+// ------------------------------------
+// Modeled identically to nozzles but translated upward and given alternating colors
+
+
+hoodSketch = startSketchOn(YZ)
+hoodProfile = sketch(on = hoodSketch) {
+  line1 = line(start = [var -0.1m, var 0m], end = [var -0.1m, var 9m])
+  line2 = line(start = [var -0.1m, var 9m], end = [var -2.1m, var 0m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -2.1m, var 0m], end = [var -0.1m, var 0m])
+  coincident([line2.end, line3.start])
+  vertical(line1)
+}
+region002 = region(segments = [hoodProfile.line1, hoodProfile.line2])
+hood1 = revolve(region002, angle = 360, axis = Y)
+  |> translate(x = -r1, y = 0, z = 4)
+  |> appearance(%, color = "#ffffff")
+hood2 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+  |> appearance(%, color = "#000000")
+hood3 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+  |> appearance(%, color = "#ffffff")
+hood4 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+  |> appearance(%, color = "#000000")
+
+// ----------------------------
+// --- Stabilizer Fins (x4) ---
+// ----------------------------
+// Small extrusions in X-Y profile, rotated to form cross pattern
+
+
+finSketch = startSketchOn(YZ)
+finProfile = sketch(on = finSketch) {
+  line1 = line(start = [var -4.23m, var 6.02m], end = [var -7.63m, var 6.02m])
+  line2 = line(start = [var -7.63m, var 6.02m], end = [var -7.63m, var 8.22m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -7.63m, var 8.22m], end = [var -4.23m, var 11.22m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -4.23m, var 11.22m], end = [var -4.23m, var 6.02m])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  vertical(line2)
+}
+region003 = region(segments = [finProfile.line1, finProfile.line2])
+fin1 = extrude(region003, length = 0.1)
+  |> appearance(%, color = "#ffffff")
+fin2 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+fin3 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+fin4 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+
+// -------------------------------
+// --- Stage 1: Bottom Section ---
+// -------------------------------
+// Uses split white/black geometry to emulate paint scheme with mirrored arcs
+
+
+bottomBasePlane = offsetPlane(XY, offset = 6)
+blackPanelSketch = startSketchOn(bottomBasePlane)
+blackPanelProfile = sketch(on = blackPanelSketch) {
+  line1 = line(start = [var 0m, var -4.5m], end = [var 0m, var 4.5m])
+  arc2 = arc(start = [var 0m, var -4.5m], end = [var 0m, var 4.5m], center = [var 0m, var 0m])
+  coincident([line1.end, arc2.end])
+  vertical(line1)
+}
+region004 = region(segments = [
+  blackPanelProfile.line1,
+  blackPanelProfile.arc2
+])
+blackPanel = extrude(region004, length = 14)
+  |> appearance(%, color = "#000000")
+
+whitePanelProfile = sketch(on = blackPanelSketch) {
+  line1 = line(start = [var 0m, var -4.5m], end = [var 0m, var 4.5m])
+  arc2 = arc(start = [var 0m, var 4.5m], end = [var 0m, var -4.5m], center = [var 0m, var 0m])
+  coincident([line1.end, arc2.start])
+  vertical(line1)
+}
+region005 = region(segments = [
+  whitePanelProfile.line1,
+  whitePanelProfile.arc2
+])
+whitePanel = extrude(region005, length = 14)
+  |> appearance(%, color = "#ffffff")
+
+// ------------------------------
+// --- Stage 1: Upper Section ---
+// ------------------------------
+// Alternating black and white zones using circular cross-sections
+
+
+cylinderBasePlane = offsetPlane(XY, offset = 20)
+cylinderSketch = startSketchOn(cylinderBasePlane)
+stage1CylinderProfile = sketch(on = cylinderSketch) {
+  circle1 = circle(start = [var 4.5m, var 0m], center = [var 0m, var 0m])
+}
+region006 = region(segments = [stage1CylinderProfile.circle1])
+stage1Cylinder = extrude(region006, length = 18)
+  |> appearance(%, color = "#ffffff")
+
+midStripePlane = offsetPlane(XY, offset = 38)
+midStripeSketch = startSketchOn(midStripePlane)
+midStripeProfileBlack = sketch(on = midStripeSketch) {
+  line1 = line(start = [var -4.5m, var 0m], end = [var 4.5m, var 0m])
+  arc2 = arc(start = [var 4.5m, var 0m], end = [var -4.5m, var 0m], center = [var 0m, var 0m])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+}
+region007 = region(segments = [
+  midStripeProfileBlack.line1,
+  midStripeProfileBlack.arc2
+])
+midStripeBlack = extrude(region007, length = 9)
+  |> appearance(%, color = "#000000")
+
+// White
+midStripeProfileWhite = sketch(on = midStripeSketch) {
+  line1 = line(start = [var -4.5m, var 0m], end = [var 4.5m, var 0m])
+  arc2 = arc(start = [var -4.5m, var 0m], end = [var 4.5m, var 0m], center = [var 0m, var 0m])
+  coincident([line1.end, arc2.end])
+  horizontal(line1)
+}
+region008 = region(segments = [
+  midStripeProfileWhite.line1,
+  midStripeProfileWhite.arc2
+])
+midStripeWhite = extrude(region008, length = 9)
+  |> appearance(%, color = "#ffffff")
+
+// Ring
+ringPlane = offsetPlane(XY, offset = 47)
+ringSketch = startSketchOn(ringPlane)
+ringProfile = sketch(on = ringSketch) {
+  circle1 = circle(start = [var 4.5m, var 0m], center = [var 0m, var 0m])
+}
+region009 = region(segments = [ringProfile.circle1])
+ringBand = extrude(region009, length = 2)
+  |> appearance(%, color = "#000000")
+
+// Upper Cyl
+upperCylPlane = offsetPlane(XY, offset = 49)
+upperCylSketch = startSketchOn(upperCylPlane)
+upperCylProfile = sketch(on = upperCylSketch) {
+  circle1 = circle(start = [var 4.5m, var 0m], center = [var 0m, var 0m])
+}
+region010 = region(segments = [upperCylProfile.circle1])
+upperStage1 = extrude(region010, length = 15)
+  |> appearance(%, color = "#ffffff")
+
+// --------------------------------
+// --- Stage Transition Cones ---
+// --------------------------------
+// This conic taper transitions between stage diameters
+
+// lower cones
+transitionLowerConeSketch = startSketchOn(YZ)
+transitionLowerConeWhiteProfile = sketch(on = transitionLowerConeSketch) {
+  line1 = line(start = [var 0m, var 64m], end = [var -4.5m, var 64m])
+  line2 = line(start = [var -4.5m, var 64m], end = [var -3.85m, var 66.5m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.85m, var 66.5m], end = [var 0m, var 66.5m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0m, var 66.5m], end = [var 0m, var 64m])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+region011 = region(segments = [
+  transitionLowerConeWhiteProfile.line1,
+  transitionLowerConeWhiteProfile.line2
+])
+transitionLowerConeWhite = revolve(region011, angle = 180, axis = Y)
+  |> appearance(%, color = "#ffffff")
+
+transitionLowerConeBlackProfile = sketch(on = transitionLowerConeSketch) {
+  line1 = line(start = [var 0m, var 64m], end = [var -4.5m, var 64m])
+  line2 = line(start = [var -4.5m, var 64m], end = [var -3.85m, var 66.5m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.85m, var 66.5m], end = [var 0m, var 66.5m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0m, var 66.5m], end = [var 0m, var 64m])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+region012 = region(segments = [
+  transitionLowerConeBlackProfile.line1,
+  transitionLowerConeBlackProfile.line2
+])
+transitionLowerConeBlack = revolve(region012, angle = -180, axis = Y)
+  |> appearance(%, color = "#000000")
+
+// upper cones
+transitionUpperConeSketch = startSketchOn(YZ)
+transitionUpperConeBlackProfile = sketch(on = transitionUpperConeSketch) {
+  line1 = line(start = [var 0m, var 66.5m], end = [var -3.85m, var 66.5m])
+  line2 = line(start = [var -3.85m, var 66.5m], end = [var -3.2m, var 69m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.2m, var 69m], end = [var 0m, var 69m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0m, var 69m], end = [var 0m, var 66.5m])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+region013 = region(segments = [
+  transitionUpperConeBlackProfile.line1,
+  transitionUpperConeBlackProfile.line2
+])
+transitionUpperConeBlack = revolve(region013, angle = 180, axis = Y)
+  |> appearance(%, color = "#000000")
+
+transitionUpperConeWhiteProfile = sketch(on = transitionUpperConeSketch) {
+  line1 = line(start = [var 0m, var 66.5m], end = [var -3.85m, var 66.5m])
+  line2 = line(start = [var -3.85m, var 66.5m], end = [var -3.2m, var 69m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -3.2m, var 69m], end = [var 0m, var 69m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0m, var 69m], end = [var 0m, var 66.5m])
+  coincident([line3.end, line4.start])
+  horizontal(line1)
+  horizontal(line3)
+}
+region014 = region(segments = [
+  transitionUpperConeWhiteProfile.line1,
+  transitionUpperConeWhiteProfile.line2
+])
+transitionUpperConeWhite = revolve(region014, angle = -180, axis = Y)
+  |> appearance(%, color = "#ffffff")
+
+// ----------------------------
+// --- Stage 2: Upper Body ---
+// ----------------------------
+// Simple white and black stack of extruded cylinders
+
+// white
+stage2Plane = offsetPlane(XY, offset = 69)
+stage2Sketch = startSketchOn(stage2Plane)
+stage2Profile = sketch(on = stage2Sketch) {
+  circle1 = circle(start = [var 3.2m, var 0m], center = [var 0m, var 0m])
+}
+region015 = region(segments = [stage2Profile.circle1])
+stage2White = extrude(region015, length = 9)
+  |> appearance(%, color = "#ffffff")
+
+// black
+stage2StripePlane = offsetPlane(XY, offset = 78)
+stage2StripeSketch = startSketchOn(stage2StripePlane)
+stage2StripeProfile = sketch(on = stage2StripeSketch) {
+  circle1 = circle(start = [var 3.2m, var 0m], center = [var 0m, var 0m])
+}
+region016 = region(segments = [stage2StripeProfile.circle1])
+stage2Black = extrude(region016, length = 2)
+  |> appearance(%, color = "#000000")
+
+// ----------------------------
+// --- Launch Escape System ---
+// ----------------------------
+// Final tapered nose modeled using a revolve profile for a sleek profile
+
+
+lesSketch = startSketchOn(XZ)
+lesProfile = sketch(on = lesSketch) {
+  line1 = line(start = [var 0m, var 80m], end = [var -3.2m, var 80m])
+  line2 = line(start = [var -3.2m, var 80m], end = [var -1.45m, var 87.2m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -1.45m, var 87.2m], end = [var -1.45m, var 91.2m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.45m, var 91.2m], end = [var -0.45m, var 92.4m])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.45m, var 92.4m], end = [var -0.45m, var 99.4m])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -0.45m, var 99.4m], end = [var 0m, var 100m])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 0m, var 100m], end = [var 0m, var 80m])
+  coincident([line6.end, line7.start])
+  horizontal(line1)
+  vertical(line3)
+  vertical(line5)
+}
+region017 = region(segments = [lesProfile.line1, lesProfile.line2])
+launchEscapeSystem = revolve(region017, angle = 360, axis = Y)
+  |> appearance(%, color = '#FFFFFF')
+

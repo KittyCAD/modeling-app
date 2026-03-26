@@ -1,0 +1,177 @@
+// Gingerbread Man
+// A gingerbread man is a classic holiday cookie shaped like a stylized human figure. Typically made from gingerbread dough - a sweet, spiced mixture containing ginger, cinnamon, nutmeg, cloves, molasses, and brown sugar - these charming cookies are flat with a distinctive form featuring a round head, torso, arms, and legs. The traditional gingerbread man is decorated with icing to create facial features (eyes, mouth, sometimes a nose) and details like buttons down the front, cuffs at the wrists and ankles, and sometimes a bow tie. Candies like raisins, chocolate chips, or colorful gumdrops might be used for embellishments.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+origin2D = [0, 0]
+thickness = 50
+eyeDiameter = 30
+gumDropDiameter = 60
+decorationThickness = 10
+
+// create a sketch for the body of the gingerbread man
+bodySketch = startSketchOn(XY)
+
+// create the body
+sketch001 = sketch(on = bodySketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var -88mm, var -112mm])
+  arc2 = arc(start = [var -170mm, var -53mm], end = [var -88mm, var -112mm], center = [var -127.75mm, var -80.77mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -170mm, var -53mm], end = [var -77mm, var 57mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var -77mm, var 57mm], end = [var -77mm, var 213mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -77mm, var 213mm], end = [var -187mm, var 130mm])
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var -232mm, var 195mm], end = [var -187mm, var 130mm], center = [var -210.83mm, var 161.58mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -232mm, var 195mm], end = [var -108mm, var 290mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -59mm, var 312mm], end = [var -108mm, var 290mm], center = [var -36.89mm, var 197.18mm])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -59mm, var 312mm], end = [var -59mm, var 335mm])
+  coincident([arc8.start, line9.start])
+  arc10 = arc(start = [var 0mm, var 549mm], end = [var -59mm, var 335mm], center = [var 0.6mm, var 433.7mm])
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var 0mm, var 549mm], end = [var 0mm, var 0mm])
+  coincident([arc10.start, line11.start])
+  vertical(line4)
+  vertical(line9)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+body = extrude(region001, length = thickness)
+  |> appearance(%, color = "#ad5b25")
+
+// create a sketch for the decorations
+decorationSketch = startSketchOn(offsetPlane(XY, offset = thickness))
+
+// sketch the inner profile
+innermouth = sketch(on = decorationSketch) {
+  arc1 = arc(start = [var -41mm, var 401mm], end = [var 38.45mm, var 399.54mm], center = [var -0.71mm, var 431.15mm])
+  arc2 = arc(start = [var 52.56mm, var 391.68mm], end = [var 38.45mm, var 399.54mm], center = [var 44.83mm, var 394.39mm])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var -54.93mm, var 391.2mm], end = [var 52.56mm, var 391.68mm], center = [var -1.34mm, var 426.01mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var -41mm, var 401mm], end = [var -54.93mm, var 391.2mm], center = [var -47.78mm, var 395.84mm])
+  coincident([arc3.start, arc4.end])
+}
+
+// create the mouth by sketching the outer mouth profile and subtracting the inner
+sketch002 = sketch(on = decorationSketch) {
+  arc1 = arc(start = [var -37.56mm, var 405.86mm], end = [var 32.65mm, var 404.69mm], center = [var -1.96mm, var 435.04mm])
+  arc2 = arc(start = [var 56.9mm, var 389.24mm], end = [var 32.65mm, var 404.69mm], center = [var 43.59mm, var 395.1mm])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var -60.78mm, var 391.48mm], end = [var 56.9mm, var 389.24mm], center = [var -1.47mm, var 414.93mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var -37.56mm, var 405.86mm], end = [var -60.78mm, var 391.48mm], center = [var -47.88mm, var 396.58mm])
+  coincident([arc3.start, arc4.end])
+}
+region002 = region(segments = [sketch002.arc1, sketch002.arc2])
+mouth = extrude(region002, length = decorationThickness)
+  |> appearance(color = "#ff0000")
+
+// create the eyes
+sketch003 = sketch(on = decorationSketch) {
+  circle1 = circle(start = [var -40mm, var 440mm], center = [var -55mm, var 440mm])
+}
+region003 = region(segments = [sketch003.circle1])
+eyes = extrude(region003, length = decorationThickness)
+  |> appearance(color = "#ffffff")
+  |> patternLinear3d(instances = 2, distance = 110, axis = [1, 0, 0])
+
+// create the buttons
+sketch004 = sketch(on = decorationSketch) {
+  circle1 = circle(start = [var 30mm, var 250mm], center = [var 0mm, var 250mm])
+}
+region004 = region(segments = [sketch004.circle1])
+buttons = extrude(region004, length = decorationThickness)
+  |> appearance(color = "#fb00ff")
+  |> patternLinear3d(instances = 2, distance = 75, axis = [0, -1, 0])
+
+// create the eyebrows
+sketch005 = sketch(on = decorationSketch) {
+  arc1 = arc(start = [var -37.9mm, var 503.47mm], end = [var -73.02mm, var 483.5mm], center = [var -45.82mm, var 476.53mm])
+  arc2 = arc(start = [var -37.9mm, var 503.47mm], end = [var -34.91mm, var 514.62mm], center = [var -36.27mm, var 509.01mm])
+  coincident([arc1.start, arc2.start])
+  arc3 = arc(start = [var -34.91mm, var 514.62mm], end = [var -86.17mm, var 485mm], center = [var -45.03mm, var 472.96mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var -86.17mm, var 485mm], end = [var -73.02mm, var 483.5mm], center = [var -79.72mm, var 483.11mm])
+  coincident([arc3.end, arc4.start])
+  tangent([arc1, arc2])
+  tangent([arc2, arc3])
+  tangent([arc3, arc4])
+}
+region005 = region(segments = [sketch005.arc1, sketch005.arc2])
+eyebrow = extrude(region005, length = decorationThickness)
+  |> appearance(color = "#00fffb")
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 1, 0],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+// create the belt
+sketch006 = sketch(on = decorationSketch) {
+  arc1 = arc(start = [var -59.59mm, var 99.65mm], end = [var -22.49mm, var 96.09mm], center = [var -39.78mm, var 111.03mm])
+  arc2 = arc(start = [var 17.76mm, var 96.49mm], end = [var -22.49mm, var 96.09mm], center = [var -2.17mm, var 76.96mm])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var 17.76mm, var 96.49mm], end = [var 58.8mm, var 96.09mm], center = [var 38.37mm, var 105.84mm])
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(start = [var 69.46mm, var 92.15mm], end = [var 58.8mm, var 96.09mm], center = [var 63.95mm, var 93.63mm])
+  coincident([arc3.end, arc4.end])
+  arc5 = arc(start = [var 41.83mm, var 72.02mm], end = [var 69.46mm, var 92.15mm], center = [var 43.16mm, var 99.23mm])
+  coincident([arc4.start, arc5.end])
+  arc6 = arc(start = [var 10.66mm, var 89.39mm], end = [var 41.83mm, var 72.02mm], center = [var 43.79mm, var 112.19mm])
+  coincident([arc5.start, arc6.end])
+  arc7 = arc(start = [var 10.66mm, var 89.39mm], end = [var -14.6mm, var 87.41mm], center = [var -1.4mm, var 81.09mm])
+  coincident([arc6.start, arc7.start])
+  arc8 = arc(start = [var -43.8mm, var 77.94mm], end = [var -14.6mm, var 87.41mm], center = [var -33.7mm, var 96.55mm])
+  coincident([arc7.end, arc8.end])
+  arc9 = arc(start = [var -67.09mm, var 100.83mm], end = [var -43.8mm, var 77.94mm], center = [var -15.56mm, var 129.97mm])
+  coincident([arc8.start, arc9.end])
+  arc10 = arc(start = [var -59.59mm, var 99.65mm], end = [var -67.09mm, var 100.83mm], center = [var -62.87mm, var 103.22mm])
+  coincident([arc9.start, arc10.end])
+  tangent([arc6, arc7])
+}
+region006 = region(segments = [sketch006.arc1, sketch006.arc2])
+belt = extrude(region006, length = decorationThickness)
+  |> appearance(color = "#ffffff")
+
+// create the cuffs
+sketch007 = sketch(on = decorationSketch) {
+  arc1 = arc(start = [var -224.97mm, var 184.88mm], end = [var -207.34mm, var 167.5mm], center = [var -209.07mm, var 183.37mm])
+  arc2 = arc(start = [var -189.21mm, var 143.41mm], end = [var -207.34mm, var 167.5mm], center = [var -205.3mm, var 150.17mm])
+  coincident([arc1.end, arc2.end])
+  arc3 = arc(start = [var -196.41mm, var 145.15mm], end = [var -189.21mm, var 143.41mm], center = [var -192.67mm, var 144.86mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var -196.41mm, var 145.15mm], end = [var -208.33mm, var 158.31mm], center = [var -208.6mm, var 146.08mm])
+  coincident([arc3.start, arc4.start])
+  arc5 = arc(start = [var -232.92mm, var 185.38mm], end = [var -208.33mm, var 158.31mm], center = [var -207.76mm, var 183.53mm])
+  coincident([arc4.end, arc5.end])
+  arc6 = arc(start = [var -224.97mm, var 184.88mm], end = [var -232.92mm, var 185.38mm], center = [var -228.95mm, var 185.09mm])
+  coincident([arc5.start, arc6.end])
+  tangent([arc3, arc4])
+}
+region007 = region(segments = [sketch007.arc1, sketch007.arc2])
+cuffs = extrude(region007, length = decorationThickness)
+  |> appearance(color = "#ffffff")
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 1, 0],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+

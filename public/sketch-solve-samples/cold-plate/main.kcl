@@ -1,0 +1,99 @@
+// Cold Plate
+// A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant
+// Categories: Automotive, Aerospace, Computer Hardware
+
+// Set units
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+// Define parameters
+tubeDiameter = 5 / 8
+wallThickness = 0.080
+bendRadius = 1
+
+// Create the cold plate with indentions to secure each pass of the brazed copper tube
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 0in, var 1.25in], end = [var 0.69in, var 1.25in])
+  line2 = line(start = [var 0.69in, var 1.25in], end = [var 0.69in, var 0.63in])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 0.69in, var 0.63in], end = [var 1.31in, var 0.63in], center = [var 1in, var 0.63in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 1.31in, var 0.63in], end = [var 1.31in, var 1.25in])
+  coincident([arc3.end, line4.start])
+  line5 = line(start = [var 1.31in, var 1.25in], end = [var 2.69in, var 1.25in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 2.69in, var 1.25in], end = [var 2.69in, var 0.63in])
+  coincident([line5.end, line6.start])
+  arc7 = arc(start = [var 2.69in, var 0.63in], end = [var 3.31in, var 0.63in], center = [var 3in, var 0.63in])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var 3.31in, var 0.63in], end = [var 3.31in, var 1.25in])
+  coincident([arc7.end, line8.start])
+  line9 = line(start = [var 3.31in, var 1.25in], end = [var 4in, var 1.25in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 4in, var 1.25in], end = [var 4.05in, var 1.05in])
+  coincident([line9.end, line10.start])
+  arc11 = arc(start = [var 4.05in, var 1.05in], end = [var 4.66in, var 0.56in], center = [var 4.66in, var 1.19in])
+  coincident([line10.end, arc11.start])
+  line12 = line(start = [var 4.66in, var 0.56in], end = [var 5.66in, var 0.56in])
+  coincident([arc11.end, line12.start])
+  line13 = line(start = [var 5.66in, var 0.56in], end = [var 5.66in, var 0in])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 5.66in, var 0in], end = [var 0in, var 0in])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 0in, var 0in], end = [var 0in, var 1.25in])
+  coincident([line14.end, line15.start])
+  horizontal(line2)
+  vertical(arc3)
+  vertical(line5)
+  horizontal(line6)
+  vertical(arc7)
+  vertical(line9)
+  horizontal(line10)
+  vertical(line14)
+  horizontal(line15)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+coldPlate = extrude(region001, length = 10, symmetric = true)
+
+// Sketch the path for the copper tube to follow
+copperTubePath = sketch(on = offsetPlane(XY, offset = tubeDiameter)) {
+  line1 = line(start = [var -7.35in, var -3in], end = [var 6.78in, var -3in])
+  arc2 = arc(start = [var 6.78in, var -3in], end = [var 6.78in, var -1in], center = [var 6.78in, var -2in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 6.78in, var -1in], end = [var -6.24in, var -1in])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -6.24in, var 1in], end = [var -6.24in, var -1in], center = [var -6.24in, var 0in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -6.24in, var 1in], end = [var 6.78in, var 1in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var 6.78in, var 1in], end = [var 6.78in, var 3in], center = [var 6.78in, var 2in])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 6.78in, var 3in], end = [var -7.35in, var 3in])
+  coincident([arc6.end, line7.start])
+  horizontal(arc2)
+  equalLength([arc6, line3])
+}
+
+// Create the profile for the inner and outer diameter of the hollow copper tube
+sketch002 = sketch(on = offsetPlane(YZ, offset = -7.35)) {
+  circle1 = circle(start = [var -2.69in, var 0.63in], center = [var -3in, var 0.63in])
+}
+region002 = region(segments = [sketch002.circle1])
+tubeWall = sweep(region002, path = copperTubePath)
+  |> appearance(color = "#b81b0a")
+
+// Model a brazed cap to cover each tube. Constrain the caps using the walls of the plate
+sketch003 = sketch(on = YZ) {
+  arc1 = arc(start = [var 2.69in, var 1.25in], end = [var 3.31in, var 1.25in], center = [var 3in, var 1.72in])
+  line2 = line(start = [var 3.31in, var 1.25in], end = [var 3.31in, var 0.63in])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 3.31in, var 0.63in], end = [var 2.69in, var 0.63in], center = [var 3in, var 0.63in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 2.69in, var 0.63in], end = [var 2.69in, var 1.25in])
+  coincident([arc3.end, line4.start])
+  vertical(arc3)
+}
+region003 = region(segments = [sketch003.arc1, sketch003.line2])
+brazedCap = extrude(region003, length = 10, symmetric = true)
+  |> patternLinear3d(instances = 4, distance = bendRadius * 2, axis = [0, -1, 0])
+  |> appearance(color = "#6b261e")
+
