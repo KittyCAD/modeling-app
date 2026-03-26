@@ -701,3 +701,196 @@ app.ts:264 [app.rustContext#45] waitForAllEngineCommands end {durationMs: 33.699
 app.ts:264 [app.rustContext#48] sendResponse end {durationMs: 0.5, details: {…}}
 app.ts:252 [app.rustContext#49] sendResponse start {success: true, requestId: '0f75cc30-a0c7-473d-adde-1e6fd38784c0', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
 app.ts:264 [app.rustContext#49] sendResponse end {durationMs: 0.4000000059604645, details: {…}}
+installHook.js:1 Could not find valid pathToNode, found: [Array(2)]
+overrideMethod @ installHook.js:1
+processCodeMirrorRanges @ selections.ts:543
+handleOnViewUpdate @ KclManager.ts:2099
+(anonymous) @ KclManager.ts:885
+Promise.then
+(anonymous) @ KclManager.ts:884
+update @ index.js:7750
+(anonymous) @ index.js:7630
+dispatch @ index.js:7654
+select @ index.js:4605
+up @ index.js:4564
+app.ts:252 [app.rustContext#50] sendResponse start {success: true, requestId: '8c28e5b9-fba8-43f4-ae21-9f94c7a75b00', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#50] sendResponse end {durationMs: 0.9000000059604645, details: {…}}
+app.ts:252 [app.rustContext#51] sendResponse start {success: true, requestId: '6a5481e6-d26b-4091-b126-be97486007bb', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#51] sendResponse end {durationMs: 0.4000000059604645, details: {…}}
+app.ts:252 [app.rustContext#52] sendUpdateFile start undefined
+app.ts:264 [app.rustContext#52] sendUpdateFile end {durationMs: 3, details: undefined}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=3aeeb2db-cc07-5a1e-840d-baeb34ceb75a type=make_plane payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_end cmd_id=6754a9b3-9b1e-5e6f-b872-7849d82fa323 type=object_visible payload={"object_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=fc48a210-666e-5981-9498-be796451c958 type=enable_sketch_mode payload={"entity_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=dcd8f58f-5302-5e5a-bdc2-b3054e0992f4 type=start_path payload=null
+ [wasm modeling] label=batch_prebuilt cmd_id=5f99494b-3998-57cd-bb7c-3796a34b3300 type=move_path_pen payload=null
+ [wasm modeling] label=batch_prebuilt cmd_id=874498b2-e6c4-58dd-b68a-a67018d3d822 type=sketch_mode_disable payload=null
+ [wasm modeling] label=batch cmd_id=5fe067f7-d979-5f95-9ea2-155e1c2fb4c0 type=extend_path payload=null
+ [wasm modeling] label=batch cmd_id=0c58f11b-8db6-523e-94b5-12f0f7c1bd05 type=move_path_pen payload=null
+ [wasm modeling] label=batch cmd_id=364b40d4-898b-5fcd-a3ac-925042f14a2e type=extend_path payload=null
+ [wasm modeling] label=batch cmd_id=d5517509-fa14-5871-b0b1-59b181a08a23 type=move_path_pen payload=null
+ [wasm modeling] label=batch cmd_id=dd91e3d3-7aa3-59e6-acf8-85db5ae39a50 type=extend_path payload=null
+ [wasm modeling] label=batch cmd_id=ddad9bdf-fa37-5479-8d16-1c3d898e9c05 type=move_path_pen payload=null
+ [wasm modeling] label=batch cmd_id=7895e302-fba2-5f90-97e1-1040c1c2a2cc type=extend_path payload=null
+ [wasm modeling] label=send cmd_id=4b3930b1-3abd-5f35-b000-e52afece5054 type=create_region_from_query_point payload={"object_id":"dcd8f58f-5302-5e5a-bdc2-b3054e0992f4"}
+ [wasm modeling] label=batch_prebuilt cmd_id=83a24ce2-6149-50fa-8a2e-05f52fbadc26 type=enable_sketch_mode payload={"entity_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+ [wasm modeling] label=batch_prebuilt cmd_id=b02821f1-ef16-58ef-8693-6c56bc75f06b type=extrude payload={"target":"4b3930b1-3abd-5f35-b000-e52afece5054"}
+ [wasm modeling] label=batch_prebuilt cmd_id=eadced5f-a463-5a9e-bb11-44174fe799a8 type=sketch_mode_disable payload=null
+ [wasm modeling] label=batch cmd_id=87ee9877-ee45-507c-baa0-427edd354a0d type=object_bring_to_front payload={"object_id":"4b3930b1-3abd-5f35-b000-e52afece5054"}
+ [wasm modeling] label=send cmd_id=29ccdaab-f917-58a9-8052-c4a72a969184 type=solid3d_get_extrusion_face_info payload={"edge_id":"298c3f6e-cbe4-5629-8e0b-d2e061d20d52","object_id":"4b3930b1-3abd-5f35-b000-e52afece5054"}
+ [wasm modeling] label=batch cmd_id=4db41856-73be-53ca-8c7c-f2792ad7935d type=solid3d_get_adjacency_info payload={"edge_id":"298c3f6e-cbe4-5629-8e0b-d2e061d20d52","object_id":"4b3930b1-3abd-5f35-b000-e52afece5054"}
+ [app.rustContext#53] execute start undefined
+react-dom_client.js:25556 [Violation] 'setTimeout' handler took 81ms
+ [app.rustContext#54] sendResponse start {success: true, requestId: '434caad6-06c9-434e-a4a2-dc34cff4176b', responseType: 'modeling_batch', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#54] sendResponse end {durationMs: 0.800000011920929, details: {…}}
+ [wasm modeling] label=batch_prebuilt cmd_id=ceb5f1b5-fd49-5c09-a759-a5e87f23c39a type=enable_sketch_mode payload={"entity_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+ [wasm modeling] label=batch_prebuilt cmd_id=f3111882-6602-50f1-a1a1-d878ec4420cc type=extrude payload={"target":"1173902c-36a4-51e4-ba62-e51739ec2a5c"}
+ [wasm modeling] label=batch_prebuilt cmd_id=5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e type=sketch_mode_disable payload=null
+ [wasm modeling] label=batch cmd_id=2bba5d49-d2a4-56bb-88c8-302a3fe1aca7 type=object_bring_to_front payload={"object_id":"1173902c-36a4-51e4-ba62-e51739ec2a5c"}
+ [wasm modeling] label=send cmd_id=0edcccdd-3f57-5e86-84d9-90aac061b21e type=solid3d_get_extrusion_face_info payload={"edge_id":"b3a327ba-a286-5e82-8eb4-ed878dab91fb","object_id":"1173902c-36a4-51e4-ba62-e51739ec2a5c"}
+ [app.rustContext#55] sendResponse start {success: true, requestId: '3ad82b5e-997a-46b9-b8f3-05b9f35367e3', responseType: 'modeling_batch', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#55] sendResponse end {durationMs: 1.5999999940395355, details: {…}}
+ [wasm modeling] label=batch cmd_id=f7861c82-8117-5bb5-af9c-be285026b0c6 type=solid3d_get_adjacency_info payload={"edge_id":"b3a327ba-a286-5e82-8eb4-ed878dab91fb","object_id":"1173902c-36a4-51e4-ba62-e51739ec2a5c"}
+ Error in response to request f7861c82-8117-5bb5-af9c-be285026b0c6:
+  - internal_engine: Entity found but it was of the wrong type
+  - bad_request: No such edge exists, cannot retrieve adjacency information.
+}
+overrideMethod @ installHook.js:1
+onWebSocketMessage @ websocketConnection.ts:82
+ [app.rustContext#56] sendResponse start {success: false, requestId: 'f7861c82-8117-5bb5-af9c-be285026b0c6', responseType: undefined, modelingResponseType: undefined, payload: {…}}
+ [{…}]
+overrideMethod @ installHook.js:1
+sendModelingCommandFromWasm @ connectionManager.ts:973
+await in sendModelingCommandFromWasm
+(anonymous) @ kcl_wasm_lib.js:2181
+handleError @ kcl_wasm_lib.js:2643
+__wbg_sendModelingCommandFromWasm_2ccb301249bf809e @ kcl_wasm_lib.js:2163
+$kcl_lib::engine::conn_wasm::EngineCommandManager::send_modeling_cmd_from_wasm::__wbg_sendModelingCommandFromWasm_2ccb301249bf809e::h5c5ce0417b5578cf externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::engine::conn_wasm::EngineCommandManager::send_modeling_cmd_from_wasm::hba2101408c19daef @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::engine::conn_wasm::EngineConnection::do_send_modeling_cmd::{{closure}}::h8dac345c1d350b4c @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<kcl_lib::engine::conn_wasm::EngineConnection as kcl_lib::engine::EngineManager>::inner_send_modeling_cmd::{{closure}}::hf00eeb4fd501e1bc @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::pin::Pin<P> as core::future::future::Future>::poll::h9f1a0c11ddd79510 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::engine::EngineManager::run_batch::{{closure}}::hd245161f41dd9082 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::pin::Pin<P> as core::future::future::Future>::poll::h9bd9e1794a8dd131 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::engine::EngineManager::flush_batch::{{closure}}::h24ea25d808897c71 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::pin::Pin<P> as core::future::future::Future>::poll::h9bd9e1794a8dd131 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::modeling::<impl kcl_lib::execution::state::ExecState>::flush_batch::{{closure}}::hefe0575cc51bb19f @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::exec_ast::<impl kcl_lib::execution::ExecutorContext>::exec_block::{{closure}}::hdb84bd1c2108e127 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::pin::Pin<P> as core::future::future::Future>::poll::hb11a02496f440634 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::exec_ast::<impl kcl_lib::execution::ExecutorContext>::exec_module_body::{{closure}}::hb19a80e25a9ad4e2 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::ExecutorContext::execute_and_build_graph::{{closure}}::hc256610cc7f06449 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::ExecutorContext::inner_run::{{closure}}::hab1b4707032ef2ee @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::ExecutorContext::run_concurrent::{{closure}}::h0119e4f496664351 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_lib::execution::ExecutorContext::run_with_caching::{{closure}}::h5b381d05e474a705 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_wasm_lib::context::Context::execute_typed::{{closure}}::h1c78298fa28c6888 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_wasm_lib::context::Context::execute::{{closure}}::hb498914ee01dfa4d @ kcl_wasm_lib.wasm-0aa9b45a:1
+$kcl_wasm_lib::context::Context::execute::{{closure}}::_::__wasm_bindgen_generated_Context_execute::{{closure}}::h157e2824e43b0965 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::future_to_promise::{{closure}}::{{closure}}::he6cdfa44e7420e14 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::Inner::is_ready::h4736356015aaf1b7 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::Task::run::{{closure}}::h90fbf0854cbb4357 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::{{closure}}::h34dcd80587ea791c @ kcl_wasm_lib.wasm-0aa9b45a:1
+$core::ops::function::FnOnce::call_once::h0b97cfc3f93dc59f @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once::h5177de0ba68df70c @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::__rt::maybe_catch_unwind::he10f7ae0381ac4f7 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::h395f8d902c5a0c15 @ kcl_wasm_lib.wasm-0aa9b45a:1
+wasm_bindgen__convert__closures_____invoke__h395f8d902c5a0c15 @ kcl_wasm_lib.js:2450
+cb0 @ kcl_wasm_lib.js:2143
+(anonymous) @ kcl_wasm_lib.js:2148
+logError @ kcl_wasm_lib.js:2654
+__wbg_run_78b7b601add6ed6b @ kcl_wasm_lib.js:2133
+$wasm_bindgen_futures::task::singlethread::ConsoleTask::run::__wbg_run_78b7b601add6ed6b::hf848890cdd080fd5 externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::ConsoleTask::run::hd12b39700b2012d4 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::Task::run::h5eb321ad31ac854c @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::queue::QueueState::run_all::h3b7c180f6f3d3261 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::queue::Queue::new::{{closure}}::hba3c7f746f04b708 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::{{closure}}::h23c208071349448a @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once::h0fab057aee2cf460 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::__rt::maybe_catch_unwind::hf5a786101b95aea6 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::hc2f36aeaa8b7cca9 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::hc2f36aeaa8b7cca9 externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::hc2f36aeaa8b7cca9 externref shim multivalue shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+wasm_bindgen__convert__closures_____invoke__hc2f36aeaa8b7cca9 @ kcl_wasm_lib.js:2464
+real @ kcl_wasm_lib.js:2682
+wasm_bindgen_futures::future_to_promise<kcl_wasm_lib::context::Context::execute::{{closure}}::_::__wasm_bindgen_generated_Context_execute::{{closure}}>::{{closure}}::{{closure}}
+(anonymous) @ kcl_wasm_lib.js:1674
+handleError @ kcl_wasm_lib.js:2643
+__wbg_createTask_6eb3a8b6dd2f87c9 @ kcl_wasm_lib.js:1673
+$wasm_bindgen_futures::task::singlethread::create_task::__wbg_createTask_6eb3a8b6dd2f87c9::h78a3ab55b8cdc825 externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::create_task::hda2e7933f75ec391 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::task::singlethread::Task::spawn::hedaebb9c296faecc @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::spawn_local::haaad6068a6ce39d8 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::future_to_promise::{{closure}}::h8acd554e20e77402 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::{{closure}}::h5246fd4129d5036f @ kcl_wasm_lib.wasm-0aa9b45a:1
+$<core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once::h0d7595507235cdd7 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::__rt::maybe_catch_unwind::h3667c0a4507203d7 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::h1b24d886fe1cf380 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen::convert::closures::_::invoke::h1b24d886fe1cf380 externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+wasm_bindgen__convert__closures_____invoke__h1b24d886fe1cf380 @ kcl_wasm_lib.js:2472
+cb0 @ kcl_wasm_lib.js:2001
+(anonymous) @ kcl_wasm_lib.js:2006
+logError @ kcl_wasm_lib.js:2654
+__wbg_new_typed_aaaeaf29cf802876 @ kcl_wasm_lib.js:1991
+$js_sys::Promise<T>::new_typed::__wbg_new_typed_aaaeaf29cf802876::h6262a9bcfb51d3c7 externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+$js_sys::Promise<T>::new_typed::h6910e4b1756ffcdc @ kcl_wasm_lib.wasm-0aa9b45a:1
+$wasm_bindgen_futures::future_to_promise::h24d6e08fb68a2456 @ kcl_wasm_lib.wasm-0aa9b45a:1
+$context_execute @ kcl_wasm_lib.wasm-0aa9b45a:1
+$context_execute externref shim @ kcl_wasm_lib.wasm-0aa9b45a:1
+execute @ kcl_wasm_lib.js:254
+execute @ rustContext.ts:76
+await in execute
+wrapped @ app.ts:106
+executeAst @ langHelpers.ts:25
+executeAst @ KclManager.ts:861
+executeCode @ KclManager.ts:1007
+await in executeCode
+(anonymous) @ KclManager.ts:638
+later @ utils.ts:95
+setTimeout
+deferred @ utils.ts:102
+(anonymous) @ KclManager.ts:602
+update @ chunk-CNZ45JJE.js?v=bc468732:7400
+(anonymous) @ chunk-CNZ45JJE.js?v=bc468732:7293
+dispatch @ chunk-CNZ45JJE.js?v=bc468732:7315
+(anonymous) @ chunk-5JWNN2IX.js?v=bc468732:61
+toggleComment @ chunk-5JWNN2IX.js?v=bc468732:52
+runFor @ chunk-CNZ45JJE.js?v=bc468732:8322
+runHandlers @ chunk-CNZ45JJE.js?v=bc468732:8338
+keydown @ chunk-CNZ45JJE.js?v=bc468732:8219
+(anonymous) @ chunk-CNZ45JJE.js?v=bc468732:4329
+runHandlers @ chunk-CNZ45JJE.js?v=bc468732:4241
+handleEvent @ chunk-CNZ45JJE.js?v=bc468732:4231
+ [app.rustContext#56] sendResponse end {durationMs: 4.9000000059604645, details: {…}}
+ [app.rustContext#53] execute error {durationMs: 298.39999997615814, details: undefined, error: KCLError: engine: Entity found but it was of the wrong type
+No such edge exists, cannot retrieve ad…}
+overrideMethod @ installHook.js:1
+(anonymous) @ app.ts:117
+Promise.catch
+wrapped @ app.ts:115
+executeAst @ langHelpers.ts:25
+executeAst @ KclManager.ts:861
+executeCode @ KclManager.ts:1007
+await in executeCode
+(anonymous) @ KclManager.ts:638
+later @ utils.ts:95
+setTimeout
+deferred @ utils.ts:102
+(anonymous) @ KclManager.ts:602
+update @ chunk-CNZ45JJE.js?v=bc468732:7400
+(anonymous) @ chunk-CNZ45JJE.js?v=bc468732:7293
+dispatch @ chunk-CNZ45JJE.js?v=bc468732:7315
+(anonymous) @ chunk-5JWNN2IX.js?v=bc468732:61
+toggleComment @ chunk-5JWNN2IX.js?v=bc468732:52
+runFor @ chunk-CNZ45JJE.js?v=bc468732:8322
+runHandlers @ chunk-CNZ45JJE.js?v=bc468732:8338
+keydown @ chunk-CNZ45JJE.js?v=bc468732:8219
+(anonymous) @ chunk-CNZ45JJE.js?v=bc468732:4329
+runHandlers @ chunk-CNZ45JJE.js?v=bc468732:4241
+handleEvent @ chunk-CNZ45JJE.js?v=bc468732:4231
+ [app.rustContext#57] sendResponse start {success: true, requestId: '482c1ba0-652c-4f85-afd4-677148a84423', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#57] sendResponse end {durationMs: 0.5999999940395355, details: {…}}
+ [app.rustContext#58] sendResponse start {success: true, requestId: '03038a82-31b5-445b-a066-a10ec0f4a14d', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#58] sendResponse end {durationMs: 0.4000000059604645, details: {…}}
+ [app.rustContext#59] sendResponse start {success: true, requestId: 'a0570dc7-bc79-497b-9962-864a9266a1d9', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#59] sendResponse end {durationMs: 0.5, details: {…}}
+ [app.rustContext#60] sendResponse start {success: true, requestId: '23183353-bcb5-43b7-8e6f-fc5b61ae1850', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+ [app.rustContext#60] sendResponse end {durationMs: 0.19999998807907104, details: {…}}
