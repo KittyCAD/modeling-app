@@ -25,18 +25,24 @@ pub enum FormatNumericSuffixError {
 /// as a literal. If it can't be done, returns an error.
 ///
 /// This is used by TS.
-pub fn format_number_literal(value: f64, suffix: NumericSuffix) -> Result<String, FormatNumericSuffixError> {
-    // Format to 2 decimal places maximum (matching TypeScript roundOff function)
+pub fn format_number_literal(
+    value: f64,
+    suffix: NumericSuffix,
+    decimals: Option<usize>,
+) -> Result<String, FormatNumericSuffixError> {
+    // Format to `d` decimal places maximum (default 2, matching TypeScript roundOff function)
+    let d = decimals.unwrap_or(2);
     // Round first to ensure we don't have floating point precision issues
-    let rounded = (value * 100.0).round() / 100.0;
-    // Format with up to 2 decimal places, removing trailing zeros
+    let factor = 10_f64.powf(d as f64);
+    let rounded = (value * factor).round() / factor;
+    // Format with up to `d` decimal places, removing trailing zeros
     let formatted = if rounded.fract().abs() < 1e-10 {
         // Integer value
         format!("{:.0}", rounded)
     } else {
-        // Format with 2 decimal places, then remove trailing zeros
-        let with_2_decimals = format!("{:.2}", rounded);
-        with_2_decimals.trim_end_matches('0').trim_end_matches('.').to_string()
+        // Format with `d` decimal places, then remove trailing zeros
+        let with_decimals = format!("{rounded:.d$}");
+        with_decimals.trim_end_matches('0').trim_end_matches('.').to_string()
     };
 
     match suffix {
@@ -153,25 +159,60 @@ mod tests {
     #[test]
     fn test_format_number_literal() {
         assert_eq!(
-            format_number_literal(1.0, NumericSuffix::Length),
+            format_number_literal(1.0, NumericSuffix::Length, None),
             Err(FormatNumericSuffixError::Invalid(NumericSuffix::Length))
         );
         assert_eq!(
-            format_number_literal(1.0, NumericSuffix::Angle),
+            format_number_literal(1.0, NumericSuffix::Angle, None),
             Err(FormatNumericSuffixError::Invalid(NumericSuffix::Angle))
         );
-        assert_eq!(format_number_literal(1.0, NumericSuffix::None), Ok("1".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Count), Ok("1_".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Mm), Ok("1mm".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Cm), Ok("1cm".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::M), Ok("1m".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Inch), Ok("1in".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Ft), Ok("1ft".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Yd), Ok("1yd".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Deg), Ok("1deg".to_owned()));
-        assert_eq!(format_number_literal(1.0, NumericSuffix::Rad), Ok("1rad".to_owned()));
         assert_eq!(
-            format_number_literal(1.0, NumericSuffix::Unknown),
+            format_number_literal(1.0, NumericSuffix::None, None),
+            Ok("1".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Count, None),
+            Ok("1_".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Mm, None),
+            Ok("1mm".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Cm, None),
+            Ok("1cm".to_owned())
+        );
+        assert_eq!(format_number_literal(1.0, NumericSuffix::M, None), Ok("1m".to_owned()));
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Inch, None),
+            Ok("1in".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Ft, None),
+            Ok("1ft".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Yd, None),
+            Ok("1yd".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Deg, None),
+            Ok("1deg".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Rad, None),
+            Ok("1rad".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.23456, NumericSuffix::None, Some(4)),
+            Ok("1.2346".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.2, NumericSuffix::None, Some(4)),
+            Ok("1.2".to_owned())
+        );
+        assert_eq!(
+            format_number_literal(1.0, NumericSuffix::Unknown, None),
             Err(FormatNumericSuffixError::Invalid(NumericSuffix::Unknown))
         );
     }
