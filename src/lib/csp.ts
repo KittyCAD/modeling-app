@@ -9,11 +9,7 @@ import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import { getAppFolderName } from '@src/lib/appFolderName'
-const isStagingBuild = packageJSON.name.includes('-staging')
-const isStagingOrDebugBuild =
-  isStagingBuild ||
-  packageJSON.version === '0.0.0' ||
-  packageJSON.version === 'dev'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -51,8 +47,8 @@ const getEnvironmentFolderName = () => {
   return getAppFolderName({
     packageName: packageJSON.name,
     platform: os.platform(),
-    isStaging: isStagingBuild,
-    isStagingOrDebug: isStagingOrDebugBuild,
+    isStaging: IS_STAGING,
+    isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })
 }
 
@@ -131,9 +127,6 @@ const buildIndexHtmlWithCsp = async (indexPath: string) => {
 }
 
 export const registerFileProtocolCsp = () => {
-  if (isStagingOrDebugBuild) {
-    return
-  }
   protocol.interceptBufferProtocol('file', (request, callback) => {
     void (async () => {
       const filePath = fileURLToPath(request.url)
@@ -147,10 +140,7 @@ export const registerFileProtocolCsp = () => {
         callback({ data, mimeType: getMimeType(filePath) })
       } catch (error) {
         console.error('Failed to load file protocol response', error)
-        callback({
-          data: Buffer.alloc(0),
-          mimeType: 'application/octet-stream',
-        })
+        callback({ data: Buffer.alloc(0), mimeType: 'application/octet-stream' })
       }
     })()
   })
