@@ -4051,7 +4051,7 @@ e
     fn parse_names() {
         for (test, expected_len) in [("someVar", 0), ("::foo", 0), ("foo::bar::baz", 2)] {
             let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            match name.parse(tokens.as_slice()) {
+            match in_ctx(|| name.parse(tokens.as_slice())) {
                 Ok(n) => assert_eq!(n.path.len(), expected_len, "Could not parse name from `{test}`: {n:?}"),
                 Err(e) => panic!("Could not parse name from `{test}`: {e:?}"),
             }
@@ -4063,7 +4063,7 @@ e
         let tokens = crate::parsing::token::lex("fn firstPrime(", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let last = tokens.last().unwrap().as_source_range();
-        let err: CompilationError = error_from_winnow_error(program.parse(tokens).unwrap_err());
+        let err: CompilationError = error_from_winnow_error(in_ctx(|| program.parse(tokens)).unwrap_err());
         assert_eq!(err.source_range, last);
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -4074,21 +4074,21 @@ e
     fn kw_call_as_operand() {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        operand.parse(tokens).unwrap();
+        in_ctx(|| operand.parse(tokens)).unwrap();
     }
 
     #[test]
     fn parse_binary_operator_on_array() {
         let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        binary_expression.parse(tokens).unwrap();
+        in_ctx(|| binary_expression.parse(tokens)).unwrap();
     }
 
     #[test]
     fn expression_in_array_index() {
         let tokens = crate::parsing::token::lex("arr[x + 1]", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
+        let Expr::MemberExpression(expr) = in_ctx(|| expression.parse(tokens)).unwrap() else {
             panic!();
         };
         let Expr::BinaryExpression(be) = expr.inner.property else {
@@ -4101,14 +4101,14 @@ e
     fn parse_binary_operator_on_object() {
         let tokens = crate::parsing::token::lex("{ a = 1 } + 2", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        binary_expression.parse(tokens).unwrap();
+        in_ctx(|| binary_expression.parse(tokens)).unwrap();
     }
 
     #[test]
     fn parse_call_array_operator() {
         let tokens = crate::parsing::token::lex("f([0] + 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        fn_call_kw.parse(tokens).unwrap();
+        in_ctx(|| fn_call_kw.parse(tokens)).unwrap();
     }
 
     #[test]
@@ -4202,7 +4202,7 @@ e
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
-        let err: CompilationError = error_from_winnow_error(program.parse(tokens.as_slice()).unwrap_err());
+        let err: CompilationError = error_from_winnow_error(in_ctx(|| program.parse(tokens.as_slice())).unwrap_err());
         assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
@@ -4211,7 +4211,7 @@ e
     fn parse_binary_expressions() {
         for (i, test_program) in ["1 + 2 + 3"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-            let _actual = match binary_expression.parse_next(&mut tokens.as_slice()) {
+            let _actual = match in_ctx(|| binary_expression.parse_next(&mut tokens.as_slice())) {
                 Ok(x) => x,
                 Err(e) => panic!("Failed test {i}, could not parse binary expressions from \"{test_program}\": {e:?}"),
             };
@@ -4221,7 +4221,7 @@ e
     #[test]
     fn test_vardec_no_keyword() {
         let tokens = crate::parsing::token::lex("x = 4", ModuleId::default()).unwrap();
-        let vardec = declaration(&mut tokens.as_slice()).unwrap();
+        let vardec = in_ctx(|| declaration(&mut tokens.as_slice())).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
         let vardec = &vardec.declaration;
         assert_eq!(vardec.id.name, "x");
@@ -4234,7 +4234,7 @@ e
     #[test]
     fn test_negative_operands() {
         let tokens = crate::parsing::token::lex("-leg2", ModuleId::default()).unwrap();
-        let _s = operand.parse_next(&mut tokens.as_slice()).unwrap();
+        let _s = in_ctx(|| operand.parse_next(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -4248,7 +4248,7 @@ e
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.body[0].get_comments();
         let comment0 = expr.body.body[1].get_comments();
@@ -4265,7 +4265,7 @@ e
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -4278,7 +4278,7 @@ comment */
 mySk1 = startSketchOn(XY)
   |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let program = program.parse(tokens.as_slice()).unwrap();
+        let program = in_ctx(|| program.parse(tokens.as_slice())).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
@@ -4296,7 +4296,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_comment_in_pipe() {
         let tokens = crate::parsing::token::lex(r#"x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
-        let mut body = program.parse(tokens.as_slice()).unwrap().inner.body;
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
@@ -4323,7 +4323,7 @@ mySk1 = startSketchOn(XY)
             return sg
           }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let _expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -4334,7 +4334,7 @@ mySk1 = startSketchOn(XY)
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = in_ctx(|| function_decl.parse_next(&mut tokens.as_slice())).unwrap();
         assert_eq!(
             expr.body.non_code_meta.start_nodes,
             vec![Node::new(
@@ -4357,7 +4357,7 @@ mySk1 = startSketchOn(XY)
         |> d(%)"#;
 
         let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-        let (body, non_code_meta) = match expression.parse_next(&mut tokens.as_slice()).unwrap() {
+        let (body, non_code_meta) = match in_ctx(|| expression.parse_next(&mut tokens.as_slice())).unwrap() {
             Expr::PipeExpression(e) => (e.inner.body, e.inner.non_code_meta),
             _ => panic!(),
         };
@@ -4388,7 +4388,7 @@ mySk1 = startSketchOn(XY)
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
         let Block {
             items, non_code_meta, ..
-        } = function_body.parse(tokens.as_slice()).unwrap().inner;
+        } = in_ctx(|| function_body.parse(tokens.as_slice())).unwrap().inner;
         assert_eq!(items[0].get_comments(), vec!["// this is a comment".to_owned()],);
 
         assert_eq!(
@@ -4428,7 +4428,7 @@ mySk1 = startSketchOn(XY)
   return 1"#;
 
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let actual = program.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| program.parse(tokens.as_slice())).unwrap();
         assert_eq!(actual.non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
@@ -4443,7 +4443,7 @@ mySk1 = startSketchOn(XY)
     fn test_bracketed_binary_expression() {
         let input = "(2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-        let actual = match binary_expr_in_parens.parse(tokens.as_slice()) {
+        let actual = match in_ctx(|| binary_expr_in_parens.parse(tokens.as_slice())) {
             Ok(x) => x,
             Err(e) => panic!("{e:?}"),
         };
@@ -4458,7 +4458,7 @@ mySk1 = startSketchOn(XY)
             "sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))",
         ] {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let _actual = match expression.parse(tokens.as_slice()) {
+            let _actual = match in_ctx(|| expression.parse(tokens.as_slice())) {
                 Ok(x) => x,
                 Err(e) => panic!("{e:?}"),
             };
@@ -4533,7 +4533,7 @@ mySk1 = startSketchOn(XY)
         let input = "1 * (2 - 3)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let actual = binary_expression.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(rhs) = actual.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -4568,7 +4568,7 @@ mySk1 = startSketchOn(XY)
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-            let actual = match declaration.parse(tokens.as_slice()) {
+            let actual = match in_ctx(|| declaration.parse(tokens.as_slice())) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -4586,7 +4586,7 @@ mySk1 = startSketchOn(XY)
     fn test_function_call() {
         for (i, test_input) in ["x = f(1)", "x = f( 1 )"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-            let _actual = match declaration.parse(tokens.as_slice()) {
+            let _actual = match in_ctx(|| declaration.parse(tokens.as_slice())) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -4598,7 +4598,7 @@ mySk1 = startSketchOn(XY)
         let input = "1 * ((2 - 3) / 4)";
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let outer = binary_expression.parse(tokens.as_slice()).unwrap();
+        let outer = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
         assert_eq!(outer.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(middle) = outer.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -4616,7 +4616,7 @@ mySk1 = startSketchOn(XY)
         let tests = ["1 - 2", "1- 2", "1 -2", "1-2"];
         for test in tests {
             let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            let actual = binary_expression.parse(tokens.as_slice()).unwrap();
+            let actual = in_ctx(|| binary_expression.parse(tokens.as_slice())).unwrap();
             assert_eq!(actual.operator, BinaryOperator::Sub);
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
@@ -4649,7 +4649,7 @@ mySk1 = startSketchOn(XY)
         spanning a few lines */
         |> z(%)"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let non_code_meta = match expression.parse(tokens.as_slice()).unwrap() {
+        let non_code_meta = match in_ctx(|| expression.parse(tokens.as_slice())).unwrap() {
             Expr::PipeExpression(e) => e.non_code_meta.clone(),
             _ => panic!(),
         };
@@ -4680,7 +4680,7 @@ mySk1 = startSketchOn(XY)
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-            let actual = expression.parse(tokens.as_slice());
+            let actual = in_ctx(|| expression.parse(tokens.as_slice()));
             assert!(actual.is_ok(), "could not parse test {i}, '{test_program}'");
 
             match actual.unwrap() {
@@ -4849,7 +4849,7 @@ mySk1 = startSketchOn(XY)
             let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
             let mut slice = tokens.as_slice();
             for (index, expected_node) in expected.into_iter().enumerate() {
-                let actual = non_code_node.parse_next(&mut slice);
+                let actual = in_ctx(|| non_code_node.parse_next(&mut slice));
                 assert!(actual.is_ok(), "could not parse test {i}.{index}: {actual:#?}");
                 let actual = actual.unwrap();
                 assert_eq!(actual, expected_node, "failed test {i}.{index}");
@@ -4862,7 +4862,9 @@ mySk1 = startSketchOn(XY)
         let test_fn = "(let) => { return 1 }";
         let module_id = ModuleId::from_usize(2);
         let tokens = crate::parsing::token::lex(test_fn, module_id).unwrap();
-        let err = function_decl.parse(tokens.as_slice()).unwrap_err().into_inner();
+        let err = in_ctx(|| function_decl.parse(tokens.as_slice()))
+            .unwrap_err()
+            .into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
@@ -4875,7 +4877,7 @@ mySk1 = startSketchOn(XY)
            // a comment
              ""#;
         let tokens = crate::parsing::token::lex(string_literal, ModuleId::default()).unwrap();
-        let parsed_literal = literal.parse(tokens.as_slice()).unwrap();
+        let parsed_literal = in_ctx(|| literal.parse(tokens.as_slice())).unwrap();
         assert_eq!(
             parsed_literal.value,
             "
@@ -4894,7 +4896,7 @@ mySk1 = startSketchOn(XY)
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let tokens = &mut tokens.as_slice();
-        let _actual = expression.parse_next(tokens).unwrap();
+        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
         assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
     }
 
@@ -4909,7 +4911,7 @@ mySk1 = startSketchOn(XY)
     fn test_cube() {
         let test_program = include_str!("../../e2e/executor/inputs/cube.kcl");
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        match program.parse(tokens.as_slice()) {
+        match in_ctx(|| program.parse(tokens.as_slice())) {
             Ok(_) => {}
             Err(e) => {
                 panic!("{e:#?}");
@@ -4944,7 +4946,7 @@ mySk1 = startSketchOn(XY)
         ];
         for (i, (input, expected)) in tests.into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-            let actual = parameters.parse(tokens.as_slice());
+            let actual = in_ctx(|| parameters.parse(tokens.as_slice()));
             assert!(actual.is_ok(), "could not parse test {i}");
             let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.inner.name).collect();
             assert_eq!(actual_ids, expected);
@@ -4958,7 +4960,7 @@ mySk1 = startSketchOn(XY)
         }";
 
         let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
-        let actual = function_decl.parse(tokens.as_slice());
+        let actual = in_ctx(|| function_decl.parse(tokens.as_slice()));
         assert!(actual.is_ok(), "could not parse test function");
     }
 
@@ -4975,7 +4977,7 @@ mySk1 = startSketchOn(XY)
             };
 
             // Run the second parser, check it matches the first parser.
-            let actual = declaration.parse(tokens.as_slice()).unwrap();
+            let actual = in_ctx(|| declaration.parse(tokens.as_slice())).unwrap();
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
@@ -5679,7 +5681,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1, 2, 3]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5691,7 +5693,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[allow(unused)]
@@ -5704,7 +5706,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5716,7 +5718,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         ]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5724,7 +5726,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"[1/* comment*/]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| array_elem_by_elem(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5736,7 +5738,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = object(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| object(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5744,7 +5746,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         let program = r#"{x=1/* comment*/}"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
-        let _arr = object(&mut tokens.as_slice()).unwrap();
+        let _arr = in_ctx(|| object(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5756,7 +5758,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = if_expr(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| if_expr(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5766,7 +5768,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = else_if(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| else_if(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5780,7 +5782,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
         }";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
-        let _res = if_expr(&mut tokens.as_slice()).unwrap();
+        let _res = in_ctx(|| if_expr(&mut tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5798,7 +5800,7 @@ thing(false)
     fn test_mul_if() {
         let some_program_string = r#"10 * if true { 1 } else { 0}"#;
         let tokens = crate::parsing::token::lex(some_program_string, ModuleId::default()).unwrap();
-        super::binary_expression_tokens.parse(tokens.as_slice()).unwrap();
+        in_ctx(|| super::binary_expression_tokens.parse(tokens.as_slice())).unwrap();
     }
 
     #[test]
@@ -5873,7 +5875,7 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
         for input in ["val = foo(x, y = z)", "val = foo(y = z)"] {
             let module_id = ModuleId::default();
             let tokens = crate::parsing::token::lex(input, module_id).unwrap();
-            super::program.parse(tokens.as_slice()).unwrap();
+            in_ctx(|| super::program.parse(tokens.as_slice())).unwrap();
         }
     }
 
@@ -6019,7 +6021,7 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
         let some_program_string = "myFunction().field";
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
-        let actual = expression.parse(tokens.as_slice()).unwrap();
+        let actual = in_ctx(|| expression.parse(tokens.as_slice())).unwrap();
         let Expr::MemberExpression(_expr) = actual else {
             panic!("expected member expression")
         };
@@ -6151,7 +6153,7 @@ bar = 1
         let some_program_string = r#"!true"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
-        let actual = match unary_expression.parse(tokens.as_slice()) {
+        let actual = match in_ctx(|| unary_expression.parse(tokens.as_slice())) {
             // Use tokens.as_slice() for parsing
             Ok(x) => x,
             Err(e) => panic!("{e:?}"),
@@ -6237,7 +6239,7 @@ bar = 1
     fn test_sensible_error_when_missing_rhs_of_kw_arg() {
         for (i, program) in ["f(x, y=)"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let err = in_ctx(|| fn_call_kw.parse(tokens.as_slice())).unwrap_err();
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
                 cause.message, "This argument has a label, but no value. Put some value after the equals sign",
@@ -6274,7 +6276,7 @@ bar = 1
     fn test_sensible_error_when_using_keyword_as_arg_label() {
         for (i, program) in ["pow(2, fn = 8)"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = match fn_call_kw.parse(tokens.as_slice()) {
+            let err = match in_ctx(|| fn_call_kw.parse(tokens.as_slice())) {
                 Err(e) => e,
                 Ok(_ast) => {
                     panic!("Expected this to error but it didn't");
@@ -6297,7 +6299,7 @@ bar = 1
     fn test_sensible_error_when_missing_rhs_of_obj_property() {
         for (i, program) in ["{x = 1, y =}"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = object.parse(tokens.as_slice()).unwrap_err();
+            let err = in_ctx(|| object.parse(tokens.as_slice())).unwrap_err();
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
                 cause.message, "This property has a label, but no value. Put some value after the equals sign",
