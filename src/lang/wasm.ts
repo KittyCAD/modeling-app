@@ -444,10 +444,15 @@ export const recast = (ast: Program, instance: ModuleType): string | Error => {
 export function formatNumberLiteral(
   value: number,
   suffix: NumericSuffix,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  decimals?: number
 ): string | Error {
   try {
-    return wasmInstance.format_number_literal(value, JSON.stringify(suffix))
+    return wasmInstance.format_number_literal(
+      value,
+      JSON.stringify(suffix),
+      decimals
+    )
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
