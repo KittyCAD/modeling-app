@@ -640,3 +640,64 @@ overrideMethod @ installHook.js:1
 (anonymous) @ peerConnection.ts:71
 app.ts:252 [app.rustContext#34] sendResponse start {success: true, requestId: '41db8e4e-4700-47a0-901c-964bc1acb281', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
 app.ts:264 [app.rustContext#34] sendResponse end {durationMs: 0.5999999940395355, details: {…}}
+app.ts:252 [app.rustContext#35] sendResponse start {success: true, requestId: '99e6b4cf-5bf6-4d3d-9516-6abf951a6ea8', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#35] sendResponse end {durationMs: 1.9000000059604645, details: {…}}
+app.ts:252 [app.rustContext#36] sendResponse start {success: true, requestId: '7cc460e8-02b0-4476-bc2f-f2c5f42ea625', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#36] sendResponse end {durationMs: 0.5999999940395355, details: {…}}
+app.ts:252 [app.rustContext#37] sendUpdateFile start undefined
+app.ts:264 [app.rustContext#37] sendUpdateFile end {durationMs: 5.299999982118607, details: undefined}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=3aeeb2db-cc07-5a1e-840d-baeb34ceb75a type=make_plane payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_end cmd_id=6754a9b3-9b1e-5e6f-b872-7849d82fa323 type=object_visible payload={"object_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=fc48a210-666e-5981-9498-be796451c958 type=enable_sketch_mode payload={"entity_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=dcd8f58f-5302-5e5a-bdc2-b3054e0992f4 type=start_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=5f99494b-3998-57cd-bb7c-3796a34b3300 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=874498b2-e6c4-58dd-b68a-a67018d3d822 type=sketch_mode_disable payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=5fe067f7-d979-5f95-9ea2-155e1c2fb4c0 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=0c58f11b-8db6-523e-94b5-12f0f7c1bd05 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=364b40d4-898b-5fcd-a3ac-925042f14a2e type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=d5517509-fa14-5871-b0b1-59b181a08a23 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=dd91e3d3-7aa3-59e6-acf8-85db5ae39a50 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=ddad9bdf-fa37-5479-8d16-1c3d898e9c05 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=7895e302-fba2-5f90-97e1-1040c1c2a2cc type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=send cmd_id=4b3930b1-3abd-5f35-b000-e52afece5054 type=create_region_from_query_point payload={"object_id":"dcd8f58f-5302-5e5a-bdc2-b3054e0992f4"}
+app.ts:252 [app.rustContext#38] execute start undefined
+react-dom_client.js:25567 [Violation] 'setTimeout' handler took 94ms
+app.ts:252 [app.rustContext#39] sendResponse start {success: true, requestId: '351bce6c-68e1-5a92-a1c1-c31042ebba32', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#39] sendResponse end {durationMs: 0.800000011920929, details: {…}}
+app.ts:252 [app.rustContext#40] sendResponse start {success: true, requestId: '5656ab5b-ba90-4a92-b354-dc3a417cd061', responseType: 'modeling_batch', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#40] sendResponse end {durationMs: 1, details: {…}}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=3b9b7e44-df88-5f85-82a2-d6c192b9ae40 type=set_order_independent_transparency payload=null
+app.ts:252 [app.rustContext#41] sendResponse start {success: true, requestId: '3b9b7e44-df88-5f85-82a2-d6c192b9ae40', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#41] sendResponse end {durationMs: 0.800000011920929, details: {…}}
+kcl_wasm_lib.js:3514 [Violation] 'message' handler took 336ms
+app.ts:252 [app.rustContext#42] sendResponse start {success: true, requestId: 'c0aa58b5-e750-45f3-8bae-a3ae606ffda9', responseType: 'modeling_batch', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#42] sendResponse end {durationMs: 0.9000000059604645, details: {…}}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=3aeeb2db-cc07-5a1e-840d-baeb34ceb75a type=make_plane payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_end cmd_id=837bc8b4-ea00-5674-8e14-4dd0cf97b3b3 type=object_visible payload={"object_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=90a5d279-3b15-5070-b2fd-a30474df87a6 type=enable_sketch_mode payload={"entity_id":"3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"}
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=f5cca6d8-813c-5e62-81d9-e4e8e17ede93 type=start_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=6f9536f6-0229-5cbb-bd5f-d3e20949d527 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch_prebuilt cmd_id=5173c024-ac32-59f6-acbe-69ddbf68893d type=sketch_mode_disable payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=3c085bb9-a401-55d5-8042-5a9095193d55 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=59bc8baf-257f-5783-ad91-95db236aa6b0 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=8868de97-0e2a-52f7-8e1a-8f0671a194e3 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=037b0f2d-13ef-58af-b918-43b89e77393e type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=91226189-7e64-5690-9203-67ee33a6eb03 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=eb15cf8e-a943-5fe0-8d78-046893de64b7 type=move_path_pen payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=batch cmd_id=bbcd405a-3da3-5b6f-a7b5-95071e3f2d53 type=extend_path payload=null
+kcl_wasm_lib.js:2615 [wasm modeling] label=send cmd_id=1173902c-36a4-51e4-ba62-e51739ec2a5c type=create_region_from_query_point payload={"object_id":"f5cca6d8-813c-5e62-81d9-e4e8e17ede93"}
+app.ts:252 [app.rustContext#43] sendResponse start {success: true, requestId: '1009e56a-b2dd-4a2a-8610-41b11ecbc588', responseType: 'modeling_batch', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#43] sendResponse end {durationMs: 0.9000000059604645, details: {…}}
+app.ts:252 [app.rustContext#44] sendResponse start {success: true, requestId: '837bc8b4-ea00-5674-8e14-4dd0cf97b3b3', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#44] sendResponse end {durationMs: 0.29999998211860657, details: {…}}
+app.ts:264 [app.rustContext#38] execute end {durationMs: 806.5999999940395, details: undefined}
+app.ts:252 [app.rustContext#45] waitForAllEngineCommands start undefined
+app.ts:252 [app.rustContext#46] sendResponse start {success: true, requestId: 'b00894af-09d3-4606-9a73-569e92337818', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#46] sendResponse end {durationMs: 0.5999999940395355, details: {…}}
+app.ts:252 [app.rustContext#47] sendResponse start {success: true, requestId: 'c8085a65-18f1-429c-9e91-ee670213bfaf', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#47] sendResponse end {durationMs: 0.5, details: {…}}
+app.ts:252 [app.rustContext#48] sendResponse start {success: true, requestId: 'cbabfdcb-bffe-4db5-8c8b-16046c828436', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#45] waitForAllEngineCommands end {durationMs: 33.69999998807907, details: undefined}
+app.ts:264 [app.rustContext#48] sendResponse end {durationMs: 0.5, details: {…}}
+app.ts:252 [app.rustContext#49] sendResponse start {success: true, requestId: '0f75cc30-a0c7-473d-adde-1e6fd38784c0', responseType: 'modeling', modelingResponseType: undefined, payload: undefined}
+app.ts:264 [app.rustContext#49] sendResponse end {durationMs: 0.4000000059604645, details: {…}}
