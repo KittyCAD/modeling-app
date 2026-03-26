@@ -10,6 +10,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -619,6 +620,12 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  private _executionGeneration = 0
+  private _executionCompletionWaiters: {
+    afterGeneration: number
+    resolve: () => void
+  }[] = []
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -631,7 +638,7 @@ export class KclManager extends File {
   /** a representation of selections used by modelingMachine */
   private _selectionRanges: Selections = {
     otherSelections: [],
-    graphSelections: [],
+    graphSelectionsV2: [],
   }
   undoDepth = signal(0)
   redoDepth = signal(0)
@@ -777,6 +784,72 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+
+  /**
+   * If the current code has fillet/chamfer calls with deprecated tags and we have
+   * execution metadata, apply the Z0006 fix (convert to edgeRefs), update the
+   * editor, and wait for the next run to complete. Used before opening the edit
+   * flow so P&C works (artifact graph no longer has sweepEdges).
+   * @returns Promise<true> if fix was applied and we waited for run; Promise<false> otherwise.
+   */
+  async applyZ0006FixBeforeEdit(): Promise<boolean> {
+    const execState = this.execState
+    const hasMeta =
+      (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
+      (execState.directTagFilletMetadata?.length ?? 0) > 0
+    if (!hasMeta) return false
+    if (!this.artifactGraph?.size) return false
+
+    const instance = await this.wasmInstancePromise
+    const newSource = refactorZ0006Unified(
+      this.ast as Program,
+      execState.edgeRefactorMetadata ?? [],
+      execState.directTagFilletMetadata ?? [],
+      this.artifactGraph,
+      instance
+    )
+    if (err(newSource)) return false
+    const trimmed = newSource.trim()
+    if (!trimmed) return false
+
+    const generationBeforeDispatch = this._executionGeneration
+    this._editorView.dispatch({
+      changes: {
+        from: 0,
+        to: this._editorView.state.doc.length,
+        insert: trimmed,
+      },
+    })
+    await this.waitForExecutionGenerationAfter(generationBeforeDispatch)
+    return true
+  }
+
+  /**
+   * Returns a promise that resolves when an execution has completed after the given generation.
+   * Used by applyZ0006FixBeforeEdit to wait for the re-run after dispatching refactored code.
+   */
+  private waitForExecutionGenerationAfter(
+    afterGeneration: number
+  ): Promise<void> {
+    if (this._executionGeneration > afterGeneration) return Promise.resolve()
+    return new Promise((resolve) => {
+      this._executionCompletionWaiters.push({ afterGeneration, resolve })
+    })
+  }
+
+  private notifyExecutionCompletion(): void {
+    this._executionGeneration += 1
+    const gen = this._executionGeneration
+    this._executionCompletionWaiters = this._executionCompletionWaiters.filter(
+      (w) => {
+        if (w.afterGeneration < gen) {
+          w.resolve()
+          return false
+        }
+        return true
+      }
+    )
   }
 
   // Get the kcl version from the wasm module
@@ -965,11 +1038,6 @@ export class KclManager extends File {
                 sceneGraphDelta,
               },
             })
-          } else {
-            console.debug(
-              'Error when executing after user edit:',
-              setProgramOutcome
-            )
           }
         } else {
           await this.executeCode(newCode)
@@ -1330,6 +1398,9 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
         })
       )
       if (this.sceneEntitiesManager) {
@@ -1347,6 +1418,8 @@ export class KclManager extends File {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion()
       return
     }
 
@@ -1399,6 +1472,7 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    this.notifyExecutionCompletion()
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
@@ -1418,6 +1492,7 @@ export class KclManager extends File {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
+    this.notifyExecutionCompletion()
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
@@ -1533,7 +1608,7 @@ export class KclManager extends File {
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        graphSelections: [],
+        graphSelectionsV2: [],
         otherSelections: [],
       }
 
@@ -1556,7 +1631,7 @@ export class KclManager extends File {
           }
 
         if (start && end) {
-          returnVal.graphSelections.push({
+          returnVal.graphSelectionsV2.push({
             codeRef: {
               range: topLevelRange(start, end),
               pathToNode: path,
@@ -1781,7 +1856,7 @@ export class KclManager extends File {
     this._isShiftDown = isShiftDown
   }
   private selectionsWithSafeEnds(
-    selection: Array<Selection['codeRef']['range']>
+    selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
       return selection.filter(isTopLevelModule).map((s): [number, number] => {
@@ -1819,7 +1894,9 @@ export class KclManager extends File {
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
-  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+  setHighlightRange(
+    range: Array<NonNullable<Selection['codeRef']>['range']>
+  ): void {
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
       (selection) => {
         // Only keep valid selections.
@@ -1906,9 +1983,7 @@ export class KclManager extends File {
   }
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
-    // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
-
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -1922,16 +1997,15 @@ export class KclManager extends File {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
-    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
-    const firstSelection = this._selectionRanges.graphSelections[0]
+    if (!this._editorView || !this._selectionRanges.graphSelectionsV2[0]) return
+    const firstSelection = this._selectionRanges.graphSelectionsV2[0]
+    const codeRef = firstSelection.codeRef
+    if (!codeRef?.range) return
     this._editorView.focus()
     this._editorView.dispatch({
       effects: [
         EditorView.scrollIntoView(
-          EditorSelection.range(
-            firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1]
-          ),
+          EditorSelection.range(codeRef.range[0], codeRef.range[1]),
           { y: 'center' }
         ),
       ],
@@ -2027,7 +2101,7 @@ export class KclManager extends File {
     return false
   }
   selectRange(selections: Selections) {
-    if (selections?.graphSelections?.length === 0) {
+    if (selections?.graphSelectionsV2?.length === 0) {
       return
     }
     if (!this._editorView) {
@@ -2045,24 +2119,31 @@ export class KclManager extends File {
   createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
     // Handle empty graphSelections array to avoid runtime errors
-    if (selections.graphSelections.length === 0) {
+    if (selections.graphSelectionsV2.length === 0) {
       const defaultCursor = EditorSelection.cursor(
         this._editorView?.state.doc.length || 0
       )
       return EditorSelection.create([defaultCursor], 0)
     }
-    for (const selection of selections.graphSelections) {
+    for (const selection of selections.graphSelectionsV2) {
+      const cr = selection.codeRef
+      if (!cr?.range) continue
       const safeEnd = Math.min(
-        selection.codeRef.range[1],
-        this._editorView?.state.doc.length || selection.codeRef.range[1]
+        cr.range[1],
+        this._editorView?.state.doc.length || cr.range[1]
       )
-      codeBasedSelections.push(
-        EditorSelection.range(selection.codeRef.range[0], safeEnd)
-      )
+      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
-    const end =
-      selections.graphSelections[selections.graphSelections.length - 1].codeRef
-        .range[1]
+    const lastSel =
+      selections.graphSelectionsV2[selections.graphSelectionsV2.length - 1]
+    const lastRange = lastSel?.codeRef?.range
+    if (!lastRange) {
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    const end = lastRange[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)
@@ -2301,10 +2382,7 @@ export class KclManager extends File {
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
     const result = parse(newCode, wasmInstance)
-    if (err(result)) {
-      console.log('Recast code could not be parsed:', result, ast)
-      return
-    }
+    if (err(result)) return
     this.updateCodeEditor(newCode, resolvedOptions)
   }
 }

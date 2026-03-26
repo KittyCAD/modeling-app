@@ -523,7 +523,7 @@ export class CameraControls {
         this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
-            type: 'highlight_set_entity',
+            type: 'highlight_query_entity',
             selected_at_window: { x, y },
           },
           cmd_id: newCmdId,

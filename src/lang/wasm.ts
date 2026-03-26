@@ -45,6 +45,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
+import type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -59,7 +61,6 @@ export type {
   Segment as SegmentArtifact,
   Solid2d as Solid2dArtifact,
   Sweep as SweepArtifact,
-  SweepEdge,
   Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
@@ -67,6 +68,9 @@ export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
+export type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
+export type { DirectTagFilletTagEntry } from '@rust/kcl-lib/bindings/DirectTagFilletTagEntry'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
 export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
 export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
@@ -264,6 +268,10 @@ export interface ExecState {
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+  /** Populated when deprecated edge stdlib functions run (e.g. getOppositeEdge in a fillet). */
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+  /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0006 code mod. */
+  directTagFilletMetadata: DirectTagFilletMeta[]
 }
 
 /**
@@ -278,11 +286,16 @@ export function emptyExecState(): ExecState {
     errors: [],
     filenames: [],
     defaultPlanes: null,
+    edgeRefactorMetadata: [],
+    directTagFilletMetadata: [],
   }
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
+  const rawMeta = execOutcome.edgeRefactorMetadata
+  const edgeRefactorMetadata = isArray(rawMeta) ? rawMeta : []
+  const directTagFilletMetadata = execOutcome.directTagFilletMetadata
 
   return {
     variables: execOutcome.variables,
@@ -291,6 +304,8 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
+    edgeRefactorMetadata,
+    directTagFilletMetadata,
   }
 }
 

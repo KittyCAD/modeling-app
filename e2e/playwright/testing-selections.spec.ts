@@ -1,5 +1,6 @@
 import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
+import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -427,13 +428,14 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
     })
   })
 
-  test(`Engine primitive selection works on shell inner edge`, async ({
+  test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap.`, async ({
     context,
     page,
     homePage,
     scene,
     toolbar,
     cmdBar,
+    editor,
   }) => {
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -445,18 +447,66 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
     // Two dumb hardcoded screen ratio values
     const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })
-    const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
-      format: 'ratio',
-    })
 
     await test.step(`Click a primitive edge and expect the selection to be set to it`, async () => {
       await clickOnEdge()
       await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
-    await test.step(`Clicking in the corner resets the selection`, async () => {
-      await clearSelection()
-      await expect(toolbar.selectionStatus).not.toContainText('1 edge')
+    await test.step(`Fillet the selected edge (1mm radius)`, async () => {
+      await scene.moveCameraTo(
+        { x: 11.58, y: -20.49, z: 5.72 },
+        { x: 0, y: -2.6, z: 2.5 }
+      )
+      // await page.pause()
+
+      const [clickEdgeForFillet] = scene.makeMouseHelpers(0.4457, 0.5014, {
+        format: 'ratio',
+      })
+      // const [clickEdgeForFillet] = scene.makeMouseHelpers(830, 412,  {})
+      // const [clickEdgeForFillet] = scene.makeMouseHelpers(828, 420)
+      await clickEdgeForFillet()
+
+      await page.waitForTimeout(100)
+      await toolbar.filletButton.click()
+
+      const state: CmdBarSerialised = {
+        commandName: 'Fillet',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Radius: '',
+        },
+        highlightedHeaderArg: 'selection',
+        stage: 'arguments',
+      }
+      await cmdBar.expectState(state)
+
+      // Scene selection should carry into the fillet command (same pattern as split-edge fillet e2e)
+      state.currentArgKey = 'radius'
+      state.currentArgValue = '5'
+      state.headerArguments.Selection = '1 edge'
+      state.highlightedHeaderArg = 'radius'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState(state)
+
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('1')
+      state.currentArgValue = '1'
+      state.headerArguments.Radius = '1'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Fillet',
+        headerArguments: state.headerArguments,
+        stage: 'review',
+        reviewValidationError: undefined,
+      })
+
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('fillet')
+      await editor.expectEditor.toContain('radius')
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
   })
 })

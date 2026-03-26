@@ -1833,18 +1833,20 @@ function createLengthIndicator({
       return
     }
 
+    const firstV2 = selection.graphSelectionsV2?.[0]
+    if (!firstV2) return
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: selection.graphSelections[0],
+        selection: firstV2,
       },
     })
 
     const canConstrainLength = angleLengthInfo({
       selectionRanges: {
         ...selection,
-        graphSelections: [selection.graphSelections[0]],
+        graphSelectionsV2: [firstV2],
       },
       angleOrLength: 'setLength',
       kclManager,

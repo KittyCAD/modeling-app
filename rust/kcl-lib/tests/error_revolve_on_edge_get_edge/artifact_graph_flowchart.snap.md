@@ -13,18 +13,18 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7[Solid2d]
   end
-  subgraph path23 [Path]
-    23["Path<br>[247, 273, 0]<br>Consumed: true"]
+  subgraph path15 [Path]
+    15["Path<br>[247, 273, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    24["Segment<br>[279, 299, 0]"]
+    16["Segment<br>[279, 299, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    25["Segment<br>[305, 323, 0]"]
+    17["Segment<br>[305, 323, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    26["Segment<br>[329, 348, 0]"]
+    18["Segment<br>[329, 348, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    27["Segment<br>[354, 361, 0]"]
+    19["Segment<br>[354, 361, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    28[Solid2d]
+    20[Solid2d]
   end
   1["Plane<br>[6, 23, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -42,17 +42,9 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   14["Cap End"]
     %% face_code_ref=Missing NodePath
-  15["SweepEdge Opposite"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Opposite"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  29["Sweep RevolveAboutEdge<br>[367, 406, 0]<br>Consumed: false"]
+  21["Sweep RevolveAboutEdge<br>[367, 406, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  30["StartSketchOnFace<br>[203, 241, 0]"]
+  22["StartSketchOnFace<br>[203, 241, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -63,56 +55,24 @@ flowchart LR
   2 ---- 8
   3 --- 12
   3 x--> 13
-  3 --- 21
-  3 --- 22
   4 --- 11
   4 x--> 13
-  4 --- 19
-  4 --- 20
   5 --- 10
   5 x--> 13
-  5 --- 17
-  5 --- 18
   6 --- 9
   6 x--> 13
-  6 --- 15
-  6 --- 16
   8 --- 9
   8 --- 10
   8 --- 11
   8 --- 12
   8 --- 13
   8 --- 14
-  8 --- 15
-  8 --- 16
-  8 --- 17
-  8 --- 18
-  8 --- 19
-  8 --- 20
-  8 --- 21
-  8 --- 22
-  9 --- 15
-  9 --- 16
-  18 <--x 9
-  10 --- 17
-  10 --- 18
-  20 <--x 10
-  10 --- 23
-  10 <--x 30
-  11 --- 19
-  11 --- 20
-  22 <--x 11
-  16 <--x 12
-  12 --- 21
-  12 --- 22
-  15 <--x 14
-  17 <--x 14
-  19 <--x 14
-  21 <--x 14
-  23 --- 24
-  23 --- 25
-  23 --- 26
-  23 --- 27
-  23 --- 28
-  23 ---- 29
+  10 --- 15
+  10 <--x 22
+  15 --- 16
+  15 --- 17
+  15 --- 18
+  15 --- 19
+  15 --- 20
+  15 ---- 21
 ```

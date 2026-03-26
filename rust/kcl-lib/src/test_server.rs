@@ -67,7 +67,7 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
 }
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-#[cfg(test)]
+#[cfg(any(test, feature = "artifact-graph"))]
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,

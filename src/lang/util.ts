@@ -104,11 +104,16 @@ export function isCursorInSketchCommandRange(
       types: ['segment', 'path', 'plane', 'cap', 'wall'],
       predicate: (artifact) => {
         const codeRefRange = getFaceCodeRef(artifact)?.range
-        return selectionRanges.graphSelections.some(
-          (selection) =>
-            isArray(selection?.codeRef?.range) &&
-            isArray(codeRefRange) &&
-            isOverlap(selection?.codeRef?.range, codeRefRange)
+        return selectionRanges.graphSelectionsV2.some(
+          (selection: { codeRef?: { range?: [number, number, number] } }) => {
+            const selRange = selection?.codeRef?.range
+            return (
+              isArray(selRange) &&
+              selRange.length >= 3 &&
+              isArray(codeRefRange) &&
+              isOverlap(selRange, codeRefRange)
+            )
+          }
         )
       },
     },

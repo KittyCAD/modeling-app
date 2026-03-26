@@ -1,0 +1,30 @@
+// Blend using edge specifier objects: blend([{ sideFaces, endFaces?, index? }, ...])
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [1.97, 3.74])
+  |> angledLine(angle = 0deg, length = 2.1, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 1.98)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg04)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
+  |> close()
+sketch002 = startSketchOn(-XZ)
+profile002 = startProfile(sketch002, at = [-1.39, 3.8])
+  |> angledLine(angle = 180deg, length = 1.77, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = 1.59)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = -5, bodyType = SURFACE)
+extrude002 = extrude(profile002, length = -5, bodyType = SURFACE)
+
+blend001 = blend([
+  {
+    sideFaces = [seg01],
+    endFaces = [seg02, rectangleSegmentA002],
+    index = 0
+  },
+  {
+    sideFaces = [seg03],
+    endFaces = [seg04, rectangleSegmentA001],
+    index = 1
+  }
+])

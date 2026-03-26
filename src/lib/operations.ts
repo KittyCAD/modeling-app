@@ -17,15 +17,19 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
+  artifactToEntityRef,
+  findOperationArtifact,
   getNodeFromPath,
   getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
+  getEdgeCutConsumedCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
   type Program,
@@ -116,6 +120,9 @@ async function extractKclArgument(
   return result
 }
 
+/** Face selection with artifact + codeRef before mapping to SelectionV2 (entityRef + codeRef). */
+type FaceSelectionWithArtifact = { artifact: Artifact; codeRef: CodeRef }
+
 /**
  * Extracts face selections for GDT annotations.
  *
@@ -127,11 +134,11 @@ async function extractKclArgument(
 function extractFaceSelections(
   artifactGraph: ArtifactGraph,
   facesArg: any
-): Selection[] | { error: string } {
+): FaceSelectionWithArtifact[] | { error: string } {
   const faceValues: any[] =
     facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
 
-  const graphSelections: Selection[] = []
+  const graphSelections: FaceSelectionWithArtifact[] = []
 
   for (const v of faceValues) {
     if (v.type !== 'TagIdentifier' || !v.artifact_id) {
@@ -300,7 +307,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       operation.labeledArgs.to
     )
     if ('error' in graphSelections) return { reason: graphSelections.error }
-    to = { graphSelections, otherSelections: [] }
+    to = {
+      graphSelectionsV2: graphSelections.map((s) =>
+        s.artifact
+          ? {
+              entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+              codeRef: s.codeRef,
+            }
+          : { codeRef: s.codeRef }
+      ),
+      otherSelections: [],
+    }
   }
 
   // symmetric argument from a string to boolean
@@ -585,6 +602,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   rustContext,
   code,
   artifactGraph,
+  artifact,
 }) => {
   const baseCommand = {
     name: 'Fillet',
@@ -594,16 +612,117 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the unlabeled and edge arguments to selections
+  // Phase 2: Support both tags (legacy) and edgeRefs (new API)
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
-  if (err(selection)) return { reason: selection.message }
+  let selection: Selections | Error
+
+  const buildSelectionFromArtifact = (): Selections | null => {
+    if (
+      !artifact ||
+      (artifact.type !== 'edgeCut' && artifact.type !== 'segment')
+    )
+      return null
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs?.length) return null
+    const pathId =
+      artifact.type === 'segment'
+        ? (artifact as { pathId?: string }).pathId
+        : undefined
+    const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
+    if (!entityRef) return null
+    return {
+      graphSelectionsV2: [{ entityRef, codeRef: codeRefs[0] }],
+      otherSelections: [],
+    }
+  }
+
+  // Try edges first (new API), then edgeRefs (backward compat)
+  const edgesArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  if (edgesArg) {
+    const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
+  } else if (operation.labeledArgs?.tags) {
+    // Fall back to tags (legacy API)
+    selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.unlabeledArg,
+      operation.labeledArgs.tags,
+      artifactGraph,
+      code
+    )
+  } else {
+    const fromArtifact = buildSelectionFromArtifact()
+    if (fromArtifact) selection = fromArtifact
+    else {
+      return {
+        reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
+      }
+    }
+  }
+
+  if (err(selection)) {
+    return { reason: selection.message }
+  }
+
+  // Fallback: when op has edges/edgeRefs but tag names didn't resolve (no artifact_id), build edge
+  // selection from edgeCut so addFillet keeps edges and correct faces (e.g. seg01, capStart001)
+  if (
+    selection.graphSelectionsV2.length === 0 &&
+    (operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs) &&
+    artifact?.type === 'edgeCut'
+  ) {
+    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
+    const segId = edgeIds?.length
+      ? edgeIds[0]
+      : (artifact as { consumedEdgeId?: string }).consumedEdgeId
+    if (segId) {
+      const segResult = getArtifactOfTypes(
+        { key: segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (!err(segResult)) {
+        const commonFaces = getCommonFacesForEdge(segResult, artifactGraph)
+        const codeRefResult = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
+        if (
+          !err(commonFaces) &&
+          commonFaces.length > 0 &&
+          !err(codeRefResult)
+        ) {
+          const startCap = commonFaces.find(
+            (f) =>
+              f.type === 'cap' &&
+              (f as { subType?: string }).subType?.toLowerCase() === 'start'
+          )
+          const faceIds = startCap
+            ? [segResult.id, startCap.id]
+            : segResult.commonSurfaceIds.slice(0, 2)
+          if (faceIds.length >= 2) {
+            selection = {
+              graphSelectionsV2: [
+                {
+                  entityRef: { type: 'edge', side_faces: faceIds },
+                  codeRef: codeRefResult,
+                },
+              ],
+              otherSelections: [],
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback: if tags/edges gave no selection but we have the fillet's edge artifact, use it
+  if (!err(selection) && selection.graphSelectionsV2.length === 0) {
+    const fromArtifact = buildSelectionFromArtifact()
+    if (fromArtifact) selection = fromArtifact
+  }
 
   // 2. Convert the radius argument from a string to a KCL expression
   const radius = await extractKclArgument(
@@ -612,13 +731,16 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     'radius',
     rustContext
   )
-  if ('error' in radius) return { reason: radius.error }
+  if ('error' in radius) {
+    return { reason: radius.error }
+  }
 
   const tag = extractStringArgument(code, operation, 'tag')
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
+  if (err(selection)) return { reason: selection.message }
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
     selection,
     radius,
@@ -649,15 +771,31 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the unlabeled and edge arguments to selections (support both edgeRefs and tags)
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
+  let selection: Selections | Error
+  const edgesArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  if (edgesArg) {
+    const { retrieveEdgeSelectionsFromEdgeRefs } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
+  } else if (operation.labeledArgs?.tags) {
+    selection = retrieveEdgeSelectionsFromOpArgs(
+      operation.unlabeledArg,
+      operation.labeledArgs.tags,
+      artifactGraph,
+      code
+    )
+  } else {
+    return {
+      reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
+    }
+  }
   if (err(selection)) return { reason: selection.message }
 
   // 2. Convert the length argument from a string to a KCL expression
@@ -940,7 +1078,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     }
 
     plane = {
-      graphSelections: [],
+      graphSelectionsV2: [],
       otherSelections: [{ id, name: maybeDefaultPlaneName }],
     }
   } else {
@@ -1059,9 +1197,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   const path = {
-    graphSelections: [
+    graphSelectionsV2: [
       {
-        artifact: trajectoryArtifact,
+        entityRef: artifactToEntityRef(
+          trajectoryArtifact.type,
+          trajectoryArtifact.id
+        ),
         codeRef: trajectoryArtifact.codeRef,
       },
     ],
@@ -1145,7 +1286,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return { reason: 'Wrong operation type or arguments' }
+    const reason = 'Wrong operation type or arguments'
+    return { reason }
   }
 
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
@@ -1157,14 +1299,38 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   let axis: string | undefined
   let edge: Selections | undefined
   let cylinder: Selections | undefined
-  if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
-    // axis options string or selection arg
+  // axis can be legacy (tag/axis) or an edge reference payload (object with sideFaces); edgeRef is legacy refactor name
+  const axisArg = operation.labeledArgs?.axis
+  const edgeRefArg =
+    'edgeRef' in operation.labeledArgs
+      ? operation.labeledArgs.edgeRef
+      : undefined
+  const axisIsEdgeRefPayload =
+    axisArg?.value?.type === 'Object' &&
+    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+  const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
+  if (edgeRefPayload) {
+    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
+      edgeRefPayload,
+      artifactGraph
+    )
+    if (err(edgeSelections)) {
+      const reason = `Couldn't retrieve edge from axis/edgeRef: ${edgeSelections.message}`
+      return { reason }
+    }
+    mode = 'Edge'
+    edge = edgeSelections
+  } else if (axisArg) {
     const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-      operation.labeledArgs.axis,
+      axisArg,
       artifactGraph
     )
     if (err(axisEdgeSelection)) {
-      return { reason: "Couldn't retrieve axis or edge selection" }
+      const reason = "Couldn't retrieve axis or edge selection"
+      return { reason }
     }
     mode = axisEdgeSelection.axisOrEdge
     axis = axisEdgeSelection.axis
@@ -1179,15 +1345,16 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       artifactGraph
     )
     if (err(result)) {
-      return { reason: "Couldn't retrieve cylinder selection" }
+      const reason = "Couldn't retrieve cylinder selection"
+      return { reason }
     }
 
     mode = 'Cylinder'
     cylinder = result
   } else {
-    return {
-      reason: "The axis or cylinder arguments couldn't be retrieved.",
-    }
+    const reason =
+      "The axis or cylinder arguments couldn't be retrieved (helix may need Z0006 refactor first)."
+    return { reason }
   }
 
   // revolutions kcl arg (required for all)
@@ -1199,7 +1366,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(revolutions) || 'errors' in revolutions) {
-    return { reason: 'Errors found in revolutions argument' }
+    const reason = 'Errors found in revolutions argument'
+    return { reason }
   }
 
   // angleStart kcl arg (required for all)
@@ -1210,7 +1378,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(angleStart) || 'errors' in angleStart) {
-    return { reason: 'Errors found in angleStart argument' }
+    const reason = 'Errors found in angleStart argument'
+    return { reason }
   }
 
   // radius and cylinder and kcl arg (only for axis or edge)
@@ -1221,7 +1390,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       rustContext
     )
     if (err(r) || 'errors' in r) {
-      return { reason: 'Error in radius argument retrieval' }
+      const reason = 'Error in radius argument retrieval'
+      return { reason }
     }
 
     radius = r
@@ -1287,7 +1457,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (!artifact || operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return { reason: 'Wrong operation type or artifact' }
+    const reason = 'Wrong operation type or artifact'
+    return { reason }
   }
 
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
@@ -1295,7 +1466,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
 
   // 1. Map the unlabeled arguments to solid2d selections
   if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
+    const reason = `Couldn't retrieve operation arguments`
+    return { reason }
   }
 
   const sketches = retrieveSelectionsFromOpArg(
@@ -1303,23 +1475,55 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     artifactGraph
   )
   if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
+    const reason = "Couldn't retrieve sketches"
+    return { reason }
   }
 
-  // 2. Prepare labeled arguments
-  // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
-    return { reason: "Couldn't find axis argument" }
-  }
+  // 2. Prepare labeled arguments: axis (legacy or edge reference payload after Z0006 refactor)
+  let axisOrEdge: 'Axis' | 'Edge'
+  let axis: string | undefined
+  let edge: Selections | undefined
 
-  const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-    operation.labeledArgs.axis,
-    artifactGraph
-  )
-  if (err(axisEdgeSelection)) {
-    return { reason: "Couldn't retrieve axis or edge selections" }
+  const axisArg = operation.labeledArgs?.axis
+  const edgeRefArg =
+    'edgeRef' in operation.labeledArgs
+      ? operation.labeledArgs.edgeRef
+      : undefined
+  const axisIsEdgeRefPayload =
+    axisArg?.value?.type === 'Object' &&
+    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+  const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
+  if (edgeRefPayload) {
+    const { retrieveEdgeSelectionsFromSingleEdgeRef } = await import(
+      '@src/lang/modifyAst/edges'
+    )
+    const edgeSelections = retrieveEdgeSelectionsFromSingleEdgeRef(
+      edgeRefPayload,
+      artifactGraph
+    )
+    if (err(edgeSelections)) {
+      const reason = `Couldn't retrieve edge from axis/edgeRef: ${edgeSelections.message}`
+      return { reason }
+    }
+    axisOrEdge = 'Edge'
+    edge = edgeSelections
+  } else if (axisArg) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      axisArg,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection)) {
+      const reason = "Couldn't retrieve axis or edge selections"
+      return { reason }
+    }
+    axisOrEdge = axisEdgeSelection.axisOrEdge
+    axis = axisEdgeSelection.axis
+    edge = axisEdgeSelection.edge
+  } else {
+    const reason =
+      "Couldn't find axis argument (revolve may need Z0006 refactor first)"
+    return { reason }
   }
-  const { axisOrEdge, axis, edge } = axisEdgeSelection
 
   // angle kcl arg
   // Default to '360' if not present
@@ -1330,7 +1534,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     rustContext
   )
   if (err(angle) || 'errors' in angle) {
-    return { reason: 'Error in angle argument retrieval' }
+    const reason = 'Error in angle argument retrieval'
+    return { reason }
   }
 
   // symmetric argument from a string to boolean
@@ -1357,7 +1562,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       rustContext
     )
     if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve bidirectionalAngle argument" }
+      const reason = "Couldn't retrieve bidirectionalAngle argument"
+      return { reason }
     }
 
     bidirectionalAngle = result
@@ -1676,7 +1882,17 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   const tolerance = await extractKclArgument(
     code,
@@ -1743,7 +1959,17 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     return { reason: graphSelections.error }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces = {
+    graphSelectionsV2: graphSelections.map((s) =>
+      s.artifact
+        ? {
+            entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+            codeRef: s.codeRef,
+          }
+        : { codeRef: s.codeRef }
+    ),
+    otherSelections: [],
+  }
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(code, operation, 'name')
@@ -2129,19 +2355,21 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
-    // TODO: fix matching sketches-on-faces and offset planes back to their
-    // original plane artifacts in order to edit them.
-    async prepareToEdit({ artifact }) {
-      if (artifact) {
+    async prepareToEdit({ operation, artifact, artifactGraph }) {
+      const resolvedArtifact =
+        artifact ??
+        (operation.type === 'StdLibCall'
+          ? (findOperationArtifact(operation, artifactGraph) ?? undefined)
+          : undefined)
+      if (resolvedArtifact) {
         return {
           name: 'Enter sketch',
           groupId: 'modeling',
         }
-      } else {
-        return {
-          reason:
-            'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
-        }
+      }
+      return {
+        reason:
+          'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
       }
     },
   },

@@ -8,6 +8,7 @@ use kcmc::shared::Angle;
 use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::{self as kcmc};
 
+use super::args::FromKclValue;
 use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -16,10 +17,17 @@ use crate::execution::Helix as HelixValue;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
-use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis3dOrEdgeReference;
+
+/// True if the value is an object with a `sideFaces` (or `side_faces`) key, i.e. an edge reference payload.
+fn is_edge_ref_object(v: &KclValue) -> bool {
+    match v {
+        KclValue::Object { value, .. } => value.get("sideFaces").or_else(|| value.get("side_faces")).is_some(),
+        _ => false,
+    }
+}
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -27,14 +35,164 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
-    let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt(
-        "axis",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis3d),
-        ]),
-        exec_state,
-    )?;
+
+    // axis accepts: (1) Edge or Axis3d (legacy), or (2) an object with sideFaces (edge reference payload)
+    let axis_value: Option<KclValue> = args.get_kw_arg_opt("axis", &RuntimeType::any(), exec_state)?;
+    let axis_opt: Option<Axis3dOrEdgeReference> = axis_value.as_ref().and_then(|v| {
+        if !is_edge_ref_object(v) {
+            Axis3dOrEdgeReference::from_kcl_val(v)
+        } else {
+            None
+        }
+    });
+
+    let axis: Option<Axis3dOrEdgeReference> = if let Some(axis_val) = axis_value {
+        if is_edge_ref_object(&axis_val) {
+            // axis is an edge reference payload (object with sideFaces)
+            let edge_ref_obj = match axis_val {
+                KclValue::Object { value, .. } => value,
+                _ => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) must be an object with 'sideFaces' field".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+            };
+
+            // Get sideFaces array (KCL uses camelCase; accept side_faces for backward compat)
+            let faces_value = edge_ref_obj
+                .get("sideFaces")
+                .or_else(|| edge_ref_obj.get("side_faces"))
+                .ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) must have 'sideFaces' field".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    })
+                })?;
+
+            let faces_array = match faces_value {
+                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+                _ => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) 'sideFaces' must be an array".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+            };
+
+            if faces_array.is_empty() {
+                return Err(KclError::new_type(KclErrorDetails {
+                    message: "axis (edge reference) 'sideFaces' must have at least one face".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                }));
+            }
+
+            // Resolve faces to UUIDs - for helix, we try to resolve tags to face IDs
+            let mut face_uuids = Vec::new();
+            for face_value in faces_array {
+                let face_uuid = match face_value {
+                    KclValue::Uuid { value, .. } => *value,
+                    KclValue::TagIdentifier(tag) => {
+                        // Try to get face ID using get_adjacent_face_to_tag (for face tags)
+                        match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+                            Ok(face_id) => face_id,
+                            Err(_) => {
+                                // The tag doesn't refer to a face. It might refer to an edge.
+                                // Try to get the engine info as a fallback
+                                args.get_tag_engine_info(exec_state, tag)?.id
+                            }
+                        }
+                    }
+                    _ => {
+                        return Err(KclError::new_type(KclErrorDetails {
+                            message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
+                            source_ranges: vec![args.source_range],
+                            backtrace: Default::default(),
+                        }));
+                    }
+                };
+                face_uuids.push(face_uuid);
+            }
+
+            // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
+            let mut disambiguator_uuids = Vec::new();
+            if let Some(disambiguators_value) = edge_ref_obj
+                .get("endFaces")
+                .or_else(|| edge_ref_obj.get("end_faces"))
+                .or_else(|| edge_ref_obj.get("disambiguators"))
+            {
+                let disambiguators_array = match disambiguators_value {
+                    KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
+                    _ => {
+                        return Err(KclError::new_type(KclErrorDetails {
+                            message: "axis (edge reference) 'endFaces' must be an array".to_string(),
+                            source_ranges: vec![args.source_range],
+                            backtrace: Default::default(),
+                        }));
+                    }
+                };
+                for disambiguator_value in disambiguators_array {
+                    let disamb_uuid = match disambiguator_value {
+                        KclValue::Uuid { value, .. } => *value,
+                        KclValue::TagIdentifier(tag) => {
+                            // Try to get face ID using get_adjacent_face_to_tag (for face tags)
+                            match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+                                Ok(face_id) => face_id,
+                                Err(_) => {
+                                    // The tag doesn't refer to a face. Try to get the engine info as a fallback
+                                    args.get_tag_engine_info(exec_state, tag)?.id
+                                }
+                            }
+                        }
+                        _ => {
+                            return Err(KclError::new_type(KclErrorDetails {
+                                message: "axis (edge reference) disambiguators must be UUIDs or tags".to_string(),
+                                source_ranges: vec![args.source_range],
+                                backtrace: Default::default(),
+                            }));
+                        }
+                    };
+                    disambiguator_uuids.push(disamb_uuid);
+                }
+            }
+
+            // Get index (optional)
+            let index = match edge_ref_obj.get("index") {
+                Some(KclValue::Number { value, .. }) => Some(*value as u32),
+                Some(_) => {
+                    return Err(KclError::new_type(KclErrorDetails {
+                        message: "axis (edge reference) 'index' must be a number".to_string(),
+                        source_ranges: vec![args.source_range],
+                        backtrace: Default::default(),
+                    }));
+                }
+                None => None,
+            };
+
+            // Build EdgeSpecifier from shared module
+            use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
+            let builder = ModelingEdgeReference::builder()
+                .side_faces(face_uuids)
+                .end_faces(disambiguator_uuids);
+
+            let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
+                builder.index(index_val).build()
+            } else {
+                builder.build()
+            };
+
+            Some(Axis3dOrEdgeReference::EdgeReference(edge_reference))
+        } else {
+            axis_opt
+        }
+    } else {
+        axis_opt
+    };
+
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let cylinder = args.get_kw_arg_opt("cylinder", &RuntimeType::solid(), exec_state)?;
 
@@ -57,7 +215,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     // Make sure we have an axis if we don't have a cylinder.
     if axis.is_none() && cylinder.is_none() {
         return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            "Axis is required when creating a helix without a cylinder.".to_string(),
+            "`axis` is required when creating a helix without a cylinder.".to_string(),
             vec![args.source_range],
         )));
     }
@@ -65,7 +223,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     // Make sure we don't have an axis if we have a cylinder.
     if axis.is_some() && cylinder.is_some() {
         return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            "Axis is not allowed when creating a helix with a cylinder.".to_string(),
+            "`axis` is not allowed when creating a helix with a cylinder.".to_string(),
             vec![args.source_range],
         )));
     }
@@ -81,7 +239,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     // Make sure we have an axis if we have a radius.
     if axis.is_none() && radius.is_some() {
         return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            "Axis is required when creating a helix around an axis.".to_string(),
+            "`axis` is required when creating a helix around an axis or edge.".to_string(),
             vec![args.source_range],
         )));
     }
@@ -192,6 +350,7 @@ async fn inner_helix(
             Axis3dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
 
+                // For backwards compatibility, use edge_id directly instead of querying for EdgeReference
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
                         .radius(LengthUnit(radius.to_mm()))
@@ -208,6 +367,33 @@ async fn inner_helix(
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_id(edge_id)
+                        .build()
+                };
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                        ModelingCmd::from(cmd),
+                    )
+                    .await?;
+            }
+            Axis3dOrEdgeReference::EdgeReference(edge_ref) => {
+                // New API: use EdgeReference directly
+                let cmd = if let Some(length) = length {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_reference(edge_ref.clone())
+                        .length(LengthUnit(length.to_mm()))
+                        .build()
+                } else {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_reference(edge_ref.clone())
                         .build()
                 };
                 exec_state

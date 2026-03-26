@@ -12,5 +12,4 @@ flowchart LR
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
-  3 <--x 4
 ```

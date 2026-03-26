@@ -68,8 +68,13 @@ export fn fillet(
   @solid: Solid,
   /// The radius of the fillet
   radius: number(Length),
-  /// The paths you want to fillet
-  tags: [Edge; 1+],
+  /// The paths you want to fillet (legacy API)
+  tags?: [Edge; 1+],
+  /// Edges to fillet (preferred). Array of edge references; each element is an object with:
+  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet
+  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  edges?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
@@ -170,8 +175,13 @@ export fn chamfer(
   /// The larger this length to chamfer away, the larger the
   /// new face will be.
   length: number(Length),
-  /// The paths you want to chamfer
-  tags: [Edge; 1+],
+  /// The paths you want to chamfer (legacy API)
+  tags?: [Edge; 1+],
+  /// Edges to chamfer (preferred). Array of edge references; each element is an object with:
+  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer
+  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  edges?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
   /// the first and second face are both given by `length`.
@@ -1681,9 +1691,17 @@ export fn deleteFace(
 ///
 /// blend([rectangleSegmentA001, rectangleSegmentA002])
 /// ```
+///
+/// You can also pass edge specifier objects instead of tagged edges or bounded edges:
+/// ```kcl
+/// blend([
+///   { sideFaces = [seg01], endFaces = [seg02, rectangleSegmentA002], index = 0 },
+///   { sideFaces = [seg03], endFaces = [seg04, rectangleSegmentA001], index = 1 }
+/// ])
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn blend(
    /// The two edges that will be blended.
-   /// Tagged edges blend the full edge length.
-   @edges: [BoundedEdge | TaggedEdge; 2],
+   /// Tagged edges blend the full edge length. Edge specifier objects: `{ sideFaces = [...], endFaces? = [...], index? = 0 }`.
+   @edges: [BoundedEdge | TaggedEdge | any; 2],
 ): Solid {}

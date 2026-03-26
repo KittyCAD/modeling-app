@@ -3,13 +3,22 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecState, Program } from '@src/lang/wasm'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import type {
+  DirectTagFilletMeta,
+  EdgeRefactorMeta,
+  ExecState,
+  Program,
+} from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
+import { err } from '@src/lib/trap'
 import type { EditorView } from 'codemirror'
 
 export type ToolTip =
@@ -89,37 +98,7 @@ export async function executeAst({
   }
 }
 
-export async function executeAstMock({
-  ast,
-  rustContext,
-  path,
-  usePrevMemory,
-}: {
-  ast: Node<Program>
-  rustContext: RustContext
-  path?: string
-  usePrevMemory?: boolean
-}): Promise<ExecutionResult> {
-  try {
-    const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.executeMock(
-      ast,
-      settings,
-      path,
-      usePrevMemory
-    )
-
-    await rustContext.waitForAllEngineCommands()
-    return {
-      logs: [],
-      errors: [],
-      execState,
-      isInterrupted: false,
-    }
-  } catch (e: any) {
-    return handleExecuteError(e)
-  }
-}
+export const executeAstMock = executeAstMockImpl
 
 function handleExecuteError(e: any): ExecutionResult {
   let isInterrupted = false
@@ -177,11 +156,17 @@ export async function lintAst({
   sourceCode,
   instance,
   rustContext,
+  edgeRefactorMetadata,
+  directTagFilletMetadata,
+  artifactGraph,
 }: {
   ast: Program
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
+  directTagFilletMetadata?: DirectTagFilletMeta[]
+  artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
     let discovered_findings = await kclLint(ast, instance)
@@ -322,6 +307,46 @@ export async function lintAst({
         } catch (e) {
           console.warn('[lintAst] Error processing Z0005:', e)
         }
+      } else if (
+        lint.finding.code === 'Z0006' &&
+        artifactGraph &&
+        (edgeRefactorMetadata?.length || directTagFilletMetadata?.length)
+      ) {
+        const newSourceResult = refactorZ0006Unified(
+          ast,
+          edgeRefactorMetadata ?? [],
+          directTagFilletMetadata ?? [],
+          artifactGraph,
+          instance
+        )
+        const newSource = err(newSourceResult)
+          ? null
+          : newSourceResult.trim() || null
+        const codeActuallyChanged =
+          newSource != null && newSource !== sourceCode.trim()
+        if (newSource && codeActuallyChanged) {
+          actions = [
+            {
+              name: 'Convert to edges/axis',
+              apply: (view: EditorView, _from: number, _to: number) => {
+                try {
+                  view.dispatch({
+                    changes: {
+                      from: 0,
+                      to: view.state.doc.length,
+                      insert: newSource,
+                    },
+                    annotations: [lspCodeActionEvent],
+                  })
+                } catch (e) {
+                  console.warn('[lintAst] Z0006 apply dispatch failed:', e)
+                }
+              },
+            },
+          ]
+        }
+      } else if (lint.finding.code === 'Z0006') {
+        // Z0006 lint shown but no code action (missing graph or metadata)
       }
 
       const diagnostic = {

@@ -1,4 +1,4 @@
-import { executeAstMock } from '@src/lang/langHelpers'
+import { executeAstMock } from '@src/lang/executeAstMock'
 import {
   type SourceRange,
   type KclValue,

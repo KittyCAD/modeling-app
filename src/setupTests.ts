@@ -2,6 +2,14 @@
 import '@src/setupTests-globals'
 import '@testing-library/jest-dom'
 
+// Local engine URL for integration tests that connect (override via env or change this line)
+// TODO REMOVE, this is just temp to get it to connect to the right endpoint in CI before the engine changes merge
+if (typeof process !== 'undefined') {
+  process.env.VITE_KITTYCAD_WEBSOCKET_URL ??=
+    // 'ws://nixos:8080/ws/modeling/commands'
+    'wss://api.dev.zoo.dev/ws/modeling/commands&pool=pr-4194'
+}
+
 import { cleanup } from '@testing-library/react'
 import { afterEach } from 'vitest'
 import { Vector2 } from 'three'

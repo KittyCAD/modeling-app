@@ -88,6 +88,7 @@ function CommandBarVector3DInput({
 }) {
   const { commands } = useApp()
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const rustContext = kclManager.rustContext
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)
@@ -136,8 +137,11 @@ function CommandBarVector3DInput({
   // Note: Not passing selectionRanges - will default to end-of-file context (all variables available)
   const xCalculation = useCalculateKclExpression({
     value: x,
-    selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    selectionRanges: {
+      graphSelectionsV2: [],
+      otherSelections: [],
+    },
+    rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
@@ -146,8 +150,11 @@ function CommandBarVector3DInput({
 
   const yCalculation = useCalculateKclExpression({
     value: y,
-    selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    selectionRanges: {
+      graphSelectionsV2: [],
+      otherSelections: [],
+    },
+    rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
@@ -156,8 +163,11 @@ function CommandBarVector3DInput({
 
   const zCalculation = useCalculateKclExpression({
     value: z,
-    selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    selectionRanges: {
+      graphSelectionsV2: [],
+      otherSelections: [],
+    },
+    rustContext,
     options: calculateKclExpressionOptions,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,

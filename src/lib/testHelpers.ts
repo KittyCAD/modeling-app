@@ -10,8 +10,9 @@ import {
 } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type RustContext from '@src/lib/rustContext'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
@@ -62,7 +63,10 @@ export async function getAstAndSketchSelections(
   }
 
   const sketches = createSelectionFromPathArtifact(
-    artifacts.slice(count ? -count : undefined)
+    artifacts.slice(count ? -count : undefined) as (Artifact & {
+      codeRef: CodeRef
+    })[],
+    artifactGraph
   )
   return { artifactGraph, ast, sketches }
 }
@@ -71,35 +75,44 @@ export function createSelectionFromArtifacts(
   artifacts: Artifact[],
   artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelections = artifacts.flatMap((artifact) => {
+  const graphSelectionsV2 = artifacts.flatMap((artifact) => {
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       return []
     }
-
-    return {
-      codeRef: codeRefs[0],
-      artifact,
-    } as Selection
+    return [
+      {
+        entityRef: artifactToEntityRef(artifact.type, artifact.id),
+        codeRef: codeRefs[0],
+      },
+    ]
   })
   return {
-    graphSelections,
+    graphSelectionsV2,
     otherSelections: [],
   }
 }
 
 export function createSelectionFromPathArtifact(
-  artifacts: (Artifact & { codeRef: CodeRef })[]
+  artifacts: (Artifact & { codeRef: CodeRef })[],
+  artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
+  const graphSelectionsV2 = artifacts.map((artifact) => {
+    let id: string | undefined
+    for (const [k, a] of artifactGraph) {
+      if (a === artifact) {
+        id = k
+        break
+      }
+    }
+    return {
+      entityRef:
+        id != null ? artifactToEntityRef(artifact.type, id) : undefined,
+      codeRef: artifact.codeRef,
+    }
+  })
   return {
-    graphSelections,
+    graphSelectionsV2,
     otherSelections: [],
   }
 }

@@ -42,6 +42,10 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  getEngineTopologyFallbackNormalized,
+  mergeEngineTopologyFallbackFromLiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -986,7 +990,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: ['segment', 'primitiveEdge', 'edgeCut'],
         multiple: false,
         hidden: (context) =>
           Boolean(context.argumentsToSubmit.nodeToEdit) ||
@@ -1445,11 +1449,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const wasmInstance = await context.wasmInstancePromise
       const modRes = addHelix({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1487,7 +1492,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       edge: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['segment', 'primitiveEdge'],
         multiple: false,
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.mode as string),
@@ -1551,18 +1556,113 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
-      const modRes = addFillet({
+      // Set localStorage DEBUG_FILLET_SELECTION=1 to compare command-bar selection vs live modeling selection.
+      if (
+        typeof localStorage !== 'undefined' &&
+        localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'
+      ) {
+        const live = modelingActor.getSnapshot().context.selectionRanges
+        const submitted = (
+          context.argumentsToSubmit as ModelingCommandSchema['Fillet']
+        ).selection
+        const other = submitted?.otherSelections
+        const g0 = submitted?.graphSelectionsV2?.[0]
+        console.info('[fillet review debug]', {
+          submittedGraph: submitted?.graphSelectionsV2?.length ?? 0,
+          engineTopologyFallback: g0?.engineTopologyFallback,
+          submittedOther: other?.length ?? 0,
+          submittedOtherKinds: other?.map((s) => {
+            if (typeof s === 'string') {
+              return { kind: 'string' as const, value: s }
+            }
+            if (s && typeof s === 'object' && 'type' in s) {
+              const o = s as { type: string; primitiveType?: string }
+              return {
+                kind: o.type,
+                primitiveType: o.primitiveType,
+              }
+            }
+            return { kind: 'unknown' as const }
+          }),
+          liveGraph: live?.graphSelectionsV2?.length ?? 0,
+          liveOther: live?.otherSelections?.length ?? 0,
+        })
+      }
+      const filletArgs = {
         ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
+      }
+      const liveSel = modelingActor.getSnapshot().context.selectionRanges
+      const selectionForFillet = mergeEngineTopologyFallbackFromLiveSelection(
+        filletArgs.selection,
+        liveSel
+      )
+      const sel = selectionForFillet ?? filletArgs.selection
+      const g0 = sel?.graphSelectionsV2?.[0]
+      if (
+        typeof localStorage !== 'undefined' &&
+        localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'
+      ) {
+        console.info('[fillet review debug post-merge]', {
+          graphSelectionsV2: sel?.graphSelectionsV2?.map((g, i) => ({
+            i,
+            entityRefType: g.entityRef?.type,
+            hasCodeRefPath: Boolean(g.codeRef?.pathToNode),
+            hasEngineTopologyFallbackKey: Boolean(g.engineTopologyFallback),
+            hasSnakeEngineTopologyFallback: Boolean(
+              (g as { engine_topology_fallback?: unknown })
+                .engine_topology_fallback
+            ),
+            engineTopologyFallback: g.engineTopologyFallback ?? null,
+            engine_topology_fallback:
+              (g as { engine_topology_fallback?: unknown })
+                .engine_topology_fallback ?? null,
+            normalized: getEngineTopologyFallbackNormalized(g),
+          })),
+        })
+      }
+      // Trace: command bar validateArguments → Fillet.reviewValidation → addFillet (src/lang/modifyAst/edges.ts)
+      console.info(
+        '[Fillet reviewValidation] about to call addFillet codemod',
+        {
+          graphSelectionsV2: sel?.graphSelectionsV2?.length ?? 0,
+          otherSelections: sel?.otherSelections?.length ?? 0,
+          topologyNormalized: g0
+            ? getEngineTopologyFallbackNormalized(g0)
+            : null,
+          topologyRaw: g0?.engineTopologyFallback ?? null,
+          topologyRawSnake:
+            (g0 as { engine_topology_fallback?: unknown })
+              .engine_topology_fallback ?? null,
+        }
+      )
+      const modRes = addFillet({
+        ...filletArgs,
+        selection: sel,
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        console.info(
+          '[Fillet reviewValidation] addFillet returned error (see message — matches one of the "codemod:" strings in edges.ts)',
+          modRes.message
+        )
+        return modRes
+      }
+      console.info(
+        '[Fillet reviewValidation] addFillet ok, running mockExecAstAndReportErrors'
+      )
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        console.info(
+          '[Fillet reviewValidation] mockExecAstAndReportErrors error',
+          execRes.message
+        )
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1572,9 +1672,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: [
           'segment',
-          'sweepEdge',
           'primitiveEdge',
           'enginePrimitiveEdge',
+          'edgeCut',
         ],
         multiple: true,
         required: true,
@@ -1607,13 +1707,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
-      const modRes = addChamfer({
+      const chamferArgs = {
         ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
+      }
+      const liveSelChamfer = modelingActor.getSnapshot().context.selectionRanges
+      const selectionForChamfer = mergeEngineTopologyFallbackFromLiveSelection(
+        chamferArgs.selection,
+        liveSelChamfer
+      )
+      const modRes = addChamfer({
+        ...chamferArgs,
+        selection: selectionForChamfer ?? chamferArgs.selection,
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
+      if (modRes.pathToNode.length === 0) {
+        return new Error(
+          'Chamfer could not resolve the selection to edges. Ensure an edge is selected.'
+        )
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
@@ -1628,9 +1742,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: [
           'segment',
-          'sweepEdge',
           'primitiveEdge',
           'enginePrimitiveEdge',
+          'edgeCut',
         ],
         multiple: true,
         required: true,
@@ -2456,12 +2570,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       edges: {
         inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
+        selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
         description: 'Note: Only straight edges are supported now.',

@@ -5,12 +5,14 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { memo, useCallback, useState } from 'react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
+  useSignals()
   const { billing, commands } = useApp()
   const { kclManager } = useSingletons()
   const platform = usePlatform()

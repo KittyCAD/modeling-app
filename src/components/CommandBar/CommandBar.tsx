@@ -35,9 +35,12 @@ export const CommandBar = () => {
     : Dialog
 
   // Close the command bar when navigating
-  // but importantly not when the query parameters change
+  // but importantly not when the query parameters change.
+  // Do not close when a command is selected (e.g. edit flow from feature tree)
+  // so that programmatic "Find and select command" is not immediately closed.
   useEffect(() => {
     if (commandBarState.matches('Closed')) return
+    if (commandBarState.context.selectedCommand) return
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])

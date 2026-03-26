@@ -6,7 +6,7 @@ import {
   createIdentifier,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { type ActorRefFrom, createActor } from 'xstate'
@@ -964,9 +964,12 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelections: [
+                  graphSelectionsV2: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1095,9 +1098,12 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelections: [
+                  graphSelectionsV2: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1235,9 +1241,12 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelections: [
+                  graphSelectionsV2: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1364,9 +1373,12 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelections: [
+                  graphSelectionsV2: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
