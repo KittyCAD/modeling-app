@@ -638,7 +638,7 @@ export class KclManager extends File {
   /** a representation of selections used by modelingMachine */
   private _selectionRanges: Selections = {
     otherSelections: [],
-    graphSelectionsV2: [],
+    graphSelections: [],
   }
   undoDepth = signal(0)
   redoDepth = signal(0)
@@ -1608,7 +1608,7 @@ export class KclManager extends File {
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        graphSelectionsV2: [],
+        graphSelections: [],
         otherSelections: [],
       }
 
@@ -1631,7 +1631,7 @@ export class KclManager extends File {
           }
 
         if (start && end) {
-          returnVal.graphSelectionsV2.push({
+          returnVal.graphSelections.push({
             codeRef: {
               range: topLevelRange(start, end),
               pathToNode: path,
@@ -1997,8 +1997,8 @@ export class KclManager extends File {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
-    if (!this._editorView || !this._selectionRanges.graphSelectionsV2[0]) return
-    const firstSelection = this._selectionRanges.graphSelectionsV2[0]
+    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
+    const firstSelection = this._selectionRanges.graphSelections[0]
     const codeRef = firstSelection.codeRef
     if (!codeRef?.range) return
     this._editorView.focus()
@@ -2101,7 +2101,7 @@ export class KclManager extends File {
     return false
   }
   selectRange(selections: Selections) {
-    if (selections?.graphSelectionsV2?.length === 0) {
+    if (selections?.graphSelections?.length === 0) {
       return
     }
     if (!this._editorView) {
@@ -2119,13 +2119,13 @@ export class KclManager extends File {
   createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
     // Handle empty graphSelections array to avoid runtime errors
-    if (selections.graphSelectionsV2.length === 0) {
+    if (selections.graphSelections.length === 0) {
       const defaultCursor = EditorSelection.cursor(
         this._editorView?.state.doc.length || 0
       )
       return EditorSelection.create([defaultCursor], 0)
     }
-    for (const selection of selections.graphSelectionsV2) {
+    for (const selection of selections.graphSelections) {
       const cr = selection.codeRef
       if (!cr?.range) continue
       const safeEnd = Math.min(
@@ -2135,7 +2135,7 @@ export class KclManager extends File {
       codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
     const lastSel =
-      selections.graphSelectionsV2[selections.graphSelectionsV2.length - 1]
+      selections.graphSelections[selections.graphSelections.length - 1]
     const lastRange = lastSel?.codeRef?.range
     if (!lastRange) {
       const defaultCursor = EditorSelection.cursor(

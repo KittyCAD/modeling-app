@@ -81,7 +81,7 @@ describe('pattern3D.test.ts', () => {
     artifacts: (Artifact & { codeRef: CodeRef })[],
     artifactGraph: ArtifactGraph
   ): Selections {
-    const graphSelectionsV2 = artifacts.map((artifact) => {
+    const graphSelections = artifacts.map((artifact) => {
       let id: string | undefined
       for (const [k, a] of artifactGraph) {
         if (a === artifact) {
@@ -96,7 +96,7 @@ describe('pattern3D.test.ts', () => {
       }
     })
     return {
-      graphSelectionsV2,
+      graphSelections,
       otherSelections: [],
     }
   }

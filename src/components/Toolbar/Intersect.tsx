@@ -27,7 +27,7 @@ import {
   type Program,
   type VariableDeclarator,
 } from '@src/lang/wasm'
-import type { Selections, SelectionV2 } from '@src/machines/modelingSharedTypes'
+import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -49,7 +49,7 @@ export function intersectInfo({
       forcedSelectionRanges: Selections
     }
   | Error {
-  if (selectionRanges.graphSelectionsV2.length < 2) {
+  if (selectionRanges.graphSelections.length < 2) {
     return {
       enabled: false,
       transforms: [],
@@ -58,11 +58,11 @@ export function intersectInfo({
   }
 
   const primaryResolved = resolveSelectionV2(
-    selectionRanges.graphSelectionsV2[0],
+    selectionRanges.graphSelections[0],
     kclManager.artifactGraph
   )
   const secondaryResolved = resolveSelectionV2(
-    selectionRanges.graphSelectionsV2[1],
+    selectionRanges.graphSelections[1],
     kclManager.artifactGraph
   )
   if (!primaryResolved || !secondaryResolved) {
@@ -93,7 +93,7 @@ export function intersectInfo({
   const selectionToV2 = (sel: {
     artifact?: { type: string; id: string }
     codeRef?: CodeRef
-  }): SelectionV2 | null =>
+  }): Selection | null =>
     sel.artifact && sel.codeRef
       ? {
           entityRef: artifactToEntityRef(
@@ -106,18 +106,18 @@ export function intersectInfo({
         ? { codeRef: sel.codeRef }
         : null
 
-  const secondV2: SelectionV2 | null | undefined =
+  const secondV2: Selection | null | undefined =
     shouldUsePreviousSegment && previousSegment.selection
       ? selectionToV2(previousSegment.selection)
-      : selectionRanges.graphSelectionsV2[1]
+      : selectionRanges.graphSelections[1]
   const _forcedSelectionRanges: typeof selectionRanges = {
     ...selectionRanges,
-    graphSelectionsV2: [selectionRanges.graphSelectionsV2[0], secondV2].filter(
-      (s): s is SelectionV2 => s != null
+    graphSelections: [selectionRanges.graphSelections[0], secondV2].filter(
+      (s): s is Selection => s != null
     ),
   }
 
-  const withCodeRef = _forcedSelectionRanges.graphSelectionsV2.filter(
+  const withCodeRef = _forcedSelectionRanges.graphSelections.filter(
     (s): s is typeof s & { codeRef: NonNullable<typeof s.codeRef> } =>
       s.codeRef != null
   )
@@ -162,16 +162,16 @@ export function intersectInfo({
   const theTransforms = getTransformInfos(
     {
       ...selectionRanges,
-      graphSelectionsV2: _forcedSelectionRanges.graphSelectionsV2.slice(1),
+      graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
     'intersect',
     wasmInstance
   )
 
-  const forcedResolved = _forcedSelectionRanges?.graphSelectionsV2?.[1]
+  const forcedResolved = _forcedSelectionRanges?.graphSelections?.[1]
     ? resolveSelectionV2(
-        _forcedSelectionRanges.graphSelectionsV2[1],
+        _forcedSelectionRanges.graphSelections[1],
         kclManager.artifactGraph
       )
     : null

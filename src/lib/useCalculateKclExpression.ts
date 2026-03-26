@@ -58,7 +58,7 @@ export function useCalculateKclExpression({
   // If there is no selection, use the end of the code
   // so all variables are available
   const selectionRange: SourceRange | undefined =
-    selectionRanges.graphSelectionsV2[0]?.codeRef?.range
+    selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
   // If we don't memoize this, we risk an infinite set/read state loop
   const endingSourceRange = useMemo((): SourceRange => {

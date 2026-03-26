@@ -128,25 +128,22 @@ export type EngineTopologyFallback = {
   primitiveIndex: number
 }
 
-export interface SelectionV2 {
+export interface Selection {
   entityRef?: EntityReference
   codeRef?: CodeRef
   /** From query_entity_type_with_point reference.topology_fallback; not duplicated in otherSelections */
   engineTopologyFallback?: EngineTopologyFallback
 }
 
-/** Alias for SelectionV2 (legacy name used in lang/lib). */
-export type Selection = SelectionV2
-
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
-  graphSelectionsV2: Array<SelectionV2>
+  graphSelections: Array<Selection>
 }
 
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection: SelectionV2
+      selection: Selection
       scrollIntoView?: boolean
     }
   | {

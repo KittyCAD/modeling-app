@@ -946,7 +946,7 @@ export class SceneEntities {
           // the following line is not robust to sketches defined within a function
           sketchInfo.pathToNode[1][0] === sketchEntryNodePath[1][0]
         const segRange = segment.__geoMeta?.sourceRange
-        const isSelected = selectionRanges?.graphSelectionsV2.some((sel) => {
+        const isSelected = selectionRanges?.graphSelections.some((sel) => {
           const selRange = sel?.codeRef?.range
           if (!selRange || !segRange) return false
           return isOverlap(selRange, sourceRangeFromRust(segRange))
@@ -4352,7 +4352,7 @@ function computeSelectionFromSourceRangeAndAST(
     }
   }
   const selection: Selections = {
-    graphSelectionsV2: [{ entityRef, codeRef }],
+    graphSelections: [{ entityRef, codeRef }],
     otherSelections: [],
   }
   return selection

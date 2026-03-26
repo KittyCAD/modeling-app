@@ -45,7 +45,7 @@ export function horzVertDistanceInfo({
       enabled: boolean
     }
   | Error {
-  const _nodes = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
       codeRef?.pathToNode ?? [],
@@ -59,7 +59,7 @@ export function horzVertDistanceInfo({
   if (hasErr) return nodesWErrs[0]
   const nodes = _nodes as Expr[]
 
-  const _varDecs = selectionRanges.graphSelectionsV2.map(({ codeRef }) => {
+  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef?.pathToNode ?? [],
@@ -87,7 +87,7 @@ export function horzVertDistanceInfo({
   const theTransforms = getTransformInfos(
     {
       ...selectionRanges,
-      graphSelectionsV2: selectionRanges.graphSelectionsV2.slice(1),
+      graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
     constraint,

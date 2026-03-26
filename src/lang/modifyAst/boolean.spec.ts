@@ -55,7 +55,7 @@ async function getSolidsAndTools(
   // path selection is what p&c is doing with the filter (v. sweep)
   const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
   const solids: Selections = {
-    graphSelectionsV2: solidIds.map((i) => {
+    graphSelections: solidIds.map((i) => {
       return {
         artifact: paths[i],
         codeRef: paths[i].codeRef,
@@ -64,7 +64,7 @@ async function getSolidsAndTools(
     otherSelections: [],
   }
   const tools: Selections = {
-    graphSelectionsV2: toolIds.map((i) => {
+    graphSelections: toolIds.map((i) => {
       return {
         artifact: paths[i],
         codeRef: paths[i].codeRef,

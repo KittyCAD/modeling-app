@@ -72,7 +72,7 @@ export default function CommandBarSelectionMixedInput({
     // Don't do additional checks if this argument is not required
     if (!isArgRequired) return true
     if (!effectiveSelection) return false
-    const isNonZeroRange = effectiveSelection.graphSelectionsV2.some((sel) => {
+    const isNonZeroRange = effectiveSelection.graphSelections.some((sel) => {
       const range = sel.codeRef?.range
       return range != null && range[1] - range[0] !== 0 // Non-zero range is always valid
     })
@@ -159,7 +159,7 @@ export default function CommandBarSelectionMixedInput({
       const resolvedSelection: Selections | undefined = isArgRequired
         ? effectiveSelection
         : effectiveSelection || {
-            graphSelectionsV2: [],
+            graphSelections: [],
             otherSelections: [],
           }
 
@@ -193,7 +193,7 @@ export default function CommandBarSelectionMixedInput({
     const resolvedSelection: Selections | undefined = isArgRequired
       ? effectiveSelection
       : effectiveSelection || {
-          graphSelectionsV2: [],
+          graphSelections: [],
           otherSelections: [],
         }
 
@@ -214,9 +214,9 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (effectiveSelection?.graphSelectionsV2.length ||
+        (effectiveSelection?.graphSelections.length ||
           effectiveSelection?.otherSelections.length ||
-          effectiveSelection?.graphSelectionsV2.length)
+          effectiveSelection?.graphSelections.length)
           ? getSelectionTypeDisplayText(
               kclManager.astSignal.value,
               effectiveSelection,

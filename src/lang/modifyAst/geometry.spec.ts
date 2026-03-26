@@ -209,7 +209,7 @@ helix001 = helix(
         (n) => n.type === 'segment'
       )
       const edge: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
@@ -250,7 +250,7 @@ helix001 = helix(
         (n) => n.type === 'segment'
       )
       const edge: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
@@ -312,7 +312,7 @@ helix001 = helix(
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
@@ -348,7 +348,7 @@ helix001 = helix(
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
-        graphSelectionsV2: [
+        graphSelections: [
           {
             entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,

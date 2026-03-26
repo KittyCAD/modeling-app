@@ -91,19 +91,19 @@ export function addHelix({
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
     const hasV2Edge =
-      edge?.graphSelectionsV2?.length &&
-      edge.graphSelectionsV2[0]?.entityRef?.type === 'edge'
+      edge?.graphSelections?.length &&
+      edge.graphSelections[0]?.entityRef?.type === 'edge'
     const shouldUseEdgeRef =
-      hasV2Edge && Boolean(edge?.graphSelectionsV2?.[0]?.entityRef)
+      hasV2Edge && Boolean(edge?.graphSelections?.[0]?.entityRef)
 
     if (shouldUseEdgeRef) {
-      const entityRef = edge.graphSelectionsV2[0].entityRef!
+      const entityRef = edge.graphSelections[0].entityRef!
       if (entityRef.type !== 'edge') {
         return new Error('Expected helix axis edgeRef to be an edge entityRef')
       }
       const payload = entityReferenceToEdgeRefPayload(entityRef)
       const originalEdgeSelection = resolveSelectionV2(
-        edge.graphSelectionsV2[0],
+        edge.graphSelections[0],
         artifactGraph
       )
       const edgeRefResult = createEdgeRefObjectExpression(

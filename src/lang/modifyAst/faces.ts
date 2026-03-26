@@ -55,7 +55,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type {
   Selections,
-  SelectionV2,
+  Selection,
   EdgeCutInfo,
   EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
@@ -748,7 +748,7 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelectionsV2.some((sel) => {
+  const hasFaceToOffset = plane.graphSelections.some((sel) => {
     const resolved = resolveSelectionV2(sel, artifactGraph)
     const t = resolved?.artifact?.type
     return t === 'cap' || t === 'wall' || t === 'edgeCut'
@@ -889,7 +889,7 @@ export function getFacesExprsFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ) {
-  return faces.graphSelectionsV2.flatMap((v2Sel) => {
+  return faces.graphSelections.flatMap((v2Sel) => {
     const resolved = resolveSelectionV2(v2Sel, artifactGraph)
     if (!resolved?.artifact) {
       console.warn('No artifact found for face', v2Sel)
@@ -987,7 +987,7 @@ export function retrieveFaceSelectionsFromOpArgs(
 
   // Collect sweep IDs from all solids (shell can have multiple solids e.g. [thing1, thing2])
   const sweepIdsSet = new Set<string>()
-  for (const sel of solids.graphSelectionsV2) {
+  for (const sel of solids.graphSelections) {
     const resolved = resolveSelectionV2(sel, artifactGraph)
     const artifact = resolved?.artifact
     if (artifact?.type === 'sweep') {
@@ -1044,12 +1044,12 @@ export function retrieveFaceSelectionsFromOpArgs(
   } else {
     faceValues.push(facesArg.value)
   }
-  const graphSelectionsV2: SelectionV2[] = []
+  const graphSelections: Selection[] = []
   for (const v of faceValues) {
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
       const result = candidates.get(v.value)
       if (result) {
-        graphSelectionsV2.push({
+        graphSelections.push({
           entityRef: artifactToEntityRef(
             result.artifact.type,
             result.artifact.id
@@ -1068,7 +1068,7 @@ export function retrieveFaceSelectionsFromOpArgs(
     ) {
       const result = candidates.get(v.artifact_id)
       if (result) {
-        graphSelectionsV2.push({
+        graphSelections.push({
           entityRef: artifactToEntityRef(
             result.artifact.type,
             result.artifact.id
@@ -1093,7 +1093,10 @@ export function retrieveFaceSelectionsFromOpArgs(
     }
   }
 
-  const faces: Selections = { graphSelectionsV2, otherSelections: [] }
+  const faces: Selections = {
+    graphSelections,
+    otherSelections: [],
+  }
   return { solids, faces }
 }
 
@@ -1120,7 +1123,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
 
   if (planeArtifact.type === 'plane') {
     return {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef('plane', planeArtifact.id),
           codeRef: planeArtifact.codeRef,
@@ -1143,7 +1146,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
 
     return {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(faceArtifact.type, faceArtifact.id),
           codeRef,
@@ -1271,7 +1274,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
     }
     const bodyVars = getVariableExprsFromSelection(
       {
-        graphSelectionsV2: [{ entityRef, codeRef: bodySelection.codeRef }],
+        graphSelections: [{ entityRef, codeRef: bodySelection.codeRef }],
         otherSelections: [],
       },
       artifactGraph,

@@ -8,7 +8,7 @@ import {
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { CommandSelectionType } from '@src/lib/commandTypes'
-import type { Selections, SelectionV2 } from '@src/machines/modelingSharedTypes'
+import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 
@@ -25,11 +25,11 @@ export function coerceSelectionsToBody(
   artifactGraph: ArtifactGraph
 ): Selections | Error {
   const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
-  const codeRefOnlyV2: Array<SelectionV2> = []
+  const codeRefOnlyV2: Array<Selection> = []
   const remainingOtherSelections: Selections['otherSelections'] = []
   const seenBodyIds = new Set<string>()
 
-  for (const selV2 of selections.graphSelectionsV2) {
+  for (const selV2 of selections.graphSelections) {
     const resolvedSelection = resolveSelectionV2(selV2, artifactGraph)
     const selection = resolvedSelection
       ? !resolvedSelection.artifact && resolvedSelection.codeRef.range
@@ -172,7 +172,7 @@ export function coerceSelectionsToBody(
     remainingOtherSelections.push(selection)
   }
 
-  const graphSelectionsV2: SelectionV2[] = [
+  const graphSelections: Selection[] = [
     ...bodySelections
       .map((s) => ({
         entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
@@ -188,7 +188,7 @@ export function coerceSelectionsToBody(
   ]
 
   return {
-    graphSelectionsV2,
+    graphSelections,
     otherSelections: remainingOtherSelections,
   }
 }
@@ -200,7 +200,7 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
 ): Selections | undefined {
   if (
     !selections ||
-    (selections.graphSelectionsV2.length === 0 &&
+    (selections.graphSelections.length === 0 &&
       selections.otherSelections.length === 0)
   ) {
     return selections
@@ -218,7 +218,7 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
     return selections
   }
 
-  if ((coercedSelections.graphSelectionsV2?.length ?? 0) === 0) {
+  if ((coercedSelections.graphSelections?.length ?? 0) === 0) {
     return selections
   }
 

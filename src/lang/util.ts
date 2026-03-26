@@ -104,7 +104,7 @@ export function isCursorInSketchCommandRange(
       types: ['segment', 'path', 'plane', 'cap', 'wall'],
       predicate: (artifact) => {
         const codeRefRange = getFaceCodeRef(artifact)?.range
-        return selectionRanges.graphSelectionsV2.some(
+        return selectionRanges.graphSelections.some(
           (selection: { codeRef?: { range?: [number, number, number] } }) => {
             const selRange = selection?.codeRef?.range
             return (

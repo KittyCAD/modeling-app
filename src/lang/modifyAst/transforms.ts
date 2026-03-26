@@ -462,8 +462,8 @@ export function addHide({
 
   // 2. Prepare unlabeled arguments
   const firstResolved =
-    objects.graphSelectionsV2[0] != null
-      ? resolveSelectionV2(objects.graphSelectionsV2[0], artifactGraph)
+    objects.graphSelections[0] != null
+      ? resolveSelectionV2(objects.graphSelections[0], artifactGraph)
       : null
   const lastChildLookup = firstResolved?.artifact?.type !== 'helix'
   const vars = getVariableExprsFromSelection(

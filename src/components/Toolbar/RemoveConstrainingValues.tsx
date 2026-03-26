@@ -11,7 +11,7 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
-import type { SelectionV2, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -38,8 +38,8 @@ export function removeConstrainingValuesInfo(
 
   const updatedSelectionRanges: Selections = {
     otherSelections: [],
-    graphSelectionsV2: nodes.map(
-      (node): SelectionV2 => ({
+    graphSelections: nodes.map(
+      (node): Selection => ({
         codeRef: codeRefFromRange(
           topLevelRange(node.start, node.end),
           kclManager.ast
@@ -82,7 +82,7 @@ export function applyRemoveConstrainingValues({
   | Error {
   pathToNodes =
     pathToNodes ||
-    selectionRanges.graphSelectionsV2.flatMap((s) =>
+    selectionRanges.graphSelections.flatMap((s) =>
       s.codeRef?.pathToNode != null ? [s.codeRef.pathToNode] : []
     )
   const constraint = removeConstrainingValuesInfo(

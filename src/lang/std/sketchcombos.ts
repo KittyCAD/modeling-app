@@ -1829,7 +1829,7 @@ export function getTransformInfos(
   constraintType: ConstraintType,
   wasmInstance: ModuleType
 ): TransformInfo[] {
-  const nodes = selectionRanges.graphSelectionsV2.map(
+  const nodes = selectionRanges.graphSelections.map(
     ({ codeRef }: { codeRef?: { pathToNode: PathToNode } }) =>
       getNodeFromPath<Expr>(ast, codeRef?.pathToNode ?? [], wasmInstance, [
         'CallExpressionKw',
@@ -1865,7 +1865,7 @@ export function getRemoveConstraintsTransforms(
   ast: Program,
   wasmInstance: ModuleType
 ): TransformInfo[] | Error {
-  const nodes = selectionRanges.graphSelectionsV2.map(
+  const nodes = selectionRanges.graphSelections.map(
     ({ codeRef }: { codeRef?: { pathToNode: PathToNode } }) =>
       getNodeFromPath<Expr>(ast, codeRef?.pathToNode ?? [], wasmInstance)
   )
@@ -1921,7 +1921,7 @@ export function transformSecondarySketchLinesTagFirst({
 
   // We need to sort the selections by their start position
   // so that we can process them in dependency order and not write invalid KCL.
-  const sortedCodeBasedSelections = selectionRanges.graphSelectionsV2.toSorted(
+  const sortedCodeBasedSelections = selectionRanges.graphSelections.toSorted(
     (
       a: { codeRef?: { range?: [number, number, number] } },
       b: { codeRef?: { range?: [number, number, number] } }
@@ -1944,7 +1944,7 @@ export function transformSecondarySketchLinesTagFirst({
     ast: modifiedAst,
     selectionRanges: {
       ...selectionRanges,
-      graphSelectionsV2: secondarySelections,
+      graphSelections: secondarySelections,
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
@@ -2205,11 +2205,11 @@ export function transformAstSketchLines({
   }
 
   if (
-    'graphSelectionsV2' in selectionRanges &&
-    isArray(selectionRanges.graphSelectionsV2)
+    'graphSelections' in selectionRanges &&
+    isArray(selectionRanges.graphSelections)
   ) {
     // If the processing of any of the selections failed, return the first error
-    const maybeProcessErrors = selectionRanges.graphSelectionsV2
+    const maybeProcessErrors = selectionRanges.graphSelections
       .map(
         (
           { codeRef }: { codeRef?: { range: [number, number, number] } },

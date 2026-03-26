@@ -78,7 +78,7 @@ export function addFlatnessGdt({
 
   // Filter to only include face selections (resolve V2 to get artifact).
   // When the engine returns a path id for a cap face (edit flow), resolve path → cap.
-  const resolved = faces.graphSelectionsV2.map((selV2) => {
+  const resolved = faces.graphSelections.map((selV2) => {
     const r = resolveSelectionV2(selV2, artifactGraph)
     if (!r?.artifact) return r
     if (r.artifact.type === 'path') {
@@ -264,7 +264,7 @@ export function addDatumGdt({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Filter to only include face selections (resolve V2 to get artifact)
-  const faceSelections = faces.graphSelectionsV2
+  const faceSelections = faces.graphSelections
     .map((selV2) => resolveSelectionV2(selV2, artifactGraph))
     .filter(
       (s): s is NonNullable<typeof s> => s != null && isFaceArtifact(s.artifact)

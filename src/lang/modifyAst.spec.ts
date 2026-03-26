@@ -1152,7 +1152,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
@@ -1199,7 +1199,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       throw new Error('Artifact not found in the graph')
     }
     const selections: Selections = {
-      graphSelectionsV2: [
+      graphSelections: [
         {
           entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,

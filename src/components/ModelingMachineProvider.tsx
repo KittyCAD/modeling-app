@@ -350,7 +350,7 @@ export const ModelingMachineProvider = ({
     // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
     const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
     const selections =
-      modelingState.context.selectionRanges.graphSelectionsV2.filter(
+      modelingState.context.selectionRanges.graphSelections.filter(
         (
           sel
         ): sel is typeof sel & { codeRef: NonNullable<typeof sel.codeRef> } =>
@@ -369,7 +369,7 @@ export const ModelingMachineProvider = ({
       data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
     })
     if (
-      modelingState.context.selectionRanges.graphSelectionsV2.length >
+      modelingState.context.selectionRanges.graphSelections.length >
       selections.length
     ) {
       // Not all selection were segments -> keep the default delete behavior

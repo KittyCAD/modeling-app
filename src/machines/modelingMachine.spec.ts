@@ -964,7 +964,7 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelectionsV2: [
+                  graphSelections: [
                     {
                       entityRef: artifactToEntityRef(
                         artifact.type,
@@ -1098,7 +1098,7 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelectionsV2: [
+                  graphSelections: [
                     {
                       entityRef: artifactToEntityRef(
                         artifact.type,
@@ -1241,7 +1241,7 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelectionsV2: [
+                  graphSelections: [
                     {
                       entityRef: artifactToEntityRef(
                         artifact.type,
@@ -1373,7 +1373,7 @@ p3 = [342.51, 216.38],
               data: {
                 selectionType: 'mirrorCodeMirrorSelections',
                 selection: {
-                  graphSelectionsV2: [
+                  graphSelections: [
                     {
                       entityRef: artifactToEntityRef(
                         artifact.type,
