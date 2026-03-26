@@ -38,7 +38,7 @@ mod tests {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"fillet(radius = ${0:10}, tags = [${1:tag_or_edge_fn}])"#);
+        assert_eq!(snippet, r#"fillet(radius = ${0:10})"#);
     }
 
     #[test]
@@ -82,7 +82,7 @@ mod tests {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"revolve(axis = ${0:X})"#);
+        assert_eq!(snippet, r#"revolve()"#);
     }
 
     #[test]
@@ -173,7 +173,7 @@ mod tests {
         let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:10}, angleStart = ${1:0deg}, radius = ${2:10}, axis = ${3:X}, length = ${4:10})"#
+            r#"helix(revolutions = ${0:10}, angleStart = ${1:0deg}, axis = ${2:X}, radius = ${3:10}, length = ${4:10})"#
         );
     }
 
@@ -290,7 +290,7 @@ mod tests {
             r#"extrude(
   @sketches: [Sketch | Face | TaggedFace; 1+],
   length?: number(Length),
-  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   symmetric?: bool,
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,

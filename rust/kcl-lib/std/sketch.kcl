@@ -697,7 +697,8 @@ export fn extrude(
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
-  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
+  /// May also be an edge specifier object: `{ sideFaces = [faceTag1, faceTag2], endFaces? = [...], index? }`.
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
@@ -958,8 +959,9 @@ export fn extrude(
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
   @sketches: [Sketch; 1+],
-  /// Axis of revolution.
-  axis: Axis2d | Edge,
+  /// Axis of revolution. Can be an Axis2d, an Edge, or an edge reference object
+  /// (e.g. `{ sideFaces = [faceTag1, faceTag2] }`).
+  axis?: Axis2d | Edge | any,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
@@ -1138,8 +1140,8 @@ export fn getCommonEdge(
 export fn getBoundedEdge(
   /// The solid that the edge belongs to.
   @solid: Solid,
-  /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
-  edge: Edge,
+  /// The edge to bound. This can be a tagged edge, an edge ID from `edgeId(...)`, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`).
+  edge: Edge | any,
   /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
   lowerBound?: number(Count),
   /// A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1.

@@ -11,7 +11,8 @@ Blend a transitional edge along a tagged path, smoothing the sharp edge.
 fillet(
   @solid: Solid,
   radius: number(Length),
-  tags: [Edge; 1+],
+  tags?: [Edge; 1+],
+  edges?: [any],
   tolerance?: number(Length),
   tag?: TagDecl,
 ): Solid
@@ -27,7 +28,8 @@ will smoothly blend the transition.
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be filletted | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
-| `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to fillet | Yes |
+| `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to fillet (legacy API) | No |
+| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | Edges to fillet (preferred). Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
 
