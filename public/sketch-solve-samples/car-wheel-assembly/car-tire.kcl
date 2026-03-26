@@ -1,0 +1,44 @@
+// Tire
+// A tire is a critical component of a vehicle that provides the necessary traction and grip between the car and the road. It supports the vehicle's weight and absorbs shocks from road irregularities.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Create the sketch of the tire
+tireSketch = sketch(on = XY) {
+  line1 = line(start = [var 12.01in, var 0in], end = [var 12.01in, var 2.51in])
+  arc2 = arc(start = [var 12.01in, var 2.75in], end = [var 12.01in, var 2.51in], center = [var 12.01in, var 2.63in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 12.01in, var 2.75in], end = [var 12.01in, var 4.02in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 12.01in, var 4.02in], end = [var 11.1in, var 5.02in], center = [var 11.01in, var 4.02in])
+  coincident([line3.end, arc4.start])
+  arc5 = arc(start = [var 11.1in, var 5.02in], end = [var 9in, var 4.75in], center = [var 10.66in, var 0.05in])
+  coincident([arc4.end, arc5.start])
+  line6 = line(start = [var 9in, var 4.75in], end = [var 9in, var 4.51in])
+  coincident([arc5.end, line6.start])
+  line7 = line(start = [var 9in, var 4.51in], end = [var 9.09in, var 4.55in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var 11.01in, var 4.18in], end = [var 9.09in, var 4.55in], center = [var 9.74in, var 2.72in])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var 11.01in, var 4.18in], end = [var 11.01in, var 0in])
+  coincident([arc8.start, line9.start])
+  line10 = line(start = [var 11.01in, var 0in], end = [var 12.01in, var 0in])
+  coincident([line9.end, line10.start])
+  vertical(arc2)
+  vertical(arc4)
+  tangent([arc4, arc5])
+  radius(arc5) == 4.98in
+  vertical(line7)
+  vertical(line10)
+}
+
+region001 = region(segments = [tireSketch.line1, tireSketch.arc2])
+// Revolve the sketch to create the tire
+carTire = revolve(region001, axis = Y)
+  |> appearance(color = "#0a0a0a", roughness = 20)
+  |> translate(y = -tBell + offset)
+

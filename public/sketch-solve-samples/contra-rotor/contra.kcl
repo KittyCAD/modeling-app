@@ -1,0 +1,102 @@
+// Contra-Rotor Module
+// Shaft, spine teeth, and sample instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Revolve the contra-shaft
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -100mm, var 100mm], end = [var -100mm, var 150mm])
+  line2 = line(start = [var -100mm, var 150mm], end = [var -300mm, var 150mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -300mm, var 150mm], end = [var -300mm, var 80mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -300mm, var 80mm], end = [var -550mm, var 80mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -550mm, var 80mm], end = [var -550mm, var 30mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -550mm, var 30mm], end = [var -180mm, var 30mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -180mm, var 30mm], end = [var -180mm, var 50mm])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var -177.07mm, var 57.07mm], end = [var -180mm, var 50mm], center = [var -170mm, var 50mm])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -177.07mm, var 57.07mm], end = [var -134.64mm, var 99.5mm])
+  coincident([arc8.start, line9.start])
+  line10 = line(start = [var -134.64mm, var 99.5mm], end = [var -134.64mm, var 100mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -134.64mm, var 100mm], end = [var -100mm, var 100mm])
+  coincident([line10.end, line11.start])
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  vertical(arc8)
+  vertical(line11)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+shaft = revolve(region001, axis = X)
+
+// Spline shaft inputs
+toothWidth = 10
+toothHeight = 6
+shaftDiameter = 148
+
+// Tooth angle and count
+toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+toothCount = round(180deg / toothAngleDeg)
+
+// Sketch the spline portion of the shaft
+sketch002 = sketch(on = startSketchOn(shaft, face = seg01)) {
+  arc1 = arc(start = [var 74mm, var 0mm], end = [var 73.33mm, var 9.97mm], center = [var 0mm, var 0mm])
+  line2 = line(start = [var 73.33mm, var 9.97mm], end = [var 79.27mm, var 10.78mm])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 79.27mm, var 10.78mm], end = [var 77.1mm, var 21.36mm], center = [var 0mm, var 0mm])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 77.1mm, var 21.36mm], end = [var 71.31mm, var 19.76mm])
+  coincident([arc3.end, line4.start])
+  line5 = line(start = [var 71.31mm, var 19.76mm], end = [var 71.26mm, var 19.96mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 71.26mm, var 19.96mm], end = [var 74mm, var 0mm])
+  coincident([line5.end, line6.start])
+}
+region002 = region(segments = [sketch002.arc1, sketch002.line2])
+spine = extrude(region002, length = 200)
+
+// Hollow the front of the shaft
+sketch003 = sketch(on = startSketchOn(spine, face = END)) {
+  circle1 = circle(start = [var 40mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [sketch003.circle1])
+frontBore = extrude(region003, length = -100)
+
+// Create a rear step and bore
+sketch004 = sketch(on = startSketchOn(spine, face = END)) {
+  circle1 = circle(start = [var 50mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region004 = region(segments = [sketch004.circle1])
+rearStep = extrude(region004, length = 20)
+sketch005 = sketch(on = startSketchOn(rearStep, face = END)) {
+  circle1 = circle(start = [var 37.48mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region005 = region(segments = [sketch005.circle1])
+rearBore = extrude(region005, length = -20)
+
+// Build helical gear and propeller bodies
+helicalGear(nTeeth = 28, helixAngle = -25deg, bore = 300)
+  |> translate(y = -200)
+
+propeller(
+       twistAngle = -75deg,
+       toothWidth = toothWidth,
+       toothHeight = toothHeight,
+       shaftDiameter = shaftDiameter,
+     )
+  |> translate(y = -630)
+

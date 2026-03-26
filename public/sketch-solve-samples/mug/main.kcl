@@ -1,0 +1,117 @@
+// Mug
+// A cup with straight sides and a handle, typically used for hot drinks
+// Categories: Maker
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+mugDiameter = 80
+mugHeight = 95
+wallThickness = 6
+handleWidth = 18
+handleThickness = 5
+
+// Revolve the outer perimeter of the mug body. This will be used to subtract material from the handle, so that it fits snug to the body
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 3.2mm], end = [var 8mm, var 3.2mm])
+  arc2 = arc(start = [var 24mm, var 0.8mm], end = [var 8mm, var 3.2mm], center = [var 8mm, var -51.33mm])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var 24mm, var 0.8mm], end = [var 24.8mm, var 0mm], center = [var 24.8mm, var 0.8mm])
+  coincident([arc2.start, arc3.start])
+  line4 = line(start = [var 24.8mm, var 0mm], end = [var 26.8mm, var 0mm])
+  coincident([arc3.end, line4.start])
+  arc5 = arc(start = [var 26.8mm, var 0mm], end = [var 27.6mm, var 0.8mm], center = [var 26.8mm, var 0.8mm])
+  coincident([line4.end, arc5.start])
+  line6 = line(start = [var 27.6mm, var 0.8mm], end = [var 28mm, var 0.8mm])
+  coincident([arc5.end, line6.start])
+  arc7 = arc(start = [var 28mm, var 0.8mm], end = [var 40mm, var 12.8mm], center = [var 28mm, var 12.8mm])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var 40mm, var 12.8mm], end = [var 40mm, var 92mm])
+  coincident([arc7.end, line8.start])
+  arc9 = arc(start = [var 40mm, var 92mm], end = [var 37mm, var 95mm], center = [var 37mm, var 92mm])
+  coincident([line8.end, arc9.start])
+  line10 = line(start = [var 37mm, var 95mm], end = [var 0mm, var 95mm])
+  coincident([arc9.end, line10.start])
+  line11 = line(start = [var 0mm, var 95mm], end = [var 0mm, var 3.2mm])
+  coincident([line10.end, line11.start])
+  horizontal(arc2)
+  horizontal(arc5)
+  horizontal(arc7)
+  vertical(arc9)
+  horizontal(line11)
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+tools = revolve(region001, axis = Y)
+
+// Draw the path of the mug handle
+handlePath = sketch(on = XZ) {
+  line1 = line(start = [var 26.67mm, var 23.75mm], end = [var 53.23mm, var 21.43mm])
+  arc2 = arc(start = [var 53.23mm, var 21.43mm], end = [var 68.67mm, var 34.38mm], center = [var 54.47mm, var 35.62mm])
+  coincident([line1.end, arc2.start])
+  arc3 = arc(start = [var 68.67mm, var 34.38mm], end = [var 68.67mm, var 74.75mm], center = [var -162.07mm, var 54.57mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var 68.67mm, var 74.75mm], end = [var 53.23mm, var 87.71mm], center = [var 54.47mm, var 73.51mm])
+  coincident([arc3.end, arc4.start])
+  line5 = line(start = [var 53.23mm, var 87.71mm], end = [var 26.67mm, var 85.38mm])
+  coincident([arc4.end, line5.start])
+  tangent([arc2, arc3])
+  radius(arc3) == 231.63mm
+  tangent([arc3, arc4])
+}
+
+// Sweep the handle profile along the path
+sketch002 = sketch(on = offsetPlane(YZ, offset = mugDiameter / 3)) {
+  arc1 = arc(start = [var 9mm, var 26.25mm], end = [var -9mm, var 26.25mm], center = [var 0mm, var -5.53mm])
+  arc2 = arc(start = [var 9mm, var 21.25mm], end = [var 9mm, var 26.25mm], center = [var 8.29mm, var 23.75mm])
+  coincident([arc1.start, arc2.end])
+  arc3 = arc(start = [var -9mm, var 21.25mm], end = [var 9mm, var 21.25mm], center = [var 0mm, var 53.03mm])
+  coincident([arc2.start, arc3.end])
+  arc4 = arc(start = [var -9mm, var 26.25mm], end = [var -9mm, var 21.25mm], center = [var -8.29mm, var 23.75mm])
+  coincident([arc3.start, arc4.end])
+}
+region002 = region(segments = [sketch002.arc1, sketch002.arc2])
+handle = sweep(region002, path = handlePath)
+  |> subtract(tools)
+
+// Create the body of the mug
+sketch003 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 3.2mm], end = [var 8mm, var 3.2mm])
+  arc2 = arc(start = [var 24mm, var 0.8mm], end = [var 8mm, var 3.2mm], center = [var 8mm, var -51.33mm])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var 24mm, var 0.8mm], end = [var 24.8mm, var 0mm], center = [var 24.8mm, var 0.8mm])
+  coincident([arc2.start, arc3.start])
+  line4 = line(start = [var 24.8mm, var 0mm], end = [var 26.8mm, var 0mm])
+  coincident([arc3.end, line4.start])
+  arc5 = arc(start = [var 26.8mm, var 0mm], end = [var 27.6mm, var 0.8mm], center = [var 26.8mm, var 0.8mm])
+  coincident([line4.end, arc5.start])
+  line6 = line(start = [var 27.6mm, var 0.8mm], end = [var 28mm, var 0.8mm])
+  coincident([arc5.end, line6.start])
+  arc7 = arc(start = [var 28mm, var 0.8mm], end = [var 40mm, var 12.8mm], center = [var 28mm, var 12.8mm])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var 40mm, var 12.8mm], end = [var 40mm, var 92mm])
+  coincident([arc7.end, line8.start])
+  arc9 = arc(start = [var 40mm, var 92mm], end = [var 34mm, var 92mm], center = [var 37mm, var 92mm])
+  coincident([line8.end, arc9.start])
+  line10 = line(start = [var 34mm, var 92mm], end = [var 34mm, var 12mm])
+  coincident([arc9.end, line10.start])
+  arc11 = arc(start = [var 27.2mm, var 5.2mm], end = [var 34mm, var 12mm], center = [var 27.2mm, var 12mm])
+  coincident([line10.end, arc11.end])
+  line12 = line(start = [var 27.2mm, var 5.2mm], end = [var 0mm, var 5.2mm])
+  coincident([arc11.start, line12.start])
+  line13 = line(start = [var 0mm, var 5.2mm], end = [var 0mm, var 3.2mm])
+  coincident([line12.end, line13.start])
+  horizontal(arc2)
+  horizontal(arc5)
+  horizontal(arc7)
+  vertical(arc9)
+  vertical(arc11)
+  horizontal(line13)
+}
+region003 = region(segments = [sketch003.line1, sketch003.arc2])
+mug = revolve(region003, axis = Y)
+
+// Join the mug and handle, then add an appearance
+[handle, mug]
+  |> appearance(color = "#9b1212", metalness = 40, roughness = 30)
+
