@@ -520,7 +520,6 @@ async fn inner_region(
                     paths: vec![first_path],
                     inner_paths: vec![],
                     units,
-                    region_mapping: Default::default(),
                     mirror: Default::default(),
                     clone: Default::default(),
                     meta: vec![args.source_range.into()],
@@ -547,7 +546,7 @@ async fn inner_region(
     }
     // Build reverse map: original_seg_id -> Vec<region_seg_id>
     let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
-    sketch.region_mapping = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
+    let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
 
     // Early expansion: replace paths and update tags to use region segment IDs.
     {
@@ -555,7 +554,7 @@ async fn inner_region(
         let mut new_paths = Vec::new();
         for path in &sketch.paths {
             let original_id = path.get_id();
-            if let Some(region_ids) = sketch.region_mapping.get(&original_id) {
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
                 for region_id in region_ids {
                     let mut new_path = path.clone();
                     new_path.set_id(*region_id);
@@ -572,7 +571,7 @@ async fn inner_region(
                 continue;
             };
             let original_id = info.id;
-            if let Some(region_ids) = sketch.region_mapping.get(&original_id) {
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
                 let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
                 // First entry: update existing info's ID.
                 // Additional entries: clone and push with new IDs.

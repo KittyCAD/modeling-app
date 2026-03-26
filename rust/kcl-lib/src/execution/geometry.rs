@@ -796,10 +796,6 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
-    /// If the sketch was created from a region, the mapping from original sketch
-    /// segment ID to region segment IDs.
-    #[serde(skip)]
-    pub region_mapping: IndexMap<Uuid, Vec<Uuid>>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
