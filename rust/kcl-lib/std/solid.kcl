@@ -69,6 +69,7 @@ export fn fillet(
   /// The radius of the fillet
   radius: number(Length),
   /// The paths you want to fillet (legacy API)
+  @(includeInSnippet = true)
   tags?: [Edge; 1+],
   /// Edges to fillet (preferred). Array of edge references; each element is an object with:
   /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet

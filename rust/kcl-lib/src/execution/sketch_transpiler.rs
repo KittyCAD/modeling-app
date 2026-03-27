@@ -739,7 +739,7 @@ fn create_arc_size_constraint_ast_from_name(
         digest: None,
         non_code_meta: Default::default(),
     })));
-    let raw = format_number_literal(num.value, num.units).map_err(|err| {
+    let raw = format_number_literal(num.value, num.units, None).map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
             format!("Failed to format numeric constraint literal: {err}"),
             vec![],

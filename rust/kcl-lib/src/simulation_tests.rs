@@ -4634,6 +4634,48 @@ mod sketch_on_face_normal_inches {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_on_face_of_region_extrude_one_to_one {
+    const TEST_NAME: &str = "sketch_on_face_of_region_extrude_one_to_one";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_face_of_region_extrude_one_to_many {
+    const TEST_NAME: &str = "sketch_on_face_of_region_extrude_one_to_many";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod pos_literals {
     const TEST_NAME: &str = "pos_literals";
 
@@ -5006,7 +5048,7 @@ mod tangent_line_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_circle {
@@ -5027,7 +5069,7 @@ mod tangent_line_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_arc_reversed_line {
@@ -5048,7 +5090,7 @@ mod tangent_line_arc_reversed_line {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_arc_arc {
@@ -5069,7 +5111,7 @@ mod tangent_arc_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_line_error {
@@ -5111,7 +5153,7 @@ mod tangent_circle_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_circle_circle_native {
@@ -5132,7 +5174,7 @@ mod tangent_circle_circle_native {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_arc_arc_math_only {
@@ -5153,6 +5195,6 @@ mod tangent_arc_arc_math_only {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }

@@ -961,6 +961,7 @@ export fn revolve(
   @sketches: [Sketch; 1+],
   /// Axis of revolution. Can be an Axis2d, an Edge, or an edge reference object
   /// (e.g. `{ sideFaces = [faceTag1, faceTag2] }`).
+  @(includeInSnippet = true)
   axis?: Axis2d | Edge | any,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),

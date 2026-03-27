@@ -39,6 +39,7 @@ use crate::execution::types::UnitType;
 use crate::front::Number;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
+use crate::std::edge::check_tag_not_ambiguous;
 use crate::std::shapes::PolygonType;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::FaceTag;
@@ -255,50 +256,6 @@ impl Args {
             .collect::<Result<Vec<_>, _>>()
     }
 
-    /// Try to get edge array + source for the first matching key (e.g. "tags" or "Tags").
-    pub(crate) fn kw_arg_edge_array_and_source_any_key(
-        &self,
-        keys: &[&str],
-    ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
-        for key in keys {
-            if let Ok(result) = self.kw_arg_edge_array_and_source(key) {
-                return Ok(result);
-            }
-        }
-        Err(KclError::new_semantic(KclErrorDetails::new(
-            if let Some(ref fname) = self.fn_name {
-                format!("The `{fname}` function requires a keyword argument 'tags' or 'edges'")
-            } else {
-                "This function requires a keyword argument 'tags' or 'edges'".to_string()
-            },
-            vec![self.source_range],
-        )))
-    }
-
-    /// Try to get edge array from any labeled key not in the exclusion list (for chamfer/fillet compatibility).
-    pub(crate) fn kw_arg_edge_array_and_source_first_other(
-        &self,
-        exclude: &[&str],
-    ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
-        let exclude: std::collections::HashSet<_> = exclude.iter().map(|s| s.to_lowercase()).collect();
-        for (key, _) in &self.labeled {
-            if exclude.contains(&key.to_lowercase()) {
-                continue;
-            }
-            if let Ok(result) = self.kw_arg_edge_array_and_source(key) {
-                return Ok(result);
-            }
-        }
-        Err(KclError::new_semantic(KclErrorDetails::new(
-            if let Some(ref fname) = self.fn_name {
-                format!("The `{fname}` function requires a keyword argument 'tags' or 'edges'")
-            } else {
-                "This function requires a keyword argument 'tags' or 'edges'".to_string()
-            },
-            vec![self.source_range],
-        )))
-    }
-
     pub(crate) fn get_unlabeled_kw_arg_array_and_type(
         &self,
         label: &str,
@@ -483,6 +440,9 @@ impl Args {
                 vec![self.source_range],
             )));
         }
+
+        // Check for ambiguous region-mapped tags (1:N).
+        check_tag_not_ambiguous(tag, self)?;
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 

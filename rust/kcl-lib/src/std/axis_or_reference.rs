@@ -4,20 +4,29 @@ use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeReference;
 
 use super::args::TyF64;
 use crate::execution::Plane;
+use crate::execution::KclValue;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::FaceTag;
 
+/// True if the value is an object with a `sideFaces` (or `side_faces`) key.
+pub(crate) fn is_edge_ref_object(v: &KclValue) -> bool {
+    match v {
+        KclValue::Object { value, .. } => value.get("sideFaces").is_some(),
+        _ => false,
+    }
+}
+
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
-    /// Tagged edge (simple: Uuid or Tag).
+    /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with faces, disambiguators, and index.
+    /// Edge reference with side faces, end faces, and index.
     EdgeReference(ModelingEdgeReference),
 }
 
@@ -27,9 +36,9 @@ pub enum Axis2dOrEdgeReference {
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
-    /// Tagged edge (simple: Uuid or Tag).
+    /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with faces, disambiguators, and index.
+    /// Edge reference with side faces, end faces, and index.
     EdgeReference(ModelingEdgeReference),
 }
 

@@ -90,6 +90,22 @@ pub(crate) async fn get_face_ids_for_edge(
     Ok(info.faces.clone())
 }
 
+/// Check that a tag does not map to multiple edges (ambiguous region mapping).
+pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
+    let all_infos = tag.get_all_cur_info();
+    if all_infos.len() > 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Tag `{}` is ambiguous: it maps to {} edges in the region. Use a more specific reference.",
+                tag.value,
+                all_infos.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+    Ok(())
+}
+
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input_edge = args.get_unlabeled_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
@@ -106,6 +122,7 @@ async fn inner_get_opposite_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -169,6 +186,7 @@ async fn inner_get_next_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -238,6 +256,7 @@ async fn inner_get_previous_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -331,6 +350,8 @@ async fn inner_get_common_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&face1, &args)?;
+    check_tag_not_ambiguous(&face2, &args)?;
     let id = exec_state.next_uuid();
     if args.ctx.no_engine_commands().await {
         return Ok(id);
