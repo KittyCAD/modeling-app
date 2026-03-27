@@ -244,7 +244,11 @@ export function createOnClickCallback({
       closestObject = closestObjects[0]
     }
 
-    if (mouseEvent.detail === 2 && isConstraint(closestObject?.apiObject)) {
+    if (
+      mouseEvent.detail === 2 &&
+      isConstraint(closestObject?.apiObject) &&
+      !isInvisibleConstraintObject(closestObject.apiObject)
+    ) {
       // Double clicking on Constraint
       onEditConstraint(closestObject.apiObject.id)
     } else {
