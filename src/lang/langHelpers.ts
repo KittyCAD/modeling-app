@@ -5,7 +5,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
-import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import { resolveRefactorLintActions } from '@src/lang/lintRefactorActions'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -18,7 +18,6 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
-import { err } from '@src/lib/trap'
 import type { EditorView } from 'codemirror'
 
 export type ToolTip =
@@ -193,8 +192,6 @@ export async function lintAst({
     // Process findings - for Z0005 without suggestion, we'll create actions async
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
-      const transpilationFailMessage =
-        'Deprecated sketch syntax. This sketch cannot be converted to new sketch block syntax at this time.'
       let message = lint.finding.title
       const suggestion = lint.suggestion
 
@@ -214,139 +211,22 @@ export async function lintAst({
             },
           },
         ]
-      } else if (
-        lint.finding.code === 'Z0005' &&
-        rustContext &&
-        shouldShowZ0005
-      ) {
-        // For Z0005 without suggestion, try to transpile using WASM
-        // Extract variable name from the AST at the lint position
-        try {
-          const lintStart = lint.pos[0]
-          const lintEnd = lint.pos[1]
-
-          // Find the variable declaration that contains this range
-          let variableName: string | null = null
-          for (const item of ast.body) {
-            if (item.type === 'VariableDeclaration') {
-              const varDecl = item.declaration
-
-              // Check if lint range is within this variable's init expression
-              if (
-                lintStart >= varDecl.init.start &&
-                lintEnd <= varDecl.init.end
-              ) {
-                variableName = varDecl.id.name
-                break
-              }
-            }
-          }
-
-          if (variableName) {
-            // Create a temporary context for transpilation
-            // Note: This creates a new context each time, but transpile_old_sketch
-            // uses the execution cache, so it should be fast
-            // The ExecutorContext inside transpile_old_sketch is closed automatically,
-            // but we still need to ensure the WASM Context reference is released
-            let ctx: Awaited<
-              ReturnType<typeof rustContext.createNewContext>
-            > | null = null
-            try {
-              const settings = jsAppSettings(rustContext.settingsActor)
-
-              ctx = await rustContext.createNewContext()
-
-              const transpiledCodeResult = await ctx.transpile_old_sketch(
-                JSON.stringify(ast),
-                variableName,
-                null, // path
-                JSON.stringify(settings)
-              )
-
-              const transpiledCode =
-                typeof transpiledCodeResult === 'string'
-                  ? transpiledCodeResult
-                  : String(transpiledCodeResult)
-
-              if (transpiledCode?.trim()) {
-                actions = [
-                  {
-                    name: `convert '${variableName}' to new sketch block syntax`,
-                    apply: (view: EditorView, from: number, to: number) => {
-                      view.dispatch({
-                        changes: {
-                          from: toUtf16(lint.pos[0], sourceCode),
-                          to: toUtf16(lint.pos[1], sourceCode),
-                          insert: transpiledCode.trim(),
-                        },
-                        annotations: [lspCodeActionEvent],
-                      })
-                    },
-                  },
-                ]
-              } else {
-                // Transpilation returned empty result - update message
-                message = transpilationFailMessage
-                console.warn(
-                  '[lintAst] Z0005 transpilation returned empty result'
-                )
-              }
-            } catch (transpileError) {
-              // Transpilation failed - update message
-              message = transpilationFailMessage
-              console.warn(
-                '[lintAst] Z0005 transpilation failed:',
-                transpileError
-              )
-            } finally {
-              // Explicitly clear the context reference to help GC
-              // The ExecutorContext inside transpile_old_sketch is already closed by Rust code
-              ctx = null
-            }
-          }
-        } catch (e) {
-          console.warn('[lintAst] Error processing Z0005:', e)
-        }
-      } else if (
-        lint.finding.code === 'Z0006' &&
-        artifactGraph &&
-        (edgeRefactorMetadata?.length || directTagFilletMetadata?.length)
-      ) {
-        const newSourceResult = refactorZ0006Unified(
+      } else {
+        const refactorResult = await resolveRefactorLintActions({
+          lint,
           ast,
-          edgeRefactorMetadata ?? [],
-          directTagFilletMetadata ?? [],
+          sourceCode,
+          instance,
+          rustContext,
+          shouldShowZ0005,
+          edgeRefactorMetadata,
+          directTagFilletMetadata,
           artifactGraph,
-          instance
-        )
-        const newSource = err(newSourceResult)
-          ? null
-          : newSourceResult.trim() || null
-        const codeActuallyChanged =
-          newSource != null && newSource !== sourceCode.trim()
-        if (newSource && codeActuallyChanged) {
-          actions = [
-            {
-              name: 'Convert to edges/axis',
-              apply: (view: EditorView, _from: number, _to: number) => {
-                try {
-                  view.dispatch({
-                    changes: {
-                      from: 0,
-                      to: view.state.doc.length,
-                      insert: newSource,
-                    },
-                    annotations: [lspCodeActionEvent],
-                  })
-                } catch (e) {
-                  console.warn('[lintAst] Z0006 apply dispatch failed:', e)
-                }
-              },
-            },
-          ]
+        })
+        actions = refactorResult.actions
+        if (refactorResult.messageOverride) {
+          message = refactorResult.messageOverride
         }
-      } else if (lint.finding.code === 'Z0006') {
-        // Z0006 lint shown but no code action (missing graph or metadata)
       }
 
       const diagnostic = {

@@ -727,9 +727,10 @@ export const mlEphantManagerMachine = setup({
 
       const requestProjectContext: Extract<
         MlCopilotClientMessage,
-        { type: 'project_context' }
+        { type: 'user' }
       > = {
-        type: 'project_context',
+        type: 'user',
+        content: '',
         project_name: event.projectName,
         current_files: filesAsByteArrays,
       }
@@ -739,7 +740,7 @@ export const mlEphantManagerMachine = setup({
         { type: 'system' }
       > = {
         type: 'system',
-        command: 'continue',
+        command: 'answer_now',
       }
 
       context.ws.send(JSON.stringify(requestContinue))
