@@ -287,19 +287,23 @@ export const MlEphantConversationInput = (
 
   const onCaptureScreenshot = () => {
     if (props.disabled) return
-    const dataUrl = takeViewportScreenshot()
-    if (!dataUrl) return
-    fetch(dataUrl)
-      .then((r) => r.blob())
-      .then((blob) => {
-        const file = new File([blob], 'viewport-screenshot.png', {
-          type: 'image/png',
-        })
-        appendAttachments([file])
-      })
-      .catch((e) => {
-        console.error('Failed to capture viewport screenshot', e)
-      })
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      // Convert data URL to File without fetch (fetch of data: URLs is
+      // blocked by CSP in the browser).
+      const [header, base64] = dataUrl.split(',')
+      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
+      const bytes = atob(base64)
+      const buf = new Uint8Array(bytes.length)
+      for (let i = 0; i < bytes.length; i++) {
+        buf[i] = bytes.charCodeAt(i)
+      }
+      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
+      appendAttachments([file])
+    } catch (e) {
+      console.error('Failed to capture viewport screenshot', e)
+    }
   }
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
