@@ -103,6 +103,27 @@ export fn angle(@input: [Segment; 2]) {}
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn tangent(@input: [Segment; 2]) {}
 
+/// Constrain a point to a fixed position.
+///
+/// The return value can be set equal to a `Point2d`.
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// s = sketch(on = XY) {
+///   p1 = point(at = [var 0mm, var 0mm])
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 4mm])
+///   coincident([p1, line1.start])
+///   fixed(p1) == [0mm, 0mm]
+///   fixed(line1.end) == [3mm, 4mm]
+/// }
+///
+/// r = region(point = [1mm, 1mm], sketch = s)
+/// extrude(r, length = 5)
+/// ```
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn fixed(@point: Segment) {}
+
 /// Constrain a line to be horizontal.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn horizontal(@input: Segment) {}

@@ -323,8 +323,6 @@ pub enum Constraint {
     Angle(Angle),
     Diameter(Diameter),
     Fixed(Fixed),
-    FixedX(FixedConstraint),
-    FixedY(FixedConstraint),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
     Horizontal(Horizontal),
@@ -379,15 +377,6 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
-    #[serde(default)]
-    pub source: ConstraintSource,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct FixedConstraint {
-    pub point: ObjectId,
-    pub value: Number,
     #[serde(default)]
     pub source: ConstraintSource,
 }

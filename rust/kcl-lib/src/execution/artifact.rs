@@ -283,8 +283,7 @@ pub enum SketchBlockConstraintType {
     Coincident,
     Distance,
     Diameter,
-    FixedX,
-    FixedY,
+    Fixed,
     HorizontalDistance,
     VerticalDistance,
     Horizontal,
@@ -302,11 +301,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
-            Constraint::Fixed { .. } => {
-                unreachable!("Fixed is expanded into FixedX/FixedY before reaching the artifact graph")
-            }
-            Constraint::FixedX { .. } => SketchBlockConstraintType::FixedX,
-            Constraint::FixedY { .. } => SketchBlockConstraintType::FixedY,
+            Constraint::Fixed { .. } => SketchBlockConstraintType::Fixed,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
             Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
             Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,

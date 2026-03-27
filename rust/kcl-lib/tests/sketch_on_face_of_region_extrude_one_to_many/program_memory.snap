@@ -3,12 +3,12 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_of_region_extrude_one_to_many.kcl
 ---
 {
-  "__sketch_18_on": {
+  "__sketch_16_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 17,
+      "objectId": 15,
       "value": "line1",
       "xAxis": {
         "x": 1.0,
@@ -727,7 +727,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "objectId": 17,
+          "objectId": 15,
           "value": "line1",
           "xAxis": {
             "x": 1.0,
@@ -1038,7 +1038,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "objectId": 17,
+      "objectId": 15,
       "value": "line1",
       "xAxis": {
         "x": 1.0,
@@ -1609,7 +1609,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
-        "objectId": 17,
+        "objectId": 15,
         "value": "line1",
         "xAxis": {
           "x": 1.0,
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
+                "objectId": 9,
                 "kind": {
                   "arc": {
                     "start": [
@@ -2015,9 +2015,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
-                    "center_object_id": 10,
+                    "start_object_id": 6,
+                    "end_object_id": 7,
+                    "center_object_id": 8,
                     "start_freedom": "Free",
                     "end_freedom": "Fixed",
                     "center_freedom": "Free",
@@ -2192,7 +2192,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
+                "objectId": 14,
                 "kind": {
                   "line": {
                     "start": [
@@ -2257,8 +2257,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    "start_object_id": 12,
+                    "end_object_id": 13,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -2510,7 +2510,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 21,
+                "objectId": 19,
                 "kind": {
                   "line": {
                     "start": [
@@ -2575,8 +2575,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 19,
-                    "end_object_id": 20,
+                    "start_object_id": 17,
+                    "end_object_id": 18,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -2586,7 +2586,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 17,
+                  "objectId": 15,
                   "value": "line1",
                   "xAxis": {
                     "x": 1.0,
@@ -2865,7 +2865,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
+                "objectId": 22,
                 "kind": {
                   "line": {
                     "start": [
@@ -2930,8 +2930,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    "start_object_id": 20,
+                    "end_object_id": 21,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -2941,7 +2941,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 17,
+                  "objectId": 15,
                   "value": "line1",
                   "xAxis": {
                     "x": 1.0,
@@ -3220,7 +3220,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 27,
+                "objectId": 25,
                 "kind": {
                   "line": {
                     "start": [
@@ -3285,8 +3285,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 25,
-                    "end_object_id": 26,
+                    "start_object_id": 23,
+                    "end_object_id": 24,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -3296,7 +3296,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 17,
+                  "objectId": 15,
                   "value": "line1",
                   "xAxis": {
                     "x": 1.0,
@@ -3575,7 +3575,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 30,
+                "objectId": 28,
                 "kind": {
                   "line": {
                     "start": [
@@ -3640,8 +3640,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       }
                     },
-                    "start_object_id": 28,
-                    "end_object_id": 29,
+                    "start_object_id": 26,
+                    "end_object_id": 27,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -3651,7 +3651,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "objectId": 17,
+                  "objectId": 15,
                   "value": "line1",
                   "xAxis": {
                     "x": 1.0,
@@ -4084,7 +4084,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "objectId": 17,
+                "objectId": 15,
                 "value": "line1",
                 "xAxis": {
                   "x": 1.0,

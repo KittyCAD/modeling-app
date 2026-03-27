@@ -1399,6 +1399,52 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     }
 }
 
+pub async fn fixed(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segment: KclValue =
+        args.get_unlabeled_kw_arg("point", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+
+    match &segment {
+        KclValue::Segment { value: seg } => {
+            let SegmentRepr::Unsolved { segment: unsolved } = &seg.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "fixed() argument must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            match &unsolved.kind {
+                UnsolvedSegmentKind::Point { position, .. } => match (&position[0], &position[1]) {
+                    (UnsolvedExpr::Unknown(px), UnsolvedExpr::Unknown(py)) => {
+                        let sketch_constraint = SketchConstraint {
+                            kind: SketchConstraintKind::Fixed {
+                                point: ConstrainablePoint2d {
+                                    vars: Point2d { x: *px, y: *py },
+                                    object_id: unsolved.object_id,
+                                },
+                            },
+                            meta: vec![args.source_range.into()],
+                        };
+                        Ok(KclValue::SketchConstraint {
+                            value: Box::new(sketch_constraint),
+                        })
+                    }
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        "fixed() argument must have sketch variable coordinates".to_owned(),
+                        vec![args.source_range],
+                    ))),
+                },
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "fixed() argument must be a point segment".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "fixed() argument must be a point segment".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
 /// Helper function to create a radius or diameter constraint from a circular segment.
 /// Used by both radius() and diameter() functions.
 fn create_circular_radius_constraint(

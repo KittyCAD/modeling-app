@@ -197,7 +197,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
+                "objectId": 10,
                 "kind": {
                   "line": {
                     "start": [
@@ -262,8 +262,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       }
                     },
-                    "start_object_id": 10,
-                    "end_object_id": 11,
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": false
@@ -317,7 +317,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
+                "objectId": 14,
                 "kind": {
                   "line": {
                     "start": [
@@ -382,8 +382,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       }
                     },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    "start_object_id": 12,
+                    "end_object_id": 13,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": false
@@ -715,7 +715,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
+                "objectId": 18,
                 "kind": {
                   "point": {
                     "position": [

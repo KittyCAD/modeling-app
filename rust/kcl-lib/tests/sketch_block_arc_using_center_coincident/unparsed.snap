@@ -24,8 +24,7 @@ s = sketch(on = XY) {
 
   // Point at (1,0).
   p1 = point(at = [var, var])
-  p1.at[0] == 1mm
-  p1.at[1] == 0
+  fixed(p1) == [1mm, 0]
   // We can't specify a line length yet, so constrain the line's end to a point.
   coincident([lineX.end, p1])
   // Make the lines equal length.

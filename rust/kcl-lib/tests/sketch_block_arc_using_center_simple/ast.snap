@@ -284,59 +284,52 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "fixed",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
                       "commentStart": 0,
-                      "computed": true,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
                         "commentStart": 0,
                         "computed": false,
                         "end": 0,
                         "moduleId": 0,
                         "object": {
+                          "abs_path": false,
                           "commentStart": 0,
-                          "computed": false,
                           "end": 0,
                           "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
+                          "name": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "arc1",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
+                            "name": "arc1",
                             "start": 0,
-                            "type": "Name",
-                            "type": "Name"
+                            "type": "Identifier"
                           },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "start",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
+                          "path": [],
                           "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "property": {
                           "abs_path": false,
@@ -347,7 +340,7 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "at",
+                            "name": "start",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -359,162 +352,45 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                         "start": 0,
                         "type": "MemberExpression",
                         "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      }
                     },
                     "moduleId": 0,
                     "operator": "==",
                     "right": {
                       "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "1mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "commentStart": 0,
-                      "computed": true,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "arc1",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "start",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
+                      "elements": [
+                        {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "at",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
+                          "raw": "1mm",
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "Mm"
+                          }
                         },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0mm",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "Mm"
+                          }
                         }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
+                      ],
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     },
                     "start": 0,
                     "type": "BinaryExpression",
@@ -656,59 +532,52 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "fixed",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
                       "commentStart": 0,
-                      "computed": true,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
                         "commentStart": 0,
                         "computed": false,
                         "end": 0,
                         "moduleId": 0,
                         "object": {
+                          "abs_path": false,
                           "commentStart": 0,
-                          "computed": false,
                           "end": 0,
                           "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
+                          "name": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "arc1",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
+                            "name": "arc1",
                             "start": 0,
-                            "type": "Name",
-                            "type": "Name"
+                            "type": "Identifier"
                           },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "center",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
+                          "path": [],
                           "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "property": {
                           "abs_path": false,
@@ -719,7 +588,7 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "at",
+                            "name": "center",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -731,38 +600,45 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                         "start": 0,
                         "type": "MemberExpression",
                         "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      }
                     },
                     "moduleId": 0,
                     "operator": "==",
                     "right": {
                       "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0mm",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "Mm"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0mm",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "Mm"
+                          }
+                        }
+                      ],
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     },
                     "start": 0,
                     "type": "BinaryExpression",
@@ -772,130 +648,6 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                   "preComments": [
                     "// arc1.end.at[1] not specified. Based on other constraints, it should solve."
                   ],
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "commentStart": 0,
-                      "computed": true,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "arc1",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "center",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "at",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
