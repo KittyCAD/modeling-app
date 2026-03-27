@@ -4,10 +4,14 @@
 
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
+use crate::ExecOutcome;
 pub use crate::ExecutorSettings as Settings;
-use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::NumericSuffix};
+use crate::engine::PlaneName;
+use crate::execution::ArtifactId;
+use crate::pretty::NumericSuffix;
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -140,6 +144,8 @@ pub enum ObjectKind {
     Nil,
     Plane(Plane),
     Face(Face),
+    Wall(Wall),
+    Cap(Cap),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -164,6 +170,29 @@ pub enum Plane {
 #[serde(rename_all = "camelCase")]
 pub struct Face {
     pub id: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiWall")]
+#[serde(rename_all = "camelCase")]
+pub struct Wall {
+    pub id: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCap")]
+#[serde(rename_all = "camelCase")]
+pub struct Cap {
+    pub id: ObjectId,
+    pub kind: CapKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapKind")]
+#[serde(rename_all = "camelCase")]
+pub enum CapKind {
+    Start,
+    End,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

@@ -25,7 +25,7 @@ slatSpacing = (pergolaLength - (beamWidth * 2)) / (slatCount + 1) // spacing bet
 
 // Post profile
 postSketch = startSketchOn(XY)
-postProfile = sketch(on = XY) {
+postProfile = sketch(on = postSketch) {
   line1 = line(start = [var -60mm, var -60mm], end = [var 60mm, var -60mm])
   line2 = line(start = [var 60mm, var -60mm], end = [var 60mm, var 60mm])
   coincident([line1.end, line2.start])
@@ -58,7 +58,7 @@ posts = translate(post, x = (pergolaLength - postSize) / 2, y = (pergolaWidth - 
 
 // Long beams (front and back)
 longBeamSketch = startSketchOn(XY)
-longBeamProfile = sketch(on = XY) {
+longBeamProfile = sketch(on = longBeamSketch) {
   line1 = line(start = [var -2000mm, var -60mm], end = [var 2000mm, var -60mm])
   line2 = line(start = [var 2000mm, var -60mm], end = [var 2000mm, var 60mm])
   coincident([line1.end, line2.start])
@@ -88,7 +88,7 @@ longBeams = translate(longBeam, y = pergolaWidth / 2 - (beamWidth / 2))
 
 // Side beams (left and right)
 sideBeamSketch = startSketchOn(XY)
-sideBeamProfile = sketch(on = XY) {
+sideBeamProfile = sketch(on = sideBeamSketch) {
   line1 = line(start = [var -60mm, var -1380mm], end = [var 60mm, var -1380mm])
   line2 = line(start = [var 60mm, var -1380mm], end = [var 60mm, var 1380mm])
   coincident([line1.end, line2.start])
@@ -118,7 +118,7 @@ sideBeams = translate(sideBeam, x = pergolaLength / 2 - (beamWidth / 2))
 
 // Slat profile (crosswise)
 slatSketch = startSketchOn(XY)
-slatProfile = sketch(on = XY) {
+slatProfile = sketch(on = slatSketch) {
   line1 = line(start = [var -25mm, var -1380mm], end = [var 25mm, var -1380mm])
   line2 = line(start = [var 25mm, var -1380mm], end = [var 25mm, var 1380mm])
   coincident([line1.end, line2.start])

@@ -1,11 +1,15 @@
 use anyhow::Result;
 
-use crate::{
-    SourceRange,
-    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
-    parsing::ast::types::{Expr, Node as AstNode, PipeExpression, Program},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::FindingFamily;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 def_finding!(
     Z0005,
@@ -20,7 +24,7 @@ New: profile001 = sketch(on = XY) { line1 = line(start = [var 0mm, var 0mm], end
 
 Use the transpile function to convert this to the new format.
 ",
-    FindingFamily::Simplify
+    FindingFamily::Style
 );
 
 /// Check if a pipe expression contains startProfile

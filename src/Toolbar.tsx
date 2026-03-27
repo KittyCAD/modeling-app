@@ -30,6 +30,7 @@ import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -441,8 +442,9 @@ const Toolbar_ = memo(
           {props.state.matches('sketchSolveMode') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
-                Sketch solve mode is experimental. Disable in settings if you
-                want classic sketch mode.
+                {IS_STAGING_OR_DEBUG
+                  ? 'Sketch solve mode is experimental. This will soon become the default in production.'
+                  : 'Sketch solve mode is experimental. Disable in settings if you want classic sketch mode.'}
               </p>
             </div>
           )}

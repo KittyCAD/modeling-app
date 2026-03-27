@@ -1,12 +1,15 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    CoreDump, Program, SourceRange,
-    exec::{NumericType, UnitType, WarningLevel},
-    pretty::NumericSuffix,
-};
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+use kcl_lib::CoreDump;
+use kcl_lib::Program;
+use kcl_lib::SourceRange;
+use kcl_lib::exec::NumericType;
+use kcl_lib::exec::UnitType;
+use kcl_lib::exec::WarningLevel;
+use kcl_lib::pretty::NumericSuffix;
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
@@ -55,11 +58,11 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, JsError> {
+pub fn format_number_literal(value: f64, suffix_json: &str, decimals: Option<usize>) -> Result<String, JsError> {
     console_error_panic_hook::set_once();
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
-    kcl_lib::pretty::format_number_literal(value, suffix).map_err(JsError::from)
+    kcl_lib::pretty::format_number_literal(value, suffix, decimals).map_err(JsError::from)
 }
 
 #[wasm_bindgen]

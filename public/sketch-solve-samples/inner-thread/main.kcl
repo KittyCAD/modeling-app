@@ -1,0 +1,46 @@
+// Inner Thread
+// An example of an inner thread on a cylinder.
+// Categories: Fasteners
+
+@settings(experimentalFeatures = allow)
+
+outerCylinderRadius = 5
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+outerCylinder = extrude(region001, length = 10)
+
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch002.circle1])
+inner = extrude(region002, length = 10)
+
+rectHeight = 0.5mm
+rectWidth = 0.5mm
+
+threadProfile = sketch(on = XZ) {
+  line1 = line(start = [var 3.75mm, var -0.25mm], end = [var 4.25mm, var -0.25mm])
+  line2 = line(start = [var 4.25mm, var -0.25mm], end = [var 4.25mm, var 0.25mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4.25mm, var 0.25mm], end = [var 3.75mm, var 0.25mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 3.75mm, var 0.25mm], end = [var 3.75mm, var -0.25mm])
+  coincident([line3.end, line4.start])
+}
+threadHelix = helix(
+  revolutions = 10,
+  angleStart = 0deg,
+  cylinder = inner,
+  length = outerCylinderRadius * 2 + rectHeight * 2,
+)
+
+region003 = region(segments = [
+  threadProfile.line1,
+  threadProfile.line2
+])
+thread = sweep(region003, path = threadHelix)
+
+subtract([outerCylinder], tools = [inner, thread])
+

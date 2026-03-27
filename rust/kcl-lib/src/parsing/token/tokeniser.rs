@@ -1,20 +1,30 @@
 use fnv::FnvHashMap;
+use fnv::FnvHashSet;
 use lazy_static::lazy_static;
-use winnow::{
-    LocatingSlice, Stateful,
-    ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat},
-    error::{ContextError, ParseError},
-    prelude::*,
-    stream::{Location, Stream},
-    token::{any, none_of, take_till, take_until, take_while},
-};
+use winnow::LocatingSlice;
+use winnow::Stateful;
+use winnow::ascii::digit1;
+use winnow::ascii::multispace1;
+use winnow::combinator::alt;
+use winnow::combinator::opt;
+use winnow::combinator::peek;
+use winnow::combinator::preceded;
+use winnow::combinator::repeat;
+use winnow::error::ContextError;
+use winnow::error::ParseError;
+use winnow::prelude::*;
+use winnow::stream::Location;
+use winnow::stream::Stream;
+use winnow::token::any;
+use winnow::token::none_of;
+use winnow::token::take_till;
+use winnow::token::take_until;
+use winnow::token::take_while;
 
 use super::TokenStream;
-use crate::{
-    ModuleId,
-    parsing::token::{Token, TokenType},
-};
+use crate::ModuleId;
+use crate::parsing::token::Token;
+use crate::parsing::token::TokenType;
 
 lazy_static! {
     pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
@@ -48,6 +58,26 @@ lazy_static! {
         set.insert("record", TokenType::Keyword);
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
+
+        set
+    };
+    /// These names are reserved only in sketch blocks.
+    pub(crate) static ref RESERVED_SKETCH_BLOCK_WORDS: FnvHashSet<&'static str> = {
+        let mut set = FnvHashSet::default();
+        set.insert("construction");
+        set.insert("dependencies");
+        set.insert("exports");
+        set.insert("id");
+        set.insert("location");
+        set.insert("meta");
+        set.insert("module");
+        set.insert("on");
+        set.insert("ORIGIN");
+        set.insert("porcelain");
+        set.insert("surface");
+        set.insert("tags");
+        set.insert("worldCoordinates");
+        set.insert("zoo");
 
         set
     };

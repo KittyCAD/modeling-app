@@ -1,22 +1,34 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
-    ok_response::OkModelingCmdResponse,
-    shared::ExtrusionFaceCapType,
-    websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-};
-use serde::{Serialize, ser::SerializeSeq};
+use kittycad_modeling_cmds::EnableSketchMode;
+use kittycad_modeling_cmds::FaceIsPlanar;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::ExtrusionFaceCapType;
+use kittycad_modeling_cmds::websocket::BatchResponse;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::{self as kcmc};
+use serde::Serialize;
+use serde::ser::SerializeSeq;
 use uuid::Uuid;
 
-use crate::{
-    KclError, ModuleId, NodePath, SourceRange,
-    errors::KclErrorDetails,
-    execution::{ArtifactId, state::ModuleInfoMap},
-    front::{Constraint, ObjectId},
-    modules::ModulePath,
-    parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
-};
+use crate::KclError;
+use crate::ModuleId;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
+use crate::execution::state::ModuleInfoMap;
+use crate::front::Constraint;
+use crate::front::ObjectId;
+use crate::modules::ModulePath;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
+use crate::std::sketch2::build_reverse_region_mapping;
 
 #[cfg(test)]
 mod mermaid_tests;
@@ -155,6 +167,10 @@ pub struct Path {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// If this artifact is a segment in a region, the segment in the original
+    /// sketch that this was derived from.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_seg_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
@@ -619,6 +635,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
+        merge_opt_id(&mut self.original_seg_id, new.original_seg_id);
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
@@ -700,6 +717,10 @@ pub struct ArtifactGraph {
 }
 
 impl ArtifactGraph {
+    pub fn get(&self, id: &ArtifactId) -> Option<&Artifact> {
+        self.map.get(id)
+    }
+
     pub fn len(&self) -> usize {
         self.map.len()
     }
@@ -1153,6 +1174,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
+                original_seg_id: None,
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
@@ -1194,6 +1216,7 @@ fn artifacts_to_update(
                     "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
             };
+            // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
                 plane_id: path.plane_id,
@@ -1202,11 +1225,41 @@ fn artifacts_to_update(
                 sweep_id: None,
                 trajectory_sweep_id: None,
                 solid2d_id: None,
-                code_ref,
+                code_ref: code_ref.clone(),
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
             }));
+            // If we have a response, we can also create the segments in the
+            // region.
+            let Some(
+                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion { region_mapping, .. })
+                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
+                    region_mapping,
+                    ..
+                }),
+            ) = response
+            else {
+                return Ok(return_arr);
+            };
+            // Each key is a segment in the region. The value is the segment in
+            // the original path. Build the reverse mapping.
+            let original_segment_ids = path.seg_ids.iter().map(|p| p.0).collect::<Vec<_>>();
+            let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
+            for (original_segment_id, region_segment_ids) in reverse.iter() {
+                for segment_id in region_segment_ids {
+                    return_arr.push(Artifact::Segment(Segment {
+                        id: ArtifactId::new(*segment_id),
+                        path_id: id,
+                        original_seg_id: Some(ArtifactId::new(*original_segment_id)),
+                        surface_id: None,
+                        edge_ids: Vec::new(),
+                        edge_cut_id: None,
+                        code_ref: code_ref.clone(),
+                        common_surface_ids: Vec::new(),
+                    }))
+                }
+            }
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetFaceUuid(kcmc::Solid3dGetFaceUuid { object_id, .. }) => {
@@ -1290,6 +1343,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: edge_id,
                         path_id: path.id,
+                        original_seg_id: None,
                         surface_id: None,
                         edge_ids: Vec::new(),
                         edge_cut_id: None,

@@ -1,6 +1,8 @@
 use std::hint::black_box;
 
-use criterion::{Criterion, criterion_group, criterion_main};
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
 
 pub fn bench_parse(c: &mut Criterion) {
     for (name, file) in [

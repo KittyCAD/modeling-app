@@ -1,0 +1,71 @@
+// Robot Rotating Base
+
+// Set Units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+import axisJ1, baseHeight, plane001, plane002 from "globals.kcl"
+
+// Create Rotating Base
+sketch005 = sketch(on = plane001) {
+  circle1 = circle(start = [var 3.9in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [sketch005.circle1])
+extrude005 = extrude(region001, length = 1.5 - 0.1)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge1)])
+  |> appearance(color = "#4f7d54", metalness = 90, roughness = 90)
+
+sketch006 = sketch(on = plane002) {
+  line1 = line(start = [var 3.5in, var 5in], end = [var 4.38in, var 6.52in])
+  arc2 = arc(start = [var 4.38in, var 6.52in], end = [var -0.82in, var 9.52in], center = [var 1.78in, var 8.02in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -0.82in, var 9.52in], end = [var -3.43in, var 5in])
+  coincident([arc2.end, line3.start])
+  line4 = line(start = [var -3.43in, var 5in], end = [var 3.5in, var 5in])
+  coincident([line3.end, line4.start])
+}
+
+region002 = region(segments = [sketch006.line1, sketch006.arc2])
+extrude006 = extrude(region002, length = 1)
+
+sketch007 = sketch(on = startSketchOn(extrude006, face = END)) {
+  circle1 = circle(start = [var 4.5in, var 8in], center = [var 1.75in, var 8in])
+}
+region003 = region(segments = [sketch007.circle1])
+extrude007 = extrude(region003, length = 1.5)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge2)])
+
+// Draw Bolt Pattern on Rotating Base
+sketch008 = startSketchOn(extrude007, face = END)
+  |> circle(
+       center = [
+         1.75 * cos(axisJ1) / abs(cos(axisJ1)),
+         6.75
+       ],
+       radius = 0.2,
+     )
+  |> patternCircular2d(
+       center = [
+         1.75 * cos(axisJ1) / abs(cos(axisJ1)),
+         8
+       ],
+       instances = 4,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+extrude008 = extrude(sketch008, length = 0.2)
+
+sketch009 = sketch(on = startSketchOn(extrude007, face = END)) {
+  circle1 = circle(start = [var 2.25in, var 8in], center = [var 1.75in, var 8in])
+}
+region004 = region(segments = [sketch009.circle1])
+extrude009 = extrude(region004, length = 0.15)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge3)])
+  |> appearance(color = "#4f7d54", metalness = 90, roughness = 90)
+
+sketch010 = sketch(on = plane002) {
+  circle1 = circle(start = [var 2.05in, var 8in], center = [var 1.75in, var 8in])
+}
+
+region005 = region(segments = [sketch010.circle1])
+extrude(region005, length = -1)
+

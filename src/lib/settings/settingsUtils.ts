@@ -1,6 +1,7 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
@@ -33,6 +34,22 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+const INITIALISM_MAPPING: Record<string, string> = {
+  api: 'API',
+  id: 'ID',
+  ui: 'UI',
+  url: 'URL',
+}
+
+export function formatSettingsLabel(key: string): string {
+  return decamelize(key, { separator: ' ' })
+    .split(' ')
+    .map((word) =>
+      word in INITIALISM_MAPPING ? INITIALISM_MAPPING[word] : word
+    )
+    .join(' ')
+}
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -662,6 +679,7 @@ export function getSettingsFromActorContext(
   const {
     currentProject: _,
     commandBarActor: _cmd,
+    wasmInstancePromise,
     ...settings
   } = s.getSnapshot().context
   return settings

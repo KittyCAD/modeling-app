@@ -19,6 +19,7 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import type {
   BaseUnit,
   HideOnPlatformValue,
@@ -32,6 +33,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getToken } from '@src/machines/authMachine'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { hexToRgba } from '@src/lib/utils'
 
 /**
@@ -283,7 +285,7 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: 5 * MS_IN_MINUTE,
+        defaultValue: 1 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
@@ -539,14 +541,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Visibility is controlled by the 'new_sketch_mode' feature flag.
-       * If the feature flag exists, the setting will be visible.
-       * Otherwise, it will be hidden.
+       * Determines if new sketches should use the experimental solver-based sketch mode.
+       * On staging, this setting cannot be disabled except by Playwright tests.
+       * On production, the 'new_sketch_mode' feature flag controls visibility.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
-        defaultValue: false,
+        hideOnPlatform: IS_STAGING_OR_DEBUG
+          ? 'both'
+          : hideWithoutFeatureFlag('new_sketch_mode', 'both'),
+        defaultValue: IS_STAGING_OR_DEBUG && !isPlaywright(),
         description:
           'Default to the experimental solver-based sketch mode for all new sketches.',
         validate: (v) => typeof v === 'boolean',

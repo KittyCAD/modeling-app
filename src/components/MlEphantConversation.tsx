@@ -15,6 +15,7 @@ import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 
 const noop = () => {}
 
@@ -129,6 +130,7 @@ export interface MlEphantExtraInputsProps {
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
   onAttachFiles: () => void
+  onCaptureScreenshot: () => void
   attachmentsDisabled?: boolean
 }
 
@@ -157,6 +159,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           <CustomIcon name="paperclip" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
             <span>Attach files</span>
+          </Tooltip>
+        </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-screenshot-button"
+          onClick={props.onCaptureScreenshot}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Capture viewport screenshot"
+        >
+          <CustomIcon name="camera" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Capture viewport screenshot</span>
           </Tooltip>
         </button>
       </div>
@@ -268,6 +283,27 @@ export const MlEphantConversationInput = (
   const onAttachFiles = () => {
     if (props.disabled) return
     fileInputRef.current?.click()
+  }
+
+  const onCaptureScreenshot = () => {
+    if (props.disabled) return
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      // Convert data URL to File without fetch (fetch of data: URLs is
+      // blocked by CSP in the browser).
+      const [header, base64] = dataUrl.split(',')
+      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
+      const bytes = atob(base64)
+      const buf = new Uint8Array(bytes.length)
+      for (let i = 0; i < bytes.length; i++) {
+        buf[i] = bytes.charCodeAt(i)
+      }
+      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
+      appendAttachments([file])
+    } catch (e) {
+      console.error('Failed to capture viewport screenshot', e)
+    }
   }
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -418,6 +454,7 @@ export const MlEphantConversationInput = (
               props.onMlCopilotModeChange?.(m)
             }}
             onAttachFiles={onAttachFiles}
+            onCaptureScreenshot={onCaptureScreenshot}
             attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">
@@ -497,30 +534,20 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0) return
-
-    requestAnimationFrame(() => {
-      if (refScroll.current) {
-        refScroll.current.scrollTo({
-          top: refScroll.current.scrollHeight,
-          behavior: 'smooth',
-        })
-      }
+    if (exchangesLength === 0 || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
     })
   }, [exchangesLength])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
-    if (isEndOfStream) {
-      requestAnimationFrame(() => {
-        if (refScroll.current) {
-          refScroll.current.scrollTo({
-            top: refScroll.current.scrollHeight,
-            behavior: 'smooth',
-          })
-        }
-      })
-    }
+    if (!isEndOfStream || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
   }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
@@ -546,7 +573,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false || props.needsReconnect ? (
+              ) : props.isLoading === false &&
+                props.needsReconnect === false ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
                     {exchangeCards}

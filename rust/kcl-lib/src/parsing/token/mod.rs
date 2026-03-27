@@ -1,27 +1,32 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
-use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
+use std::fmt;
+use std::iter::Enumerate;
+use std::num::NonZeroUsize;
+use std::str::FromStr;
 
 use anyhow::Result;
 use parse_display::Display;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
-use winnow::{
-    self,
-    error::ParseError,
-    stream::{ContainsToken, Stream},
-};
+use winnow::error::ParseError;
+use winnow::stream::ContainsToken;
+use winnow::stream::Stream;
+use winnow::{self};
 
-use crate::{
-    CompilationError, ModuleId, SourceRange,
-    errors::KclError,
-    parsing::ast::types::{ItemVisibility, VariableKind},
-};
+use crate::CompilationError;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
 
+pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.

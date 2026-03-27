@@ -1,6 +1,6 @@
 [package]
 name = "kcl-language-server-release"
-version = "0.1.133"
+version = "0.1.135"
 edition = "2024"
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
 publish = false

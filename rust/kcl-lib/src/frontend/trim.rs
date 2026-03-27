@@ -3,14 +3,15 @@ use std::f64::consts::TAU;
 use indexmap::IndexSet;
 use kittycad_modeling_cmds::units::UnitLength;
 
-use crate::{
-    execution::types::adjust_length,
-    frontend::{
-        api::{Number, Object, ObjectId, ObjectKind},
-        sketch::{Constraint, Segment, SegmentCtor},
-    },
-    pretty::NumericSuffix,
-};
+use crate::execution::types::adjust_length;
+use crate::frontend::api::Number;
+use crate::frontend::api::Object;
+use crate::frontend::api::ObjectId;
+use crate::frontend::api::ObjectKind;
+use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::Segment;
+use crate::frontend::sketch::SegmentCtor;
+use crate::pretty::NumericSuffix;
 
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests;
@@ -1972,10 +1973,10 @@ pub(crate) async fn execute_trim_flow(
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
 ) -> Result<TrimFlowResult, String> {
-    use crate::{
-        ExecutorContext, Program,
-        frontend::{FrontendState, api::Version},
-    };
+    use crate::ExecutorContext;
+    use crate::Program;
+    use crate::frontend::FrontendState;
+    use crate::frontend::api::Version;
 
     // Parse KCL code
     let parse_result = Program::parse(kcl_code).map_err(|e| format!("Failed to parse KCL: {}", e))?;
@@ -3529,10 +3530,10 @@ pub(crate) async fn execute_trim_operations_simple(
     version: crate::frontend::api::Version,
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
-    use crate::frontend::{
-        SketchApi,
-        sketch::{Constraint, ExistingSegmentCtor, SegmentCtor},
-    };
+    use crate::frontend::SketchApi;
+    use crate::frontend::sketch::Constraint;
+    use crate::frontend::sketch::ExistingSegmentCtor;
+    use crate::frontend::sketch::SegmentCtor;
 
     let default_unit = frontend.default_length_unit();
 

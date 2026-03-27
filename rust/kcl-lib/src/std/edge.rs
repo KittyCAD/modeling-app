@@ -1,19 +1,45 @@
 //! Edge helper functions.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
+use crate::std::sketch::FaceTag;
+
+/// Check that a tag does not map to multiple edges (ambiguous region mapping).
+pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
+    let all_infos = tag.get_all_cur_info();
+    if all_infos.len() > 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Tag `{}` is ambiguous: it maps to {} edges in the region. Use a more specific reference.",
+                tag.value,
+                all_infos.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+    Ok(())
+}
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -31,6 +57,7 @@ async fn inner_get_opposite_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -81,6 +108,7 @@ async fn inner_get_next_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -137,6 +165,7 @@ async fn inner_get_previous_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&edge, &args)?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
@@ -217,6 +246,8 @@ async fn inner_get_common_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    check_tag_not_ambiguous(&face1, &args)?;
+    check_tag_not_ambiguous(&face2, &args)?;
     let id = exec_state.next_uuid();
     if args.ctx.no_engine_commands().await {
         return Ok(id);

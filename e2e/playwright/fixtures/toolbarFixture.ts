@@ -347,6 +347,18 @@ export class ToolbarFixture {
       .nth(operationIndex)
   }
 
+  /**
+   * Get a specific sketch solve group caret button from the Feature Tree pane.
+   * Index is 0-based.
+   */
+  async getFeatureTreeSketchBlockGroupCaret(index: number) {
+    await this.openFeatureTreePane()
+    await expect(this.featureTreePane).toBeVisible()
+    return this.featureTreePane
+      .getByTestId('sketchblock-group-caret')
+      .nth(index)
+  }
+
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {
     const index = plane === 'XZ' ? 0 : plane === 'XY' ? 1 : 2
     return this.featureTreePane

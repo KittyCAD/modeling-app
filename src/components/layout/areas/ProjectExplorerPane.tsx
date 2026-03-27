@@ -159,7 +159,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       <LayoutPanelHeader
         id={props.layout.id}
         icon="folder"
-        title={`${theProject?.name || ''}`}
+        title={props.layout.label}
         Menu={
           <FileExplorerHeaderActions
             onCreateFile={() => {

@@ -1,19 +1,20 @@
 use kcmc::ModelingCmd;
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-};
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
 #[cfg(feature = "artifact-graph")]
 use crate::exec::ArtifactCommand;
-use crate::{
-    ExecState, ExecutorContext, KclError, SourceRange,
-    errors::KclErrorDetails,
-    exec::{IdGenerator, KclValue},
-    execution::Solid,
-    std::Args,
-};
+use crate::exec::IdGenerator;
+use crate::exec::KclValue;
+use crate::execution::Solid;
+use crate::std::Args;
 
 /// Context and metadata needed to send a single modeling command.
 ///

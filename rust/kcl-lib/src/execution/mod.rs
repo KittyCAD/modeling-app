@@ -6,12 +6,28 @@ use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
-    StartSketchOnFace, StartSketchOnPlane,
-};
+pub use artifact::Artifact;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::ArtifactCommand;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::CapSubType;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::CodeRef;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::SketchBlock;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::SketchBlockConstraint;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::SketchBlockConstraintType;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::StartSketchOnFace;
+#[cfg(feature = "artifact-graph")]
+pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
-pub use cache::{bust_cache, clear_mem_cache};
+pub use cache::bust_cache;
+pub use cache::clear_mem_cache;
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
@@ -19,41 +35,60 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue};
-use kcmc::{
-    ImageFormat, ModelingCmd, each_cmd as mcmd,
-    ok_response::{OkModelingCmdResponse, output::TakeSnapshot},
-    websocket::{ModelingSessionData, OkWebSocketResponseData},
-};
-use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
+pub use kcl_value::KclObjectFields;
+pub use kcl_value::KclValue;
+use kcmc::ImageFormat;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::ok_response::output::TakeSnapshot;
+use kcmc::websocket::ModelingSessionData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::{self as kcmc};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
-use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::{normalize_to_solver_distance_unit, solver_numeric_type};
-pub use sketch_transpiler::{
-    pre_execute_transpile, transpile_all_old_sketches_to_new, transpile_old_sketch_to_new,
-    transpile_old_sketch_to_new_ast, transpile_old_sketch_to_new_with_execution,
-};
+use serde::Deserialize;
+use serde::Serialize;
+pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
+pub(crate) use sketch_solve::solver_numeric_type;
+pub use sketch_transpiler::pre_execute_transpile;
+pub use sketch_transpiler::transpile_all_old_sketches_to_new;
+pub use sketch_transpiler::transpile_old_sketch_to_new;
+pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
+pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub use state::ExecState;
+pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
-pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
-use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
-    engine::{EngineManager, GridScaleBehavior},
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        cache::{CacheInformation, CacheResult},
-        import_graph::{Universe, UniverseMap},
-        typed_path::TypedPath,
-    },
-    front::{Object, ObjectId},
-    fs::FileManager,
-    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
-    parsing::ast::types::{Expr, ImportPath, NodeRef},
-};
+use crate::CompilationError;
+use crate::ExecError;
+use crate::KclErrorWithOutputs;
+use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
-use crate::{collections::AhashIndexSet, front::Number};
+use crate::collections::AhashIndexSet;
+use crate::engine::EngineManager;
+use crate::engine::GridScaleBehavior;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::cache::CacheInformation;
+use crate::execution::cache::CacheResult;
+use crate::execution::import_graph::Universe;
+use crate::execution::import_graph::UniverseMap;
+use crate::execution::typed_path::TypedPath;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::fs::FileManager;
+use crate::modules::ModuleExecutionOutcome;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::NodeRef;
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -355,6 +390,20 @@ impl TagIdentifier {
         self.info.last().map(|i| &i.1)
     }
 
+    /// Get all tag info entries at the most recent epoch.
+    /// For region-mapped tags, this returns multiple entries (one per region segment).
+    pub fn get_all_cur_info(&self) -> Vec<&TagEngineInfo> {
+        let Some(cur_epoch) = self.info.last().map(|(e, _)| *e) else {
+            return vec![];
+        };
+        self.info
+            .iter()
+            .rev()
+            .take_while(|(e, _)| *e == cur_epoch)
+            .map(|(_, info)| info)
+            .collect()
+    }
+
     /// Add info from a different instance of this tag.
     pub fn merge_info(&mut self, other: &TagIdentifier) {
         assert_eq!(&self.value, &other.value);
@@ -635,6 +684,7 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
@@ -649,7 +699,7 @@ impl ExecutorContext {
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
                 pool: None,
-                pr: None,
+                pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: None,
@@ -1869,12 +1919,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        ModuleId,
-        errors::{KclErrorDetails, Severity},
-        exec::NumericType,
-        execution::{memory::Stack, types::RuntimeType},
-    };
+    use crate::ModuleId;
+    use crate::errors::KclErrorDetails;
+    use crate::errors::Severity;
+    use crate::exec::NumericType;
+    use crate::execution::memory::Stack;
+    use crate::execution::types::RuntimeType;
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -2857,6 +2907,40 @@ w = f() + f()
         ctx2.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_then_add_extrude_then_mock_again() {
+        let code = "@settings(experimentalFeatures = allow)
+    
+s = sketch(on = XY) {
+    line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
+    line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [0.92, 4.67], end = [0.05, 0.05])
+    coincident([line2.end, line3.start])
+    coincident([line1.start, line3.end])
+}
+    ";
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+
+        let code2 = code.to_owned()
+            + "
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)
+    ";
+        let program2 = crate::Program::parse_no_errs(&code2).unwrap();
+        let result = ctx.run_mock(&program2, &MockConfig::default()).await.unwrap();
+        assert!(
+            result.variables.contains_key("region001"),
+            "actual: {:?}",
+            &result.variables
+        );
+
+        ctx.close().await;
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
@@ -3035,4 +3119,33 @@ answer = inc(5)
         let errors = result.exec_state.errors();
         assert_eq!(errors.len(), 0);
     }
+
+    // START Mock Execution tests
+    // Ideally, we would do this as part of all sim tests and delete these one-off tests.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_arc_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_arc/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_arc_arc_math_only_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_arc_arc_math_only/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_circle_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_circle/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_circle_circle_native_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_circle_circle_native/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    // END Mock Execution tests
 }
