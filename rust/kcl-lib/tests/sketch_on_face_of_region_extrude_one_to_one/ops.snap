@@ -1074,8 +1074,13 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedX",
-      "unlabeledArg": null,
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {},
       "nodePath": {
         "steps": [
@@ -1098,7 +1103,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_one.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedY",
+      "name": "fixed",
       "unlabeledArg": null,
       "labeledArgs": {},
       "nodePath": {

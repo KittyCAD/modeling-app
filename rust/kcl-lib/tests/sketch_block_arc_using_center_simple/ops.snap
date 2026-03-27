@@ -109,7 +109,36 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedX",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixed",
       "unlabeledArg": null,
       "labeledArgs": {},
       "nodePath": {
@@ -133,8 +162,13 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedY",
-      "unlabeledArg": null,
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {},
       "nodePath": {
         "steps": [
@@ -157,55 +191,7 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedX",
-      "unlabeledArg": null,
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fixedX",
-      "unlabeledArg": null,
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fixedY",
+      "name": "fixed",
       "unlabeledArg": null,
       "labeledArgs": {},
       "nodePath": {

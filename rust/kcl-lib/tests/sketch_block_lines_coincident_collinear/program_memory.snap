@@ -165,7 +165,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
+                "objectId": 9,
                 "kind": {
                   "line": {
                     "start": [
@@ -230,8 +230,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
                         }
                       }
                     },
-                    "start_object_id": 9,
-                    "end_object_id": 10,
+                    "start_object_id": 7,
+                    "end_object_id": 8,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": false
@@ -338,10 +338,10 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 506,
-                    "end": 511,
+                    "commentStart": 470,
+                    "end": 475,
                     "moduleId": 0,
-                    "start": 506,
+                    "start": 470,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },

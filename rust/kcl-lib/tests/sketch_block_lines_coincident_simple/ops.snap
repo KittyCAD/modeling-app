@@ -527,8 +527,13 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedX",
-      "unlabeledArg": null,
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {},
       "nodePath": {
         "steps": [
@@ -551,7 +556,7 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "fixedY",
+      "name": "fixed",
       "unlabeledArg": null,
       "labeledArgs": {},
       "nodePath": {

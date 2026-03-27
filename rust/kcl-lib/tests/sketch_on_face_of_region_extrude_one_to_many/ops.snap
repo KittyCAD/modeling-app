@@ -83,54 +83,6 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
     },
     {
       "type": "StdLibCall",
-      "name": "fixedX",
-      "unlabeledArg": null,
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fixedY",
-      "unlabeledArg": null,
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
       "name": "horizontal",
       "unlabeledArg": {
         "value": {
@@ -1074,7 +1026,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
     },
     {
       "type": "SketchSolve",
-      "sketchId": 18,
+      "sketchId": 16,
       "nodePath": {
         "steps": [
           {
