@@ -31,7 +31,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<Freedom> {
             segment: crate::front::Segment::Point(point),
         } = &obj.kind
         {
-            point_freedoms.push((obj.id.0, point.freedom));
+            point_freedoms.push((obj.id, point.freedom));
         }
     }
     // Sort by object ID so the freedom list is stable even if scene object IDs shift.
