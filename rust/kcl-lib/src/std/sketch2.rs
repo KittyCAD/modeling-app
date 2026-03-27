@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::f64::consts::TAU;
 
 use indexmap::IndexMap;
@@ -5,10 +6,12 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::Angle as KAngle;
 use kittycad_modeling_cmds::shared::PathSegment;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
 use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
 
 use crate::ExecState;
@@ -363,13 +366,13 @@ async fn inner_region(
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
 
-    let sketch_or_segment = match (point, segments) {
+    let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegionFromQueryPoint::builder()
@@ -380,7 +383,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            sketch
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (sketch, region_mapping)
         }
         (None, Some(segments)) => {
             if sketch.is_some() {
@@ -424,8 +436,8 @@ async fn inner_region(
             };
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            exec_state
-                .batch_modeling_cmd(
+            let response = exec_state
+                .send_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegion::builder()
@@ -439,7 +451,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            SketchOrSegment::Segment(seg0)
+            let region_mapping = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CreateRegion(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (SketchOrSegment::Segment(seg0), region_mapping)
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -512,6 +533,63 @@ async fn inner_region(
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
+
+    let mut region_mapping = region_mapping;
+    if args.ctx.no_engine_commands().await && region_mapping.is_empty() {
+        // In mock mode, we need to create fake segment IDs so that tags can be
+        // found.
+        let mut mock_mapping = HashMap::new();
+        for path in &sketch.paths {
+            mock_mapping.insert(exec_state.next_uuid(), path.get_id());
+        }
+        region_mapping = mock_mapping;
+    }
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
+    let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
+
+    // Early expansion: replace paths and update tags to use region segment IDs.
+    {
+        // Replace paths with region-segment paths.
+        let mut new_paths = Vec::new();
+        for path in &sketch.paths {
+            let original_id = path.get_id();
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                for region_id in region_ids {
+                    let mut new_path = path.clone();
+                    new_path.set_id(*region_id);
+                    new_paths.push(new_path);
+                }
+            }
+            // Paths not in region_mapping are dropped (not part of region).
+        }
+        sketch.paths = new_paths;
+
+        // Update tag engine infos to use region segment IDs.
+        for (_tag_name, tag) in &mut sketch.tags {
+            let Some(info) = tag.get_cur_info().cloned() else {
+                continue;
+            };
+            let original_id = info.id;
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
+                // First entry: update existing info's ID.
+                // Additional entries: clone and push with new IDs.
+                for (i, region_id) in region_ids.iter().enumerate() {
+                    if i == 0 {
+                        if let Some((_, existing)) = tag.info.last_mut() {
+                            existing.id = *region_id;
+                        }
+                    } else {
+                        let mut new_info = info.clone();
+                        new_info.id = *region_id;
+                        tag.info.push((epoch, new_info));
+                    }
+                }
+            }
+        }
+    }
+
     sketch.meta.push(args.source_range.into());
     // The engine always returns a closed Solid2d for a region.
     sketch.is_closed = ProfileClosed::Explicitly;
@@ -519,6 +597,53 @@ async fn inner_region(
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
+}
+
+/// The region mapping returned from the engine maps from region segment ID to
+/// the original sketch segment ID. Create the reverse mapping, i.e. original
+/// sketch segment ID to region segment IDs, where the entries are ordered by
+/// the given original segments.
+///
+/// This runs in O(r + s) where r is the number of segments in the region, and s
+/// is the number of segments in the original sketch. Technically, it's more
+/// complicated since we also sort region segments, but in practice, there
+/// should be very few of these.
+pub(crate) fn build_reverse_region_mapping(
+    region_mapping: &HashMap<Uuid, Uuid>,
+    original_segments: &[Uuid],
+) -> IndexMap<Uuid, Vec<Uuid>> {
+    // Build reverse map: original_seg_id -> Vec<region_seg_id>
+    let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::default();
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice. This function exists to work around that."
+    )]
+    for (region_id, original_id) in region_mapping {
+        reverse.entry(*original_id).or_default().push(*region_id);
+    }
+    // Sort the values so that they're deterministic. The engine uses
+    // UUIDv5s, so the relative order shouldn't change across runs.
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is safe since we're just sorting values."
+    )]
+    for values in reverse.values_mut() {
+        values.sort_unstable();
+    }
+    // Create the order. The region_mapping is unordered, so never use any order
+    // that comes out of it. Use the order of the original segments.
+    let mut ordered = IndexMap::with_capacity(original_segments.len());
+    for original_id in original_segments {
+        let mut region_ids = Vec::new();
+        reverse.entry(*original_id).and_modify(|entry_value| {
+            region_ids = std::mem::take(entry_value);
+        });
+        // Not every original segment will be in the region. Omit those.
+        if !region_ids.is_empty() {
+            ordered.insert(*original_id, region_ids);
+        }
+    }
+    ordered
 }
 
 fn region_from_point(

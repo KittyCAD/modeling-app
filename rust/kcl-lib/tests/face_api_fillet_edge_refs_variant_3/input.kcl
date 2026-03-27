@@ -1,4 +1,4 @@
-// Test variant 3: fillet top edge using disambiguator (endCap)
+// Test variant 3: fillet top edge using endFaces (endCap)
 // Shape has an edge split into two edges that share the same two faces.
 
 startX = 2

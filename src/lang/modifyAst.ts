@@ -1102,12 +1102,13 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error('Region point coordinates are invalid')
     }
 
+    const decimals = 4 // from looking at the values returned by engine, needs to be confirmed
     const regionExpr = createCallExpressionStdLibKw('region', null, [
       createLabeledArg(
         'point',
         createArrayExpression([
-          createLiteral(x, wasmInstance, unitSuffix),
-          createLiteral(y, wasmInstance, unitSuffix),
+          createLiteral(x, wasmInstance, unitSuffix, decimals),
+          createLiteral(y, wasmInstance, unitSuffix, decimals),
         ])
       ),
       createLabeledArg('sketch', createLocalName(sketchVarName)),

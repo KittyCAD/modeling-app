@@ -137,7 +137,7 @@ export fn vertical(@input: Segment) {}
 /// }
 ///
 /// r = region(point = [0.5mm, 0.5mm], sketch = triangle)
-/// //extrude(r, length = 5)
+/// extrude(r, length = 5)
 /// ```
 ///
 /// ```kcl
@@ -158,7 +158,7 @@ export fn vertical(@input: Segment) {}
 /// }
 ///
 /// r = region(point = [1mm, 1mm], sketch = trapezoid)
-/// //extrude(r, length = 3)
+/// extrude(r, length = 3)
 /// ```
 ///
 /// ```kcl
@@ -172,7 +172,7 @@ export fn vertical(@input: Segment) {}
 /// }
 ///
 /// r = region(point = s.arc1.center)
-/// //extrude(r, length = 2)
+/// extrude(r, length = 2)
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = false)
 export fn region(
