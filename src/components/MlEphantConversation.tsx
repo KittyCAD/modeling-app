@@ -15,7 +15,7 @@ import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 
 const noop = () => {}
 
@@ -287,7 +287,7 @@ export const MlEphantConversationInput = (
 
   const onCaptureScreenshot = () => {
     if (props.disabled) return
-    const dataUrl = takeScreenshotOfVideoStreamCanvas()
+    const dataUrl = takeViewportScreenshot()
     if (!dataUrl) return
     const res = fetch(dataUrl)
       .then((r) => r.blob())

@@ -78,7 +78,7 @@ export default class GizmoRenderer {
     sceneInfra: SceneInfra
   ) {
     this.canvas = canvas
-    this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+    this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true })
     this.renderer.setSize(82, 82) // CANVAS_SIZE + border
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.dprDetector = new DprDetector(this.onDprChange)
