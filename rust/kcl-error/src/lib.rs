@@ -8,7 +8,7 @@ mod source_range;
 /// An error which occurred during parsing, etc.
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
-pub struct CompilationError {
+pub struct CompilationIssue {
     #[serde(rename = "sourceRange")]
     pub source_range: SourceRange,
     pub message: String,
@@ -17,9 +17,9 @@ pub struct CompilationError {
     pub tag: Tag,
 }
 
-impl CompilationError {
-    pub fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
-        CompilationError {
+impl CompilationIssue {
+    pub fn err(source_range: SourceRange, message: impl ToString) -> CompilationIssue {
+        CompilationIssue {
             source_range,
             message: message.to_string(),
             suggestion: None,
@@ -28,8 +28,8 @@ impl CompilationError {
         }
     }
 
-    pub fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationError {
-        CompilationError {
+    pub fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationIssue {
+        CompilationIssue {
             source_range,
             message: message.to_string(),
             suggestion: None,
@@ -45,8 +45,8 @@ impl CompilationError {
         // Will use the error source range if none is supplied
         source_range: Option<SourceRange>,
         tag: Tag,
-    ) -> CompilationError {
-        CompilationError {
+    ) -> CompilationIssue {
+        CompilationIssue {
             suggestion: Some(Suggestion {
                 title: suggestion_title.to_string(),
                 insert: suggestion_insert.to_string(),

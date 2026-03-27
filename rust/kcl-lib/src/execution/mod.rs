@@ -62,7 +62,7 @@ pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 use uuid::Uuid;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
 use crate::SourceRange;
@@ -277,8 +277,7 @@ pub struct ExecOutcome {
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
-    /// TODO: Rename this since it's confusing that it contains warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
@@ -305,8 +304,8 @@ impl ExecOutcome {
     }
 
     /// Returns non-fatal errors. Warnings are not included.
-    pub fn actual_errors(&self) -> impl Iterator<Item = &CompilationError> {
-        self.errors.iter().filter(|error| error.is_err())
+    pub fn errors(&self) -> impl Iterator<Item = &CompilationIssue> {
+        self.issues.iter().filter(|error| error.is_err())
     }
 }
 
@@ -1952,7 +1951,7 @@ mod tests {
     async fn test_execute_warn() {
         let text = "@blah";
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
+        let errs = result.exec_state.issues();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -2025,7 +2024,7 @@ secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length
 "#;
 
         let result = parse_execute(code).await.unwrap();
-        assert!(result.exec_state.errors().is_empty());
+        assert!(result.exec_state.issues().is_empty());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2062,7 +2061,7 @@ myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
 "#;
 
         let result = parse_execute(code).await.unwrap();
-        assert!(result.exec_state.errors().is_empty());
+        assert!(result.exec_state.issues().is_empty());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2079,11 +2078,11 @@ sketch001 = sketch(on = YZ) {
         assert!(
             result
                 .exec_state
-                .errors()
+                .issues()
                 .iter()
-                .all(|error| error.severity != Severity::Error),
-            "unexpected execution errors: {:#?}",
-            result.exec_state.errors()
+                .all(|issue| issue.severity != Severity::Error),
+            "unexpected execution issues: {:#?}",
+            result.exec_state.issues()
         );
     }
 
@@ -2374,7 +2373,7 @@ answer = returnX()"#;
     async fn test_override_prelude() {
         let text = "PI = 3.0";
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
+        let errs = result.exec_state.issues();
         assert!(errs.is_empty());
     }
 
@@ -2391,7 +2390,7 @@ foo([0, 1])
 type Other = MyTy | Helix
 "#;
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
+        let errs = result.exec_state.issues();
         assert!(errs.is_empty());
     }
 
@@ -3152,7 +3151,7 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert_eq!(errors.len(), 1);
         assert_eq!(errors[0].severity, Severity::Error);
         let msg = &errors[0].message;
@@ -3164,7 +3163,7 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert!(errors.is_empty());
 
         let code = r#"@settings(experimentalFeatures = warn)
@@ -3173,7 +3172,7 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert_eq!(errors.len(), 1);
         assert_eq!(errors[0].severity, Severity::Warning);
         let msg = &errors[0].message;
@@ -3185,7 +3184,7 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert_eq!(errors.len(), 1);
         assert_eq!(errors[0].severity, Severity::Error);
         let msg = &errors[0].message;
@@ -3209,7 +3208,7 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5, amount = 2)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert_eq!(errors.len(), 1);
         assert_eq!(errors[0].severity, Severity::Error);
         let msg = &errors[0].message;
@@ -3224,7 +3223,7 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
+        let errors = result.exec_state.issues();
         assert_eq!(errors.len(), 0);
     }
 
@@ -3246,12 +3245,12 @@ sketch(on = XY) {
 
         for code in [code_left, code_right] {
             let result = parse_execute(code).await.unwrap();
-            let errors = result.exec_state.errors();
-            let Some(error) = errors
+            let issues = result.exec_state.issues();
+            let Some(error) = issues
                 .iter()
-                .find(|err| err.message.contains("scalar fixed constraint is experimental"))
+                .find(|issue| issue.message.contains("scalar fixed constraint is experimental"))
             else {
-                panic!("found {errors:#?}");
+                panic!("found {issues:#?}");
             };
             assert_eq!(error.severity, Severity::Warning);
         }

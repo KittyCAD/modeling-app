@@ -8,7 +8,7 @@ import {
 } from '@src/editor/plugins/artifacts'
 import type { KCLError } from '@src/lang/errors'
 import {
-  compilationErrorsToDiagnostics,
+  compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
@@ -1297,8 +1297,8 @@ export class KclManager extends File {
     this.errors = []
     this.logs = []
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -1403,7 +1403,7 @@ export class KclManager extends File {
     this.addDiagnostics(
       isInterrupted
         ? []
-        : compilationErrorsToDiagnostics(execState.errors, code)
+        : compilationIssuesToDiagnostics(execState.issues, code)
     )
     this.execState = execState
     if (!errors.length) {

@@ -29,7 +29,7 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
-import { compilationErrorsToDiagnostics } from '@src/lang/errors'
+import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback } from '@src/lib/utils'
@@ -990,7 +990,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
-  const sketchSolveDiagnostics = compilationErrorsToDiagnostics(
+  const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
     getSketchSolveExecOutcomeErrors(event.data.sceneGraphDelta),
     event.data.sourceDelta.text
   )

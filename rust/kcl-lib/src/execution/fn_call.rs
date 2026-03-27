@@ -1,7 +1,7 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use crate::CompilationError;
+use crate::CompilationIssue;
 use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -266,7 +266,7 @@ impl FunctionSource {
     ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
-                CompilationError::err(
+                CompilationIssue::err(
                     callsite,
                     format!(
                         "{} is deprecated, see the docs for a recommended replacement",
@@ -702,7 +702,7 @@ fn type_check_params_kw(
                 result.unlabeled = vec![(None, pipe)];
             } else if let Some(arg) = args.labeled.swap_remove(name) {
                 // Mistakenly labelled
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call. You might try removing the `{name} = `",
@@ -748,7 +748,7 @@ fn type_check_params_kw(
             // Try to un-spread args into an array
             if let Some(Type::Array { len, .. }) = ty {
                 if len.satisfied(args.unlabeled.len(), false).is_none() {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         args.source_range,
                         format!(
                             "{} expects an array input argument with {} elements",
@@ -799,7 +799,7 @@ fn type_check_params_kw(
         };
 
         let mut errors = args.unlabeled.iter().map(|(_, arg)| {
-            CompilationError::err(
+            CompilationIssue::err(
                 arg.source_range,
                 format!("This argument needs a label, but it doesn't have one{suggestion}"),
             )
@@ -852,7 +852,7 @@ fn type_check_params_kw(
                 }
             }
             None => {
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "`{label}` is not an argument of {}",

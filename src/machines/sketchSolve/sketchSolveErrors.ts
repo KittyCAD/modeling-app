@@ -1,4 +1,4 @@
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import toast from 'react-hot-toast'
 
@@ -69,8 +69,8 @@ export function toastSketchSolveError(
 
 export function getSketchSolveExecOutcomeErrors(
   sceneGraphDelta?: SceneGraphDelta
-): CompilationError[] {
-  return sceneGraphDelta?.exec_outcome?.errors ?? []
+): CompilationIssue[] {
+  return sceneGraphDelta?.exec_outcome?.issues ?? []
 }
 
 export function getSketchSolveExecOutcomeErrorMessage(

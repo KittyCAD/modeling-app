@@ -135,7 +135,7 @@ async fn do_execute_and_snapshot(
         .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
-    for e in exec_state.errors() {
+    for e in exec_state.issues() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
                 KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
@@ -207,7 +207,7 @@ pub async fn execute_and_export_step(
         .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
-    for e in exec_state.errors() {
+    for e in exec_state.issues() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
                 KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
