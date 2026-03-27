@@ -11,7 +11,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
-import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoin } from '@src/lang/modifyAst/surfaces'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -69,6 +69,56 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
         ast,
         artifactGraph,
         surface,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addJoin', () => {
+    it('should add a simple join call on body selections', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [-0.2, 0], radius = 0.1)
+profile002 = circle(sketch001, center = [0.2, 0], radius = 0.1)
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)
+extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
+      const expectedNewLine = `surface001 = join([extrude001, extrude002])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const pathArtifacts = [...artifactGraph.values()].filter(
+        (n) => n.type === 'path'
+      )
+      const [firstPathArtifact, secondPathArtifact] = pathArtifacts
+      if (!firstPathArtifact || !secondPathArtifact) {
+        throw new Error('Expected two path artifacts to build join selection')
+      }
+
+      const selection: Selections = {
+        graphSelections: [
+          {
+            artifact: firstPathArtifact,
+            codeRef: firstPathArtifact.codeRef,
+          },
+          {
+            artifact: secondPathArtifact,
+            codeRef: secondPathArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+
+      const result = addJoin({
+        ast,
+        artifactGraph,
+        selection,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result

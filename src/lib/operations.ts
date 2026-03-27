@@ -2114,6 +2114,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Holes',
     icon: 'hole',
   },
+  join: {
+    label: 'Join',
+    icon: 'booleanUnion', // TODO: check if we need an icon here
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',

@@ -487,12 +487,22 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'join',
-                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
-                onClick: () => {},
-                status: 'unavailable',
+                onClick: () =>
+                  commands.send({
+                    type: 'Find and select command',
+                    data: { name: 'Join', groupId: 'modeling' },
+                  }),
+                status: 'available',
                 title: 'Join',
                 description: 'Join surfaces together',
-                links: [],
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-join' // TODO: fix this
+                    ),
+                  },
+                ],
               },
               {
                 id: 'delete-face',
