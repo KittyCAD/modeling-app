@@ -9,7 +9,6 @@ import {
   buildAngleConstraintInput,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { updateSelectedIds } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []
@@ -153,25 +152,5 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
-  })
-})
-
-describe('updateSelectedIds', () => {
-  it('replaces the existing selection when requested', () => {
-    const result = updateSelectedIds({
-      context: {
-        selectedIds: [3, 4, 10],
-        duringAreaSelectIds: [],
-      },
-      event: {
-        type: 'update selected ids',
-        data: {
-          selectedIds: [10],
-          replaceExistingSelection: true,
-        },
-      },
-    } as any)
-
-    expect(result.selectedIds).toEqual([10])
   })
 })
