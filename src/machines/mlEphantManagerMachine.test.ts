@@ -105,10 +105,11 @@ describe('mlEphantManagerMachine', () => {
       expect(ws.sentPayloads).toStrictEqual([
         JSON.stringify({
           type: 'system',
-          command: 'continue',
+          command: 'answer_now',
         }),
         JSON.stringify({
-          type: 'project_context',
+          type: 'user',
+          content: '',
           project_name: 'zoo-project',
           current_files: {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
