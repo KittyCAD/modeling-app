@@ -20,14 +20,7 @@ use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis3dOrEdgeReference;
-
-/// True if the value is an object with a `sideFaces` (or `side_faces`) key, i.e. an edge reference payload.
-fn is_edge_ref_object(v: &KclValue) -> bool {
-    match v {
-        KclValue::Object { value, .. } => value.get("sideFaces").or_else(|| value.get("side_faces")).is_some(),
-        _ => false,
-    }
-}
+use crate::std::axis_or_reference::is_edge_ref_object;
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

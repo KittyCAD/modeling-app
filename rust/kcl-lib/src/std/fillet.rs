@@ -70,8 +70,6 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
     Ok(())
 }
 
-// EdgeRef is parsed directly from KclValue, no need for a separate struct
-
 /// Convert tags (edge tag refs) to engine EdgeReference list by resolving each to edge ID then face IDs.
 /// Used when both `tags` and `edges` are provided to fillet/chamfer.
 pub(super) async fn tags_to_engine_edge_references(
@@ -100,36 +98,33 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags_result = args.kw_arg_edge_array_and_source("tags");
 
-    let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());
-
-    if has_edge_refs && has_tags {
-        // Both provided: merge tags and edges into one list and use the edges engine path.
-        let edge_refs = edge_refs.unwrap();
-        let tags_with_source = tags_result.unwrap();
-        validate_unique(&tags_with_source)?;
-        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-        let tags_as_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
-        let edge_refs_parsed = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
-        let mut all_refs = tags_as_refs;
-        all_refs.extend(edge_refs_parsed);
-        let value = inner_fillet_with_engine_refs(solid, radius, all_refs, tolerance, tag, exec_state, args).await?;
-        Ok(KclValue::Solid { value })
-    } else if let Some(edge_refs) = edge_refs {
-        // Only edges
-        let value = inner_fillet_with_edge_refs(solid, radius, edge_refs, tolerance, tag, exec_state, args).await?;
-        Ok(KclValue::Solid { value })
-    } else if let Ok(tags_with_source) = tags_result {
-        // Only tags
-        validate_unique(&tags_with_source)?;
-        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-        let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
-        Ok(KclValue::Solid { value })
-    } else {
-        Err(KclError::new_semantic(KclErrorDetails {
+    match (edge_refs, tags_result) {
+        (Some(edge_refs), Ok(tags_with_source)) => {
+            validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let tags_as_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
+            let edge_refs_parsed = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+            let mut all_refs = tags_as_refs;
+            all_refs.extend(edge_refs_parsed);
+            let value =
+                inner_fillet_with_engine_refs(solid, radius, all_refs, tolerance, tag, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (Some(edge_refs), Err(_)) => {
+            let value = inner_fillet_with_edge_refs(solid, radius, edge_refs, tolerance, tag, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Ok(tags_with_source)) => {
+            validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You must provide either 'tags' or 'edges' to fillet edges".to_owned(),
             backtrace: Default::default(),
-        }))
+        })),
     }
 }
 
@@ -265,14 +260,14 @@ async fn inner_fillet_with_edge_refs(
     if edge_refs.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
-            message: "You must provide at least one edgeRef".to_owned(),
+            message: "You must provide at least one edge".to_owned(),
             backtrace: Default::default(),
         }));
     }
 
     if tag.is_some() && edge_refs.len() > 1 {
         return Err(KclError::new_type(KclErrorDetails {
-            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edgeRef.".to_string(),
+            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edge.".to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));
@@ -294,14 +289,14 @@ async fn inner_fillet_with_engine_refs(
     if edge_references.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
-            message: "You must provide at least one edgeRef".to_owned(),
+            message: "You must provide at least one edge".to_owned(),
             backtrace: Default::default(),
         }));
     }
 
     if tag.is_some() && edge_references.len() > 1 {
         return Err(KclError::new_type(KclErrorDetails {
-            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edgeRef.".to_string(),
+            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edge.".to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));
@@ -357,7 +352,7 @@ pub(super) async fn parse_edge_refs_to_references(
 ) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
     if edge_refs.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
-            message: "You must provide at least one edgeRef".to_owned(),
+            message: "You must provide at least one edge".to_owned(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));
@@ -381,7 +376,7 @@ pub(super) async fn parse_edge_refs_to_references(
             .or_else(|| edge_ref_obj.get("side_faces"))
             .ok_or_else(|| {
                 KclError::new_type(KclErrorDetails {
-                    message: "edgeRef must have 'sideFaces' field".to_string(),
+                    message: "edges must have 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 })
@@ -391,7 +386,7 @@ pub(super) async fn parse_edge_refs_to_references(
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'sideFaces' must be an array".to_string(),
+                    message: "edges 'sideFaces' must be an array".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));
@@ -400,7 +395,7 @@ pub(super) async fn parse_edge_refs_to_references(
 
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
-                message: "edgeRef 'sideFaces' must have at least one face".to_string(),
+                message: "edges 'sideFaces' must have at least one face".to_string(),
                 source_ranges: vec![args.source_range],
                 backtrace: Default::default(),
             }));
@@ -417,7 +412,7 @@ pub(super) async fn parse_edge_refs_to_references(
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
                     return Err(KclError::new_type(KclErrorDetails {
-                        message: "edgeRef 'endFaces' must be an array".to_string(),
+                        message: "edges 'endFaces' must be an array".to_string(),
                         source_ranges: vec![args.source_range],
                         backtrace: Default::default(),
                     }));
@@ -432,7 +427,7 @@ pub(super) async fn parse_edge_refs_to_references(
             Some(KclValue::Number { value, .. }) => Some(*value as u32),
             Some(_) => {
                 return Err(KclError::new_type(KclErrorDetails {
-                    message: "edgeRef 'index' must be a number".to_string(),
+                    message: "edge 'index' must be a number".to_string(),
                     source_ranges: vec![args.source_range],
                     backtrace: Default::default(),
                 }));

@@ -24,17 +24,10 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::axis_or_reference::is_edge_ref_object;
 use crate::std::extrude::do_post_extrude;
 
 extern crate nalgebra_glm as glm;
-
-/// True if the value is an object with a `sideFaces` (or `side_faces`) key, i.e. an edge reference payload.
-fn is_edge_ref_object(v: &KclValue) -> bool {
-    match v {
-        KclValue::Object { value, .. } => value.get("sideFaces").or_else(|| value.get("side_faces")).is_some(),
-        _ => false,
-    }
-}
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

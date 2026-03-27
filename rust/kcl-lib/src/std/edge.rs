@@ -133,9 +133,7 @@ async fn inner_get_opposite_edge(
         )));
     };
 
-    let edge_id = opposite_edge.edge;
-
-    Ok(edge_id)
+    Ok(opposite_edge.edge)
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -186,14 +184,12 @@ async fn inner_get_next_adjacent_edge(
         )));
     };
 
-    let edge_id = adjacent_edge.edge.ok_or_else(|| {
+    adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found next adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })?;
-
-    Ok(edge_id)
+    })
 }
 
 /// Get the previous adjacent edge to the edge given.
@@ -243,14 +239,12 @@ async fn inner_get_previous_adjacent_edge(
         )));
     };
 
-    let edge_id = adjacent_edge.edge.ok_or_else(|| {
+    adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found previous adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })?;
-
-    Ok(edge_id)
+    })
 }
 
 /// Get the shared edge between two faces.
@@ -347,7 +341,7 @@ async fn inner_get_common_edge(
         )));
     };
 
-    let edge_id = common_edge.edge.ok_or_else(|| {
+    common_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "No common edge was found between `{}` and `{}`",
@@ -355,9 +349,7 @@ async fn inner_get_common_edge(
             ),
             vec![args.source_range],
         ))
-    })?;
-
-    Ok(edge_id)
+    })
 }
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

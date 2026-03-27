@@ -39,59 +39,49 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
-    let tags_result = args.kw_arg_edge_array_and_source_any_key(&["tags", "Tags"]);
+    let tags_result = args.kw_arg_edge_array_and_source("tags");
 
-    let (has_edge_refs, has_tags) = (edge_refs.is_some(), tags_result.is_ok());
-
-    if has_edge_refs && has_tags {
-        // Both provided: merge tags and edges into one list and use the edges engine path.
-        let edge_refs = edge_refs.unwrap();
-        let tags_with_source = tags_result.unwrap();
-        super::fillet::validate_unique(&tags_with_source)?;
-        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-        let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
-        let edge_refs_parsed =
-            super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
-        let mut all_refs = tags_as_refs;
-        all_refs.extend(edge_refs_parsed);
-        let value =
-            inner_chamfer_with_engine_refs(solid, length, all_refs, second_length, angle, tag, exec_state, args)
-                .await?;
-        Ok(KclValue::Solid { value })
-    } else if let Some(edge_refs) = edge_refs {
-        let value = inner_chamfer_with_edge_refs(
-            solid,
-            length,
-            edge_refs,
-            second_length,
-            angle,
-            None,
-            tag,
-            exec_state,
-            args,
-        )
-        .await?;
-        Ok(KclValue::Solid { value })
-    } else if let Ok(tags_with_source) = tags_result {
-        super::fillet::validate_unique(&tags_with_source)?;
-        let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-        let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
-        Ok(KclValue::Solid { value })
-    } else {
-        let fallback = args.kw_arg_edge_array_and_source_first_other(&["length", "secondLength", "angle", "tag"]);
-        match fallback {
-            Ok(tags) => {
-                super::fillet::validate_unique(&tags)?;
-                let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-                let value =
-                    inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
-                Ok(KclValue::Solid { value })
-            }
-            Err(_) => Err(KclError::new_semantic(KclErrorDetails::new(
-                "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
-                vec![args.source_range],
-            ))),
+    match (edge_refs, tags_result) {
+        (Some(edge_refs), Ok(tags_with_source)) => {
+            // Both provided: merge tags and edges into one list and use the edges engine path.
+            super::fillet::validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let tags_as_refs =
+                super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
+            let edge_refs_parsed =
+                super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+            let mut all_refs = tags_as_refs;
+            all_refs.extend(edge_refs_parsed);
+            let value =
+                inner_chamfer_with_engine_refs(solid, length, all_refs, second_length, angle, tag, exec_state, args)
+                    .await?;
+            Ok(KclValue::Solid { value })
         }
+        (Some(edge_refs), Err(_)) => {
+            let value = inner_chamfer_with_edge_refs(
+                solid,
+                length,
+                edge_refs,
+                second_length,
+                angle,
+                None,
+                tag,
+                exec_state,
+                args,
+            )
+            .await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Ok(tags_with_source)) => {
+            super::fillet::validate_unique(&tags_with_source)?;
+            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let value = inner_chamfer(solid, length, tags, second_length, angle, None, tag, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
+            "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
+            vec![args.source_range],
+        ))),
     }
 }
 
