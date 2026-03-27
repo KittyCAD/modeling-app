@@ -3540,7 +3540,7 @@ fn sketch_face_of_scene_object_ast_expr(
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
-                        "Could not resolve extrude reference for selected wall: artifact_id={:?}",
+                        "Could not resolve sweep reference for selected wall: artifact_id={:?}",
                         on_object.artifact_id
                     ),
                 });
@@ -3549,7 +3549,7 @@ fn sketch_face_of_scene_object_ast_expr(
             let solid_expr = ast_name_expr(solid_name.clone());
             let segment_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[1] }, "line", None)?;
 
-            let face_expr = if let Some(region_name) = region_name_from_extrude_variable(ast, &solid_name) {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(Error {
                         msg: format!(
@@ -3582,7 +3582,7 @@ fn sketch_face_of_scene_object_ast_expr(
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
-                        "Could not resolve extrude reference for selected cap: artifact_id={:?}",
+                        "Could not resolve sweep reference for selected cap: artifact_id={:?}",
                         on_object.artifact_id
                     ),
                 });
@@ -3714,17 +3714,20 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
 }
 
 #[cfg(feature = "artifact-graph")]
-fn region_name_from_extrude_variable(ast: &ast::Node<ast::Program>, extrude_variable_name: &str) -> Option<String> {
-    let ast::Definition::Variable(extrude_decl) = ast.get_variable(extrude_variable_name)? else {
+fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
+    let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
     };
-    let ast::Expr::CallExpressionKw(extrude_call) = &extrude_decl.init else {
+    let ast::Expr::CallExpressionKw(sweep_call) = &sweep_decl.init else {
         return None;
     };
-    if extrude_call.callee.name.name != "extrude" {
+    if !matches!(
+        sweep_call.callee.name.name.as_str(),
+        "extrude" | "revolve" | "sweep" | "loft"
+    ) {
         return None;
     }
-    let ast::Expr::Name(region_name_expr) = extrude_call.unlabeled.as_ref()? else {
+    let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
         return None;
     };
     let candidate = region_name_expr.name.name.clone();
@@ -4563,6 +4566,38 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
+        let source = "\
+region001 = region(point = [0.1, 0.1], sketch = s)
+extrude001 = extrude(region001, length = 5)
+revolve001 = revolve(region001, axis = Y)
+sweep001 = sweep(region001, path = path001)
+loft001 = loft(region001)
+not_sweep001 = shell(extrude001, faces = [], thickness = 1)
+";
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "extrude001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "revolve001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "sweep001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "loft001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(region_name_from_sweep_variable(&program.ast, "not_sweep001"), None);
     }
 
     #[track_caller]
