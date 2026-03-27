@@ -23,13 +23,48 @@ sketch2::circle(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | A boolean value. | No |
+| `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point on the circle that sets where the circle starts. | Yes |
+| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle. | Yes |
+| `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether this segment is construction geometry rather than part of the modeled profile. | No |
 
 ### Returns
 
 [`Segment`](/docs/kcl-std/types/std-types-Segment) - A segment of a path in a sketch. It may be a line, arc, or other segment type.
 
+
+### Examples
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
+  edge1 = line(start = [var -3mm, var -2mm], end = [var 3mm, var -2mm])
+  edge2 = line(start = [var 3mm, var -2mm], end = [var 3mm, var 2mm])
+  edge3 = line(start = [var 3mm, var 2mm], end = [var -3mm, var 2mm])
+  edge4 = line(start = [var -3mm, var 2mm], end = [var -3mm, var -2mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sketch2::circle function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-circle0_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-circle0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 
