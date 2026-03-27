@@ -289,7 +289,7 @@ export const MlEphantConversationInput = (
     if (props.disabled) return
     const dataUrl = takeViewportScreenshot()
     if (!dataUrl) return
-    const res = fetch(dataUrl)
+    fetch(dataUrl)
       .then((r) => r.blob())
       .then((blob) => {
         const file = new File([blob], 'viewport-screenshot.png', {
