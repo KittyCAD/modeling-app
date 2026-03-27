@@ -106,7 +106,7 @@ export function addFillet({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -201,7 +201,7 @@ export function addChamfer({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -300,7 +300,7 @@ export function addBlend({
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast so we can freely edit it
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
 
   // 2. Validate the edge selection
   const selectedEdges = getEdgeSelections(edges)
@@ -856,7 +856,7 @@ export function createEdgeRefObjectExpression(
     }
   }
 
-  const disambiguatorTags: string[] = []
+  const endFaceTags: string[] = []
   if (payload.end_faces?.length) {
     for (const faceId of payload.end_faces) {
       const faceArtifact = artifactGraph.get(faceId)
@@ -875,7 +875,7 @@ export function createEdgeRefObjectExpression(
       )
       if (err(tagResult)) continue
 
-      disambiguatorTags.push(tagResult.tags[0])
+      endFaceTags.push(tagResult.tags[0])
       currentAst = tagResult.modifiedAst
     }
   }
@@ -891,13 +891,13 @@ export function createEdgeRefObjectExpression(
     sideFaces: createArrayExpression(sideFacesExprs),
   }
 
-  if (disambiguatorTags.length > 0) {
+  if (endFaceTags.length > 0) {
     properties.endFaces = createArrayExpression(
       tagsBaseExpr != null
-        ? disambiguatorTags.map((tag) =>
+        ? endFaceTags.map((tag) =>
             createMemberExpr(createMemberExpr(tagsBaseExpr, 'tags'), tag)
           )
-        : disambiguatorTags.map((tag) => createLocalName(tag))
+        : endFaceTags.map((tag) => createLocalName(tag))
     )
   }
 
@@ -1019,6 +1019,87 @@ function sourceRangeMatch(
   return false
 }
 
+interface ExprWalkOptions {
+  resolveWrappedCalls?: boolean
+  includeCallUnlabeled?: boolean
+}
+
+type ExprVisitor = (
+  expr: Expr,
+  pathPrefix: PathToNode | undefined,
+  walk: (expr: Expr, pathPrefix?: PathToNode) => void
+) => void
+
+function visitExpr(
+  expr: Expr,
+  visitor: ExprVisitor,
+  options: ExprWalkOptions,
+  pathPrefix?: PathToNode
+): void {
+  const walk = (nextExpr: Expr, nextPathPrefix = pathPrefix) =>
+    walkExpr(nextExpr, visitor, options, nextPathPrefix)
+  visitor(expr, pathPrefix, walk)
+}
+
+function walkExpr(
+  expr: Expr,
+  visitor: ExprVisitor,
+  options: ExprWalkOptions,
+  pathPrefix?: PathToNode
+): void {
+  if (!expr || typeof expr !== 'object') return
+
+  if (expr.type === 'PipeExpression') {
+    for (const bodyExpr of (expr as { body?: Expr[] }).body ?? []) {
+      visitExpr(bodyExpr, visitor, options, pathPrefix)
+    }
+    return
+  }
+
+  const callExpr = options.resolveWrappedCalls
+    ? getCallFromExpr(expr)
+    : expr.type === 'CallExpressionKw'
+      ? (expr as Node<CallExpressionKw>)
+      : null
+  if (callExpr) {
+    if (options.includeCallUnlabeled && callExpr.unlabeled) {
+      visitExpr(callExpr.unlabeled, visitor, options, pathPrefix)
+    }
+    for (const arg of callExpr.arguments ?? []) {
+      visitExpr(arg.arg, visitor, options, pathPrefix)
+    }
+    return
+  }
+
+  if (expr.type === 'BinaryExpression') {
+    if (expr.left) walkExpr(expr.left, visitor, options, pathPrefix)
+    if (expr.right) walkExpr(expr.right, visitor, options, pathPrefix)
+    return
+  }
+  if (expr.type === 'ArrayExpression') {
+    for (const element of expr.elements ?? []) {
+      walkExpr(element, visitor, options, pathPrefix)
+    }
+    return
+  }
+  if (expr.type === 'ObjectExpression') {
+    for (const property of expr.properties ?? []) {
+      walkExpr(property.value, visitor, options, pathPrefix)
+    }
+    return
+  }
+  if (expr.type === 'LabelledExpression') {
+    visitExpr(expr.expr, visitor, options, pathPrefix)
+  } else if (expr.type === 'AscribedExpression') {
+    visitExpr(expr.expr, visitor, options, pathPrefix)
+  } else if (expr.type === 'UnaryExpression') {
+    walkExpr(expr.argument, visitor, options, pathPrefix)
+  } else if (expr.type === 'MemberExpression') {
+    walkExpr(expr.object, visitor, options, pathPrefix)
+    walkExpr(expr.property, visitor, options, pathPrefix)
+  }
+}
+
 interface UnifiedCallToFix {
   range: [number, number, number]
   orderedFaceIds: [string, string][]
@@ -1033,15 +1114,15 @@ function findFilletChamferCallsToFixUnified(
 ): UnifiedCallToFix[] {
   const results: UnifiedCallToFix[] = []
 
-  function visitExpr(expr: Expr): void {
+  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
     if (expr.type !== 'CallExpressionKw') {
-      walkExpr(expr)
+      walk(expr)
       return
     }
     const call = expr as Node<CallExpressionKw>
     const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
     if (!calleeName || !isFilletOrChamfer(calleeName)) {
-      walkExpr(expr)
+      walk(expr)
       return
     }
 
@@ -1102,52 +1183,25 @@ function findFilletChamferCallsToFixUnified(
       })
     }
 
-    walkExpr(expr)
-  }
-
-  function walkExpr(expr: Expr): void {
-    if (expr.type === 'PipeExpression') {
-      const body = (expr as { body?: Expr[] }).body
-      if (isArray(body)) body.forEach(visitExpr)
-      return
-    }
-    if (expr.type === 'CallExpressionKw') {
-      if (expr.unlabeled) visitExpr(expr.unlabeled)
-      for (const arg of expr.arguments ?? []) visitExpr(arg.arg)
-      return
-    }
-    if (expr.type === 'BinaryExpression') {
-      if (expr.left) walkExpr(expr.left)
-      if (expr.right) walkExpr(expr.right)
-      return
-    }
-    if (expr.type === 'ArrayExpression') {
-      for (const element of expr.elements ?? []) walkExpr(element)
-      return
-    }
-    if (expr.type === 'ObjectExpression') {
-      for (const property of expr.properties ?? []) walkExpr(property.value)
-      return
-    }
-    if (expr.type === 'LabelledExpression') visitExpr(expr.expr)
-    else if (expr.type === 'AscribedExpression') visitExpr(expr.expr)
-    else if (expr.type === 'UnaryExpression') walkExpr(expr.argument)
-    else if (expr.type === 'MemberExpression') {
-      walkExpr(expr.object)
-      walkExpr(expr.property)
-    }
+    walk(expr)
   }
 
   for (const item of program.body ?? []) {
     if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init)
+      visitExpr(item.declaration.init, processExpr, {
+        includeCallUnlabeled: true,
+      })
     } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression)
+      visitExpr(item.expression, processExpr, {
+        includeCallUnlabeled: true,
+      })
     } else if (
       item.type === 'ReturnStatement' &&
       (item as { argument?: Expr }).argument
     ) {
-      visitExpr((item as { argument: Expr }).argument)
+      visitExpr((item as { argument: Expr }).argument, processExpr, {
+        includeCallUnlabeled: true,
+      })
     }
   }
 
@@ -1163,20 +1217,20 @@ function findFilletChamferCallsToFix(
     orderedMetas: EdgeRefactorMeta[]
   }[] = []
 
-  function visitExpr(expr: Expr): void {
+  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
     if (expr.type !== 'CallExpressionKw') {
-      walkExpr(expr)
+      walk(expr)
       return
     }
     const call = expr as Node<CallExpressionKw>
     const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
     if (!calleeName || !isFilletOrChamfer(calleeName)) {
-      walkExpr(expr)
+      walk(expr)
       return
     }
     const elements = getTagsElementsFromCall(call)
     if (!elements?.length) {
-      walkExpr(expr)
+      walk(expr)
       return
     }
 
@@ -1200,7 +1254,7 @@ function findFilletChamferCallsToFix(
       })
     }
     if (deprecatedRanges.length === 0) {
-      walkExpr(expr)
+      walk(expr)
       return
     }
 
@@ -1210,7 +1264,7 @@ function findFilletChamferCallsToFix(
         sourceRangeMatch(m, range.start, range.end, range.moduleId)
       )
       if (!meta) {
-        walkExpr(expr)
+        walk(expr)
         return
       }
       orderedMetas.push(meta)
@@ -1221,52 +1275,25 @@ function findFilletChamferCallsToFix(
       range: [call.start, call.end, moduleId],
       orderedMetas,
     })
-    walkExpr(expr)
-  }
-
-  function walkExpr(expr: Expr): void {
-    if (expr.type === 'PipeExpression') {
-      const body = (expr as { body?: Expr[] }).body
-      if (isArray(body)) body.forEach(visitExpr)
-      return
-    }
-    if (expr.type === 'CallExpressionKw') {
-      if (expr.unlabeled) visitExpr(expr.unlabeled)
-      for (const arg of expr.arguments ?? []) visitExpr(arg.arg)
-      return
-    }
-    if (expr.type === 'BinaryExpression') {
-      if (expr.left) walkExpr(expr.left)
-      if (expr.right) walkExpr(expr.right)
-      return
-    }
-    if (expr.type === 'ArrayExpression') {
-      for (const element of expr.elements ?? []) walkExpr(element)
-      return
-    }
-    if (expr.type === 'ObjectExpression') {
-      for (const property of expr.properties ?? []) walkExpr(property.value)
-      return
-    }
-    if (expr.type === 'LabelledExpression') visitExpr(expr.expr)
-    else if (expr.type === 'AscribedExpression') visitExpr(expr.expr)
-    else if (expr.type === 'UnaryExpression') walkExpr(expr.argument)
-    else if (expr.type === 'MemberExpression') {
-      walkExpr(expr.object)
-      walkExpr(expr.property)
-    }
+    walk(expr)
   }
 
   for (const item of program.body ?? []) {
     if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init)
+      visitExpr(item.declaration.init, processExpr, {
+        includeCallUnlabeled: true,
+      })
     } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression)
+      visitExpr(item.expression, processExpr, {
+        includeCallUnlabeled: true,
+      })
     } else if (
       item.type === 'ReturnStatement' &&
       (item as { argument?: Expr }).argument
     ) {
-      visitExpr((item as { argument: Expr }).argument)
+      visitExpr((item as { argument: Expr }).argument, processExpr, {
+        includeCallUnlabeled: true,
+      })
     }
   }
 
@@ -1274,7 +1301,7 @@ function findFilletChamferCallsToFix(
 }
 
 export function refactorFilletChamferTagsToEdgeRefs(
-  ast: Program,
+  ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
@@ -1283,7 +1310,7 @@ export function refactorFilletChamferTagsToEdgeRefs(
     return new Error('No edge refactor metadata')
   }
 
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
   const toFix = findFilletChamferCallsToFix(ast, edgeRefactorMetadata)
   for (const { range, orderedMetas } of toFix) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
@@ -1322,7 +1349,7 @@ export function refactorFilletChamferTagsToEdgeRefs(
 }
 
 export function refactorFilletChamferTagsToEdgeRefsUnified(
-  ast: Program,
+  ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
   directTagFilletMetadata: DirectTagFilletMeta[],
   artifactGraph: ArtifactGraph,
@@ -1337,7 +1364,7 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
     return new Error('No fillet/chamfer calls with tags or edges to convert')
   }
 
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
   for (const {
     range,
     orderedFaceIds,
@@ -1962,7 +1989,7 @@ function callSourceRangeToTuple(
 }
 
 export function refactorDirectTagFilletToEdgeRefs(
-  ast: Program,
+  ast: Node<Program>,
   directTagFilletMetadata: DirectTagFilletMeta[],
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
@@ -1971,7 +1998,7 @@ export function refactorDirectTagFilletToEdgeRefs(
     return new Error('No direct tag fillet metadata')
   }
 
-  let modifiedAst = structuredClone(ast as Node<Program>)
+  let modifiedAst = structuredClone(ast)
   for (const meta of directTagFilletMetadata) {
     if (!meta.tags?.length) continue
     const path = getNodePathFromSourceRange(
