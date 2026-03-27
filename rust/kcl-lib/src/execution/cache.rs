@@ -122,9 +122,7 @@ impl GlobalState {
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             #[cfg(feature = "artifact-graph")]
-            edge_refactor_metadata: Vec::new(),
-            #[cfg(feature = "artifact-graph")]
-            direct_tag_fillet_metadata: Vec::new(),
+            refactor_metadata: self.exec_state.root_module_artifacts.refactor_metadata.clone(),
             errors: self.exec_state.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }

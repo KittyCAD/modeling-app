@@ -111,6 +111,8 @@ pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::Point2d;
+#[cfg(feature = "artifact-graph")]
+pub use execution::RefactorMetadata;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
 pub use execution::pre_execute_transpile;
