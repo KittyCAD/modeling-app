@@ -167,6 +167,8 @@ pub struct Path {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// If this artifact is a segment in a region, the segment in the original
+    /// sketch that this was derived from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original_seg_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
