@@ -699,9 +699,7 @@ const OperationItem = ({
     item,
     commandBarActor,
     selectOperation,
-    systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager,
-    systemDeps.kclManager.code,
     systemDeps.rustContext,
   ])
 
