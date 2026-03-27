@@ -3527,7 +3527,7 @@ fn sketch_face_of_scene_object_ast_expr(
 
     match &on_object.kind {
         ObjectKind::Wall(_) => {
-            if ranges.len() != 2 {
+            let [sweep_range, segment_range] = ranges.as_slice() else {
                 return Err(Error {
                     msg: format!(
                         "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
@@ -3535,8 +3535,9 @@ fn sketch_face_of_scene_object_ast_expr(
                         on_object.artifact_id
                     ),
                 });
-            }
-            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[0] }, "solid", None)?;
+            };
+            let sweep_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *sweep_range }, "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
@@ -3547,7 +3548,8 @@ fn sketch_face_of_scene_object_ast_expr(
             };
             let solid_name = solid_name_expr.name.name.clone();
             let solid_expr = ast_name_expr(solid_name.clone());
-            let segment_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[1] }, "line", None)?;
+            let segment_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *segment_range }, "line", None)?;
 
             let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
@@ -3569,7 +3571,7 @@ fn sketch_face_of_scene_object_ast_expr(
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
         }
         ObjectKind::Cap(cap) => {
-            if ranges.len() != 1 {
+            let [range] = ranges.as_slice() else {
                 return Err(Error {
                     msg: format!(
                         "Expected cap source metadata to have 1 range, got {}; artifact_id={:?}",
@@ -3577,8 +3579,8 @@ fn sketch_face_of_scene_object_ast_expr(
                         on_object.artifact_id
                     ),
                 });
-            }
-            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[0] }, "solid", None)?;
+            };
+            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *range }, "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
@@ -3588,6 +3590,7 @@ fn sketch_face_of_scene_object_ast_expr(
                 });
             };
             let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            // TODO: change this to explicit tag references with tagStart/tagEnd mutations
             let face_expr = match cap.kind {
                 crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
                 crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
