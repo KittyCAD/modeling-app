@@ -58,12 +58,12 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             };
 
             let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
-                    KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) must have 'sideFaces' field".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    })
-                })?;
+                KclError::new_type(KclErrorDetails {
+                    message: "axis (edge reference) must have 'sideFaces' field".to_string(),
+                    source_ranges: vec![args.source_range],
+                    backtrace: Default::default(),
+                })
+            })?;
 
             let faces_array = match faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
@@ -125,14 +125,14 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                                 Ok(face_id) => face_id,
                                 Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
                             }
-                    }
-                    _ => {
-                        return Err(KclError::new_type(KclErrorDetails {
-                            message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
-                            source_ranges: vec![args.source_range],
-                            backtrace: Default::default(),
-                        }));
-                    }
+                        }
+                        _ => {
+                            return Err(KclError::new_type(KclErrorDetails {
+                                message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
+                                source_ranges: vec![args.source_range],
+                                backtrace: Default::default(),
+                            }));
+                        }
                     };
                     end_face_uuids.push(end_face_uuid);
                 }

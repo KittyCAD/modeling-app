@@ -394,12 +394,12 @@ pub(super) async fn parse_edge_refs_to_references(
         };
 
         let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
-                KclError::new_type(KclErrorDetails {
-                    message: "edges must have 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                })
-            })?;
+            KclError::new_type(KclErrorDetails {
+                message: "edges must have 'sideFaces' field".to_string(),
+                source_ranges: vec![args.source_range],
+                backtrace: Default::default(),
+            })
+        })?;
 
         let faces_array = match faces_value {
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
