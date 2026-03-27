@@ -48,7 +48,7 @@ describe('buildAngleConstraintInput', () => {
     })
   })
 
-  it('builds a 225deg angle constraint when one line direction is inverted', () => {
+  it('flips line order to keep the smaller angle when one line direction is inverted', () => {
     const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
     const up = createPointApiObject({ id: 2, x: 0, y: 10 })
     const diag = createPointApiObject({ id: 3, x: 10, y: 10 })
@@ -75,9 +75,9 @@ describe('buildAngleConstraintInput', () => {
 
     expect(constraint).toEqual({
       type: 'Angle',
-      lines: [11, 12],
-      angle: { value: 225, units: 'Deg' },
-      source: { expr: '225deg', is_literal: true },
+      lines: [12, 11],
+      angle: { value: 135, units: 'Deg' },
+      source: { expr: '135deg', is_literal: true },
     })
   })
 })
