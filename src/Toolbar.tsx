@@ -280,6 +280,7 @@ const Toolbar_ = memo(
                     buttonBorderClassName +
                     ' relative group !gap-0'
                   }
+                  selectedItemId={selectedIcon.id}
                   splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                     id: itemConfig.id,
                     label: itemConfig.title,

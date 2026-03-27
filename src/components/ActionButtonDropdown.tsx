@@ -9,6 +9,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
   dropdownTooltipText?: string
+  selectedItemId?: string
   splitMenuItems: {
     id: string
     label: string
@@ -23,6 +24,7 @@ export function ActionButtonDropdown({
   splitMenuItems,
   className,
   dropdownTooltipText = 'More tools',
+  selectedItemId,
   children,
   ...props
 }: ActionButtonSplitProps) {
@@ -70,6 +72,7 @@ export function ActionButtonDropdown({
             {splitMenuItems.map((item) => (
               <ActionButtonDropdownListItem
                 item={item}
+                skipHotkey={item.id === selectedItemId}
                 onClick={() => {
                   item.onClick()
                   // Close the popover
@@ -87,22 +90,24 @@ export function ActionButtonDropdown({
 
 function ActionButtonDropdownListItem({
   item,
+  skipHotkey,
   onClick,
 }: {
   item: ActionButtonSplitProps['splitMenuItems'][number]
+  skipHotkey: boolean
   onClick: () => void
 }) {
   /**
-   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
-   * and since the first item in the dropdown has a top-level button too,
-   * it already has a hotkey listener, so we should skip it.
+   * The selected dropdown item also has a top-level button with its own hotkey listener.
+   * Skip the duplicate listener here to avoid dispatching the same command twice.
    * TODO: make a global hotkey registration system. make them editable.
    */
   useHotkeys(item.hotkey || '', item.onClick, {
     enabled:
       ['available', 'experimental'].includes(item.status || '') &&
       !!item.hotkey &&
-      !item.disabled,
+      !item.disabled &&
+      !skipHotkey,
   })
 
   return (

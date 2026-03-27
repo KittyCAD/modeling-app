@@ -1552,7 +1552,7 @@ export const useToolbarConfig = () => {
                 icon: 'rectangle',
                 status: 'available',
                 title: 'Corner Rectangle',
-                hotkey: 'Shift+R',
+                hotkey: 'R',
                 description: 'Start drawing a rectangle',
                 links: [],
                 isActive: (state) =>
@@ -1661,7 +1661,6 @@ export const useToolbarConfig = () => {
             icon: 'perpendicular',
             status: 'available',
             title: 'Perpendicular',
-            hotkey: 'R',
             description: 'Constrain lines or curves to be perpendicular',
             links: [],
             isActive: (state) => false,
