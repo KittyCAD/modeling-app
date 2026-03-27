@@ -1,4 +1,5 @@
 use fnv::FnvHashMap;
+use fnv::FnvHashSet;
 use lazy_static::lazy_static;
 use winnow::LocatingSlice;
 use winnow::Stateful;
@@ -57,6 +58,26 @@ lazy_static! {
         set.insert("record", TokenType::Keyword);
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
+
+        set
+    };
+    /// These names are reserved only in sketch blocks.
+    pub(crate) static ref RESERVED_SKETCH_BLOCK_WORDS: FnvHashSet<&'static str> = {
+        let mut set = FnvHashSet::default();
+        set.insert("construction");
+        set.insert("dependencies");
+        set.insert("exports");
+        set.insert("id");
+        set.insert("location");
+        set.insert("meta");
+        set.insert("module");
+        set.insert("on");
+        set.insert("ORIGIN");
+        set.insert("porcelain");
+        set.insert("surface");
+        set.insert("tags");
+        set.insert("worldCoordinates");
+        set.insert("zoo");
 
         set
     };

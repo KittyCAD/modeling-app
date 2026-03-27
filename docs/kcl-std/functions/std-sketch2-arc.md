@@ -24,14 +24,44 @@ sketch2::arc(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point in two dimensional space. | Yes |
-| `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | A boolean value. | No |
+| `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point where the arc begins. | Yes |
+| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point where the arc ends. | Yes |
+| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle the arc lies on. | Yes |
+| `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether this segment is construction geometry rather than part of the modeled profile. | No |
 
 ### Returns
 
 [`Segment`](/docs/kcl-std/types/std-types-Segment) - A segment of a path in a sketch. It may be a line, arc, or other segment type.
 
+
+### Examples
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+  top = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 5mm])
+  coincident([base.end, top.start])
+  coincident([base.start, top.end])
+}
+
+solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sketch2::arc function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch2-arc0_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch2-arc0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 

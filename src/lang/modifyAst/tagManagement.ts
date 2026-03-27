@@ -480,7 +480,6 @@ function modifyAstWithTagForWallFace(
         artifactGraph,
         wasmInstance
       )
-      console.log('wallLineName', originalSegName)
       if (originalSegName) {
         return {
           modifiedAst: astClone,
