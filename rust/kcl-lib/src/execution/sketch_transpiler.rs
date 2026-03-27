@@ -12,6 +12,7 @@ use crate::execution::ExecOutcome;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
+use crate::execution::geometry::GetTangentialInfoFromPathsResult;
 use crate::execution::geometry::Path;
 use crate::execution::geometry::Sketch;
 use crate::fmt::format_number_literal;
@@ -394,7 +395,8 @@ fn build_sketch_block_ast(
 fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -> Number {
     // Round to 2 decimal places, then convert using From trait
     let rounded = (value * 100.0).round() / 100.0;
-    (rounded, units).into()
+    let normalized = if rounded == 0.0 { 0.0 } else { rounded };
+    (normalized, units).into()
 }
 
 fn transpiler_build_segment(
@@ -410,8 +412,11 @@ fn transpiler_build_segment(
             start: base.from,
             end: base.to,
         }))),
-        Path::TangentialArcTo { center, ccw, .. } | Path::TangentialArc { center, ccw, .. } => {
-            let (start, end, entry_endpoint, exit_endpoint) = if *ccw {
+        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } | Path::Arc { .. } | Path::ArcThreePoint { .. } => {
+            let GetTangentialInfoFromPathsResult::Arc { center, ccw } = path_segment.get_tangential_info() else {
+                unreachable!("Arc-like paths should always produce arc tangential info");
+            };
+            let (start, end, entry_endpoint, exit_endpoint) = if ccw {
                 (base.from, base.to, SegmentEndpoint::Start, SegmentEndpoint::End)
             } else {
                 (base.to, base.from, SegmentEndpoint::End, SegmentEndpoint::Start)
@@ -421,7 +426,7 @@ fn transpiler_build_segment(
                 name: transpiler_segment_name_for_path(path_segment, segment_index),
                 start,
                 end,
-                center: *center,
+                center,
                 entry_endpoint,
                 exit_endpoint,
             })))
@@ -432,11 +437,9 @@ fn transpiler_build_segment(
             radius: *radius,
         })),
         Path::CircleThreePoint { .. }
-        | Path::ArcThreePoint { .. }
         | Path::Horizontal { .. }
         | Path::AngledLineTo { .. }
         | Path::Base { .. }
-        | Path::Arc { .. }
         | Path::Ellipse { .. }
         | Path::Conic { .. }
         | Path::Bezier { .. } => {
@@ -444,7 +447,7 @@ fn transpiler_build_segment(
                 Err(transpiler_create_unsupported_segment_error(segment_index, path_segment))
             } else {
                 std::eprintln!(
-                    "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+                    "Transpilation not supported: segment {} has unsupported type {}. Only line segments, arcs, tangential arcs, and circles are currently supported.",
                     segment_index + 1,
                     transpiler_path_type_name(path_segment),
                 );
@@ -475,7 +478,9 @@ fn transpiler_path_type_name(path_segment: &Path) -> &'static str {
 fn transpiler_segment_name_for_path(path_segment: &Path, segment_index: usize) -> String {
     match path_segment {
         Path::ToPoint { .. } => format!("line{}", segment_index + 1),
-        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } => format!("arc{}", segment_index + 1),
+        Path::TangentialArcTo { .. } | Path::TangentialArc { .. } | Path::Arc { .. } | Path::ArcThreePoint { .. } => {
+            format!("arc{}", segment_index + 1)
+        }
         Path::Circle { .. } => format!("circle{}", segment_index + 1),
         _ => format!("segment{}", segment_index + 1),
     }
@@ -553,7 +558,7 @@ fn transpiler_create_segment_coincident_constraint(
 fn transpiler_create_unsupported_segment_error(segment_index: usize, _path_segment: &Path) -> KclError {
     KclError::new_internal(KclErrorDetails::new(
         format!(
-            "Transpilation not supported: segment {} has unsupported type {}. Only line segments, tangential arcs, and circles are currently supported.",
+            "Transpilation not supported: segment {} has unsupported type {}. Only line segments, arcs, tangential arcs, and circles are currently supported.",
             segment_index + 1,
             transpiler_path_type_name(_path_segment),
         ),
@@ -734,7 +739,7 @@ fn create_arc_size_constraint_ast_from_name(
         digest: None,
         non_code_meta: Default::default(),
     })));
-    let raw = format_number_literal(num.value, num.units).map_err(|err| {
+    let raw = format_number_literal(num.value, num.units, None).map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
             format!("Failed to format numeric constraint literal: {err}"),
             vec![],
@@ -995,6 +1000,20 @@ fn detect_constraints_from_ast(
             {
                 constraints[*segment_index].push(SegmentConstraint::Diameter { d });
             }
+        } else if function_name == "arc" {
+            if call_has_labeled_arg(call, "radius")
+                && let Some(r) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Radius)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Radius { r });
+            }
+
+            if call_has_labeled_arg(call, "diameter")
+                && let Some(d) =
+                    get_arc_size_constraint_value(&sketch.paths[*segment_index], sketch.units, ArcSizeKind::Diameter)
+            {
+                constraints[*segment_index].push(SegmentConstraint::Diameter { d });
+            }
         }
     }
 
@@ -1020,7 +1039,9 @@ fn get_arc_size_constraint_value(
     kind: ArcSizeKind,
 ) -> Option<Number> {
     let (center, from) = match path_segment {
-        Path::TangentialArc { center, base, .. } | Path::TangentialArcTo { center, base, .. } => (*center, base.from),
+        Path::TangentialArc { center, base, .. }
+        | Path::TangentialArcTo { center, base, .. }
+        | Path::Arc { center, base, .. } => (*center, base.from),
         _ => return None,
     };
 
@@ -1363,6 +1384,78 @@ profile001 = startProfile(sketch001, at = [0, 0])
   tangent([line1, arc2])
   line3 = line(start = [var 20mm, var 10mm], end = [var 20mm, var 20mm])
   coincident([arc2.end, line3.start])
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_arc_radius_angle_adds_radius_constraint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> arc(angleStart = 0deg, angleEnd = 90deg, radius = 10)
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  arc1 = arc(start = [var 0mm, var 0mm], end = [var -10mm, var 10mm], center = [var -10mm, var 0mm])
+  radius(arc1) == 10mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_arc_diameter_angle_adds_diameter_constraint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> arc(angleStart = 0deg, angleEnd = 90deg, diameter = 10)
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  arc1 = arc(start = [var 0mm, var 0mm], end = [var -5mm, var 5mm], center = [var -5mm, var 0mm])
+  diameter(arc1) == 10mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_clockwise_arc_preserves_connectivity() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(angleStart = 180deg, angleEnd = 0deg, radius = 5)
+  |> line(end = [0, 10])
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 20mm, var 0mm], end = [var 10mm, var 0mm], center = [var 15mm, var 0mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 20mm, var 0mm], end = [var 20mm, var 10mm])
+  coincident([arc2.start, line3.start])
+  radius(arc2) == 5mm
+}"#;
+
+        assert_transpiled_matches(code, "profile001", expected_output).await;
+    }
+
+    #[tokio::test]
+    async fn test_transpile_line_then_three_point_arc_adds_coincident_endpoint() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(interiorAbsolute = [15, -5], endAbsolute = [20, 0])
+"#;
+
+        let expected_output = r#"sketch(on = sketch001) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm], center = [var 15mm, var 0mm])
+  coincident([line1.end, arc2.start])
 }"#;
 
         assert_transpiled_matches(code, "profile001", expected_output).await;

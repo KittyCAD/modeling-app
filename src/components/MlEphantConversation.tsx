@@ -497,30 +497,20 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0) return
-
-    requestAnimationFrame(() => {
-      if (refScroll.current) {
-        refScroll.current.scrollTo({
-          top: refScroll.current.scrollHeight,
-          behavior: 'smooth',
-        })
-      }
+    if (exchangesLength === 0 || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
     })
   }, [exchangesLength])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
-    if (isEndOfStream) {
-      requestAnimationFrame(() => {
-        if (refScroll.current) {
-          refScroll.current.scrollTo({
-            top: refScroll.current.scrollHeight,
-            behavior: 'smooth',
-          })
-        }
-      })
-    }
+    if (!isEndOfStream || !refScroll.current) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
   }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
@@ -546,7 +536,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false || props.needsReconnect ? (
+              ) : props.isLoading === false &&
+                props.needsReconnect === false ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   <>
                     {exchangeCards}

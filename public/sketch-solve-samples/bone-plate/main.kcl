@@ -1,0 +1,86 @@
+// Bone Plate
+// A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications
+// Categories: Medical
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+boltSize = 4.5
+
+// Revolve the profile of a compression plate designed to fit a bone
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 23.19mm, var 8.37mm], end = [var 22.9mm, var 0mm], center = [var 142.9mm, var 0mm])
+  arc2 = arc(start = [var 23.19mm, var 8.37mm], end = [var 23.63mm, var 16.75mm], center = [var 20.69mm, var 12.7mm])
+  coincident([arc1.start, arc2.start])
+  arc3 = arc(start = [var 23.92mm, var 25.12mm], end = [var 23.63mm, var 16.75mm], center = [var 143.63mm, var 16.75mm])
+  coincident([arc2.end, arc3.end])
+  arc4 = arc(start = [var 23.92mm, var 25.12mm], end = [var 24.36mm, var 33.49mm], center = [var 21.42mm, var 29.45mm])
+  coincident([arc3.start, arc4.start])
+  arc5 = arc(start = [var 24.65mm, var 41.86mm], end = [var 24.36mm, var 33.49mm], center = [var 144.36mm, var 33.49mm])
+  coincident([arc4.end, arc5.end])
+  arc6 = arc(start = [var 24.65mm, var 41.86mm], end = [var 25.09mm, var 50.24mm], center = [var 22.15mm, var 46.19mm])
+  coincident([arc5.start, arc6.start])
+  arc7 = arc(start = [var 26.02mm, var 68.01mm], end = [var 25.09mm, var 50.24mm], center = [var 195.09mm, var 50.24mm])
+  coincident([arc6.end, arc7.end])
+  arc8 = arc(start = [var 41.8mm, var 91.88mm], end = [var 26.02mm, var 68.01mm], center = [var 56.88mm, var 64.76mm])
+  coincident([arc7.start, arc8.end])
+  arc9 = arc(start = [var 41.8mm, var 91.88mm], end = [var 56.92mm, var 117.08mm], center = [var 27.49mm, var 117.6mm])
+  coincident([arc8.start, arc9.start])
+  line10 = line(start = [var 56.92mm, var 117.08mm], end = [var 57.33mm, var 140.24mm])
+  coincident([arc9.end, line10.start])
+  arc11 = arc(start = [var 60.93mm, var 140.44mm], end = [var 57.33mm, var 140.24mm], center = [var 59.14mm, var 140.2mm])
+  coincident([line10.end, arc11.end])
+  line12 = line(start = [var 60.93mm, var 140.44mm], end = [var 64.27mm, var 115.01mm])
+  coincident([arc11.start, line12.start])
+  arc13 = arc(start = [var 48.35mm, var 85.53mm], end = [var 64.27mm, var 115.01mm], center = [var 35.92mm, var 111.28mm])
+  coincident([line12.end, arc13.end])
+  arc14 = arc(start = [var 48.35mm, var 85.53mm], end = [var 35.2mm, var 67.73mm], center = [var 58.67mm, var 64.15mm])
+  coincident([arc13.start, arc14.start])
+  line15 = line(start = [var 35.2mm, var 67.73mm], end = [var 27.8mm, var 19.23mm])
+  coincident([arc14.end, line15.start])
+  line16 = line(start = [var 27.8mm, var 19.23mm], end = [var 22.9mm, var 0mm])
+  coincident([line15.end, line16.start])
+  radius(arc2) == 5mm
+  radius(arc3) == 120mm
+  radius(arc4) == 5mm
+  radius(arc5) == 120mm
+  radius(arc6) == 5mm
+  radius(arc7) == 170mm
+  radius(arc8) == 31.03mm
+  tangent([arc8, arc9])
+  tangent([arc13, arc14])
+}
+region001 = region(segments = [sketch001.arc1, sketch001.arc2])
+plateRevolve = revolve(
+       region001,
+       axis = Y,
+       angle = 65,
+       symmetric = true,
+     )
+
+// Define a function to create and extrude holes
+fn holeFn(@center) {
+  sketch002 = startSketchOn(XZ)
+    |> circle(center = center, diameter = boltSize)
+  return extrude(sketch002, length = -100)
+}
+
+// Create a hole sketch with the size and location of each bolt hole
+holeCenters = [
+  [0, 12.25],
+  [0, 29.5],
+  [0, 46.25],
+  [0, 77],
+  [0, 100],
+  [0, 130],
+  [-20, 130],
+  [20, 130]
+]
+
+// Use map to apply the hole creation function to the list of center coordinates
+holes = map(holeCenters, f = holeFn)
+
+// Cut each guiding clearance hole from the bone plate using a single subtract operation
+solid = subtract([plateRevolve], tools = holes)
+
