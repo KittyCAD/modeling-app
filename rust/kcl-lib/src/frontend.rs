@@ -5507,7 +5507,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            10,
+            12,
             "{:#?}",
             scene_delta.new_graph.objects
         );
