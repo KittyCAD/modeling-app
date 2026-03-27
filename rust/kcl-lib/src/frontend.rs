@@ -3505,16 +3505,6 @@ fn sketch_on_ast_expr(
             let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
                 msg: format!("Sketch plane object not found: {object_id:?}"),
             })?;
-            get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
-        }
-        Plane::Artifact(artifact_id) => {
-            let on_object = scene_graph
-                .objects
-                .iter()
-                .find(|object| object.artifact_id == *artifact_id)
-                .ok_or_else(|| Error {
-                    msg: format!("Sketch plane artifact not found: {artifact_id:?}"),
-                })?;
             #[cfg(feature = "artifact-graph")]
             {
                 if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
@@ -4566,10 +4556,10 @@ mod tests {
         None
     }
 
-    fn find_first_wall_face_artifact_id(scene_graph: &SceneGraph) -> Option<crate::execution::ArtifactId> {
+    fn find_first_wall_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
         for object in &scene_graph.objects {
             if matches!(&object.kind, ObjectKind::Wall(_)) {
-                return Some(object.artifact_id);
+                return Some(object.id);
             }
         }
         None
@@ -7357,11 +7347,10 @@ extrude001 = extrude(region001, length = 5)
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_artifact_id =
-            find_first_wall_face_artifact_id(&frontend.scene_graph).expect("expected a wall artifact");
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
 
         let sketch_args = SketchCtor {
-            on: Plane::Artifact(wall_artifact_id),
+            on: Plane::Object(wall_object_id),
         };
         let (src_delta, _scene_delta, _sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -7403,11 +7392,10 @@ extrude001 = extrude(region001, length = 5)
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_artifact_id =
-            find_first_wall_face_artifact_id(&frontend.scene_graph).expect("expected a wall artifact");
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
 
         let sketch_args = SketchCtor {
-            on: Plane::Artifact(wall_artifact_id),
+            on: Plane::Object(wall_object_id),
         };
         let (src_delta, _scene_delta, _sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)

@@ -2991,26 +2991,43 @@ export const modelingMachine = setup({
             // Construct SketchCtor based on the result
             let sketchArgs: SketchCtor
 
-            // Determine the plane type from the result
+            const setProgramOutcome = await rustContext.hackSetProgram(
+              kclManager.ast,
+              jsAppSettings(rustContext.settingsActor)
+            )
             if (result.type === 'defaultPlane') {
               sketchArgs = {
                 on: { default: toPlaneName(result.plane) },
               }
             } else {
+              if (setProgramOutcome.type !== 'Success') {
+                return Promise.reject(
+                  new Error(
+                    'Could not update SceneGraph before creating sketch'
+                  )
+                )
+              }
+
+              const selectedArtifactId =
+                result.type === 'extrudeFace' ? result.faceId : result.planeId
+              const selectedSceneObject =
+                setProgramOutcome.sceneGraph.objects.find(
+                  (object) => object.artifact_id === selectedArtifactId
+                )
+
+              if (!selectedSceneObject) {
+                return Promise.reject(
+                  new Error(
+                    `Could not find SceneGraph object for artifact ${selectedArtifactId}`
+                  )
+                )
+              }
+
               sketchArgs = {
-                on: {
-                  artifact:
-                    result.type === 'extrudeFace'
-                      ? result.faceId
-                      : result.planeId,
-                },
+                on: { object: selectedSceneObject.id },
               }
             }
 
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
               0, // fileId - using 0 as placeholder
