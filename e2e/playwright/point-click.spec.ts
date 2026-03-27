@@ -2803,6 +2803,83 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     })
   })
 
+  test('Join point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const firstSurface = `extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
+    const secondSurface = `extrude002 = extrude(profile002, length = 5, bodyType = SURFACE)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [6.07, 1.66])
+  |> yLine(length = -5.33)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-2, -3.87])
+  |> line(endAbsolute = [0, 0])
+${firstSurface}
+${secondSurface}`
+    const joinDeclaration = `surface001 = join([extrude001, extrude002])`
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Start Join and select two solids', async () => {
+      await toolbar.selectSurface('join')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Join',
+      })
+      await page.keyboard.down('Shift')
+      await (await toolbar.getFeatureTreeOperation('extrude001', 0)).click()
+      await (await toolbar.getFeatureTreeOperation('extrude002', 0)).click()
+      await page.keyboard.up('Shift')
+
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '2 sweeps',
+        },
+        commandName: 'Join',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Verify code was added', async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(joinDeclaration)
+    })
+
+    await test.step('Delete join via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'surface001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(joinDeclaration)
+    })
+  })
+
   test(`Appearance point-and-click`, async ({
     context,
     page,
