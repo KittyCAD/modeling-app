@@ -39,6 +39,7 @@ use crate::execution::types::UnitType;
 use crate::front::Number;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
+use crate::std::edge::check_tag_not_ambiguous;
 use crate::std::shapes::PolygonType;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::FaceTag;
@@ -439,6 +440,9 @@ impl Args {
                 vec![self.source_range],
             )));
         }
+
+        // Check for ambiguous region-mapped tags (1:N).
+        check_tag_not_ambiguous(tag, self)?;
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 

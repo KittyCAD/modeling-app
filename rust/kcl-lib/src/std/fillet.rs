@@ -46,6 +46,23 @@ impl EdgeReference {
             EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(exec_state, tag)?.id),
         }
     }
+
+    /// Get all engine IDs for this edge reference.
+    /// For region-mapped tags, returns multiple IDs (one per region segment).
+    pub fn get_all_engine_ids(&self, exec_state: &mut ExecState, args: &Args) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(vec![*uuid]),
+            EdgeReference::Tag(tag) => {
+                let infos = tag.get_all_cur_info();
+                if infos.is_empty() {
+                    // Fallback to single ID lookup (checks the stack).
+                    Ok(vec![args.get_tag_engine_info(exec_state, tag)?.id])
+                } else {
+                    Ok(infos.iter().map(|i| i.id).collect())
+                }
+            }
+        }
+    }
 }
 
 pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]) -> Result<(), KclError> {
@@ -155,11 +172,16 @@ async fn inner_fillet(
     }
 
     let mut solid = solid.clone();
-    let mut edge_ids = Vec::with_capacity(tags.len());
-    for edge_ref in &tags {
-        let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
-        edge_ids.push(edge_id);
-    }
+    let edge_ids = tags
+        .into_iter()
+        .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
+        .try_fold(Vec::new(), |mut acc, item| match item {
+            Ok(ids) => {
+                acc.extend(ids);
+                Ok(acc)
+            }
+            Err(e) => Err(e),
+        })?;
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
