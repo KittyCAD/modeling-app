@@ -1,0 +1,93 @@
+// Engine Valve
+// A mechanical valve used in internal combustion engines to control intake or exhaust flow
+// Categories: Automotive
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+// Define parameters
+valveDiameter = 30
+valveLength = 120
+valveHeadLength = valveDiameter * 1.0
+valveHeadThickness = 3
+stemDiameter = 6
+stemHeadLength = 9
+stemLength = valveLength - valveHeadLength - stemHeadLength
+
+// Create the valve head
+valveRadius = valveDiameter / 2
+valveHeadPlane = startSketchOn(XZ)
+valveHeadShape = sketch(on = valveHeadPlane) {
+  line1 = line(start = [var -0.01mm, var 30mm], end = [var -3mm, var 30mm])
+  line2 = line(start = [var -3mm, var 30mm], end = [var -2.99mm, var 15mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var -12mm, var 3mm], end = [var -2.99mm, var 15mm], center = [var -15.48mm, var 14.99mm])
+  coincident([line2.end, arc3.end])
+  arc4 = arc(start = [var -12mm, var 3mm], end = [var -15mm, var 0mm], center = [var -10.78mm, var -1.22mm])
+  coincident([arc3.start, arc4.start])
+  line5 = line(start = [var -15mm, var 0mm], end = [var -10.5mm, var 0mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -0.3mm, var 1.65mm], end = [var -10.5mm, var 0mm], center = [var 1.16mm, var -39.7mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -0.3mm, var 1.65mm], end = [var -0.01mm, var 30mm])
+  coincident([arc6.start, line7.start])
+  horizontal(line1)
+  tangent([arc3, arc4])
+  horizontal(line5)
+}
+region001 = region(segments = [
+  valveHeadShape.line1,
+  valveHeadShape.line2
+])
+valveHead = revolve(region001, angle = 360, axis = Y)
+
+// Create the valve stem
+sketch001 = sketch(on = offsetPlane(XY, offset = valveHeadLength)) {
+  circle1 = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch001.circle1])
+valveStemSketch = extrude(region002, length = stemLength - valveHeadLength - stemHeadLength)
+
+// Create the valve stem end
+stepLength = stemHeadLength / 10
+sketch002 = sketch(on = startSketchOn(valveStemSketch, face = END)) {
+  circle1 = circle(start = [var 2.7mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region003 = region(segments = [sketch002.circle1])
+step1 = extrude(region003, length = stepLength * 2)
+sketch003 = sketch(on = startSketchOn(step1, face = END)) {
+  circle1 = circle(start = [var 2.4mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region004 = region(segments = [sketch003.circle1])
+step2 = extrude(region004, length = stepLength)
+sketch004 = sketch(on = startSketchOn(step2, face = END)) {
+  circle1 = circle(start = [var 2.7mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region005 = region(segments = [sketch004.circle1])
+step3 = extrude(region005, length = stepLength)
+sketch005 = sketch(on = startSketchOn(step3, face = END)) {
+  circle1 = circle(start = [var 2.4mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region006 = region(segments = [sketch005.circle1])
+step4 = extrude(region006, length = stepLength)
+sketch006 = sketch(on = startSketchOn(step4, face = END)) {
+  circle1 = circle(start = [var 2.7mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region007 = region(segments = [sketch006.circle1])
+step5 = extrude(region007, length = stepLength)
+sketch007 = sketch(on = startSketchOn(step5, face = END)) {
+  circle1 = circle(start = [var 2.4mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region008 = region(segments = [sketch007.circle1])
+step6 = extrude(region008, length = stepLength)
+sketch008 = sketch(on = startSketchOn(step6, face = END)) {
+  circle1 = circle(start = [var 2.7mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region009 = region(segments = [sketch008.circle1])
+step7 = extrude(region009, length = stepLength * 3, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )
+
