@@ -4704,6 +4704,35 @@ y = x[0mm + 1]
         assert!(matches!(actual_operations[1], Operation::GroupEnd));
     }
 
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fixed_constraints_add_operations() {
+        let ast = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1.start.at[0] == 3
+  line1.start.at[1] == 4
+}
+"#;
+        let out = parse_execute(ast).await.unwrap();
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        assert!(
+            actual_operations
+                .iter()
+                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedX")),
+            "expected fixedX operation, got {actual_operations:#?}"
+        );
+        assert!(
+            actual_operations
+                .iter()
+                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedY")),
+            "expected fixedY operation, got {actual_operations:#?}"
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn custom_warning() {
         let warn = r#"

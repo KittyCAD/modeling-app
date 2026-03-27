@@ -322,6 +322,7 @@ pub enum Constraint {
     Distance(Distance),
     Angle(Angle),
     Diameter(Diameter),
+    Fixed(Fixed),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
     Horizontal(Horizontal),
@@ -378,6 +379,19 @@ pub struct Diameter {
     pub diameter: Number,
     #[serde(default)]
     pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Fixed {
+    pub points: Vec<FixedPoint>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct FixedPoint {
+    pub point: ObjectId,
+    pub position: Point2d<Number>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

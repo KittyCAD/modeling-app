@@ -223,6 +223,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch2-horizontalDistance-0",
     "std-sketch2-verticalDistance-0",
     "std-sketch2-equalLength-0",
+    "std-sketch2-fixed-0",
     "std-sketch2-parallel-0",
     "std-sketch2-perpendicular-0",
     "std-sketch2-angle-0",
