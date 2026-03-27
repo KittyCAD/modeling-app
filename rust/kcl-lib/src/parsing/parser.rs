@@ -525,7 +525,7 @@ fn outer_annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
 
 fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
-    let name = opt(identifier).parse_next(i)?;
+    let name = opt(nameable_identifier).parse_next(i)?;
     let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
@@ -534,7 +534,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         let properties: Vec<_> = separated(
             0..,
             separated_pair(
-                terminated(identifier, opt(whitespace)),
+                terminated(nameable_identifier, opt(whitespace)),
                 terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
                 expression,
             )
@@ -1671,7 +1671,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let name = opt(nameable_identifier).parse_next(i)?;
+    let name = opt(binding_name).parse_next(i)?;
     ignore_whitespace(i);
     let mut result = function_decl.parse_next(i)?;
     // Make the function expression aware of its name.
@@ -2300,7 +2300,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     } = selector
         && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
-            identifier.context(expected("an identifier to alias the import")),
+            binding_name.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
     {
@@ -2503,7 +2503,7 @@ fn import_item(i: &mut TokenSlice) -> ModalResult<Node<ImportItem>> {
     let module_id = name.module_id;
     let alias = opt(preceded(
         (whitespace, import_as_keyword, whitespace),
-        identifier.context(expected("an identifier to alias the import")),
+        binding_name.context(expected("an identifier to alias the import")),
     ))
     .parse_next(i)?;
     let end = if let Some(ref alias) = alias {
@@ -2588,7 +2588,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = preceded(
         (whitespace, import_as_keyword, whitespace),
-        nameable_identifier.context(expected("an identifier")),
+        binding_name.context(expected("an identifier")),
     )
     .parse_next(i)?;
 
@@ -2698,7 +2698,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
         require_whitespace(i)?;
     }
 
-    let id = nameable_identifier
+    let id = binding_name
         .context(expected(
             "an identifier, which becomes name you're binding the value to",
         ))
@@ -2835,7 +2835,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
                 t.module_id,
             )
         }),
-        identifier,
+        binding_name,
     ))
     .parse_next(i)?;
     let mut end = name.end;
@@ -2924,10 +2924,6 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
         .parse_next(i)
 }
 
-fn is_safe_sketch_block_binding_name(name: &str) -> bool {
-    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
-}
-
 fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = identifier.parse_next(i)?;
 
@@ -2940,11 +2936,6 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         ParseContext::err(CompilationError::err(
             SourceRange::new(result.start, result.end, result.module_id),
             format!("{desc} cannot be referred to, only declared."),
-        ));
-    } else if !is_safe_sketch_block_binding_name(&result.name) {
-        ParseContext::err(CompilationError::err(
-            SourceRange::new(result.start, result.end, result.module_id),
-            format!("`{}` is a reserved name and cannot be defined.", &result.name),
         ));
     }
 
@@ -3702,6 +3693,26 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
         }
     }
     Ok(())
+}
+
+fn is_safe_sketch_block_binding_name(name: &str) -> bool {
+    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
+}
+
+/// Introduce a new name, which binds some value.
+fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
+    let ident = identifier
+        .context(expected("an identifier, which will be the name of some value"))
+        .parse_next(i)?;
+
+    if !is_safe_sketch_block_binding_name(&ident.name) {
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(ident.start, ident.end, ident.module_id),
+            format!("`{}` is a reserved name and cannot be defined.", &ident.name),
+        ));
+    }
+
+    Ok(ident)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
