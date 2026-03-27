@@ -74,8 +74,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     });
                 }
             }
-            let tags_as_refs =
-                super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
+            let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
             let edge_refs_parsed =
                 super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
             let mut all_refs = tags_as_refs;
