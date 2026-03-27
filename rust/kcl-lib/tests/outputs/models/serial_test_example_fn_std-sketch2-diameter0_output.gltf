@@ -7,14 +7,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.004000000189989805,
+        0.003000000026077032,
         0,
-        -0.003000000026077032
+        -0.0020000000949949026
       ],
       "max": [
-        0.004000000189989805,
         0.003000000026077032,
-        -0
+        0.0020000000949949026,
+        0.0020000000949949026
       ]
     },
     {
@@ -31,14 +31,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        -0.003000000026077032,
         0,
-        0,
-        -0.003000000026077032
+        -0.0020000000949949026
       ],
       "max": [
-        0.004000000189989805,
         0.003000000026077032,
-        -0.003000000026077032
+        0.0020000000949949026,
+        -0.0020000000949949026
       ]
     },
     {
@@ -55,14 +55,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        -0.003000000026077032,
         0,
-        0,
-        -0.003000000026077032
+        -0.0020000000949949026
       ],
       "max": [
-        0,
-        0.003000000026077032,
-        -0
+        -0.003000000026077032,
+        0.0020000000949949026,
+        0.0020000000949949026
       ]
     },
     {
@@ -79,14 +79,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        -0.003000000026077032,
         0,
-        0,
-        -0
+        0.0020000000949949026
       ],
       "max": [
-        0.004000000189989805,
         0.003000000026077032,
-        -0
+        0.0020000000949949026,
+        0.0020000000949949026
       ]
     },
     {
@@ -103,14 +103,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        -0.003000000026077032,
         0,
-        0,
-        -0.003000000026077032
+        -0.0020000000949949026
       ],
       "max": [
-        0.004000000189989805,
+        0.003000000026077032,
         0,
-        -0
+        0.0020000000949949026
       ]
     },
     {
@@ -127,14 +127,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0,
-        0.003000000026077032,
-        -0.003000000026077032
+        -0.003000000026077032,
+        0.0020000000949949026,
+        -0.0020000000949949026
       ],
       "max": [
-        0.004000000189989805,
         0.003000000026077032,
-        -0
+        0.0020000000949949026,
+        0.0020000000949949026
       ]
     },
     {
@@ -152,7 +152,7 @@
   "buffers": [
     {
       "byteLength": 864,
-      "uri": "data:application/octet-stream;base64,bxKDO6abRDsAAACAAACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDO6abRDumm0S7AACAPwAAAAAAAAAAbxKDO6abRDumm0S7AACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDOwAAAACmm0S7AACAPwAAAAAAAAAAbxKDO6abRDumm0S7AAAAAAAAAAAAAIC/bxKDOwAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AAAAAAAAAAAAAIC/bxKDOwAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAAAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AACAvwAAAAAAAAAAAAAAAAAAAACmm0S7AACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAAAAAACmm0S7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDO6abRDsAAACAAAAAAAAAAAAAAIA/bxKDO6abRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDOwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAAbxKDO6abRDsAAACAAAAAAAAAgD8AAAAAAAAAAKabRDumm0S7AAAAAAAAgD8AAAAAAAAAAKabRDumm0S7AAAAAAAAgD8AAAAAbxKDO6abRDsAAACAAAAAAAAAgD8AAAAAbxKDO6abRDumm0S7AAAAAAAAgD8AAAAA"
+      "uri": "data:application/octet-stream;base64,pptEO28SAztvEgM7AACAPwAAAAAAAAAApptEOwAAAABvEgM7AACAPwAAAAAAAAAApptEO28SAztvEgO7AACAPwAAAAAAAAAApptEO28SAztvEgO7AACAPwAAAAAAAAAApptEOwAAAABvEgM7AACAPwAAAAAAAAAApptEOwAAAABvEgO7AACAPwAAAAAAAAAApptEO28SAztvEgO7AAAAAAAAAAAAAIC/pptEOwAAAABvEgO7AAAAAAAAAAAAAIC/pptEu28SAztvEgO7AAAAAAAAAAAAAIC/pptEu28SAztvEgO7AAAAAAAAAAAAAIC/pptEOwAAAABvEgO7AAAAAAAAAAAAAIC/pptEuwAAAABvEgO7AAAAAAAAAAAAAIC/pptEu28SAztvEgO7AACAvwAAAAAAAAAApptEuwAAAABvEgO7AACAvwAAAAAAAAAApptEu28SAztvEgM7AACAvwAAAAAAAAAApptEu28SAztvEgM7AACAvwAAAAAAAAAApptEuwAAAABvEgO7AACAvwAAAAAAAAAApptEuwAAAABvEgM7AACAvwAAAAAAAAAApptEu28SAztvEgM7AAAAAAAAAAAAAIA/pptEuwAAAABvEgM7AAAAAAAAAAAAAIA/pptEO28SAztvEgM7AAAAAAAAAAAAAIA/pptEO28SAztvEgM7AAAAAAAAAAAAAIA/pptEuwAAAABvEgM7AAAAAAAAAAAAAIA/pptEOwAAAABvEgM7AAAAAAAAAAAAAIA/pptEuwAAAABvEgM7AAAAgAAAgL8AAACApptEuwAAAABvEgO7AAAAgAAAgL8AAACApptEOwAAAABvEgM7AAAAgAAAgL8AAACApptEuwAAAABvEgO7AAAAgAAAgL8AAACApptEOwAAAABvEgO7AAAAgAAAgL8AAACApptEOwAAAABvEgM7AAAAgAAAgL8AAACApptEu28SAztvEgM7AAAAAAAAgD8AAAAApptEO28SAztvEgM7AAAAAAAAgD8AAAAApptEu28SAztvEgO7AAAAAAAAgD8AAAAApptEu28SAztvEgO7AAAAAAAAgD8AAAAApptEO28SAztvEgM7AAAAAAAAgD8AAAAApptEO28SAztvEgO7AAAAAAAAgD8AAAAA"
     }
   ],
   "bufferViews": [
@@ -454,7 +454,7 @@
           "end": 1,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -466,7 +466,7 @@
           "end": 2,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -478,7 +478,7 @@
           "end": 2,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -490,7 +490,7 @@
           "end": 3,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -502,7 +502,7 @@
           "end": 4,
           "t": [
             0,
-            0.004
+            0.006
           ]
         },
         {
@@ -514,7 +514,7 @@
           "end": 5,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -526,7 +526,7 @@
           "end": 5,
           "t": [
             0,
-            0.004
+            0.006
           ]
         },
         {
@@ -538,7 +538,7 @@
           "end": 6,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -550,7 +550,7 @@
           "end": 7,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -562,7 +562,7 @@
           "end": 7,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -574,7 +574,7 @@
           "end": 0,
           "t": [
             0,
-            0.004
+            0.006
           ]
         },
         {
@@ -586,50 +586,50 @@
           "end": 3,
           "t": [
             0,
-            0.004
+            0.006
           ]
         }
       ],
       "vertices": [
         [
-          0.004,
-          0,
-          -0
-        ],
-        [
-          0.004,
-          0,
-          -0.003
-        ],
-        [
-          0.004,
           0.003,
-          -0.003
+          0,
+          0.002
         ],
         [
-          0.004,
           0.003,
-          -0
+          0,
+          -0.002
         ],
         [
-          0,
-          0,
-          -0.003
-        ],
-        [
-          0,
           0.003,
-          -0.003
+          0.002,
+          -0.002
         ],
         [
-          0,
-          0,
-          -0
-        ],
-        [
-          0,
           0.003,
-          -0
+          0.002,
+          0.002
+        ],
+        [
+          -0.003,
+          0,
+          -0.002
+        ],
+        [
+          -0.003,
+          0.002,
+          -0.002
+        ],
+        [
+          -0.003,
+          0,
+          0.002
+        ],
+        [
+          -0.003,
+          0.002,
+          0.002
         ]
       ],
       "surfaces": [
@@ -647,9 +647,9 @@
               1
             ],
             "origin": [
-              0.004,
-              0.0015,
-              -0.0015
+              0.003,
+              0.001,
+              -0
             ]
           }
         },
@@ -667,9 +667,9 @@
               0
             ],
             "origin": [
-              0.002,
-              0.0015,
-              -0.003
+              0,
+              0.001,
+              -0.002
             ]
           }
         },
@@ -687,9 +687,9 @@
               -1
             ],
             "origin": [
-              0,
-              0.0015,
-              -0.0015
+              -0.003,
+              0.001,
+              -0
             ]
           }
         },
@@ -707,48 +707,48 @@
               0
             ],
             "origin": [
+              0,
+              0.001,
+              0.002
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              0,
+              0,
+              -1
+            ],
+            "origin": [
+              0,
+              0,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              0,
+              0,
+              -1
+            ],
+            "origin": [
+              0,
               0.002,
-              0.0015,
-              -0
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              1,
-              0,
-              0
-            ],
-            "yAxis": [
-              0,
-              0,
-              -1
-            ],
-            "origin": [
-              0,
-              0,
-              -0
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              1,
-              0,
-              0
-            ],
-            "yAxis": [
-              0,
-              0,
-              -1
-            ],
-            "origin": [
-              0,
-              0.003,
               -0
             ]
           }
@@ -759,9 +759,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
+              0.003,
               0,
-              -0
+              0.002
             ],
             "direction": [
               0,
@@ -774,9 +774,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
+              0.003,
               0,
-              -0.003
+              -0.002
             ],
             "direction": [
               0,
@@ -789,9 +789,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
               0.003,
-              -0
+              0.002,
+              0.002
             ],
             "direction": [
               0,
@@ -804,9 +804,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
+              0.003,
               0,
-              -0
+              0.002
             ],
             "direction": [
               0,
@@ -819,9 +819,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
+              0.003,
               0,
-              -0.003
+              -0.002
             ],
             "direction": [
               -1,
@@ -834,9 +834,9 @@
           "type": "line",
           "line": {
             "origin": [
+              -0.003,
               0,
-              0,
-              -0.003
+              -0.002
             ],
             "direction": [
               0,
@@ -849,9 +849,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.004,
               0.003,
-              -0.003
+              0.002,
+              -0.002
             ],
             "direction": [
               -1,
@@ -864,9 +864,9 @@
           "type": "line",
           "line": {
             "origin": [
+              -0.003,
               0,
-              0,
-              -0.003
+              -0.002
             ],
             "direction": [
               0,
@@ -879,9 +879,9 @@
           "type": "line",
           "line": {
             "origin": [
+              -0.003,
               0,
-              0,
-              -0
+              0.002
             ],
             "direction": [
               0,
@@ -894,9 +894,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0,
-              0.003,
-              -0.003
+              -0.003,
+              0.002,
+              -0.002
             ],
             "direction": [
               0,
@@ -909,9 +909,9 @@
           "type": "line",
           "line": {
             "origin": [
+              -0.003,
               0,
-              0,
-              -0
+              0.002
             ],
             "direction": [
               1,
@@ -924,9 +924,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0,
-              0.003,
-              -0
+              -0.003,
+              0.002,
+              0.002
             ],
             "direction": [
               1,
