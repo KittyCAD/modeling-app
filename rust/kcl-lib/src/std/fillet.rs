@@ -214,8 +214,7 @@ async fn inner_fillet(
             };
             if !tag_identifier.is_empty() {
                 for edge_id in ids {
-                    if let Ok(face_ids) =
-                        super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                    if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                         && let [a, b] = face_ids.as_slice()
                     {
                         tag_entries.push(crate::execution::DirectTagFilletTagEntry {

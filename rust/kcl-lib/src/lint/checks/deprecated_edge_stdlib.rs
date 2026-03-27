@@ -122,7 +122,10 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
-            format!("{} uses 'axis' with deprecated stdlib; prefer an edge specifier object", callee_name),
+            format!(
+                "{} uses 'axis' with deprecated stdlib; prefer an edge specifier object",
+                callee_name
+            ),
             pos,
             None,
         ));
