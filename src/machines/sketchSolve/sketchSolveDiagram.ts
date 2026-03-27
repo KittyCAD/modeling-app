@@ -189,10 +189,13 @@ async function addFixedConstraint(
     return
   }
 
-  const result = await context.rustContext.addFixed(
+  const result = await context.rustContext.addConstraint(
     0,
     context.sketchId,
-    fixedInput,
+    {
+      type: 'Fixed',
+      points: fixedInput,
+    },
     jsAppSettings(context.kclManager.systemDeps.settings)
   )
   sendToolbarConstraintOutcome(self, result)

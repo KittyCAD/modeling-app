@@ -437,39 +437,6 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Add fixed x/y constraints for one or more points in one operation.
-    #[wasm_bindgen]
-    pub async fn add_fixed(
-        &self,
-        version_json: &str,
-        sketch_json: &str,
-        points_json: &str,
-        settings: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
-            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let points: Vec<kcl_lib::front::FixedPoint> =
-            serde_json::from_str(points_json).map_err(|e| format!("Could not deserialize fixed points: {e}"))?;
-
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for add fixed. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .add_fixed(&ctx, version, sketch, points)
-            .await
-            .map_err(|e| format!("Failed to add fixed constraint to sketch: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize add fixed result. {TRUE_BUG} Details: {e}"))?)
-    }
-
     /// Edit a constraint in a sketch.
     #[wasm_bindgen]
     pub async fn edit_constraint(

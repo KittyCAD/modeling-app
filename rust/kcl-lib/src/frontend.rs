@@ -751,6 +751,7 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::Fixed(fixed) => self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?,
             Constraint::FixedX(fixed) => {
                 self.add_fixed_constraint(sketch, fixed, FixedAxis::X, &mut new_ast)
                     .await?
@@ -786,31 +787,6 @@ impl SketchApi for FrontendState {
             .await;
 
         // If execution failed, restore the original state to prevent corruption
-        if result.is_err() {
-            self.program = original_program;
-            self.scene_graph = original_scene_graph;
-        }
-
-        result
-    }
-
-    async fn add_fixed(
-        &mut self,
-        ctx: &ExecutorContext,
-        _version: Version,
-        sketch: ObjectId,
-        points: Vec<FixedPoint>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        let original_program = self.program.clone();
-        let original_scene_graph = self.scene_graph.clone();
-
-        let mut new_ast = self.program.ast.clone();
-        let sketch_block_range = self.add_fixed_constraints(sketch, points, &mut new_ast).await?;
-
-        let result = self
-            .execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
-            .await;
-
         if result.is_err() {
             self.program = original_program;
             self.scene_graph = original_scene_graph;
@@ -1005,6 +981,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::Fixed(fixed) => {
+                    self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?;
                 }
                 Constraint::FixedX(fixed) => {
                     self.add_fixed_constraint(sketch, fixed, FixedAxis::X, &mut new_ast)
@@ -3317,6 +3296,7 @@ impl FrontendState {
                     }
                     false
                 }),
+                Constraint::Fixed(_) => false,
                 Constraint::FixedX(fixed) | Constraint::FixedY(fixed) => {
                     if segment_ids_set.contains(&fixed.point) {
                         true
@@ -4444,6 +4424,7 @@ mod tests {
     use super::*;
     use crate::engine::PlaneName;
     use crate::front::Distance;
+    use crate::front::Fixed;
     use crate::front::FixedConstraint;
     use crate::front::FixedPoint;
     use crate::front::Object;
@@ -6650,23 +6631,25 @@ sketch(on = XY) {
         let point_id = *sketch.segments.first().unwrap();
 
         let (src_delta, scene_delta) = frontend
-            .add_fixed(
+            .add_constraint(
                 &mock_ctx,
                 version,
                 sketch_id,
-                vec![FixedPoint {
-                    point: point_id,
-                    position: Point2d {
-                        x: Number {
-                            value: 2.0,
-                            units: NumericSuffix::Mm,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
                         },
-                        y: Number {
-                            value: 3.0,
-                            units: NumericSuffix::Mm,
-                        },
-                    },
-                }],
+                    }],
+                }),
             )
             .await
             .unwrap();
@@ -6720,38 +6703,40 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let (src_delta, scene_delta) = frontend
-            .add_fixed(
+            .add_constraint(
                 &mock_ctx,
                 version,
                 sketch_id,
-                vec![
-                    FixedPoint {
-                        point: point0_id,
-                        position: Point2d {
-                            x: Number {
-                                value: 2.0,
-                                units: NumericSuffix::Mm,
-                            },
-                            y: Number {
-                                value: 3.0,
-                                units: NumericSuffix::Mm,
-                            },
-                        },
-                    },
-                    FixedPoint {
-                        point: point1_id,
-                        position: Point2d {
-                            x: Number {
-                                value: 4.0,
-                                units: NumericSuffix::Mm,
-                            },
-                            y: Number {
-                                value: 5.0,
-                                units: NumericSuffix::Mm,
+                Constraint::Fixed(Fixed {
+                    points: vec![
+                        FixedPoint {
+                            point: point0_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 2.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 3.0,
+                                    units: NumericSuffix::Mm,
+                                },
                             },
                         },
-                    },
-                ],
+                        FixedPoint {
+                            point: point1_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 4.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 5.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                            },
+                        },
+                    ],
+                }),
             )
             .await
             .unwrap();
@@ -6806,23 +6791,25 @@ sketch(on = XY) {
         let line_start_id = *sketch.segments.first().unwrap();
 
         let (src_delta, scene_delta) = frontend
-            .add_fixed(
+            .add_constraint(
                 &mock_ctx,
                 version,
                 sketch_id,
-                vec![FixedPoint {
-                    point: line_start_id,
-                    position: Point2d {
-                        x: Number {
-                            value: 2.0,
-                            units: NumericSuffix::Mm,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: line_start_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
                         },
-                        y: Number {
-                            value: 3.0,
-                            units: NumericSuffix::Mm,
-                        },
-                    },
-                }],
+                    }],
+                }),
             )
             .await
             .unwrap();

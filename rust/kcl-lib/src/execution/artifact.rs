@@ -302,6 +302,9 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::Fixed { .. } => {
+                unreachable!("Fixed is expanded into FixedX/FixedY before reaching the artifact graph")
+            }
             Constraint::FixedX { .. } => SketchBlockConstraintType::FixedX,
             Constraint::FixedY { .. } => SketchBlockConstraintType::FixedY,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,

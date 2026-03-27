@@ -97,14 +97,6 @@ pub trait SketchApi {
         constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
-    async fn add_fixed(
-        &mut self,
-        ctx: &ExecutorContext,
-        version: Version,
-        sketch: ObjectId,
-        points: Vec<FixedPoint>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
-
     async fn chain_segment(
         &mut self,
         ctx: &ExecutorContext,
@@ -330,6 +322,7 @@ pub enum Constraint {
     Distance(Distance),
     Angle(Angle),
     Diameter(Diameter),
+    Fixed(Fixed),
     FixedX(FixedConstraint),
     FixedY(FixedConstraint),
     HorizontalDistance(Distance),
@@ -397,6 +390,12 @@ pub struct FixedConstraint {
     pub value: Number,
     #[serde(default)]
     pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Fixed {
+    pub points: Vec<FixedPoint>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
