@@ -375,6 +375,21 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  camera: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="camera"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 3L6.5 5H4C3.44772 5 3 5.44772 3 6V15C3 15.5523 3.44772 16 4 16H16C16.5523 16 17 15.5523 17 15V6C17 5.44772 16.5523 5 16 5H13.5L12 3H8ZM10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13ZM10 11.5C10.8284 11.5 11.5 10.8284 11.5 10C11.5 9.17157 10.8284 8.5 10 8.5C9.17157 8.5 8.5 9.17157 8.5 10C8.5 10.8284 9.17157 11.5 10 11.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   chat: (
     <svg
       viewBox="0 0 20 20"

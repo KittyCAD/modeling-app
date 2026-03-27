@@ -15,6 +15,7 @@ import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 
 const noop = () => {}
 
@@ -129,6 +130,7 @@ export interface MlEphantExtraInputsProps {
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
   onAttachFiles: () => void
+  onCaptureScreenshot: () => void
   attachmentsDisabled?: boolean
 }
 
@@ -157,6 +159,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           <CustomIcon name="paperclip" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
             <span>Attach files</span>
+          </Tooltip>
+        </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-screenshot-button"
+          onClick={props.onCaptureScreenshot}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Capture viewport screenshot"
+        >
+          <CustomIcon name="camera" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Capture viewport screenshot</span>
           </Tooltip>
         </button>
       </div>
@@ -268,6 +283,23 @@ export const MlEphantConversationInput = (
   const onAttachFiles = () => {
     if (props.disabled) return
     fileInputRef.current?.click()
+  }
+
+  const onCaptureScreenshot = () => {
+    if (props.disabled) return
+    const dataUrl = takeScreenshotOfVideoStreamCanvas()
+    if (!dataUrl) return
+    const res = fetch(dataUrl)
+      .then((r) => r.blob())
+      .then((blob) => {
+        const file = new File([blob], 'viewport-screenshot.png', {
+          type: 'image/png',
+        })
+        appendAttachments([file])
+      })
+      .catch((e) => {
+        console.error('Failed to capture viewport screenshot', e)
+      })
   }
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -418,6 +450,7 @@ export const MlEphantConversationInput = (
               props.onMlCopilotModeChange?.(m)
             }}
             onAttachFiles={onAttachFiles}
+            onCaptureScreenshot={onCaptureScreenshot}
             attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">
