@@ -404,6 +404,8 @@ export fn tangent(
 ) {}
 
 /// Constrain a point to be fixed to a position.
+///
+/// See [coincident()](/docs/kcl-std/functions/std-sketch2-coincident) for more info.
 export fixed = coincident
 
 /// Constrain a line to be horizontal.
