@@ -83,21 +83,6 @@ struct ArcSizeConstraintParams {
     constraint_type_name: &'static str,
 }
 
-#[derive(Debug, Clone, Copy)]
-enum FixedAxis {
-    X,
-    Y,
-}
-
-impl FixedAxis {
-    fn index(self) -> usize {
-        match self {
-            Self::X => 0,
-            Self::Y => 1,
-        }
-    }
-}
-
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
@@ -114,6 +99,7 @@ const CIRCLE_CENTER_PARAM: &str = "center";
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
@@ -2679,20 +2665,13 @@ impl FrontendState {
 
         for fixed_point in points {
             let point_ast = self.point_id_to_ast_reference(fixed_point.point, new_ast)?;
-            let fixed_x_ast = create_fixed_constraint_ast(point_ast.clone(), FixedAxis::X, fixed_point.position.x)
-                .map_err(|err| Error { msg: err.to_string() })?;
-            let fixed_y_ast = create_fixed_constraint_ast(point_ast, FixedAxis::Y, fixed_point.position.y)
+            let fixed_ast = create_fixed_point_constraint_ast(point_ast, fixed_point.position)
                 .map_err(|err| Error { msg: err.to_string() })?;
 
-            let (_, _) = self.mutate_ast(
-                new_ast,
-                sketch,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_x_ast },
-            )?;
             let (range, _) = self.mutate_ast(
                 new_ast,
                 sketch,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_y_ast },
+                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_ast },
             )?;
             sketch_block_range = Some(range);
         }
@@ -4298,35 +4277,38 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create a computed member expression like object[index] (e.g. point.at[0]).
-pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::MemberExpression(Box::new(ast::Node::no_src(
-        ast::MemberExpression {
-            object: object_expr,
-            property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
-                Number {
-                    value: index as f64,
-                    units: NumericSuffix::None,
-                },
-            )?)))),
-            computed: true,
+/// Create an AST node for `fixed(point) == [x, y]`.
+fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    // Create fixed(point) call.
+    let fixed_call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
+        unlabeled: Some(point_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create [x, y] array literal.
+    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.x,
+    )?))));
+    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.y,
+    )?))));
+    let point_array = ast::BinaryPart::try_from(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+        ast::ArrayExpression {
+            elements: vec![x_literal, y_literal],
             digest: None,
+            non_code_meta: Default::default(),
         },
     ))))
-}
-
-/// Create an AST node for point.at[index] == value.
-fn create_fixed_constraint_ast(point_expr: ast::Expr, axis: FixedAxis, value: Number) -> anyhow::Result<ast::Expr> {
-    let point_at_expr = create_member_expression(point_expr, POINT_AT_PARAM);
-    let indexed_expr = create_index_expression(point_at_expr, axis.index())?;
+    .map_err(|err| anyhow::anyhow!(err))?;
 
     Ok(ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(
         ast::BinaryExpression {
-            left: indexed_expr.try_into().map_err(|err: String| anyhow::anyhow!(err))?,
+            left: fixed_call,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
-                value,
-            )?)))),
+            right: point_array,
             digest: None,
         },
     ))))
@@ -5384,8 +5366,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed(line1.start) == [0, 0]
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5432,8 +5413,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed(line1.start) == [0, 0]
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5441,7 +5421,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            12,
+            11,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -6491,14 +6471,13 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
-  point1.at[0] == 2mm
-  point1.at[1] == 3mm
+  fixed(point1) == [2mm, 3mm]
 }
 "
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            5,
+            4,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -6579,16 +6558,14 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  point1.at[0] == 2mm
-  point1.at[1] == 3mm
-  point2.at[0] == 4mm
-  point2.at[1] == 5mm
+  fixed(point1) == [2mm, 3mm]
+  fixed(point2) == [4mm, 5mm]
 }
 "
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            8,
+            6,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -6651,14 +6628,13 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line1.start.at[0] == 2mm
-  line1.start.at[1] == 3mm
+  fixed(line1.start) == [2mm, 3mm]
 }
 "
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            7,
+            6,
             "{:#?}",
             scene_delta.new_graph.objects
         );
