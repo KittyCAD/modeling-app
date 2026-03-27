@@ -5605,6 +5605,22 @@ e
     }
 
     #[test]
+    fn test_module_name() {
+        #[track_caller]
+        fn assert_mod_name(stmt: &str, name: &str) {
+            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
+            let stmt = in_ctx(|| import_stmt(&mut tokens.as_slice())).unwrap();
+            assert_eq!(stmt.module_name().unwrap(), name);
+        }
+
+        assert_mod_name("import 'foo.kcl'", "foo");
+        assert_mod_name("import 'foo.kcl' as bar", "bar");
+        assert_mod_name("import 'main.kcl'", "main");
+        assert_mod_name("import 'foo/main.kcl'", "foo");
+        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
+    }
+
+    #[test]
     fn std_fn_decl() {
         let code = r#"/// Compute the cosine of a number (in radians).
 ///
