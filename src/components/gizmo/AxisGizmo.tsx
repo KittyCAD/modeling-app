@@ -57,7 +57,12 @@ export default function AxisGizmo() {
     if (!canvasRef.current) return
 
     const canvas = canvasRef.current
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+    const renderer = new WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true,
+    })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
