@@ -4846,7 +4846,7 @@ mod tangent_line_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_circle {
@@ -4867,7 +4867,7 @@ mod tangent_line_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_arc_reversed_line {
@@ -4888,7 +4888,7 @@ mod tangent_line_arc_reversed_line {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_arc_arc {
@@ -4909,7 +4909,7 @@ mod tangent_arc_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_line_line_error {
@@ -4951,7 +4951,7 @@ mod tangent_circle_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_circle_circle_native {
@@ -4972,7 +4972,7 @@ mod tangent_circle_circle_native {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod tangent_arc_arc_math_only {
@@ -4993,6 +4993,6 @@ mod tangent_arc_arc_math_only {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
