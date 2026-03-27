@@ -114,9 +114,13 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   60["SketchBlockConstraint Horizontal<br>[1264, 1281, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  61["SketchBlockConstraint Distance<br>[1342, 1386, 0]"]
+  61["SketchBlockConstraint FixedX<br>[1284, 1310, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  62["SketchBlockConstraint Distance<br>[1389, 1433, 0]"]
+  62["SketchBlockConstraint FixedY<br>[1313, 1339, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  63["SketchBlockConstraint Distance<br>[1342, 1386, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  64["SketchBlockConstraint Distance<br>[1389, 1433, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 6
