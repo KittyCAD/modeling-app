@@ -125,8 +125,10 @@ export class InvisibleConstraintSpriteBuilder {
       sprite.position.copy(position)
       sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
       sprite.renderOrder = renderOrder
-      sprite.material.map = texture
-      sprite.material.needsUpdate = true
+      if (sprite.material.map !== texture) {
+        sprite.material.map = texture
+        sprite.material.needsUpdate = true
+      }
       if (popup) {
         sprite.userData[CONSTRAINT_HOVER_POPUP_KEY] = popup
       } else {
