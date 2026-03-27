@@ -3527,7 +3527,7 @@ fn sketch_face_of_scene_object_ast_expr(
 
     match &on_object.kind {
         ObjectKind::Wall(_) => {
-            if ranges.len() != 2 {
+            let [sweep_range, segment_range] = ranges.as_slice() else {
                 return Err(Error {
                     msg: format!(
                         "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
@@ -3535,8 +3535,9 @@ fn sketch_face_of_scene_object_ast_expr(
                         on_object.artifact_id
                     ),
                 });
-            }
-            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[0] }, "solid", None)?;
+            };
+            let sweep_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *sweep_range }, "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(Error {
                     msg: format!(
@@ -3547,7 +3548,8 @@ fn sketch_face_of_scene_object_ast_expr(
             };
             let solid_name = solid_name_expr.name.name.clone();
             let solid_expr = ast_name_expr(solid_name.clone());
-            let segment_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: ranges[1] }, "line", None)?;
+            let segment_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *segment_range }, "line", None)?;
 
             let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
