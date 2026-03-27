@@ -2227,6 +2227,9 @@ pub enum SketchConstraintKind {
     Distance {
         points: [ConstrainablePoint2d; 2],
     },
+    Fixed {
+        point: ConstrainablePoint2d,
+    },
     Radius {
         points: [ConstrainablePoint2d; 2],
     },
@@ -2246,6 +2249,7 @@ impl SketchConstraintKind {
         match self {
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::Fixed { .. } => "fixed",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
