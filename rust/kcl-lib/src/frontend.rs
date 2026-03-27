@@ -2460,8 +2460,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -2543,7 +2545,7 @@ impl FrontendState {
                     value: angle.angle.value,
                     suffix: angle.angle.units,
                 },
-                raw: format_number_literal(angle.angle.value, angle.angle.units).map_err(|_| Error {
+                raw: format_number_literal(angle.angle.value, angle.angle.units, None).map_err(|_| Error {
                     msg: format!("Could not format numeric suffix: {:?}", angle.angle.units),
                 })?,
                 digest: None,
@@ -2714,7 +2716,7 @@ impl FrontendState {
                     value: params.value,
                     suffix: params.units,
                 },
-                raw: format_number_literal(params.value, params.units).map_err(|_| Error {
+                raw: format_number_literal(params.value, params.units, None).map_err(|_| Error {
                     msg: format!("Could not format numeric suffix: {:?}", params.units),
                 })?,
                 digest: None,
@@ -2773,8 +2775,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -2832,8 +2836,10 @@ impl FrontendState {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                    Error {
+                        msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                    }
                 })?,
                 digest: None,
             }))),
@@ -4067,7 +4073,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: format_number_literal(number.value, number.units)?,
+        raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
 }
