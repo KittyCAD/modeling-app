@@ -53,11 +53,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                 }
             };
 
-            // Get sideFaces array (KCL uses camelCase; accept side_faces for backward compat)
-            let faces_value = edge_ref_obj
-                .get("sideFaces")
-                .or_else(|| edge_ref_obj.get("side_faces"))
-                .ok_or_else(|| {
+            let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
                     KclError::new_type(KclErrorDetails {
                         message: "axis (edge reference) must have 'sideFaces' field".to_string(),
                         source_ranges: vec![args.source_range],
@@ -111,14 +107,10 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                 face_uuids.push(face_uuid);
             }
 
-            // Get endFaces (optional; KCL camelCase; accept end_faces and disambiguators for backward compat)
-            let mut disambiguator_uuids = Vec::new();
-            if let Some(disambiguators_value) = edge_ref_obj
-                .get("endFaces")
-                .or_else(|| edge_ref_obj.get("end_faces"))
-                .or_else(|| edge_ref_obj.get("disambiguators"))
-            {
-                let disambiguators_array = match disambiguators_value {
+            // Get endFaces (optional)
+            let mut end_face_uuids = Vec::new();
+            if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
+                let end_faces_array = match end_faces_value {
                     KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                     _ => {
                         return Err(KclError::new_type(KclErrorDetails {
@@ -128,8 +120,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                         }));
                     }
                 };
-                for disambiguator_value in disambiguators_array {
-                    let disamb_uuid = match disambiguator_value {
+                for end_face_value in end_faces_array {
+                    let end_face_uuid = match end_face_value {
                         KclValue::Uuid { value, .. } => *value,
                         KclValue::TagIdentifier(tag) => {
                             // Try to get face ID using get_adjacent_face_to_tag (for face tags)
@@ -143,13 +135,13 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                         }
                         _ => {
                             return Err(KclError::new_type(KclErrorDetails {
-                                message: "axis (edge reference) disambiguators must be UUIDs or tags".to_string(),
+                                message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
                                 source_ranges: vec![args.source_range],
                                 backtrace: Default::default(),
                             }));
                         }
                     };
-                    disambiguator_uuids.push(disamb_uuid);
+                    end_face_uuids.push(end_face_uuid);
                 }
             }
 
@@ -170,7 +162,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
             let builder = ModelingEdgeReference::builder()
                 .side_faces(face_uuids)
-                .end_faces(disambiguator_uuids);
+                .end_faces(end_face_uuids);
 
             let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
                 builder.index(index_val).build()

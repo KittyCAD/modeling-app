@@ -14,7 +14,7 @@ use crate::std::sketch::FaceTag;
 /// True if the value is an object with a `sideFaces` (or `side_faces`) key.
 pub(crate) fn is_edge_ref_object(v: &KclValue) -> bool {
     match v {
-        KclValue::Object { value, .. } => value.get("sideFaces").or_else(|| value.get("side_faces")).is_some(),
+        KclValue::Object { value, .. } => value.get("sideFaces").is_some(),
         _ => false,
     }
 }
@@ -26,7 +26,7 @@ pub enum Axis2dOrEdgeReference {
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
     /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with faces, disambiguators, and index.
+    /// Edge reference with side faces, end faces, and index.
     EdgeReference(ModelingEdgeReference),
 }
 
@@ -38,7 +38,7 @@ pub enum Axis3dOrEdgeReference {
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with faces, disambiguators, and index.
+    /// Edge reference with side faces, end faces, and index.
     EdgeReference(ModelingEdgeReference),
 }
 

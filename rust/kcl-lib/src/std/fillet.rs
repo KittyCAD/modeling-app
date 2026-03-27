@@ -371,10 +371,7 @@ pub(super) async fn parse_edge_refs_to_references(
             }
         };
 
-        let faces_value = edge_ref_obj
-            .get("sideFaces")
-            .or_else(|| edge_ref_obj.get("side_faces"))
-            .ok_or_else(|| {
+        let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
                 KclError::new_type(KclErrorDetails {
                     message: "edges must have 'sideFaces' field".to_string(),
                     source_ranges: vec![args.source_range],
@@ -407,7 +404,7 @@ pub(super) async fn parse_edge_refs_to_references(
         }
 
         let mut end_face_uuids = Vec::new();
-        if let Some(end_faces_value) = edge_ref_obj.get("endFaces").or_else(|| edge_ref_obj.get("end_faces")) {
+        if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
             let end_faces_array = match end_faces_value {
                 KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
                 _ => {
