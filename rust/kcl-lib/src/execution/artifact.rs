@@ -1831,7 +1831,22 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::EntityMakeHelixFromEdge(helix) => {
-            let edge_id = ArtifactId::new(helix.edge_id);
+            let helix_edge_id = match (&helix.edge_id, &helix.edge_reference) {
+                (_, Some(reference)) => {
+                    let Some(id) = reference.side_faces.first() else {
+                        internal_error!(
+                            range,
+                            "HelixFromEdge command returned a reference with no side edges: id={id:?}, cmd={cmd:?}"
+                        )
+                    };
+                    *id
+                }
+                (Some(id), _) => *id,
+                (None, None) => {
+                    internal_error!(range, "HelixFromEdge command has no edge ID: id={id:?}, cmd={cmd:?}")
+                }
+            };
+            let edge_id = ArtifactId::new(helix_edge_id);
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: Some(edge_id),

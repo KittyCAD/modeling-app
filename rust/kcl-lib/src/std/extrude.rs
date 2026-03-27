@@ -276,7 +276,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: plane_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(plane_id),
+                                entity_reference: None, // TODO: Face API.
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -287,7 +290,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: edge_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(edge_id),
+                                entity_reference: None, // TODO: Face API.
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -298,7 +304,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: face_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(face_id),
+                                entity_reference: None, // TODO: Face API.
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -308,7 +317,8 @@ async fn inner_extrude(
                     mcmd::ExtrudeToReference::builder()
                         .target(sketch_or_face_id.into())
                         .reference(ExtrudeReference::EntityReference {
-                            entity_id: sketch_ref.id,
+                            entity_id: Some(sketch_ref.id),
+                            entity_reference: None, // TODO: Face API.
                         })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -317,7 +327,10 @@ async fn inner_extrude(
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
                         .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::EntityReference { entity_id: solid.id })
+                        .reference(ExtrudeReference::EntityReference {
+                            entity_id: Some(solid.id),
+                            entity_reference: None, // TODO: Face API.
+                        })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
                         .build(),
@@ -329,7 +342,8 @@ async fn inner_extrude(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
-                                entity_id: tagged_edge_or_face_id,
+                                entity_id: Some(tagged_edge_or_face_id),
+                                entity_reference: None, // TODO: Face API.
                             })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
