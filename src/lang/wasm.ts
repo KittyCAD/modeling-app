@@ -47,6 +47,7 @@ import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
 import type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
+import type { RefactorMetadata } from '@rust/kcl-lib/bindings/RefactorMetadata'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -292,11 +293,38 @@ export function emptyExecState(): ExecState {
   }
 }
 
+function edgeRefactorMetadataFromUnified(
+  metadata: RefactorMetadata[]
+): EdgeRefactorMeta[] {
+  return metadata
+    .filter(
+      (entry): entry is Extract<RefactorMetadata, { kind: 'edgeRefactor' }> =>
+        entry.kind === 'edgeRefactor'
+    )
+    .map((entry) => entry.data)
+}
+
+function directTagFilletMetadataFromUnified(
+  metadata: RefactorMetadata[]
+): DirectTagFilletMeta[] {
+  return metadata
+    .filter(
+      (
+        entry
+      ): entry is Extract<RefactorMetadata, { kind: 'directTagFillet' }> =>
+        entry.kind === 'directTagFillet'
+    )
+    .map((entry) => entry.data)
+}
+
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
-  const rawMeta = execOutcome.edgeRefactorMetadata
-  const edgeRefactorMetadata = isArray(rawMeta) ? rawMeta : []
-  const directTagFilletMetadata = execOutcome.directTagFilletMetadata
+  const edgeRefactorMetadata = edgeRefactorMetadataFromUnified(
+    execOutcome.refactorMetadata
+  )
+  const directTagFilletMetadata = directTagFilletMetadataFromUnified(
+    execOutcome.refactorMetadata
+  )
 
   return {
     variables: execOutcome.variables,

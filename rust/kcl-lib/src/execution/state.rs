@@ -152,6 +152,16 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Unified metadata stream for Z0006 and future execution-backed refactors.
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "kind", content = "data", rename_all = "camelCase")]
+pub enum RefactorMetadata {
+    EdgeRefactor(EdgeRefactorMeta),
+    DirectTagFillet(DirectTagFilletMeta),
+}
+
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
@@ -178,10 +188,8 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
-    /// Metadata from deprecated edge stdlib calls (getOppositeEdge, getCommonEdge, etc.) for refactor lint/code mod.
-    pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
-    /// Metadata from fillet/chamfer calls that used `tags` directly (for refactor to edgeRefs).
-    pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
+    /// Metadata collected during execution for refactor lint/code-mod paths (Z0006 and future).
+    pub refactor_metadata: Vec<RefactorMetadata>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -356,9 +364,7 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
             #[cfg(feature = "artifact-graph")]
-            edge_refactor_metadata: self.global.root_module_artifacts.edge_refactor_metadata.clone(),
-            #[cfg(feature = "artifact-graph")]
-            direct_tag_fillet_metadata: self.global.root_module_artifacts.direct_tag_fillet_metadata.clone(),
+            refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -595,25 +601,47 @@ impl ExecState {
     /// Record metadata from a deprecated edge stdlib call for refactor lint/code mod (Step 1).
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
-        self.mod_local.artifacts.edge_refactor_metadata.push(meta);
+        self.mod_local
+            .artifacts
+            .refactor_metadata
+            .push(RefactorMetadata::EdgeRefactor(meta));
     }
 
     /// Record metadata from a fillet/chamfer call that used `tags` directly (for refactor to edgeRefs).
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
-        self.mod_local.artifacts.direct_tag_fillet_metadata.push(meta);
+        self.mod_local
+            .artifacts
+            .refactor_metadata
+            .push(RefactorMetadata::DirectTagFillet(meta));
     }
 
     /// Refactor metadata collected when deprecated edge stdlib functions run (for tests and lint).
     #[cfg(feature = "artifact-graph")]
-    pub fn edge_refactor_metadata(&self) -> &[EdgeRefactorMeta] {
-        &self.global.root_module_artifacts.edge_refactor_metadata
+    pub fn edge_refactor_metadata(&self) -> Vec<EdgeRefactorMeta> {
+        self.global
+            .root_module_artifacts
+            .refactor_metadata
+            .iter()
+            .filter_map(|m| match m {
+                RefactorMetadata::EdgeRefactor(meta) => Some(meta.clone()),
+                RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
     }
 
     /// Direct-tag fillet/chamfer metadata (for Z0006 code mod).
     #[cfg(feature = "artifact-graph")]
-    pub fn direct_tag_fillet_metadata(&self) -> &[DirectTagFilletMeta] {
-        &self.global.root_module_artifacts.direct_tag_fillet_metadata
+    pub fn direct_tag_fillet_metadata(&self) -> Vec<DirectTagFilletMeta> {
+        self.global
+            .root_module_artifacts
+            .refactor_metadata
+            .iter()
+            .filter_map(|m| match m {
+                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
+            })
+            .collect()
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -684,9 +712,7 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.var_solutions.clone(),
             #[cfg(feature = "artifact-graph")]
-            self.global.root_module_artifacts.edge_refactor_metadata.clone(),
-            #[cfg(feature = "artifact-graph")]
-            self.global.root_module_artifacts.direct_tag_fillet_metadata.clone(),
+            self.global.root_module_artifacts.refactor_metadata.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
@@ -835,8 +861,7 @@ impl ModuleArtifactState {
             self.unprocessed_commands.clear();
             self.commands.clear();
             self.operations.clear();
-            self.edge_refactor_metadata.clear();
-            self.direct_tag_fillet_metadata.clear();
+            self.refactor_metadata.clear();
         }
     }
 
@@ -892,8 +917,7 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
-        self.edge_refactor_metadata.extend(other.edge_refactor_metadata);
-        self.direct_tag_fillet_metadata.extend(other.direct_tag_fillet_metadata);
+        self.refactor_metadata.extend(other.refactor_metadata);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

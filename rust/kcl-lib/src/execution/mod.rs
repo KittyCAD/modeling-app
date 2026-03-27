@@ -66,6 +66,8 @@ pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+#[cfg(feature = "artifact-graph")]
+pub use state::RefactorMetadata;
 use uuid::Uuid;
 
 use crate::CompilationError;
@@ -282,12 +284,9 @@ pub struct ExecOutcome {
     #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
-    /// Metadata from deprecated edge stdlib calls for refactor-to-edgeRefs lint/code mod.
+    /// Execution-backed metadata used by Z0006 and future auto-refactors.
     #[cfg(feature = "artifact-graph")]
-    pub edge_refactor_metadata: Vec<EdgeRefactorMeta>,
-    /// Metadata from fillet/chamfer calls that used `tags` directly (for Z0006 code mod).
-    #[cfg(feature = "artifact-graph")]
-    pub direct_tag_fillet_metadata: Vec<DirectTagFilletMeta>,
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order

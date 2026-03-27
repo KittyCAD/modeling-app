@@ -23,6 +23,8 @@ use crate::execution::DefaultPlanes;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::Operation;
 #[cfg(feature = "artifact-graph")]
+use crate::execution::RefactorMetadata;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Number;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Object;
@@ -205,9 +207,7 @@ pub struct KclErrorWithOutputs {
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     #[cfg(feature = "artifact-graph")]
-    pub edge_refactor_metadata: Vec<crate::execution::EdgeRefactorMeta>,
-    #[cfg(feature = "artifact-graph")]
-    pub direct_tag_fillet_metadata: Vec<crate::execution::DirectTagFilletMeta>,
+    pub refactor_metadata: Vec<RefactorMetadata>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -226,8 +226,7 @@ impl KclErrorWithOutputs {
         #[cfg(feature = "artifact-graph")] scene_objects: Vec<Object>,
         #[cfg(feature = "artifact-graph")] source_range_to_object: BTreeMap<SourceRange, ObjectId>,
         #[cfg(feature = "artifact-graph")] var_solutions: Vec<(SourceRange, Number)>,
-        #[cfg(feature = "artifact-graph")] edge_refactor_metadata: Vec<crate::execution::EdgeRefactorMeta>,
-        #[cfg(feature = "artifact-graph")] direct_tag_fillet_metadata: Vec<crate::execution::DirectTagFilletMeta>,
+        #[cfg(feature = "artifact-graph")] refactor_metadata: Vec<RefactorMetadata>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -249,9 +248,7 @@ impl KclErrorWithOutputs {
             #[cfg(feature = "artifact-graph")]
             var_solutions,
             #[cfg(feature = "artifact-graph")]
-            edge_refactor_metadata,
-            #[cfg(feature = "artifact-graph")]
-            direct_tag_fillet_metadata,
+            refactor_metadata,
             scene_graph: Default::default(),
             filenames,
             source_files,
@@ -276,9 +273,7 @@ impl KclErrorWithOutputs {
             #[cfg(feature = "artifact-graph")]
             var_solutions: Default::default(),
             #[cfg(feature = "artifact-graph")]
-            edge_refactor_metadata: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            direct_tag_fillet_metadata: Default::default(),
+            refactor_metadata: Default::default(),
             scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
