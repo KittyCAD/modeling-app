@@ -1688,9 +1688,11 @@ export fn blend(
    @edges: [BoundedEdge | TaggedEdge; 2],
 ): Solid {}
 
-/// Stitch multiple surface together into one polysurface
+/// Stitch multiple surface together into one polysurface, or join together the results of a split into one body
 @(impl = std_rust, feature_tree = true)
-export fn stitch(
+export fn join(
   /// The bodies to stitch
-  @selction: [Solid; 2+],
+  @selction: [Solid; 1+],
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
+  tolerance?: number(Length),
 ): Solid {}
