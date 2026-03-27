@@ -235,6 +235,12 @@ export const sketchSolveMachine = setup({
     'toggle non-visual constraints': assign(({ context }) => ({
       showNonVisualConstraints: !context.showNonVisualConstraints,
     })),
+    'send show non-visual constraints changed to parent': sendParent(
+      ({ context }) => ({
+        type: 'show non-visual constraints changed',
+        data: { value: !context.showNonVisualConstraints },
+      })
+    ),
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
@@ -326,7 +332,11 @@ export const sketchSolveMachine = setup({
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
     },
     'toggle non-visual constraints': {
-      actions: ['toggle non-visual constraints', 'refresh selection styling'],
+      actions: [
+        'toggle non-visual constraints',
+        'send show non-visual constraints changed to parent',
+        'refresh selection styling',
+      ],
       description:
         'Toggles whether non-visual constraints should be shown in sketch solve mode.',
     },

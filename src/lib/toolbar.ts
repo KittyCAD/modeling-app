@@ -1797,8 +1797,8 @@ export const useToolbarConfig = () => {
           },
           {
             id: 'show-constraints',
-            onClick: ({ modelingState }) =>
-              modelingState.children.sketchSolveMachine?.send({
+            onClick: ({ modelingSend }) =>
+              modelingSend({
                 type: 'toggle non-visual constraints',
               }),
             icon: 'eyeOpen',
@@ -1809,13 +1809,7 @@ export const useToolbarConfig = () => {
             links: [],
             isActive: (state) =>
               state.matches('sketchSolveMode') &&
-              (
-                state.children.sketchSolveMachine?.getSnapshot() as
-                  | {
-                      context?: { showNonVisualConstraints?: boolean }
-                    }
-                  | undefined
-              )?.context?.showNonVisualConstraints === true,
+              state.context.showNonVisualConstraints,
           },
         ],
       },

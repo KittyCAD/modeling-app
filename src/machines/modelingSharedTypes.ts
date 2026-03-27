@@ -241,6 +241,9 @@ export type ModelingMachineInput = {
 export type ModelingMachineInternalContext = {
   currentMode: ToolbarModeName
   currentTool: SketchTool
+  // This is duplicated state from sketch-solve for now,
+  // long term plan is to have sketchSolve machine a sibling of modelingMachine
+  showNonVisualConstraints: boolean
   toastId: string | null
   selection: string[]
   selectionRanges: Selections

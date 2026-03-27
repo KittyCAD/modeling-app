@@ -1,4 +1,3 @@
-import { useSelector } from '@xstate/react'
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -90,15 +89,8 @@ const Toolbar_ = memo(
       (Object.entries(toolbarConfig).find(([_, mode]) =>
         mode.check(props.state)
       )?.[0] as ToolbarModeName) || 'modeling'
-    const sketchSolveActor = props.state.children.sketchSolveMachine
-    const showNonVisualConstraints = useSelector(
-      sketchSolveActor ?? props.actor,
-      (snapshot) =>
-        sketchSolveActor
-          ? (snapshot as { context: { showNonVisualConstraints?: boolean } })
-              .context.showNonVisualConstraints === true
-          : false
-    )
+    const showNonVisualConstraints =
+      props.state.context.showNonVisualConstraints
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,

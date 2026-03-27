@@ -19,10 +19,11 @@ import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
-function createTestMouseEvent(): MouseEvent {
+function createTestMouseEvent(detail = 1): MouseEvent {
   return new MouseEvent('click', {
     bubbles: true,
     cancelable: true,
+    detail,
   })
 }
 
