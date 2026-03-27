@@ -181,12 +181,18 @@ export function buildAngleConstraintInput(
     return null
   }
 
+  const shouldFlipLineOrder = angle > 180
+  const constraintLines = shouldFlipLineOrder
+    ? [line2.id, line1.id]
+    : [line1.id, line2.id]
+  const constraintAngle = shouldFlipLineOrder ? roundOff(360 - angle) : angle
+
   return {
     type: 'Angle' as const,
-    lines: [line1.id, line2.id],
-    angle: { value: angle, units: 'Deg' as const },
+    lines: constraintLines,
+    angle: { value: constraintAngle, units: 'Deg' as const },
     source: {
-      expr: `${angle}deg`,
+      expr: `${constraintAngle}deg`,
       is_literal: true as const,
     },
   }
