@@ -9,11 +9,11 @@
       "min": [
         0.004000000189989805,
         0,
-        -0.003000000026077032
+        -0.004999999888241291
       ],
       "max": [
         0.004000000189989805,
-        0.003000000026077032,
+        0.0020000000949949026,
         -0
       ]
     },
@@ -33,12 +33,12 @@
       "min": [
         0,
         0,
-        -0.003000000026077032
+        -0.004999999888241291
       ],
       "max": [
         0.004000000189989805,
-        0.003000000026077032,
-        -0.003000000026077032
+        0.0020000000949949026,
+        -0.004999999888241291
       ]
     },
     {
@@ -57,11 +57,11 @@
       "min": [
         0,
         0,
-        -0.003000000026077032
+        -0.004999999888241291
       ],
       "max": [
         0,
-        0.003000000026077032,
+        0.0020000000949949026,
         -0
       ]
     },
@@ -85,7 +85,7 @@
       ],
       "max": [
         0.004000000189989805,
-        0.003000000026077032,
+        0.0020000000949949026,
         -0
       ]
     },
@@ -105,7 +105,7 @@
       "min": [
         0,
         0,
-        -0.003000000026077032
+        -0.004999999888241291
       ],
       "max": [
         0.004000000189989805,
@@ -128,12 +128,12 @@
       "type": "VEC3",
       "min": [
         0,
-        0.003000000026077032,
-        -0.003000000026077032
+        0.0020000000949949026,
+        -0.004999999888241291
       ],
       "max": [
         0.004000000189989805,
-        0.003000000026077032,
+        0.0020000000949949026,
         -0
       ]
     },
@@ -152,7 +152,7 @@
   "buffers": [
     {
       "byteLength": 864,
-      "uri": "data:application/octet-stream;base64,bxKDO6abRDsAAACAAACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDO6abRDumm0S7AACAPwAAAAAAAAAAbxKDO6abRDumm0S7AACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDOwAAAACmm0S7AACAPwAAAAAAAAAAbxKDO6abRDumm0S7AAAAAAAAAAAAAIC/bxKDOwAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AAAAAAAAAAAAAIC/bxKDOwAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAAAAAACmm0S7AAAAAAAAAAAAAIC/AAAAAKabRDumm0S7AACAvwAAAAAAAAAAAAAAAAAAAACmm0S7AACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAAAAAACmm0S7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDO6abRDsAAACAAAAAAAAAAAAAAIA/bxKDO6abRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDOwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAACmm0S7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAAbxKDO6abRDsAAACAAAAAAAAAgD8AAAAAAAAAAKabRDumm0S7AAAAAAAAgD8AAAAAAAAAAKabRDumm0S7AAAAAAAAgD8AAAAAbxKDO6abRDsAAACAAAAAAAAAgD8AAAAAbxKDO6abRDumm0S7AAAAAAAAgD8AAAAA"
+      "uri": "data:application/octet-stream;base64,bxKDO28SAzsAAACAAACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDO28SAzsK16O7AACAPwAAAAAAAAAAbxKDO28SAzsK16O7AACAPwAAAAAAAAAAbxKDOwAAAAAAAACAAACAPwAAAAAAAAAAbxKDOwAAAAAK16O7AACAPwAAAAAAAAAAbxKDO28SAzsK16O7AAAAAAAAAAAAAIC/bxKDOwAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAG8SAzsK16O7AAAAAAAAAAAAAIC/AAAAAG8SAzsK16O7AAAAAAAAAAAAAIC/bxKDOwAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAAAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAG8SAzsK16O7AACAvwAAAAAAAAAAAAAAAAAAAAAK16O7AACAvwAAAAAAAAAAAAAAAG8SAzsAAACAAACAvwAAAAAAAAAAAAAAAG8SAzsAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAK16O7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAG8SAzsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDO28SAzsAAACAAAAAAAAAAAAAAIA/bxKDO28SAzsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/bxKDOwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAAAK16O7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAAAK16O7AAAAgAAAgL8AAACAbxKDOwAAAAAK16O7AAAAgAAAgL8AAACAbxKDOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAG8SAzsAAACAAAAAAAAAgD8AAAAAbxKDO28SAzsAAACAAAAAAAAAgD8AAAAAAAAAAG8SAzsK16O7AAAAAAAAgD8AAAAAAAAAAG8SAzsK16O7AAAAAAAAgD8AAAAAbxKDO28SAzsAAACAAAAAAAAAgD8AAAAAbxKDO28SAzsK16O7AAAAAAAAgD8AAAAA"
     }
   ],
   "bufferViews": [
@@ -454,7 +454,7 @@
           "end": 1,
           "t": [
             0,
-            0.003
+            0.005
           ]
         },
         {
@@ -466,7 +466,7 @@
           "end": 2,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -478,7 +478,7 @@
           "end": 2,
           "t": [
             0,
-            0.003
+            0.005
           ]
         },
         {
@@ -490,7 +490,7 @@
           "end": 3,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -514,7 +514,7 @@
           "end": 5,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -538,7 +538,7 @@
           "end": 6,
           "t": [
             0,
-            0.003
+            0.005
           ]
         },
         {
@@ -550,7 +550,7 @@
           "end": 7,
           "t": [
             0,
-            0.003
+            0.002
           ]
         },
         {
@@ -562,7 +562,7 @@
           "end": 7,
           "t": [
             0,
-            0.003
+            0.005
           ]
         },
         {
@@ -599,27 +599,27 @@
         [
           0.004,
           0,
-          -0.003
+          -0.005
         ],
         [
           0.004,
-          0.003,
-          -0.003
+          0.002,
+          -0.005
         ],
         [
           0.004,
-          0.003,
+          0.002,
           -0
         ],
         [
           0,
           0,
-          -0.003
+          -0.005
         ],
         [
           0,
-          0.003,
-          -0.003
+          0.002,
+          -0.005
         ],
         [
           0,
@@ -628,7 +628,7 @@
         ],
         [
           0,
-          0.003,
+          0.002,
           -0
         ]
       ],
@@ -648,8 +648,8 @@
             ],
             "origin": [
               0.004,
-              0.0015,
-              -0.0015
+              0.001,
+              -0.0025
             ]
           }
         },
@@ -668,8 +668,8 @@
             ],
             "origin": [
               0.002,
-              0.0015,
-              -0.003
+              0.001,
+              -0.005
             ]
           }
         },
@@ -688,8 +688,8 @@
             ],
             "origin": [
               0,
-              0.0015,
-              -0.0015
+              0.001,
+              -0.0025
             ]
           }
         },
@@ -708,7 +708,7 @@
             ],
             "origin": [
               0.002,
-              0.0015,
+              0.001,
               -0
             ]
           }
@@ -748,7 +748,7 @@
             ],
             "origin": [
               0,
-              0.003,
+              0.002,
               -0
             ]
           }
@@ -776,7 +776,7 @@
             "origin": [
               0.004,
               0,
-              -0.003
+              -0.005
             ],
             "direction": [
               0,
@@ -790,7 +790,7 @@
           "line": {
             "origin": [
               0.004,
-              0.003,
+              0.002,
               -0
             ],
             "direction": [
@@ -821,7 +821,7 @@
             "origin": [
               0.004,
               0,
-              -0.003
+              -0.005
             ],
             "direction": [
               -1,
@@ -836,7 +836,7 @@
             "origin": [
               0,
               0,
-              -0.003
+              -0.005
             ],
             "direction": [
               0,
@@ -850,8 +850,8 @@
           "line": {
             "origin": [
               0.004,
-              0.003,
-              -0.003
+              0.002,
+              -0.005
             ],
             "direction": [
               -1,
@@ -866,7 +866,7 @@
             "origin": [
               0,
               0,
-              -0.003
+              -0.005
             ],
             "direction": [
               0,
@@ -895,8 +895,8 @@
           "line": {
             "origin": [
               0,
-              0.003,
-              -0.003
+              0.002,
+              -0.005
             ],
             "direction": [
               0,
@@ -925,7 +925,7 @@
           "line": {
             "origin": [
               0,
-              0.003,
+              0.002,
               -0
             ],
             "direction": [
