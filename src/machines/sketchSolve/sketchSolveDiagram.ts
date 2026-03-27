@@ -113,15 +113,16 @@ async function addAxisDistanceConstraint(
         x: second.kind.segment.position.x,
         y: second.kind.segment.position.y,
       }
-      // Calculate distance: axis === 'horizontal' ? x2 - x1 : y2 - y1 (preserve sign)
-      if (axis === 'horizontal') {
-        const x1 = point1.x.value
-        const x2 = point2.x.value
-        distance = roundOff(x2 - x1)
+      const signedDistance =
+        axis === 'horizontal'
+          ? roundOff(point2.x.value - point1.x.value)
+          : roundOff(point2.y.value - point1.y.value)
+
+      if (signedDistance < 0) {
+        segmentsToConstrain = [segmentsToConstrain[1], segmentsToConstrain[0]]
+        distance = -signedDistance
       } else {
-        const y1 = point1.y.value
-        const y2 = point2.y.value
-        distance = roundOff(y2 - y1)
+        distance = signedDistance
       }
     }
   }
@@ -231,6 +232,15 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
+    'toggle non-visual constraints': assign(({ context }) => ({
+      showNonVisualConstraints: !context.showNonVisualConstraints,
+    })),
+    'send show non-visual constraints changed to parent': sendParent(
+      ({ context }) => ({
+        type: 'show non-visual constraints changed',
+        data: { value: !context.showNonVisualConstraints },
+      })
+    ),
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
@@ -238,7 +248,10 @@ export const sketchSolveMachine = setup({
     'update selected ids': assign(updateSelectedIds),
     'update hovered id': assign(({ event }) => {
       assertEvent(event, 'update hovered id')
-      return { hoveredId: event.data.hoveredId }
+      return {
+        hoveredId: event.data.hoveredId,
+        constraintHoverPopups: event.data.constraintHoverPopups ?? [],
+      }
     }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
@@ -270,6 +283,7 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       hoveredId: null,
+      constraintHoverPopups: [],
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         sourceDelta: {
@@ -282,6 +296,7 @@ export const sketchSolveMachine = setup({
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
+      showNonVisualConstraints: false,
     }
   },
   id: 'Sketch Solve Mode',
@@ -315,6 +330,15 @@ export const sketchSolveMachine = setup({
       actions: 'delete draft entities',
       description:
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
+    },
+    'toggle non-visual constraints': {
+      actions: [
+        'toggle non-visual constraints',
+        'send show non-visual constraints changed to parent',
+        'refresh selection styling',
+      ],
+      description:
+        'Toggles whether non-visual constraints should be shown in sketch solve mode.',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state

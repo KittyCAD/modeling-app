@@ -114,6 +114,10 @@ export function getLength(a: [number, number], b: [number, number]): number {
   return Math.sqrt(x * x + y * y)
 }
 
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
 /**
  * Calculates the angle in degrees between two vectors in 2D.
  * The angle is normalized to the range [-180, 180].
