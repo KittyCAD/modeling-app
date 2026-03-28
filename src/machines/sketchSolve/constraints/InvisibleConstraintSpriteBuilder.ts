@@ -1,21 +1,17 @@
-import type { Texture } from 'three'
-import {
-  Group,
-  SRGBColorSpace,
-  Sprite,
-  SpriteMaterial,
-  TextureLoader,
-  Vector3,
-} from 'three'
+import { Group, Sprite, Vector3 } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { constraintIconPaths } from '@src/components/constraintIconPaths'
-import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { getResolvedTheme } from '@src/lib/theme'
 import { clamp, isArray } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
+import {
+  CONSTRAINT_BADGE_SIZE_PX,
+  createConstraintBadgeSprite,
+  getConstraintBadgeTexture,
+  type ConstraintBadgeState,
+} from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
 import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
@@ -29,7 +25,6 @@ export type InvisibleConstraintDisplayState = {
   constraintHoverPopups: ConstraintHoverPopup[]
 }
 
-const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
 const CONSTRAINT_HOVER_POPUP_KEY = 'constraintHoverPopup'
 const SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY =
   'selectedInvisibleConstraintPopup'
@@ -45,9 +40,6 @@ type SelectedInvisibleConstraintPopup = ConstraintHoverPopup & {
 }
 
 export class InvisibleConstraintSpriteBuilder {
-  private readonly textureCache = new Map<string, Texture>()
-  private readonly textureLoader = new TextureLoader()
-
   public init(obj: InvisibleConstraintObject) {
     const group = new Group()
     group.name = obj.id.toString()
@@ -58,14 +50,7 @@ export class InvisibleConstraintSpriteBuilder {
     }
     group.visible = false
 
-    const sprite = new Sprite(
-      new SpriteMaterial({
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
-        color: 0xffffff,
-      })
-    )
+    const sprite = createConstraintBadgeSprite()
     sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
 
@@ -111,11 +96,11 @@ export class InvisibleConstraintSpriteBuilder {
     }
 
     const theme = getResolvedTheme(sceneInfra.theme)
-    const texture = this.getTexture(
-      obj.kind.constraint.type,
-      getConstraintBadgeState(obj.id, selectedIds, hoveredId),
-      theme
-    )
+    const texture = getConstraintBadgeTexture({
+      badgeType: obj.kind.constraint.type,
+      badgeState: getConstraintBadgeState(obj.id, selectedIds, hoveredId),
+      theme,
+    })
     const sprites = syncSprites(group, positions.length)
     const scale = sceneInfra.getClientSceneScaleFactor(group)
     group.position.set(0, 0, 0)
@@ -123,7 +108,7 @@ export class InvisibleConstraintSpriteBuilder {
     sprites.forEach((sprite, index) => {
       const { position, renderOrder, popup } = positions[index]
       sprite.position.copy(position)
-      sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
+      sprite.scale.setScalar(CONSTRAINT_BADGE_SIZE_PX * scale)
       sprite.renderOrder = renderOrder
       if (sprite.material.map !== texture) {
         sprite.material.map = texture
@@ -138,34 +123,12 @@ export class InvisibleConstraintSpriteBuilder {
         {
           type: 'screenRect',
           center: [position.x, position.y, position.z],
-          sizePx: [
-            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-          ],
+          sizePx: [CONSTRAINT_BADGE_SIZE_PX, CONSTRAINT_BADGE_SIZE_PX],
         },
       ]
     })
 
     group.visible = true
-  }
-
-  private getTexture(
-    objType: InvisibleConstraintObject['kind']['constraint']['type'],
-    badgeState: ConstraintBadgeState,
-    theme: Themes
-  ) {
-    const key = `${objType}:${badgeState}:${theme}`
-    const cached = this.textureCache.get(key)
-    if (cached) {
-      return cached
-    }
-
-    const texture = this.textureLoader.load(
-      createConstraintBadgeSvgDataUrl(objType, badgeState, theme)
-    )
-    texture.colorSpace = SRGBColorSpace
-    this.textureCache.set(key, texture)
-    return texture
   }
 }
 
@@ -175,14 +138,7 @@ function syncSprites(group: Group, count: number): Sprite[] {
   )
 
   while (sprites.length < count) {
-    const sprite = new Sprite(
-      new SpriteMaterial({
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
-        color: 0xffffff,
-      })
-    )
+    const sprite = createConstraintBadgeSprite()
     sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
     sprites.push(sprite)
@@ -376,7 +332,7 @@ function getHoverPreviewWorldPosition(
     sceneInfra
   )
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
-  const badgeSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX
+  const badgeSize = CONSTRAINT_BADGE_SIZE_PX
   const badgeGap = 4
   const viewportPadding = 4
   const totalRowWidth =
@@ -428,51 +384,6 @@ function unprojectScreenPosition(
   ).unproject(sceneInfra.camControls.camera)
 }
 
-function createConstraintBadgeSvgDataUrl(
-  objType: InvisibleConstraintObject['kind']['constraint']['type'],
-  badgeState: ConstraintBadgeState,
-  theme: Themes
-) {
-  const iconPath = getInvisibleConstraintSpriteIcon(objType)
-  const dpr = window.devicePixelRatio || 1
-  const rasterSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * dpr
-  const hasBorder = badgeState !== 'default'
-  const borderStroke = hasBorder
-    ? `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${
-        badgeState === 'hovered' ? 0.8 : 1
-      })`
-    : 'none'
-  const borderWidth = hasBorder ? 1 : 0
-  const rectInset = hasBorder ? 0.5 : 0
-  const badgeFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
-  const iconFill = theme === Themes.Dark ? '#000000' : '#FFFFFF'
-  const svg = `
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="${rasterSize}"
-      height="${rasterSize}"
-      viewBox="0 0 ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX} ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX}"
-      fill="none"
-    >
-      <rect
-        x="${rectInset}"
-        y="${rectInset}"
-        width="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
-        height="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
-        rx="2"
-        fill="${badgeFill}"
-        stroke="${borderStroke}"
-        stroke-width="${borderWidth}"
-      />
-      <path d="${iconPath}" fill="${iconFill}" />
-    </svg>
-  `.trim()
-
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-}
-
-type ConstraintBadgeState = 'default' | 'hovered' | 'selected'
-
 function getConstraintBadgeState(
   objId: number,
   selectedIds: number[],
@@ -487,25 +398,4 @@ function getConstraintBadgeState(
   }
 
   return 'default'
-}
-
-function getInvisibleConstraintSpriteIcon(
-  objType: InvisibleConstraintObject['kind']['constraint']['type']
-) {
-  switch (objType) {
-    case 'Coincident':
-      return constraintIconPaths.coincident
-    case 'Horizontal':
-      return constraintIconPaths.horizontal
-    case 'Vertical':
-      return constraintIconPaths.vertical
-    case 'LinesEqualLength':
-      return constraintIconPaths.equal
-    case 'Parallel':
-      return constraintIconPaths.parallel
-    case 'Perpendicular':
-      return constraintIconPaths.perpendicular
-    case 'Tangent':
-      return constraintIconPaths.tangent
-  }
 }

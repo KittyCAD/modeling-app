@@ -5,6 +5,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import {
   type ActionArgs,
   type AssignArgs,
@@ -20,6 +21,14 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { getSnappingCandidates } from '@src/machines/sketchSolve/snapping'
+import {
+  hideSnappingPreviewSprite,
+  updateSnappingPreviewSprite,
+} from '@src/machines/sketchSolve/snappingPreviewSprite'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import { Group } from 'three'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -67,6 +76,76 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
+function sendHoveredId(
+  self: ToolActionArgs['self'],
+  hoveredId: number | null
+) {
+  self._parent?.send({
+    type: 'update hovered id',
+    data: {
+      hoveredId,
+    },
+  })
+}
+
+function getBestSnappingCandidate({
+  self,
+  context,
+  mousePosition,
+}: {
+  self: ToolActionArgs['self']
+  context: ToolContext
+  mousePosition: Coords2d
+}) {
+  if (!context.draftPointId) {
+    return null
+  }
+
+  const snapshot = self._parent?.getSnapshot()
+  const sceneGraphDelta = snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
+  const objects = sceneGraphDelta?.new_graph?.objects
+  if (!objects) {
+    return null
+  }
+
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    objects,
+    context.sketchId
+  )
+  const draftPoint = currentSketchObjects[context.draftPointId]
+  if (!isPointSegment(draftPoint)) {
+    return null
+  }
+
+  return (
+    getSnappingCandidates(mousePosition, draftPoint, {
+      objects: currentSketchObjects,
+      sceneInfra: context.sceneInfra,
+    })[0] ?? null
+  )
+}
+
+function updateSnappingPreview({
+  context,
+  snappingCandidate,
+}: {
+  context: ToolContext
+  snappingCandidate: ReturnType<typeof getBestSnappingCandidate>
+}) {
+  const sketchSolveGroup = context.sceneInfra.scene.getObjectByName(
+    SKETCH_SOLVE_GROUP
+  )
+  if (!(sketchSolveGroup instanceof Group)) {
+    return
+  }
+
+  updateSnappingPreviewSprite({
+    sketchSolveGroup,
+    sceneInfra: context.sceneInfra,
+    targetPoint: snappingCandidate?.apiObject ?? null,
+  })
+}
+
 ////////////// --Actions-- //////////////////
 
 export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
@@ -76,7 +155,14 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       if (!args || !context.draftPointId) return
       const twoD = args.intersectionPoint?.twoD
       if (twoD && !isEditInProgress) {
-        // Send the add point event with the clicked coordinates
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          context,
+          mousePosition,
+        })
+        sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+        updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
@@ -131,6 +217,13 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       if (!args || !context.draftPointId) return
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          context,
+          mousePosition,
+        })
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         const isDoubleClick = args.mouseEvent.detail === 2
         // Set pending double-click flag immediately if detected
         if (isDoubleClick) {
@@ -140,8 +233,9 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         }
         self.send({
           type: 'add point',
-          data: [twoD.x, twoD.y],
+          data: [x, y],
           id: context.draftPointId,
+          snapTargetId: snappingCandidate?.apiObject.id,
           isDoubleClick,
         })
       }
@@ -176,7 +270,14 @@ export function addPointListener({ self, context }: ToolActionArgs) {
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function removePointListener({ context, self }: ToolActionArgs) {
+  sendHoveredId(self, null)
+  const sketchSolveGroup = context.sceneInfra.scene.getObjectByName(
+    SKETCH_SOLVE_GROUP
+  )
+  if (sketchSolveGroup instanceof Group) {
+    hideSnappingPreviewSprite(sketchSolveGroup)
+  }
   // Reset callbacks to remove the onClick and onMove listeners
   context.sceneInfra.setCallbacks({
     onClick: () => {},

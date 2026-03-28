@@ -78,7 +78,7 @@ export function createSketchSolveOriginSpriteSvgDataUrl(theme: Themes) {
   // So need to use backgroundFill based on the theme.
   // Other options would be:
   // - both transparent: make segment meshes transparent, which is slightly slower to render, but probably doesn't matter)
-  // - both opaque: render this svg via triangle geometry so it can be opaque. 
+  // - both opaque: render this svg via triangle geometry so it can be opaque.
   // - segments opaque, origin transparent: need to enable depthTest, depthWrite, z offsets.
   const backgroundFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
   const svg = `

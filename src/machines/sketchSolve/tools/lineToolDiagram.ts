@@ -107,6 +107,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           id: number
+          snapTargetId?: number
           lastLineEndPointId: number | undefined
           isDoubleClick: boolean
           rustContext: RustContext
@@ -130,6 +131,7 @@ export const machine = setup({
         const {
           pointData,
           id,
+          snapTargetId,
           lastLineEndPointId,
           isDoubleClick,
           rustContext,
@@ -140,6 +142,7 @@ export const machine = setup({
         const units = baseUnitToNumericSuffix(
           kclManager.fileSettings.defaultLengthUnit
         )
+        const settings = jsAppSettings(rustContext.settingsActor)
 
         try {
           // Note: x and y come from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
@@ -161,8 +164,33 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            jsAppSettings(rustContext.settingsActor)
+            settings
           )
+
+          let latestKclSource = result.kclSource
+          let latestSceneGraphDelta = result.sceneGraphDelta
+          let snapConstraintId: number | undefined
+          let snapConstraintNewObjects: Array<number> = []
+
+          if (snapTargetId !== undefined) {
+            const snapResult = await rustContext.addConstraint(
+              0,
+              sketchId,
+              {
+                type: 'Coincident',
+                segments: [id, snapTargetId],
+              },
+              settings
+            )
+            latestKclSource = snapResult.kclSource
+            latestSceneGraphDelta = snapResult.sceneGraphDelta
+            snapConstraintId = snapResult.sceneGraphDelta.new_objects.find(
+              (objId) =>
+                snapResult.sceneGraphDelta.new_graph.objects[objId]?.kind.type ===
+                'Constraint'
+            )
+            snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
+          }
 
           // After updating the point, create a new line segment chained from it (unless double-click)
           // The updated point (id) becomes the start of the new line segment
@@ -196,7 +224,7 @@ export const machine = setup({
               previousEndPointId, // previous line's end point ID
               newLineCtor,
               'line-segment',
-              jsAppSettings(rustContext.settingsActor)
+              settings
             )
 
             // Extract the new line segment from the chained result
@@ -244,6 +272,9 @@ export const machine = setup({
             if (constraintId !== undefined) {
               newlyAddedEntities.constraintIds.push(constraintId)
             }
+            if (snapConstraintId !== undefined) {
+              newlyAddedEntities.constraintIds.unshift(snapConstraintId)
+            }
 
             // Merge all results: point update + new line + constraint
             return {
@@ -252,6 +283,7 @@ export const machine = setup({
                 ...chainResult.sceneGraphDelta,
                 new_objects: [
                   ...result.sceneGraphDelta.new_objects,
+                  ...snapConstraintNewObjects,
                   ...chainResult.sceneGraphDelta.new_objects,
                 ],
               },
@@ -261,7 +293,16 @@ export const machine = setup({
           }
 
           // On double-click, just return the point update result without chaining
-          return result
+          return {
+            kclSource: latestKclSource,
+            sceneGraphDelta: {
+              ...latestSceneGraphDelta,
+              new_objects: [
+                ...result.sceneGraphDelta.new_objects,
+                ...snapConstraintNewObjects,
+              ],
+            },
+          }
         } catch (error) {
           console.error('Failed to add point segment:', error)
           return {
@@ -336,6 +377,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             id: event.id || 0,
+            snapTargetId: event.snapTargetId,
             lastLineEndPointId: context.lastLineEndPointId,
             isDoubleClick: event.isDoubleClick || false,
             rustContext: context.rustContext,
