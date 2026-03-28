@@ -376,4 +376,50 @@ subtract(cube001, tools = cube002)
 >
 </model-viewer>
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  line3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  line4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+block = extrude(baseRegion, length = 4mm, tagEnd = $top)
+
+sideSketch = startSketchOn(block, face = top)
+  |> startProfile(at = [0.5mm, 0.5mm])
+  |> line(end = [2mm, 0mm])
+  |> line(end = [0mm, 1mm])
+  |> line(end = [-2mm, 0mm])
+  |> close()
+
+tower = extrude(sideSketch, length = 1mm)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn7_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn7.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
