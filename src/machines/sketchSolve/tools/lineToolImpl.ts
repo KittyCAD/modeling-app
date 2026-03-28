@@ -76,10 +76,7 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-function sendHoveredId(
-  self: ToolActionArgs['self'],
-  hoveredId: number | null
-) {
+function sendHoveredId(self: ToolActionArgs['self'], hoveredId: number | null) {
   self._parent?.send({
     type: 'update hovered id',
     data: {
@@ -132,9 +129,8 @@ function updateSnappingPreview({
   context: ToolContext
   snappingCandidate: ReturnType<typeof getBestSnappingCandidate>
 }) {
-  const sketchSolveGroup = context.sceneInfra.scene.getObjectByName(
-    SKETCH_SOLVE_GROUP
-  )
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!(sketchSolveGroup instanceof Group)) {
     return
   }
@@ -272,9 +268,8 @@ export function addPointListener({ self, context }: ToolActionArgs) {
 
 export function removePointListener({ context, self }: ToolActionArgs) {
   sendHoveredId(self, null)
-  const sketchSolveGroup = context.sceneInfra.scene.getObjectByName(
-    SKETCH_SOLVE_GROUP
-  )
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (sketchSolveGroup instanceof Group) {
     hideSnappingPreviewSprite(sketchSolveGroup)
   }

@@ -186,8 +186,8 @@ export const machine = setup({
             latestSceneGraphDelta = snapResult.sceneGraphDelta
             snapConstraintId = snapResult.sceneGraphDelta.new_objects.find(
               (objId) =>
-                snapResult.sceneGraphDelta.new_graph.objects[objId]?.kind.type ===
-                'Constraint'
+                snapResult.sceneGraphDelta.new_graph.objects[objId]?.kind
+                  .type === 'Constraint'
             )
             snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
           }
