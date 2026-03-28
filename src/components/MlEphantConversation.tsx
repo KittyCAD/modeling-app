@@ -259,20 +259,36 @@ export const MlEphantConversationInput = (
     setAttachments([])
   }
 
+  const deduplicateFileName = (
+    name: string,
+    existingNames: string[]
+  ): string => {
+    if (!existingNames.includes(name)) return name
+    const dotIndex = name.lastIndexOf('.')
+    const base = dotIndex !== -1 ? name.slice(0, dotIndex) : name
+    const ext = dotIndex !== -1 ? name.slice(dotIndex) : ''
+    let i = 1
+    while (existingNames.includes(`${base}-${i}${ext}`)) i++
+    return `${base}-${i}${ext}`
+  }
+
   const appendAttachments = (files: File[]) => {
     if (!files.length) return
     setAttachments((current) => {
       const next = [...current]
       for (const file of files) {
-        const exists = next.some(
-          (existing) =>
-            existing.name === file.name &&
-            existing.size === file.size &&
-            (existing.lastModified === file.lastModified ||
-              existing.lastModified === 0 ||
-              file.lastModified === 0)
+        const newName = deduplicateFileName(
+          file.name,
+          next.map((f) => f.name)
         )
-        if (!exists) {
+        if (newName !== file.name) {
+          next.push(
+            new File([file], newName, {
+              type: file.type,
+              lastModified: file.lastModified,
+            })
+          )
+        } else {
           next.push(file)
         }
       }
