@@ -112,7 +112,7 @@ jobs:
         run: npm run playwright install --with-deps
 
       - name: npm run test:snapshots
-        uses: nick-fields/retry@v3.0.2
+        uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
           command: npm run test:snapshots
@@ -256,7 +256,7 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
 
       - name: npm run test:e2e:web
-        uses: nick-fields/retry@v3.0.2
+        uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
           command: npm run test:e2e:web
@@ -395,7 +395,7 @@ jobs:
       - name: npm run test:e2e:desktop
         id: retry
         if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
-        uses: nick-fields/retry@v3.0.2
+        uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}

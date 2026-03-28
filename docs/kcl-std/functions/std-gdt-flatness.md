@@ -108,4 +108,35 @@ gdt::flatness(
 
 ![Rendered example of gdt::flatness 2](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness2.png)
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+gdt::flatness(
+  faces = [top],
+  tolerance = 0.05mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)
+
+```
+
+
+![Rendered example of gdt::flatness 3](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness3.png)
+
 

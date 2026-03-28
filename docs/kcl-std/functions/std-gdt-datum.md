@@ -68,4 +68,36 @@ gdt::datum(
 
 ![Rendered example of gdt::datum 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-datum0.png)
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])
+  edge3 = line(start = [var 8mm, var 5mm], end = [var 0mm, var 5mm])
+  edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+
+gdt::datum(
+  face = top,
+  name = "A",
+  framePosition = [10mm, 0mm],
+  framePlane = XZ,
+)
+
+```
+
+
+![Rendered example of gdt::datum 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-datum1.png)
+
 
