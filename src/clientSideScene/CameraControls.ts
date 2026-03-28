@@ -178,7 +178,7 @@ export class CameraControls {
   }) {
     const { left, top, width, height } = this.domElement.getBoundingClientRect()
     if (width === 0 || height === 0) {
-      return { x: clientX, y: clientY }
+      return { x: 0, y: 0 }
     }
 
     return {
