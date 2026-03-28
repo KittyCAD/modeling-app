@@ -12,6 +12,8 @@ pub use artifact::ArtifactCommand;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::ArtifactGraph;
 #[cfg(feature = "artifact-graph")]
+pub use artifact::CapSubType;
+#[cfg(feature = "artifact-graph")]
 pub use artifact::CodeRef;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlock;

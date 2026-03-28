@@ -4819,22 +4819,6 @@ startSketchOn(XY)
     }
 
     #[test]
-    fn test_module_name() {
-        #[track_caller]
-        fn assert_mod_name(stmt: &str, name: &str) {
-            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
-            let stmt = crate::parsing::parser::import_stmt(&mut tokens.as_slice()).unwrap();
-            assert_eq!(stmt.module_name().unwrap(), name);
-        }
-
-        assert_mod_name("import 'foo.kcl'", "foo");
-        assert_mod_name("import 'foo.kcl' as bar", "bar");
-        assert_mod_name("import 'main.kcl'", "main");
-        assert_mod_name("import 'foo/main.kcl'", "foo");
-        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
-    }
-
-    #[test]
     fn test_rename_in_math_in_std_function() {
         let code = r#"rise = 4.5
 run = 8

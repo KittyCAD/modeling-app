@@ -192,8 +192,8 @@ pub mod front {
     pub use crate::frontend::{
         FrontendState, SetProgramOutcome,
         api::{
-            Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
-            Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
+            Cap, CapKind, Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane,
+            ProjectId, Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version, Wall,
         },
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Fixed,

@@ -187,7 +187,7 @@ import {
   updateSelections,
 } from '@src/lib/selections'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
+import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type {
@@ -213,7 +213,6 @@ export type ModelingMachineEvent =
       data?: {
         forceNewSketch?: boolean
         keepDefaultPlaneVisibility?: boolean
-        forceSketchSolveMode?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -1224,14 +1223,6 @@ export const modelingMachine = setup({
       }
       void context.kclManager.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
-    }),
-    'force sketch solve mode': assign(({ event }) => {
-      if (event.type !== 'Enter sketch' || !event.data?.forceSketchSolveMode)
-        return {}
-      return { forceSketchSolveMode: true }
-    }),
-    'reset default sketch mode': assign({
-      forceSketchSolveMode: undefined,
     }),
     'setup noPoints onClick listener': ({
       context: {
@@ -2950,7 +2941,7 @@ export const modelingMachine = setup({
             sceneEntitiesManager: kclManager.sceneEntitiesManager,
             sceneInfra: kclManager.sceneInfra,
           })
-          if (!err(offsetResult) && offsetResult) {
+          if (!isErr(offsetResult) && offsetResult) {
             result = offsetResult
           }
         }
@@ -2992,19 +2983,43 @@ export const modelingMachine = setup({
             // Construct SketchCtor based on the result
             let sketchArgs: SketchCtor
 
-            // Determine the plane type from the result
+            const setProgramOutcome = await rustContext.hackSetProgram(
+              kclManager.ast,
+              jsAppSettings(rustContext.settingsActor)
+            )
             if (result.type === 'defaultPlane') {
               sketchArgs = {
                 on: { default: toPlaneName(result.plane) },
               }
             } else {
-              sketchArgs = { on: { default: 'xy' } }
+              if (setProgramOutcome.type !== 'Success') {
+                return Promise.reject(
+                  new Error(
+                    'Could not update SceneGraph before creating sketch'
+                  )
+                )
+              }
+
+              const selectedArtifactId =
+                result.type === 'extrudeFace' ? result.faceId : result.planeId
+              const selectedSceneObject =
+                setProgramOutcome.sceneGraph.objects.find(
+                  (object) => object.artifact_id === selectedArtifactId
+                )
+
+              if (!selectedSceneObject) {
+                return Promise.reject(
+                  new Error(
+                    `Could not find SceneGraph object for artifact ${selectedArtifactId}`
+                  )
+                )
+              }
+
+              sketchArgs = {
+                on: { object: selectedSceneObject.id },
+              }
             }
 
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
             const newSketchResult = await rustContext.newSketch(
               0, // projectId - using 0 as placeholder
               0, // fileId - using 0 as placeholder
@@ -3074,6 +3089,9 @@ export const modelingMachine = setup({
           sceneInfra: kclManager.sceneInfra,
           rustContext,
           sceneEntitiesManager: kclManager.sceneEntitiesManager,
+          ast: kclManager.ast,
+          execState: kclManager.execState,
+          wasmInstance: await kclManager.wasmInstancePromise,
         }
 
         // Get the sketchBlock artifact from the artifact graph
@@ -5302,7 +5320,6 @@ export const modelingMachine = setup({
               ({ context }) => {
                 context.kclManager.sceneInfra.animate()
               },
-              'force sketch solve mode',
             ],
           },
         ],
@@ -6771,11 +6788,7 @@ export const modelingMachine = setup({
         'enter sketching mode',
       ],
 
-      exit: [
-        'hide default planes',
-        'set selection filter to defaults',
-        'reset default sketch mode',
-      ],
+      exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
         'Select sketch plane': {
           target: 'animating to plane',
