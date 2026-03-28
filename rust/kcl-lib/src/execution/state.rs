@@ -50,7 +50,6 @@ use crate::execution::types::NumericType;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
-#[cfg(feature = "artifact-graph")]
 use crate::id::IncIdGenerator;
 use crate::modules::ModuleId;
 use crate::modules::ModuleInfo;
@@ -136,7 +135,10 @@ pub struct ModuleArtifactState {
 
 #[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct ModuleArtifactState {}
+pub struct ModuleArtifactState {
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+}
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
@@ -179,8 +181,6 @@ pub(super) struct ModuleState {
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
-    #[cfg(not(feature = "artifact-graph"))]
-    pub object_id_generator: usize,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -360,24 +360,10 @@ impl ExecState {
             }
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn next_object_id(&mut self) -> ObjectId {
-        let next_id = self.mod_local.object_id_generator;
-        self.mod_local.object_id_generator += 1;
-        ObjectId(next_id)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn peek_object_id(&self) -> ObjectId {
-        ObjectId(self.mod_local.object_id_generator)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
@@ -886,8 +872,6 @@ impl ModuleState {
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
-            #[cfg(not(feature = "artifact-graph"))]
-            object_id_generator: Default::default(),
         }
     }
 

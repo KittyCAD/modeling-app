@@ -65,7 +65,6 @@ mod execution;
 mod fmt;
 mod frontend;
 mod fs;
-#[cfg(feature = "artifact-graph")]
 pub(crate) mod id;
 pub mod lint;
 mod log;
