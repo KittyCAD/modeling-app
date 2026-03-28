@@ -179,6 +179,8 @@ pub(super) struct ModuleState {
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+    #[cfg(not(feature = "artifact-graph"))]
+    pub object_id_generator: usize,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -360,9 +362,9 @@ impl ExecState {
 
     #[cfg(not(feature = "artifact-graph"))]
     pub fn next_object_id(&mut self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
+        let next_id = self.mod_local.object_id_generator;
+        self.mod_local.object_id_generator += 1;
+        ObjectId(next_id)
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -372,9 +374,7 @@ impl ExecState {
 
     #[cfg(not(feature = "artifact-graph"))]
     pub fn peek_object_id(&self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
+        ObjectId(self.mod_local.object_id_generator)
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -886,6 +886,8 @@ impl ModuleState {
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
+            #[cfg(not(feature = "artifact-graph"))]
+            object_id_generator: Default::default(),
         }
     }
 
