@@ -24,7 +24,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   11["SketchBlockConstraint Coincident<br>[588, 617, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  12["SketchBlockConstraint Fixed<br>[672, 693, 0]"]
+  12["SketchBlockConstraint Coincident<br>[672, 693, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   13["SketchBlockConstraint Coincident<br>[777, 804, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]

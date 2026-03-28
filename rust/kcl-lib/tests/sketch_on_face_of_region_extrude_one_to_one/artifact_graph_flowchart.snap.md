@@ -114,7 +114,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   60["SketchBlockConstraint Horizontal<br>[1264, 1281, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  61["SketchBlockConstraint Fixed<br>[1284, 1320, 0]"]
+  61["SketchBlockConstraint Coincident<br>[1284, 1320, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   62["SketchBlockConstraint Distance<br>[1323, 1367, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]

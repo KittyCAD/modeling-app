@@ -61,6 +61,8 @@ use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
@@ -791,7 +793,10 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "points",
-        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![RuntimeType::segment(), RuntimeType::point2d()])),
+            ArrayLen::Known(2),
+        ),
         exec_state,
     )?;
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
@@ -1237,11 +1242,209 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 ))),
             }
         }
-        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "All inputs must be segments (points or lines), created from point(), line(), or another sketch function"
-                .to_owned(),
-            vec![args.source_range],
-        ))),
+        // One argument is a Segment and the other is a Point2d literal.
+        (KclValue::Segment { value: seg }, point2d) | (point2d, KclValue::Segment { value: seg }) => {
+            let Some(pt) = <[TyF64; 2]>::from_kcl_val(point2d) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Expected a Segment or Point2d (e.g. [1mm, 2mm])".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved } = &seg.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "segment must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            match &unsolved.kind {
+                UnsolvedSegmentKind::Point { position, .. } => {
+                    let p_x = &position[0];
+                    let p_y = &position[1];
+                    match (p_x, p_y) {
+                        (UnsolvedExpr::Unknown(p_x), UnsolvedExpr::Unknown(p_y)) => {
+                            let pt_x = KclValue::Number {
+                                value: pt[0].n,
+                                ty: pt[0].ty,
+                                meta: vec![args.source_range.into()],
+                            };
+                            let pt_y = KclValue::Number {
+                                value: pt[1].n,
+                                ty: pt[1].ty,
+                                meta: vec![args.source_range.into()],
+                            };
+                            let (constraint_x, constraint_y) =
+                                coincident_constraints_fixed(*p_x, *p_y, &pt_x, &pt_y, exec_state, &args)?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "coincident() can only be used inside a sketch block".to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            };
+                            sketch_state.solver_constraints.push(constraint_x);
+                            sketch_state.solver_constraints.push(constraint_y);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                let constraint = crate::front::Constraint::Coincident(Coincident {
+                                    segments: vec![unsolved.object_id],
+                                });
+                                sketch_state.sketch_constraints.push(constraint_id);
+                                track_constraint(constraint_id, constraint, exec_state, &args);
+                            }
+                            Ok(KclValue::none())
+                        }
+                        (UnsolvedExpr::Known(known_x), UnsolvedExpr::Known(known_y)) => {
+                            let pt_x_val = normalize_to_solver_distance_unit(
+                                &KclValue::Number {
+                                    value: pt[0].n,
+                                    ty: pt[0].ty,
+                                    meta: vec![args.source_range.into()],
+                                },
+                                args.source_range,
+                                exec_state,
+                                "coincident constraint value",
+                            )?;
+                            let pt_y_val = normalize_to_solver_distance_unit(
+                                &KclValue::Number {
+                                    value: pt[1].n,
+                                    ty: pt[1].ty,
+                                    meta: vec![args.source_range.into()],
+                                },
+                                args.source_range,
+                                exec_state,
+                                "coincident constraint value",
+                            )?;
+                            let Some(pt_x) = pt_x_val.as_ty_f64() else {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Expected number for Point2d x coordinate".to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            };
+                            let Some(pt_y) = pt_y_val.as_ty_f64() else {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Expected number for Point2d y coordinate".to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            };
+                            let known_x_val = normalize_to_solver_distance_unit(
+                                &KclValue::Number {
+                                    value: known_x.n,
+                                    ty: known_x.ty,
+                                    meta: vec![args.source_range.into()],
+                                },
+                                args.source_range,
+                                exec_state,
+                                "coincident constraint value",
+                            )?;
+                            let Some(known_x_f) = known_x_val.as_ty_f64() else {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Expected number for known x coordinate".to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            };
+                            let known_y_val = normalize_to_solver_distance_unit(
+                                &KclValue::Number {
+                                    value: known_y.n,
+                                    ty: known_y.ty,
+                                    meta: vec![args.source_range.into()],
+                                },
+                                args.source_range,
+                                exec_state,
+                                "coincident constraint value",
+                            )?;
+                            let Some(known_y_f) = known_y_val.as_ty_f64() else {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Expected number for known y coordinate".to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            };
+                            if known_x_f.n != pt_x.n || known_y_f.n != pt_y.n {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Coincident constraint between two fixed points failed since coordinates differ"
+                                        .to_owned(),
+                                    vec![args.source_range],
+                                )));
+                            }
+                            Ok(KclValue::none())
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must have consistent known/unknown status for coincident constraint"
+                                .to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "A Point2d can only be constrained coincident with a point segment, not a line or arc".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
+        // Both arguments are Point2d literals -- just verify equality.
+        _ => {
+            let pt0 = <[TyF64; 2]>::from_kcl_val(&point0);
+            let pt1 = <[TyF64; 2]>::from_kcl_val(&point1);
+            match (pt0, pt1) {
+                (Some(a), Some(b)) => {
+                    // Normalize both to solver units and compare.
+                    let a_x = normalize_to_solver_distance_unit(
+                        &KclValue::Number {
+                            value: a[0].n,
+                            ty: a[0].ty,
+                            meta: vec![args.source_range.into()],
+                        },
+                        args.source_range,
+                        exec_state,
+                        "coincident constraint value",
+                    )?;
+                    let a_y = normalize_to_solver_distance_unit(
+                        &KclValue::Number {
+                            value: a[1].n,
+                            ty: a[1].ty,
+                            meta: vec![args.source_range.into()],
+                        },
+                        args.source_range,
+                        exec_state,
+                        "coincident constraint value",
+                    )?;
+                    let b_x = normalize_to_solver_distance_unit(
+                        &KclValue::Number {
+                            value: b[0].n,
+                            ty: b[0].ty,
+                            meta: vec![args.source_range.into()],
+                        },
+                        args.source_range,
+                        exec_state,
+                        "coincident constraint value",
+                    )?;
+                    let b_y = normalize_to_solver_distance_unit(
+                        &KclValue::Number {
+                            value: b[1].n,
+                            ty: b[1].ty,
+                            meta: vec![args.source_range.into()],
+                        },
+                        args.source_range,
+                        exec_state,
+                        "coincident constraint value",
+                    )?;
+                    if a_x.as_ty_f64().map(|v| v.n) != b_x.as_ty_f64().map(|v| v.n)
+                        || a_y.as_ty_f64().map(|v| v.n) != b_y.as_ty_f64().map(|v| v.n)
+                    {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Coincident constraint between two fixed points failed since coordinates differ".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                    Ok(KclValue::none())
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "All inputs must be Segments or Point2d values".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
     }
 }
 

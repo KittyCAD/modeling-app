@@ -45,7 +45,7 @@ import {
   enableMenu,
 } from '@src/menu'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificates'
+import { configureSystemCertificates } from '@src/systemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
@@ -59,8 +59,8 @@ if (
   app.commandLine.appendSwitch('ozone-platform', 'x11')
 }
 
-// If we're on Windows, pull the local system TLS CAs in
-configureWindowsSystemCertificates()
+// Pull user and system CAs from the OS trust store into Node TLS.
+configureSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
 let isInstallingUpdate = false

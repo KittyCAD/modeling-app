@@ -381,12 +381,15 @@ pub struct Diameter {
     pub source: ConstraintSource,
 }
 
+/// Multiple fixed constraints, allowing callers to add fixed constraints on
+/// multiple points at once.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Fixed {
     pub points: Vec<FixedPoint>,
 }
 
+/// A fixed constraint on a single point.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct FixedPoint {

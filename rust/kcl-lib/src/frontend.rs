@@ -4530,17 +4530,8 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
-/// Create an AST node for `fixed(point) == [x, y]`.
+/// Create an AST node for `fixed([point, [x, y]])`.
 fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
-    // Create fixed(point) call.
-    let fixed_call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
-        unlabeled: Some(point_expr),
-        arguments: Default::default(),
-        digest: None,
-        non_code_meta: Default::default(),
-    })));
-
     // Create [x, y] array literal.
     let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.x,
@@ -4548,21 +4539,27 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
     let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.y,
     )?))));
-    let point_array = ast::BinaryPart::try_from(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-        ast::ArrayExpression {
-            elements: vec![x_literal, y_literal],
+    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![x_literal, y_literal],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create [point, [x, y]] outer array.
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![point_expr, point_array],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create fixed([...])
+    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+        ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
+            unlabeled: Some(array_expr),
+            arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
-        },
-    ))))
-    .map_err(|err| anyhow::anyhow!(err))?;
-
-    Ok(ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(
-        ast::BinaryExpression {
-            left: fixed_call,
-            operator: ast::BinaryOperator::Eq,
-            right: point_array,
-            digest: None,
         },
     ))))
 }
@@ -5660,7 +5657,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  fixed(line1.start) == [0, 0]
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5707,7 +5704,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
-  fixed(line1.start) == [0, 0]
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -6765,7 +6762,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
-  fixed(point1) == [2mm, 3mm]
+  fixed([point1, [2mm, 3mm]])
 }
 "
         );
@@ -6852,8 +6849,8 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  fixed(point1) == [2mm, 3mm]
-  fixed(point2) == [4mm, 5mm]
+  fixed([point1, [2mm, 3mm]])
+  fixed([point2, [4mm, 5mm]])
 }
 "
         );
@@ -6922,7 +6919,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  fixed(line1.start) == [2mm, 3mm]
+  fixed([line1.start, [2mm, 3mm]])
 }
 "
         );

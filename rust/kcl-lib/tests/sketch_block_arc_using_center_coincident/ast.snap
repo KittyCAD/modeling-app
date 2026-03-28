@@ -1319,82 +1319,86 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                   "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "fixed",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "p1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
+                        "name": "fixed",
                         "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
                     },
+                    "commentStart": 0,
+                    "end": 0,
                     "moduleId": 0,
-                    "operator": "==",
-                    "right": {
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
                       "commentStart": 0,
                       "elements": [
                         {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "1mm",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "p1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "Mm"
-                          }
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "commentStart": 0,
+                          "elements": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "1mm",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 1.0,
+                                "suffix": "Mm"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          ],
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "0",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
                         }
                       ],
                       "end": 0,
@@ -1402,10 +1406,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
+                    }
                   },
                   "moduleId": 0,
                   "start": 0,

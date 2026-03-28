@@ -1788,6 +1788,22 @@ export const useToolbarConfig = () => {
             links: [],
             isActive: (state) => false,
           },
+          {
+            id: 'show-constraints',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'toggle non-visual constraints',
+              }),
+            icon: 'eyeOpen',
+            status: 'available',
+            title: 'Show constraints',
+            description:
+              'Toggle visibility for sketch constraints that do not have their own UI yet.',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.showNonVisualConstraints,
+          },
         ],
       },
     }),

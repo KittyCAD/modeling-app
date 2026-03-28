@@ -67,6 +67,14 @@ export function isArcLikeSegment(
 ): obj is ArcSegment | CircleSegment {
   return isArcSegment(obj) || isCircleSegment(obj)
 }
+
+export function isConstruction(obj: ApiObject | undefined | null): boolean {
+  return (
+    (isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)) &&
+    obj.kind.segment.construction === true
+  )
+}
+
 export function getLinePointSegments(
   lineObj: ApiObject | undefined | null,
   objects: ApiObject[]

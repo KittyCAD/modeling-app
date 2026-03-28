@@ -90,6 +90,8 @@ const Toolbar_ = memo(
       (Object.entries(toolbarConfig).find(([_, mode]) =>
         mode.check(props.state)
       )?.[0] as ToolbarModeName) || 'modeling'
+    const showNonVisualConstraints =
+      props.state.context.showNonVisualConstraints
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -220,7 +222,13 @@ const Toolbar_ = memo(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
+    }, [
+      currentMode,
+      disableAllButtons,
+      configCallbackProps,
+      wasmInstance,
+      showNonVisualConstraints,
+    ])
 
     // To remember the last selected item in an ActionButtonDropdown
     const [lastSelectedMultiActionItem, _] = useState(

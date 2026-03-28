@@ -34,7 +34,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<Freedom> {
             point_freedoms.push((obj.id.0, point.freedom));
         }
     }
-    // Sort by object ID so the freedom list is stable even if scene object IDs shift.
+    // Sort by object ID for consistent ordering
     point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
     point_freedoms.into_iter().map(|(_, freedom)| freedom).collect()

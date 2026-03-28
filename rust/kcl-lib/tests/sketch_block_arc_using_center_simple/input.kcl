@@ -2,10 +2,10 @@
 
 s = sketch(on = XY) {
   arc1 = arc(start = [var 1mm, var 0], end = [var 0, var 2mm], center = [var 0, var 0])
-  fixed(arc1.start) == [1mm, 0mm]
+  fixed([arc1.start, [1mm, 0mm]])
   arc1.end.at[0] == 0mm
   // arc1.end.at[1] not specified. Based on other constraints, it should solve.
-  fixed(arc1.center) == [0mm, 0mm]
+  fixed([arc1.center, [0mm, 0mm]])
 }
 
 assert(s.arc1.center.at[0], isEqualTo = 0)

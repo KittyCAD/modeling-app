@@ -10,9 +10,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   4["SketchBlock<br>[45, 325, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  5["SketchBlockConstraint Fixed<br>[153, 184, 0]"]
+  5["SketchBlockConstraint Coincident<br>[153, 184, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  6["SketchBlockConstraint Fixed<br>[291, 323, 0]"]
+  6["SketchBlockConstraint Coincident<br>[291, 323, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 4
