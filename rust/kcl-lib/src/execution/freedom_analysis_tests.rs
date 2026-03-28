@@ -7,8 +7,9 @@ use crate::execution::ContextType;
 use crate::execution::MockConfig;
 use crate::front::Freedom;
 use crate::front::ObjectKind;
+use crate::frontend::api::ObjectId;
 
-async fn run_with_freedom_analysis(kcl: &str) -> Vec<Freedom> {
+async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
 
     let exec_ctxt = ExecutorContext {
@@ -31,13 +32,13 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<Freedom> {
             segment: crate::front::Segment::Point(point),
         } = &obj.kind
         {
-            point_freedoms.push((obj.id.0, point.freedom));
+            point_freedoms.push((obj.id, point.freedom));
         }
     }
     // Sort by object ID for consistent ordering
     point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
-    point_freedoms.into_iter().map(|(_, freedom)| freedom).collect()
+    point_freedoms
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -68,16 +69,23 @@ distance([line3.start, line3.end]) == 6mm
     // Expected: line1 has both ends constrained -> Fixed, Fixed
     //           line2 has one end constrained -> Fixed, Free (but currently shows Fixed, Conflict - bug)
     //           line3 has conflicting distance constraints -> Conflict, Conflict (but currently shows Free, Free - bug)
+    // Note: IDs skip every third because segments don't get freedom values
+    // Format: (ObjectId, Freedom)
+
     let expected = vec![
-        Freedom::Fixed,
-        Freedom::Fixed,
-        Freedom::Fixed,
-        Freedom::Free,
-        Freedom::Conflict,
-        Freedom::Conflict,
+        (ObjectId(2), Freedom::Fixed),
+        (ObjectId(3), Freedom::Fixed),
+        (ObjectId(5), Freedom::Fixed),
+        (ObjectId(6), Freedom::Free),
+        (ObjectId(8), Freedom::Conflict),
+        (ObjectId(9), Freedom::Conflict),
     ];
 
-    assert_eq!(point_freedoms, expected, "Point freedoms should match expected values.");
+    // This assertion will fail until the bug is fixed
+    assert_eq!(
+        point_freedoms, expected,
+        "Point freedoms should match expected values. Current behavior shows bugs with conflicts and reordered lines."
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -110,12 +118,12 @@ distance([line3.start, line3.end]) == 4mm
 
     // Expected: Fixed, Fixed, Fixed, Free, Free, Free
     let expected = vec![
-        Freedom::Fixed,
-        Freedom::Fixed,
-        Freedom::Fixed,
-        Freedom::Free,
-        Freedom::Free,
-        Freedom::Free,
+        (ObjectId(2), Freedom::Fixed),
+        (ObjectId(3), Freedom::Fixed),
+        (ObjectId(5), Freedom::Fixed),
+        (ObjectId(6), Freedom::Free),
+        (ObjectId(8), Freedom::Free),
+        (ObjectId(9), Freedom::Free),
     ];
 
     assert_eq!(point_freedoms, expected, "Point freedoms should match expected values");
@@ -151,15 +159,19 @@ line2.start.at[1] == 1
     //           line2 has one end constrained -> Fixed, Free
 
     let expected = vec![
-        Freedom::Fixed,
-        Freedom::Fixed,
-        Freedom::Conflict,
-        Freedom::Conflict,
-        Freedom::Fixed,
-        Freedom::Free,
+        (ObjectId(2), Freedom::Fixed),
+        (ObjectId(3), Freedom::Fixed),
+        (ObjectId(5), Freedom::Conflict),
+        (ObjectId(6), Freedom::Conflict),
+        (ObjectId(10), Freedom::Fixed),
+        (ObjectId(11), Freedom::Free),
     ];
 
-    assert_eq!(point_freedoms, expected, "Point freedoms should match expected values.");
+    // This assertion will fail until the bug is fixed
+    assert_eq!(
+        point_freedoms, expected,
+        "Point freedoms should match expected values. Current behavior shows bug where line3.end is Free instead of Conflict."
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -181,12 +193,12 @@ sketch(on = YZ) {
     // With 0 constraints, ALL points should be Free (underconstrained)
     // This test would have failed before the fix, where all points were incorrectly marked as Fixed
     let expected = vec![
-        Freedom::Free,
-        Freedom::Free,
-        Freedom::Free,
-        Freedom::Free,
-        Freedom::Free,
-        Freedom::Free,
+        (ObjectId(2), Freedom::Free),
+        (ObjectId(3), Freedom::Free),
+        (ObjectId(5), Freedom::Free),
+        (ObjectId(6), Freedom::Free),
+        (ObjectId(8), Freedom::Free),
+        (ObjectId(9), Freedom::Free),
     ];
 
     assert_eq!(

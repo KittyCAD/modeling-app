@@ -535,10 +535,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
-        ("sketch2", "fixed") => (
-            |e, a| Box::pin(crate::std::constraints::fixed(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch2::fixed"),
-        ),
         ("sketch2", "radius") => (
             |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::radius"),

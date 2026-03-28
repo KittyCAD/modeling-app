@@ -2943,14 +2943,6 @@ impl Node<BinaryExpression> {
                             exec_state,
                             "fixed constraint value",
                         )?,
-                        // Fixed expects a Point2d, not a single number.
-                        SketchConstraintKind::Fixed { .. } => {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "fixed() constraint value must be a Point2d (e.g. [1mm, 2mm]), not a single number"
-                                    .to_owned(),
-                                vec![self.into()],
-                            )));
-                        }
                     };
                     let Some(n) = number_value.as_ty_f64() else {
                         let message = format!(
@@ -3512,148 +3504,6 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        // Fixed is handled by the SketchConstraint + HomArray arm,
-                        // not SketchConstraint + Number. We return an error above
-                        // for Fixed + Number, so this should not be reached.
-                        SketchConstraintKind::Fixed { .. } => {
-                            let message =
-                                "Fixed constraint should have been handled by the Fixed + Number error arm above"
-                                    .to_owned();
-                            debug_assert!(false, "{}", &message);
-                            return Err(internal_err(message, self));
-                        }
-                    }
-                    return Ok(KclValue::Bool { value: true, meta });
-                }
-                // One sketch constraint (fixed), one Point2d array.
-                (KclValue::SketchConstraint { value: constraint }, KclValue::HomArray { value: arr, .. })
-                | (KclValue::HomArray { value: arr, .. }, KclValue::SketchConstraint { value: constraint })
-                    if matches!(constraint.kind, SketchConstraintKind::Fixed { .. }) =>
-                {
-                    let SketchConstraintKind::Fixed { ref point } = constraint.kind else {
-                        let message = "Fixed constraint match guard should guarantee Fixed kind here".to_owned();
-                        debug_assert!(false, "{}", &message);
-                        return Err(internal_err(message, self));
-                    };
-                    if arr.len() != 2 {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            format!(
-                                "fixed() constraint value must be a Point2d (array of 2 numbers), got array of length {}",
-                                arr.len()
-                            ),
-                            vec![self.into()],
-                        )));
-                    }
-                    let x_value = normalize_to_solver_distance_unit(
-                        &arr[0],
-                        (&arr[0]).into(),
-                        exec_state,
-                        "fixed constraint x value",
-                    )?;
-                    let y_value = normalize_to_solver_distance_unit(
-                        &arr[1],
-                        (&arr[1]).into(),
-                        exec_state,
-                        "fixed constraint y value",
-                    )?;
-                    let Some(nx) = x_value.as_ty_f64() else {
-                        let message = format!(
-                            "Expected number after coercion for x, but found {}",
-                            x_value.human_friendly_type()
-                        );
-                        debug_assert!(false, "{}", &message);
-                        return Err(internal_err(message, self));
-                    };
-                    let Some(ny) = y_value.as_ty_f64() else {
-                        let message = format!(
-                            "Expected number after coercion for y, but found {}",
-                            y_value.human_friendly_type()
-                        );
-                        debug_assert!(false, "{}", &message);
-                        return Err(internal_err(message, self));
-                    };
-                    let range = self.as_source_range();
-                    let constraint_x = Constraint::Fixed(point.vars.x.to_constraint_id(range)?, nx.n);
-                    let constraint_y = Constraint::Fixed(point.vars.y.to_constraint_id(range)?, ny.n);
-                    {
-                        let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
-                            let message =
-                                "Being inside a sketch block should have already been checked above".to_owned();
-                            debug_assert!(false, "{}", &message);
-                            return Err(internal_err(message, self));
-                        };
-                        sketch_block_state.solver_constraints.push(constraint_x);
-                        sketch_block_state.solver_constraints.push(constraint_y);
-                    }
-                    #[cfg(feature = "artifact-graph")]
-                    {
-                        use crate::execution::Artifact;
-                        use crate::execution::CodeRef;
-                        use crate::execution::SketchBlockConstraint;
-                        use crate::execution::SketchBlockConstraintType;
-
-                        exec_state.push_op(Operation::StdLibCall {
-                            name: "fixed".to_owned(),
-                            unlabeled_arg: None,
-                            labeled_args: IndexMap::new(),
-                            node_path: NodePath::placeholder(),
-                            source_range: range,
-                            stdlib_entry_source_range: exec_state.mod_local.stdlib_entry_source_range,
-                            is_error: false,
-                        });
-
-                        // Create a single constraint artifact for both axes.
-                        let constraint_id = exec_state.next_object_id();
-                        let constraint_x_value = nx
-                            .try_into()
-                            .map_err(|_| internal_err("Failed to convert fixed x units numeric suffix:", range))?;
-                        let constraint_y_value = ny
-                            .try_into()
-                            .map_err(|_| internal_err("Failed to convert fixed y units numeric suffix:", range))?;
-                        let frontend_constraint = crate::front::Constraint::Fixed(crate::front::Fixed {
-                            points: vec![crate::front::FixedPoint {
-                                point: point.object_id,
-                                position: crate::front::Point2d {
-                                    x: constraint_x_value,
-                                    y: constraint_y_value,
-                                },
-                            }],
-                        });
-                        let sketch_id = {
-                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
-                                let message = "Sketch id missing for constraint artifact".to_owned();
-                                debug_assert!(false, "{}", &message);
-                                return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
-                            };
-                            sketch_block_state.sketch_constraints.push(constraint_id);
-                            sketch_block_state.sketch_id
-                        };
-                        let Some(sketch_id) = sketch_id else {
-                            let message = "Sketch id missing for constraint artifact".to_owned();
-                            debug_assert!(false, "{}", &message);
-                            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
-                        };
-                        let artifact_id = exec_state.next_artifact_id();
-                        exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
-                            id: artifact_id,
-                            sketch_id,
-                            constraint_id,
-                            constraint_type: SketchBlockConstraintType::from(&frontend_constraint),
-                            code_ref: CodeRef::placeholder(range),
-                        }));
-                        exec_state.add_scene_object(
-                            Object {
-                                id: constraint_id,
-                                kind: ObjectKind::Constraint {
-                                    constraint: frontend_constraint,
-                                },
-                                label: Default::default(),
-                                comments: Default::default(),
-                                artifact_id,
-                                source: range.into(),
-                            },
-                            range,
-                        );
                     }
                     return Ok(KclValue::Bool { value: true, meta });
                 }
@@ -4852,35 +4702,6 @@ y = x[0mm + 1]
         );
         assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
         assert!(matches!(actual_operations[1], Operation::GroupEnd));
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn fixed_constraints_add_operations() {
-        let ast = r#"
-@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line1.start.at[0] == 3
-  line1.start.at[1] == 4
-}
-"#;
-        let out = parse_execute(ast).await.unwrap();
-        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
-
-        assert!(
-            actual_operations
-                .iter()
-                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedX")),
-            "expected fixedX operation, got {actual_operations:#?}"
-        );
-        assert!(
-            actual_operations
-                .iter()
-                .any(|op| matches!(op, Operation::StdLibCall { name, .. } if name == "fixedY")),
-            "expected fixedY operation, got {actual_operations:#?}"
-        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
