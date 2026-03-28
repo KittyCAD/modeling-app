@@ -1621,27 +1621,6 @@ export const useToolbarConfig = () => {
             isActive: (state) => false,
           },
           {
-            id: 'Fixed',
-            onClick: ({ modelingSend }) =>
-              modelingSend({
-                type: 'Fixed',
-              }),
-            icon: 'fix',
-            status: 'available',
-            disabled: (state) =>
-              getSelectedFixedConstraintInput(state) === null,
-            disabledReason: (state) =>
-              getSelectedFixedConstraintInput(state) === null
-                ? 'Select one or more points to lock them in place.'
-                : undefined,
-            title: 'Fixed',
-            hotkey: 'F',
-            description:
-              'Lock selected points to their current x and y positions',
-            links: [],
-            isActive: (state) => false,
-          },
-          {
             id: 'Tangent',
             onClick: ({ modelingSend }) =>
               modelingSend({
@@ -1729,6 +1708,27 @@ export const useToolbarConfig = () => {
             title: 'Horizontal',
             hotkey: 'H',
             description: 'Constrain lines to be horizontal',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Fixed',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Fixed',
+              }),
+            icon: 'fix',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedFixedConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedFixedConstraintInput(state) === null
+                ? 'Select one or more points to lock them in place.'
+                : undefined,
+            title: 'Fixed',
+            hotkey: 'F',
+            description:
+              'Lock selected points to their current x and y positions',
             links: [],
             isActive: (state) => false,
           },
