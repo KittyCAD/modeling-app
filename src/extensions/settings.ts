@@ -1,7 +1,6 @@
 import { statusBarGlobalItemsFacet } from '@src/facets'
 import { createPlugin, defineExtension, provide } from '@src/lib/extensions'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 const settingsStatusBar = defineExtension({
   provides: [
@@ -9,9 +8,10 @@ const settingsStatusBar = defineExtension({
       id: 'settings',
       element: 'link',
       icon: 'settings',
-      href: `${makeUrlPathRelative(PATHS.SETTINGS)}${
-        location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''
-      }`,
+      href: (location) =>
+        `${webSafeJoin([location.pathname, PATHS.SETTINGS])}${
+          location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''
+        }`,
       'data-testid': 'settings-link',
       label: 'Settings',
     }),

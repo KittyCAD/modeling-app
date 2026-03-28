@@ -1,10 +1,7 @@
-import { ActionButton } from '@src/components/ActionButton'
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
 import { defineExtension, provide, createPlugin } from '@src/lib/extensions'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 /** Contributes the telemetry modal routes for both home and file contexts. */
 const telemetryRouteExt = defineExtension({
@@ -14,33 +11,17 @@ const telemetryRouteExt = defineExtension({
   ],
 })
 
-/**
- * Plugin UI runs inside the app's existing React tree, so it can derive route
- * context through hooks instead of needing `App` on `ExtensionContext`.
- */
-function TelemetryStatusBarItem() {
-  return (
-    <ActionButton
-      Element="link"
-      to={makeUrlPathRelative(PATHS.TELEMETRY)}
-      className={defaultStatusBarItemClassNames}
-      data-testid="telemetry-link"
-      aria-label="Telemetry"
-      title="Telemetry"
-      iconStart={{
-        icon: 'stopwatch',
-        bgClassName: 'bg-transparent dark:bg-transparent',
-      }}
-    />
-  )
-}
-
 /** Contributes a status-bar entry point for the telemetry plugin. */
 const telemetryStatusBarExt = defineExtension({
   provides: [
     provide(statusBarGlobalItemsFacet, {
       id: 'telemetry',
-      component: TelemetryStatusBarItem,
+      element: 'link',
+      icon: 'stopwatch',
+      href: (location) => webSafeJoin([location.pathname, PATHS.TELEMETRY]),
+      'data-testid': 'telemetry-link',
+      label: 'Telemetry',
+      hideLabel: true,
     }),
   ],
 })
