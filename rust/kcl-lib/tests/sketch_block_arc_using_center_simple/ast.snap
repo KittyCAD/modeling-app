@@ -310,20 +310,48 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                       "elements": [
                         {
                           "commentStart": 0,
+                          "computed": false,
                           "end": 0,
                           "moduleId": 0,
-                          "name": {
+                          "object": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "arc1",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "arc1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "path": [],
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
                         },
                         {
                           "commentStart": 0,
@@ -531,20 +559,48 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                       "elements": [
                         {
                           "commentStart": 0,
+                          "computed": false,
                           "end": 0,
                           "moduleId": 0,
-                          "name": {
+                          "object": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "arc1",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "arc1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "path": [],
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
                         },
                         {
                           "commentStart": 0,

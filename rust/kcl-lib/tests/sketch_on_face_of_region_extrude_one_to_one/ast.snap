@@ -3056,20 +3056,48 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                       "elements": [
                         {
                           "commentStart": 0,
+                          "computed": false,
                           "end": 0,
                           "moduleId": 0,
-                          "name": {
+                          "object": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "line1",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "path": [],
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
                         },
                         {
                           "commentStart": 0,
