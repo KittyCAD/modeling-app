@@ -165,6 +165,33 @@ export class CameraControls {
     return ndc.unproject(camera || this.camera)
   }
 
+  private getStreamWindowCoordinates({
+    clientX,
+    clientY,
+  }: {
+    clientX: number
+    clientY: number
+  }) {
+    const streamElement =
+      (document.getElementById('video-stream') as HTMLVideoElement | null) ??
+      this.domElement
+    const { left, top, width, height } = streamElement.getBoundingClientRect()
+    if (width === 0 || height === 0) {
+      return { x: clientX, y: clientY }
+    }
+
+    return {
+      x: Math.round(
+        ((clientX - left) / width) *
+          this.engineCommandManager.streamDimensions.width
+      ),
+      y: Math.round(
+        ((clientY - top) / height) *
+          this.engineCommandManager.streamDimensions.height
+      ),
+    }
+  }
+
   get engineCameraProjection(): CameraProjectionType {
     return this.camera instanceof OrthographicCamera
       ? 'orthographic'
@@ -241,16 +268,17 @@ export class CameraControls {
     interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
+    const window = this.getStreamWindowCoordinates({
+      clientX: coordinates[0],
+      clientY: coordinates[1],
+    })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
         type: 'camera_drag_move',
         interaction: interaction,
-        window: {
-          x: coordinates[0],
-          y: coordinates[1],
-        },
+        window,
       },
       cmd_id: uuidv4(),
     })
@@ -430,12 +458,16 @@ export class CameraControls {
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
+      const window = this.getStreamWindowCoordinates({
+        clientX: event.clientX,
+        clientY: event.clientY,
+      })
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
           interaction,
-          window: { x: event.clientX, y: event.clientY },
+          window,
         },
         cmd_id: uuidv4(),
       })
@@ -547,12 +579,16 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
+      const window = this.getStreamWindowCoordinates({
+        clientX: event.clientX,
+        clientY: event.clientY,
+      })
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_end',
           interaction,
-          window: { x: event.clientX, y: event.clientY },
+          window,
         },
         cmd_id: uuidv4(),
       })
