@@ -13,7 +13,7 @@
       ],
       "max": [
         0.006000000052154064,
-        0.003000000026077032,
+        0.004000000189989805,
         -0
       ]
     },
@@ -37,7 +37,7 @@
       ],
       "max": [
         0.006000000052154064,
-        0.003000000026077032,
+        0.004000000189989805,
         -0.004000000189989805
       ]
     },
@@ -61,7 +61,7 @@
       ],
       "max": [
         0,
-        0.003000000026077032,
+        0.004000000189989805,
         -0
       ]
     },
@@ -85,7 +85,7 @@
       ],
       "max": [
         0.006000000052154064,
-        0.003000000026077032,
+        0.004000000189989805,
         -0
       ]
     },
@@ -123,24 +123,24 @@
     {
       "bufferView": 5,
       "byteOffset": 0,
-      "count": 27,
+      "count": 6,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
         0,
-        0.003000000026077032,
+        0.004000000189989805,
         -0.004000000189989805
       ],
       "max": [
         0.006000000052154064,
-        0.003000000026077032,
+        0.004000000189989805,
         -0
       ]
     },
     {
       "bufferView": 5,
       "byteOffset": 12,
-      "count": 27,
+      "count": 6,
       "componentType": 5126,
       "type": "VEC3"
     },
@@ -151,14 +151,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0010000000474974513,
-        0.003000000026077032,
-        -0.0010000000474974513
+        0,
+        0.004999999888241291,
+        -0
       ],
       "max": [
-        0.0044999998062849045,
-        0.004000000189989805,
-        -0.0010000000474974513
+        0.0020000000949949026,
+        0.006000000052154064,
+        -0
       ]
     },
     {
@@ -175,14 +175,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
+        0.0020000000949949026,
         0.004999999888241291,
-        0.003000000026077032,
-        -0.0020000000949949026
+        -0.0010000000474974513
       ],
       "max": [
-        0.004999999888241291,
-        0.004000000189989805,
-        -0.001500000013038516
+        0.0020000000949949026,
+        0.006000000052154064,
+        -0
       ]
     },
     {
@@ -199,14 +199,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0010000000474974513,
-        0.003000000026077032,
-        -0.0020000000949949026
+        0,
+        0.004999999888241291,
+        -0.0010000000474974513
       ],
       "max": [
-        0.004999999888241291,
-        0.004000000189989805,
-        -0.0020000000949949026
+        0.0020000000949949026,
+        0.006000000052154064,
+        -0.0010000000474974513
       ]
     },
     {
@@ -223,14 +223,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0010000000474974513,
-        0.003000000026077032,
-        -0.0020000000949949026
+        0,
+        0.004999999888241291,
+        -0.0010000000474974513
       ],
       "max": [
-        0.0010000000474974513,
-        0.004000000189989805,
-        -0.0010000000474974513
+        0,
+        0.006000000052154064,
+        -0
       ]
     },
     {
@@ -243,24 +243,24 @@
     {
       "bufferView": 10,
       "byteOffset": 0,
-      "count": 9,
+      "count": 6,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0010000000474974513,
-        0.004000000189989805,
-        -0.0020000000949949026
+        0,
+        0.004999999888241291,
+        -0.0010000000474974513
       ],
       "max": [
+        0.0020000000949949026,
         0.004999999888241291,
-        0.004000000189989805,
-        -0.0010000000474974513
+        -0
       ]
     },
     {
       "bufferView": 10,
       "byteOffset": 12,
-      "count": 9,
+      "count": 6,
       "componentType": 5126,
       "type": "VEC3"
     },
@@ -271,14 +271,14 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.0044999998062849045,
-        0.003000000026077032,
-        -0.001500000013038516
+        0,
+        0.006000000052154064,
+        -0.0010000000474974513
       ],
       "max": [
-        0.004999999888241291,
-        0.004000000189989805,
-        -0.0010000000474974513
+        0.0020000000949949026,
+        0.006000000052154064,
+        -0
       ]
     },
     {
@@ -295,8 +295,8 @@
   },
   "buffers": [
     {
-      "byteLength": 2304,
-      "uri": "data:application/octet-stream;base64,ppvEO6abRDsAAACAAACAPwAAAAAAAAAAppvEOwAAAAAAAACAAACAPwAAAAAAAAAAppvEO6abRDtvEoO7AACAPwAAAAAAAAAAppvEO6abRDtvEoO7AACAPwAAAAAAAAAAppvEOwAAAAAAAACAAACAPwAAAAAAAAAAppvEOwAAAABvEoO7AACAPwAAAAAAAAAAppvEO6abRDtvEoO7AAAAAAAAAAAAAIC/ppvEOwAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAKabRDtvEoO7AAAAAAAAAAAAAIC/AAAAAKabRDtvEoO7AAAAAAAAAAAAAIC/ppvEOwAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAAAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAKabRDtvEoO7AACAvwAAAAAAAAAAAAAAAAAAAABvEoO7AACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAKabRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/ppvEO6abRDsAAACAAAAAAAAAAAAAAIA/ppvEO6abRDsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/ppvEOwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAAAAAACAAAAAgAAAgL8AAACAvHSTO6abRDtvEoO6AAAAAAAAgD8AAAAAppvEO6abRDsAAACAAAAAAAAAgD8AAAAACtejO6abRDumm8S6AAAAAAAAgD8AAAAAvHSTO6abRDtvEoO6AAAAAAAAgD8AAAAAbxKDOqabRDtvEoO6AAAAAAAAgD8AAAAAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAACtejO6abRDtvEgO7AAAAAAAAgD8AAAAAppvEO6abRDtvEoO7AAAAAAAAgD8AAAAAbxKDOqabRDtvEgO7AAAAAAAAgD8AAAAAbxKDOqabRDtvEgO7AAAAAAAAgD8AAAAAppvEO6abRDtvEoO7AAAAAAAAgD8AAAAAAAAAAKabRDtvEoO7AAAAAAAAgD8AAAAACtejO6abRDtvEgO7AAAAAAAAgD8AAAAACtejO6abRDumm8S6AAAAAAAAgD8AAAAAppvEO6abRDsAAACAAAAAAAAAgD8AAAAACtejO6abRDtvEgO7AAAAAAAAgD8AAAAAppvEO6abRDsAAACAAAAAAAAAgD8AAAAAppvEO6abRDtvEoO7AAAAAAAAgD8AAAAAvHSTO6abRDtvEoO6AAAAAAAAgD8AAAAAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAAppvEO6abRDsAAACAAAAAAAAAgD8AAAAAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAAbxKDOqabRDtvEoO6AAAAAAAAgD8AAAAAbxKDOqabRDtvEgO7AAAAAAAAgD8AAAAAAAAAAKabRDtvEoO7AAAAAAAAgD8AAAAAAAAAAKabRDsAAACAAAAAAAAAgD8AAAAAbxKDOqabRDtvEgO7AAAAAAAAgD8AAAAAbxKDOm8SgztvEoO6AAAAAAAAAAAAAIA/bxKDOqabRDtvEoO6AAAAAAAAAAAAAIA/vHSTO28SgztvEoO6AAAAAAAAAAAAAIA/vHSTO28SgztvEoO6AAAAAAAAAAAAAIA/bxKDOqabRDtvEoO6AAAAAAAAAAAAAIA/vHSTO6abRDtvEoO6AAAAAAAAAAAAAIA/CtejO28Sgzumm8S6AACAPwAAAAAAAAAACtejO6abRDumm8S6AACAPwAAAAAAAAAACtejO28SgztvEgO7AACAPwAAAAAAAAAACtejO28SgztvEgO7AACAPwAAAAAAAAAACtejO6abRDumm8S6AACAPwAAAAAAAAAACtejO6abRDtvEgO7AACAPwAAAAAAAAAACtejO28SgztvEgO7AAAAAAAAAAAAAIC/CtejO6abRDtvEgO7AAAAAAAAAAAAAIC/bxKDOm8SgztvEgO7AAAAAAAAAAAAAIC/bxKDOm8SgztvEgO7AAAAAAAAAAAAAIC/CtejO6abRDtvEgO7AAAAAAAAAAAAAIC/bxKDOqabRDtvEgO7AAAAAAAAAAAAAIC/bxKDOm8SgztvEgO7AACAvwAAAAAAAAAAbxKDOqabRDtvEgO7AACAvwAAAAAAAAAAbxKDOm8SgztvEoO6AACAvwAAAAAAAAAAbxKDOm8SgztvEoO6AACAvwAAAAAAAAAAbxKDOqabRDtvEgO7AACAvwAAAAAAAAAAbxKDOqabRDtvEoO6AACAvwAAAAAAAAAAbxKDOm8SgztvEgO7AAAAAAAAgD8AAAAAvHSTO28SgztvEoO6AAAAAAAAgD8AAAAACtejO28SgztvEgO7AAAAAAAAgD8AAAAAvHSTO28SgztvEoO6AAAAAAAAgD8AAAAACtejO28Sgzumm8S6AAAAAAAAgD8AAAAACtejO28SgztvEgO7AAAAAAAAgD8AAAAAvHSTO28SgztvEoO6AAAAAAAAgD8AAAAAbxKDOm8SgztvEgO7AAAAAAAAgD8AAAAAbxKDOm8SgztvEoO6AAAAAAAAgD8AAAAACtejO6abRDumm8S68wQ1PwAAAIDzBDU/CtejO28Sgzumm8S68wQ1PwAAAIDzBDU/vHSTO6abRDtvEoO68wQ1PwAAAIDzBDU/CtejO28Sgzumm8S68wQ1PwAAAIDzBDU/vHSTO28SgztvEoO68wQ1PwAAAIDzBDU/vHSTO6abRDtvEoO68wQ1PwAAAIDzBDU/"
+      "byteLength": 1728,
+      "uri": "data:application/octet-stream;base64,ppvEO28SgzsAAACAAACAPwAAAAAAAAAAppvEOwAAAAAAAACAAACAPwAAAAAAAAAAppvEO28SgztvEoO7AACAPwAAAAAAAAAAppvEO28SgztvEoO7AACAPwAAAAAAAAAAppvEOwAAAAAAAACAAACAPwAAAAAAAAAAppvEOwAAAABvEoO7AACAPwAAAAAAAAAAppvEO28SgztvEoO7AAAAAAAAAAAAAIC/ppvEOwAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAG8SgztvEoO7AAAAAAAAAAAAAIC/AAAAAG8SgztvEoO7AAAAAAAAAAAAAIC/ppvEOwAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAAAAAABvEoO7AAAAAAAAAAAAAIC/AAAAAG8SgztvEoO7AACAvwAAAAAAAAAAAAAAAAAAAABvEoO7AACAvwAAAAAAAAAAAAAAAG8SgzsAAACAAACAvwAAAAAAAAAAAAAAAG8SgzsAAACAAACAvwAAAAAAAAAAAAAAAAAAAABvEoO7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAG8SgzsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/ppvEO28SgzsAAACAAAAAAAAAAAAAAIA/ppvEO28SgzsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/ppvEOwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAABvEoO7AAAAgAAAgL8AAACAppvEOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAG8SgzsAAACAAAAAAAAAgD8AAAAAppvEO28SgzsAAACAAAAAAAAAgD8AAAAAAAAAAG8SgztvEoO7AAAAAAAAgD8AAAAAAAAAAG8SgztvEoO7AAAAAAAAgD8AAAAAppvEO28SgzsAAACAAAAAAAAAgD8AAAAAppvEO28SgztvEoO7AAAAAAAAgD8AAAAAAAAAAKabxDsAAACAAAAAAAAAAAAAAIA/AAAAAArXozsAAACAAAAAAAAAAAAAAIA/bxIDO6abxDsAAACAAAAAAAAAAAAAAIA/bxIDO6abxDsAAACAAAAAAAAAAAAAAIA/AAAAAArXozsAAACAAAAAAAAAAAAAAIA/bxIDOwrXozsAAACAAAAAAAAAAAAAAIA/bxIDO6abxDsAAACAAACAPwAAAAAAAAAAbxIDOwrXozsAAACAAACAPwAAAAAAAAAAbxIDO6abxDtvEoO6AACAPwAAAAAAAAAAbxIDO6abxDtvEoO6AACAPwAAAAAAAAAAbxIDOwrXozsAAACAAACAPwAAAAAAAAAAbxIDOwrXoztvEoO6AACAPwAAAAAAAAAAbxIDO6abxDtvEoO6AAAAAAAAAAAAAIC/bxIDOwrXoztvEoO6AAAAAAAAAAAAAIC/AAAAAKabxDtvEoO6AAAAAAAAAAAAAIC/AAAAAKabxDtvEoO6AAAAAAAAAAAAAIC/bxIDOwrXoztvEoO6AAAAAAAAAAAAAIC/AAAAAArXoztvEoO6AAAAAAAAAAAAAIC/AAAAAKabxDtvEoO6AACAvwAAAAAAAAAAAAAAAArXoztvEoO6AACAvwAAAAAAAAAAAAAAAKabxDsAAACAAACAvwAAAAAAAAAAAAAAAKabxDsAAACAAACAvwAAAAAAAAAAAAAAAArXoztvEoO6AACAvwAAAAAAAAAAAAAAAArXozsAAACAAACAvwAAAAAAAAAAAAAAAArXoztvEoO6AAAAgAAAgL8AAACAbxIDOwrXoztvEoO6AAAAgAAAgL8AAACAAAAAAArXozsAAACAAAAAgAAAgL8AAACAbxIDOwrXoztvEoO6AAAAgAAAgL8AAACAbxIDOwrXozsAAACAAAAAgAAAgL8AAACAAAAAAArXozsAAACAAAAAgAAAgL8AAACAAAAAAKabxDtvEoO6AAAAAAAAgD8AAAAAAAAAAKabxDsAAACAAAAAAAAAgD8AAAAAbxIDO6abxDtvEoO6AAAAAAAAgD8AAAAAbxIDO6abxDtvEoO6AAAAAAAAgD8AAAAAAAAAAKabxDsAAACAAAAAAAAAgD8AAAAAbxIDO6abxDsAAACAAAAAAAAAgD8AAAAA"
     }
   ],
   "bufferViews": [
@@ -337,7 +337,7 @@
     },
     {
       "buffer": 0,
-      "byteLength": 648,
+      "byteLength": 144,
       "byteOffset": 720,
       "byteStride": 24,
       "target": 34962
@@ -345,42 +345,42 @@
     {
       "buffer": 0,
       "byteLength": 144,
-      "byteOffset": 1368,
+      "byteOffset": 864,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 144,
-      "byteOffset": 1512,
+      "byteOffset": 1008,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 144,
-      "byteOffset": 1656,
+      "byteOffset": 1152,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 144,
-      "byteOffset": 1800,
-      "byteStride": 24,
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 216,
-      "byteOffset": 1944,
+      "byteOffset": 1296,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 144,
-      "byteOffset": 2160,
+      "byteOffset": 1440,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 144,
+      "byteOffset": 1584,
       "byteStride": 24,
       "target": 34962
     }
@@ -400,6 +400,20 @@
           "extras": {
             "KITTYCAD": {
               "material": 0
+            }
+          }
+        },
+        {
+          "shells": [
+            [
+              1,
+              1
+            ]
+          ],
+          "mesh": 1,
+          "extras": {
+            "KITTYCAD": {
+              "material": 1
             }
           }
         }
@@ -430,7 +444,11 @@
             [
               5,
               1
-            ],
+            ]
+          ]
+        },
+        {
+          "faces": [
             [
               6,
               1
@@ -528,10 +546,6 @@
             [
               5,
               1
-            ],
-            [
-              6,
-              1
             ]
           ]
         },
@@ -542,7 +556,7 @@
           ],
           "loops": [
             [
-              7,
+              6,
               1
             ]
           ]
@@ -554,7 +568,7 @@
           ],
           "loops": [
             [
-              8,
+              7,
               1
             ]
           ]
@@ -566,7 +580,7 @@
           ],
           "loops": [
             [
-              9,
+              8,
               1
             ]
           ]
@@ -578,7 +592,7 @@
           ],
           "loops": [
             [
-              10,
+              9,
               1
             ]
           ]
@@ -586,11 +600,11 @@
         {
           "surface": [
             10,
-            1
+            -1
           ],
           "loops": [
             [
-              11,
+              10,
               1
             ]
           ]
@@ -598,11 +612,11 @@
         {
           "surface": [
             11,
-            -1
+            1
           ],
           "loops": [
             [
-              12,
+              11,
               1
             ]
           ]
@@ -733,11 +747,11 @@
           "edges": [
             [
               12,
-              -1
+              1
             ],
             [
               13,
-              -1
+              1
             ],
             [
               14,
@@ -745,10 +759,6 @@
             ],
             [
               15,
-              1
-            ],
-            [
-              16,
               -1
             ]
           ]
@@ -765,10 +775,10 @@
             ],
             [
               18,
-              1
+              -1
             ],
             [
-              19,
+              13,
               -1
             ]
           ]
@@ -776,7 +786,7 @@
         {
           "edges": [
             [
-              14,
+              19,
               1
             ],
             [
@@ -785,26 +795,26 @@
             ],
             [
               21,
-              1
+              -1
             ],
             [
-              22,
-              1
+              17,
+              -1
             ]
           ]
         },
         {
           "edges": [
             [
-              13,
+              22,
+              1
+            ],
+            [
+              15,
               1
             ],
             [
               23,
-              1
-            ],
-            [
-              24,
               -1
             ],
             [
@@ -815,20 +825,20 @@
         },
         {
           "edges": [
+            [
+              22,
+              -1
+            ],
+            [
+              19,
+              -1
+            ],
+            [
+              16,
+              -1
+            ],
             [
               12,
-              1
-            ],
-            [
-              19,
-              1
-            ],
-            [
-              25,
-              -1
-            ],
-            [
-              23,
               -1
             ]
           ]
@@ -836,44 +846,20 @@
         {
           "edges": [
             [
-              18,
-              -1
+              14,
+              1
             ],
             [
-              26,
+              18,
               1
             ],
             [
               21,
-              -1
-            ],
-            [
-              24,
               1
             ],
             [
-              25,
+              23,
               1
-            ]
-          ]
-        },
-        {
-          "edges": [
-            [
-              15,
-              -1
-            ],
-            [
-              22,
-              -1
-            ],
-            [
-              26,
-              -1
-            ],
-            [
-              17,
-              -1
             ]
           ]
         }
@@ -900,7 +886,7 @@
           "end": 2,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -924,7 +910,7 @@
           "end": 3,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -948,7 +934,7 @@
           "end": 5,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -984,7 +970,7 @@
           "end": 7,
           "t": [
             0,
-            0.003
+            0.004
           ]
         },
         {
@@ -1032,7 +1018,7 @@
           "end": 9,
           "t": [
             0,
-            0.001
+            0.002
           ]
         },
         {
@@ -1040,11 +1026,11 @@
             13,
             1
           ],
-          "start": 10,
-          "end": 8,
+          "start": 9,
+          "end": 10,
           "t": [
             0,
-            0.004
+            0.001
           ]
         },
         {
@@ -1056,7 +1042,7 @@
           "end": 10,
           "t": [
             0,
-            0.0005
+            0.002
           ]
         },
         {
@@ -1064,11 +1050,11 @@
             15,
             1
           ],
-          "start": 11,
-          "end": 12,
+          "start": 8,
+          "end": 11,
           "t": [
             0,
-            0.0007071067811865478
+            0.001
           ]
         },
         {
@@ -1080,7 +1066,7 @@
           "end": 12,
           "t": [
             0,
-            0.0034999999999999996
+            0.001
           ]
         },
         {
@@ -1100,20 +1086,8 @@
             18,
             1
           ],
-          "start": 13,
-          "end": 14,
-          "t": [
-            0,
-            0.0034999999999999996
-          ]
-        },
-        {
-          "curve": [
-            19,
-            1
-          ],
-          "start": 9,
-          "end": 14,
+          "start": 10,
+          "end": 13,
           "t": [
             0,
             0.001
@@ -1121,10 +1095,22 @@
         },
         {
           "curve": [
+            19,
+            1
+          ],
+          "start": 12,
+          "end": 14,
+          "t": [
+            0,
+            0.002
+          ]
+        },
+        {
+          "curve": [
             20,
             1
           ],
-          "start": 10,
+          "start": 14,
           "end": 15,
           "t": [
             0,
@@ -1136,11 +1122,11 @@
             21,
             1
           ],
-          "start": 15,
-          "end": 16,
+          "start": 13,
+          "end": 15,
           "t": [
             0,
-            0.0005
+            0.002
           ]
         },
         {
@@ -1148,8 +1134,8 @@
             22,
             1
           ],
-          "start": 16,
-          "end": 11,
+          "start": 14,
+          "end": 8,
           "t": [
             0,
             0.001
@@ -1160,47 +1146,11 @@
             23,
             1
           ],
-          "start": 8,
-          "end": 17,
-          "t": [
-            0,
-            0.001
-          ]
-        },
-        {
-          "curve": [
-            24,
-            1
-          ],
           "start": 15,
-          "end": 17,
-          "t": [
-            0,
-            0.004
-          ]
-        },
-        {
-          "curve": [
-            25,
-            1
-          ],
-          "start": 17,
-          "end": 14,
+          "end": 11,
           "t": [
             0,
             0.001
-          ]
-        },
-        {
-          "curve": [
-            26,
-            1
-          ],
-          "start": 13,
-          "end": 16,
-          "t": [
-            0,
-            0.0007071067811865478
           ]
         }
       ],
@@ -1217,12 +1167,12 @@
         ],
         [
           0.006,
-          0.003,
+          0.004,
           -0.004
         ],
         [
           0.006,
-          0.003,
+          0.004,
           -0
         ],
         [
@@ -1232,7 +1182,7 @@
         ],
         [
           0,
-          0.003,
+          0.004,
           -0.004
         ],
         [
@@ -1242,58 +1192,48 @@
         ],
         [
           0,
-          0.003,
+          0.004,
           -0
         ],
         [
-          0.001,
-          0.003,
-          -0.002
+          0,
+          0.005,
+          -0
         ],
         [
-          0.001,
-          0.003,
+          0.002,
+          0.005,
+          -0
+        ],
+        [
+          0.002,
+          0.006,
+          -0
+        ],
+        [
+          0,
+          0.006,
+          -0
+        ],
+        [
+          0.002,
+          0.005,
           -0.001
         ],
         [
-          0.005,
-          0.003,
-          -0.002
-        ],
-        [
-          0.005,
-          0.003,
-          -0.0015
-        ],
-        [
-          0.0045,
-          0.003,
+          0.002,
+          0.006,
           -0.001
         ],
         [
-          0.0045,
-          0.004,
+          0,
+          0.005,
           -0.001
         ],
         [
-          0.001,
-          0.004,
+          0,
+          0.006,
           -0.001
-        ],
-        [
-          0.005,
-          0.004,
-          -0.002
-        ],
-        [
-          0.005,
-          0.004,
-          -0.0015
-        ],
-        [
-          0.001,
-          0.004,
-          -0.002
         ]
       ],
       "surfaces": [
@@ -1312,7 +1252,7 @@
             ],
             "origin": [
               0.006,
-              0.0015,
+              0.002,
               -0.002
             ]
           }
@@ -1332,7 +1272,7 @@
             ],
             "origin": [
               0.003,
-              0.0015,
+              0.002,
               -0.004
             ]
           }
@@ -1352,7 +1292,7 @@
             ],
             "origin": [
               0,
-              0.0015,
+              0.002,
               -0.002
             ]
           }
@@ -1372,7 +1312,7 @@
             ],
             "origin": [
               0.003,
-              0.0015,
+              0.002,
               -0
             ]
           }
@@ -1394,106 +1334,6 @@
               0,
               0,
               -0
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              1,
-              0,
-              0
-            ],
-            "yAxis": [
-              0,
-              0,
-              -1
-            ],
-            "origin": [
-              0,
-              0.003,
-              -0
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              1,
-              0,
-              -0
-            ],
-            "yAxis": [
-              -0,
-              1,
-              0
-            ],
-            "origin": [
-              0.003,
-              0.0035,
-              -0.001
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              -0,
-              1,
-              0
-            ],
-            "yAxis": [
-              0,
-              -0,
-              1
-            ],
-            "origin": [
-              0.005,
-              0.0035,
-              -0.0015
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              1,
-              0,
-              0
-            ],
-            "yAxis": [
-              0,
-              -1,
-              0
-            ],
-            "origin": [
-              0.003,
-              0.0035,
-              -0.002
-            ]
-          }
-        },
-        {
-          "type": "plane",
-          "plane": {
-            "xAxis": [
-              0,
-              1,
-              0
-            ],
-            "yAxis": [
-              0,
-              0,
-              -1
-            ],
-            "origin": [
-              0.001,
-              0.0035,
-              -0.0015
             ]
           }
         },
@@ -1521,9 +1361,49 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.7071067811865476,
+              1,
               0,
-              -0.7071067811865476
+              -0
+            ],
+            "yAxis": [
+              -0,
+              1,
+              0
+            ],
+            "origin": [
+              0.001,
+              0.0055,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              -0,
+              1,
+              0
+            ],
+            "yAxis": [
+              0,
+              -0,
+              1
+            ],
+            "origin": [
+              0.002,
+              0.0055,
+              -0.0005
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
             ],
             "yAxis": [
               0,
@@ -1531,9 +1411,69 @@
               0
             ],
             "origin": [
-              0.00497855,
-              0.00375,
-              -0.00147855
+              0.001,
+              0.0055,
+              -0.001
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              0,
+              1,
+              0
+            ],
+            "yAxis": [
+              0,
+              0,
+              -1
+            ],
+            "origin": [
+              0,
+              0.0055,
+              -0.0005
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              0,
+              0,
+              -1
+            ],
+            "origin": [
+              0,
+              0.005,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              0,
+              0,
+              -1
+            ],
+            "origin": [
+              0,
+              0.006,
+              -0
             ]
           }
         }
@@ -1574,7 +1514,7 @@
           "line": {
             "origin": [
               0.006,
-              0.003,
+              0.004,
               -0
             ],
             "direction": [
@@ -1634,7 +1574,7 @@
           "line": {
             "origin": [
               0.006,
-              0.003,
+              0.004,
               -0.004
             ],
             "direction": [
@@ -1679,7 +1619,7 @@
           "line": {
             "origin": [
               0,
-              0.003,
+              0.004,
               -0.004
             ],
             "direction": [
@@ -1709,7 +1649,7 @@
           "line": {
             "origin": [
               0,
-              0.003,
+              0.004,
               -0
             ],
             "direction": [
@@ -1723,14 +1663,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.001,
-              0.003,
-              -0.002
+              0,
+              0.005,
+              -0
             ],
             "direction": [
+              1,
               0,
-              0,
-              1
+              -0
             ]
           }
         },
@@ -1738,13 +1678,13 @@
           "type": "line",
           "line": {
             "origin": [
+              0.002,
               0.005,
-              0.003,
-              -0.002
+              -0
             ],
             "direction": [
-              -1,
               0,
+              1,
               0
             ]
           }
@@ -1753,9 +1693,39 @@
           "type": "line",
           "line": {
             "origin": [
+              0,
+              0.006,
+              -0
+            ],
+            "direction": [
+              1,
+              0,
+              -0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0,
               0.005,
-              0.003,
-              -0.0015
+              -0
+            ],
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.002,
+              0.005,
+              -0
             ],
             "direction": [
               0,
@@ -1768,14 +1738,14 @@
           "type": "line",
           "line": {
             "origin": [
+              0.002,
               0.005,
-              0.003,
-              -0.0015
+              -0.001
             ],
             "direction": [
-              -0.7071067811865478,
               0,
-              0.7071067811865472
+              1,
+              0
             ]
           }
         },
@@ -1783,29 +1753,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.001,
-              0.003,
-              -0.001
-            ],
-            "direction": [
-              1,
-              0,
+              0.002,
+              0.006,
               -0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.0045,
-              0.003,
-              -0.001
             ],
             "direction": [
               0,
-              1,
-              0
+              0,
+              -1
             ]
           }
         },
@@ -1813,8 +1768,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0045,
-              0.004,
+              0.002,
+              0.005,
               -0.001
             ],
             "direction": [
@@ -1828,8 +1783,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.001,
-              0.003,
+              0,
+              0.005,
               -0.001
             ],
             "direction": [
@@ -1843,13 +1798,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.005,
-              0.003,
-              -0.002
+              0.002,
+              0.006,
+              -0.001
             ],
             "direction": [
+              -1,
               0,
-              1,
               0
             ]
           }
@@ -1858,9 +1813,9 @@
           "type": "line",
           "line": {
             "origin": [
+              0,
               0.005,
-              0.004,
-              -0.002
+              -0.001
             ],
             "direction": [
               0,
@@ -1873,74 +1828,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.005,
-              0.004,
-              -0.0015
-            ],
-            "direction": [
               0,
-              -1,
-              0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.001,
-              0.003,
-              -0.002
-            ],
-            "direction": [
-              0,
-              1,
-              0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.005,
-              0.004,
-              -0.002
-            ],
-            "direction": [
-              -1,
-              0,
-              0
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.001,
-              0.004,
-              -0.002
+              0.006,
+              -0.001
             ],
             "direction": [
               0,
               0,
               1
-            ]
-          }
-        },
-        {
-          "type": "line",
-          "line": {
-            "origin": [
-              0.0045,
-              0.004,
-              -0.001
-            ],
-            "direction": [
-              0.7071067811865478,
-              0,
-              -0.7071067811865472
             ]
           }
         }
@@ -1951,6 +1846,25 @@
     "KITTYCAD_boundary_representation"
   ],
   "materials": [
+    {
+      "alphaMode": "OPAQUE",
+      "doubleSided": false,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.9,
+          0.9,
+          0.9,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ]
+    },
     {
       "alphaMode": "OPAQUE",
       "doubleSided": false,
@@ -2015,48 +1929,52 @@
             "NORMAL": 11
           },
           "material": 0
-        },
+        }
+      ]
+    },
+    {
+      "primitives": [
         {
           "attributes": {
             "POSITION": 12,
             "NORMAL": 13
           },
-          "material": 0
+          "material": 1
         },
         {
           "attributes": {
             "POSITION": 14,
             "NORMAL": 15
           },
-          "material": 0
+          "material": 1
         },
         {
           "attributes": {
             "POSITION": 16,
             "NORMAL": 17
           },
-          "material": 0
+          "material": 1
         },
         {
           "attributes": {
             "POSITION": 18,
             "NORMAL": 19
           },
-          "material": 0
+          "material": 1
         },
         {
           "attributes": {
             "POSITION": 20,
             "NORMAL": 21
           },
-          "material": 0
+          "material": 1
         },
         {
           "attributes": {
             "POSITION": 22,
             "NORMAL": 23
           },
-          "material": 0
+          "material": 1
         }
       ]
     }
@@ -2069,7 +1987,8 @@
     },
     {
       "children": [
-        2
+        2,
+        3
       ]
     },
     {
@@ -2079,6 +1998,14 @@
         }
       },
       "mesh": 0
+    },
+    {
+      "extensions": {
+        "KITTYCAD_boundary_representation": {
+          "solid": 1
+        }
+      },
+      "mesh": 1
     }
   ],
   "scenes": [
