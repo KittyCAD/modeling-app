@@ -484,6 +484,10 @@ export function updateSceneGraphFromDelta({
     }
   }
 
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
+  }
+
   currentSketchObjects.forEach((obj) => {
     // sketch is not a drawable object
     if (obj.kind.type === 'Sketch') {
@@ -813,7 +817,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
   const draftEntityIds = context.draftEntities?.segmentIds
 
-  updateOriginSprite(sketchSolveGroup, scaleFactor)
+  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {

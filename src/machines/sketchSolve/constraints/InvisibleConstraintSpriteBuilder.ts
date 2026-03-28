@@ -15,6 +15,7 @@ import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { clamp, isArray } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
@@ -29,7 +30,6 @@ export type InvisibleConstraintDisplayState = {
 }
 
 const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
-const INVISIBLE_CONSTRAINT_RENDER_ORDER = 100
 const CONSTRAINT_HOVER_POPUP_KEY = 'constraintHoverPopup'
 const SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY =
   'selectedInvisibleConstraintPopup'
@@ -66,7 +66,7 @@ export class InvisibleConstraintSpriteBuilder {
         color: 0xffffff,
       })
     )
-    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
+    sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
 
     return group
@@ -183,7 +183,7 @@ function syncSprites(group: Group, count: number): Sprite[] {
         color: 0xffffff,
       })
     )
-    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
+    sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
     sprites.push(sprite)
   }
@@ -219,7 +219,7 @@ function getInvisibleConstraintWorldPositions(
       ? [
           {
             position: naturalPosition,
-            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT,
           },
         ]
       : []
@@ -252,7 +252,7 @@ function getInvisibleConstraintWorldPositions(
       ).map((position) => ({
         ...position,
         renderOrder:
-          INVISIBLE_CONSTRAINT_RENDER_ORDER +
+          RENDER_ORDER.INVISIBLE_CONSTRAINT +
           displayState.constraintHoverPopups.length +
           1,
       }))
@@ -268,7 +268,7 @@ function getInvisibleConstraintWorldPositions(
       ? [
           {
             position: naturalPosition,
-            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT,
           },
         ]
       : []
@@ -300,7 +300,7 @@ function getConstraintHoverPopupPositions(
             hoverPreviewConstraintIds.length,
             sceneInfra
           ),
-          renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER + popupIndex + 1,
+          renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT + popupIndex + 1,
           popup,
         },
       ]
