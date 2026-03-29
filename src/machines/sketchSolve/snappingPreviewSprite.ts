@@ -16,8 +16,8 @@ import {
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'
 
-const SNAPPING_PREVIEW_OFFSET_X_PX = 12
-const SNAPPING_PREVIEW_OFFSET_Y_PX = -12
+const SNAPPING_PREVIEW_OFFSET_X_PX = -25
+const SNAPPING_PREVIEW_OFFSET_Y_PX = 25
 
 export function updateSnappingPreviewSprite({
   sketchSolveGroup,
