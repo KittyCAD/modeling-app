@@ -1589,7 +1589,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'Constraint',
         constraint: {
           type: 'Coincident',
-          segments: [1, 2],
+          segments: [
+            { type: 'Segment', id: 1 },
+            { type: 'Segment', id: 2 },
+          ],
         },
       },
       label: '',
@@ -1635,7 +1638,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'Constraint',
         constraint: {
           type: 'Coincident',
-          segments: [10, 11],
+          segments: [
+            { type: 'Segment', id: 10 },
+            { type: 'Segment', id: 11 },
+          ],
         },
       },
       label: '',
@@ -1745,7 +1751,10 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         type: 'Constraint',
         constraint: {
           type: 'Coincident',
-          segments: [10, 11],
+          segments: [
+            { type: 'Segment', id: 10 },
+            { type: 'Segment', id: 11 },
+          ],
         },
       },
       label: '',

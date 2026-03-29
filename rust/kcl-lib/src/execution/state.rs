@@ -219,6 +219,11 @@ impl ExecState {
         }
     }
 
+    pub(crate) fn source_for_module(&self, module_id: ModuleId) -> Option<&str> {
+        let source = self.global.get_source(module_id)?;
+        Some(source.source.as_str())
+    }
+
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
         let global = GlobalState::new(&exec_context.settings, Default::default());
 

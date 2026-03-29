@@ -355,7 +355,10 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'Coincident',
-            segments: context.selectedIds,
+            segments: context.selectedIds.map((id) => ({
+              type: 'Segment',
+              id,
+            })),
           },
           jsAppSettings(context.kclManager.systemDeps.settings)
         )

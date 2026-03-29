@@ -53,6 +53,7 @@ use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
+use crate::frontend::sketch::CoincidentTarget;
 use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
@@ -872,9 +873,7 @@ impl SketchApi for FrontendState {
         let new_line_start_point_id = new_line.start;
 
         // Now add the coincident constraint between the previous end point and the new line's start point.
-        let coincident = Coincident {
-            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
-        };
+        let coincident = Coincident::from_segment_ids([previous_segment_end_point_id, new_line_start_point_id]);
 
         let (final_src_delta, final_scene_delta) = self
             .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
@@ -2367,77 +2366,49 @@ impl FrontendState {
         }
     }
 
+    fn coincident_target_to_ast(
+        &self,
+        target: &CoincidentTarget,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<ast::Expr> {
+        match target {
+            CoincidentTarget::Origin => Ok(create_origin_ast()),
+            CoincidentTarget::Segment { id } => {
+                let segment_object = self.scene_graph.objects.get(id.0).ok_or_else(|| Error {
+                    msg: format!("Object not found: {id:?}"),
+                })?;
+                let ObjectKind::Segment { segment } = &segment_object.kind else {
+                    return Err(Error {
+                        msg: format!("Object is not a segment: {segment_object:?}"),
+                    });
+                };
+                match segment {
+                    Segment::Point(_) => self.point_id_to_ast_reference(*id, new_ast),
+                    Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
+                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
+                    Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "circle", None),
+                }
+            }
+        }
+    }
+
     async fn add_coincident(
         &mut self,
         sketch: ObjectId,
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[seg0_id, seg1_id] = coincident.segments.as_slice() else {
+        let [target0, target1] = coincident.segments.as_slice() else {
             return Err(Error {
                 msg: format!(
-                    "Coincident constraint must have exactly 2 segments, got {}",
+                    "Coincident constraint must have exactly 2 targets, got {}",
                     coincident.segments.len()
                 ),
             });
         };
         let sketch_id = sketch;
-
-        // Get AST reference for first object (point or segment)
-        let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {seg0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: seg0_segment } = &seg0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {seg0_object:?}"),
-            });
-        };
-        let seg0_ast = match seg0_segment {
-            Segment::Point(_) => {
-                // Use the helper function which supports both Line and Arc owners
-                self.point_id_to_ast_reference(seg0_id, new_ast)?
-            }
-            Segment::Line(_) => {
-                // Reference the segment directly (for point-segment coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
-            }
-            Segment::Arc(_) => {
-                // Reference the segment directly (for point-arc coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
-            }
-            Segment::Circle(_) => {
-                // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg0_object.source, "circle", None)?
-            }
-        };
-
-        // Get AST reference for second object (point or segment)
-        let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {seg1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: seg1_segment } = &seg1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {seg1_object:?}"),
-            });
-        };
-        let seg1_ast = match seg1_segment {
-            Segment::Point(_) => {
-                // Use the helper function which supports both Line and Arc owners
-                self.point_id_to_ast_reference(seg1_id, new_ast)?
-            }
-            Segment::Line(_) => {
-                // Reference the segment directly (for point-segment coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
-            }
-            Segment::Arc(_) => {
-                // Reference the segment directly (for point-arc coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
-            }
-            Segment::Circle(_) => {
-                // Reference the segment directly (for point-circle coincident)
-                get_or_insert_ast_reference(new_ast, &seg1_object.source, "circle", None)?
-            }
-        };
+        let seg0_ast = self.coincident_target_to_ast(target0, new_ast)?;
+        let seg1_ast = self.coincident_target_to_ast(target1, new_ast)?;
 
         // Create the coincident() call using shared helper.
         let coincident_ast = create_coincident_ast(seg0_ast, seg1_ast);
@@ -3244,9 +3215,9 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.segments.iter().any(|seg_id| {
+                Constraint::Coincident(c) => c.segment_ids().any(|seg_id| {
                     // Check if the segment itself is being deleted
-                    if segment_ids_set.contains(seg_id) {
+                    if segment_ids_set.contains(&seg_id) {
                         return true;
                     }
                     // For points, also check if the owner line/arc is being deleted
@@ -4424,6 +4395,10 @@ pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::
         digest: None,
         non_code_meta: Default::default(),
     })))
+}
+
+fn create_origin_ast() -> ast::Expr {
+    ast::Expr::Name(Box::new(ast::Name::new("ORIGIN")))
 }
 
 /// Create an AST node for line(start = [...], end = [...])
@@ -6209,9 +6184,7 @@ sketch(on = XY) {
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
 
-        let constraint = Constraint::Coincident(Coincident {
-            segments: vec![point0_id, point1_id],
-        });
+        let constraint = Constraint::Coincident(Coincident::from_segment_ids([point0_id, point1_id]));
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -6233,6 +6206,75 @@ sketch(on = XY) {
             5,
             "{:#?}",
             scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_coincident_with_origin() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let constraint = Constraint::Coincident(Coincident::from_targets([
+            CoincidentTarget::segment(point_id),
+            CoincidentTarget::Origin,
+        ]));
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  coincident([point1, ORIGIN])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.constraints.len(), 1);
+
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Coincident(coincident) = constraint else {
+            panic!("Expected coincident constraint");
+        };
+        assert_eq!(
+            coincident.segments,
+            vec![CoincidentTarget::segment(point_id), CoincidentTarget::Origin]
         );
 
         ctx.close().await;
@@ -6265,9 +6307,7 @@ sketch(on = XY) {
         let point0_id = *sketch.segments.get(1).unwrap();
         let point1_id = *sketch.segments.get(3).unwrap();
 
-        let constraint = Constraint::Coincident(Coincident {
-            segments: vec![point0_id, point1_id],
-        });
+        let constraint = Constraint::Coincident(Coincident::from_segment_ids([point0_id, point1_id]));
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
@@ -6395,9 +6435,7 @@ sketch(on = XY) {
 
         // Attempt to add an invalid coincident constraint between arc and line
         // This should fail during execution, but state should remain intact
-        let constraint = Constraint::Coincident(Coincident {
-            segments: vec![arc_id, line_id],
-        });
+        let constraint = Constraint::Coincident(Coincident::from_segment_ids([arc_id, line_id]));
         let result = frontend.add_constraint(&mock_ctx, version, sketch_id, constraint).await;
 
         // The constraint addition should fail (invalid constraint)

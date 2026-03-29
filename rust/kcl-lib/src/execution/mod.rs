@@ -934,6 +934,8 @@ impl ExecutorContext {
             self.prepare_mem(&mut exec_state).await?
         };
 
+        exec_state.add_root_module_contents(program);
+
         // Push a scope so that old variables can be overwritten (since we might be re-executing some
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
@@ -2937,6 +2939,48 @@ extrude001 = extrude(region001, length = 1)
             "actual: {:?}",
             &result.variables
         );
+
+        ctx.close().await;
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_coincident_to_origin_tracks_origin_target() {
+        let code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  coincident([point1, ORIGIN])
+}
+"#;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        let constraints = result
+            .scene_objects
+            .iter()
+            .filter_map(|obj| {
+                let crate::front::ObjectKind::Constraint { constraint } = &obj.kind else {
+                    return None;
+                };
+                Some(constraint)
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(constraints.len(), 1, "{:#?}", result.scene_objects);
+        let crate::front::Constraint::Coincident(coincident) = constraints[0] else {
+            panic!("expected coincident constraint, got {:?}", constraints[0]);
+        };
+        assert_eq!(coincident.segments.len(), 2, "{:#?}", coincident);
+        assert!(matches!(
+            coincident.segments.as_slice(),
+            [
+                crate::front::CoincidentTarget::Segment { .. },
+                crate::front::CoincidentTarget::Origin
+            ]
+        ));
 
         ctx.close().await;
     }

@@ -337,7 +337,72 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub segments: Vec<ObjectId>,
+    pub segments: Vec<CoincidentTarget>,
+}
+
+impl Coincident {
+    pub fn from_segment_ids<I>(segment_ids: I) -> Self
+    where
+        I: IntoIterator<Item = ObjectId>,
+    {
+        Self {
+            segments: segment_ids.into_iter().map(CoincidentTarget::segment).collect(),
+        }
+    }
+
+    pub fn from_targets<I>(targets: I) -> Self
+    where
+        I: IntoIterator<Item = CoincidentTarget>,
+    {
+        Self {
+            segments: targets.into_iter().collect(),
+        }
+    }
+
+    pub fn contains_segment(&self, id: ObjectId) -> bool {
+        self.segments.iter().any(|target| target.segment_id() == Some(id))
+    }
+
+    pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.segments.iter().filter_map(CoincidentTarget::segment_id)
+    }
+
+    pub fn map_segment_ids<F>(&self, mut map: F) -> Self
+    where
+        F: FnMut(ObjectId) -> ObjectId,
+    {
+        Self {
+            segments: self
+                .segments
+                .iter()
+                .map(|target| match target {
+                    CoincidentTarget::Segment { id } => CoincidentTarget::segment(map(*id)),
+                    CoincidentTarget::Origin => CoincidentTarget::Origin,
+                })
+                .collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
+pub enum CoincidentTarget {
+    Segment { id: ObjectId },
+    Origin,
+}
+
+impl CoincidentTarget {
+    pub fn segment(id: ObjectId) -> Self {
+        Self::Segment { id }
+    }
+
+    pub fn segment_id(&self) -> Option<ObjectId> {
+        match self {
+            Self::Segment { id } => Some(*id),
+            Self::Origin => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

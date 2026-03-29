@@ -1,6 +1,8 @@
 import type {
   ApiConstraint,
   ApiObject,
+  Coincident,
+  CoincidentTarget,
   SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
@@ -293,7 +295,33 @@ export type AngleConstraint = ApiObject & {
 }
 
 export type CoincidentConstraint = ApiObject & {
-  kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
+  kind: {
+    type: 'Constraint'
+    constraint: Extract<ApiConstraint, { type: 'Coincident' }>
+  }
+}
+
+function isCoincidentSegmentTarget(
+  target: CoincidentTarget
+): target is Extract<CoincidentTarget, { type: 'Segment' }> {
+  return target.type === 'Segment'
+}
+
+export function getCoincidentSegmentIds(
+  coincident: Pick<Coincident, 'segments'>
+): number[] {
+  return coincident.segments
+    .filter(isCoincidentSegmentTarget)
+    .map((target) => target.id)
+}
+
+export function coincidentHasSegment(
+  coincident: Pick<Coincident, 'segments'>,
+  targetId: number
+): boolean {
+  return coincident.segments.some(
+    (target) => isCoincidentSegmentTarget(target) && target.id === targetId
+  )
 }
 
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
@@ -427,9 +455,9 @@ export function getOtherCoincidentIdsByPointId(
 ): number[] {
   const constraints: CoincidentConstraint[] = sceneGraph.objects
     .filter((obj) => isConstraint(obj, 'Coincident'))
-    .filter((obj) => obj.kind.constraint.segments.includes(targetId))
+    .filter((obj) => coincidentHasSegment(obj.kind.constraint, targetId))
 
   return constraints.flatMap((c) =>
-    c.kind.constraint.segments.filter((id) => id !== targetId)
+    getCoincidentSegmentIds(c.kind.constraint).filter((id) => id !== targetId)
   )
 }

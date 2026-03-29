@@ -126,7 +126,10 @@ describe('invisibleConstraintSpriteUtils', () => {
     })
     const coincident = createConstraintApiObject(21, {
       type: 'Coincident',
-      segments: [2, 4],
+      segments: [
+        { type: 'Segment', id: 2 },
+        { type: 'Segment', id: 4 },
+      ],
     })
 
     const relatedConstraintIds = findInvisibleConstraintsForSegment(
@@ -152,7 +155,10 @@ describe('invisibleConstraintSpriteUtils', () => {
     const line = createLineApiObject({ id: 10, start: 1, end: 2 })
     const coincident = createConstraintApiObject(20, {
       type: 'Coincident',
-      segments: [1, 2],
+      segments: [
+        { type: 'Segment', id: 1 },
+        { type: 'Segment', id: 2 },
+      ],
     })
     const horizontal = createConstraintApiObject(21, {
       type: 'Horizontal',

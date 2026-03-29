@@ -7,6 +7,8 @@ import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import {
+  coincidentHasSegment,
+  getCoincidentSegmentIds,
   getArcPoints,
   getLinePoints,
   isArcLikeSegment,
@@ -71,7 +73,8 @@ export function getInvisibleConstraintAnchor(
 
   switch (constraint.type) {
     case 'Coincident': {
-      const pointAnchors = constraint.segments
+      const segmentIds = getCoincidentSegmentIds(constraint)
+      const pointAnchors = segmentIds
         .map((segmentId) => objects[segmentId])
         .filter(isPointSegment)
         .map(pointToVec3)
@@ -81,7 +84,7 @@ export function getInvisibleConstraintAnchor(
       }
 
       return averageVectors(
-        constraint.segments
+        segmentIds
           .map((segmentId) => getObjectAnchor(segmentId, objects))
           .filter(isVector3)
       )
@@ -140,7 +143,7 @@ export function findSegmentsForInvisibleConstraint(
   const constrainedIds = (() => {
     switch (constraint.kind.constraint.type) {
       case 'Coincident':
-        return constraint.kind.constraint.segments
+        return getCoincidentSegmentIds(constraint.kind.constraint)
       case 'Horizontal':
       case 'Vertical':
         return [constraint.kind.constraint.line]
@@ -169,7 +172,7 @@ export function isConstrainingSegment(
   }
   switch (constraint.kind.constraint.type) {
     case 'Coincident':
-      return constraint.kind.constraint.segments.includes(segment.id)
+      return coincidentHasSegment(constraint.kind.constraint, segment.id)
     case 'Horizontal':
     case 'Vertical':
       return (

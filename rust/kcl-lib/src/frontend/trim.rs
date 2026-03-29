@@ -743,8 +743,8 @@ fn is_point_coincident_with_segment_native(point_id: ObjectId, segment_id: Objec
         };
 
         // Check if both pointId and segmentId are in the segments array
-        let has_point = coincident.segments.contains(&point_id);
-        let has_segment = coincident.segments.contains(&segment_id);
+        let has_point = coincident.contains_segment(point_id);
+        let has_segment = coincident.contains_segment(segment_id);
 
         if has_point && has_segment {
             return true;
@@ -2390,11 +2390,8 @@ pub(crate) fn trim_strategy(
                         continue;
                     };
 
-                    let involves_trim_seg = coincident
-                        .segments
-                        .iter()
-                        .any(|id| *id == trim_seg_id || *id == point_id);
-                    let involves_point = coincident.segments.contains(&point_id);
+                    let involves_trim_seg = coincident.segment_ids().any(|id| id == trim_seg_id || id == point_id);
+                    let involves_point = coincident.contains_segment(point_id);
 
                     if involves_trim_seg && involves_point {
                         return Some(CoincidentData {
@@ -2468,7 +2465,7 @@ pub(crate) fn trim_strategy(
                     continue;
                 };
 
-                let constraint_segment_ids: Vec<ObjectId> = coincident.segments.to_vec();
+                let constraint_segment_ids: Vec<ObjectId> = coincident.segment_ids().collect();
 
                 // Check if constraint involves the trim segment itself OR any trim endpoint
                 let involves_trim_seg = constraint_segment_ids.contains(&trim_seg_id)
@@ -2512,14 +2509,14 @@ pub(crate) fn trim_strategy(
             };
 
             // Check if this constraint involves the endpoint
-            if !coincident.segments.contains(&endpoint_point_id) {
+            if !coincident.contains_segment(endpoint_point_id) {
                 continue;
             }
 
             // Find the other entity
-            let other_segment_id = coincident.segments.iter().find_map(|seg_id| {
-                if *seg_id != endpoint_point_id {
-                    Some(*seg_id)
+            let other_segment_id = coincident.segment_ids().find_map(|seg_id| {
+                if seg_id != endpoint_point_id {
+                    Some(seg_id)
                 } else {
                     None
                 }
@@ -2554,13 +2551,13 @@ pub(crate) fn trim_strategy(
             };
 
             // Check if this constraint involves the endpoint
-            if !coincident.segments.contains(&endpoint_point_id) {
+            if !coincident.contains_segment(endpoint_point_id) {
                 continue;
             }
 
             // Check if this is a point-point constraint (all segments are points)
-            let is_point_point = coincident.segments.iter().all(|seg_id| {
-                if let Some(seg_obj) = objects.iter().find(|o| o.id == *seg_id) {
+            let is_point_point = coincident.segment_ids().all(|seg_id| {
+                if let Some(seg_obj) = objects.iter().find(|o| o.id == seg_id) {
                     matches!(&seg_obj.kind, ObjectKind::Segment { segment } if matches!(segment, Segment::Point(_)))
                 } else {
                     false
@@ -2588,14 +2585,14 @@ pub(crate) fn trim_strategy(
             };
 
             // Check if this constraint involves the endpoint
-            if !coincident.segments.contains(&endpoint_point_id) {
+            if !coincident.contains_segment(endpoint_point_id) {
                 continue;
             }
 
             // Find the other entity
-            let other_segment_id = coincident.segments.iter().find_map(|seg_id| {
-                if *seg_id != endpoint_point_id {
-                    Some(*seg_id)
+            let other_segment_id = coincident.segment_ids().find_map(|seg_id| {
+                if seg_id != endpoint_point_id {
+                    Some(seg_id)
                 } else {
                     None
                 }
@@ -2950,10 +2947,7 @@ pub(crate) fn trim_strategy(
                     let Constraint::Coincident(coincident) = constraint else {
                         return None;
                     };
-                    coincident
-                        .segments
-                        .iter()
-                        .find_map(|seg_id| if *seg_id != end_id { Some(*seg_id) } else { None })
+                    coincident.segment_ids().find(|seg_id| *seg_id != end_id)
                 });
 
                 if let Some(other_point_id) = other_point_id_opt {
@@ -3015,25 +3009,19 @@ pub(crate) fn trim_strategy(
                 // Note: We want to find constraints like [pointId, segmentId] where pointId is a point
                 // that happens to be at the endpoint geometrically, but the constraint doesn't reference
                 // the endpoint ID directly
-                if !coincident.segments.contains(&trim_spawn_id) {
+                if !coincident.contains_segment(trim_spawn_id) {
                     continue;
                 }
                 // Skip constraints that involve endpoint IDs directly (those are handled by endpoint constraint migration)
                 // But we still want to find constraints where a point (not an endpoint ID) is at the endpoint
                 if let (Some(start_id), Some(end_id_val)) = (original_start_point_id, Some(end_id))
-                    && coincident
-                        .segments
-                        .iter()
-                        .any(|id| *id == start_id || *id == end_id_val)
+                    && coincident.segment_ids().any(|id| id == start_id || id == end_id_val)
                 {
                     continue; // Skip constraints that involve endpoint IDs directly
                 }
 
                 // Find the other entity (should be a point)
-                let other_id = coincident
-                    .segments
-                    .iter()
-                    .find_map(|seg_id| if *seg_id != trim_spawn_id { Some(*seg_id) } else { None });
+                let other_id = coincident.segment_ids().find(|seg_id| *seg_id != trim_spawn_id);
 
                 if let Some(other_id) = other_id {
                     // Check if the other entity is a point
@@ -3091,7 +3079,7 @@ pub(crate) fn trim_strategy(
                                             constraint: Constraint::Coincident(coincident),
                                         } = &constraint_obj.kind
                                         {
-                                            coincident.segments.contains(&other_id)
+                                            coincident.contains_segment(other_id)
                                         } else {
                                             false
                                         }
@@ -3164,22 +3152,19 @@ pub(crate) fn trim_strategy(
                     };
 
                     // Check if constraint involves the segment being split
-                    if !coincident.segments.contains(&trim_spawn_id) {
+                    if !coincident.contains_segment(trim_spawn_id) {
                         continue;
                     }
 
                     // Skip if constraint also involves endpoint IDs directly (those are handled separately)
                     if let (Some(start_id), Some(end_id)) = (original_start_point_id, original_end_point_id)
-                        && coincident.segments.iter().any(|id| *id == start_id || *id == end_id)
+                        && coincident.segment_ids().any(|id| id == start_id || id == end_id)
                     {
                         continue;
                     }
 
                     // Find the other entity in the constraint
-                    let other_id = coincident
-                        .segments
-                        .iter()
-                        .find_map(|seg_id| if *seg_id != trim_spawn_id { Some(*seg_id) } else { None });
+                    let other_id = coincident.segment_ids().find(|seg_id| *seg_id != trim_spawn_id);
 
                     if let Some(other_id) = other_id {
                         // Check if the other entity is a point
@@ -3253,7 +3238,7 @@ pub(crate) fn trim_strategy(
                                                     constraint: Constraint::Coincident(coincident),
                                                 } = &constraint_obj.kind
                                                 {
-                                                    coincident.segments.contains(&other_id)
+                                                    coincident.contains_segment(other_id)
                                                 } else {
                                                     false
                                                 }
@@ -3358,7 +3343,7 @@ pub(crate) fn trim_strategy(
             };
 
             // Only consider constraints that involve the segment ID
-            if !coincident.segments.contains(&trim_spawn_id) {
+            if !coincident.contains_segment(trim_spawn_id) {
                 continue;
             }
 
@@ -3373,10 +3358,7 @@ pub(crate) fn trim_strategy(
             // So we'll check this after we verify the other entity is a point and check its coordinates
 
             // Find the other entity (should be a point)
-            let other_id = coincident
-                .segments
-                .iter()
-                .find_map(|seg_id| if *seg_id != trim_spawn_id { Some(*seg_id) } else { None });
+            let other_id = coincident.segment_ids().find(|seg_id| *seg_id != trim_spawn_id);
 
             if let Some(other_id) = other_id {
                 // Check if the other entity is a point
@@ -3393,7 +3375,7 @@ pub(crate) fn trim_strategy(
                     // BUT: if the point is at the original end point geometrically, we still want to handle it
                     let _is_endpoint_constraint =
                         if let (Some(start_id), Some(end_id)) = (original_start_point_id, original_end_point_id) {
-                            coincident.segments.iter().any(|id| *id == start_id || *id == end_id)
+                            coincident.segment_ids().any(|id| id == start_id || id == end_id)
                         } else {
                             false
                         };
@@ -3447,7 +3429,7 @@ pub(crate) fn trim_strategy(
                                             constraint: Constraint::Coincident(coincident),
                                         } = &constraint_obj.kind
                                         {
-                                            coincident.segments.contains(&other_id)
+                                            coincident.contains_segment(other_id)
                                         } else {
                                             false
                                         }
@@ -3626,9 +3608,9 @@ pub(crate) async fn execute_trim_operations_simple(
                                 vec![endpoint_point_id, *segment_or_point_to_make_coincident_to]
                             };
 
-                            let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
-                                segments: coincident_segments,
-                            });
+                            let constraint = Constraint::Coincident(
+                                crate::frontend::sketch::Coincident::from_segment_ids(coincident_segments),
+                            );
 
                             let segment_to_edit = ExistingSegmentCtor {
                                 id: *segment_id,
@@ -3732,9 +3714,9 @@ pub(crate) async fn execute_trim_operations_simple(
                     vec![new_segment_endpoint_point_id, *segment_or_point_to_make_coincident_to]
                 };
 
-                let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
-                    segments: coincident_segments,
-                });
+                let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident::from_segment_ids(
+                    coincident_segments,
+                ));
 
                 frontend
                     .add_constraint(ctx, version, sketch_id, constraint)
@@ -3801,7 +3783,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find coincident constraints that reference the original center point
                         if let Constraint::Coincident(coincident) = constraint
-                            && coincident.segments.contains(&original_center_id)
+                            && coincident.contains_segment(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -4002,9 +3984,9 @@ pub(crate) async fn execute_trim_operations_simple(
                         vec![left_side_endpoint_point_id, left_intersecting_seg_id]
                     }
                 };
-                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                    segments: left_coincident_segments,
-                }));
+                batch_constraints.push(Constraint::Coincident(
+                    crate::frontend::sketch::Coincident::from_segment_ids(left_coincident_segments),
+                ));
 
                 // Right constraint - need to check if intersection is at endpoint
                 let right_intersecting_seg_id = match &**right_side {
@@ -4126,9 +4108,9 @@ pub(crate) async fn execute_trim_operations_simple(
                 } else {
                     vec![new_segment_start_point_id, right_intersecting_seg_id]
                 };
-                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                    segments: right_coincident_segments,
-                }));
+                batch_constraints.push(Constraint::Coincident(
+                    crate::frontend::sketch::Coincident::from_segment_ids(right_coincident_segments),
+                ));
 
                 // Migrate constraints
                 let mut points_constrained_to_new_segment_start = std::collections::HashSet::new();
@@ -4170,9 +4152,9 @@ pub(crate) async fn execute_trim_operations_simple(
                         };
                         vec![target_endpoint_id, constraint_to_migrate.other_entity_id]
                     };
-                    batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                        segments: constraint_segments,
-                    }));
+                    batch_constraints.push(Constraint::Coincident(
+                        crate::frontend::sketch::Coincident::from_segment_ids(constraint_segments),
+                    ));
                 }
 
                 // Find distance constraints that reference both endpoints of the original segment
@@ -4217,21 +4199,15 @@ pub(crate) async fn execute_trim_operations_simple(
                     for (constraint, original_center_id) in center_point_constraints_to_migrate {
                         match constraint {
                             Constraint::Coincident(coincident) => {
-                                let new_segments: Vec<ObjectId> = coincident
-                                    .segments
-                                    .iter()
-                                    .map(|seg_id| {
-                                        if *seg_id == original_center_id {
-                                            new_center_id
-                                        } else {
-                                            *seg_id
-                                        }
-                                    })
-                                    .collect();
+                                let new_coincident = coincident.map_segment_ids(|seg_id| {
+                                    if seg_id == original_center_id {
+                                        new_center_id
+                                    } else {
+                                        seg_id
+                                    }
+                                });
 
-                                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
-                                    segments: new_segments,
-                                }));
+                                batch_constraints.push(Constraint::Coincident(new_coincident));
                             }
                             Constraint::Distance(distance) => {
                                 let new_points: Vec<ObjectId> = distance

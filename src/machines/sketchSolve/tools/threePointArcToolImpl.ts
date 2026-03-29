@@ -598,7 +598,10 @@ export async function finalizeArcActor({
     sketchId,
     {
       type: 'Coincident',
-      segments: [throughPointId, arcId],
+      segments: [
+        { type: 'Segment', id: throughPointId },
+        { type: 'Segment', id: arcId },
+      ],
     },
     settings
   )

@@ -804,7 +804,10 @@ export async function finalizeArcActor({
       sketchId,
       {
         type: 'Coincident',
-        segments: [tangentStartId, tangentArcPointId],
+        segments: [
+          { type: 'Segment', id: tangentStartId },
+          { type: 'Segment', id: tangentArcPointId },
+        ],
       },
       settings
     )

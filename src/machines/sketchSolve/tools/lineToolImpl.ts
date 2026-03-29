@@ -22,7 +22,10 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { getSnappingCandidates } from '@src/machines/sketchSolve/snapping'
+import {
+  getSnappingCandidates,
+  type SnappingCandidate,
+} from '@src/machines/sketchSolve/snapping'
 import {
   hideSnappingPreviewSprite,
   updateSnappingPreviewSprite,
@@ -127,7 +130,7 @@ function updateSnappingPreview({
   snappingCandidate,
 }: {
   context: ToolContext
-  snappingCandidate: ReturnType<typeof getBestSnappingCandidate>
+  snappingCandidate: SnappingCandidate | null
 }) {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -138,7 +141,7 @@ function updateSnappingPreview({
   updateSnappingPreviewSprite({
     sketchSolveGroup,
     sceneInfra: context.sceneInfra,
-    targetPoint: snappingCandidate?.apiObject ?? null,
+    targetPosition: snappingCandidate?.position ?? null,
   })
 }
 
@@ -157,7 +160,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           context,
           mousePosition,
         })
-        sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+        sendHoveredId(
+          self,
+          snappingCandidate?.type === 'point'
+            ? snappingCandidate.apiObject.id
+            : null
+        )
         updateSnappingPreview({ context, snappingCandidate })
 
         const units = baseUnitToNumericSuffix(
@@ -231,7 +239,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           type: 'add point',
           data: [x, y],
           id: context.draftPointId,
-          snapTargetId: snappingCandidate?.apiObject.id,
+          snapTarget:
+            snappingCandidate?.type === 'point'
+              ? { type: 'segment', id: snappingCandidate.apiObject.id }
+              : snappingCandidate?.type === 'origin'
+                ? { type: 'origin' }
+                : undefined,
           isDoubleClick,
         })
       }

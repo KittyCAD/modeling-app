@@ -511,7 +511,13 @@ async function addCoincidentConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    { type: 'Coincident', segments: [a, b] },
+    {
+      type: 'Coincident',
+      segments: [
+        { type: 'Segment', id: a },
+        { type: 'Segment', id: b },
+      ],
+    },
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)

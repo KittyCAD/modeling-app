@@ -39,6 +39,8 @@ use crate::front::CircleCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Coincident;
 #[cfg(feature = "artifact-graph")]
+use crate::front::CoincidentTarget;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Constraint;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Horizontal;
@@ -63,6 +65,45 @@ use crate::front::Vertical;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+
+#[cfg(feature = "artifact-graph")]
+fn split_top_level_pair(source: &str) -> Option<(&str, &str)> {
+    let mut depth = 0usize;
+    for (index, ch) in source.char_indices() {
+        match ch {
+            '[' | '(' | '{' => depth += 1,
+            ']' | ')' | '}' => depth = depth.checked_sub(1)?,
+            ',' if depth == 0 => {
+                return Some((&source[..index], &source[index + 1..]));
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+#[cfg(feature = "artifact-graph")]
+fn coincident_origin_targets(args: &Args, exec_state: &ExecState) -> Option<[bool; 2]> {
+    let arg = args.unlabeled_kw_arg_unconverted()?;
+    let source = exec_state.source_for_module(arg.source_range.module_id())?;
+    let source = source.get(arg.source_range.start()..arg.source_range.end())?;
+    let inner = source.trim().strip_prefix('[')?.strip_suffix(']')?;
+    let (target0, target1) = split_top_level_pair(inner)?;
+    Some([target0.trim() == "ORIGIN", target1.trim() == "ORIGIN"])
+}
+
+#[cfg(feature = "artifact-graph")]
+fn coincident_from_segment_and_target(segment_id: ObjectId, is_origin_target: bool, segment_first: bool) -> Coincident {
+    if is_origin_target {
+        if segment_first {
+            Coincident::from_targets([CoincidentTarget::segment(segment_id), CoincidentTarget::Origin])
+        } else {
+            Coincident::from_targets([CoincidentTarget::Origin, CoincidentTarget::segment(segment_id)])
+        }
+    } else {
+        Coincident::from_segment_ids([segment_id])
+    }
+}
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
@@ -806,6 +847,9 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         ))
     })?;
 
+    #[cfg(feature = "artifact-graph")]
+    let origin_targets = coincident_origin_targets(&args, exec_state);
+
     let range = args.source_range;
     match (&point0, &point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
@@ -856,9 +900,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     sketch_state.solver_constraints.push(constraint);
                                     #[cfg(feature = "artifact-graph")]
                                     {
-                                        let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                        });
+                                        let constraint =
+                                            crate::front::Constraint::Coincident(Coincident::from_segment_ids([
+                                                unsolved0.object_id,
+                                                unsolved1.object_id,
+                                            ]));
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
                                     }
@@ -891,9 +937,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     sketch_state.solver_constraints.push(constraint_y);
                                     #[cfg(feature = "artifact-graph")]
                                     {
-                                        let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                        });
+                                        let constraint =
+                                            crate::front::Constraint::Coincident(Coincident::from_segment_ids([
+                                                unsolved0.object_id,
+                                                unsolved1.object_id,
+                                            ]));
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
                                     }
@@ -940,9 +988,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     sketch_state.solver_constraints.push(constraint_y);
                                     #[cfg(feature = "artifact-graph")]
                                     {
-                                        let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                        });
+                                        let constraint =
+                                            crate::front::Constraint::Coincident(Coincident::from_segment_ids([
+                                                unsolved0.object_id,
+                                                unsolved1.object_id,
+                                            ]));
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
                                     }
@@ -1034,9 +1084,9 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     sketch_state.solver_constraints.push(constraint);
                                     #[cfg(feature = "artifact-graph")]
                                     {
-                                        let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                        });
+                                        let constraint = crate::front::Constraint::Coincident(
+                                            Coincident::from_segment_ids([unsolved0.object_id, unsolved1.object_id]),
+                                        );
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
                                     }
@@ -1125,9 +1175,9 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     sketch_state.solver_constraints.push(constraint);
                                     #[cfg(feature = "artifact-graph")]
                                     {
-                                        let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                        });
+                                        let constraint = crate::front::Constraint::Coincident(
+                                            Coincident::from_segment_ids([unsolved0.object_id, unsolved1.object_id]),
+                                        );
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
                                     }
@@ -1218,9 +1268,10 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             sketch_state.solver_constraints.push(distance_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                let constraint = crate::front::Constraint::Coincident(Coincident {
-                                    segments: vec![unsolved0.object_id, unsolved1.object_id],
-                                });
+                                let constraint = crate::front::Constraint::Coincident(Coincident::from_segment_ids([
+                                    unsolved0.object_id,
+                                    unsolved1.object_id,
+                                ]));
                                 sketch_state.sketch_constraints.push(constraint_id);
                                 track_constraint(constraint_id, constraint, exec_state, &args);
                             }
@@ -1244,6 +1295,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         }
         // One argument is a Segment and the other is a Point2d literal.
         (KclValue::Segment { value: seg }, point2d) | (point2d, KclValue::Segment { value: seg }) => {
+            let segment_first = matches!((&point0, &point1), (KclValue::Segment { .. }, _));
+            #[cfg(feature = "artifact-graph")]
+            let is_origin_target = origin_targets
+                .map(|targets| if segment_first { targets[1] } else { targets[0] })
+                .unwrap_or(false);
             let Some(pt) = <[TyF64; 2]>::from_kcl_val(point2d) else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Expected a Segment or Point2d (e.g. [1mm, 2mm])".to_owned(),
@@ -1276,6 +1332,12 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                 coincident_constraints_fixed(*p_x, *p_y, &pt_x, &pt_y, exec_state, &args)?;
 
                             #[cfg(feature = "artifact-graph")]
+                            let constraint = crate::front::Constraint::Coincident(coincident_from_segment_and_target(
+                                unsolved.object_id,
+                                is_origin_target,
+                                segment_first,
+                            ));
+                            #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1287,9 +1349,6 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             sketch_state.solver_constraints.push(constraint_y);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                let constraint = crate::front::Constraint::Coincident(Coincident {
-                                    segments: vec![unsolved.object_id],
-                                });
                                 sketch_state.sketch_constraints.push(constraint_id);
                                 track_constraint(constraint_id, constraint, exec_state, &args);
                             }

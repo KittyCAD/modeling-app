@@ -22,6 +22,7 @@ import {
   storePendingSketchOutcome,
   sendStoredResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
+import type { PointSnapTarget } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type {
   SketchSolveMachineEvent,
   ToolInput,
@@ -107,7 +108,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           id: number
-          snapTargetId?: number
+          snapTarget?: PointSnapTarget
           lastLineEndPointId: number | undefined
           isDoubleClick: boolean
           rustContext: RustContext
@@ -131,7 +132,7 @@ export const machine = setup({
         const {
           pointData,
           id,
-          snapTargetId,
+          snapTarget,
           lastLineEndPointId,
           isDoubleClick,
           rustContext,
@@ -172,13 +173,23 @@ export const machine = setup({
           let snapConstraintId: number | undefined
           let snapConstraintNewObjects: Array<number> = []
 
-          if (snapTargetId !== undefined) {
+          if (snapTarget !== undefined) {
+            const coincidentTargets =
+              snapTarget.type === 'origin'
+                ? [
+                    { type: 'Segment' as const, id },
+                    { type: 'Origin' as const },
+                  ]
+                : [
+                    { type: 'Segment' as const, id },
+                    { type: 'Segment' as const, id: snapTarget.id },
+                  ]
             const snapResult = await rustContext.addConstraint(
               0,
               sketchId,
               {
                 type: 'Coincident',
-                segments: [id, snapTargetId],
+                segments: coincidentTargets,
               },
               settings
             )
@@ -377,7 +388,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             id: event.id || 0,
-            snapTargetId: event.snapTargetId,
+            snapTarget: event.snapTarget,
             lastLineEndPointId: context.lastLineEndPointId,
             isDoubleClick: event.isDoubleClick || false,
             rustContext: context.rustContext,
