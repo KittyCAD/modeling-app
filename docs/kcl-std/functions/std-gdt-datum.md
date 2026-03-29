@@ -37,7 +37,7 @@ gdt::datum(
 
 ### Returns
 
-[`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation) - A GD&T annotation.
+[`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation) - A GD&T annotation created by one of the [`gdt` functions](/docs/kcl-std/modules/std-gdt).
 
 
 ### Examples
