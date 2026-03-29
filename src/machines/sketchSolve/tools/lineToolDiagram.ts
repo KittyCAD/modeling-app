@@ -17,6 +17,7 @@ import {
   type CONFIRMING_DIMENSIONS,
   animateDraftSegmentListener,
   addPointListener,
+  addNextDraftLineListener,
   removePointListener,
   sendResultToParent,
   storePendingSketchOutcome,
@@ -44,6 +45,7 @@ export const machine = setup({
   actions: {
     'animate draft segment listener': animateDraftSegmentListener,
     'add point listener': addPointListener,
+    'add next draft line listener': addNextDraftLineListener,
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
   },
@@ -108,8 +110,6 @@ export const machine = setup({
           pointData: [number, number]
           id: number
           snapTargetId?: number
-          lastLineEndPointId: number | undefined
-          isDoubleClick: boolean
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
@@ -118,26 +118,16 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
-            newLineEndPointId?: number
-            newlyAddedEntities?: {
-              segmentIds: Array<number>
-              constraintIds: Array<number>
-            }
+            lineEndPointId: number
+            lineEndPoint: [number, number]
+            stopChaining: boolean
           }
         | {
             error: string
           }
       > => {
-        const {
-          pointData,
-          id,
-          snapTargetId,
-          lastLineEndPointId,
-          isDoubleClick,
-          rustContext,
-          kclManager,
-          sketchId,
-        } = input
+        const { pointData, id, snapTargetId, rustContext, kclManager, sketchId } =
+          input
         const [x, y] = pointData
         const units = baseUnitToNumericSuffix(
           kclManager.fileSettings.defaultLengthUnit
@@ -169,7 +159,6 @@ export const machine = setup({
 
           let latestKclSource = result.kclSource
           let latestSceneGraphDelta = result.sceneGraphDelta
-          let snapConstraintId: number | undefined
           let snapConstraintNewObjects: Array<number> = []
 
           if (snapTargetId !== undefined) {
@@ -184,115 +173,9 @@ export const machine = setup({
             )
             latestKclSource = snapResult.kclSource
             latestSceneGraphDelta = snapResult.sceneGraphDelta
-            snapConstraintId = snapResult.sceneGraphDelta.new_objects.find(
-              (objId) =>
-                snapResult.sceneGraphDelta.new_graph.objects[objId]?.kind
-                  .type === 'Constraint'
-            )
             snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
           }
 
-          // After updating the point, create a new line segment chained from it (unless double-click)
-          // The updated point (id) becomes the start of the new line segment
-          if (!isDoubleClick) {
-            const newLineCtor: SegmentCtor = {
-              type: 'Line',
-              start: {
-                x: { type: 'Var', value: roundOff(x), units },
-                y: { type: 'Var', value: roundOff(y), units },
-              },
-              end: {
-                x: { type: 'Var', value: roundOff(x), units },
-                y: { type: 'Var', value: roundOff(y), units },
-              },
-            }
-
-            // Chain the new line segment to the previous segment's end point
-            // This adds the line and creates a coincident constraint in one operation
-            // Use lastLineEndPointId if available, otherwise fall back to id (draftPointId)
-            const previousEndPointId = lastLineEndPointId ?? id
-            if (!previousEndPointId) {
-              return {
-                error:
-                  'previousEndPointId should be defined when chaining segments. This indicates a logic error in the line tool state machine.',
-              }
-            }
-
-            const chainResult = await rustContext.chainSegment(
-              0,
-              sketchId,
-              previousEndPointId, // previous line's end point ID
-              newLineCtor,
-              'line-segment',
-              settings
-            )
-
-            // Extract the new line segment from the chained result
-            const newLine = chainResult.sceneGraphDelta.new_objects.find(
-              (objId) => {
-                const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
-                return isLineSegment(obj)
-              }
-            )
-
-            // Get the end point ID from the line object itself
-            let newLineEndPointId: number | undefined
-            if (newLine !== undefined) {
-              const lineObj =
-                chainResult.sceneGraphDelta.new_graph.objects[newLine]
-              if (isLineSegment(lineObj)) {
-                // The start and end point IDs are stored in the Line segment
-                // newLineStartPointId = lineObj.kind.segment.start
-                newLineEndPointId = lineObj.kind.segment.end
-              }
-            }
-
-            const constraintId = chainResult.sceneGraphDelta.new_objects.find(
-              (objId) => {
-                const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
-                return obj?.kind.type === 'Constraint'
-              }
-            )
-
-            // Track newly created entities that might need to be deleted on double-click
-            const newlyAddedEntities: {
-              segmentIds: Array<number>
-              constraintIds: Array<number>
-            } = {
-              segmentIds: [],
-              constraintIds: [],
-            }
-
-            // Add the new line segment ID to tracking
-            if (newLine !== undefined) {
-              newlyAddedEntities.segmentIds.push(newLine)
-            }
-
-            // Add the constraint ID to tracking
-            if (constraintId !== undefined) {
-              newlyAddedEntities.constraintIds.push(constraintId)
-            }
-            if (snapConstraintId !== undefined) {
-              newlyAddedEntities.constraintIds.unshift(snapConstraintId)
-            }
-
-            // Merge all results: point update + new line + constraint
-            return {
-              kclSource: chainResult.kclSource,
-              sceneGraphDelta: {
-                ...chainResult.sceneGraphDelta,
-                new_objects: [
-                  ...result.sceneGraphDelta.new_objects,
-                  ...snapConstraintNewObjects,
-                  ...chainResult.sceneGraphDelta.new_objects,
-                ],
-              },
-              newLineEndPointId, // Return the new line's end point ID for context update
-              newlyAddedEntities, // Track entities that might need deletion
-            }
-          }
-
-          // On double-click, just return the point update result without chaining
           return {
             kclSource: latestKclSource,
             sceneGraphDelta: {
@@ -302,9 +185,132 @@ export const machine = setup({
                 ...snapConstraintNewObjects,
               ],
             },
+            lineEndPointId: id,
+            lineEndPoint: pointData,
+            stopChaining: snapTargetId !== undefined,
           }
         } catch (error) {
           console.error('Failed to add point segment:', error)
+          return {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          }
+        }
+      }
+    ),
+    startNextDraftLine: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          lineEndPoint?: [number, number]
+          draftPointData: [number, number]
+          lineEndPointId?: number
+          rustContext: RustContext
+          kclManager: KclManager
+          sketchId: number
+        }
+      }): Promise<
+        | {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            newLineEndPointId?: number
+            newlyAddedEntities?: {
+              segmentIds: Array<number>
+              constraintIds: Array<number>
+            }
+          }
+        | {
+            error: string
+          }
+      > => {
+        const {
+          lineEndPoint,
+          draftPointData,
+          lineEndPointId,
+          rustContext,
+          kclManager,
+          sketchId,
+        } = input
+
+        if (!lineEndPoint || lineEndPointId === undefined) {
+          return {
+            error:
+              'lineEndPointId and lineEndPoint should be defined when starting the next draft line.',
+          }
+        }
+
+        const [startX, startY] = lineEndPoint
+        const [endX, endY] = draftPointData
+        const units = baseUnitToNumericSuffix(
+          kclManager.fileSettings.defaultLengthUnit
+        )
+        const settings = jsAppSettings(rustContext.settingsActor)
+
+        try {
+          const newLineCtor: SegmentCtor = {
+            type: 'Line',
+            start: {
+              x: { type: 'Var', value: roundOff(startX), units },
+              y: { type: 'Var', value: roundOff(startY), units },
+            },
+            end: {
+              x: { type: 'Var', value: roundOff(endX), units },
+              y: { type: 'Var', value: roundOff(endY), units },
+            },
+          }
+
+          const chainResult = await rustContext.chainSegment(
+            0,
+            sketchId,
+            lineEndPointId,
+            newLineCtor,
+            'line-segment',
+            settings
+          )
+
+          const newLine = chainResult.sceneGraphDelta.new_objects.find((objId) => {
+            const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
+            return isLineSegment(obj)
+          })
+
+          let newLineEndPointId: number | undefined
+          if (newLine !== undefined) {
+            const lineObj = chainResult.sceneGraphDelta.new_graph.objects[newLine]
+            if (isLineSegment(lineObj)) {
+              newLineEndPointId = lineObj.kind.segment.end
+            }
+          }
+
+          const constraintId = chainResult.sceneGraphDelta.new_objects.find(
+            (objId) => {
+              const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
+              return obj?.kind.type === 'Constraint'
+            }
+          )
+
+          const newlyAddedEntities: {
+            segmentIds: Array<number>
+            constraintIds: Array<number>
+          } = {
+            segmentIds: [],
+            constraintIds: [],
+          }
+
+          if (newLine !== undefined) {
+            newlyAddedEntities.segmentIds.push(newLine)
+          }
+          if (constraintId !== undefined) {
+            newlyAddedEntities.constraintIds.push(constraintId)
+          }
+
+          return {
+            kclSource: chainResult.kclSource,
+            sceneGraphDelta: chainResult.sceneGraphDelta,
+            newLineEndPointId,
+            newlyAddedEntities,
+          }
+        } catch (error) {
+          console.error('Failed to start next draft line:', error)
           return {
             error: error instanceof Error ? error.message : 'Unknown error',
           }
@@ -317,8 +323,7 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     draftPointId: undefined,
     lastLineEndPointId: undefined,
-    isDoubleClick: undefined,
-    pendingDoubleClick: undefined,
+    stopAfterCommit: undefined,
     pendingSketchOutcome: undefined,
     deleteFromEscape: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
@@ -353,24 +358,11 @@ export const machine = setup({
 
     [confirmingDimensions]: {
       entry: assign(({ event }) => {
-        // Set pendingDoubleClick flag if this event is a double-click
-        // This flag will cause any pending results to be deleted instead of sent
-        if (event.type === 'add point' && event.isDoubleClick) {
-          return { pendingDoubleClick: true }
+        return {
+          stopAfterCommit:
+            event.type === 'add point' && event.isDoubleClick === true,
         }
-        return {}
       }),
-      on: {
-        // Handle the flag-setting event even while modAndSolve is running
-        // This is critical: when the second click (detail=2) arrives while the first click's
-        // modAndSolve is still running, we set the flag here, and then when modAndSolve
-        // completes, it will see the flag and delete instead of send
-        'set pending double click': {
-          actions: assign({
-            pendingDoubleClick: true,
-          }),
-        },
-      },
       invoke: {
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
@@ -378,8 +370,6 @@ export const machine = setup({
             pointData: event.data,
             id: event.id || 0,
             snapTargetId: event.snapTargetId,
-            lastLineEndPointId: context.lastLineEndPointId,
-            isDoubleClick: event.isDoubleClick || false,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -387,12 +377,8 @@ export const machine = setup({
         },
 
         onDone: {
-          target: 'check double click',
-          actions: [
-            assign(({ event, self }) =>
-              storePendingSketchOutcome({ event, self })
-            ),
-          ],
+          target: 'check whether to stop drawing',
+          actions: [assign(({ event }) => storePendingSketchOutcome({ event }))],
         },
         onError: {
           target: 'unequipping',
@@ -400,41 +386,103 @@ export const machine = setup({
         src: 'modAndSolve',
       },
     },
-    'check double click': {
+    'check whether to stop drawing': {
       always: [
         {
-          guard: ({ context }) => context.pendingDoubleClick === true,
-          target: 'delete newly added entities',
-        },
-        {
-          target: 'ShowDraftLine',
+          guard: ({ context }) => context.stopAfterCommit === true,
+          target: 'ready for user click',
           actions: [
             sendStoredResultToParent,
             assign({
-              pendingDoubleClick: undefined, // Clear the flag AFTER checking
-              pendingSketchOutcome: undefined, // Clear after sending
+              draftPointId: undefined,
+              lastLineEndPointId: undefined,
+              stopAfterCommit: undefined,
+              pendingSketchOutcome: undefined,
             }),
-            'send result to parent', // Update context with draftPointId
+          ],
+        },
+        {
+          guard: ({ context }) =>
+            context.pendingSketchOutcome?.stopChaining === true,
+          target: 'ready for user click',
+          actions: [
+            sendStoredResultToParent,
+            assign({
+              draftPointId: undefined,
+              lastLineEndPointId: undefined,
+              stopAfterCommit: undefined,
+              pendingSketchOutcome: undefined,
+            }),
+          ],
+        },
+        {
+          target: 'waiting to start next draft line',
+          actions: [
+            sendStoredResultToParent,
+            assign({
+              draftPointId: undefined,
+              lastLineEndPointId: undefined,
+              stopAfterCommit: undefined,
+            }),
           ],
         },
       ],
     },
-    'delete newly added entities': {
-      entry: ({ self }) => {
-        const sendData: SketchSolveMachineEvent = {
-          type: 'delete draft entities',
-        }
-        self._parent?.send(sendData)
-      },
-      always: {
-        target: 'ready for user click',
-        actions: [
-          assign({
-            pendingDoubleClick: undefined, // Clear the flag
-            lastLineEndPointId: undefined, // Clear on double-click to stop chaining
-            pendingSketchOutcome: undefined, // Clear stored result
+
+    'waiting to start next draft line': {
+      entry: 'add next draft line listener',
+      exit: 'remove point listener',
+      on: {
+        'finish line chain': {
+          target: 'ready for user click',
+          actions: assign({
+            lastLineEndPointId: undefined,
+            stopAfterCommit: undefined,
+            pendingSketchOutcome: undefined,
           }),
-        ],
+        },
+        'start next draft line': 'Starting next draft line',
+        escape: {
+          target: 'ready for user click',
+          actions: assign({
+            lastLineEndPointId: undefined,
+            stopAfterCommit: undefined,
+            pendingSketchOutcome: undefined,
+          }),
+        },
+      },
+    },
+
+    'Starting next draft line': {
+      invoke: {
+        src: 'startNextDraftLine',
+        input: ({ event, context }) => {
+          assertEvent(event, 'start next draft line')
+          return {
+            lineEndPoint: context.pendingSketchOutcome?.lineEndPoint,
+            draftPointData: event.data,
+            lineEndPointId: context.pendingSketchOutcome?.lineEndPointId,
+            rustContext: context.rustContext,
+            kclManager: context.kclManager,
+            sketchId: context.sketchId,
+          }
+        },
+        onDone: {
+          target: 'ShowDraftLine',
+          actions: [
+            'send result to parent',
+            assign({
+              pendingSketchOutcome: undefined,
+            }),
+          ],
+        },
+        onError: {
+          target: 'ready for user click',
+          actions: assign({
+            pendingSketchOutcome: undefined,
+            lastLineEndPointId: undefined,
+          }),
+        },
       },
     },
 
@@ -475,12 +523,6 @@ export const machine = setup({
     ShowDraftLine: {
       on: {
         'add point': 'Confirming dimensions',
-        'set pending double click': {
-          // Set flag immediately - this will cause any pending modAndSolve results to be deleted
-          actions: assign({
-            pendingDoubleClick: true,
-          }),
-        },
         unequip: {
           target: 'delete draft entities on unequip',
           actions: assign({

@@ -32,18 +32,16 @@ import { Group } from 'three'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
-export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding point`
-export const CONFIRMING_DIMENSIONS_EVENT = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
 
 export type ToolEvents =
   | BaseToolEvent
 
-  // because the single click will still fire before the double click, we have to have a way of
-  // doing the single click action (creating a new segment chained to the old one) but then catch this
-  // and reverse it if a double click is detected
-  | { type: 'set pending double click' }
+  | { type: 'finish line chain' }
+  | { type: 'start next draft line'; data: [number, number] }
   | {
-      type: typeof ADDING_POINT | typeof CONFIRMING_DIMENSIONS_EVENT
+      type:
+        | `xstate.done.actor.0.${typeof TOOL_ID}.Adding point`
+        | `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
@@ -53,11 +51,13 @@ export type ToolEvents =
 export type ToolContext = {
   draftPointId?: number
   lastLineEndPointId?: number
-  isDoubleClick?: boolean
-  pendingDoubleClick?: boolean
+  stopAfterCommit?: boolean
   pendingSketchOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    lineEndPointId?: number
+    lineEndPoint?: [number, number]
+    stopChaining?: boolean
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
   sceneGraphDelta: SceneGraphDelta
@@ -220,19 +220,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           mousePosition,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
-        const isDoubleClick = args.mouseEvent.detail === 2
-        // Set pending double-click flag immediately if detected
-        if (isDoubleClick) {
-          self.send({
-            type: 'set pending double click',
-          })
-        }
         self.send({
           type: 'add point',
           data: [x, y],
           id: context.draftPointId,
           snapTargetId: snappingCandidate?.apiObject.id,
-          isDoubleClick,
+          isDoubleClick: args.mouseEvent.detail === 2,
         })
       }
     },
@@ -247,22 +240,37 @@ export function addPointListener({ self, context }: ToolActionArgs) {
 
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
-        const isDoubleClick = args.mouseEvent.detail === 2
-        // If it's a double-click, set the flag immediately BEFORE sending the event
-        // This ensures any pending operations from the first click will be cancelled
-        if (isDoubleClick) {
-          // Send the flag-setting event first, synchronously
-          self.send({ type: 'set pending double click' })
-        }
-        // Send the add point event with the clicked coordinates
         self.send({
           type: 'add point',
           data: [twoD.x, twoD.y],
-          isDoubleClick,
         })
       }
     },
     onMove: () => {},
+  })
+}
+
+export function addNextDraftLineListener({ self, context }: ToolActionArgs) {
+  let hasStartedNextDraftLine = false
+  context.sceneInfra.setCallbacks({
+    onClick: (args) => {
+      if (!args || args.mouseEvent.which !== 1) return
+      if (args.mouseEvent.detail === 2) {
+        self.send({ type: 'finish line chain' })
+      }
+    },
+    onMove: (args) => {
+      if (hasStartedNextDraftLine) return
+
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) return
+
+      hasStartedNextDraftLine = true
+      self.send({
+        type: 'start next draft line',
+        data: [twoD.x, twoD.y],
+      })
+    },
   })
 }
 
@@ -281,38 +289,10 @@ export function removePointListener({ context, self }: ToolActionArgs) {
 }
 
 export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
-  if (
-    event.type !== ADDING_POINT &&
-    event.type !== CONFIRMING_DIMENSIONS_EVENT
-  ) {
-    // Handle delete result or other events
-    if ('output' in event && event.output) {
-      const output = event.output as {
-        kclSource?: SourceDelta
-        sceneGraphDelta?: SceneGraphDelta
-        error?: string
-      }
-
-      if (output.error) {
-        return {}
-      }
-
-      // Send result to parent if we have valid data
-      if (output.kclSource && output.sceneGraphDelta) {
-        const sendData: SketchSolveMachineEvent = {
-          type: 'update sketch outcome',
-          data: {
-            sourceDelta: output.kclSource,
-            sceneGraphDelta: output.sceneGraphDelta,
-          },
-        }
-        self._parent?.send(sendData)
-      }
-    }
+  if (!('output' in event) || !event.output) {
     return {}
   }
 
-  // Check if the output has a newLineEndPointId (from modAndSolve when chaining)
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
@@ -329,12 +309,18 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     return {}
   }
 
-  // Don't send result to parent here - we'll send it after checking double-click flag
-  // This prevents editor flicker by only updating once we know if we're keeping or deleting
+  if (output.kclSource && output.sceneGraphDelta) {
+    const sendData: SketchSolveMachineEvent = {
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: output.kclSource,
+        sceneGraphDelta: output.sceneGraphDelta,
+      },
+    }
+    self._parent?.send(sendData)
+  }
 
-  // If we have a newLineEndPointId from chaining, use that as the draftPointId
   if (output.newLineEndPointId !== undefined) {
-    // Find the line segment to get its end point ID for tracking
     const lineId = [...output.sceneGraphDelta!.new_objects]
       .reverse()
       .find((objId) => {
@@ -351,7 +337,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       }
     }
 
-    // Send draft entities to parent if they exist (from chaining)
     if (output.newlyAddedEntities) {
       const sendData: SketchSolveMachineEvent = {
         type: 'set draft entities',
@@ -433,40 +418,27 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
 export function storePendingSketchOutcome({
   event,
-  self,
 }: {
   event: DoneActorEvent<{
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
-    newLineEndPointId?: number
-    newlyAddedEntities?: {
-      segmentIds: Array<number>
-      constraintIds: Array<number>
-    }
+    lineEndPointId?: number
+    lineEndPoint?: [number, number]
+    stopChaining?: boolean
     error?: string
   }>
-  self: ToolActionArgs['self']
 }) {
   const output = event.output
 
   const result: Partial<ToolContext> = {}
 
-  // Send draft entities to parent for tracking
-  if (output.newlyAddedEntities) {
-    const sendData: SketchSolveMachineEvent = {
-      type: 'set draft entities',
-      data: output.newlyAddedEntities,
-    }
-    self._parent?.send(sendData)
-  }
-
-  // Store the result, but DON'T send it yet - we'll check the flag in 'check double click' state
-  // The key insight: if pendingDoubleClick is already true (set by the second click),
-  // we should delete this result instead of sending it
   if (output.kclSource && output.sceneGraphDelta && !output.error) {
     result.pendingSketchOutcome = {
       kclSource: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      lineEndPointId: output.lineEndPointId,
+      lineEndPoint: output.lineEndPoint,
+      stopChaining: output.stopChaining,
     }
   }
 
@@ -474,78 +446,18 @@ export function storePendingSketchOutcome({
 }
 
 export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
-  // Send the stored result to parent (with new entities)
-  // Note: We only reach this action if pendingDoubleClick is false (the guard above routes
-  // double-clicks to the delete path). The debounceEditorUpdate flag allows the parent to
-  // cancel this update if a subsequent double-click is detected within the debounce window.
   if (context.pendingSketchOutcome) {
     const sendData: SketchSolveMachineEvent = {
       type: 'update sketch outcome',
       data: {
         sourceDelta: context.pendingSketchOutcome.kclSource,
         sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
-        debounceEditorUpdate: true,
         writeToDisk: true,
       },
     }
     self._parent?.send(sendData)
     const clearData: SketchSolveMachineEvent = { type: 'clear draft entities' }
     self._parent?.send(clearData)
-  }
-  return {}
-}
-
-export function sendDeleteResultToParentWithDebounce({
-  event,
-  self,
-}: {
-  event: DoneActorEvent<{
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-  }>
-  self: ToolActionArgs['self']
-}) {
-  // Send the delete result to parent (this removes the entities)
-  if (event.output) {
-    const output = event.output
-    if (output.kclSource && output.sceneGraphDelta) {
-      const sendData: SketchSolveMachineEvent = {
-        type: 'update sketch outcome',
-        data: {
-          sourceDelta: output.kclSource,
-          sceneGraphDelta: output.sceneGraphDelta,
-          debounceEditorUpdate: true,
-        },
-      }
-      self._parent?.send(sendData)
-    }
-  }
-  return {}
-}
-
-export function sendDeleteResultToParent({
-  event,
-  self,
-}: {
-  event: DoneActorEvent<{
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-  }>
-  self: ToolActionArgs['self']
-}) {
-  // Send the delete result to parent
-  if (event.output) {
-    const output = event.output
-    if (output.kclSource && output.sceneGraphDelta) {
-      const sendData: SketchSolveMachineEvent = {
-        type: 'update sketch outcome',
-        data: {
-          sourceDelta: output.kclSource,
-          sceneGraphDelta: output.sceneGraphDelta,
-        },
-      }
-      self._parent?.send(sendData)
-    }
   }
   return {}
 }
