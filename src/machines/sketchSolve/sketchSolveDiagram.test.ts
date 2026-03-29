@@ -7,6 +7,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   buildAngleConstraintInput,
+  buildFixedConstraintInput,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -152,5 +153,56 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
+  })
+})
+
+describe('buildFixedConstraintInput', () => {
+  it('builds a fixed-point input for one selected point', () => {
+    const point = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const objects = createObjectsArray([point])
+
+    expect(buildFixedConstraintInput([10], objects)).toEqual([
+      {
+        point: 10,
+        position: {
+          x: { value: 3, units: 'Mm' },
+          y: { value: 4, units: 'Mm' },
+        },
+      },
+    ])
+  })
+
+  it('builds fixed-point inputs for multiple selected points', () => {
+    const point1 = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const point2 = createPointApiObject({ id: 11, x: 5, y: 6 })
+    const objects = createObjectsArray([point1, point2])
+
+    expect(buildFixedConstraintInput([10, 11], objects)).toEqual([
+      {
+        point: 10,
+        position: {
+          x: { value: 3, units: 'Mm' },
+          y: { value: 4, units: 'Mm' },
+        },
+      },
+      {
+        point: 11,
+        position: {
+          x: { value: 5, units: 'Mm' },
+          y: { value: 6, units: 'Mm' },
+        },
+      },
+    ])
+  })
+
+  it('returns null unless the selection is one or more points', () => {
+    const point1 = createPointApiObject({ id: 10, x: 3, y: 4 })
+    const point2 = createPointApiObject({ id: 11, x: 5, y: 6 })
+    const line = createLineApiObject({ id: 12, start: 10, end: 11 })
+    const objects = createObjectsArray([point1, point2, line])
+
+    expect(buildFixedConstraintInput([], objects)).toBeNull()
+    expect(buildFixedConstraintInput([12], objects)).toBeNull()
+    expect(buildFixedConstraintInput([10, 12], objects)).toBeNull()
   })
 })
