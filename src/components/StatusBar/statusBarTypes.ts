@@ -1,6 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { TooltipProps } from '@src/components/Tooltip'
-import { Location } from 'react-router-dom'
+import type { Location } from 'react-router-dom'
 
 export type StatusBarItemType = {
   id: string
