@@ -375,8 +375,7 @@ function getConstraintRowWorldPosition(
     clientWidth - viewportPadding - totalRowWidth
   )
   const rowStartX = clamp(baseScreenX + rowStartXOffsetPx, minStartX, maxStartX)
-  const centerX =
-    rowStartX + itemIndex * (badgeSize + badgeGap) + badgeSize / 2
+  const centerX = rowStartX + itemIndex * (badgeSize + badgeGap) + badgeSize / 2
   const centerY = clamp(
     baseScreenY + centerYOffsetPx,
     viewportPadding + badgeSize / 2,

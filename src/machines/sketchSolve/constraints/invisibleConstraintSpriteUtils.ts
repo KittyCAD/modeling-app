@@ -151,13 +151,15 @@ export function findInvisibleConstraintClusterIds(
 ): number[] {
   const constraintIds = new Set<number>([constraint.id])
 
-  findSegmentsForInvisibleConstraint(constraint, objects).forEach((segmentId) => {
-    findInvisibleConstraintsForSegment(objects[segmentId], objects).forEach(
-      (constraintId) => {
-        constraintIds.add(constraintId)
-      }
-    )
-  })
+  findSegmentsForInvisibleConstraint(constraint, objects).forEach(
+    (segmentId) => {
+      findInvisibleConstraintsForSegment(objects[segmentId], objects).forEach(
+        (constraintId) => {
+          constraintIds.add(constraintId)
+        }
+      )
+    }
+  )
 
   return [...constraintIds].sort((a, b) => a - b)
 }
@@ -194,7 +196,9 @@ function getCoincidentHighlightedSegmentIds(
   constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
   objects: ApiObject[]
 ) {
-  const pointIds = constraint.segments.filter((id) => isPointSegment(objects[id]))
+  const pointIds = constraint.segments.filter((id) =>
+    isPointSegment(objects[id])
+  )
   const ownerSegmentIds = pointIds.flatMap((pointId) => {
     const point = objects[pointId]
     if (!isPointSegment(point)) {
