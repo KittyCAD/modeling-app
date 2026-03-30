@@ -164,19 +164,18 @@ function getDragPointSnappingCandidate({
   sceneInfra,
 }: {
   draggedEntityId: number | null
-  selectedIds: Array<number>
+  selectedIds: number[]
   sceneGraphDelta: SceneGraphDelta
   sketchId: number
   mousePosition: Coords2d
   sceneInfra: SceneInfra
 }): { sourcePointId: number; candidate: SnappingCandidate | null } | null {
-  console.log('drag', draggedEntityId, selectedIds)
   if (draggedEntityId === null) {
     return null
   }
   if (
     selectedIds.length >= 2 ||
-    (selectedIds[0] && selectedIds[0] !== draggedEntityId)
+    (selectedIds.length === 1 && selectedIds[0] !== draggedEntityId)
   ) {
     // dragging more than 1 point -> not supported
     return null
