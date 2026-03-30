@@ -15,10 +15,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import {
-  CoreDumpManager,
-  submitCoreDumpSupportTicket,
-} from '@src/lib/coredump'
+import { CoreDumpManager, submitCoreDumpSupportTicket } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
