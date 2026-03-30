@@ -1732,8 +1732,7 @@ revolve001 = revolve(
   axis = X,
   bodyType = SURFACE,
 )`)
-      // TODO: enable once KCL is updated
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add basic revolve call with symmetric true', async () => {
