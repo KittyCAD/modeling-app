@@ -16,7 +16,6 @@ export type SnappingCandidate = {
 
 export function getSnappingCandidates(
   mousePosition: Coords2d,
-  existingPoint: PointSegment,
   {
     objects,
     sceneInfra,
@@ -27,10 +26,7 @@ export function getSnappingCandidates(
 ): SnappingCandidate[] {
   return findClosestApiObjects(mousePosition, objects, sceneInfra).flatMap(
     (candidate) => {
-      if (
-        !isPointSegment(candidate.apiObject) ||
-        candidate.apiObject.id === existingPoint.id
-      ) {
+      if (!isPointSegment(candidate.apiObject)) {
         return []
       }
 

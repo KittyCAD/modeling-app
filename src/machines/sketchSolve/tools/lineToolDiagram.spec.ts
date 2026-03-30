@@ -103,7 +103,6 @@ describe('lineTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.draftPointId).toBeUndefined()
-      expect(context.lastLineEndPointId).toBeUndefined()
       expect(context.stopAfterCommit).toBeUndefined()
       expect(context.deleteFromEscape).toBeUndefined()
       expect(context.sketchId).toBe(0)

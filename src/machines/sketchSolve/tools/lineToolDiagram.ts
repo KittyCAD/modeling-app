@@ -27,7 +27,10 @@ import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { isLineSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -56,12 +59,26 @@ export const machine = setup({
       }: {
         input: {
           pointData: [number, number]
+          snapTargetId?: number
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
         }
-      }) => {
-        const { pointData, rustContext, kclManager, sketchId } = input
+      }): Promise<
+        | {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            newlyAddedEntities?: {
+              segmentIds: Array<number>
+              constraintIds: Array<number>
+            }
+          }
+        | {
+            error: string
+          }
+      > => {
+        const { pointData, snapTargetId, rustContext, kclManager, sketchId } =
+          input
         const [x, y] = pointData
 
         const units = baseUnitToNumericSuffix(
@@ -84,16 +101,70 @@ export const machine = setup({
             },
           }
 
-          // Call the addSegment method using the rustContext from context
+          const settings = jsAppSettings(rustContext.settingsActor)
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
             sketchId, // sketchId from context
             segmentCtor,
             'line-segment', // label
-            jsAppSettings(rustContext.settingsActor)
+            settings
           )
 
-          return result
+          if (snapTargetId === undefined) {
+            return result
+          }
+
+          const startPointId = result.sceneGraphDelta.new_objects.find(
+            (objId) => {
+              const obj = result.sceneGraphDelta.new_graph.objects[objId]
+              return isPointSegment(obj)
+            }
+          )
+
+          if (startPointId === undefined) {
+            return {
+              error:
+                'startPointId should be defined when snapping the first line point.',
+            }
+          }
+
+          const snapResult = await rustContext.addConstraint(
+            0,
+            sketchId,
+            {
+              type: 'Coincident',
+              segments: [startPointId, snapTargetId],
+            },
+            settings
+          )
+
+          const segmentIds = result.sceneGraphDelta.new_objects.filter(
+            (objId) => {
+              const obj = result.sceneGraphDelta.new_graph.objects[objId]
+              return obj?.kind.type === 'Segment'
+            }
+          )
+          const constraintIds = snapResult.sceneGraphDelta.new_objects.filter(
+            (objId) => {
+              const obj = snapResult.sceneGraphDelta.new_graph.objects[objId]
+              return obj?.kind.type === 'Constraint'
+            }
+          )
+
+          return {
+            kclSource: snapResult.kclSource,
+            sceneGraphDelta: {
+              ...snapResult.sceneGraphDelta,
+              new_objects: [
+                ...result.sceneGraphDelta.new_objects,
+                ...snapResult.sceneGraphDelta.new_objects,
+              ],
+            },
+            newlyAddedEntities: {
+              segmentIds,
+              constraintIds,
+            },
+          }
         } catch (error) {
           console.error('Failed to add point segment:', error)
           return {
@@ -126,8 +197,14 @@ export const machine = setup({
             error: string
           }
       > => {
-        const { pointData, id, snapTargetId, rustContext, kclManager, sketchId } =
-          input
+        const {
+          pointData,
+          id,
+          snapTargetId,
+          rustContext,
+          kclManager,
+          sketchId,
+        } = input
         const [x, y] = pointData
         const units = baseUnitToNumericSuffix(
           kclManager.fileSettings.defaultLengthUnit
@@ -268,14 +345,17 @@ export const machine = setup({
             settings
           )
 
-          const newLine = chainResult.sceneGraphDelta.new_objects.find((objId) => {
-            const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
-            return isLineSegment(obj)
-          })
+          const newLine = chainResult.sceneGraphDelta.new_objects.find(
+            (objId) => {
+              const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
+              return isLineSegment(obj)
+            }
+          )
 
           let newLineEndPointId: number | undefined
           if (newLine !== undefined) {
-            const lineObj = chainResult.sceneGraphDelta.new_graph.objects[newLine]
+            const lineObj =
+              chainResult.sceneGraphDelta.new_graph.objects[newLine]
             if (isLineSegment(lineObj)) {
               newLineEndPointId = lineObj.kind.segment.end
             }
@@ -322,11 +402,9 @@ export const machine = setup({
   /** @xstate-layout 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-2fEXSOE-OFCwNRDkIRbLbZ0qgS4BJoDQTkCKVGoRyBoNQhQXwRMuF2AupJgXXFUCC6SagS7IzOsLHAFKHqnN4l7NCKsnB5BbHot2UyFq0xcJkbRJcy4T1+AKuOvZGzsokGivimQ0TfUih8WoQ5cS9izjTSFYjvGT0kcg6RPCaBqvSNiHujQZDET9O+Qc30aY1GwtkZwFxeJPGLpkoAA */
   context: ({ input }): ToolContext => ({
     draftPointId: undefined,
-    lastLineEndPointId: undefined,
     stopAfterCommit: undefined,
     pendingSketchOutcome: undefined,
     deleteFromEscape: undefined,
-    sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
@@ -378,7 +456,9 @@ export const machine = setup({
 
         onDone: {
           target: 'check whether to stop drawing',
-          actions: [assign(({ event }) => storePendingSketchOutcome({ event }))],
+          actions: [
+            assign(({ event }) => storePendingSketchOutcome({ event })),
+          ],
         },
         onError: {
           target: 'unequipping',
@@ -395,7 +475,6 @@ export const machine = setup({
             sendStoredResultToParent,
             assign({
               draftPointId: undefined,
-              lastLineEndPointId: undefined,
               stopAfterCommit: undefined,
               pendingSketchOutcome: undefined,
             }),
@@ -409,7 +488,6 @@ export const machine = setup({
             sendStoredResultToParent,
             assign({
               draftPointId: undefined,
-              lastLineEndPointId: undefined,
               stopAfterCommit: undefined,
               pendingSketchOutcome: undefined,
             }),
@@ -421,7 +499,6 @@ export const machine = setup({
             sendStoredResultToParent,
             assign({
               draftPointId: undefined,
-              lastLineEndPointId: undefined,
               stopAfterCommit: undefined,
             }),
           ],
@@ -436,7 +513,6 @@ export const machine = setup({
         'finish line chain': {
           target: 'ready for user click',
           actions: assign({
-            lastLineEndPointId: undefined,
             stopAfterCommit: undefined,
             pendingSketchOutcome: undefined,
           }),
@@ -445,7 +521,6 @@ export const machine = setup({
         escape: {
           target: 'ready for user click',
           actions: assign({
-            lastLineEndPointId: undefined,
             stopAfterCommit: undefined,
             pendingSketchOutcome: undefined,
           }),
@@ -480,7 +555,6 @@ export const machine = setup({
           target: 'ready for user click',
           actions: assign({
             pendingSketchOutcome: undefined,
-            lastLineEndPointId: undefined,
           }),
         },
       },
@@ -507,6 +581,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           return {
             pointData: event.data,
+            snapTargetId: event.snapTargetId,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,

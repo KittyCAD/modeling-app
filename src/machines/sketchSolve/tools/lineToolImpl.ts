@@ -35,7 +35,6 @@ export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 
 export type ToolEvents =
   | BaseToolEvent
-
   | { type: 'finish line chain' }
   | { type: 'start next draft line'; data: [number, number] }
   | {
@@ -50,7 +49,6 @@ export type ToolEvents =
 
 export type ToolContext = {
   draftPointId?: number
-  lastLineEndPointId?: number
   stopAfterCommit?: boolean
   pendingSketchOutcome?: {
     kclSource: SourceDelta
@@ -60,7 +58,6 @@ export type ToolContext = {
     stopChaining?: boolean
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
-  sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -94,10 +91,6 @@ function getBestSnappingCandidate({
   context: ToolContext
   mousePosition: Coords2d
 }) {
-  if (!context.draftPointId) {
-    return null
-  }
-
   const snapshot = self._parent?.getSnapshot()
   const sceneGraphDelta = snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
   const objects = sceneGraphDelta?.new_graph?.objects
@@ -109,16 +102,13 @@ function getBestSnappingCandidate({
     objects,
     context.sketchId
   )
-  const draftPoint = currentSketchObjects[context.draftPointId]
-  if (!isPointSegment(draftPoint)) {
-    return null
-  }
 
   return (
-    getSnappingCandidates(mousePosition, draftPoint, {
+    getSnappingCandidates(mousePosition, {
       objects: currentSketchObjects,
       sceneInfra: context.sceneInfra,
-    })[0] ?? null
+    }).find((candidate) => candidate.apiObject.id !== context.draftPointId) ??
+    null
   )
 }
 
@@ -240,13 +230,36 @@ export function addPointListener({ self, context }: ToolActionArgs) {
 
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          context,
+          mousePosition,
+        })
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
-          data: [twoD.x, twoD.y],
+          data: [x, y],
+          snapTargetId: snappingCandidate?.apiObject.id,
         })
       }
     },
-    onMove: () => {},
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        sendHoveredId(self, null)
+        updateSnappingPreview({ context, snappingCandidate: null })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        context,
+        mousePosition: [twoD.x, twoD.y],
+      })
+      sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
+      updateSnappingPreview({ context, snappingCandidate })
+    },
   })
 }
 
@@ -321,22 +334,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   }
 
   if (output.newLineEndPointId !== undefined) {
-    const lineId = [...output.sceneGraphDelta!.new_objects]
-      .reverse()
-      .find((objId) => {
-        const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return isLineSegment(obj)
-      })
-
-    let lastLineEndPointId: number | undefined
-    if (lineId !== undefined) {
-      const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
-      if (isLineSegment(lineObj)) {
-        // The end point ID is stored in the Line segment
-        lastLineEndPointId = lineObj.kind.segment.end
-      }
-    }
-
     if (output.newlyAddedEntities) {
       const sendData: SketchSolveMachineEvent = {
         type: 'set draft entities',
@@ -347,8 +344,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
     return {
       draftPointId: output.newLineEndPointId,
-      lastLineEndPointId,
-      sceneGraphDelta: output.sceneGraphDelta,
     }
   }
 
@@ -363,7 +358,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   // The last point ID is the end point of the newly created line
   const pointId = pointIds[pointIds.length - 1]
 
-  // Find the line segment to get its end point ID
   const lineId = [...(output.sceneGraphDelta?.new_objects || [])]
     .reverse()
     .find((objId) => {
@@ -371,30 +365,18 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       return isLineSegment(obj)
     })
 
-  let lastLineEndPointId: number | undefined
-  if (lineId !== undefined && output.sceneGraphDelta) {
-    const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
-    if (isLineSegment(lineObj)) {
-      // The end point ID is stored in the Line segment
-      lastLineEndPointId = lineObj.kind.segment.end
+  const entitiesToTrack = output.newlyAddedEntities ?? {
+    segmentIds: [] as Array<number>,
+    constraintIds: [] as Array<number>,
+  }
+
+  if (!output.newlyAddedEntities) {
+    if (pointIds.length > 0 && output.sceneGraphDelta) {
+      entitiesToTrack.segmentIds.push(...pointIds)
     }
-  }
-
-  // Track entities created in first point creation for potential deletion on unequip
-  const entitiesToTrack: {
-    segmentIds: Array<number>
-    constraintIds: Array<number>
-  } = {
-    segmentIds: [],
-    constraintIds: [],
-  }
-
-  // Add point IDs and line ID to tracking
-  if (pointIds.length > 0 && output.sceneGraphDelta) {
-    entitiesToTrack.segmentIds.push(...pointIds)
-  }
-  if (lineId !== undefined) {
-    entitiesToTrack.segmentIds.push(lineId)
+    if (lineId !== undefined) {
+      entitiesToTrack.segmentIds.push(lineId)
+    }
   }
 
   // Send draft entities to parent for tracking
@@ -409,8 +391,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   if (pointId !== undefined && output.sceneGraphDelta) {
     return {
       draftPointId: pointId,
-      lastLineEndPointId,
-      sceneGraphDelta: output.sceneGraphDelta,
     }
   }
   return {}
