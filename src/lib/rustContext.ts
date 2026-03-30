@@ -20,7 +20,7 @@ import type {
   SketchCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { type Context } from '@kittycad/kcl-wasm-lib/kcl_wasm_lib'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 
 import type { WebSocketResponse } from '@kittycad/lib'

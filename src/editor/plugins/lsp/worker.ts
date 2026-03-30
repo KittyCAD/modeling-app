@@ -10,7 +10,7 @@ import init, {
   LspServerConfig,
   lsp_run_copilot,
   lsp_run_kcl,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+} from '@kittycad/kcl-wasm-lib/kcl_wasm_lib'
 
 import type {
   CopilotWorkerOptions,

@@ -14,7 +14,7 @@ import { lerp2d, subVec } from '@src/lib/utils2d'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { calculate_circle_from_3_points } from '@kittycad/kcl-wasm-lib/kcl_wasm_lib'
 import {
   isArcSegment,
   isPointSegment,

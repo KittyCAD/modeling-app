@@ -85,7 +85,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
       end: 0,
       moduleId: 'test-module',
     },
-    wasmInstancePromise: vi.importActual('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'),
+    wasmInstancePromise: vi.importActual('@kittycad/kcl-wasm-lib/kcl_wasm_lib'),
   } as any,
   toast: {
     error: vi.fn(),
