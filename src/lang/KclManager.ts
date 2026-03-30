@@ -217,11 +217,12 @@ export class ZDSProject {
     private app: App
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
-    window.electron?.watchFileOn(
-      projectIORefSignal.value.path,
-      this.fileWatcherId,
-      this.onUpdateFromDisk
-    )
+    console.log('Calling watchFileOn with', projectIORefSignal.value.path),
+      window.electron?.watchFileOn(
+        projectIORefSignal.value.path,
+        this.fileWatcherId,
+        this.onUpdateFromDisk
+      )
   }
 
   /** Clean up resources and watchers for Project */
@@ -501,9 +502,10 @@ export class File extends EventTarget {
     if (this.watching || this.path.length < 1) {
       return
     }
-    File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
-      this.onWatchEvent.map((f) => f(e, p))
-    })
+    console.log('Calling watchFileOn with', this.path),
+      File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
+        this.onWatchEvent.map((f) => f(e, p))
+      })
     this.watching = true
   }
 

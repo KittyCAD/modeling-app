@@ -51,7 +51,8 @@ export const useFileSystemWatcher = (
       // "There can be many keys (functions) per path"
       // Again if refs were preserved, we wouldn't need to do this. Keys
       // gives us uniqueness.
-      window.electron.watchFileOn(path, key.current, cbWatcher)
+      console.log('Calling watchFileOn with', path),
+        window.electron.watchFileOn(path, key.current, cbWatcher)
     }
 
     const electron = window.electron
