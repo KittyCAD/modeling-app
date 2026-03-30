@@ -242,7 +242,7 @@ export function findClosestApiObjects(
   // All segments outside of hoverDistance are dropped.
   // Visible non-visual constraints take precedence over overlapping geometry,
   // then points take precedence over other segments to keep them easy to target.
-  const hoverDistance = 8 * scale
+  const hoverDistance = 10 * scale
   let mouseScreenPosition: Coords2d | undefined
   const getMouseScreenPosition = () =>
     (mouseScreenPosition ??= localToScreen(
