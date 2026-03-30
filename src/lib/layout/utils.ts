@@ -612,11 +612,18 @@ export function closeAllPanes(
     return rootLayout
   }
 
-  for (const activeIndex of paneLayout.activeIndices) {
-    const child = paneLayout.children[activeIndex]
+  const activePaneIds = paneLayout.activeIndices.map(
+    (activeIndex) => paneLayout.children[activeIndex]?.id
+  )
+
+  for (const childId of activePaneIds) {
+    if (!childId) {
+      continue
+    }
+
     togglePaneLayoutNode({
       rootLayout,
-      targetNodeId: child.id,
+      targetNodeId: childId,
       shouldExpand: false,
     })
   }

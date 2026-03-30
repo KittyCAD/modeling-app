@@ -42,6 +42,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
   {
     currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {
@@ -84,6 +85,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {

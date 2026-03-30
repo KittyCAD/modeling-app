@@ -221,7 +221,9 @@ export type fn
 @(impl = std_rust)
 export type Plane
 
-/// A segment of a path in a sketch. It may be a line, arc, or other segment type.
+/// A segment in a sketch created in a sketch block. It may be a line, arc, point, or other segment type.
+///
+/// See the [sketch2 module](/docs/kcl-std/modules/std-sketch2) for functions that create segments and the [region function](/docs/kcl-std/functions/std-sketch2-region) for examples using segments to create a region that can be extruded.
 @(impl = std_rust_constrainable, experimental = true)
 export type Segment
 
@@ -319,7 +321,9 @@ export type Solid
 @(impl = std_rust)
 export type Face
 
-/// A helix; created by the `helix` function.
+/// A helix.
+///
+/// A helix can be created by the [`helix` function](/docs/kcl-std/functions/std-helix).
 @(impl = std_rust)
 export type Helix
 
@@ -344,14 +348,44 @@ export type Point2d = [number(Length); 2]
 export type Point3d = [number(Length); 3]
 
 /// An abstract and infinite line in 2d space.
+///
+/// The `X`, `Y`, and `Z` axes are defined in the standard library. You can define custom axes by using an object with origin and direction properties.
+///
+/// The 2D version of the X axis could be defined like:
+///
+/// ```kcl,inline
+/// xAxis2d = {
+///   origin = [0, 0],
+///   direction = [1, 0],
+/// }
+/// ```
+///
+/// The number components of the origin and direction must be usable as lengths.
+/// 
+/// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis2d
 
 /// An abstract and infinite line in 3d space.
+///
+/// The `X`, `Y`, and `Z` axes are defined in the standard library. You can define custom axes by using an object with origin and direction properties.
+///
+/// The 3D X axis is defined similar to the following:
+///
+/// ```kcl,inline
+/// xAxis = {
+///   origin = [0, 0, 0],
+///   direction = [1, 0, 0],
+/// }
+/// ```
+///
+/// The number components of the origin and direction must be usable as lengths.
+/// 
+/// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis3d
 
-/// A GD&T annotation.
+/// A GD&T annotation created by one of the [`gdt` functions](/docs/kcl-std/modules/std-gdt).
 @(impl = std_rust, experimental = true)
 export type GdtAnnotation
 
