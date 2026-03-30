@@ -459,7 +459,7 @@ export function pointToCoords2d(point: PointSegment): Coords2d {
  * Eg. coincident constraints:
  * [1, 2], [2, 3], [3, 5]
  * for param: 1 it will return: 1, 2, 3, 5
- * 
+ *
  * Result includes the given point as well.
  */
 export function getCoincidentCluster(
