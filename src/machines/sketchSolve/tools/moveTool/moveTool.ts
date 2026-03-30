@@ -945,52 +945,55 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const settings = jsAppSettings(context.rustContext.settingsActor)
           const result =
             snappingCandidate && draggedEntityId !== null
-            ? await (async () => {
-                const units = baseUnitToNumericSuffix(
-                  context.kclManager.fileSettings.defaultLengthUnit
-                )
-                const [x, y] = snappingCandidate.position
+              ? await (async () => {
+                  const units = baseUnitToNumericSuffix(
+                    context.kclManager.fileSettings.defaultLengthUnit
+                  )
+                  const [x, y] = snappingCandidate.position
 
-                await context.rustContext.editSegments(
-                  0,
-                  context.sketchId,
-                  [
-                    {
-                      id: draggedEntityId,
-                      ctor: {
-                        type: 'Point',
-                        position: {
-                          x: {
-                            type: 'Var',
-                            value: roundOff(x),
-                            units,
-                          },
-                          y: {
-                            type: 'Var',
-                            value: roundOff(y),
-                            units,
+                  await context.rustContext.editSegments(
+                    0,
+                    context.sketchId,
+                    [
+                      {
+                        id: draggedEntityId,
+                        ctor: {
+                          type: 'Point',
+                          position: {
+                            x: {
+                              type: 'Var',
+                              value: roundOff(x),
+                              units,
+                            },
+                            y: {
+                              type: 'Var',
+                              value: roundOff(y),
+                              units,
+                            },
                           },
                         },
                       },
-                    },
-                  ],
-                  settings
-                )
+                    ],
+                    settings
+                  )
 
-                return context.rustContext.addConstraint(
+                  return context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    {
+                      type: 'Coincident',
+                      segments: [
+                        draggedEntityId,
+                        snappingCandidate.apiObject.id,
+                      ],
+                    },
+                    settings
+                  )
+                })()
+              : await context.rustContext.sketchExecuteMock(
                   SKETCH_FILE_VERSION,
-                  context.sketchId,
-                  {
-                    type: 'Coincident',
-                    segments: [draggedEntityId, snappingCandidate.apiObject.id],
-                  },
-                  settings
+                  context.sketchId
                 )
-              })()
-            : await context.rustContext.sketchExecuteMock(
-                SKETCH_FILE_VERSION,
-                context.sketchId
-              )
 
           // Send the event to update the sketch outcome
           self.send({
