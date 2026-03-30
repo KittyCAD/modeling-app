@@ -53,15 +53,15 @@ export type ToolbarItem = {
   title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
   hotkey?:
-  | string
-  | ((state: StateFrom<typeof modelingMachine>) => string | string[])
+    | string
+    | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
   extraNote?: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
-  | string
-  | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
+    | string
+    | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
 }
 
 export type ToolbarItemResolved = Omit<
@@ -463,7 +463,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'join',
                 // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Join',
                 description: 'Join surfaces together',
@@ -767,7 +767,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-profile',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Profile',
                 description:
@@ -776,7 +776,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-position',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Position',
                 description:
@@ -785,7 +785,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-perpendicularity',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Perpendicularity',
                 description:
@@ -794,7 +794,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-parallelism',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Parallelism',
                 description:
@@ -803,7 +803,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-dimension',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Dimension',
                 description:
@@ -812,7 +812,7 @@ export const useToolbarConfig = () => {
               },
               {
                 id: 'gdt-note',
-                onClick: () => { },
+                onClick: () => {},
                 status: 'unavailable',
                 title: 'Note',
                 description:
@@ -1385,8 +1385,7 @@ export const useToolbarConfig = () => {
               modelingSend({
                 type: 'Exit sketch',
               })
-            }
-            ,
+            },
             icon: 'arrowShortLeft',
             status: 'available',
             title: 'Exit sketch',
@@ -1400,12 +1399,12 @@ export const useToolbarConfig = () => {
             onClick: ({ modelingSend, isActive }) =>
               isActive
                 ? modelingSend({
-                  type: 'unequip tool',
-                })
+                    type: 'unequip tool',
+                  })
                 : modelingSend({
-                  type: 'equip tool',
-                  data: { tool: 'lineTool' },
-                }),
+                    type: 'equip tool',
+                    data: { tool: 'lineTool' },
+                  }),
             icon: 'line',
             status: 'available',
             title: 'Line',
@@ -1421,12 +1420,12 @@ export const useToolbarConfig = () => {
             onClick: ({ modelingSend, isActive }) =>
               isActive
                 ? modelingSend({
-                  type: 'unequip tool',
-                })
+                    type: 'unequip tool',
+                  })
                 : modelingSend({
-                  type: 'equip tool',
-                  data: { tool: 'pointTool' },
-                }),
+                    type: 'equip tool',
+                    data: { tool: 'pointTool' },
+                  }),
             icon: 'oneDot',
             status: 'available',
             title: 'Point',
@@ -1442,12 +1441,12 @@ export const useToolbarConfig = () => {
             onClick: ({ modelingSend, isActive }) =>
               isActive
                 ? modelingSend({
-                  type: 'unequip tool',
-                })
+                    type: 'unequip tool',
+                  })
                 : modelingSend({
-                  type: 'equip tool',
-                  data: { tool: 'circleTool' },
-                }),
+                    type: 'equip tool',
+                    data: { tool: 'circleTool' },
+                  }),
             icon: 'circle',
             status: 'available',
             title: 'Center circle',
@@ -1465,12 +1464,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'centerArcTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'centerArcTool' },
+                      }),
                 icon: 'arcCenter',
                 status: 'available',
                 title: 'Center Arc',
@@ -1486,12 +1485,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'threePointArcTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'threePointArcTool' },
+                      }),
                 icon: 'arc',
                 status: 'available',
                 title: '3-Point Arc',
@@ -1506,12 +1505,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'tangentialArcTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'tangentialArcTool' },
+                      }),
                 icon: 'tangent',
                 status: 'available',
                 title: 'Tangential Arc',
@@ -1530,9 +1529,9 @@ export const useToolbarConfig = () => {
               isActive
                 ? modelingSend({ type: 'unequip tool' })
                 : modelingSend({
-                  type: 'equip tool',
-                  data: { tool: 'trimTool' },
-                }),
+                    type: 'equip tool',
+                    data: { tool: 'trimTool' },
+                  }),
             icon: 'trimTool',
             status: 'experimental',
             title: 'Trim',
@@ -1552,12 +1551,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'cornerRectTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'cornerRectTool' },
+                      }),
                 icon: 'rectangle',
                 status: 'available',
                 title: 'Corner Rectangle',
@@ -1573,12 +1572,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'centerRectTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'centerRectTool' },
+                      }),
                 icon: 'rectangleCenter',
                 status: 'available',
                 title: 'Center Rectangle',
@@ -1594,12 +1593,12 @@ export const useToolbarConfig = () => {
                 onClick: ({ modelingSend, isActive }) =>
                   isActive
                     ? modelingSend({
-                      type: 'unequip tool',
-                    })
+                        type: 'unequip tool',
+                      })
                     : modelingSend({
-                      type: 'equip tool',
-                      data: { tool: 'angledRectTool' },
-                    }),
+                        type: 'equip tool',
+                        data: { tool: 'angledRectTool' },
+                      }),
                 icon: 'rectangleAngled',
                 status: 'available',
                 title: 'Angled Rectangle',

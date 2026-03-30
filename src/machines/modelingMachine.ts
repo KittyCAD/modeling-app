@@ -209,38 +209,38 @@ import { toPlaneName } from '@src/lib/planes'
 
 export type ModelingMachineEvent =
   | {
-    type: 'Enter sketch'
-    data?: {
-      forceNewSketch?: boolean
-      keepDefaultPlaneVisibility?: boolean
+      type: 'Enter sketch'
+      data?: {
+        forceNewSketch?: boolean
+        keepDefaultPlaneVisibility?: boolean
+      }
     }
-  }
   | { type: 'Sketch On Face' }
   | {
-    type: 'Select sketch plane'
-    data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-  }
+      type: 'Select sketch plane'
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+    }
   | {
-    type: 'Select sketch solve plane'
-    data: ArtifactId
-  }
+      type: 'Select sketch solve plane'
+      data: ArtifactId
+    }
   | {
-    type: 'Set selection'
-    data: SetSelections
-  }
+      type: 'Set selection'
+      data: SetSelections
+    }
   | {
-    type: 'Delete selection'
-  }
+      type: 'Delete selection'
+    }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'Exit sketch' }
   | {
-    type: 'Add start point' | 'Continue existing profile'
-    data: {
-      sketchNodePaths: PathToNode[]
-      sketchEntryNodePath: PathToNode
+      type: 'Add start point' | 'Continue existing profile'
+      data: {
+        sketchNodePaths: PathToNode[]
+        sketchEntryNodePath: PathToNode
+      }
     }
-  }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -255,37 +255,37 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-    type: 'Constrain length'
-    data: ModelingCommandSchema['Constrain length']
-  }
+      type: 'Constrain length'
+      data: ModelingCommandSchema['Constrain length']
+    }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-    type: 'Boolean Subtract'
-    data: ModelingCommandSchema['Boolean Subtract']
-  }
+      type: 'Boolean Subtract'
+      data: ModelingCommandSchema['Boolean Subtract']
+    }
   | {
-    type: 'Boolean Union'
-    data: ModelingCommandSchema['Boolean Union']
-  }
+      type: 'Boolean Union'
+      data: ModelingCommandSchema['Boolean Union']
+    }
   | {
-    type: 'Boolean Intersect'
-    data: ModelingCommandSchema['Boolean Intersect']
-  }
+      type: 'Boolean Intersect'
+      data: ModelingCommandSchema['Boolean Intersect']
+    }
   | {
-    type: 'Boolean Split'
-    data: ModelingCommandSchema['Boolean Split']
-  }
+      type: 'Boolean Split'
+      data: ModelingCommandSchema['Boolean Split']
+    }
   | {
-    type: 'Pattern Circular 3D'
-    data: ModelingCommandSchema['Pattern Circular 3D']
-  }
+      type: 'Pattern Circular 3D'
+      data: ModelingCommandSchema['Pattern Circular 3D']
+    }
   | {
-    type: 'Pattern Linear 3D'
-    data: ModelingCommandSchema['Pattern Linear 3D']
-  }
+      type: 'Pattern Linear 3D'
+      data: ModelingCommandSchema['Pattern Linear 3D']
+    }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -302,96 +302,96 @@ export type ModelingMachineEvent =
   | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-    type: 'Delete selection'
-    data: ModelingCommandSchema['Delete selection']
-  }
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
   | {
-    type: 'Update sketch details'
-    data: Partial<SketchDetails>
-  }
+      type: 'Update sketch details'
+      data: Partial<SketchDetails>
+    }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-    type: 'Hide'
-    data: {
-      objects: Selections
+      type: 'Hide'
+      data: {
+        objects: Selections
+      }
     }
-  }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | {
-    type:
-    | 'Add circle origin'
-    | 'Add circle center'
-    | 'Add center rectangle origin'
-    | 'click in scene'
-    | 'Add first point'
-    data: [x: number, y: number]
-  }
-  | {
-    type: 'Add second point'
-    data: {
-      p1: [x: number, y: number]
-      p2: [x: number, y: number]
+      type:
+        | 'Add circle origin'
+        | 'Add circle center'
+        | 'Add center rectangle origin'
+        | 'click in scene'
+        | 'Add first point'
+      data: [x: number, y: number]
     }
-  }
   | {
-    type: 'xstate.done.actor.animate-to-face'
-    output: SketchDetails
-  }
+      type: 'Add second point'
+      data: {
+        p1: [x: number, y: number]
+        p2: [x: number, y: number]
+      }
+    }
+  | {
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
+    }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-    type:
-    | 'xstate.done.actor.set-up-draft-circle'
-    | 'xstate.done.actor.set-up-draft-rectangle'
-    | 'xstate.done.actor.set-up-draft-center-rectangle'
-    | 'xstate.done.actor.set-up-draft-circle-three-point'
-    | 'xstate.done.actor.set-up-draft-arc'
-    | 'xstate.done.actor.set-up-draft-arc-three-point'
-    | 'xstate.done.actor.split-sketch-pipe-if-needed'
-    | 'xstate.done.actor.actor-circle-three-point'
-    | 'xstate.done.actor.reeval-node-paths'
+      type:
+        | 'xstate.done.actor.set-up-draft-circle'
+        | 'xstate.done.actor.set-up-draft-rectangle'
+        | 'xstate.done.actor.set-up-draft-center-rectangle'
+        | 'xstate.done.actor.set-up-draft-circle-three-point'
+        | 'xstate.done.actor.set-up-draft-arc'
+        | 'xstate.done.actor.set-up-draft-arc-three-point'
+        | 'xstate.done.actor.split-sketch-pipe-if-needed'
+        | 'xstate.done.actor.actor-circle-three-point'
+        | 'xstate.done.actor.reeval-node-paths'
 
-    output: SketchDetailsUpdate
-  }
+      output: SketchDetailsUpdate
+    }
   | {
-    type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-  }
+      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'toggle non-visual constraints' }
   | {
-    type: 'show non-visual constraints changed'
-    data: { value: boolean }
-  }
-  | {
-    type: 'Set Segment Overlays'
-    data: SegmentOverlayPayload
-  }
-  | {
-    type: 'Center camera on selection'
-  }
-  | {
-    type: 'Delete segments'
-    data: PathToNode[]
-  }
-  | {
-    type: 'code edit during sketch'
-  }
-  | {
-    type: 'Constrain with named value'
-    data: ModelingCommandSchema['Constrain with named value']
-  }
-  | {
-    type: 'change tool'
-    data: {
-      tool: SketchTool
+      type: 'show non-visual constraints changed'
+      data: { value: boolean }
     }
-  }
+  | {
+      type: 'Set Segment Overlays'
+      data: SegmentOverlayPayload
+    }
+  | {
+      type: 'Center camera on selection'
+    }
+  | {
+      type: 'Delete segments'
+      data: PathToNode[]
+    }
+  | {
+      type: 'code edit during sketch'
+    }
+  | {
+      type: 'Constrain with named value'
+      data: ModelingCommandSchema['Constrain with named value']
+    }
+  | {
+      type: 'change tool'
+      data: {
+        tool: SketchTool
+      }
+    }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -401,43 +401,43 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph emptied' }
   | { type: 'Artifact graph initialized' }
   | {
-    type: 'Toggle default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Toggle default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Save default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Save default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Restore default plane visibility'
-  }
+      type: 'Restore default plane visibility'
+    }
   | {
-    type: 'equip tool'
-    data: { tool: EquipTool }
-  }
+      type: 'equip tool'
+      data: { tool: EquipTool }
+    }
   | {
-    type:
-    | 'coincident'
-    | 'Fixed'
-    | 'Tangent'
-    | 'LinesEqualLength'
-    | 'Vertical'
-    | 'Horizontal'
-    | 'Parallel'
-    | 'Perpendicular'
-    | 'Dimension'
-    | 'HorizontalDistance'
-    | 'VerticalDistance'
-    | 'construction'
-  }
+      type:
+        | 'coincident'
+        | 'Fixed'
+        | 'Tangent'
+        | 'LinesEqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+        | 'Perpendicular'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
+    }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
   | {
-    type: 'sketch solve tool changed'
-    data: { tool: EquipTool | null }
-  }
+      type: 'sketch solve tool changed'
+      data: { tool: EquipTool | null }
+    }
   | { type: 'delete selected' }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -679,8 +679,8 @@ export const modelingMachine = setup({
       const pathToNodes = event.data
         ? [event.data]
         : selectionRanges.graphSelections.map(({ codeRef }) => {
-          return codeRef.pathToNode
-        })
+            return codeRef.pathToNode
+          })
       const info = removeConstrainingValuesInfo(
         pathToNodes,
         kclManager,
@@ -1550,10 +1550,10 @@ export const modelingMachine = setup({
               selection: codeMirrorSelection,
               effects: setSelections.scrollIntoView
                 ? [
-                  EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
-                    y: 'center',
-                  }),
-                ]
+                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
+                      y: 'center',
+                    }),
+                  ]
                 : [],
             })
           }
@@ -1590,12 +1590,12 @@ export const modelingMachine = setup({
           const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
-                (selection) =>
-                  !(
-                    isEnginePrimitiveSelection(selection) &&
-                    selection.entityId === setSelections.selection.entityId
-                  )
-              )
+                  (selection) =>
+                    !(
+                      isEnginePrimitiveSelection(selection) &&
+                      selection.entityId === setSelections.selection.entityId
+                    )
+                )
               : [...selectionRanges.otherSelections, setSelections.selection]
             : [setSelections.selection]
 
@@ -1639,12 +1639,12 @@ export const modelingMachine = setup({
           const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
-                (selection) =>
-                  !(
-                    isEngineRegionSelection(selection) &&
-                    selection.id === setSelections.selection.id
-                  )
-              )
+                  (selection) =>
+                    !(
+                      isEngineRegionSelection(selection) &&
+                      selection.id === setSelections.selection.id
+                    )
+                )
               : [...selectionRanges.otherSelections, setSelections.selection]
             : [setSelections.selection]
 
@@ -1944,7 +1944,7 @@ export const modelingMachine = setup({
             if (
               !engineCommandManager.started &&
               engineCommandManager.connection?.websocket?.readyState ===
-              WebSocket.CLOSED
+                WebSocket.CLOSED
             )
               return
 
@@ -2637,14 +2637,14 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await (info.enabled
             ? applyConstraintAngleBetween({
-              selectionRanges,
-              kclManager,
-            })
+                selectionRanges,
+                kclManager,
+              })
             : applyConstraintAngleLength({
-              selectionRanges,
-              angleOrLength: 'setAngle',
-              kclManager,
-            }))
+                selectionRanges,
+                angleOrLength: 'setAngle',
+                kclManager,
+              }))
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
@@ -2808,8 +2808,8 @@ export const modelingMachine = setup({
           })
         }
         kclManager.sceneInfra.setCallbacks({
-          onClick: () => { },
-          onDrag: () => { },
+          onClick: () => {},
+          onDrag: () => {},
         })
         return undefined
       }
@@ -2832,19 +2832,19 @@ export const modelingMachine = setup({
           const sketched =
             plane.type === 'extrudeFace'
               ? sketchOnExtrudedFace(
-                kclManager.ast,
-                plane.sketchPathToNode,
-                plane.extrudePathToNode,
-                addTagForSketchOnFace,
-                await kclManager.wasmInstancePromise,
-                plane.faceInfo
-              )
+                  kclManager.ast,
+                  plane.sketchPathToNode,
+                  plane.extrudePathToNode,
+                  addTagForSketchOnFace,
+                  await kclManager.wasmInstancePromise,
+                  plane.faceInfo
+                )
               : sketchOnOffsetPlane(
-                kclManager.ast,
-                plane.pathToNode,
-                plane.negated,
-                wasmInstance
-              )
+                  kclManager.ast,
+                  plane.pathToNode,
+                  plane.negated,
+                  wasmInstance
+                )
           if (err(sketched)) {
             const sketchedError = new Error(
               'Incompatible face, please try another'
@@ -2906,16 +2906,16 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          artifactOrPlaneId: ArtifactId | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          engineCommandManager: ConnectionManager
-          wasmInstance: ModuleType
-          defaultUnit?: ModelingMachineContext['store']['defaultUnit']
-          projectRef?: { current: Project | undefined }
-        }
-        | undefined
+          | {
+              artifactOrPlaneId: ArtifactId | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
+              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              projectRef?: { current: Project | undefined }
+            }
+          | undefined
       }): Promise<{
         plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
         sketchSolveId: number
@@ -3067,15 +3067,15 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          artifactId: ArtifactId | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          engineCommandManager: ConnectionManager
-          defaultUnit?: ModelingMachineContext['store']['defaultUnit']
-          projectRef?: { current: Project | undefined }
-        }
-        | undefined
+          | {
+              artifactId: ArtifactId | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              projectRef?: { current: Project | undefined }
+            }
+          | undefined
       }): Promise<{
         plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
         sketchSolveId: number
@@ -3916,9 +3916,9 @@ export const modelingMachine = setup({
       }
     }),
     'submit-prompt-edit': fromPromise(
-      async ({ }: {
+      async ({}: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => { }
+      }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -3928,12 +3928,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Extrude'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Extrude'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3966,12 +3966,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Sweep'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Sweep'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4004,12 +4004,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Loft'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Loft'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4041,12 +4041,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Revolve'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Revolve'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4079,12 +4079,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Offset plane'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Offset plane'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4118,12 +4118,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Helix'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Helix'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4156,12 +4156,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Shell'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Shell'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4194,12 +4194,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Delete Face'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Delete Face'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4231,12 +4231,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Hole'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Hole'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4268,14 +4268,14 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Fillet'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          engineCommandManager: ConnectionManager
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Fillet'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4309,14 +4309,14 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Chamfer'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          engineCommandManager: ConnectionManager
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Chamfer'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4350,13 +4350,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Blend'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Blend'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4424,12 +4424,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Appearance'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Appearance'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4460,12 +4460,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Translate'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Translate'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4497,12 +4497,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Rotate'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Rotate'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4534,12 +4534,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Scale'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Scale'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4572,13 +4572,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Clone'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Clone'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4609,17 +4609,17 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data:
           | {
-            objects: Selections
-          }
+              data:
+                | {
+                    objects: Selections
+                  }
+                | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
           | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4647,12 +4647,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['GDT Flatness'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['GDT Flatness'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4702,12 +4702,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['GDT Datum'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['GDT Datum'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4757,12 +4757,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Flip Surface'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Flip Surface'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -4793,13 +4793,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input?:
-        | {
-          data: ModelingCommandSchema['Export'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          defaultUnit?: ModelingMachineContext['store']['defaultUnit']
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Export'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
@@ -4852,25 +4852,25 @@ export const modelingMachine = setup({
           format.coords =
             up === 'y'
               ? {
-                forward: {
-                  axis: 'z',
-                  direction: 'positive',
-                },
-                up: {
-                  axis: 'y',
-                  direction: 'positive',
-                },
-              }
+                  forward: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                  up: {
+                    axis: 'y',
+                    direction: 'positive',
+                  },
+                }
               : {
-                forward: {
-                  axis: 'y',
-                  direction: 'negative',
-                },
-                up: {
-                  axis: 'z',
-                  direction: 'positive',
-                },
-              }
+                  forward: {
+                    axis: 'y',
+                    direction: 'negative',
+                  },
+                  up: {
+                    axis: 'z',
+                    direction: 'positive',
+                  },
+                }
         }
 
         if (
@@ -4908,12 +4908,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input?:
-        | ({
-          machineManager: MachineManager
-          rustContext: RustContext
-          fileName?: string
-        } & ModelingCommandSchema['Make'])
-        | undefined
+          | ({
+              machineManager: MachineManager
+              rustContext: RustContext
+              fileName?: string
+            } & ModelingCommandSchema['Make'])
+          | undefined
       }) => {
         if (input === undefined) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
@@ -4980,13 +4980,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Boolean Subtract'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Boolean Subtract'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -5017,13 +5017,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Boolean Union'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Boolean Union'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -5054,13 +5054,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Boolean Intersect'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Boolean Intersect'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -5092,13 +5092,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Boolean Split'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-          wasmInstance: ModuleType
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Boolean Split'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -5131,12 +5131,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -5168,12 +5168,12 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-        | {
-          data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-        | undefined
+          | {
+              data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -6811,13 +6811,13 @@ export const modelingMachine = setup({
 
         'Select sketch solve plane': 'animating to sketch solve mode',
         'Exit sketch': {
-          target: 'idle',
-          actions: ['enter modeling mode']
+          // target: 'idle',
+          // actions: [() => { console.log('I WILL PROCESS!') }],
         },
-        'Cancel': {
-          target: 'idle',
-          actions: ['enter modeling mode']
-        }
+        // Cancel: {
+        //   target: 'idle',
+        //   actions: ['enter modeling mode'],
+        // },
       },
     },
 
@@ -6920,7 +6920,7 @@ export const modelingMachine = setup({
           // - If no tool equipped (move and select): exit sketch mode
         },
         'Exit sketch': {
-          actions: ['enter modeling mode', sendTo('sketchSolveMachine', { type: 'exit' })],
+          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
           // Exit sketch immediately, bypassing tool unequip logic
         },
         'equip tool': {
