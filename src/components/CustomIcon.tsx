@@ -1182,6 +1182,19 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  joinSurfaces: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="join surfaces"
+    >
+      <path
+        d="M9.22461 2.35938L13.2246 4.36816L13.5 4.50684V13.1162L13.2344 13.2568L6.73438 16.7002L6 17.0898V7.89746L6.26855 7.75781L8.45996 6.61523L8.5 2.80176L8.50781 2L9.22461 2.35938ZM7 8.50391V15.4268L12.5 12.5137V5.63965L7 8.50391Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   kcl: (
     <svg
       viewBox="0 0 40 40"
