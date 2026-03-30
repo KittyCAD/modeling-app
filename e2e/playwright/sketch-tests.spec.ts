@@ -197,7 +197,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
       await toolbar.startSketchBtn.click()
       await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
+        page.getByRole('button', { name: 'Cancel Sketch' })
       ).toBeVisible()
 
       await expect(page.getByText('select a plane or face')).toBeVisible()
