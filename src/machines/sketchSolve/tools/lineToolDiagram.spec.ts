@@ -27,6 +27,14 @@ function createTestMachine(mockActors?: {
     | {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        lastPointId?: number
+      }
+    | { error: string }
+  >
+  startNextDraftLine?: (input: unknown) => Promise<
+    | {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
         newLineEndPointId?: number
         newlyAddedEntities?: { segmentIds: number[]; constraintIds: number[] }
       }
@@ -49,6 +57,14 @@ function createTestMachine(mockActors?: {
       ),
       modAndSolve: fromPromise(
         mockActors?.modAndSolve ||
+          (async () => ({
+            kclSource: { text: 'test' } as SourceDelta,
+            sceneGraphDelta: createSceneGraphDelta([], []),
+            lastPointId: 2,
+          }))
+      ),
+      startNextDraftLine: fromPromise(
+        mockActors?.startNextDraftLine ||
           (async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([], []),
@@ -83,8 +99,6 @@ describe('lineTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.draftPointId).toBeUndefined()
-      expect(context.lastLineEndPointId).toBeUndefined()
-      expect(context.pendingDoubleClick).toBeUndefined()
       expect(context.deleteFromEscape).toBeUndefined()
       expect(context.sketchId).toBe(0)
       actor.stop()
@@ -189,7 +203,7 @@ describe('lineTool - XState', () => {
 
       actor.send({ type: 'add point', data: [10, 20] })
 
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
+      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
 
       const context = actor.getSnapshot().context
       expect(context.draftPointId).toBeDefined()
@@ -220,12 +234,12 @@ describe('lineTool - XState', () => {
 
       // Add first point
       actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
+      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
 
       // Add second point
       actor.send({ type: 'add point', data: [30, 40] })
 
-      await waitFor(actor, (state) => state.matches('Confirming dimensions'))
+      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
 
       actor.stop()
     })
@@ -248,8 +262,16 @@ describe('lineTool - XState', () => {
           modAndSolve: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta(
+              [pointObj1, lineObj1, pointObj2],
+              [3]
+            ),
+            lastPointId: 3,
+          }),
+          startNextDraftLine: async () => ({
+            kclSource: { text: 'test' } as SourceDelta,
+            sceneGraphDelta: createSceneGraphDelta(
               [pointObj1, lineObj1, pointObj2, lineObj2],
-              [3, 4]
+              [4]
             ),
             newLineEndPointId: 3,
             newlyAddedEntities: { segmentIds: [4], constraintIds: [1] },
@@ -267,19 +289,21 @@ describe('lineTool - XState', () => {
 
       // Add first point
       actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
+      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
 
       // Add second point (creates first line)
       actor.send({ type: 'add point', data: [30, 40] })
-      await waitFor(actor, (state) => state.matches('Confirming dimensions'))
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
+      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
+      await waitFor(
+        actor,
+        (state) => state.value === 'waiting to start next draft line'
+      )
+      actor.send({ type: 'start next draft line', data: [50, 60] })
+      await waitFor(actor, (state) => state.value === 'ShowDraftLine')
 
       // Add third point (should chain)
       actor.send({ type: 'add point', data: [50, 60] })
-      await waitFor(actor, (state) => state.matches('Confirming dimensions'))
-
-      const context = actor.getSnapshot().context
-      expect(context.lastLineEndPointId).toBe(3) // Should track the end point
+      await waitFor(actor, (state) => state.value === 'Confirming dimensions')
 
       actor.stop()
     })

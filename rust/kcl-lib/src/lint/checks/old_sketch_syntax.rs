@@ -24,7 +24,7 @@ New: profile001 = sketch(on = XY) { line1 = line(start = [var 0mm, var 0mm], end
 
 Use the transpile function to convert this to the new format.
 ",
-    FindingFamily::Style
+    FindingFamily::Simplify
 );
 
 /// Check if a pipe expression contains startProfile
@@ -42,7 +42,17 @@ pub fn contains_start_profile(pipe_expr: &PipeExpression) -> bool {
 
 /// Lint that detects old sketch syntax (startProfile in pipe expressions).
 /// This is detection-only - actual transpilation is done via WASM API function.
-pub fn lint_old_sketch_syntax(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+pub fn lint_old_sketch_syntax(node: Node, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+    // Only run if experimental features are allowed.
+    let settings = match prog.meta_settings() {
+        Ok(settings) => settings.unwrap_or_default(),
+        // Error interpreting @settings(). Ignore it and assume the default.
+        Err(_) => Default::default(),
+    };
+    if !settings.experimental_features.is_allow() {
+        return Ok(Vec::new());
+    }
+
     let mut findings = vec![];
 
     // Only check variable declarations

@@ -17,7 +17,10 @@ import type {
   ModelingMachineInput,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
+import {
+  dummyInitSketchGraphDelta,
+  modelingMachineInitialInternalContext,
+} from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
@@ -202,7 +205,7 @@ import type RustContext from '@src/lib/rustContext'
 import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
-import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
@@ -323,6 +326,7 @@ export type ModelingMachineEvent =
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
+  | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
       type:
         | 'Add circle origin'
@@ -798,6 +802,7 @@ export const modelingMachine = setup({
       sketchEnginePathId: '',
       sketchPlaneId: '',
       showNonVisualConstraints: false,
+      initialSceneGraphDelta: dummyInitSketchGraphDelta,
     }),
     'reset camera position': ({ context: { engineCommandManager } }) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -4784,6 +4789,42 @@ export const modelingMachine = setup({
         )
       }
     ),
+    joinSurfacesAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Join Surfaces'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const result = addJoinSurfaces({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({
         input,
@@ -5438,6 +5479,10 @@ export const modelingMachine = setup({
 
         'Flip Surface': {
           target: 'Applying Flip Surface',
+        },
+
+        'Join Surfaces': {
+          target: 'Applying Join',
         },
 
         // Modeling actions
@@ -7424,6 +7469,27 @@ export const modelingMachine = setup({
         id: 'flipSurfaceAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Flip Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Join': {
+      invoke: {
+        src: 'joinSurfacesAstMod',
+        id: 'joinSurfacesAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Join Surfaces') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

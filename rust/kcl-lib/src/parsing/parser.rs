@@ -889,6 +889,11 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
             "sketch var",
             SourceRange::new(var_token.start, end, var_token.module_id),
         );
+    } else if literal.is_none() {
+        ParseContext::experimental(
+            "sketch var without initial value",
+            SourceRange::new(var_token.start, end, var_token.module_id),
+        );
     }
 
     Ok(Node::new(
@@ -4182,6 +4187,29 @@ e
             "Actual: {}",
             error.message
         );
+        assert_eq!(error.severity, Severity::Error);
+    }
+
+    #[test]
+    fn parse_sketch_var_without_initial_value_is_experimental() {
+        let tokens = crate::parsing::token::lex(
+            "sketch(on = XY) {
+  x = var
+}
+",
+            ModuleId::default(),
+        )
+        .unwrap();
+        let tokens = tokens.as_slice();
+        let result = run_parser(tokens);
+        let errors = result.unwrap_errs().collect::<Vec<_>>();
+        let Some(error) = errors.iter().find(|error| {
+            error
+                .message
+                .contains("sketch var without initial value is experimental")
+        }) else {
+            panic!("Expected error not found; Actual errors: {errors:#?}",)
+        };
         assert_eq!(error.severity, Severity::Error);
     }
 
