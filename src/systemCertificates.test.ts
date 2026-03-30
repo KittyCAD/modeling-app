@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-type TlsWithSystemCertificates = {
-  createSecureContext: (options?: unknown) => unknown
-  getCACertificates: (type: 'default' | 'system') => string[]
-  setDefaultCACertificates?: (certificates: readonly string[]) => void
-}
+const tlsMockState = vi.hoisted(() => ({
+  useSetDefaultCACertificates: true,
+}))
 
 const addCACert = vi.fn()
 const createSecureContext = vi.fn(() => ({
@@ -17,13 +15,18 @@ vi.mock('node:tls', () => ({
   default: {
     createSecureContext,
     getCACertificates,
-    setDefaultCACertificates,
+    get setDefaultCACertificates() {
+      return tlsMockState.useSetDefaultCACertificates
+        ? setDefaultCACertificates
+        : undefined
+    },
   },
 }))
 
 describe('systemCertificates', () => {
   beforeEach(() => {
     vi.resetModules()
+    tlsMockState.useSetDefaultCACertificates = true
     createSecureContext.mockClear()
     getCACertificates.mockReset()
     setDefaultCACertificates.mockReset()
@@ -41,8 +44,8 @@ describe('systemCertificates', () => {
 
     configureSystemCertificates('darwin')
 
-    expect(getCACertificates).toHaveBeenCalledWith('default')
-    expect(getCACertificates).toHaveBeenCalledWith('system')
+    expect(getCACertificates).toHaveBeenNthCalledWith(1, 'system')
+    expect(getCACertificates).toHaveBeenNthCalledWith(2, 'default')
     expect(setDefaultCACertificates).toHaveBeenCalledWith([
       'public-root',
       'cert-a',
@@ -62,12 +65,11 @@ describe('systemCertificates', () => {
   })
 
   it('falls back to patching secure contexts when setDefaultCACertificates is unavailable', async () => {
+    tlsMockState.useSetDefaultCACertificates = false
     getCACertificates.mockImplementation((type: 'default' | 'system') => {
       return type === 'default' ? ['public-root'] : ['cert-a', 'cert-b']
     })
-    const tlsModule = (await import('node:tls'))
-      .default as unknown as TlsWithSystemCertificates
-    tlsModule.setDefaultCACertificates = undefined
+    const tlsModule = (await import('node:tls')).default
 
     const { configureSystemCertificates } = await import(
       '@src/systemCertificates'
