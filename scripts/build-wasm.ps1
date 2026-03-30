@@ -12,7 +12,7 @@ if (Test-Path rust/kcl-lib/bindings) {
 }
 
 cd rust
-wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg
+wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg --scope kittycad
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 
