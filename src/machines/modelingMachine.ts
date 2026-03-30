@@ -363,6 +363,11 @@ export type ModelingMachineEvent =
       type: 'xstate.done.actor.setup-client-side-sketch-segments9'
     }
   | { type: 'Set mouse state'; data: MouseState }
+  | { type: 'toggle non-visual constraints' }
+  | {
+      type: 'show non-visual constraints changed'
+      data: { value: boolean }
+    }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -415,6 +420,7 @@ export type ModelingMachineEvent =
   | {
       type:
         | 'coincident'
+        | 'Fixed'
         | 'Tangent'
         | 'LinesEqualLength'
         | 'Vertical'
@@ -791,6 +797,7 @@ export const modelingMachine = setup({
       sketchDetails: null,
       sketchEnginePathId: '',
       sketchPlaneId: '',
+      showNonVisualConstraints: false,
     }),
     'reset camera position': ({ context: { engineCommandManager } }) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -6910,6 +6917,9 @@ export const modelingMachine = setup({
         coincident: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
+        Fixed: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
         Tangent: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
@@ -6938,6 +6948,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         construction: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'toggle non-visual constraints': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         'delete selected': {
@@ -7709,6 +7722,15 @@ export const modelingMachine = setup({
         if (event.type !== 'sketch solve tool changed') return {}
         return {
           sketchSolveToolName: event.data.tool,
+        }
+      }),
+    },
+    'show non-visual constraints changed': {
+      reenter: false,
+      actions: assign(({ event }) => {
+        if (event.type !== 'show non-visual constraints changed') return {}
+        return {
+          showNonVisualConstraints: event.data.value,
         }
       }),
     },

@@ -287,6 +287,7 @@ pub enum SketchBlockConstraintType {
     Coincident,
     Distance,
     Diameter,
+    Fixed,
     HorizontalDistance,
     VerticalDistance,
     Horizontal,
@@ -304,6 +305,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::Fixed { .. } => SketchBlockConstraintType::Fixed,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
             Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
             Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,
@@ -1761,6 +1763,32 @@ fn artifacts_to_update(
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
+                }
+            }
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dMultiJoin(cmd) => {
+            let mut return_arr = Vec::new();
+            return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Union,
+                solid_ids: cmd.object_ids.iter().map(|id| id.into()).collect(),
+                tool_ids: vec![],
+                code_ref,
+                composite_solid_id: None,
+            }));
+
+            let solid_ids = cmd.object_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
+
+            for input_id in &solid_ids {
+                if let Some(artifact) = artifacts.get(input_id)
+                    && let Artifact::CompositeSolid(comp) = artifact
+                {
+                    let mut new_comp = comp.clone();
+                    new_comp.composite_solid_id = Some(id);
+                    new_comp.consumed = true;
+                    return_arr.push(Artifact::CompositeSolid(new_comp));
                 }
             }
             return Ok(return_arr);

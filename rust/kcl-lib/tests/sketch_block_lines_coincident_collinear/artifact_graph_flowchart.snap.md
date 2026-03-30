@@ -1,18 +1,24 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[179, 1023, 0]<br>Consumed: false"]
+    2["Path<br>[179, 970, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
     3["Segment<br>[238, 297, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-    4["Segment<br>[514, 556, 0]"]
+    4["Segment<br>[478, 520, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   end
-  1["Plane<br>[179, 1023, 0]"]
+  1["Plane<br>[179, 970, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  5["SketchBlock<br>[179, 1023, 0]"]
+  5["SketchBlock<br>[179, 970, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  6["SketchBlockConstraint Coincident<br>[815, 841, 0]"]
+  6["SketchBlockConstraint Coincident<br>[334, 362, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  7["SketchBlockConstraint Coincident<br>[365, 392, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  8["SketchBlockConstraint Coincident<br>[579, 606, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  9["SketchBlockConstraint Coincident<br>[762, 788, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   1 <--x 5
