@@ -53,6 +53,7 @@ export const useFileSystemWatcher = (
       // gives us uniqueness.
       if (!path) {
         console.error('Was about to call watchFileOn with a falsy path', path)
+        continue
       }
       console.log('Calling watchFileOn in useFileSystemWatcher with', path)
       window.electron.watchFileOn(path, key.current, cbWatcher)
