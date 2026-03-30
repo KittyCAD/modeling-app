@@ -4785,7 +4785,7 @@ export const modelingMachine = setup({
         )
       }
     ),
-    joinAstMod: fromPromise(
+    joinSurfacesAstMod: fromPromise(
       async ({
         input,
       }: {
@@ -7482,8 +7482,8 @@ export const modelingMachine = setup({
 
     'Applying Join': {
       invoke: {
-        src: 'joinAstMod',
-        id: 'joinAstMod',
+        src: 'joinSurfacesAstMod',
+        id: 'joinSurfacesAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Join Surfaces') return undefined
           return {
