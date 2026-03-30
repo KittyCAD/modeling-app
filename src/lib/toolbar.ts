@@ -12,7 +12,10 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getSelectedFixedConstraintInput,
+  getSelectedTangentConstraintInput,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
@@ -1705,6 +1708,27 @@ export const useToolbarConfig = () => {
             title: 'Horizontal',
             hotkey: 'H',
             description: 'Constrain lines to be horizontal',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Fixed',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Fixed',
+              }),
+            icon: 'fix',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedFixedConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedFixedConstraintInput(state) === null
+                ? 'Select one or more points to lock them in place.'
+                : undefined,
+            title: 'Fixed',
+            hotkey: 'F',
+            description:
+              'Lock selected points to their current x and y positions',
             links: [],
             isActive: (state) => false,
           },
