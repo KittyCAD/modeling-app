@@ -7,9 +7,12 @@ import {
 } from '@src/lib/constants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 
+export const DARK_CONSTRAINED_COLOR = 0x000000
+export const LIGHT_CONSTRAINED_COLOR = 0xffffff
+
 const CONSTRAINED_COLOR = {
-  [Themes.Dark]: 0x000000,
-  [Themes.Light]: 0xffffff,
+  [Themes.Dark]: DARK_CONSTRAINED_COLOR,
+  [Themes.Light]: LIGHT_CONSTRAINED_COLOR,
 } as const
 
 // Brand blue for unconstrained segments - KCL_DEFAULT_COLOR is "#3c73ff" which is 0x3c73ff

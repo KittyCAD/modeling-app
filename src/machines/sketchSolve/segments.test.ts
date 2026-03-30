@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest'
 
 import {
+  DARK_CONSTRAINED_COLOR,
   deriveSegmentFreedom,
   getSegmentColor,
+  LIGHT_CONSTRAINED_COLOR,
 } from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
@@ -428,8 +430,6 @@ describe('deriveSegmentFreedom', () => {
 describe('getSegmentColor', () => {
   const UNCONSTRAINED_COLOR = parseInt('#3c73ff'.replace('#', ''), 16) // Brand blue
   const CONFLICT_COLOR = 0xff5e5b // Coral red
-  const DARK_CONSTRAINED_COLOR = 0x000000 // Black
-  const LIGHT_CONSTRAINED_COLOR = 0xffffff // White
   const DRAFT_COLOR = 0x888888 // Grey
   const DARK_THEME = Themes.Dark
 
