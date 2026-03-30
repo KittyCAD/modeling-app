@@ -313,7 +313,8 @@ export const machine = setup({
 
         if (lastPointId === undefined) {
           return {
-            error: 'lastPointId should be defined when starting the next draft line.',
+            error:
+              'lastPointId should be defined when starting the next draft line.',
           }
         }
 
