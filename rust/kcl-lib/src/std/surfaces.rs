@@ -350,7 +350,7 @@ async fn inner_join(
             .build();
 
         exec_state
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
                 ModelingCmd::from(cmd),
             )
