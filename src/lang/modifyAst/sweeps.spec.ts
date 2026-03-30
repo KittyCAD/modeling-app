@@ -598,8 +598,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         `${triangleRegion}
 extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
       )
-      // TODO: enable once KCL is updated
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add an extrude call with bodyType "solid"', async () => {
@@ -1017,6 +1016,7 @@ sketch002 = sketch(on = XZ) {
         `region001 = region(point = [1mm, 1mm], sketch = s)
 sweep001 = sweep(region001, path = sketch002.line1)`
       )
+      // TODO: enable once KCL is updated
       // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
