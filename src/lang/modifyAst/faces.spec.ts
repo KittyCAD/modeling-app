@@ -1541,7 +1541,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 2)`)
       const editedCode = recast(editResult.modifiedAst, instanceInThisFile)
       expect(editedCode).toContain(`${shell}
 face001 = faceId(extrude001, index = 6)
-plane001 = offsetPlane(planeOf(extrude001, face = face001, offset = 3)`)
+plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 3)`)
       await enginelessExecutor(editResult.modifiedAst, rustContextInThisFile)
     })
 
