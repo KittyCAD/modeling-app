@@ -1,6 +1,7 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -81,6 +82,36 @@ function sendHoveredId(self: ToolActionArgs['self'], hoveredId: number | null) {
   })
 }
 
+// Don't snap to the current draft point and the other point on the same line.
+function getSnappingExcludedPointIds(
+  objects: ApiObject[],
+  draftPointId?: number
+) {
+  const excludedPointIds = new Set<number>()
+  if (draftPointId === undefined) {
+    return excludedPointIds
+  }
+
+  excludedPointIds.add(draftPointId)
+
+  const draftLine = objects.find(
+    (obj) =>
+      isLineSegment(obj) &&
+      (obj.kind.segment.start === draftPointId ||
+        obj.kind.segment.end === draftPointId)
+  )
+
+  if (isLineSegment(draftLine)) {
+    excludedPointIds.add(
+      draftLine.kind.segment.start === draftPointId
+        ? draftLine.kind.segment.end
+        : draftLine.kind.segment.start
+    )
+  }
+
+  return excludedPointIds
+}
+
 function getBestSnappingCandidate({
   self,
   context,
@@ -101,12 +132,16 @@ function getBestSnappingCandidate({
     objects,
     context.sketchId
   )
+  const excludedPointIds = getSnappingExcludedPointIds(
+    currentSketchObjects,
+    context.draftPointId
+  )
 
   return (
     getSnappingCandidates(mousePosition, {
       objects: currentSketchObjects,
       sceneInfra: context.sceneInfra,
-    }).find((candidate) => candidate.apiObject.id !== context.draftPointId) ??
+    }).find((candidate) => !excludedPointIds.has(candidate.apiObject.id)) ??
     null
   )
 }
