@@ -86,10 +86,7 @@ const Toolbar_ = memo(
       !props.isStreamReady ||
       !props.isStreamAcceptingInput
 
-    const currentMode =
-      (Object.entries(toolbarConfig).find(([_, mode]) =>
-        mode.check(props.state)
-      )?.[0] as ToolbarModeName) || 'modeling'
+    const currentMode = props.state.context.currentMode
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
 
@@ -460,15 +457,18 @@ const Toolbar_ = memo(
       </menu>
     )
   },
-  (oldP, newP) =>
-    oldP.isExecuting === newP.isExecuting &&
-    oldP.state.value === newP.state.value &&
-    oldP.overallState === newP.overallState &&
-    oldP.immediateState?.type === newP.immediateState?.type &&
-    oldP.isStreamReady === newP.isStreamReady &&
-    oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
-    oldP.context?.currentMode === newP.context?.currentMode &&
-    oldP.context?.currentTool === newP.context?.currentTool
+  (oldP, newP) => {
+    return (
+      oldP.isExecuting === newP.isExecuting &&
+      oldP.state.value === newP.state.value &&
+      oldP.overallState === newP.overallState &&
+      oldP.immediateState?.type === newP.immediateState?.type &&
+      oldP.isStreamReady === newP.isStreamReady &&
+      oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
+      oldP.context?.currentMode === newP.context?.currentMode &&
+      oldP.context?.currentTool === newP.context?.currentTool
+    )
+  }
 )
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {

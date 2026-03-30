@@ -83,7 +83,7 @@ async function addAxisDistanceConstraint(
   if (segmentsToConstrain.length === 1) {
     const first =
       context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-        segmentsToConstrain[0]
+      segmentsToConstrain[0]
       ]
     if (isLineSegment(first)) {
       segmentsToConstrain = [first.kind.segment.start, first.kind.segment.end]
@@ -211,10 +211,10 @@ export const sketchSolveMachine = setup({
       kclManager: KclManager
       // end dependencies
       initialSketchSolvePlane?:
-        | DefaultPlane
-        | OffsetPlane
-        | ExtrudeFacePlane
-        | null
+      | DefaultPlane
+      | OffsetPlane
+      | ExtrudeFacePlane
+      | null
       sketchId: number
       initialSceneGraphDelta: SceneGraphDelta
     },
@@ -482,11 +482,11 @@ export const sketchSolveMachine = setup({
             // Calculate radius for arc segment from its center and start point
             const centerPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.center
+              first.kind.segment.center
               ]
             const startPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.start
+              first.kind.segment.start
               ]
             if (isPointSegment(centerPoint) && isPointSegment(startPoint)) {
               const point1 = {
@@ -527,11 +527,11 @@ export const sketchSolveMachine = setup({
             // Calculate distance for line segment from its endpoints
             const startPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.start
+              first.kind.segment.start
               ]
             const endPoint =
               context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-                first.kind.segment.end
+              first.kind.segment.end
               ]
             if (isPointSegment(startPoint) && isPointSegment(endPoint)) {
               const point1 = {
@@ -557,9 +557,9 @@ export const sketchSolveMachine = setup({
         const pointsForDistance =
           currentSelections.length === 1 && isLineSegment(currentSelections[0])
             ? [
-                currentSelections[0].kind.segment.start,
-                currentSelections[0].kind.segment.end,
-              ]
+              currentSelections[0].kind.segment.start,
+              currentSelections[0].kind.segment.end,
+            ]
             : segmentsToConstrain
         const result = await context.rustContext.addConstraint(
           0,
@@ -946,6 +946,7 @@ export const sketchSolveMachine = setup({
           target: '#Sketch Solve Mode.exiting',
           actions: [
             ({ event, context, self }) => {
+              console.log('exited?');
               // Update code editor if new source was returned
               if (event.output?.kclSource) {
                 context.kclManager.updateCodeEditor(event.output.kclSource.text)
