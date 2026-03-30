@@ -110,7 +110,7 @@ struct RequiredOutputCommandArgs {
     out_dir: PathBuf,
 }
 
-// Better accesors for nested CLI Arg structs
+// Better accessors for nested CLI Arg structs
 impl OptionalOutputCommandArgs {
     fn input(&self) -> &Path {
         &self.common.input
@@ -141,7 +141,7 @@ impl OptionalOutputCommandArgs {
     }
 }
 
-// Better accesors for nested CLI Arg structs
+// Better accessors for nested CLI Arg structs
 impl RequiredOutputCommandArgs {
     fn input(&self) -> &Path {
         &self.common.input
