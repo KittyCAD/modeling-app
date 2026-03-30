@@ -30,6 +30,7 @@ import {
 import {
   getOtherCoincidentIdsByPointId,
   isConstraint,
+  isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type ConstraintHoverPopup,
@@ -48,6 +49,14 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import {
+  getSnappingCandidates,
+  type SnappingCandidate,
+} from '@src/machines/sketchSolve/snapping'
+import {
+  hideSnappingPreviewSprite,
+  updateSnappingPreviewSprite,
+} from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -146,6 +155,64 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
+function getDragPointSnappingCandidate({
+  draggedEntityId,
+  selectedIds,
+  sceneGraphDelta,
+  sketchId,
+  mousePosition,
+  sceneInfra,
+}: {
+  draggedEntityId: number | null
+  selectedIds: Array<number>
+  sceneGraphDelta: SceneGraphDelta
+  sketchId: number
+  mousePosition: Coords2d
+  sceneInfra: SceneInfra
+}): { sourcePointId: number; candidate: SnappingCandidate | null } | null {
+  console.log('drag', draggedEntityId, selectedIds)
+  if (draggedEntityId === null) {
+    return null
+  }
+  if (
+    selectedIds.length >= 2 ||
+    (selectedIds[0] && selectedIds[0] !== draggedEntityId)
+  ) {
+    // dragging more than 1 point -> not supported
+    return null
+  }
+
+  const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
+  if (!isPointSegment(draggedObject)) {
+    // snapping only works with points for now
+    return null
+  }
+
+  const coincidentPointIds = getOtherCoincidentIdsByPointId(
+    draggedEntityId,
+    sceneGraphDelta.new_graph
+  )
+
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    sceneGraphDelta.new_graph.objects,
+    sketchId
+  )
+  const candidate =
+    getSnappingCandidates(mousePosition, {
+      objects: currentSketchObjects,
+      sceneInfra,
+    }).find(
+      (candidate) =>
+        candidate.apiObject.id !== draggedEntityId &&
+        !coincidentPointIds.includes(candidate.apiObject.id)
+    ) ?? null
+
+  return {
+    sourcePointId: draggedEntityId,
+    candidate,
+  }
+}
+
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
  * Handles initialization of drag state.
@@ -182,20 +249,29 @@ export function createOnDragStartCallback({
  * @param sketchExecuteMock - Function to send updated state to Rust side
  */
 export function createOnDragEndCallback({
+  getDraggedEntityId,
   setDraggedEntityId,
   onComplete,
 }: {
+  getDraggedEntityId: () => number | null
   setDraggedEntityId: (entityId: number | null) => void
-  onComplete: () => Promise<unknown>
+  onComplete: (data: {
+    draggedEntityId: number | null
+    intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+  }) => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return async () => {
-    setDraggedEntityId(null)
-    await onComplete()
+  return async ({ intersectionPoint }) => {
+    const draggedEntityId = getDraggedEntityId()
+    try {
+      await onComplete({ draggedEntityId, intersectionPoint })
+    } finally {
+      setDraggedEntityId(null)
+    }
   }
 }
 
@@ -458,6 +534,8 @@ export function createOnDragCallback({
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
+  sceneInfra,
+  onUpdateDragSnapping,
 }: {
   getIsSolveInProgress: () => boolean
   setIsSolveInProgress: (value: boolean) => void
@@ -487,6 +565,8 @@ export function createOnDragCallback({
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
+  sceneInfra: SceneInfra
+  onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -504,6 +584,7 @@ export function createOnDragCallback({
     const sceneGraphDelta = contextData.sketchExecOutcome?.sceneGraphDelta
 
     if (!sceneGraphDelta) {
+      onUpdateDragSnapping(null)
       return
     }
 
@@ -517,12 +598,23 @@ export function createOnDragCallback({
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (!entityUnderCursorId && selectedIds.length === 0) {
+      onUpdateDragSnapping(null)
       return
     }
 
     setIsSolveInProgress(true)
     try {
       const twoD = intersectionPoint.twoD
+      const dragSnapping = getDragPointSnappingCandidate({
+        draggedEntityId: entityUnderCursorId,
+        selectedIds,
+        sceneGraphDelta,
+        sketchId: contextData.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        sceneInfra,
+      })
+      onUpdateDragSnapping(dragSnapping?.candidate ?? null)
+
       // Calculate drag vector from last successful drag point to current position
       const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
@@ -728,6 +820,32 @@ export function setUpOnDragAndSelectionClickCallbacks({
     })
   }
 
+  const getSketchSolveGroup = () => {
+    const sketchSolveGroup =
+      context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+    return sketchSolveGroup instanceof Group ? sketchSolveGroup : null
+  }
+
+  const clearDragSnappingState = () => {
+    const sketchSolveGroup = getSketchSolveGroup()
+    if (sketchSolveGroup) {
+      hideSnappingPreviewSprite(sketchSolveGroup)
+    }
+  }
+
+  const updateDragSnappingState = (candidate: SnappingCandidate | null) => {
+    const sketchSolveGroup = getSketchSolveGroup()
+    if (sketchSolveGroup) {
+      updateSnappingPreviewSprite({
+        sketchSolveGroup,
+        sceneInfra: context.sceneInfra,
+        targetPoint: candidate?.apiObject ?? null,
+      })
+    }
+
+    sendHoveredState(candidate?.apiObject.id ?? null)
+  }
+
   const clearConstraintHoverPopups = () => {
     constraintHoverPopupState.entries.forEach((entry) => {
       clearConstraintHoverPopupTimer(entry, 'hideTimeoutId')
@@ -749,6 +867,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
     clearConstraintHoverPopups()
     constraintHoverPopupState.lastHoveredTargetId = null
+    clearDragSnappingState()
 
     if (hadConstraintHoverPopup) {
       sendHoveredState(snapshot.context.hoveredId)
@@ -789,15 +908,50 @@ export function setUpOnDragAndSelectionClickCallbacks({
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
+      getDraggedEntityId,
       setDraggedEntityId,
       // Send the last up-to-date state from the frontend to Rust. It doesn't know
       // about this last feedback loop yet!
-      onComplete: async () => {
+      onComplete: async ({ draggedEntityId, intersectionPoint }) => {
         try {
-          const result = await context.rustContext.sketchExecuteMock(
-            SKETCH_FILE_VERSION,
-            context.sketchId
-          )
+          clearDragSnappingState()
+          sendHoveredState(null)
+
+          const snapshot = self.getSnapshot()
+          const sceneGraphDelta =
+            snapshot.context.sketchExecOutcome?.sceneGraphDelta
+          const dragSnapping =
+            sceneGraphDelta && intersectionPoint?.twoD
+              ? getDragPointSnappingCandidate({
+                  draggedEntityId,
+                  selectedIds: snapshot.context.selectedIds,
+                  sceneGraphDelta,
+                  sketchId: snapshot.context.sketchId,
+                  mousePosition: [
+                    intersectionPoint.twoD.x,
+                    intersectionPoint.twoD.y,
+                  ],
+                  sceneInfra: context.sceneInfra,
+                })
+              : null
+
+          const result = dragSnapping?.candidate
+            ? await context.rustContext.addConstraint(
+                SKETCH_FILE_VERSION,
+                context.sketchId,
+                {
+                  type: 'Coincident',
+                  segments: [
+                    dragSnapping.sourcePointId,
+                    dragSnapping.candidate.apiObject.id,
+                  ],
+                },
+                jsAppSettings(context.rustContext.settingsActor)
+              )
+            : await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
+              )
 
           // Send the event to update the sketch outcome
           self.send({
@@ -854,6 +1008,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
+      sceneInfra: context.sceneInfra,
+      onUpdateDragSnapping: updateDragSnappingState,
     }),
     onMouseDownSelection: () => {
       return self.getSnapshot().context.hoveredId !== null
