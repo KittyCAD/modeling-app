@@ -342,6 +342,10 @@ async fn inner_join(
     } else {
         let body_out_id = exec_state.next_uuid();
 
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &selection)
+            .await?;
+
         let body_ids = selection.iter().map(|body| body.id).collect();
         let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
         let cmd = mcmd::Solid3dMultiJoin::builder()
@@ -350,7 +354,7 @@ async fn inner_join(
             .build();
 
         exec_state
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
                 ModelingCmd::from(cmd),
             )

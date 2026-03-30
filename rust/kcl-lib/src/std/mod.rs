@@ -599,9 +599,9 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::blend(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::blend"),
         ),
-        ("solid", "join") => (
+        ("solid", "joinSurfaces") => (
             |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::solid::join"),
+            StdFnProps::default("std::solid::joinSurfaces"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
