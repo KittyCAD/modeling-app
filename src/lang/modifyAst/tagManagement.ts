@@ -144,7 +144,7 @@ export function modifyAstWithTagsForSelection(
     }
     return {
       modifiedAst: ast,
-      tags: [directLookup.node.declaration.id.name],
+      exprs: [createLocalName(directLookup.node.declaration.id.name)],
     }
   }
 
