@@ -1768,7 +1768,6 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dMultiJoin(cmd) => {
-            //TODO: don't know if I've done this correctly.
             let mut return_arr = Vec::new();
             return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                 id,
