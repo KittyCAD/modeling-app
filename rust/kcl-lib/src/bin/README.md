@@ -2,7 +2,7 @@
 
 `transpile` is a developer CLI for migrating older Sketch V1 KCL into Sketch V2 KCL. There is one subcommand for each task 
 
-1. Convert a file to Sketch V2. Does not validate or run the resulting code may or may not run succesfully 
+1. Convert a file to Sketch V2. Does not validate or run the resulting code may or may not run successfully 
 2. Run a converted file. Attempts to run the converted Sketch V2 file to see if it builds. Does not validate the output. 
 3. Render a converted file. Will evaluate and create an image of the result. Does not verify correctness with the corresponindg V1 code. 
 4. Compare a converted file's output. Will evaluage, create images for both V1 and V2 code. The comparison uses the same scaffolding as our sim tests. 
