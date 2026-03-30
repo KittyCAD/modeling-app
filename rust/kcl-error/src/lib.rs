@@ -67,6 +67,10 @@ impl CompilationError {
             &src[suggestion.source_range.end()..]
         ))
     }
+
+    pub fn is_err(&self) -> bool {
+        self.severity.is_err()
+    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]

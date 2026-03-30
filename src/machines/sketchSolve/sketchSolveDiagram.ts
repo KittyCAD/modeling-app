@@ -262,7 +262,7 @@ export const sketchSolveMachine = setup({
     'send show non-visual constraints changed to parent': sendParent(
       ({ context }) => ({
         type: 'show non-visual constraints changed',
-        data: { value: !context.showNonVisualConstraints },
+        data: { value: context.showNonVisualConstraints },
       })
     ),
     'clear child tool': assign({

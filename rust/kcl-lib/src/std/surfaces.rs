@@ -5,6 +5,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::output as mout;
 use kittycad_modeling_cmds::shared::BodyType;
@@ -25,6 +26,7 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
+use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
 use crate::std::edge;
 use crate::std::sketch::FaceTag;
@@ -337,4 +339,66 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
     };
     //TODO: How do we pass back the two new edge ids that were created?
     Ok(solid)
+}
+
+/// Stitch multiple surfaces together into one polysurface
+pub async fn join(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let selection: Vec<Solid> = args.get_unlabeled_kw_arg("selection", &RuntimeType::solids(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+
+    inner_join(selection, tolerance, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_join(
+    selection: Vec<Solid>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Solid, KclError> {
+    if selection.len() == 1 {
+        let cmd = mcmd::Solid3dJoin::builder().object_id(selection[0].id).build();
+
+        exec_state
+            .batch_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), ModelingCmd::from(cmd))
+            .await?;
+
+        Ok(selection[0].clone())
+    } else {
+        let body_out_id = exec_state.next_uuid();
+
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &selection)
+            .await?;
+
+        let body_ids = selection.iter().map(|body| body.id).collect();
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let cmd = mcmd::Solid3dMultiJoin::builder()
+            .object_ids(body_ids)
+            .tolerance(LengthUnit(tolerance))
+            .build();
+
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
+                ModelingCmd::from(cmd),
+            )
+            .await?;
+
+        let solid = Solid {
+            id: body_out_id,
+            artifact_id: body_out_id.into(),
+            value: vec![],
+            creator: SolidCreator::Procedural,
+            start_cap_id: None,
+            end_cap_id: None,
+            edge_cuts: vec![],
+            units: exec_state.length_unit(),
+            sectional: false,
+            meta: vec![args.source_range.into()],
+        };
+        Ok(solid)
+    }
 }
