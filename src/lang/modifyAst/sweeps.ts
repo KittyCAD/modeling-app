@@ -142,7 +142,7 @@ export function addExtrude({
       return res
     }
     modifiedAst = res.modifiedAst
-    const expr = createLocalName(res.tags[0])
+    const expr = res.exprs[0]
     vars.exprs.push(expr)
   }
 
@@ -218,7 +218,7 @@ export function addExtrude({
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
-    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
+    toExpr = [createLabeledArg('to', tagResult.exprs[0])]
   }
   const symmetricExpr =
     symmetric !== undefined

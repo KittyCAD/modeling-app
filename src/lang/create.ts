@@ -147,7 +147,7 @@ export function createName(path: [string], name: string): Node<Name> {
 
 /** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
 export function createMemberExpression(
-  object: Expr,
+  parent: string | Expr,
   propertyName: string
 ): Node<MemberExpression> {
   return {
@@ -159,7 +159,7 @@ export function createMemberExpression(
     preComments: [],
     commentStart: 0,
 
-    object,
+    object: typeof parent === 'string' ? createLocalName(parent) : parent,
     property: createLocalName(propertyName),
     computed: false,
   }

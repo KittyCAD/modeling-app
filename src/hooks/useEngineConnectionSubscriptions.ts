@@ -137,8 +137,7 @@ export function useEngineConnectionSubscriptions() {
         ? ({ data }) => {
             void selectSketchPlane(
               data.entity_id,
-              context.store.useSketchSolveMode?.current ||
-                context.forceSketchSolveMode,
+              context.store.useSketchSolveMode?.current,
               kclManager
             )
           }
@@ -147,7 +146,6 @@ export function useEngineConnectionSubscriptions() {
     return unSub
   }, [
     context.store.useSketchSolveMode,
-    context.forceSketchSolveMode,
     state,
     kclManager,
     rustContext,

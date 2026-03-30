@@ -679,6 +679,7 @@ export function getSettingsFromActorContext(
   const {
     currentProject: _,
     commandBarActor: _cmd,
+    wasmInstancePromise,
     ...settings
   } = s.getSnapshot().context
   return settings
