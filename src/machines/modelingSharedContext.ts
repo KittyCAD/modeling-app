@@ -40,7 +40,6 @@ const dummyInitSketchGraphDelta = Object.freeze({
 
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
-    currentMode: 'modeling',
     currentTool: 'none',
     showNonVisualConstraints: false,
     toastId: null,
@@ -83,7 +82,6 @@ export function generateModelingMachineDefaultContext(systemDeps: {
   machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
-    currentMode: 'modeling',
     currentTool: 'none',
     showNonVisualConstraints: false,
     toastId: null,

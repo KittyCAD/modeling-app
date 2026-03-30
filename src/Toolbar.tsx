@@ -86,10 +86,21 @@ const Toolbar_ = memo(
       !props.isStreamReady ||
       !props.isStreamAcceptingInput
 
-    const currentMode =
-      (Object.entries(toolbarConfig).find(([_, mode]) =>
-        mode.check(props.state)
-      )?.[0] as ToolbarModeName) || 'modeling'
+    // Loading bearing logic to determine what toolbar will be displayed to the user based on modeling state
+    console.log(props.state.value)
+    let toolbarConfigurationName = 'modeling'
+    if (props.state.matches('Sketch no face')) {
+      toolbarConfigurationName = 'onlyCancel'
+    } else if (
+      props.state.matches('sketchSolveMode') ||
+      props.state.matches('animating to sketch solve mode')
+    ) {
+      // Gotcha: match on the animating state otherwise you see a different toolbar
+      toolbarConfigurationName = 'sketchSolve'
+    } else if (props.state.matches('Sketch')) {
+      toolbarConfigurationName = 'sketching'
+    }
+
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
 
@@ -161,20 +172,22 @@ const Toolbar_ = memo(
       | ToolbarItemResolvedDropdown
       | 'break'
     )[] = useMemo(() => {
-      return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
-        if (maybeIconConfig === 'break') {
-          return 'break'
-        } else if (isToolbarDropdown(maybeIconConfig)) {
-          return {
-            id: maybeIconConfig.id,
-            array: maybeIconConfig.array.map((item) =>
-              resolveItemConfig(item, wasmInstance)
-            ),
+      return toolbarConfig[toolbarConfigurationName].items.map(
+        (maybeIconConfig) => {
+          if (maybeIconConfig === 'break') {
+            return 'break'
+          } else if (isToolbarDropdown(maybeIconConfig)) {
+            return {
+              id: maybeIconConfig.id,
+              array: maybeIconConfig.array.map((item) =>
+                resolveItemConfig(item, wasmInstance)
+              ),
+            }
+          } else {
+            return resolveItemConfig(maybeIconConfig, wasmInstance)
           }
-        } else {
-          return resolveItemConfig(maybeIconConfig, wasmInstance)
         }
-      })
+      )
 
       function resolveItemConfig(
         maybeIconConfig: ToolbarItem,
@@ -223,7 +236,7 @@ const Toolbar_ = memo(
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [
-      currentMode,
+      toolbarConfigurationName,
       disableAllButtons,
       configCallbackProps,
       wasmInstance,
@@ -240,7 +253,7 @@ const Toolbar_ = memo(
 
     return (
       <menu
-        data-current-mode={currentMode}
+        data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
         className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
@@ -467,7 +480,6 @@ const Toolbar_ = memo(
     oldP.immediateState?.type === newP.immediateState?.type &&
     oldP.isStreamReady === newP.isStreamReady &&
     oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
-    oldP.context?.currentMode === newP.context?.currentMode &&
     oldP.context?.currentTool === newP.context?.currentTool
 )
 

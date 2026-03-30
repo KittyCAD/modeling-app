@@ -91,6 +91,29 @@ export const useToolbarConfig = () => {
   const { commands } = useApp()
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
+      onlyCancel: {
+        items: [
+          {
+            id: 'sketch-exit',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Cancel',
+              }),
+            disableHotkey: (state) =>
+              !(
+                state.matches({ Sketch: 'SketchIdle' }) ||
+                state.matches('Sketch no face')
+              ),
+            icon: 'arrowShortLeft',
+            status: 'available',
+            title: 'Cancel sketch',
+            showTitle: true,
+            hotkey: 'Esc',
+            description: 'Cancel the current sketch',
+            links: [],
+          },
+        ],
+      },
       modeling: {
         check: (state) =>
           !(

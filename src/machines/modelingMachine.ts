@@ -773,8 +773,6 @@ export const modelingMachine = setup({
     'reset selections': assign({
       selectionRanges: { graphSelections: [], otherSelections: [] },
     }),
-    'enter sketching mode': assign({ currentMode: 'sketching' }),
-    'enter modeling mode': assign({ currentMode: 'modeling' }),
     'set sketchMetadata from pathToNode': assign(
       ({ context: { sketchDetails } }) => {
         if (!sketchDetails?.sketchEntryNodePath || !sketchDetails) return {}
@@ -5905,7 +5903,6 @@ export const modelingMachine = setup({
 
               onDone: {
                 target: '#Modeling.idle',
-                actions: 'enter modeling mode',
                 reenter: true,
               },
 
@@ -6791,7 +6788,6 @@ export const modelingMachine = setup({
         'disable copilot',
         'show planes sketch no face',
         'set selection filter to faces only',
-        'enter sketching mode',
       ],
 
       exit: ['hide default planes', 'set selection filter to defaults'],
@@ -6843,11 +6839,7 @@ export const modelingMachine = setup({
 
         onDone: {
           target: 'Sketch',
-          actions: [
-            'disable copilot',
-            'set new sketch metadata',
-            'enter sketching mode',
-          ],
+          actions: ['disable copilot', 'set new sketch metadata'],
         },
 
         onError: 'idle',
@@ -7679,7 +7671,6 @@ export const modelingMachine = setup({
       actions: [
         'reset sketch metadata',
         'enable copilot',
-        'enter modeling mode',
         ({ context }) => {
           context.kclManager.sceneInfra.stop()
         },
