@@ -217,7 +217,10 @@ export class ZDSProject {
     private app: App
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
-    console.log('Calling watchFileOn with', projectIORefSignal.value.path),
+    console.log(
+      'Calling watchFileOn in ZDSProject with',
+      projectIORefSignal.value.path
+    ),
       window.electron?.watchFileOn(
         projectIORefSignal.value.path,
         this.fileWatcherId,
@@ -502,7 +505,7 @@ export class File extends EventTarget {
     if (this.watching || this.path.length < 1) {
       return
     }
-    console.log('Calling watchFileOn with', this.path),
+    console.log('Calling watchFileOn in File with', this.path),
       File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
         this.onWatchEvent.map((f) => f(e, p))
       })
