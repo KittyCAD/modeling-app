@@ -588,7 +588,7 @@ export function createOnDragCallback({
     }
 
     const entityUnderCursorId = getDraggedEntityId()
-    const entitiesCoincidentWithUnderCursor = entityUnderCursorId
+    const entitiesCoincidentWithUnderCursor = entityUnderCursorId !== null
       ? getOtherCoincidentIdsByPointId(
           entityUnderCursorId,
           sceneGraphDelta.new_graph
@@ -596,7 +596,7 @@ export function createOnDragCallback({
       : []
 
     // If no entity under cursor and no selectedIds, nothing to do
-    if (!entityUnderCursorId && selectedIds.length === 0) {
+    if (entityUnderCursorId !== null && selectedIds.length === 0) {
       onUpdateDragSnapping(null)
       return
     }
