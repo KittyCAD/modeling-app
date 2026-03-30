@@ -35,6 +35,7 @@ import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
@@ -140,8 +141,7 @@ export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 export const POINT_SEGMENT_RADIUS = 3
-const POINT_SEGMENT_BODY_RENDER_ORDER = 10
-const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
+const HOVERED_POINT_SEGMENT_SCALE = 1.5
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
@@ -310,7 +310,7 @@ class PointSegment implements SketchEntityUtils {
     )
     pointBody.userData.type = POINT_SEGMENT_BODY
     pointBody.name = POINT_SEGMENT_BODY
-    pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
+    pointBody.renderOrder = RENDER_ORDER.POINT_SEGMENT_BODY
     pointBody.layers.set(SKETCH_LAYER)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
@@ -342,13 +342,14 @@ class PointSegment implements SketchEntityUtils {
       return
     }
     pointBody.position.set(x.value / scale, y.value / scale, 0)
+    pointBody.scale.setScalar(state.hovered ? HOVERED_POINT_SEGMENT_SCALE : 1)
 
     const freedom = args.freedom
     group.userData.type = SEGMENT_TYPE_POINT
 
     pointBody.renderOrder = state.hovered
-      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
-      : POINT_SEGMENT_BODY_RENDER_ORDER
+      ? RENDER_ORDER.HOVERED_POINT_SEGMENT_BODY
+      : RENDER_ORDER.POINT_SEGMENT_BODY
     this.updatePointColors(pointBody, {
       isSelected: state.selected,
       isHovered: state.hovered,
