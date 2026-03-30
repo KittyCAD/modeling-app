@@ -471,7 +471,7 @@ export const useToolbarConfig = () => {
                   {
                     label: 'API docs',
                     url: withSiteBaseURL(
-                      '/docs/kcl-std/functions/std-solid-join' // TODO: fix this
+                      '/docs/kcl-std/functions/std-surface-joinSurfaces'
                     ),
                   },
                 ],

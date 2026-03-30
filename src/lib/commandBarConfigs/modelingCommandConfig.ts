@@ -2393,7 +2393,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Join Surfaces': {
     description: 'Join selected surfaces into one polysurface.',
-    icon: 'split',
+    icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
