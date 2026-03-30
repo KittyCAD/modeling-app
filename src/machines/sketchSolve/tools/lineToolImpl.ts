@@ -19,6 +19,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  getCoincidentCluster,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -85,7 +86,7 @@ function sendHoveredId(self: ToolActionArgs['self'], hoveredId: number | null) {
   })
 }
 
-// Don't snap to the current draft point and the other point on the same line.
+// Don't snap to the current draft point and the opposite point's cluster.
 function getSnappingExcludedPointIds(
   objects: ApiObject[],
   draftPointId?: number
@@ -105,11 +106,14 @@ function getSnappingExcludedPointIds(
   )
 
   if (isLineSegment(draftLine)) {
-    excludedPointIds.add(
+    const fixedPointId =
       draftLine.kind.segment.start === draftPointId
         ? draftLine.kind.segment.end
         : draftLine.kind.segment.start
-    )
+
+    getCoincidentCluster(fixedPointId, objects).forEach((pointId) => {
+      excludedPointIds.add(pointId)
+    })
   }
 
   return excludedPointIds
