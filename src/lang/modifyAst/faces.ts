@@ -777,9 +777,11 @@ export function addOffsetPlane({
       return new Error("Couldn't retrieve face from selection")
     }
 
-    planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-      createLabeledArg('face', facesExpr),
-    ])
+    planeExpr = insertPlaneOfVariableAndOffsetPathToNode({
+      solidsExpr,
+      facesExpr,
+      modifiedAst,
+    })
   } else {
     planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
     if (!planeExpr) {
@@ -1265,6 +1267,41 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   }
 
   return { solidsExprs: solidExprs, faceExprs }
+}
+
+function insertPlaneOfVariableAndOffsetPathToNode({
+  solidsExpr,
+  facesExpr,
+  modifiedAst,
+}: {
+  solidsExpr: Expr | null
+  facesExpr: Expr
+  modifiedAst: Node<Program>
+}) {
+  const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
+    createLabeledArg('face', facesExpr),
+  ])
+  const planeVariableName = findUniqueName(
+    modifiedAst,
+    KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
+  )
+  const variableIdentifierAst = createLocalName(planeVariableName)
+  insertVariableAndOffsetPathToNode(
+    {
+      valueAst: planeOfExpr,
+      valueText: '',
+      valueCalculated: '',
+      variableName: planeVariableName,
+      variableDeclarationAst: createVariableDeclaration(
+        planeVariableName,
+        planeOfExpr
+      ),
+      variableIdentifierAst,
+      insertIndex: modifiedAst.body.length,
+    },
+    modifiedAst
+  )
+  return variableIdentifierAst
 }
 
 function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
