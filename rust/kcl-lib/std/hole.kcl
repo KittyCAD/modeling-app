@@ -481,7 +481,7 @@ export fn holesLinear(
   instances: number(_),
   /// How far between each hole
   distance,
-  /// Along which 3D axis should the holes be patterned?
+  /// Along which axis should the holes be cut?
   axis: Axis2d | Point2d,
 ) {
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)

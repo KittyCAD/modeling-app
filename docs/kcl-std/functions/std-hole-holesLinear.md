@@ -35,7 +35,7 @@ hole::holesLinear(
 | `cutAt` | [[`number(Length)`](/docs/kcl-std/types/std-types-number); 2] | Where to place the first cut in the linear pattern, given as absolute coordinates in the global scene. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | How many holes to cut. | Yes |
 | `distance` |  | How far between each hole | Yes |
-| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Along which 3D axis should the holes be patterned? | Yes |
+| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Along which axis should the holes be cut? | Yes |
 
 
 
