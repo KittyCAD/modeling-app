@@ -32,10 +32,10 @@ import type {
   relevant_file_extensions as RelevantFileExtensions,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
-} from '@kittycad/kcl-wasm-lib/kcl_wasm_lib'
+} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-export type ModuleType = typeof import('@kittycad/kcl-wasm-lib/kcl_wasm_lib')
+export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
 let data: ModuleType
@@ -43,7 +43,7 @@ let data: ModuleType
 // Imports the .js file again which will clear the old import
 // This allows us to reinitialize the wasm instance
 export async function reloadModule() {
-  data = await import(`@kittycad/kcl-wasm-lib/kcl_wasm_lib`)
+  data = await import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 }
 
 export function getModule(): ModuleType {

@@ -48,7 +48,7 @@ export const loadAndInitialiseWasmInstance = async (path: string) => {
   const wasmBuffer = await fsPromises.readFile(path)
   // get an instance of the wasm lib loader
   const instanceOfWasmLibImport = await import(
-    `@kittycad/kcl-wasm-lib/kcl_wasm_lib`
+    `@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`
   )
   // Tell the instance to load the wasm buffer
   await instanceOfWasmLibImport.default({ module_or_path: wasmBuffer })

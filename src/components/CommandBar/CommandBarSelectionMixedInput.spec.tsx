@@ -7,11 +7,11 @@ import { App } from '@src/lib/app'
 import { KclManager } from '@src/lang/KclManager'
 import { signal } from '@preact/signals-core'
 
-vi.mock(`@kittycad/kcl-wasm-lib/kcl_wasm_lib`)
+vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 vi.mock('@src/lang/wasmUtils', async () => {
   const realImport = await import('@src/lang/wasmUtils')
   // We have to mock this because it fetches by default
-  const mockInitialiseWasm = () => import(`@kittycad/kcl-wasm-lib/kcl_wasm_lib`)
+  const mockInitialiseWasm = () => import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
   return {
     ...realImport,
     initialiseWasm: mockInitialiseWasm,
