@@ -36,6 +36,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
+import type { ToolbarModeName } from '@src/lib/toolbar'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -176,7 +177,7 @@ export const ModelingMachineProvider = ({
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
 
-  let toolbarConfigurationName = 'modeling'
+  let toolbarConfigurationName: ToolbarModeName = 'modeling'
   if (modelingState.matches('Sketch no face')) {
     toolbarConfigurationName = 'onlyCancel'
   } else if (

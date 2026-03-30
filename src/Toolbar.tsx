@@ -86,9 +86,9 @@ const Toolbar_ = memo(
       !props.isStreamReady ||
       !props.isStreamAcceptingInput
 
-    // Loading bearing logic to determine what toolbar will be displayed to the user based on modeling state
-    console.log(props.state.value)
-    let toolbarConfigurationName = 'modeling'
+    // Load bearing logic for determining the items in the toolbar
+    // Based on the state of the modeling machine determine what toolbar should be rendered.
+    let toolbarConfigurationName: ToolbarModeName = 'modeling'
     if (props.state.matches('Sketch no face')) {
       toolbarConfigurationName = 'onlyCancel'
     } else if (

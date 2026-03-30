@@ -18,7 +18,11 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
+export type ToolbarModeName =
+  | 'modeling'
+  | 'sketching'
+  | 'sketchSolve'
+  | 'onlyCancel'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -92,6 +96,7 @@ export const useToolbarConfig = () => {
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
       onlyCancel: {
+        check: (state) => !state.matches('Sketch no face'),
         items: [
           {
             id: 'sketch-exit',
