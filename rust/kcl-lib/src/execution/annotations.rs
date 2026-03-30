@@ -96,6 +96,14 @@ pub enum WarningLevel {
 }
 
 impl WarningLevel {
+    pub(crate) fn is_allow(self) -> bool {
+        match self {
+            WarningLevel::Allow => true,
+            WarningLevel::Warn => false,
+            WarningLevel::Deny => false,
+        }
+    }
+
     pub(crate) fn severity(self) -> Option<Severity> {
         match self {
             WarningLevel::Allow => None,

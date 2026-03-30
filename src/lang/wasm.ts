@@ -36,7 +36,6 @@ import {
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CoreDumpManager } from '@src/lib/coredump'
-import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -759,27 +758,12 @@ export function getTangentialArcToInfo({
 
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
-  wasmInstancePromise: Promise<ModuleType>,
-  openGithubIssue: boolean = false
+  wasmInstancePromise: Promise<ModuleType>
 ): Promise<CoreDumpInfo> {
   try {
     console.warn('CoreDump: Initializing core dump')
     const wasmInstance = await wasmInstancePromise
     const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
-    /* NOTE: this console output of the coredump should include the field
-       `github_issue_url` which is not in the uploaded coredump file.
-       `github_issue_url` is added after the file is uploaded
-       and is only needed for the openWindow operation which creates
-       a new GitHub issue for the user.
-     */
-    if (openGithubIssue && dump.github_issue_url) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      openWindow(dump.github_issue_url)
-    } else {
-      console.error(
-        'github_issue_url undefined. Unable to create GitHub issue for coredump.'
-      )
-    }
     console.log('CoreDump: final coredump', dump)
     console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     return dump
