@@ -32,6 +32,7 @@ use crate::front::Distance;
 use crate::front::FixedPoint;
 use crate::front::Freedom;
 use crate::front::LinesEqualLength;
+use crate::front::Object;
 use crate::front::Parallel;
 use crate::front::Perpendicular;
 use crate::front::PointCtor;
@@ -71,6 +72,8 @@ use crate::frontend::traverse::TraversalReturn;
 use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
 use crate::parsing::ast::types as ast;
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::fill_node_paths;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
@@ -225,8 +228,10 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        let sketch_block_ref = sketch_block_ref_from_id(&self.scene_graph, sketch)?;
+
         let mut truncated_program = self.program.clone();
-        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)?;
 
         // Execute.
         let outcome = ctx
@@ -376,6 +381,8 @@ impl SketchApi for FrontendState {
     ) -> api::Result<SceneGraphDelta> {
         // TODO: Check version.
 
+        self.fill_node_paths();
+
         // Look up existing sketch.
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
@@ -385,13 +392,14 @@ impl SketchApi for FrontendState {
                 msg: format!("Object is not a sketch: {sketch_object:?}"),
             });
         };
+        let sketch_block_ref = expect_single_node_ref(sketch_object)?;
 
         // Enter sketch mode by setting the sketch_mode.
         self.scene_graph.sketch_mode = Some(sketch);
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = self.program.clone();
-        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)?;
 
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
@@ -489,6 +497,7 @@ impl SketchApi for FrontendState {
         _label: Option<String>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
         match segment {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
@@ -505,6 +514,7 @@ impl SketchApi for FrontendState {
         segments: Vec<ExistingSegmentCtor>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
 
@@ -673,6 +683,7 @@ impl SketchApi for FrontendState {
         segment_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
 
         // Deduplicate IDs.
         let mut constraint_ids_set = constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
@@ -764,13 +775,14 @@ impl SketchApi for FrontendState {
         constraint: Constraint,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
 
         // Save the original state as a backup - we'll restore it if anything fails
         let original_program = self.program.clone();
         let original_scene_graph = self.scene_graph.clone();
 
         let mut new_ast = self.program.ast.clone();
-        let sketch_block_range = match constraint {
+        let sketch_block_ref = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
             Constraint::Fixed(fixed) => self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?,
@@ -797,7 +809,7 @@ impl SketchApi for FrontendState {
         };
 
         let result = self
-            .execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
+            .execute_after_add_constraint(ctx, sketch, sketch_block_ref, &mut new_ast)
             .await;
 
         // If execution failed, restore the original state to prevent corruption
@@ -819,6 +831,7 @@ impl SketchApi for FrontendState {
         _label: Option<String>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
 
         // First, add the segment (line) to get its start point ID
         let SegmentCtor::Line(line_ctor) = segment else {
@@ -906,6 +919,8 @@ impl SketchApi for FrontendState {
         value_expression: String,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
+
         let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
             msg: format!("Object not found: {constraint_id:?}"),
         })?;
@@ -973,6 +988,8 @@ impl SketchApi for FrontendState {
         _new_segment_info: sketch::NewSegmentInfo,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        self.fill_node_paths();
+
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
 
@@ -1069,6 +1086,8 @@ impl SketchApi for FrontendState {
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        self.fill_node_paths();
+
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
 
@@ -1250,7 +1269,7 @@ impl FrontendState {
         };
         // Add the point to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: point_ast },
@@ -1269,20 +1288,21 @@ impl FrontendState {
                 msg: "No AST produced after adding point".to_string(),
             });
         };
+        let new_program = fill_program_node_paths(new_program);
 
-        let point_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!("Source range of point not found in sketch block: {sketch_block_range:?}; {err:?}"),
+        let point_node_ref =
+            find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
+                msg: format!("Source range of point not found in sketch block: {sketch_block_ref:?}; {err:?}"),
             })?;
         #[cfg(not(feature = "artifact-graph"))]
-        let _ = point_source_range;
+        let _ = point_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)?;
 
         // Execute.
         let outcome = ctx
@@ -1305,10 +1325,10 @@ impl FrontendState {
         let new_object_ids = {
             let segment_id = outcome
                 .source_range_to_object
-                .get(&point_source_range)
+                .get(&point_node_ref.range)
                 .copied()
                 .ok_or_else(|| Error {
-                    msg: format!("Source range of point not found: {point_source_range:?}"),
+                    msg: format!("Source range of point not found: {point_node_ref:?}"),
                 })?;
             let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
@@ -1387,7 +1407,7 @@ impl FrontendState {
         };
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: line_ast },
@@ -1406,19 +1426,20 @@ impl FrontendState {
                 msg: "No AST produced after adding line".to_string(),
             });
         };
-        let line_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}; {err:?}"),
-            })?;
+        let new_program = fill_program_node_paths(new_program);
+
+        let line_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
+            msg: format!("Source range of line not found in sketch block: {sketch_block_ref:?}; {err:?}"),
+        })?;
         #[cfg(not(feature = "artifact-graph"))]
-        let _ = line_source_range;
+        let _ = line_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)?;
 
         // Execute.
         let outcome = ctx
@@ -1441,10 +1462,10 @@ impl FrontendState {
         let new_object_ids = {
             let segment_id = outcome
                 .source_range_to_object
-                .get(&line_source_range)
+                .get(&line_node_ref.range)
                 .copied()
                 .ok_or_else(|| Error {
-                    msg: format!("Source range of line not found: {line_source_range:?}"),
+                    msg: format!("Source range of line not found: {line_node_ref:?}"),
                 })?;
             let segment_object = outcome.scene_object_by_id(segment_id).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
@@ -1528,7 +1549,7 @@ impl FrontendState {
         };
         // Add the arc to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: arc_ast },
@@ -1547,19 +1568,20 @@ impl FrontendState {
                 msg: "No AST produced after adding arc".to_string(),
             });
         };
-        let arc_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!("Source range of arc not found in sketch block: {sketch_block_range:?}; {err:?}"),
-            })?;
+        let new_program = fill_program_node_paths(new_program);
+
+        let arc_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
+            msg: format!("Source range of arc not found in sketch block: {sketch_block_ref:?}; {err:?}"),
+        })?;
         #[cfg(not(feature = "artifact-graph"))]
-        let _ = arc_source_range;
+        let _ = arc_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)?;
 
         // Execute.
         let outcome = ctx
@@ -1582,10 +1604,10 @@ impl FrontendState {
         let new_object_ids = {
             let segment_id = outcome
                 .source_range_to_object
-                .get(&arc_source_range)
+                .get(&arc_node_ref.range)
                 .copied()
                 .ok_or_else(|| Error {
-                    msg: format!("Source range of arc not found: {arc_source_range:?}"),
+                    msg: format!("Source range of arc not found: {arc_node_ref:?}"),
                 })?;
             let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
@@ -1664,7 +1686,7 @@ impl FrontendState {
         };
         // Add the circle to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             &mut new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockVarDecl {
@@ -1686,19 +1708,21 @@ impl FrontendState {
                 msg: "No AST produced after adding circle".to_string(),
             });
         };
-        let circle_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!("Source range of circle not found in sketch block: {sketch_block_range:?}; {err:?}"),
+        let new_program = fill_program_node_paths(new_program);
+
+        let circle_node_ref =
+            find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
+                msg: format!("Source range of circle not found in sketch block: {sketch_block_ref:?}; {err:?}"),
             })?;
         #[cfg(not(feature = "artifact-graph"))]
-        let _ = circle_source_range;
+        let _ = circle_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)?;
 
         // Execute.
         let outcome = ctx
@@ -1717,10 +1741,10 @@ impl FrontendState {
         let new_object_ids = {
             let segment_id = outcome
                 .source_range_to_object
-                .get(&circle_source_range)
+                .get(&circle_node_ref.range)
                 .copied()
                 .ok_or_else(|| Error {
-                    msg: format!("Source range of circle not found: {circle_source_range:?}"),
+                    msg: format!("Source range of circle not found: {circle_node_ref:?}"),
                 })?;
             let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
@@ -2179,7 +2203,7 @@ impl FrontendState {
         let is_delete = edit_kind.is_delete();
         let truncated_program = {
             let mut truncated_program = new_program;
-            self.only_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+            self.only_sketch_block_from_range(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
             truncated_program
         };
 
@@ -2406,7 +2430,7 @@ impl FrontendState {
         sketch: ObjectId,
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let sketch_id = sketch;
         let [seg0_ast, seg1_ast] = match coincident.segments.as_slice() {
             [seg0, seg1] => [
@@ -2427,12 +2451,12 @@ impl FrontendState {
         let coincident_ast = create_coincident_ast(seg0_ast, seg1_ast);
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_distance(
@@ -2440,7 +2464,7 @@ impl FrontendState {
         sketch: ObjectId,
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
@@ -2488,12 +2512,12 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_angle(
@@ -2501,7 +2525,7 @@ impl FrontendState {
         sketch: ObjectId,
         angle: Angle,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[l0_id, l1_id] = angle.lines.as_slice() else {
             return Err(Error {
                 msg: format!("Angle constraint must have exactly 2 lines, got {}", angle.lines.len()),
@@ -2571,12 +2595,12 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_tangent(
@@ -2584,7 +2608,7 @@ impl FrontendState {
         sketch: ObjectId,
         tangent: Tangent,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[seg0_id, seg1_id] = tangent.input.as_slice() else {
             return Err(Error {
                 msg: format!(
@@ -2634,12 +2658,12 @@ impl FrontendState {
         };
 
         let tangent_ast = create_tangent_ast(seg0_ast, seg1_ast);
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: tangent_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_radius(
@@ -2647,7 +2671,7 @@ impl FrontendState {
         sketch: ObjectId,
         radius: Radius,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let params = ArcSizeConstraintParams {
             points: vec![radius.arc],
             function_name: RADIUS_FN,
@@ -2663,7 +2687,7 @@ impl FrontendState {
         sketch: ObjectId,
         diameter: Diameter,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let params = ArcSizeConstraintParams {
             points: vec![diameter.arc],
             function_name: DIAMETER_FN,
@@ -2679,23 +2703,23 @@ impl FrontendState {
         sketch: ObjectId,
         points: Vec<FixedPoint>,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
-        let mut sketch_block_range = None;
+    ) -> api::Result<AstNodeRef> {
+        let mut sketch_block_ref = None;
 
         for fixed_point in points {
             let point_ast = self.point_id_to_ast_reference(fixed_point.point, new_ast)?;
             let fixed_ast = create_fixed_point_constraint_ast(point_ast, fixed_point.position)
                 .map_err(|err| Error { msg: err.to_string() })?;
 
-            let (range, _) = self.mutate_ast(
+            let (sketch_ref, _) = self.mutate_ast(
                 new_ast,
                 sketch,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_ast },
             )?;
-            sketch_block_range = Some(range);
+            sketch_block_ref = Some(sketch_ref);
         }
 
-        sketch_block_range.ok_or_else(|| Error {
+        sketch_block_ref.ok_or_else(|| Error {
             msg: "Fixed constraint requires at least one point".to_owned(),
         })
     }
@@ -2705,7 +2729,7 @@ impl FrontendState {
         sketch: ObjectId,
         params: ArcSizeConstraintParams,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let sketch_id = sketch;
 
         // Constraint must have exactly 1 argument (arc segment)
@@ -2768,12 +2792,12 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: constraint_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_horizontal_distance(
@@ -2781,7 +2805,7 @@ impl FrontendState {
         sketch: ObjectId,
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
@@ -2829,12 +2853,12 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_vertical_distance(
@@ -2842,7 +2866,7 @@ impl FrontendState {
         sketch: ObjectId,
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
@@ -2890,12 +2914,12 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_horizontal(
@@ -2903,7 +2927,7 @@ impl FrontendState {
         sketch: ObjectId,
         horizontal: Horizontal,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
@@ -2927,12 +2951,12 @@ impl FrontendState {
         let horizontal_ast = create_horizontal_ast(line_ast);
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: horizontal_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_lines_equal_length(
@@ -2940,7 +2964,7 @@ impl FrontendState {
         sketch: ObjectId,
         lines_equal_length: LinesEqualLength,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         if lines_equal_length.lines.len() < 2 {
             return Err(Error {
                 msg: format!(
@@ -2979,12 +3003,12 @@ impl FrontendState {
         let equal_length_ast = create_equal_length_ast(line_asts);
 
         // Add the constraint to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: equal_length_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_parallel(
@@ -2992,7 +3016,7 @@ impl FrontendState {
         sketch: ObjectId,
         parallel: Parallel,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         self.add_lines_at_angle_constraint(sketch, LinesAtAngleKind::Parallel, parallel.lines, new_ast)
             .await
     }
@@ -3002,7 +3026,7 @@ impl FrontendState {
         sketch: ObjectId,
         perpendicular: Perpendicular,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         self.add_lines_at_angle_constraint(sketch, LinesAtAngleKind::Perpendicular, perpendicular.lines, new_ast)
             .await
     }
@@ -3013,7 +3037,7 @@ impl FrontendState {
         angle_kind: LinesAtAngleKind,
         lines: Vec<ObjectId>,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let &[line0_id, line1_id] = lines.as_slice() else {
             return Err(Error {
                 msg: format!(
@@ -3079,12 +3103,12 @@ impl FrontendState {
         })));
 
         // Add the constraint to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: call_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn add_vertical(
@@ -3092,7 +3116,7 @@ impl FrontendState {
         sketch: ObjectId,
         vertical: Vertical,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
+    ) -> api::Result<AstNodeRef> {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
@@ -3116,19 +3140,19 @@ impl FrontendState {
         let vertical_ast = create_vertical_ast(line_ast);
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
+        let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: vertical_ast },
         )?;
-        Ok(sketch_block_range)
+        Ok(sketch_block_ref)
     }
 
     async fn execute_after_add_constraint(
         &mut self,
         ctx: &ExecutorContext,
         sketch_id: ObjectId,
-        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_range: SourceRange,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_ref: AstNodeRef,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -3146,17 +3170,15 @@ impl FrontendState {
             });
         };
         #[cfg(feature = "artifact-graph")]
-        let constraint_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!(
-                    "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
-                ),
+        let constraint_node_ref =
+            find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| Error {
+                msg: format!("Source range of new constraint not found in sketch block: {sketch_block_ref:?}; {err:?}"),
             })?;
 
         // Truncate after the sketch block for mock execution.
         // Use a clone so we don't mutate new_program yet
         let mut truncated_program = new_program.clone();
-        self.only_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.only_sketch_block_from_range(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute - if this fails, we haven't modified self yet, so state is safe
         let outcome = ctx
@@ -3177,10 +3199,10 @@ impl FrontendState {
             // Extract the constraint ID from the execution outcome using source_range_to_object
             let constraint_id = outcome
                 .source_range_to_object
-                .get(&constraint_source_range)
+                .get(&constraint_node_ref.range)
                 .copied()
                 .ok_or_else(|| Error {
-                    msg: format!("Source range of constraint not found: {constraint_source_range:?}"),
+                    msg: format!("Source range of constraint not found: {constraint_node_ref:?}"),
                 })?;
             vec![constraint_id]
         };
@@ -3397,7 +3419,14 @@ impl FrontendState {
         }
     }
 
-    fn only_sketch_block(
+    fn fill_node_paths(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        fill_node_paths(&mut self.program.ast)
+    }
+
+    /// This is soft deprecated. Prefer [`only_sketch_block()`] to avoid
+    /// reliance on source ranges.
+    fn only_sketch_block_from_range(
         &self,
         sketch_id: ObjectId,
         edit_kind: ChangeKind,
@@ -3412,7 +3441,7 @@ impl FrontendState {
             });
         };
         let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
-        only_sketch_block(ast, sketch_block_range, edit_kind)
+        only_sketch_block_from_range(ast, sketch_block_range, edit_kind)
     }
 
     fn mutate_ast(
@@ -3420,7 +3449,7 @@ impl FrontendState {
         ast: &mut ast::Node<ast::Program>,
         object_id: ObjectId,
         command: AstMutateCommand,
-    ) -> api::Result<(SourceRange, AstMutateCommandReturn)> {
+    ) -> api::Result<(AstNodeRef, AstMutateCommandReturn)> {
         let sketch_object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
             msg: format!("Object not found: {object_id:?}"),
         })?;
@@ -3429,6 +3458,57 @@ impl FrontendState {
             SourceRef::BackTrace { .. } => Err(Error {
                 msg: "BackTrace source refs not supported yet".to_owned(),
             }),
+        }
+    }
+}
+
+/// Fill node paths and consume the input so that the program without paths
+/// isn't accidentally used.
+fn fill_program_node_paths(program: Program) -> Program {
+    #[cfg(not(feature = "artifact-graph"))]
+    {
+        program
+    }
+    #[cfg(feature = "artifact-graph")]
+    {
+        let mut program = program;
+        fill_node_paths(&mut program.ast);
+        program
+    }
+}
+
+fn sketch_block_ref_from_id(scene_graph: &SceneGraph, sketch_id: ObjectId) -> api::Result<AstNodeRef> {
+    // Look up existing sketch.
+    let sketch_object = scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+        msg: format!("Sketch not found: {sketch_id:?}"),
+    })?;
+    let ObjectKind::Sketch(_) = &sketch_object.kind else {
+        return Err(Error {
+            msg: format!("Object is not a sketch: {sketch_object:?}"),
+        });
+    };
+    expect_single_node_ref(sketch_object)
+}
+
+fn expect_single_node_ref(object: &Object) -> api::Result<AstNodeRef> {
+    match &object.source {
+        SourceRef::Simple { range, node_path } => Ok(AstNodeRef {
+            range: *range,
+            node_path: node_path.clone(),
+        }),
+        SourceRef::BackTrace { ranges } => {
+            let [range] = ranges.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Expected single location in SourceRef, got {}; ranges={ranges:#?}",
+                        ranges.len()
+                    ),
+                });
+            };
+            Ok(AstNodeRef {
+                range: range.0,
+                node_path: range.1.clone(),
+            })
         }
     }
 }
@@ -3450,7 +3530,9 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
     }
 }
 
-fn only_sketch_block(
+/// This is soft deprecated. Prefer [`only_sketch_block()`] to avoid reliance on
+/// source ranges.
+fn only_sketch_block_from_range(
     ast: &mut ast::Node<ast::Program>,
     sketch_block_range: SourceRange,
     edit_kind: ChangeKind,
@@ -3505,6 +3587,78 @@ fn only_sketch_block(
     if !found {
         return Err(Error {
             msg: format!("Sketch block source range not found in AST: {sketch_block_range:?}, edit_kind={edit_kind:?}"),
+        });
+    }
+
+    Ok(())
+}
+
+fn only_sketch_block(
+    ast: &mut ast::Node<ast::Program>,
+    sketch_block_ref: &AstNodeRef,
+    edit_kind: ChangeKind,
+) -> api::Result<()> {
+    let Some(target_node_path) = &sketch_block_ref.node_path else {
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(
+            &format!(
+                "only_sketch_block: target sketch block ref doesn't have node path; sketch_block_ref={:#?}, edit_kind={edit_kind:#?}",
+                &sketch_block_ref
+            )
+            .into(),
+        );
+        return only_sketch_block_from_range(ast, sketch_block_ref.range, edit_kind);
+    };
+    let mut found = false;
+    for item in ast.body.iter_mut() {
+        match item {
+            ast::BodyItem::ImportStatement(_) => {}
+            ast::BodyItem::ExpressionStatement(node) => {
+                // Check the statement.
+                if let Some(node_path) = &node.node_path
+                    && node_path == target_node_path
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+                // Check the expression.
+                if let Some(node_path) = node.expression.node_path()
+                    && node_path == target_node_path
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::VariableDeclaration(node) => {
+                if let Some(node_path) = node.declaration.init.node_path()
+                    && node_path == target_node_path
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::TypeDeclaration(_) => {}
+            ast::BodyItem::ReturnStatement(node) => {
+                if let Some(node_path) = node.argument.node_path()
+                    && node_path == target_node_path
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+    if !found {
+        return Err(Error {
+            msg: format!("Sketch block node path not found in AST: {sketch_block_ref:?}, edit_kind={edit_kind:?}"),
         });
     }
 
@@ -3826,9 +3980,10 @@ fn mutate_ast_node_by_source_range(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
     command: AstMutateCommand,
-) -> Result<(SourceRange, AstMutateCommandReturn), Error> {
+) -> Result<(AstNodeRef, AstMutateCommandReturn), Error> {
     let mut context = AstMutateContext {
         source_range,
+        node_path: None,
         command,
         defined_names_stack: Default::default(),
     };
@@ -3844,6 +3999,7 @@ fn mutate_ast_node_by_source_range(
 #[derive(Debug)]
 struct AstMutateContext {
     source_range: SourceRange,
+    node_path: Option<ast::NodePath>,
     command: AstMutateCommand,
     defined_names_stack: Vec<HashSet<String>>,
 }
@@ -3901,8 +4057,85 @@ enum AstMutateCommandReturn {
     Name(String),
 }
 
+#[derive(Debug, Clone)]
+struct AstNodeRef {
+    range: SourceRange,
+    node_path: Option<ast::NodePath>,
+}
+
+impl<T> From<&ast::Node<T>> for AstNodeRef {
+    fn from(value: &ast::Node<T>) -> Self {
+        AstNodeRef {
+            range: value.into(),
+            node_path: value.node_path.clone(),
+        }
+    }
+}
+
+impl From<&ast::BodyItem> for AstNodeRef {
+    fn from(value: &ast::BodyItem) -> Self {
+        match value {
+            ast::BodyItem::ImportStatement(node) => AstNodeRef {
+                range: node.into(),
+                node_path: node.node_path.clone(),
+            },
+            ast::BodyItem::ExpressionStatement(node) => AstNodeRef {
+                range: node.into(),
+                node_path: node.node_path.clone(),
+            },
+            ast::BodyItem::VariableDeclaration(node) => AstNodeRef {
+                range: node.into(),
+                node_path: node.node_path.clone(),
+            },
+            ast::BodyItem::TypeDeclaration(node) => AstNodeRef {
+                range: node.into(),
+                node_path: node.node_path.clone(),
+            },
+            ast::BodyItem::ReturnStatement(node) => AstNodeRef {
+                range: node.into(),
+                node_path: node.node_path.clone(),
+            },
+        }
+    }
+}
+
+impl From<&ast::Expr> for AstNodeRef {
+    fn from(value: &ast::Expr) -> Self {
+        AstNodeRef {
+            range: SourceRange::from(value),
+            node_path: value.node_path().cloned(),
+        }
+    }
+}
+
+impl From<&AstMutateContext> for AstNodeRef {
+    fn from(value: &AstMutateContext) -> Self {
+        AstNodeRef {
+            range: value.source_range,
+            node_path: value.node_path.clone(),
+        }
+    }
+}
+
+impl TryFrom<&NodeMut<'_>> for AstNodeRef {
+    type Error = crate::walk::AstNodeError;
+
+    fn try_from(value: &NodeMut<'_>) -> Result<Self, Self::Error> {
+        Ok(AstNodeRef {
+            range: SourceRange::try_from(value)?,
+            node_path: value.try_into()?,
+        })
+    }
+}
+
+impl From<AstNodeRef> for SourceRange {
+    fn from(value: AstNodeRef) -> Self {
+        value.range
+    }
+}
+
 impl Visitor for AstMutateContext {
-    type Break = Result<(SourceRange, AstMutateCommandReturn), Error>;
+    type Break = Result<(AstNodeRef, AstMutateCommandReturn), Error>;
     type Continue = ();
 
     fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
@@ -3922,8 +4155,8 @@ impl Visitor for AstMutateContext {
 fn filter_and_process(
     ctx: &mut AstMutateContext,
     node: NodeMut,
-) -> TraversalReturn<Result<(SourceRange, AstMutateCommandReturn), Error>> {
-    let Ok(node_range) = SourceRange::try_from(&node) else {
+) -> TraversalReturn<Result<(AstNodeRef, AstMutateCommandReturn), Error>> {
+    let Ok(node_ref) = AstNodeRef::try_from(&node) else {
         // Nodes that can't be converted to a range aren't interesting.
         return TraversalReturn::new_continue(());
     };
@@ -3938,7 +4171,7 @@ fn filter_and_process(
                 // We found the variable declaration expression. It doesn't need
                 // to be added.
                 return TraversalReturn::new_break(Ok((
-                    node_range,
+                    node_ref,
                     AstMutateCommandReturn::Name(var_decl.name().to_owned()),
                 )));
             }
@@ -3947,7 +4180,7 @@ fn filter_and_process(
                 // with the segment.
                 return TraversalReturn {
                     mutate_body_item: MutateBodyItem::Delete,
-                    control_flow: ControlFlow::Break(Ok((ctx.source_range, AstMutateCommandReturn::None))),
+                    control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
                 };
             }
         }
@@ -3960,10 +4193,11 @@ fn filter_and_process(
     }
 
     // Make sure the node matches the source range.
-    if node_range != ctx.source_range {
+    // TODO: Should we also check the NodePath?
+    if node_ref.range != ctx.source_range {
         return TraversalReturn::new_continue(());
     }
-    process(ctx, node).map_break(|result| result.map(|cmd_return| (ctx.source_range, cmd_return)))
+    process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)))
 }
 
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, Error>> {
@@ -4271,7 +4505,7 @@ struct FindSketchBlockSourceRange {
     /// The source range of the sketch block's last body item after mutation. We
     /// need to use a [Cell] since the [crate::walk::Visitor] trait requires a
     /// shared reference.
-    found: Cell<Option<SourceRange>>,
+    found: Cell<Option<AstNodeRef>>,
 }
 
 impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
@@ -4292,9 +4526,56 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
                     // For declarations like `circle1 = circle(...)`, use
                     // the init expression range so lookup in source_range_to_object
                     // matches the segment source range.
-                    ast::BodyItem::VariableDeclaration(node) => SourceRange::from(&node.declaration.init),
-                    _ => SourceRange::from(item),
+                    ast::BodyItem::VariableDeclaration(node) => AstNodeRef::from(&node.declaration.init),
+                    _ => AstNodeRef::from(item),
                 }));
+                return Ok(false);
+            } else {
+                // We found a different sketch block. No need to descend into
+                // its children since sketch blocks cannot be nested.
+                return Ok(true);
+            }
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+struct FindSketchBlockByNodePath {
+    /// The Node Path of the sketch block before mutation.
+    target_node_path: ast::NodePath,
+    /// The ref of the sketch block's last body item after mutation. We need to
+    /// use a [Cell] since the [crate::walk::Visitor] trait requires a shared
+    /// reference.
+    found: Cell<Option<AstNodeRef>>,
+}
+
+impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockByNodePath {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+        let Ok(node_path) = <Option<ast::NodePath>>::try_from(&node) else {
+            return Ok(true);
+        };
+
+        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+            if let Some(node_path) = node_path
+                && node_path == self.target_node_path
+            {
+                self.found.set(sketch_block.body.items.last().map(|item| match item {
+                    // For declarations like `circle1 = circle(...)`, use
+                    // the init expression range so lookup in source_range_to_object
+                    // matches the segment source range.
+                    ast::BodyItem::VariableDeclaration(node) => AstNodeRef::from(&node.declaration.init),
+                    _ => AstNodeRef::from(item),
+                }));
+
                 return Ok(false);
             } else {
                 // We found a different sketch block. No need to descend into
@@ -4322,17 +4603,30 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
 /// sketch block forward?
 fn find_sketch_block_added_item(
     ast: &ast::Node<ast::Program>,
-    range_before_mutation: SourceRange,
-) -> api::Result<SourceRange> {
-    let find = FindSketchBlockSourceRange {
-        target_before_mutation: range_before_mutation,
-        found: Cell::new(None),
-    };
-    let node = crate::walk::Node::from(ast);
-    node.visit(&find)?;
-    find.found.into_inner().ok_or_else(|| api::Error {
-        msg: format!("Source range after mutation not found for range before mutation: {range_before_mutation:?}; Did you try formatting (i.e. call recast) before calling this?"),
-    })
+    sketch_block_before_mutation: &AstNodeRef,
+) -> api::Result<AstNodeRef> {
+    if let Some(node_path) = &sketch_block_before_mutation.node_path {
+        let find = FindSketchBlockByNodePath {
+            target_node_path: node_path.clone(),
+            found: Cell::new(None),
+        };
+        let node = crate::walk::Node::from(ast);
+        node.visit(&find)?;
+        find.found.into_inner().ok_or_else(|| api::Error {
+            msg: format!("Node ID after mutation not found for Node ID before mutation: {node_path:?}"),
+        })
+    } else {
+        // No NodePath. Fall back to legacy source range.
+        let find = FindSketchBlockSourceRange {
+            target_before_mutation: sketch_block_before_mutation.range,
+            found: Cell::new(None),
+        };
+        let node = crate::walk::Node::from(ast);
+        node.visit(&find)?;
+        find.found.into_inner().ok_or_else(|| api::Error {
+            msg: format!("Source range after mutation not found for range before mutation: {sketch_block_before_mutation:?}; Did you try formatting (i.e. call recast) before calling this?"),
+        })
+    }
 }
 
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
