@@ -59,4 +59,50 @@ startSketchOn(offsetPlane(topPlane, offset = 2))
 >
 </model-viewer>
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  line3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  line4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+block = extrude(baseRegion, length = 4mm, tagEnd = $top)
+sidePlane = planeOf(block, face = top)
+
+rib = startSketchOn(offsetPlane(sidePlane, offset = 1mm))
+  |> startProfile(at = [0mm, 0mm])
+  |> line(end = [2mm, 0mm])
+  |> line(end = [0mm, 1mm])
+  |> line(end = [-2mm, 0mm])
+  |> close()
+  |> extrude(length = 1mm)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the planeOf function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planeOf1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planeOf1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
