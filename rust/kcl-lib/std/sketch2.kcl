@@ -122,6 +122,7 @@ export fn circle(
 /// Constrain points, or a point and a segment to be coincident.
 ///
 /// Supports two points, or one point and one segment (line/arc).
+/// A single `Point2d` (e.g. `[1mm, 2.5mm]`) can be used to pin a point to a fixed position.
 ///
 /// ```kcl
 /// @settings(experimentalFeatures = allow)
@@ -142,7 +143,7 @@ export fn circle(
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn coincident(
   /// Two points, or one point and one line/arc segment, that should occupy the same location.
-  @points: [Segment; 2],
+  @points: [Segment | Point2d; 2],
 ) {}
 
 /// Constrain the distance between two points.
@@ -401,6 +402,13 @@ export fn tangent(
   /// Two supported line/arc/circle segments that should touch without crossing.
   @input: [Segment; 2],
 ) {}
+
+/// Constrain a point to be fixed to a position.
+///
+/// `fixed()` is an alias for `coincident()`. By convention, `fixed()` is used when one of the points is a known location, not solved with constraints and not another point in the sketch.
+///
+/// See [coincident()](/docs/kcl-std/functions/std-sketch2-coincident) for more info.
+export fixed = coincident
 
 /// Constrain a line to be horizontal.
 ///

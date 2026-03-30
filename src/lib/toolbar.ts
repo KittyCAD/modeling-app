@@ -12,7 +12,10 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getSelectedFixedConstraintInput,
+  getSelectedTangentConstraintInput,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
@@ -1709,6 +1712,27 @@ export const useToolbarConfig = () => {
             isActive: (state) => false,
           },
           {
+            id: 'Fixed',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Fixed',
+              }),
+            icon: 'fix',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedFixedConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedFixedConstraintInput(state) === null
+                ? 'Select one or more points to lock them in place.'
+                : undefined,
+            title: 'Fixed',
+            hotkey: 'F',
+            description:
+              'Lock selected points to their current x and y positions',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
             id: 'Dimension',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
@@ -1763,6 +1787,22 @@ export const useToolbarConfig = () => {
             description: 'Toggle construction geometry on selected segments',
             links: [],
             isActive: (state) => false,
+          },
+          {
+            id: 'show-constraints',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'toggle non-visual constraints',
+              }),
+            icon: 'eyeOpen',
+            status: 'available',
+            title: 'Show constraints',
+            description:
+              'Toggle visibility for sketch constraints that do not have their own UI yet.',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.showNonVisualConstraints,
           },
         ],
       },

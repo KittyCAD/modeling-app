@@ -6,8 +6,9 @@ import {
   Mesh,
   Sprite,
   SpriteMaterial,
-  type Vector3,
   Color,
+  Vector3,
+  type Vector3 as Vector3Type,
 } from 'three'
 import {
   CONSTRAINT_TYPE,
@@ -42,6 +43,8 @@ const DIMENSION_LINE_END_INSET_PX = 8 // Shorten line ends so arrows fully cover
 const DIAMETER_LABEL_OFFSET_PX = 25 // Offset diameter label off the line to avoid the center point
 export const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
 export const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
+const COLLAPSED_DIMENSION_MARKER_HALF_LENGTH_PX = 6
+const COLLAPSED_DIMENSION_LABEL_OFFSET_PX = 18
 
 const debug_label_canvas = false
 
@@ -105,8 +108,8 @@ export function createDimensionLine(
 }
 
 export function updateDimensionLine(
-  start: Vector3,
-  end: Vector3,
+  start: Vector3Type,
+  end: Vector3Type,
   group: Group,
   obj: ApiObject,
   scale: number,
@@ -116,7 +119,8 @@ export function updateDimensionLine(
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
   const lineCenter = start.clone().lerp(end, 0.5)
-  const dir = end.clone().sub(start).normalize()
+  const collapsedAxis = getCollapsedZeroDistanceAxis(obj, distance)
+  const dir = collapsedAxis ?? end.clone().sub(start).normalize()
   const labelCenter = isDiameter
     ? lineCenter.clone().add(
         dir
@@ -124,7 +128,15 @@ export function updateDimensionLine(
           .set(-dir.y, dir.x, 0)
           .multiplyScalar(DIAMETER_LABEL_OFFSET_PX * scale)
       )
-    : lineCenter
+    : collapsedAxis
+      ? lineCenter
+          .clone()
+          .add(
+            new Vector3(-collapsedAxis.y, collapsedAxis.x, 0).multiplyScalar(
+              COLLAPSED_DIMENSION_LABEL_OFFSET_PX * scale
+            )
+          )
+      : lineCenter
 
   const label = group.children.find(isSpriteLabel)
   if (label) {
@@ -133,13 +145,15 @@ export function updateDimensionLine(
     label.position.copy(labelCenter)
   }
 
-  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
+  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX && !collapsedAxis) {
     group.visible = false
     return
   }
 
   group.visible = true
-  const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+  const showLabel =
+    collapsedAxis !== null ||
+    dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
   let labelTextWidthPx = 0
   if (label) {
     delete label.userData.hitObjects
@@ -183,6 +197,25 @@ export function updateDimensionLine(
   const line1 = lines[0] as Line2
   const line2 = lines[1] as Line2
 
+  const arrows = group.children.filter(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
+  ) as Mesh[]
+  const arrow1 = arrows[0]
+  const arrow2 = arrows[1]
+
+  if (collapsedAxis) {
+    updateCollapsedDimensionLine(
+      lineCenter,
+      collapsedAxis,
+      line1,
+      line2,
+      arrow1,
+      arrow2,
+      scale
+    )
+    return
+  }
+
   line1.geometry.setPositions([
     lineStart.x,
     lineStart.y,
@@ -195,12 +228,6 @@ export function updateDimensionLine(
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO
-  const arrows = group.children.filter(
-    (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
-  ) as Mesh[]
-  const arrow1 = arrows[0]
-  const arrow2 = arrows[1]
-
   // Arrow tip is at origin, so position directly at start/end
   arrow1.position.copy(start)
   arrow1.rotation.z = angle + Math.PI / 2
@@ -208,6 +235,67 @@ export function updateDimensionLine(
 
   arrow2.position.copy(end)
   arrow2.rotation.z = angle - Math.PI / 2
+  arrow2.scale.setScalar(scale)
+}
+
+function getCollapsedZeroDistanceAxis(
+  obj: ApiObject,
+  distance: Number
+): Vector3 | null {
+  if (distance.value !== 0 || obj.kind.type !== 'Constraint') {
+    return null
+  }
+
+  if (obj.kind.constraint.type === 'Distance') {
+    return new Vector3(0, 1, 0)
+  }
+
+  if (obj.kind.constraint.type === 'HorizontalDistance') {
+    return new Vector3(1, 0, 0)
+  }
+
+  if (obj.kind.constraint.type === 'VerticalDistance') {
+    return new Vector3(0, 1, 0)
+  }
+
+  return null
+}
+
+function updateCollapsedDimensionLine(
+  center: Vector3Type,
+  axis: Vector3Type,
+  line1: Line2,
+  line2: Line2,
+  arrow1: Mesh,
+  arrow2: Mesh,
+  scale: number
+) {
+  const markerDir = new Vector3(-axis.y, axis.x, 0)
+  const markerHalfLength = COLLAPSED_DIMENSION_MARKER_HALF_LENGTH_PX * scale
+  const markerStart = center
+    .clone()
+    .sub(markerDir.clone().multiplyScalar(markerHalfLength))
+  const markerEnd = center
+    .clone()
+    .add(markerDir.clone().multiplyScalar(markerHalfLength))
+
+  line1.geometry.setPositions([
+    markerStart.x,
+    markerStart.y,
+    0,
+    markerEnd.x,
+    markerEnd.y,
+    0,
+  ])
+  line2.visible = false
+
+  const angle = Math.atan2(axis.y, axis.x)
+  arrow1.position.copy(center)
+  arrow1.rotation.z = angle - Math.PI / 2
+  arrow1.scale.setScalar(scale)
+
+  arrow2.position.copy(center)
+  arrow2.rotation.z = angle + Math.PI / 2
   arrow2.scale.setScalar(scale)
 }
 

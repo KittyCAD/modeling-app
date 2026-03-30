@@ -10,7 +10,7 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { getAngleDiff, roundOff } from '@src/lib/utils'
-import { addVec, scaleVec, subVec } from '@src/lib/utils2d'
+import { lerp2d, subVec } from '@src/lib/utils2d'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
@@ -498,7 +498,7 @@ export async function createArcActor({
   )
   const settings = jsAppSettings(rustContext.settingsActor)
 
-  const midpoint = scaleVec(addVec(startPoint, throughPoint), 0.5)
+  const midpoint = lerp2d(startPoint, throughPoint, 0.5)
   const segmentCtor: SegmentCtor = {
     type: 'Arc',
     start: {

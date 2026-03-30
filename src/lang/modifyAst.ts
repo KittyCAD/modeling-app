@@ -1077,9 +1077,7 @@ export function insertRegionVariablesAndOffsetPathToNode({
   if (err(settings)) {
     return settings
   }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
-    settings.defaultLengthUnit
-  )
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix('mm')
 
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
