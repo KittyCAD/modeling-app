@@ -513,7 +513,7 @@ export fn holesLinear(
   /// How far between each hole
   distance,
   /// Along which 3D axis should the holes be patterned?
-  axis: Axis3d | Point3d,
+  axis: Axis2d | Point2d,
 ) {
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
   |> patternLinear3d(instances, distance, axis)
