@@ -27,9 +27,7 @@ function createTestMachine(mockActors?: {
     | {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
-        lineEndPointId: number
-        lineEndPoint: [number, number]
-        stopChaining: boolean
+        lastPointId?: number
       }
     | { error: string }
   >
@@ -62,9 +60,7 @@ function createTestMachine(mockActors?: {
           (async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([], []),
-            lineEndPointId: 2,
-            lineEndPoint: [0, 0] as [number, number],
-            stopChaining: false,
+            lastPointId: 2,
           }))
       ),
       startNextDraftLine: fromPromise(
@@ -103,7 +99,6 @@ describe('lineTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.draftPointId).toBeUndefined()
-      expect(context.stopAfterCommit).toBeUndefined()
       expect(context.deleteFromEscape).toBeUndefined()
       expect(context.sketchId).toBe(0)
       actor.stop()
@@ -270,9 +265,7 @@ describe('lineTool - XState', () => {
               [pointObj1, lineObj1, pointObj2],
               [3]
             ),
-            lineEndPointId: 3,
-            lineEndPoint: [30, 40],
-            stopChaining: false,
+            lastPointId: 3,
           }),
           startNextDraftLine: async () => ({
             kclSource: { text: 'test' } as SourceDelta,

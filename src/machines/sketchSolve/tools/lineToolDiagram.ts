@@ -30,6 +30,7 @@ import type {
 import {
   isLineSegment,
   isPointSegment,
+  pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
@@ -181,6 +182,7 @@ export const machine = setup({
           pointData: [number, number]
           id: number
           snapTargetId?: number
+          isDoubleClick?: boolean
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
@@ -189,9 +191,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
-            lineEndPointId: number
-            lineEndPoint: [number, number]
-            stopChaining: boolean
+            lastPointId?: number
           }
         | {
             error: string
@@ -201,6 +201,7 @@ export const machine = setup({
           pointData,
           id,
           snapTargetId,
+          isDoubleClick,
           rustContext,
           kclManager,
           sketchId,
@@ -262,9 +263,10 @@ export const machine = setup({
                 ...snapConstraintNewObjects,
               ],
             },
-            lineEndPointId: id,
-            lineEndPoint: pointData,
-            stopChaining: snapTargetId !== undefined,
+            lastPointId:
+              snapTargetId === undefined && isDoubleClick !== true
+                ? id
+                : undefined,
           }
         } catch (error) {
           console.error('Failed to add point segment:', error)
@@ -279,9 +281,9 @@ export const machine = setup({
         input,
       }: {
         input: {
-          lineEndPoint?: [number, number]
+          lastPointId?: number
+          sceneGraphDelta?: SceneGraphDelta
           draftPointData: [number, number]
-          lineEndPointId?: number
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
@@ -301,22 +303,29 @@ export const machine = setup({
           }
       > => {
         const {
-          lineEndPoint,
+          lastPointId,
+          sceneGraphDelta,
           draftPointData,
-          lineEndPointId,
           rustContext,
           kclManager,
           sketchId,
         } = input
 
-        if (!lineEndPoint || lineEndPointId === undefined) {
+        if (lastPointId === undefined) {
           return {
-            error:
-              'lineEndPointId and lineEndPoint should be defined when starting the next draft line.',
+            error: 'lastPointId should be defined when starting the next draft line.',
           }
         }
 
-        const [startX, startY] = lineEndPoint
+        const graphPoint = sceneGraphDelta?.new_graph.objects[lastPointId]
+        if (!isPointSegment(graphPoint)) {
+          return {
+            error:
+              'lastPointId should resolve to a point segment when starting the next draft line.',
+          }
+        }
+
+        const [startX, startY] = pointToCoords2d(graphPoint)
         const [endX, endY] = draftPointData
         const units = baseUnitToNumericSuffix(
           kclManager.fileSettings.defaultLengthUnit
@@ -339,7 +348,7 @@ export const machine = setup({
           const chainResult = await rustContext.chainSegment(
             0,
             sketchId,
-            lineEndPointId,
+            lastPointId,
             newLineCtor,
             'line-segment',
             settings
@@ -402,7 +411,6 @@ export const machine = setup({
   /** @xstate-layout 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-2fEXSOE-OFCwNRDkIRbLbZ0qgS4BJoDQTkCKVGoRyBoNQhQXwRMuF2AupJgXXFUCC6SagS7IzOsLHAFKHqnN4l7NCKsnB5BbHot2UyFq0xcJkbRJcy4T1+AKuOvZGzsokGivimQ0TfUih8WoQ5cS9izjTSFYjvGT0kcg6RPCaBqvSNiHujQZDET9O+Qc30aY1GwtkZwFxeJPGLpkoAA */
   context: ({ input }): ToolContext => ({
     draftPointId: undefined,
-    stopAfterCommit: undefined,
     pendingSketchOutcome: undefined,
     deleteFromEscape: undefined,
     sceneInfra: input.sceneInfra,
@@ -435,12 +443,6 @@ export const machine = setup({
     },
 
     [confirmingDimensions]: {
-      entry: assign(({ event }) => {
-        return {
-          stopAfterCommit:
-            event.type === 'add point' && event.isDoubleClick === true,
-        }
-      }),
       invoke: {
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
@@ -448,6 +450,7 @@ export const machine = setup({
             pointData: event.data,
             id: event.id || 0,
             snapTargetId: event.snapTargetId,
+            isDoubleClick: event.isDoubleClick,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -469,26 +472,13 @@ export const machine = setup({
     'check whether to stop drawing': {
       always: [
         {
-          guard: ({ context }) => context.stopAfterCommit === true,
-          target: 'ready for user click',
-          actions: [
-            sendStoredResultToParent,
-            assign({
-              draftPointId: undefined,
-              stopAfterCommit: undefined,
-              pendingSketchOutcome: undefined,
-            }),
-          ],
-        },
-        {
           guard: ({ context }) =>
-            context.pendingSketchOutcome?.stopChaining === true,
+            context.pendingSketchOutcome?.lastPointId === undefined,
           target: 'ready for user click',
           actions: [
             sendStoredResultToParent,
             assign({
               draftPointId: undefined,
-              stopAfterCommit: undefined,
               pendingSketchOutcome: undefined,
             }),
           ],
@@ -499,7 +489,6 @@ export const machine = setup({
             sendStoredResultToParent,
             assign({
               draftPointId: undefined,
-              stopAfterCommit: undefined,
             }),
           ],
         },
@@ -513,7 +502,6 @@ export const machine = setup({
         'finish line chain': {
           target: 'ready for user click',
           actions: assign({
-            stopAfterCommit: undefined,
             pendingSketchOutcome: undefined,
           }),
         },
@@ -521,7 +509,6 @@ export const machine = setup({
         escape: {
           target: 'ready for user click',
           actions: assign({
-            stopAfterCommit: undefined,
             pendingSketchOutcome: undefined,
           }),
         },
@@ -534,9 +521,9 @@ export const machine = setup({
         input: ({ event, context }) => {
           assertEvent(event, 'start next draft line')
           return {
-            lineEndPoint: context.pendingSketchOutcome?.lineEndPoint,
+            lastPointId: context.pendingSketchOutcome?.lastPointId,
+            sceneGraphDelta: context.pendingSketchOutcome?.sceneGraphDelta,
             draftPointData: event.data,
-            lineEndPointId: context.pendingSketchOutcome?.lineEndPointId,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,

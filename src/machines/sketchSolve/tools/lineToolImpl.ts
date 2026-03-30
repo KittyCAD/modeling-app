@@ -49,13 +49,12 @@ export type ToolEvents =
 
 export type ToolContext = {
   draftPointId?: number
-  stopAfterCommit?: boolean
   pendingSketchOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    lineEndPointId?: number
-    lineEndPoint?: [number, number]
-    stopChaining?: boolean
+    // If present, the next draft line should chain from this committed point.
+    // When double-clicking or snapping to a line it becomes undefined to stop chaining.
+    lastPointId?: number
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
   sceneInfra: SceneInfra
@@ -402,9 +401,7 @@ export function storePendingSketchOutcome({
   event: DoneActorEvent<{
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
-    lineEndPointId?: number
-    lineEndPoint?: [number, number]
-    stopChaining?: boolean
+    lastPointId?: number
     error?: string
   }>
 }) {
@@ -416,9 +413,7 @@ export function storePendingSketchOutcome({
     result.pendingSketchOutcome = {
       kclSource: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
-      lineEndPointId: output.lineEndPointId,
-      lineEndPoint: output.lineEndPoint,
-      stopChaining: output.stopChaining,
+      lastPointId: output.lastPointId,
     }
   }
 
