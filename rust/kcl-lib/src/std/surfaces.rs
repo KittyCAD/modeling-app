@@ -335,17 +335,12 @@ async fn inner_join(
         let cmd = mcmd::Solid3dJoin::builder().object_id(selection[0].id).build();
 
         exec_state
-            .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), ModelingCmd::from(cmd))
+            .batch_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), ModelingCmd::from(cmd))
             .await?;
 
         Ok(selection[0].clone())
     } else {
         let body_out_id = exec_state.next_uuid();
-
-        //TODO: do we need this flush?
-        exec_state
-            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &selection)
-            .await?;
 
         let body_ids = selection.iter().map(|body| body.id).collect();
         let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
@@ -371,9 +366,7 @@ async fn inner_join(
             edge_cuts: vec![],
             units: exec_state.length_unit(),
             sectional: false,
-            meta: vec![crate::execution::Metadata {
-                source_range: args.source_range,
-            }],
+            meta: vec![args.source_range.into()],
         };
         Ok(solid)
     }
