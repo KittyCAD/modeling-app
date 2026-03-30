@@ -70,7 +70,9 @@ describe('coredump support ticket helpers', () => {
       client_state: {},
     } as never)
 
-    expect(message).toContain('Automatic support report from Zoo Design Studio.')
+    expect(message).toContain(
+      'Automatic support report from Zoo Design Studio.'
+    )
     expect(message).toContain('Reference ID: abc123')
     expect(message).toContain('Desktop: yes')
     expect(message).toContain('OS: macOS arm64 15.4')
