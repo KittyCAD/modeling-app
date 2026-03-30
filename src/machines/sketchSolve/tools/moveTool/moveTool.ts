@@ -945,19 +945,54 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 })
               : null
 
-          const result = dragSnapping?.candidate
-            ? await context.rustContext.addConstraint(
-                SKETCH_FILE_VERSION,
-                context.sketchId,
-                {
-                  type: 'Coincident',
-                  segments: [
-                    dragSnapping.sourcePointId,
-                    dragSnapping.candidate.apiObject.id,
+          const settings = jsAppSettings(context.rustContext.settingsActor)
+          const snapCandidate = dragSnapping?.candidate
+          const result = snapCandidate
+            ? await (async () => {
+                const units = baseUnitToNumericSuffix(
+                  context.kclManager.fileSettings.defaultLengthUnit
+                )
+                const [x, y] = snapCandidate.position
+
+                await context.rustContext.editSegments(
+                  0,
+                  context.sketchId,
+                  [
+                    {
+                      id: dragSnapping.sourcePointId,
+                      ctor: {
+                        type: 'Point',
+                        position: {
+                          x: {
+                            type: 'Var',
+                            value: roundOff(x),
+                            units,
+                          },
+                          y: {
+                            type: 'Var',
+                            value: roundOff(y),
+                            units,
+                          },
+                        },
+                      },
+                    },
                   ],
-                },
-                jsAppSettings(context.rustContext.settingsActor)
-              )
+                  settings
+                )
+
+                return context.rustContext.addConstraint(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId,
+                  {
+                    type: 'Coincident',
+                    segments: [
+                      dragSnapping.sourcePointId,
+                      snapCandidate.apiObject.id,
+                    ],
+                  },
+                  settings
+                )
+              })()
             : await context.rustContext.sketchExecuteMock(
                 SKETCH_FILE_VERSION,
                 context.sketchId
