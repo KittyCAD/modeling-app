@@ -243,4 +243,50 @@ loft([profile001, profile002, profile003], bodyType = SURFACE)
 >
 </model-viewer>
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+lowerProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+upperProfile = sketch(on = offsetPlane(XY, offset = 8mm)) {
+  edge5 = line(start = [var 1.6mm, var 1mm], end = [var 4.4mm, var 1mm])
+  edge6 = line(start = [var 4.4mm, var 1mm], end = [var 3.2mm, var 2.6mm])
+  edge7 = line(start = [var 3.2mm, var 2.6mm], end = [var 2.8mm, var 2.6mm])
+  edge8 = line(start = [var 2.8mm, var 2.6mm], end = [var 1.6mm, var 1mm])
+  coincident([edge5.end, edge6.start])
+  coincident([edge6.end, edge7.start])
+  coincident([edge7.end, edge8.start])
+  coincident([edge8.end, edge5.start])
+}
+
+lowerRegion = region(point = [2mm, 2mm], sketch = lowerProfile)
+upperRegion = region(point = [3mm, 1.8mm], sketch = upperProfile)
+
+lofted = loft([lowerRegion, upperRegion])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the loft function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft5_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 

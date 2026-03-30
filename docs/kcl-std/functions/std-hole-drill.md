@@ -40,7 +40,7 @@ bigCube
        face = a,
        cutAt = [0, 0],
        holeBottom = hole::drill(pointAngle = 25deg),
-       holeBody = hole::blind(depth = 2, diameter = 8),
+       holeBody = hole::blind(depth = 1, diameter = 8),
        holeType = hole::simple(),
      )
 

@@ -16,6 +16,12 @@ use crate::KclErrorWithOutputs;
 use crate::Program;
 use crate::collections::AhashIndexSet;
 use crate::exec::WarningLevel;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::fmt::format_number_literal;
@@ -23,6 +29,7 @@ use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Distance;
+use crate::front::FixedPoint;
 use crate::front::Freedom;
 use crate::front::LinesEqualLength;
 use crate::front::Parallel;
@@ -98,6 +105,7 @@ const CIRCLE_CENTER_PARAM: &str = "center";
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
+const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
@@ -250,7 +258,28 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
+        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &args.on)?;
+        let mut defined_names = find_defined_names(&new_ast);
+        let is_face_of_expr = matches!(
+            &plane_ast,
+            ast::Expr::CallExpressionKw(call) if call.callee.name.name == "faceOf"
+        );
+        if is_face_of_expr {
+            let face_name =
+                next_free_name_with_padding("face", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
+            let face_decl = ast::VariableDeclaration::new(
+                ast::VariableDeclarator::new(&face_name, plane_ast),
+                ast::ItemVisibility::Default,
+                ast::VariableKind::Const,
+            );
+            new_ast
+                .body
+                .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                    face_decl,
+                ))));
+            defined_names.insert(face_name.clone());
+            plane_ast = ast::Expr::Name(Box::new(ast::Name::new(&face_name)));
+        }
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
@@ -266,7 +295,6 @@ impl SketchApi for FrontendState {
         new_ast.set_experimental_features(Some(WarningLevel::Allow));
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
-        let defined_names = find_defined_names(&new_ast);
         let sketch_name =
             next_free_name_with_padding("sketch", &defined_names).map_err(|err| Error { msg: err.to_string() })?;
         let sketch_decl = ast::VariableDeclaration::new(
@@ -309,7 +337,16 @@ impl SketchApi for FrontendState {
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
-        let Some(sketch_id) = self.scene_graph.objects.last().map(|object| object.id) else {
+        let Some(sketch_id) = self
+            .scene_graph
+            .objects
+            .iter()
+            .filter_map(|object| match object.kind {
+                ObjectKind::Sketch(_) => Some(object.id),
+                _ => None,
+            })
+            .max_by_key(|id| id.0)
+        else {
             return Err(Error {
                 msg: "No objects in scene graph after adding sketch".to_owned(),
             });
@@ -734,6 +771,7 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::Fixed(fixed) => self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?,
             Constraint::HorizontalDistance(distance) => {
                 self.add_horizontal_distance(sketch, distance, &mut new_ast).await?
             }
@@ -955,6 +993,9 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::Fixed(fixed) => {
+                    self.add_fixed_constraints(sketch, fixed.points, &mut new_ast).await?;
                 }
                 Constraint::HorizontalDistance(distance) => {
                     self.add_horizontal_distance(sketch, distance, &mut new_ast).await?;
@@ -2653,6 +2694,32 @@ impl FrontendState {
         self.add_arc_size_constraint(sketch, params, new_ast).await
     }
 
+    async fn add_fixed_constraints(
+        &mut self,
+        sketch: ObjectId,
+        points: Vec<FixedPoint>,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let mut sketch_block_range = None;
+
+        for fixed_point in points {
+            let point_ast = self.point_id_to_ast_reference(fixed_point.point, new_ast)?;
+            let fixed_ast = create_fixed_point_constraint_ast(point_ast, fixed_point.position)
+                .map_err(|err| Error { msg: err.to_string() })?;
+
+            let (range, _) = self.mutate_ast(
+                new_ast,
+                sketch,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: fixed_ast },
+            )?;
+            sketch_block_range = Some(range);
+        }
+
+        sketch_block_range.ok_or_else(|| Error {
+            msg: "Fixed constraint requires at least one point".to_owned(),
+        })
+    }
+
     async fn add_arc_size_constraint(
         &mut self,
         sketch: ObjectId,
@@ -3211,6 +3278,7 @@ impl FrontendState {
                     }
                     false
                 }),
+                Constraint::Fixed(_) => false,
                 Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
                 Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
                 Constraint::HorizontalDistance(d) => d.points.iter().any(|pt_id| {
@@ -3267,7 +3335,7 @@ impl FrontendState {
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
-            let new_objects = std::mem::take(&mut outcome.scene_objects);
+            let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
             if freedom_analysis_ran {
                 // When freedom analysis ran, replace the cache entirely with new values
@@ -3281,6 +3349,7 @@ impl FrontendState {
                         self.point_freedom_cache.insert(new_obj.id, point.freedom);
                     }
                 }
+                add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
                 // Objects are already correct from the analysis, just use them as-is
                 self.scene_graph.objects = new_objects;
             } else {
@@ -3341,6 +3410,7 @@ impl FrontendState {
                     updated_objects.push(obj);
                 }
 
+                add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
                 self.scene_graph.objects = updated_objects;
             }
             outcome
@@ -3472,7 +3542,179 @@ fn sketch_on_ast_expr(
             let on_object = scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
                 msg: format!("Sketch plane object not found: {object_id:?}"),
             })?;
+            #[cfg(feature = "artifact-graph")]
+            {
+                if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
+                    return Ok(face_expr);
+                }
+            }
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
+        }
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn sketch_face_of_scene_object_ast_expr(
+    ast: &mut ast::Node<ast::Program>,
+    on_object: &crate::front::Object,
+) -> api::Result<Option<ast::Expr>> {
+    let SourceRef::BackTrace { ranges } = &on_object.source else {
+        return Ok(None);
+    };
+
+    match &on_object.kind {
+        ObjectKind::Wall(_) => {
+            let [sweep_range, segment_range] = ranges.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let sweep_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *sweep_range }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve sweep reference for selected wall: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_name = solid_name_expr.name.name.clone();
+            let solid_expr = ast_name_expr(solid_name.clone());
+            let segment_ref =
+                get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *segment_range }, "line", None)?;
+
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
+                let ast::Expr::Name(segment_name_expr) = segment_ref else {
+                    return Err(Error {
+                        msg: format!(
+                            "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
+                            on_object.artifact_id
+                        ),
+                    });
+                };
+                create_member_expression(
+                    create_member_expression(ast_name_expr(region_name), "tags"),
+                    &segment_name_expr.name.name,
+                )
+            } else {
+                segment_ref
+            };
+
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
+        }
+        ObjectKind::Cap(cap) => {
+            let [range] = ranges.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Expected cap source metadata to have 1 range, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let sweep_ref = get_or_insert_ast_reference(ast, &SourceRef::Simple { range: *range }, "solid", None)?;
+            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+                return Err(Error {
+                    msg: format!(
+                        "Could not resolve sweep reference for selected cap: artifact_id={:?}",
+                        on_object.artifact_id
+                    ),
+                });
+            };
+            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            // TODO: change this to explicit tag references with tagStart/tagEnd mutations
+            let face_expr = match cap.kind {
+                crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
+                crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
+            };
+
+            Ok(Some(create_face_of_ast(solid_expr, face_expr)))
+        }
+        _ => Ok(None),
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
+    let mut existing_artifact_ids = scene_objects
+        .iter()
+        .map(|object| object.artifact_id)
+        .collect::<HashSet<_>>();
+
+    for artifact in artifact_graph.values() {
+        match artifact {
+            Artifact::Wall(wall) => {
+                if existing_artifact_ids.contains(&wall.id) {
+                    continue;
+                }
+
+                let Some(segment) = artifact_graph.get(&wall.seg_id).and_then(|artifact| match artifact {
+                    Artifact::Segment(segment) => Some(segment),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let Some(sweep) = artifact_graph.get(&wall.sweep_id).and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let source_segment = segment
+                    .original_seg_id
+                    .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Segment(segment) => Some(segment),
+                        _ => None,
+                    })
+                    .unwrap_or(segment);
+                let id = ObjectId(scene_objects.len());
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Wall(crate::frontend::api::Wall { id }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: wall.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range, source_segment.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(wall.id);
+            }
+            Artifact::Cap(cap) => {
+                if existing_artifact_ids.contains(&cap.id) {
+                    continue;
+                }
+
+                let Some(sweep) = artifact_graph.get(&cap.sweep_id).and_then(|artifact| match artifact {
+                    Artifact::Sweep(sweep) => Some(sweep),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let id = ObjectId(scene_objects.len());
+                let kind = match cap.sub_type {
+                    CapSubType::Start => crate::frontend::api::CapKind::Start,
+                    CapSubType::End => crate::frontend::api::CapKind::End,
+                };
+                scene_objects.push(crate::front::Object {
+                    id,
+                    kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: cap.id,
+                    source: SourceRef::BackTrace {
+                        ranges: vec![sweep.code_ref.range],
+                    },
+                });
+                existing_artifact_ids.insert(cap.id);
+            }
+            _ => {}
         }
     }
 }
@@ -3495,6 +3737,50 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
         ast::UnaryOperator::Neg,
         ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
     )))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
+        unlabeled: Some(solid_expr),
+        arguments: vec![ast::LabeledArg {
+            label: Some(ast::Identifier::new("face")),
+            arg: face_expr,
+        }],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
+    let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(sweep_call) = &sweep_decl.init else {
+        return None;
+    };
+    if !matches!(
+        sweep_call.callee.name.name.as_str(),
+        "extrude" | "revolve" | "sweep" | "loft"
+    ) {
+        return None;
+    }
+    let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
+        return None;
+    };
+    let candidate = region_name_expr.name.name.clone();
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -4248,6 +4534,40 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
     })))
 }
 
+/// Create an AST node for `fixed([point, [x, y]])`.
+fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    // Create [x, y] array literal.
+    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.x,
+    )?))));
+    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        position.y,
+    )?))));
+    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![x_literal, y_literal],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create [point, [x, y]] outer array.
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![point_expr, point_array],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create fixed([...])
+    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+        ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
+            unlabeled: Some(array_expr),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        },
+    ))))
+}
+
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -4288,6 +4608,8 @@ mod tests {
     use super::*;
     use crate::engine::PlaneName;
     use crate::front::Distance;
+    use crate::front::Fixed;
+    use crate::front::FixedPoint;
     use crate::front::Object;
     use crate::front::Plane;
     use crate::front::Sketch;
@@ -4311,6 +4633,47 @@ mod tests {
             }
         }
         None
+    }
+
+    fn find_first_wall_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
+        for object in &scene_graph.objects {
+            if matches!(&object.kind, ObjectKind::Wall(_)) {
+                return Some(object.id);
+            }
+        }
+        None
+    }
+
+    #[test]
+    fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
+        let source = "\
+region001 = region(point = [0.1, 0.1], sketch = s)
+extrude001 = extrude(region001, length = 5)
+revolve001 = revolve(region001, axis = Y)
+sweep001 = sweep(region001, path = path001)
+loft001 = loft(region001)
+not_sweep001 = shell(extrude001, faces = [], thickness = 1)
+";
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "extrude001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "revolve001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "sweep001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "loft001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(region_name_from_sweep_variable(&program.ast, "not_sweep001"), None);
     }
 
     #[track_caller]
@@ -5298,8 +5661,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
   line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5346,8 +5708,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
   line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
-  line1.start.at[0] == 0
-  line1.start.at[1] == 0
+  fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
 }
@@ -5355,7 +5716,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            10,
+            11,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -6352,6 +6713,232 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_standalone_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  fixed([point1, [2mm, 3mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_multiple_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![
+                        FixedPoint {
+                            point: point0_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 2.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 3.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                            },
+                        },
+                        FixedPoint {
+                            point: point1_id,
+                            position: Point2d {
+                                x: Number {
+                                    value: 4.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                                y: Number {
+                                    value: 5.0,
+                                    units: NumericSuffix::Mm,
+                                },
+                            },
+                        },
+                    ],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  fixed([point1, [2mm, 3mm]])
+  fixed([point2, [4mm, 5mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_fixed_owned_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_start_id = *sketch.segments.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: line_start_id,
+                        position: Point2d {
+                            x: Number {
+                                value: 2.0,
+                                units: NumericSuffix::Mm,
+                            },
+                            y: Number {
+                                value: 3.0,
+                                units: NumericSuffix::Mm,
+                            },
+                        },
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  fixed([line1.start, [2mm, 3mm]])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_error_cases() {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
@@ -7068,10 +7655,90 @@ face = faceOf(cube, face = side)
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_region_extrude() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = YZ) {
+  line1 = line(start = [0, 0], end = [0, 1])
+  line2 = line(start = [0, 1], end = [1, 1])
+  line3 = line(start = [1, 1], end = [0, 0])
+}
+region001 = region(point = [0.1, 0.1], sketch = s)
+extrude001 = extrude(region001, length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_split_region_extrude() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 0.49, var -0.39], end = [var 6.52, var -0.39])
+  line2 = line(start = [var 6.52, var -0.39], end = [var 6.52, var 4.9])
+  line3 = line(start = [var 6.52, var 4.9], end = [var 0.49, var 4.9])
+  line4 = line(start = [var 0.49, var 4.9], end = [var 0.49, var -0.39])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [2.35, 6.65], end = [5.89, -2.7])
+}
+region001 = region(point = [3.1, 3.74], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7153,7 +7820,7 @@ sketch001 = sketch(on = plane) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 9);
 
         let plane_object = scene_delta.new_graph.objects.get(plane_id.0).unwrap();
         assert_eq!(plane_object.id, plane_id);
@@ -7480,7 +8147,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 23, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 29, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //

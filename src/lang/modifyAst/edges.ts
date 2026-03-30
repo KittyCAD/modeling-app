@@ -428,11 +428,11 @@ function buildEdgeExpr(
     ['oppositeAndAdjacentEdges']
   )
   if (err(tagResult)) return tagResult
-  if (tagResult.tags.length !== 1) {
+  if (tagResult.exprs.length !== 1) {
     return new Error('Expected exactly one tag for each blend edge.')
   }
 
-  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
   if (edgeExpr.type === 'Name') {
     return {
       modifiedAst: tagResult.modifiedAst,
@@ -709,10 +709,7 @@ function getTagsExprsFromSelection(
 
     tagsExprs.push(
       createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg(
-          'faces',
-          createArrayExpression(result.tags.map((tag) => createLocalName(tag)))
-        ),
+        createLabeledArg('faces', createArrayExpression(result.exprs)),
       ])
     )
 
@@ -851,7 +848,12 @@ export function createEdgeRefObjectExpression(
         )
       }
 
-      faceTags.push(tagResult.tags[0])
+      const faceTagExpr = tagResult.exprs[0]
+      if (!faceTagExpr || faceTagExpr.type !== 'Name') {
+        return new Error(`Failed to extract tag name for face ${faceId}`)
+      }
+
+      faceTags.push(faceTagExpr.name?.name ?? '')
       currentAst = tagResult.modifiedAst
     }
   }
@@ -875,7 +877,10 @@ export function createEdgeRefObjectExpression(
       )
       if (err(tagResult)) continue
 
-      endFaceTags.push(tagResult.tags[0])
+      const endFaceTagExpr = tagResult.exprs[0]
+      if (!endFaceTagExpr || endFaceTagExpr.type !== 'Name') continue
+
+      endFaceTags.push(endFaceTagExpr.name?.name ?? '')
       currentAst = tagResult.modifiedAst
     }
   }
@@ -2236,10 +2241,10 @@ export async function deleteEdgeTreatment(
 }
 
 export function getEdgeTagCall(
-  tag: string,
+  tag: string | Expr,
   artifact: Artifact
-): Node<Name | CallExpressionKw> {
-  let tagCall: Expr = createLocalName(tag)
+): Node<Expr | CallExpressionKw> {
+  let tagCall: Expr = typeof tag === 'string' ? createLocalName(tag) : tag
 
   // Modify the tag based on selectionType
   if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {

@@ -19,6 +19,7 @@ import {
   cross2d,
   distance2d,
   isValidNumber,
+  lerp2d,
   normalizeVec,
   perpendicular,
   scaleVec,
@@ -211,7 +212,7 @@ export function findTangentialArcCenter({
   }
 
   const normal = perpendicular(tangentUnit)
-  const midpoint = scaleVec(addVec(startPoint, endPoint), 0.5)
+  const midpoint = lerp2d(startPoint, endPoint, 0.5)
   const bisectorDirection = perpendicular(chord)
 
   const midpointOffset = subVec(midpoint, startPoint)

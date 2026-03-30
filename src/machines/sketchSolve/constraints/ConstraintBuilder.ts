@@ -7,6 +7,10 @@ import { AngleConstraintBuilder } from '@src/machines/sketchSolve/constraints/An
 import { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
+import {
+  InvisibleConstraintSpriteBuilder,
+  type InvisibleConstraintDisplayState,
+} from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
 import {
   type ConstraintObject,
@@ -15,6 +19,7 @@ import {
   isDistanceConstraint,
   isRadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isInvisibleConstraintObject } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 
 export type EditingCallbacks = {
   cancel: () => void
@@ -28,6 +33,8 @@ export class ConstraintBuilder {
     this.resources
   )
   private readonly radiusBuilder = new RadiusConstraintBuilder(this.resources)
+  private readonly invisibleConstraintBuilder =
+    new InvisibleConstraintSpriteBuilder()
 
   public init(obj: ConstraintObject): Group | null {
     if (isAngleConstraint(obj)) {
@@ -39,7 +46,9 @@ export class ConstraintBuilder {
     if (isRadiusConstraint(obj) || isDiameterConstraint(obj)) {
       return this.radiusBuilder.init(obj)
     }
-    // It is normal for non-visual constraints to be unimplemented: coincident, etc.
+    if (isInvisibleConstraintObject(obj)) {
+      return this.invisibleConstraintBuilder.init(obj)
+    }
     return null
   }
 
@@ -50,7 +59,8 @@ export class ConstraintBuilder {
     scale: number,
     sceneInfra: SceneInfra,
     selectedIds: number[],
-    hoveredId: number | null
+    hoveredId: number | null,
+    invisibleConstraintDisplayState: InvisibleConstraintDisplayState
   ) {
     // Technically this only needs to be done once per frame, before rendering, not per object.
     const theme = getResolvedTheme(sceneInfra.theme)
@@ -86,6 +96,16 @@ export class ConstraintBuilder {
         sceneInfra,
         selectedIds,
         hoveredId
+      )
+    } else if (isInvisibleConstraintObject(obj)) {
+      this.invisibleConstraintBuilder.update(
+        group,
+        obj,
+        objects,
+        sceneInfra,
+        selectedIds,
+        hoveredId,
+        invisibleConstraintDisplayState
       )
     }
   }
