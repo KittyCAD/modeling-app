@@ -458,14 +458,14 @@ export const useToolbarConfig = () => {
                 ],
               },
               {
-                id: 'join',
+                id: 'Join Surfaces',
                 onClick: () =>
                   commands.send({
                     type: 'Find and select command',
-                    data: { name: 'Join', groupId: 'modeling' },
+                    data: { name: 'Join Surfaces', groupId: 'modeling' },
                   }),
                 status: 'available',
-                title: 'Join',
+                title: 'Join Surfaces',
                 description: 'Join surfaces together',
                 links: [
                   {

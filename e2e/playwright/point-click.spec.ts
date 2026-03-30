@@ -2844,7 +2844,7 @@ ${secondSurface}`
           Selection: '',
         },
         highlightedHeaderArg: 'selection',
-        commandName: 'Join',
+        commandName: 'Join Surfaces',
       })
       await page.keyboard.down('Shift')
       await (await toolbar.getFeatureTreeOperation('extrude001', 0)).click()
@@ -2857,7 +2857,7 @@ ${secondSurface}`
         headerArguments: {
           Selection: '2 sweeps',
         },
-        commandName: 'Join',
+        commandName: 'Join Surfaces',
       })
       await cmdBar.submit()
     })

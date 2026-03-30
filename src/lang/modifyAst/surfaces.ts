@@ -88,7 +88,7 @@ export function addFlipSurface({
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the last created node, or an Error
  */
-export function addJoin({
+export function addJoinSurfaces({
   ast,
   artifactGraph,
   selection,
@@ -126,7 +126,7 @@ export function addJoin({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('join', objectsExpr, [])
+  const call = createCallExpressionStdLibKw('joinSurfaces', objectsExpr, [])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

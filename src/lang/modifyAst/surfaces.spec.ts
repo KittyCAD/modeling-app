@@ -11,7 +11,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
-import { addFlipSurface, addJoin } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -115,7 +115,7 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
         otherSelections: [],
       }
 
-      const result = addJoin({
+      const result = addJoinSurfaces({
         ast,
         artifactGraph,
         selection,

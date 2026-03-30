@@ -202,7 +202,7 @@ import type RustContext from '@src/lib/rustContext'
 import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
-import { addFlipSurface, addJoin } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
@@ -323,7 +323,7 @@ export type ModelingMachineEvent =
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
-  | { type: 'Join'; data: ModelingCommandSchema['Join'] }
+  | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
       type:
         | 'Add circle origin'
@@ -4791,7 +4791,7 @@ export const modelingMachine = setup({
       }: {
         input:
           | {
-              data: ModelingCommandSchema['Join'] | undefined
+              data: ModelingCommandSchema['Join Surfaces'] | undefined
               kclManager: KclManager
               rustContext: RustContext
             }
@@ -4801,7 +4801,7 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const result = addJoin({
+        const result = addJoinSurfaces({
           ...input.data,
           ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -5477,7 +5477,7 @@ export const modelingMachine = setup({
           target: 'Applying Flip Surface',
         },
 
-        Join: {
+        'Join Surfaces': {
           target: 'Applying Join',
         },
 
@@ -7485,7 +7485,7 @@ export const modelingMachine = setup({
         src: 'joinAstMod',
         id: 'joinAstMod',
         input: ({ event, context }) => {
-          if (event.type !== 'Join') return undefined
+          if (event.type !== 'Join Surfaces') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

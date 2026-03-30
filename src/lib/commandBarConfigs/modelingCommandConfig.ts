@@ -91,7 +91,7 @@ import {
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { addFlipSurface, addJoin } from '@src/lang/modifyAst/surfaces'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -426,7 +426,7 @@ export type ModelingCommandSchema = {
   Blend: {
     edges: Selections
   }
-  Join: {
+  'Join Surfaces': {
     selection: Selections
   }
 }
@@ -2391,7 +2391,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  Join: {
+  'Join Surfaces': {
     description: 'Join selected surfaces into one polysurface.',
     icon: 'split',
     needsReview: true,
@@ -2405,8 +2405,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
-      const modRes = addJoin({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Join']),
+      const modRes = addJoinSurfaces({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Join Surfaces']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
