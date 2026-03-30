@@ -14,6 +14,10 @@ export type SnappingCandidate = {
   position: Coords2d
 }
 
+export function allowSnapping(mouseEvent: MouseEvent) {
+  return !mouseEvent.shiftKey
+}
+
 export function getSnappingCandidates(
   mousePosition: Coords2d,
   {

@@ -50,6 +50,7 @@ import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
+  allowSnapping,
   getSnappingCandidates,
   type SnappingCandidate,
 } from '@src/machines/sketchSolve/snapping'
@@ -257,6 +258,7 @@ export function createOnDragEndCallback({
   onComplete: (data: {
     draggedEntityId: number | null
     intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+    mouseEvent: MouseEvent
   }) => Promise<unknown>
 }): (arg: {
   intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
@@ -264,10 +266,10 @@ export function createOnDragEndCallback({
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return async ({ intersectionPoint }) => {
+  return async ({ intersectionPoint, mouseEvent }) => {
     const draggedEntityId = getDraggedEntityId()
     try {
-      await onComplete({ draggedEntityId, intersectionPoint })
+      await onComplete({ draggedEntityId, intersectionPoint, mouseEvent })
     } finally {
       setDraggedEntityId(null)
     }
@@ -572,7 +574,7 @@ export function createOnDragCallback({
   mouseEvent: MouseEvent
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ intersectionPoint }) => {
+  return async ({ intersectionPoint, mouseEvent }) => {
     // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
       return
@@ -588,15 +590,16 @@ export function createOnDragCallback({
     }
 
     const entityUnderCursorId = getDraggedEntityId()
-    const entitiesCoincidentWithUnderCursor = entityUnderCursorId !== null
-      ? getOtherCoincidentIdsByPointId(
-          entityUnderCursorId,
-          sceneGraphDelta.new_graph
-        )
-      : []
+    const entitiesCoincidentWithUnderCursor =
+      entityUnderCursorId !== null
+        ? getOtherCoincidentIdsByPointId(
+            entityUnderCursorId,
+            sceneGraphDelta.new_graph
+          )
+        : []
 
     // If no entity under cursor and no selectedIds, nothing to do
-    if (entityUnderCursorId !== null && selectedIds.length === 0) {
+    if (entityUnderCursorId === null && selectedIds.length === 0) {
       onUpdateDragSnapping(null)
       return
     }
@@ -604,14 +607,16 @@ export function createOnDragCallback({
     setIsSolveInProgress(true)
     try {
       const twoD = intersectionPoint.twoD
-      const dragSnapping = getDragPointSnappingCandidate({
-        draggedEntityId: entityUnderCursorId,
-        selectedIds,
-        sceneGraphDelta,
-        sketchId: contextData.sketchId,
-        mousePosition: [twoD.x, twoD.y],
-        sceneInfra,
-      })
+      const dragSnapping = !allowSnapping(mouseEvent)
+        ? null
+        : getDragPointSnappingCandidate({
+            draggedEntityId: entityUnderCursorId,
+            selectedIds,
+            sceneGraphDelta,
+            sketchId: contextData.sketchId,
+            mousePosition: [twoD.x, twoD.y],
+            sceneInfra,
+          })
       onUpdateDragSnapping(dragSnapping?.candidate ?? null)
 
       // Calculate drag vector from last successful drag point to current position
@@ -911,7 +916,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
       setDraggedEntityId,
       // Send the last up-to-date state from the frontend to Rust. It doesn't know
       // about this last feedback loop yet!
-      onComplete: async ({ draggedEntityId, intersectionPoint }) => {
+      onComplete: async ({
+        draggedEntityId,
+        intersectionPoint,
+        mouseEvent,
+      }) => {
         try {
           clearDragSnappingState()
           sendHoveredState(null)
@@ -920,7 +929,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const sceneGraphDelta =
             snapshot.context.sketchExecOutcome?.sceneGraphDelta
           const dragSnapping =
-            sceneGraphDelta && intersectionPoint?.twoD
+            allowSnapping(mouseEvent) &&
+            sceneGraphDelta &&
+            intersectionPoint?.twoD
               ? getDragPointSnappingCandidate({
                   draggedEntityId,
                   selectedIds: snapshot.context.selectedIds,

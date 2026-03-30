@@ -23,7 +23,10 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { getSnappingCandidates } from '@src/machines/sketchSolve/snapping'
+import {
+  allowSnapping,
+  getSnappingCandidates,
+} from '@src/machines/sketchSolve/snapping'
 import {
   hideSnappingPreviewSprite,
   updateSnappingPreviewSprite,
@@ -116,11 +119,17 @@ function getBestSnappingCandidate({
   self,
   context,
   mousePosition,
+  mouseEvent,
 }: {
   self: ToolActionArgs['self']
   context: ToolContext
   mousePosition: Coords2d
+  mouseEvent: MouseEvent
 }) {
+  if (!allowSnapping(mouseEvent)) {
+    return null
+  }
+
   const snapshot = self._parent?.getSnapshot()
   const sceneGraphDelta = snapshot?.context?.sketchExecOutcome?.sceneGraphDelta
   const objects = sceneGraphDelta?.new_graph?.objects
@@ -180,6 +189,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           self,
           context,
           mousePosition,
+          mouseEvent: args.mouseEvent,
         })
         sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
         updateSnappingPreview({ context, snappingCandidate })
@@ -242,6 +252,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           self,
           context,
           mousePosition,
+          mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
@@ -269,6 +280,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
           self,
           context,
           mousePosition,
+          mouseEvent: args.mouseEvent,
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
@@ -290,6 +302,7 @@ export function addPointListener({ self, context }: ToolActionArgs) {
         self,
         context,
         mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
       })
       sendHoveredId(self, snappingCandidate?.apiObject.id ?? null)
       updateSnappingPreview({ context, snappingCandidate })
