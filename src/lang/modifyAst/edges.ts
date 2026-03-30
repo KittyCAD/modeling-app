@@ -41,6 +41,7 @@ import type {
   Name,
   PathToNode,
   Program,
+  SegmentArtifact,
   SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
@@ -56,6 +57,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
+  getSegmentForEdgeCut,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
@@ -95,15 +97,11 @@ function edgeSelectionToEntityReference(
 ): EntityReference | Error {
   const artifact = selection.artifact
   // Edge artifacts are segment or edgeCut (sweepEdge removed in selectionsV2)
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
+  let segmentArtifact: SegmentArtifact | null = null
   if (artifact.type === 'segment') {
     segmentArtifact = artifact
   } else if (artifact.type === 'edgeCut') {
-    const edgeIds = (artifact as { edge_ids?: string[] }).edge_ids
-    const firstEdgeId = edgeIds?.[0]
-    if (!firstEdgeId) return new Error('EdgeCut has no edge_ids')
-    const edgeArtifact = artifactGraph.get(firstEdgeId)
-    if (edgeArtifact?.type === 'segment') segmentArtifact = edgeArtifact
+    segmentArtifact = getSegmentForEdgeCut(artifact.id, artifactGraph)
   }
   if (!segmentArtifact) {
     return new Error('Selection is not an edge (segment or edgeCut)')
@@ -3068,10 +3066,10 @@ function faceRefToArtifactId(v: OpKclValue): string | null {
 }
 
 /**
- * Finds an edge artifact (segment, edgeCut, or sweepEdge) given the set of face
+ * Finds an edge artifact (segment or edgeCut) given the set of face
  * artifact IDs from an edgeRef. For getCommonEdge(faces=[seg01, capStart001]),
  * one "face" may be the segment (the edge) and one the cap; or both may be
- * wall/cap and we find the segment whose commonSurfaceIds match.
+ * wall/cap and we find the segment whose derived face pair matches.
  */
 function findEdgeArtifactFromFaceIds(
   faceIds: string[],
@@ -3093,10 +3091,9 @@ function findEdgeArtifactFromFaceIds(
   const faceIdSet = new Set(faceIds)
   for (const [, artifact] of artifactGraph) {
     if (artifact.type !== 'segment') continue
-    const commonIds = (artifact as { commonSurfaceIds?: string[] })
-      .commonSurfaceIds
-    if (!commonIds?.length) continue
-    const commonSet = new Set(commonIds)
+    const commonFaces = getCommonFacesForEdge(artifact, artifactGraph)
+    if (err(commonFaces)) continue
+    const commonSet = new Set(commonFaces.map((face) => face.id))
     if (
       faceIdSet.size === commonSet.size &&
       [...faceIdSet].every((id) => commonSet.has(id))

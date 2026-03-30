@@ -104,7 +104,7 @@ describe('tagManagement.test.ts', () => {
   //
   // Key functionality tested:
   // - Face tagging: wall faces, cap faces, edgeCut faces (chamfers/fillets)
-  // - Edge tagging: segments, sweep edges
+  // - Edge tagging: segments and edge-cut-backed selections
   // - Complex scenarios: multi-tag breakup, tag deduplication
   const basicExampleCode = `
 sketch001 = startSketchOn(XY)
@@ -176,8 +176,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
-        'segment' // segment // sweepEdge // edgeCutEdge
-        // adjacent // opposite
+        'segment'
       )
       if (err(selectionResult)) return selectionResult
       const { selection } = selectionResult
@@ -209,8 +208,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
-        'segment' // segment // sweepEdge // edgeCutEdge
-        // adjacent // opposite
+        'segment'
       )
       if (err(selectionResult)) return selectionResult
       const { selection } = selectionResult

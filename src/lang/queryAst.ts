@@ -1553,18 +1553,13 @@ export function findOperationArtifact(
       // When multiple edgeCuts match (e.g. two fillets with same codeRef range), prefer the one
       // whose segment touches the start cap so editing the second fillet (start-cap edge) gets the right artifact.
       const withStartCap = matchingEdgeCuts.find((edgeCut) => {
-        const edgeIds = (edgeCut as { edge_ids?: string[] }).edge_ids
-        const segId = edgeIds?.length
-          ? edgeIds[0]
-          : (edgeCut as { consumedEdgeId?: string }).consumedEdgeId
+        const segId = getSegmentForEdgeCut(edgeCut.id, artifactGraph)?.id
         if (!segId) return false
         const seg = getArtifactOfTypes(
           { key: segId, types: ['segment'] },
           artifactGraph
         )
         if (err(seg)) return false
-        const segWithFaces = seg as { commonSurfaceIds?: string[] }
-        if (!segWithFaces.commonSurfaceIds?.length) return false
         const commonFaces = getCommonFacesForEdge(seg, artifactGraph)
         if (err(commonFaces)) return false
         return commonFaces.some(
@@ -2045,7 +2040,7 @@ export function getEdgeCutMeta(
     ((artifact as { subType?: string }).subType === 'chamfer' ||
       (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact, artifactGraph)
     if (consumedEdgeId == null || consumedEdgeId === '') return null
     let consumedArtifact = getArtifactOfTypes(
       { key: consumedEdgeId, types: ['segment'] },
@@ -2053,7 +2048,7 @@ export function getEdgeCutMeta(
     )
     if (err(consumedArtifact)) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
-        consumedEdgeId,
+        artifact.id,
         artifactGraph
       )
       if (!segmentViaWallOrCap) {
