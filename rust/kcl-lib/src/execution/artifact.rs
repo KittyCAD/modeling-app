@@ -1783,16 +1783,13 @@ fn artifacts_to_update(
             let solid_ids = cmd.object_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
 
             for input_id in &solid_ids {
-                if let Some(artifact) = artifacts.get(input_id) {
-                    match artifact {
-                        Artifact::CompositeSolid(comp) => {
-                            let mut new_comp = comp.clone();
-                            new_comp.composite_solid_id = Some(id);
-                            new_comp.consumed = true;
-                            return_arr.push(Artifact::CompositeSolid(new_comp));
-                        }
-                        _ => {}
-                    }
+                if let Some(artifact) = artifacts.get(input_id)
+                    && let Artifact::CompositeSolid(comp) = artifact
+                {
+                    let mut new_comp = comp.clone();
+                    new_comp.composite_solid_id = Some(id);
+                    new_comp.consumed = true;
+                    return_arr.push(Artifact::CompositeSolid(new_comp));
                 }
             }
             return Ok(return_arr);
