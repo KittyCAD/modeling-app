@@ -1056,6 +1056,9 @@ export fn extrude(
 /// 
 /// // Revolve just one line in the sketch.
 /// revolve([originalSketch.line1], axis = Y, angle = 180deg, bodyType = SURFACE)
+/// // Surface revolves of sketch blocks are non-destructive, so you can keep revolving
+/// // the same line again.
+/// revolve([originalSketch.line1], axis = Y, angle = -90deg, bodyType = SURFACE)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
