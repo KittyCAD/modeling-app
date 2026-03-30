@@ -323,7 +323,7 @@ class PointSegment implements SketchEntityUtils {
       return new Error('Invalid input type for PointSegment')
     }
 
-    const { input, group, scale, state } = args
+    const { input, group, scale, state, theme } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -354,6 +354,7 @@ class PointSegment implements SketchEntityUtils {
       isHovered: state.hovered,
       isDraft: state.draft,
       freedom,
+      theme,
     })
   }
 
@@ -364,11 +365,13 @@ class PointSegment implements SketchEntityUtils {
       isHovered,
       isDraft,
       freedom,
+      theme,
     }: {
       isSelected: boolean
       isHovered: boolean
       isDraft: boolean
       freedom?: Freedom | null
+      theme: Themes
     }
   ): void {
     if (!(mesh.material instanceof MeshBasicMaterial)) {
@@ -380,6 +383,7 @@ class PointSegment implements SketchEntityUtils {
       isHovered,
       isSelected,
       freedom,
+      theme,
     })
     mesh.material.color.set(color)
   }
@@ -394,12 +398,14 @@ class LineSegment implements SketchEntityUtils {
     isSelected: boolean,
     isHovered: boolean,
     isDraft: boolean,
+    theme: Themes,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
       isDraft,
+      theme,
       freedom,
     })
   }
@@ -462,7 +468,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, state } = args
+    const { input, group, state, theme } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -567,6 +573,7 @@ class LineSegment implements SketchEntityUtils {
       state.selected,
       state.hovered,
       state.draft,
+      theme,
       freedom
     )
   }
@@ -652,12 +659,14 @@ class ArcSegment implements SketchEntityUtils {
     isSelected: boolean,
     isHovered: boolean,
     isDraft: boolean,
+    theme: Themes,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
       isDraft,
+      theme,
       freedom,
     })
   }
@@ -779,7 +788,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, state } = args
+    const { input, group, state, theme } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -886,6 +895,7 @@ class ArcSegment implements SketchEntityUtils {
       state.selected,
       state.hovered,
       state.draft,
+      theme,
       freedom
     )
   }
@@ -985,7 +995,7 @@ class CircleSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, state } = args
+    const { input, group, state, theme } = args
     const circleData = this.extractCircleData(input)
     if (circleData instanceof Error) {
       return circleData
@@ -1077,6 +1087,7 @@ class CircleSegment implements SketchEntityUtils {
       isSelected: state.selected,
       isHovered: state.hovered,
       isDraft: state.draft,
+      theme,
       freedom,
     })
   }
@@ -1088,11 +1099,13 @@ function updateLineMaterial(
     isSelected,
     isHovered,
     isDraft,
+    theme,
     freedom,
   }: {
     isSelected: boolean
     isHovered: boolean
     isDraft: boolean
+    theme: Themes
     freedom?: Freedom | null
   }
 ) {
@@ -1102,6 +1115,7 @@ function updateLineMaterial(
     isDraft,
     isHovered,
     isSelected,
+    theme,
     freedom,
   })
   material.color.set(color)
