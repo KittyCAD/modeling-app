@@ -396,7 +396,7 @@ function pinSelectedInvisibleConstraintPopup(
     rendererElement.clientWidth,
     rendererElement.clientHeight
   )
-  const mouseScreenPosition = projectSketchPointToScreen(
+  const mouseScreenPosition = localToScreen(
     [mousePosition[0], mousePosition[1], 0],
     camera,
     viewportSize,
@@ -454,7 +454,7 @@ function findClosestConstraintHoverPopup(
         return
       }
 
-      const hitScreenPosition = projectSketchPointToScreen(
+      const hitScreenPosition = localToScreen(
         hitObject.center,
         camera,
         viewportSize,
@@ -471,7 +471,7 @@ function findClosestConstraintHoverPopup(
   return closestPopup
 }
 
-function projectSketchPointToScreen(
+function localToScreen(
   point: [number, number, number],
   camera: Parameters<typeof project3DToScreen>[1],
   viewportSize: Vector2,

@@ -185,7 +185,7 @@ function distanceToScreenRect(
   sketchSceneGroup: Group | null,
   scale: number
 ): number | null {
-  const centerScreenPosition = projectSketchPointToScreen(
+  const centerScreenPosition = localToScreen(
     hitObject.center,
     sceneInfra,
     sketchSceneGroup
@@ -202,7 +202,7 @@ function distanceToScreenRect(
   return distance2d(mouseScreenPosition, centerScreenPosition) * scale
 }
 
-function projectSketchPointToScreen(
+function localToScreen(
   point: [number, number, number],
   sceneInfra: SceneInfra,
   sketchSceneGroup: Group | null
@@ -245,7 +245,7 @@ export function findClosestApiObjects(
   const hoverDistance = 8 * scale
   let mouseScreenPosition: Coords2d | undefined
   const getMouseScreenPosition = () =>
-    (mouseScreenPosition ??= projectSketchPointToScreen(
+    (mouseScreenPosition ??= localToScreen(
       [mousePosition[0], mousePosition[1], 0],
       sceneInfra,
       sketchSceneGroup

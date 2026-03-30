@@ -329,13 +329,13 @@ function offsetWorldPosition(
   sceneInfra: SceneInfra,
   offsetPx: { x: number; y: number }
 ) {
-  const [screenX, screenY, projectedZ] = projectWorldPositionToScreen(
+  const [screenX, screenY, projectedZ] = localToScreen(
     group,
     localPosition,
     sceneInfra
   )
 
-  return unprojectScreenPosition(
+  return screenToLocal(
     group,
     screenX + offsetPx.x,
     screenY + offsetPx.y,
@@ -358,7 +358,7 @@ function getConstraintRowWorldPosition(
     centerYOffsetPx: number
   }
 ) {
-  const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(
+  const [baseScreenX, baseScreenY, projectedZ] = localToScreen(
     group,
     localAnchorPosition,
     sceneInfra
@@ -382,7 +382,7 @@ function getConstraintRowWorldPosition(
     clientHeight - viewportPadding - badgeSize / 2
   )
 
-  return unprojectScreenPosition(
+  return screenToLocal(
     group,
     centerX,
     centerY,
@@ -391,7 +391,8 @@ function getConstraintRowWorldPosition(
   )
 }
 
-function projectWorldPositionToScreen(
+// Converts a local group position (sketch space) to screen-space pixels.
+function localToScreen(
   group: Group,
   localPosition: Vector3,
   sceneInfra: SceneInfra
@@ -408,7 +409,7 @@ function projectWorldPositionToScreen(
   ] as const
 }
 
-function unprojectScreenPosition(
+function screenToLocal(
   group: Group,
   screenX: number,
   screenY: number,
