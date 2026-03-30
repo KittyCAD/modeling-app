@@ -1135,7 +1135,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           isInvisibleConstraintObject(hoveredApiObject) &&
           isConstrainingSegment(
             hoveredApiObject,
-            apiObjects[entry.popup.segmentId]
+            apiObjects[entry.popup.segmentId],
+            apiObjects
           )
 
         if (isHoveringSourceSegment || isHoveringConstraintHoverPopup) {

@@ -13,6 +13,7 @@ import {
   type ConstraintBadgeState,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
 import {
+  findInvisibleConstraintClusterIds,
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
@@ -174,11 +175,24 @@ function getInvisibleConstraintWorldPositions(
 
   // Global toggle: show hidden constraints at their anchored position.
   if (displayState.showNonVisualConstraints) {
-    return naturalPosition
+    const clusterConstraintIds = findInvisibleConstraintClusterIds(obj, objects)
+    const clusterIndex = clusterConstraintIds.indexOf(obj.id)
+
+    return naturalAnchor !== null && clusterIndex !== -1
       ? [
           {
-            position: naturalPosition,
-            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT,
+            position: getConstraintRowWorldPosition(
+              group,
+              naturalAnchor,
+              clusterIndex,
+              clusterConstraintIds.length,
+              sceneInfra,
+              {
+                rowStartXOffsetPx: -15 - CONSTRAINT_BADGE_SIZE_PX / 2,
+                centerYOffsetPx: -15,
+              }
+            ),
+            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT + clusterIndex,
           },
         ]
       : []
@@ -256,12 +270,16 @@ function getConstraintHoverPopupPositions(
     ? []
     : [
         {
-          position: getHoverPreviewWorldPosition(
+          position: getConstraintRowWorldPosition(
             group,
-            popup.position,
+            new Vector3(popup.position[0], popup.position[1], 0),
             hoverPreviewIndex,
             hoverPreviewConstraintIds.length,
-            sceneInfra
+            sceneInfra,
+            {
+              rowStartXOffsetPx: 12,
+              centerYOffsetPx: -12,
+            }
           ),
           renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT + popupIndex + 1,
           popup,
@@ -326,21 +344,23 @@ function offsetWorldPosition(
   )
 }
 
-function getHoverPreviewWorldPosition(
+function getConstraintRowWorldPosition(
   group: Group,
-  constraintHoverPopupPosition: ConstraintHoverPopup['position'],
-  hoverPreviewIndex: number,
-  hoverPreviewCount: number,
-  sceneInfra: SceneInfra
+  localAnchorPosition: Vector3,
+  itemIndex: number,
+  itemCount: number,
+  sceneInfra: SceneInfra,
+  {
+    rowStartXOffsetPx,
+    centerYOffsetPx,
+  }: {
+    rowStartXOffsetPx: number
+    centerYOffsetPx: number
+  }
 ) {
-  const localPreviewPosition = new Vector3(
-    constraintHoverPopupPosition[0],
-    constraintHoverPopupPosition[1],
-    0
-  )
   const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(
     group,
-    localPreviewPosition,
+    localAnchorPosition,
     sceneInfra
   )
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
@@ -348,18 +368,17 @@ function getHoverPreviewWorldPosition(
   const badgeGap = 4
   const viewportPadding = 4
   const totalRowWidth =
-    hoverPreviewCount * badgeSize +
-    Math.max(hoverPreviewCount - 1, 0) * badgeGap
+    itemCount * badgeSize + Math.max(itemCount - 1, 0) * badgeGap
   const minStartX = viewportPadding
   const maxStartX = Math.max(
     minStartX,
     clientWidth - viewportPadding - totalRowWidth
   )
-  const rowStartX = clamp(baseScreenX + 12, minStartX, maxStartX)
+  const rowStartX = clamp(baseScreenX + rowStartXOffsetPx, minStartX, maxStartX)
   const centerX =
-    rowStartX + hoverPreviewIndex * (badgeSize + badgeGap) + badgeSize / 2
+    rowStartX + itemIndex * (badgeSize + badgeGap) + badgeSize / 2
   const centerY = clamp(
-    baseScreenY - 12,
+    baseScreenY + centerYOffsetPx,
     viewportPadding + badgeSize / 2,
     clientHeight - viewportPadding - badgeSize / 2
   )
