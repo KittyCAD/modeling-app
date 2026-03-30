@@ -741,10 +741,20 @@ export fn ellipse(
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
 /// ```
+/// ```
+/// @settings(experimentalFeatures = allow)
+///
+/// // Surface extrudes of sketch blocks let you extrude any lines.
+/// sketch0 = sketch(on = YZ) {
+///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+///   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+/// }
+/// extrude([sketch0.line1, sketch0.line2], length = 1, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch | Face | TaggedFace; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.

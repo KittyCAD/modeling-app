@@ -160,6 +160,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-extrude-11",
     "std-sketch-extrude-12",
     "std-sketch-extrude-13",
+    "std-sketch-extrude-14",
     "std-sketch-polygon-0",
     "std-sketch-polygon-1",
     "std-sketch-sweep-0",
@@ -363,7 +364,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-hole-hole-0",
     "std-hole-hole-1",
     "std-hole-hole-2",
-    "std-hole-holesLinear-0",
     "std-hole-drill-0",
     "std-hole-flat-0",
 ];
