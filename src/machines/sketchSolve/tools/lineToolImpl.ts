@@ -53,7 +53,7 @@ export type ToolContext = {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     // If present, the next draft line should chain from this committed point.
-    // When double-clicking or snapping to a line it becomes undefined to stop chaining.
+    // When double-clicking or snapping to a point it becomes undefined to stop chaining.
     lastPointId?: number
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
