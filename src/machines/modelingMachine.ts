@@ -17,7 +17,10 @@ import type {
   ModelingMachineInput,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
+import {
+  dummyInitSketchGraphDelta,
+  modelingMachineInitialInternalContext,
+} from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
@@ -798,6 +801,7 @@ export const modelingMachine = setup({
       sketchEnginePathId: '',
       sketchPlaneId: '',
       showNonVisualConstraints: false,
+      initialSceneGraphDelta: dummyInitSketchGraphDelta,
     }),
     'reset camera position': ({ context: { engineCommandManager } }) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
