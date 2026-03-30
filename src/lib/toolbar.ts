@@ -458,7 +458,7 @@ export const useToolbarConfig = () => {
                 ],
               },
               {
-                id: 'Join Surfaces',
+                id: 'join-surfaces',
                 onClick: () =>
                   commands.send({
                     type: 'Find and select command',
