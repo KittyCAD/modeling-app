@@ -331,7 +331,6 @@ async fn run_recursive(args: RequiredOutputCommandArgs) -> Result<ExitCode, std:
 
         let out_kcl_path = args.out_dir().join(&rel_path);
 
-
         let log_path = args
             .out_dir()
             .join(rel_path.parent().unwrap_or_else(|| Path::new("")))
