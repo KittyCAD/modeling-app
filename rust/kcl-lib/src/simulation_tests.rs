@@ -4256,6 +4256,27 @@ mod sketch_block_coincident_constraint {
         super::execute(TEST_NAME, false).await
     }
 }
+mod sketch_block_coincident_point2d {
+    const TEST_NAME: &str = "sketch_block_coincident_point2d";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod sketch_block_arc_using_center_simple {
     const TEST_NAME: &str = "sketch_block_arc_using_center_simple";
 

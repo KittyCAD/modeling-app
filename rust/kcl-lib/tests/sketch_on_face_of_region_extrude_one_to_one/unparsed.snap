@@ -32,8 +32,7 @@ towerSketch = sketch(on = face001) {
   parallel([line3, line1])
   perpendicular([line1, line2])
   horizontal(line3)
-  line1.start.at[0] == 0.5mm
-  line1.start.at[1] == 0.5mm
+  fixed([line1.start, [0.5mm, 0.5mm]])
   distance([line2.start, line2.end]) == 0.25mm
   distance([line1.start, line1.end]) == 0.25mm
 }

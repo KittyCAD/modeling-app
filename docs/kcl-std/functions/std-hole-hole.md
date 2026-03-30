@@ -114,4 +114,48 @@ bigCube
 >
 </model-viewer>
 
+```kcl
+@settings(experimentalFeatures = allow)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 6mm])
+  edge3 = line(start = [var 8mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [4mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+drilledBlock = hole::hole(
+  block,
+  face = top,
+  cutAt = [4mm, 3mm],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 4mm, diameter = 2mm),
+  holeType = hole::simple(),
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the hole::hole function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-hole-hole2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 

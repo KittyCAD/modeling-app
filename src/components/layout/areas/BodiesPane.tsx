@@ -64,7 +64,7 @@ function BodiesList({
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
-        {bodies.entries().map(([id, props], i) => (
+        {Array.from(bodies.entries()).map(([id, props], i) => (
           <BodyItem key={id || i} {...props} />
         ))}
       </ul>

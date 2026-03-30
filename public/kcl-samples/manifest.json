@@ -1674,8 +1674,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Car",
-    "description": "A simplified, parametric 3-D model of a small car intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "title": "Stylized Toy Car",
+    "description": "A simplified, parametric 3-D model of a small toy car intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
     "files": [
       "main.kcl"
     ]
@@ -1688,8 +1688,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Cybertruck",
-    "description": "A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.",
+    "title": "Stylized Toy Cybertruck",
+    "description": "A simplified, parametric 3-D model of a low-poly toy cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.",
     "files": [
       "main.kcl"
     ]
@@ -1702,7 +1702,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Dump Truck",
+    "title": "Stylized Toy Dump Truck",
     "description": "A simplified, parametric 3D toy dump truck with front cab, extended cargo bed, and four wheels.",
     "files": [
       "main.kcl"
@@ -1716,8 +1716,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Fire Truck",
-    "description": "A toy-like parametric fire truck with extended rear compartment and roof ladder. Optimized for real-time rendering or schematic use in stylized design scenes.",
+    "title": "Stylized Toy Fire Truck",
+    "description": "A toy parametric fire truck with extended rear compartment and roof ladder. Optimized for real-time rendering or schematic use in stylized design scenes.",
     "files": [
       "main.kcl"
     ]
@@ -1730,8 +1730,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Mini-Bus",
-    "description": "A simplified, parametric 3-D model of a compact van or mini-bus, intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "title": "Stylized Toy Mini-Bus",
+    "description": "A simplified, parametric 3-D model of a toy compact van or mini-bus, intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
     "files": [
       "main.kcl"
     ]
@@ -1744,8 +1744,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",
     "multipleFiles": false,
-    "title": "Stylized Pickup Truck",
-    "description": "A simplified, parametric 3-D model of a pickup truck intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "title": "Stylized Toy Pickup Truck",
+    "description": "A simplified, parametric 3-D model of a toy pickup truck intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
     "files": [
       "main.kcl"
     ]

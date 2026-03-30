@@ -24,7 +24,7 @@ New: profile001 = sketch(on = XY) { line1 = line(start = [var 0mm, var 0mm], end
 
 Use the transpile function to convert this to the new format.
 ",
-    FindingFamily::Simplify
+    FindingFamily::Style
 );
 
 /// Check if a pipe expression contains startProfile
