@@ -83,7 +83,13 @@ impl Artifact {
                 }
                 ids
             }
-            Artifact::Segment(a) => vec![a.path_id],
+            Artifact::Segment(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(original_id) = a.original_seg_id {
+                    ids.push(original_id);
+                }
+                ids
+            }
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::PrimitiveFace(a) => vec![a.solid_id],
             Artifact::PrimitiveEdge(a) => vec![a.solid_id],
@@ -139,7 +145,8 @@ impl Artifact {
                 ids
             }
             Artifact::Segment(a) => {
-                // Note: Don't include these since they're parents: path_id.
+                // Note: Don't include these since they're parents: path_id,
+                // original_seg_id.
                 let mut ids = Vec::new();
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
@@ -686,6 +693,7 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
         Artifact::Segment(Segment {
             id: shared_id,
             path_id,
+            original_seg_id: None,
             surface_id: None,
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),

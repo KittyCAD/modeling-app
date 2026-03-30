@@ -10,9 +10,10 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { Group } from 'three'
+import { Group, OrthographicCamera } from 'three'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
 function createObjectsArray(objects: ApiObject[]) {
   return createSceneGraphDelta(objects).new_graph.objects
@@ -49,6 +50,29 @@ function createConstraintApiObject({
                 is_literal: true,
               },
             },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0] },
+  } as ApiObject
+}
+
+function createInvisibleConstraintApiObject({
+  id,
+  type,
+}: {
+  id: number
+  type: 'Horizontal' | 'Vertical'
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Constraint',
+      constraint: {
+        type,
+        line: 3,
+      },
     },
     label: '',
     comments: '',
@@ -122,6 +146,76 @@ describe('findClosestApiObjects', () => {
 
     expect(result[0]?.apiObject.id).toBe(4)
     expect(result[1]?.apiObject.id).toBe(3)
+  })
+
+  it('prefers the higher id for coincident point candidates', () => {
+    const pointA = createPointApiObject({ id: 4, x: 20, y: 2 })
+    const pointB = createPointApiObject({ id: 8, x: 20 + 1e-9, y: 2 + 1e-9 })
+
+    const result = findClosestApiObjects(
+      [20, 2],
+      createObjectsArray([pointA, pointB]),
+      createMockSceneInfra()
+    )
+
+    expect(result[0]?.apiObject.id).toBe(8)
+    expect(result[1]?.apiObject.id).toBe(4)
+  })
+
+  it('prioritizes visible non-visual constraints over overlapping points and lines', () => {
+    const sceneInfra = createMockSceneInfra()
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    ;(sceneInfra as any).camControls = { camera }
+    ;(sceneInfra as any).renderer = {
+      domElement: { clientWidth: 800, clientHeight: 600 },
+    }
+
+    const start = createPointApiObject({ id: 1, x: -10, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const point = createPointApiObject({ id: 4, x: 0.1, y: 0.1 })
+    const constraint = createInvisibleConstraintApiObject({
+      id: 10,
+      type: 'Horizontal',
+    })
+    const group = new Group()
+    group.name = String(constraint.id)
+    const sketchSolveGroup = new Group()
+    sketchSolveGroup.name = SKETCH_SOLVE_GROUP
+
+    const badgeChild = new Group()
+    badgeChild.userData.hitObjects = [
+      {
+        type: 'screenRect',
+        center: [0, 0, 0],
+        sizePx: [20, 20],
+      },
+    ]
+    group.add(badgeChild)
+    ;(sceneInfra.scene.getObjectByName as any).mockImplementation(
+      (name: string) =>
+        name === String(constraint.id)
+          ? group
+          : name === SKETCH_SOLVE_GROUP
+            ? sketchSolveGroup
+            : null
+    )
+
+    const result = findClosestApiObjects(
+      [0.1, 0.1],
+      createObjectsArray([start, end, line, point, constraint]),
+      sceneInfra
+    )
+
+    expect(result[0]?.apiObject.id).toBe(10)
+    expect(
+      result.findIndex(({ apiObject }) => apiObject.id === 10)
+    ).toBeLessThan(result.findIndex(({ apiObject }) => apiObject.id === 4))
+    expect(
+      result.findIndex(({ apiObject }) => apiObject.id === 10)
+    ).toBeLessThan(result.findIndex(({ apiObject }) => apiObject.id === 3))
   })
 
   it('filters out candidates that are beyond the threshold', () => {
@@ -286,5 +380,50 @@ describe('findClosestApiObjects', () => {
     )
     expect(labelResult[0]?.apiObject.id).toBe(9)
     expect(labelResult[0]?.distance).toBeCloseTo(2)
+  })
+
+  it('supports explicit screen-space rect hit objects on constraint children', () => {
+    const sceneInfra = createMockSceneInfra()
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    ;(sceneInfra as any).camControls = { camera }
+    ;(sceneInfra as any).renderer = {
+      domElement: { clientWidth: 800, clientHeight: 600 },
+    }
+
+    const constraint = createConstraintApiObject({ id: 10, type: 'Angle' })
+    const group = new Group()
+    group.name = String(constraint.id)
+    const sketchSolveGroup = new Group()
+    sketchSolveGroup.name = SKETCH_SOLVE_GROUP
+
+    const badgeChild = new Group()
+    badgeChild.userData.hitObjects = [
+      {
+        type: 'screenRect',
+        center: [0, 0, 0],
+        sizePx: [20, 20],
+      },
+    ]
+    group.add(badgeChild)
+    ;(sceneInfra.scene.getObjectByName as any).mockImplementation(
+      (name: string) =>
+        name === String(constraint.id)
+          ? group
+          : name === SKETCH_SOLVE_GROUP
+            ? sketchSolveGroup
+            : null
+    )
+
+    const result = findClosestApiObjects(
+      [0.1, 0.1],
+      createObjectsArray([constraint]),
+      sceneInfra
+    )
+
+    expect(result[0]?.apiObject.id).toBe(10)
+    expect(result[0]?.distance).toBeGreaterThan(0)
+    expect(result[0]?.distance).toBeLessThan(10)
   })
 })

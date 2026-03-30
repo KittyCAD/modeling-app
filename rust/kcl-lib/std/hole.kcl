@@ -121,7 +121,7 @@ export fn blind(depth: number(Length), diameter: number(Length)) {
 ///        face = a,
 ///        cutAt = [0, 0],
 ///        holeBottom = hole::drill(pointAngle = 25deg),
-///        holeBody = hole::blind(depth = 2, diameter = 8),
+///        holeBody = hole::blind(depth = 1, diameter = 8),
 ///        holeType = hole::simple(),
 ///      )
 /// ```
@@ -335,6 +335,34 @@ fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
 ///      )
 /// ```
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+///   edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 6mm])
+///   edge3 = line(start = [var 8mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [4mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+/// drilledBlock = hole::hole(
+///   block,
+///   face = top,
+///   cutAt = [4mm, 3mm],
+///   holeBottom = hole::flat(),
+///   holeBody = hole::blind(depth = 4mm, diameter = 2mm),
+///   holeType = hole::simple(),
+/// )
+/// ```
 @(feature_tree = true)
 export fn hole(
   /// Which solid to add a hole to.
@@ -380,6 +408,34 @@ export fn hole(
 ///   holeType = hole::counterbore(diameter = 1, depth = 0.2),
 /// )
 /// ```
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+/// drilledBlock = hole::holes(
+///   block,
+///   face = top,
+///   cutsAt = [[2mm, 2mm], [5mm, 3mm], [8mm, 4mm]],
+///   holeBottom = hole::drill(pointAngle = 90deg),
+///   holeBody = hole::blind(depth = 3mm, diameter = 1.5mm),
+///   holeType = hole::simple(),
+/// )
+/// ```
 @(feature_tree = true)
 export fn holes(
   /// Which solid to add a hole to.
@@ -405,6 +461,37 @@ export fn holes(
 /// Place the given holes in a line.
 /// Basically like function `hole` but cuts multiple holes in a line.
 /// Works like linear patterns.
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   edge2 = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   edge3 = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [6mm, 3mm], sketch = blockProfile), length = 5mm, tagEnd = $top)
+/// drilledBlock = hole::holesLinear(
+///   block,
+///   face = top,
+///   cutAt = [2mm, 3mm],
+///   instances = 4,
+///   distance = 2.5mm,
+///   axis = X,
+///   holeBottom = hole::flat(),
+///   holeBody = hole::blind(depth = 3mm, diameter = 1.5mm),
+///   holeType = hole::simple(),
+/// )
+/// ```
 @(feature_tree = false)
 export fn holesLinear(
   /// Which solid to add a hole to.
@@ -425,8 +512,8 @@ export fn holesLinear(
   instances: number(_),
   /// How far between each hole
   distance,
-  /// Along which axis should the holes be cut?
-  axis: Axis2d | Point2d,
+  /// Along which 3D axis should the holes be patterned?
+  axis: Axis3d | Point3d,
 ) {
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
   |> patternLinear3d(instances, distance, axis)

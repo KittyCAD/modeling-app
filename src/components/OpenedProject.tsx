@@ -42,6 +42,7 @@ import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selecti
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   TutorialRequestToast,
+  useApplyRememberedOnboardingWorkflow,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
@@ -53,7 +54,6 @@ import {
 } from '@src/lib/layout'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
-import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions,
@@ -187,6 +187,11 @@ export function OpenedProject() {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const authToken = auth.useToken()
+  const onboardingStatus =
+    settingsValues.app.onboardingStatus.current ||
+    settingsValues.app.onboardingStatus.default
+
+  useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -247,9 +252,6 @@ export function OpenedProject() {
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
-    const onboardingStatus =
-      settingsValues.app.onboardingStatus.current ||
-      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !window.electron &&
       authToken && // we're logged in,
@@ -263,7 +265,6 @@ export function OpenedProject() {
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,

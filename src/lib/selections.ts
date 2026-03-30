@@ -61,7 +61,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -1928,34 +1928,50 @@ export async function getPlaneDataFromSketchBlock(
   systemDeps: {
     rustContext: RustContext
     sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+    ast: Node<Program>
+    execState: ExecState
+    wasmInstance: ModuleType
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
-  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
-  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
-  // XY no matter what for now
-
-  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact.
   if (!sketchBlock.planeId) {
     return null
   }
 
-  // Try to get the artifact from the graph
-  const _artifact = artifactGraph.get(sketchBlock.planeId)
+  // @pierremtb At the time of writing, this isn't working yet,
+  // so we always go to the next step and treat default planes as offset planes.
+  const defaultResult = getDefaultSketchPlaneData(
+    sketchBlock.planeId,
+    systemDeps
+  )
+  if (!err(defaultResult) && defaultResult) {
+    return defaultResult
+  }
 
-  // Use the default XY plane.
-  // This is a temporary solution while we determine the proper approach for default planes
-  if (true) {
-    const defaultPlanes = systemDeps.rustContext.defaultPlanes
-    if (defaultPlanes?.xy) {
-      const defaultResult = getDefaultSketchPlaneData(
-        defaultPlanes.xy,
-        systemDeps
-      )
-      if (!err(defaultResult) && defaultResult) {
-        return defaultResult
-      }
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const offsetResult = await getOffsetSketchPlaneData(artifact, {
+    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+    sceneInfra: systemDeps.sceneInfra,
+  })
+  if (!isErr(offsetResult) && offsetResult) {
+    return offsetResult
+  }
+
+  const sweepFaceSelected = await selectionBodyFace(
+    sketchBlock.planeId,
+    artifactGraph,
+    systemDeps.ast,
+    systemDeps.execState,
+    {
+      wasmInstance: systemDeps.wasmInstance,
+      rustContext: systemDeps.rustContext,
+      sceneInfra: systemDeps.sceneInfra,
+      sceneEntitiesManager: systemDeps.sceneEntitiesManager,
     }
-    return null
+  )
+  if (sweepFaceSelected) {
+    return sweepFaceSelected
   }
 
   return null
@@ -2048,8 +2064,7 @@ export async function getOffsetSketchPlaneData(
       pathToNode: artifact.codeRef.pathToNode,
       negated,
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
     return new Error('Error getting face details')
   }
 }
@@ -2063,7 +2078,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result) || result === false) return result
+  if (isErr(result) || result === false) return result
 
   try {
     sceneInfra.modelingSend({
@@ -2094,7 +2109,7 @@ export async function selectionBodyFace(
     planeOrFaceId,
     systemDeps
   )
-  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+  if (!isErr(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
@@ -2103,7 +2118,7 @@ export async function selectionBodyFace(
     artifact,
     systemDeps
   )
-  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+  if (!isErr(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
 

@@ -23,7 +23,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
-import { getArgForEnd } from '@src/lang/std/sketch'
+import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
   getConstraintLevelFromSourceRange,
@@ -2114,4 +2114,83 @@ export function getEdgeCutMeta(
     subType: edgeCutInfo.type,
     tagName: tagDeclarator.value,
   }
+}
+
+export function isSketchSegmentCallName(name: string): boolean {
+  return name in sketchLineHelperMapKw || name === 'close'
+}
+
+export function getSketchSegmentName(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): string | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segment)) {
+    return null
+  }
+
+  const directSegmentVarDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    !err(directSegmentVarDec) &&
+    directSegmentVarDec.node.type === 'VariableDeclaration' &&
+    directSegmentVarDec.node.declaration.init.type === 'CallExpressionKw' &&
+    isSketchSegmentCallName(
+      directSegmentVarDec.node.declaration.init.callee.name.name
+    )
+  ) {
+    return directSegmentVarDec.node.declaration.id.name
+  }
+
+  const sketchPath = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(sketchPath)) {
+    return null
+  }
+
+  const segmentIndex = sketchPath.segIds.indexOf(segment.id)
+  if (segmentIndex < 0) {
+    return null
+  }
+
+  const sketchPathVarDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    sketchPath.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(sketchPathVarDec) ||
+    sketchPathVarDec.node.type !== 'VariableDeclaration' ||
+    sketchPathVarDec.node.declaration.init.type !== 'SketchBlock'
+  ) {
+    return null
+  }
+
+  const segmentNames =
+    sketchPathVarDec.node.declaration.init.body.items.flatMap((item) => {
+      if (
+        item.type !== 'VariableDeclaration' ||
+        item.declaration.init.type !== 'CallExpressionKw'
+      ) {
+        return []
+      }
+      if (!isSketchSegmentCallName(item.declaration.init.callee.name.name)) {
+        return []
+      }
+      return [item.declaration.id.name]
+    })
+
+  return segmentNames[segmentIndex] ?? null
 }

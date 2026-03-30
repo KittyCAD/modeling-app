@@ -167,6 +167,10 @@ pub struct Path {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// If this artifact is a segment in a region, the segment in the original
+    /// sketch that this was derived from.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_seg_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -280,6 +284,7 @@ pub enum SketchBlockConstraintType {
     Coincident,
     Distance,
     Diameter,
+    Fixed,
     HorizontalDistance,
     VerticalDistance,
     Horizontal,
@@ -297,6 +302,7 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::Fixed { .. } => SketchBlockConstraintType::Fixed,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
             Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
             Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,
@@ -584,6 +590,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
+        merge_opt_id(&mut self.original_seg_id, new.original_seg_id);
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
 
@@ -659,6 +666,10 @@ pub struct ArtifactGraph {
 }
 
 impl ArtifactGraph {
+    pub fn get(&self, id: &ArtifactId) -> Option<&Artifact> {
+        self.map.get(id)
+    }
+
     pub fn len(&self) -> usize {
         self.map.len()
     }
@@ -1108,6 +1119,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
+                original_seg_id: None,
                 surface_id: None,
                 edge_cut_id: None,
                 code_ref,
@@ -1177,11 +1189,12 @@ fn artifacts_to_update(
             // the original path. Build the reverse mapping.
             let original_segment_ids = path.seg_ids.iter().map(|p| p.0).collect::<Vec<_>>();
             let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
-            for region_segment_ids in reverse.values() {
+            for (original_segment_id, region_segment_ids) in reverse.iter() {
                 for segment_id in region_segment_ids {
                     return_arr.push(Artifact::Segment(Segment {
                         id: ArtifactId::new(*segment_id),
                         path_id: id,
+                        original_seg_id: Some(ArtifactId::new(*original_segment_id)),
                         surface_id: None,
                         edge_cut_id: None,
                         code_ref: code_ref.clone(),
@@ -1271,6 +1284,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: edge_id,
                         path_id: path.id,
+                        original_seg_id: None,
                         surface_id: None,
                         edge_cut_id: None,
                         code_ref: code_ref.clone(),

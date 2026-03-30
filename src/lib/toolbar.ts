@@ -4,7 +4,6 @@ import { useMemo } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -13,9 +12,11 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { getSelectedTangentConstraintInput } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  getSelectedFixedConstraintInput,
+  getSelectedTangentConstraintInput,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -150,35 +151,6 @@ export const useToolbarConfig = () => {
               },
             ],
           },
-          // This is temporary staging-only button to reduce friction on trying
-          // out the sketch solve mode. Once we reach basic engine parity, this
-          // can be made the primary button in staging.
-          ...((IS_STAGING_OR_DEBUG && !isPlaywright()
-            ? [
-                {
-                  id: 'sketch-solve',
-                  onClick: ({ modelingSend }) => {
-                    modelingSend({
-                      type: 'Enter sketch',
-                      data: {
-                        forceNewSketch: true,
-                        forceSketchSolveMode: true,
-                      },
-                    })
-                  },
-                  icon: 'sketch',
-                  iconColor: '#dc2626',
-                  status: 'experimental',
-                  title: 'Ѕtart Sketch', // Cyrillic 'S' prevents Playwright matching
-                  showTitle: false,
-                  description:
-                    'Staging Only: Start drawing a 2D sketch, using the new solver-based sketch mode.',
-                  links: [
-                    // TODO: Add link once merged: https://github.com/KittyCAD/modeling-app/pull/10212
-                  ],
-                },
-              ]
-            : []) as ToolbarItem[]),
           'break',
           {
             id: 'extrude',
@@ -1742,6 +1714,27 @@ export const useToolbarConfig = () => {
             isActive: (state) => false,
           },
           {
+            id: 'Fixed',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Fixed',
+              }),
+            icon: 'fix',
+            status: 'available',
+            disabled: (state) =>
+              getSelectedFixedConstraintInput(state) === null,
+            disabledReason: (state) =>
+              getSelectedFixedConstraintInput(state) === null
+                ? 'Select one or more points to lock them in place.'
+                : undefined,
+            title: 'Fixed',
+            hotkey: 'F',
+            description:
+              'Lock selected points to their current x and y positions',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
             id: 'Dimension',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
@@ -1796,6 +1789,22 @@ export const useToolbarConfig = () => {
             description: 'Toggle construction geometry on selected segments',
             links: [],
             isActive: (state) => false,
+          },
+          {
+            id: 'show-constraints',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'toggle non-visual constraints',
+              }),
+            icon: 'eyeOpen',
+            status: 'available',
+            title: 'Show constraints',
+            description:
+              'Toggle visibility for sketch constraints that do not have their own UI yet.',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.showNonVisualConstraints,
           },
         ],
       },

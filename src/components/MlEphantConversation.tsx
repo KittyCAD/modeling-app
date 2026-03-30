@@ -15,6 +15,7 @@ import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 
 const noop = () => {}
 
@@ -129,6 +130,7 @@ export interface MlEphantExtraInputsProps {
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
   onAttachFiles: () => void
+  onCaptureScreenshot: () => void
   attachmentsDisabled?: boolean
 }
 
@@ -157,6 +159,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           <CustomIcon name="paperclip" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
             <span>Attach files</span>
+          </Tooltip>
+        </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-screenshot-button"
+          onClick={props.onCaptureScreenshot}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Capture viewport screenshot"
+        >
+          <CustomIcon name="camera" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Capture viewport screenshot</span>
           </Tooltip>
         </button>
       </div>
@@ -245,20 +260,36 @@ export const MlEphantConversationInput = (
     setAttachments([])
   }
 
+  const deduplicateFileName = (
+    name: string,
+    existingNames: string[]
+  ): string => {
+    if (!existingNames.includes(name)) return name
+    const dotIndex = name.lastIndexOf('.')
+    const base = dotIndex !== -1 ? name.slice(0, dotIndex) : name
+    const ext = dotIndex !== -1 ? name.slice(dotIndex) : ''
+    let i = 1
+    while (existingNames.includes(`${base}-${i}${ext}`)) i++
+    return `${base}-${i}${ext}`
+  }
+
   const appendAttachments = (files: File[]) => {
     if (!files.length) return
     setAttachments((current) => {
       const next = [...current]
       for (const file of files) {
-        const exists = next.some(
-          (existing) =>
-            existing.name === file.name &&
-            existing.size === file.size &&
-            (existing.lastModified === file.lastModified ||
-              existing.lastModified === 0 ||
-              file.lastModified === 0)
+        const newName = deduplicateFileName(
+          file.name,
+          next.map((f) => f.name)
         )
-        if (!exists) {
+        if (newName !== file.name) {
+          next.push(
+            new File([file], newName, {
+              type: file.type,
+              lastModified: file.lastModified,
+            })
+          )
+        } else {
           next.push(file)
         }
       }
@@ -269,6 +300,27 @@ export const MlEphantConversationInput = (
   const onAttachFiles = () => {
     if (props.disabled) return
     fileInputRef.current?.click()
+  }
+
+  const onCaptureScreenshot = () => {
+    if (props.disabled) return
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      // Convert data URL to File without fetch (fetch of data: URLs is
+      // blocked by CSP in the browser).
+      const [header, base64] = dataUrl.split(',')
+      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
+      const bytes = atob(base64)
+      const buf = new Uint8Array(bytes.length)
+      for (let i = 0; i < bytes.length; i++) {
+        buf[i] = bytes.charCodeAt(i)
+      }
+      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
+      appendAttachments([file])
+    } catch (e) {
+      console.error('Failed to capture viewport screenshot', e)
+    }
   }
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -419,6 +471,7 @@ export const MlEphantConversationInput = (
               props.onMlCopilotModeChange?.(m)
             }}
             onAttachFiles={onAttachFiles}
+            onCaptureScreenshot={onCaptureScreenshot}
             attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">

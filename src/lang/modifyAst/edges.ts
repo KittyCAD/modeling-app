@@ -251,7 +251,12 @@ export function createEdgeRefObjectExpression(
         )
       }
 
-      faceTags.push(tagResult.tags[0])
+      const faceTagExpr = tagResult.exprs[0]
+      if (!faceTagExpr || faceTagExpr.type !== 'Name') {
+        return new Error(`Failed to extract tag name for face ${faceId}`)
+      }
+
+      faceTags.push(faceTagExpr.name?.name ?? '')
       currentAst = tagResult.modifiedAst
     }
   }
@@ -282,7 +287,10 @@ export function createEdgeRefObjectExpression(
         continue
       }
 
-      disambiguatorTags.push(tagResult.tags[0])
+      const endFaceTagExpr = tagResult.exprs[0]
+      if (!endFaceTagExpr || endFaceTagExpr.type !== 'Name') continue
+
+      disambiguatorTags.push(endFaceTagExpr.name?.name ?? '')
       currentAst = tagResult.modifiedAst
     }
   }
@@ -2358,11 +2366,11 @@ function buildEdgeExpr(
     ['oppositeAndAdjacentEdges']
   )
   if (err(tagResult)) return tagResult
-  if (tagResult.tags.length !== 1) {
+  if (tagResult.exprs.length !== 1) {
     return new Error('Expected exactly one tag for each blend edge.')
   }
 
-  const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+  const edgeExpr = getEdgeTagCall(tagResult.exprs[0], edgeArtifact)
   if (edgeExpr.type === 'Name') {
     return {
       modifiedAst: tagResult.modifiedAst,
@@ -2970,10 +2978,7 @@ function getTagsExprsFromSelection(
 
     tagsExprs.push(
       createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg(
-          'faces',
-          createArrayExpression(result.tags.map((tag) => createLocalName(tag)))
-        ),
+        createLabeledArg('faces', createArrayExpression(result.exprs)),
       ])
     )
 
@@ -3266,11 +3271,13 @@ export async function deleteEdgeTreatment(
 }
 
 export function getEdgeTagCall(
-  tag: string,
+  tag: string | Expr,
   artifact: Artifact
-): Node<Name | CallExpressionKw> {
+): Node<Expr | CallExpressionKw> {
+  let tagCall: Expr = typeof tag === 'string' ? createLocalName(tag) : tag
+
   // selectionsV2: edge artifacts are segment or edgeCut (sweepEdge removed); use tag directly
-  return createLocalName(tag)
+  return tagCall
 }
 
 // Adds all the edgeId calls needed in the AST so we can refer to them,
