@@ -64,6 +64,7 @@ import {
   isInvisibleConstraintObject,
   type ConstraintHoverPopup,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { StateEffect } from '@codemirror/state'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
@@ -460,22 +461,23 @@ export function updateSceneGraphFromDelta({
     context.sketchId
   )
   const factor = getSketchSolveScaleFactor(context)
-  const sketchSegments = context.sceneInfra.scene.children.find(
-    ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
-  )
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+
   const hoveredSegmentIds = getHoveredSegmentIds(context.hoveredId, objects)
   const draftEntityIds = context.draftEntities?.segmentIds
 
   // If invalidates_ids is true, we need to delete everything and start fresh
   // because the old IDs can't be trusted
-  if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
-    disposeGroupChildren(sketchSegments)
+  if (sceneGraphDelta.invalidates_ids && sketchSolveGroup instanceof Group) {
+    disposeGroupChildren(sketchSolveGroup)
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
     // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
-    const invalidateScene = sketchSegments?.children.some((child) => {
+    const invalidateScene = sketchSolveGroup?.children.some((child) => {
       const childId = Number(child.name)
       // check if number
       if (Number.isNaN(childId)) {
@@ -484,9 +486,13 @@ export function updateSceneGraphFromDelta({
       // check id is not greater than new_graph.objects length
       return childId >= sceneGraphDelta.new_graph.objects.length
     })
-    if (invalidateScene && sketchSegments instanceof Group) {
-      disposeGroupChildren(sketchSegments)
+    if (invalidateScene && sketchSolveGroup instanceof Group) {
+      disposeGroupChildren(sketchSolveGroup)
     }
+  }
+
+  if (sketchSolveGroup instanceof Group) {
+    updateOriginSprite(sketchSolveGroup, factor, context.sceneInfra.theme)
   }
 
   currentSketchObjects.forEach((obj) => {
@@ -510,12 +516,10 @@ export function updateSceneGraphFromDelta({
       if (!constraintGroup) {
         constraintGroup = segmentUtilsMap.Constraint.init(obj)
         if (constraintGroup) {
-          const sketchSceneGroup =
-            context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-          if (sketchSceneGroup) {
+          if (sketchSolveGroup) {
             constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
             constraintGroup.layers.set(SKETCH_LAYER)
-            sketchSceneGroup.add(constraintGroup)
+            sketchSolveGroup.add(constraintGroup)
           }
         }
       }
@@ -557,14 +561,12 @@ export function updateSceneGraphFromDelta({
         console.error('Failed to init segment group for object', obj.id)
         return
       }
-      const sketchSceneGroup =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (sketchSceneGroup) {
+      if (sketchSolveGroup) {
         newGroup.traverse((child) => {
           child.layers.set(SKETCH_LAYER)
         })
         newGroup.layers.set(SKETCH_LAYER)
-        sketchSceneGroup.add(newGroup)
+        sketchSolveGroup.add(newGroup)
       }
       group = newGroup
     }
@@ -802,7 +804,10 @@ export function initializeInitialSceneGraph({
 export function refreshSketchSolveScale(context: SketchSolveContext): void {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-  if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+  if (
+    !(sketchSolveGroup instanceof Group) ||
+    !context.sketchExecOutcome?.sceneGraphDelta
+  ) {
     return
   }
 
@@ -818,6 +823,8 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     new Set([...context.selectedIds, ...context.duringAreaSelectIds])
   )
   const draftEntityIds = context.draftEntities?.segmentIds
+
+  updateOriginSprite(sketchSolveGroup, scaleFactor, context.sceneInfra.theme)
 
   currentSketchObjects.forEach((obj) => {
     if (!isPointSegment(obj)) {

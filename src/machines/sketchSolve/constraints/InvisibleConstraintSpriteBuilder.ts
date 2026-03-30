@@ -1,21 +1,19 @@
-import type { Texture } from 'three'
-import {
-  Group,
-  SRGBColorSpace,
-  Sprite,
-  SpriteMaterial,
-  TextureLoader,
-  Vector3,
-} from 'three'
+import { Group, Sprite, Vector3 } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { constraintIconPaths } from '@src/components/constraintIconPaths'
-import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { getResolvedTheme } from '@src/lib/theme'
 import { clamp, isArray } from '@src/lib/utils'
 import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import {
+  CONSTRAINT_BADGE_SIZE_PX,
+  createConstraintBadgeSprite,
+  getConstraintBadgeTexture,
+  type ConstraintBadgeState,
+} from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
+import {
+  findInvisibleConstraintClusterIds,
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
@@ -28,8 +26,6 @@ export type InvisibleConstraintDisplayState = {
   constraintHoverPopups: ConstraintHoverPopup[]
 }
 
-const INVISIBLE_CONSTRAINT_BADGE_SIZE_PX = 20
-const INVISIBLE_CONSTRAINT_RENDER_ORDER = 100
 const CONSTRAINT_HOVER_POPUP_KEY = 'constraintHoverPopup'
 const SELECTED_INVISIBLE_CONSTRAINT_POPUP_KEY =
   'selectedInvisibleConstraintPopup'
@@ -45,9 +41,6 @@ type SelectedInvisibleConstraintPopup = ConstraintHoverPopup & {
 }
 
 export class InvisibleConstraintSpriteBuilder {
-  private readonly textureCache = new Map<string, Texture>()
-  private readonly textureLoader = new TextureLoader()
-
   public init(obj: InvisibleConstraintObject) {
     const group = new Group()
     group.name = obj.id.toString()
@@ -58,15 +51,8 @@ export class InvisibleConstraintSpriteBuilder {
     }
     group.visible = false
 
-    const sprite = new Sprite(
-      new SpriteMaterial({
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
-        color: 0xffffff,
-      })
-    )
-    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
+    const sprite = createConstraintBadgeSprite()
+    sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
 
     return group
@@ -111,11 +97,11 @@ export class InvisibleConstraintSpriteBuilder {
     }
 
     const theme = getResolvedTheme(sceneInfra.theme)
-    const texture = this.getTexture(
-      obj.kind.constraint.type,
-      getConstraintBadgeState(obj.id, selectedIds, hoveredId),
-      theme
-    )
+    const texture = getConstraintBadgeTexture({
+      badgeType: obj.kind.constraint.type,
+      badgeState: getConstraintBadgeState(obj.id, selectedIds, hoveredId),
+      theme,
+    })
     const sprites = syncSprites(group, positions.length)
     const scale = sceneInfra.getClientSceneScaleFactor(group)
     group.position.set(0, 0, 0)
@@ -123,7 +109,7 @@ export class InvisibleConstraintSpriteBuilder {
     sprites.forEach((sprite, index) => {
       const { position, renderOrder, popup } = positions[index]
       sprite.position.copy(position)
-      sprite.scale.setScalar(INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * scale)
+      sprite.scale.setScalar(CONSTRAINT_BADGE_SIZE_PX * scale)
       sprite.renderOrder = renderOrder
       if (sprite.material.map !== texture) {
         sprite.material.map = texture
@@ -138,34 +124,12 @@ export class InvisibleConstraintSpriteBuilder {
         {
           type: 'screenRect',
           center: [position.x, position.y, position.z],
-          sizePx: [
-            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-            INVISIBLE_CONSTRAINT_BADGE_SIZE_PX,
-          ],
+          sizePx: [CONSTRAINT_BADGE_SIZE_PX, CONSTRAINT_BADGE_SIZE_PX],
         },
       ]
     })
 
     group.visible = true
-  }
-
-  private getTexture(
-    objType: InvisibleConstraintObject['kind']['constraint']['type'],
-    badgeState: ConstraintBadgeState,
-    theme: Themes
-  ) {
-    const key = `${objType}:${badgeState}:${theme}`
-    const cached = this.textureCache.get(key)
-    if (cached) {
-      return cached
-    }
-
-    const texture = this.textureLoader.load(
-      createConstraintBadgeSvgDataUrl(objType, badgeState, theme)
-    )
-    texture.colorSpace = SRGBColorSpace
-    this.textureCache.set(key, texture)
-    return texture
   }
 }
 
@@ -175,15 +139,8 @@ function syncSprites(group: Group, count: number): Sprite[] {
   )
 
   while (sprites.length < count) {
-    const sprite = new Sprite(
-      new SpriteMaterial({
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
-        color: 0xffffff,
-      })
-    )
-    sprite.renderOrder = INVISIBLE_CONSTRAINT_RENDER_ORDER
+    const sprite = createConstraintBadgeSprite()
+    sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
     group.add(sprite)
     sprites.push(sprite)
   }
@@ -210,16 +167,32 @@ function getInvisibleConstraintWorldPositions(
   // Start from the anchor geometry-derived anchor, then offset it by 15px
   const naturalAnchor = getInvisibleConstraintAnchor(obj, objects)
   const naturalPosition = naturalAnchor
-    ? offsetWorldPosition(naturalAnchor, sceneInfra, { x: -15, y: -15 })
+    ? offsetWorldPosition(group, naturalAnchor, sceneInfra, {
+        x: -15,
+        y: -15,
+      })
     : null
 
   // Global toggle: show hidden constraints at their anchored position.
   if (displayState.showNonVisualConstraints) {
-    return naturalPosition
+    const clusterConstraintIds = findInvisibleConstraintClusterIds(obj, objects)
+    const clusterIndex = clusterConstraintIds.indexOf(obj.id)
+
+    return naturalAnchor !== null && clusterIndex !== -1
       ? [
           {
-            position: naturalPosition,
-            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+            position: getConstraintRowWorldPosition(
+              group,
+              naturalAnchor,
+              clusterIndex,
+              clusterConstraintIds.length,
+              sceneInfra,
+              {
+                rowStartXOffsetPx: -15 - CONSTRAINT_BADGE_SIZE_PX / 2,
+                centerYOffsetPx: -15,
+              }
+            ),
+            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT + clusterIndex,
           },
         ]
       : []
@@ -234,6 +207,7 @@ function getInvisibleConstraintWorldPositions(
       }
 
       return getConstraintHoverPopupPositions(
+        group,
         popup,
         popupIndex,
         obj.id,
@@ -244,6 +218,7 @@ function getInvisibleConstraintWorldPositions(
   )
   const selectedPopupPositions = selectedPopup
     ? getConstraintHoverPopupPositions(
+        group,
         selectedPopup,
         displayState.constraintHoverPopups.length,
         obj.id,
@@ -252,7 +227,7 @@ function getInvisibleConstraintWorldPositions(
       ).map((position) => ({
         ...position,
         renderOrder:
-          INVISIBLE_CONSTRAINT_RENDER_ORDER +
+          RENDER_ORDER.INVISIBLE_CONSTRAINT +
           displayState.constraintHoverPopups.length +
           1,
       }))
@@ -268,7 +243,7 @@ function getInvisibleConstraintWorldPositions(
       ? [
           {
             position: naturalPosition,
-            renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER,
+            renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT,
           },
         ]
       : []
@@ -278,6 +253,7 @@ function getInvisibleConstraintWorldPositions(
 }
 
 function getConstraintHoverPopupPositions(
+  group: Group,
   popup: ConstraintHoverPopup,
   popupIndex: number,
   objId: number,
@@ -294,13 +270,18 @@ function getConstraintHoverPopupPositions(
     ? []
     : [
         {
-          position: getHoverPreviewWorldPosition(
-            popup.position,
+          position: getConstraintRowWorldPosition(
+            group,
+            new Vector3(popup.position[0], popup.position[1], 0),
             hoverPreviewIndex,
             hoverPreviewConstraintIds.length,
-            sceneInfra
+            sceneInfra,
+            {
+              rowStartXOffsetPx: 12,
+              centerYOffsetPx: -12,
+            }
           ),
-          renderOrder: INVISIBLE_CONSTRAINT_RENDER_ORDER + popupIndex + 1,
+          renderOrder: RENDER_ORDER.INVISIBLE_CONSTRAINT + popupIndex + 1,
           popup,
         },
       ]
@@ -343,16 +324,19 @@ function isSelectedInvisibleConstraintPopup(
 }
 
 function offsetWorldPosition(
-  worldPosition: Vector3,
+  group: Group,
+  localPosition: Vector3,
   sceneInfra: SceneInfra,
   offsetPx: { x: number; y: number }
 ) {
-  const [screenX, screenY, projectedZ] = projectWorldPositionToScreen(
-    worldPosition,
+  const [screenX, screenY, projectedZ] = localToScreen(
+    group,
+    localPosition,
     sceneInfra
   )
 
-  return unprojectScreenPosition(
+  return screenToLocal(
+    group,
     screenX + offsetPx.x,
     screenY + offsetPx.y,
     projectedZ,
@@ -360,50 +344,56 @@ function offsetWorldPosition(
   )
 }
 
-function getHoverPreviewWorldPosition(
-  constraintHoverPopupPosition: ConstraintHoverPopup['position'],
-  hoverPreviewIndex: number,
-  hoverPreviewCount: number,
-  sceneInfra: SceneInfra
+function getConstraintRowWorldPosition(
+  group: Group,
+  localAnchorPosition: Vector3,
+  itemIndex: number,
+  itemCount: number,
+  sceneInfra: SceneInfra,
+  {
+    rowStartXOffsetPx,
+    centerYOffsetPx,
+  }: {
+    rowStartXOffsetPx: number
+    centerYOffsetPx: number
+  }
 ) {
-  const previewPosition = new Vector3(
-    constraintHoverPopupPosition[0],
-    constraintHoverPopupPosition[1],
-    0
-  )
-  const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(
-    previewPosition,
+  const [baseScreenX, baseScreenY, projectedZ] = localToScreen(
+    group,
+    localAnchorPosition,
     sceneInfra
   )
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
-  const badgeSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX
+  const badgeSize = CONSTRAINT_BADGE_SIZE_PX
   const badgeGap = 4
   const viewportPadding = 4
   const totalRowWidth =
-    hoverPreviewCount * badgeSize +
-    Math.max(hoverPreviewCount - 1, 0) * badgeGap
+    itemCount * badgeSize + Math.max(itemCount - 1, 0) * badgeGap
   const minStartX = viewportPadding
   const maxStartX = Math.max(
     minStartX,
     clientWidth - viewportPadding - totalRowWidth
   )
-  const rowStartX = clamp(baseScreenX + 12, minStartX, maxStartX)
-  const centerX =
-    rowStartX + hoverPreviewIndex * (badgeSize + badgeGap) + badgeSize / 2
+  const rowStartX = clamp(baseScreenX + rowStartXOffsetPx, minStartX, maxStartX)
+  const centerX = rowStartX + itemIndex * (badgeSize + badgeGap) + badgeSize / 2
   const centerY = clamp(
-    baseScreenY - 12,
+    baseScreenY + centerYOffsetPx,
     viewportPadding + badgeSize / 2,
     clientHeight - viewportPadding - badgeSize / 2
   )
 
-  return unprojectScreenPosition(centerX, centerY, projectedZ, sceneInfra)
+  return screenToLocal(group, centerX, centerY, projectedZ, sceneInfra)
 }
 
-function projectWorldPositionToScreen(
-  worldPosition: Vector3,
+// Converts a local group position (sketch space) to screen-space pixels.
+function localToScreen(
+  group: Group,
+  localPosition: Vector3,
   sceneInfra: SceneInfra
 ) {
-  const projected = worldPosition.clone().project(sceneInfra.camControls.camera)
+  const worldPosition = localPosition.clone()
+  group.localToWorld(worldPosition)
+  const projected = worldPosition.project(sceneInfra.camControls.camera)
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
   return [
@@ -413,7 +403,8 @@ function projectWorldPositionToScreen(
   ] as const
 }
 
-function unprojectScreenPosition(
+function screenToLocal(
+  group: Group,
   screenX: number,
   screenY: number,
   projectedZ: number,
@@ -421,57 +412,14 @@ function unprojectScreenPosition(
 ) {
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
-  return new Vector3(
+  const worldPosition = new Vector3(
     (screenX / clientWidth) * 2 - 1,
     -((screenY / clientHeight) * 2 - 1),
     projectedZ
   ).unproject(sceneInfra.camControls.camera)
+
+  return group.worldToLocal(worldPosition)
 }
-
-function createConstraintBadgeSvgDataUrl(
-  objType: InvisibleConstraintObject['kind']['constraint']['type'],
-  badgeState: ConstraintBadgeState,
-  theme: Themes
-) {
-  const iconPath = getInvisibleConstraintSpriteIcon(objType)
-  const dpr = window.devicePixelRatio || 1
-  const rasterSize = INVISIBLE_CONSTRAINT_BADGE_SIZE_PX * dpr
-  const hasBorder = badgeState !== 'default'
-  const borderStroke = hasBorder
-    ? `rgba(${SKETCH_SELECTION_RGB.join(', ')}, ${
-        badgeState === 'hovered' ? 0.8 : 1
-      })`
-    : 'none'
-  const borderWidth = hasBorder ? 1 : 0
-  const rectInset = hasBorder ? 0.5 : 0
-  const badgeFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
-  const iconFill = theme === Themes.Dark ? '#000000' : '#FFFFFF'
-  const svg = `
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="${rasterSize}"
-      height="${rasterSize}"
-      viewBox="0 0 ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX} ${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX}"
-      fill="none"
-    >
-      <rect
-        x="${rectInset}"
-        y="${rectInset}"
-        width="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
-        height="${INVISIBLE_CONSTRAINT_BADGE_SIZE_PX - rectInset * 2}"
-        rx="2"
-        fill="${badgeFill}"
-        stroke="${borderStroke}"
-        stroke-width="${borderWidth}"
-      />
-      <path d="${iconPath}" fill="${iconFill}" />
-    </svg>
-  `.trim()
-
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-}
-
-type ConstraintBadgeState = 'default' | 'hovered' | 'selected'
 
 function getConstraintBadgeState(
   objId: number,
@@ -487,25 +435,4 @@ function getConstraintBadgeState(
   }
 
   return 'default'
-}
-
-function getInvisibleConstraintSpriteIcon(
-  objType: InvisibleConstraintObject['kind']['constraint']['type']
-) {
-  switch (objType) {
-    case 'Coincident':
-      return constraintIconPaths.coincident
-    case 'Horizontal':
-      return constraintIconPaths.horizontal
-    case 'Vertical':
-      return constraintIconPaths.vertical
-    case 'LinesEqualLength':
-      return constraintIconPaths.equal
-    case 'Parallel':
-      return constraintIconPaths.parallel
-    case 'Perpendicular':
-      return constraintIconPaths.perpendicular
-    case 'Tangent':
-      return constraintIconPaths.tangent
-  }
 }

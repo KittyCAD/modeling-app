@@ -2335,6 +2335,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Holes',
     icon: 'hole',
   },
+  joinSurfaces: {
+    label: 'Join Surfaces',
+    icon: 'joinSurfaces',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',

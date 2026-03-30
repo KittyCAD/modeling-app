@@ -315,7 +315,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.getByTestId('coincident').click()
 
       await editor.expectEditor.toContain(
-        'coincident([line1.start, line3.end])'
+        'coincident([line1.start, line2.end])'
       )
       await page.waitForTimeout(100)
     })
@@ -351,7 +351,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       // await page.waitForTimeout(100)
       await page.getByTestId('Parallel').click()
 
-      await editor.expectEditor.toContain('parallel([line1, line2])')
+      await editor.expectEditor.toContain('parallel([line1, line3])')
     })
 
     await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
@@ -544,10 +544,9 @@ sketch001 = sketch(on = XZ) {
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
       )
-      // TODO: enable after https://github.com/KittyCAD/modeling-app/issues/10612
-      // await expect(
-      //   page.locator('.cm-lint-marker-error').first()
-      // ).not.toBeInViewport()
+      await expect(
+        page.locator('.cm-lint-marker-error').first()
+      ).not.toBeInViewport()
     })
   })
 

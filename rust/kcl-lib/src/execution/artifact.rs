@@ -1767,6 +1767,32 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::Solid3dMultiJoin(cmd) => {
+            let mut return_arr = Vec::new();
+            return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Union,
+                solid_ids: cmd.object_ids.iter().map(|id| id.into()).collect(),
+                tool_ids: vec![],
+                code_ref,
+                composite_solid_id: None,
+            }));
+
+            let solid_ids = cmd.object_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
+
+            for input_id in &solid_ids {
+                if let Some(artifact) = artifacts.get(input_id)
+                    && let Artifact::CompositeSolid(comp) = artifact
+                {
+                    let mut new_comp = comp.clone();
+                    new_comp.composite_solid_id = Some(id);
+                    new_comp.consumed = true;
+                    return_arr.push(Artifact::CompositeSolid(new_comp));
+                }
+            }
+            return Ok(return_arr);
+        }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
             let mut return_arr = Vec::new();
             let edge_id = if let Some(edge_id) = cmd.edge_id {
