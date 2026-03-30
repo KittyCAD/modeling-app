@@ -744,12 +744,18 @@ export fn ellipse(
 /// ```
 /// @settings(experimentalFeatures = allow)
 ///
-/// // Surface extrudes of sketch blocks let you extrude any lines.
-/// sketch0 = sketch(on = YZ) {
+/// // Sketch some disconnected lines in a sketch block.
+/// originalSketch = sketch(on = YZ) {
 ///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
 ///   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
 /// }
-/// extrude([sketch0.line1, sketch0.line2], length = 1, bodyType = SURFACE)
+///
+/// // Surface extrudes of sketch blocks let you extrude any lines.
+/// extrude([originalSketch.line1, originalSketch.line2], length = 1, bodyType = SURFACE)
+///
+/// // Surface extrudes of sketch blocks are non-destructive: they leave the original sketch
+/// // in place. So we can add another extrude of the same lines, in a different direction.
+/// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
@@ -1007,12 +1013,18 @@ export fn extrude(
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 /// ```kcl
-/// halfTorus = startSketchOn(XY)
-///     |> circle(center = [15, 0], radius = 5)
-///     |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
-/// closedTorus = startSketchOn(XY)
-///     |> circle(center = [15, 0], radius = 5)
-///     |> revolve(axis = Y, bodyType = SURFACE)
+/// @settings(experimentalFeatures = allow)
+///
+/// shellProfile = sketch(on = XY) {
+///   outerWall = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])
+///   connector = line(start = [var 10mm, var 5mm], end = [var 12mm, var 7mm])
+///   innerWall = line(start = [var 12mm, var 7mm], end = [var 15mm, var 6mm])
+///   coincident([outerWall.end, connector.start])
+///   coincident([connector.end, innerWall.start])
+/// }
+///
+/// halfShell = revolve([shellProfile.outerWall, shellProfile.innerWall], axis = Y, bodyType = SURFACE, angle = 180deg)
+/// closedShell = revolve([shellProfile.outerWall, shellProfile.innerWall], axis = Y, bodyType = SURFACE)
 ///     |> translate(z = 30)
 /// ```
 ///
@@ -1033,10 +1045,25 @@ export fn extrude(
 /// ringRegion = region(point = [5mm, 2mm], sketch = ringProfile)
 /// ring = revolve(ringRegion, axis = Y)
 /// ```
+/// ```
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Sketch some disconnected lines in a sketch block.
+/// originalSketch = sketch(on = YZ) {
+///   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+///   line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+/// }
+/// 
+/// // Revolve just one line in the sketch.
+/// revolve([originalSketch.line1], axis = Y, angle = 180deg, bodyType = SURFACE)
+/// // Surface revolves of sketch blocks are non-destructive, so you can keep revolving
+/// // the same line again.
+/// revolve([originalSketch.line1], axis = Y, angle = -90deg, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
-  /// The sketch or set of sketches that should be revolved
-  @sketches: [Sketch; 1+],
+  /// The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve.
+  @sketches: [Sketch | Segment; 1+],
   /// Axis of revolution.
   axis: Axis2d | Edge,
   /// Angle to revolve (in degrees). Default is 360.

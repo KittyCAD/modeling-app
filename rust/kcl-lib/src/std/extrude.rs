@@ -184,14 +184,14 @@ async fn coerce_extrude_targets(
             )));
         }
 
-        let synthetic_sketch = build_segment_extrude_sketch(segments, exec_state, ctx, source_range).await?;
+        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
         return Ok(vec![Extrudable::from(synthetic_sketch)]);
     }
 
     Ok(extrudables)
 }
 
-async fn build_segment_extrude_sketch(
+pub(crate) async fn build_segment_surface_sketch(
     mut segments: Vec<Segment>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -199,7 +199,7 @@ async fn build_segment_extrude_sketch(
 ) -> Result<Sketch, KclError> {
     let Some(first_segment) = segments.first() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Expected at least one sketch segment to extrude.".to_owned(),
+            "Expected at least one sketch segment.".to_owned(),
             vec![source_range],
         )));
     };
@@ -209,28 +209,29 @@ async fn build_segment_extrude_sketch(
     for segment in &segments {
         if segment.sketch_id != sketch_id {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "All sketch segments passed to `extrude()` must come from the same sketch.".to_owned(),
+                "All sketch segments passed to this operation must come from the same sketch.".to_owned(),
                 vec![source_range],
             )));
         }
 
         if segment.surface != sketch_surface {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "All sketch segments passed to `extrude()` must lie on the same sketch surface.".to_owned(),
+                "All sketch segments passed to this operation must lie on the same sketch surface.".to_owned(),
                 vec![source_range],
             )));
         }
 
         if segment.is_construction() {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Construction segments cannot be extruded. Select non-construction sketch segments instead.".to_owned(),
+                "Construction segments cannot be used here. Select non-construction sketch segments instead."
+                    .to_owned(),
                 vec![source_range],
             )));
         }
 
         if matches!(segment.kind, SegmentKind::Point { .. }) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Point segments cannot be extruded. Select line, arc, or circle segments instead.".to_owned(),
+                "Point segments cannot be used here. Select line, arc, or circle segments instead.".to_owned(),
                 vec![source_range],
             )));
         }
@@ -262,7 +263,7 @@ async fn build_segment_extrude_sketch(
     .await?
     .ok_or_else(|| {
         KclError::new_semantic(KclErrorDetails::new(
-            "Expected at least one extrudable sketch segment.".to_owned(),
+            "Expected at least one usable sketch segment.".to_owned(),
             vec![source_range],
         ))
     })

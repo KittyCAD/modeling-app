@@ -77,6 +77,18 @@ function createDraggedEntityIdGetter(entityId: number | null = null) {
   return vi.fn(() => entityId)
 }
 
+function createDragSnappingDeps() {
+  return {
+    sceneInfra: {
+      scene: {
+        getObjectByName: vi.fn(() => null),
+      },
+      getClientSceneScaleFactor: vi.fn(() => 1),
+    } as unknown as SceneInfra,
+    onUpdateDragSnapping: vi.fn(),
+  }
+}
+
 function setUpMoveToolCallbacks({
   apiObjects = [],
   hoveredId = null,
@@ -505,6 +517,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -523,10 +536,12 @@ describe('createOnDragCallback', () => {
   })
 
   it('should clear dragged entity id and call onComplete once', async () => {
+    const getDraggedEntityId = vi.fn(() => 5)
     const setDraggedEntityId = vi.fn()
     const onComplete = vi.fn(async () => {})
 
     const callback = createOnDragEndCallback({
+      getDraggedEntityId,
       setDraggedEntityId,
       onComplete,
     })
@@ -541,9 +556,11 @@ describe('createOnDragCallback', () => {
     expect(onComplete).toHaveBeenCalledTimes(1)
   })
   it('should clear dragging state even when no element is currently being dragged', async () => {
+    const getDraggedEntityId = vi.fn(() => null)
     const setDraggedEntityId = vi.fn()
 
     const callback = createOnDragEndCallback({
+      getDraggedEntityId,
       setDraggedEntityId,
       onComplete: async () => {},
     })
@@ -586,6 +603,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -632,6 +650,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -684,6 +703,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     // Current cursor position is at (15, 25)
@@ -758,6 +778,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -830,6 +851,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -903,6 +925,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     // First call - editSegments hasn't resolved yet
@@ -1003,6 +1026,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     const newPosition = new Vector2(10, 20)
@@ -1059,6 +1083,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -1109,6 +1134,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -1158,6 +1184,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     // Should not throw
@@ -1221,6 +1248,7 @@ describe('createOnDragCallback', () => {
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
+      ...createDragSnappingDeps(),
     })
 
     await callback({
@@ -1379,8 +1407,8 @@ describe('createOnClickCallback', () => {
     } as unknown as SceneInfra
     const onUpdateSelectedIds = vi.fn()
     const onEditConstraint = vi.fn()
-    const pointA = createPointApiObject({ id: 1, x: 0, y: 0 })
-    const pointB = createPointApiObject({ id: 2, x: 20, y: 0 })
+    const pointA = createPointApiObject({ id: 1, x: -20, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 40, y: 0 })
     const constraint = createConstraintApiObject({ id: 20, type: 'Distance' })
 
     const callback = createOnClickCallback({
