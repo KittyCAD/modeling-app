@@ -382,13 +382,7 @@ function getConstraintRowWorldPosition(
     clientHeight - viewportPadding - badgeSize / 2
   )
 
-  return screenToLocal(
-    group,
-    centerX,
-    centerY,
-    projectedZ,
-    sceneInfra
-  )
+  return screenToLocal(group, centerX, centerY, projectedZ, sceneInfra)
 }
 
 // Converts a local group position (sketch space) to screen-space pixels.

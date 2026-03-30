@@ -170,7 +170,7 @@ function getDragPointSnappingCandidate({
   sketchId: number
   mousePosition: Coords2d
   sceneInfra: SceneInfra
-}): { sourcePointId: number; candidate: SnappingCandidate | null } | null {
+}): SnappingCandidate | null {
   if (draggedEntityId === null) {
     return null
   }
@@ -207,10 +207,7 @@ function getDragPointSnappingCandidate({
         !coincidentPointIds.includes(candidate.apiObject.id)
     ) ?? null
 
-  return {
-    sourcePointId: draggedEntityId,
-    candidate,
-  }
+  return candidate
 }
 
 /**
@@ -607,7 +604,7 @@ export function createOnDragCallback({
     setIsSolveInProgress(true)
     try {
       const twoD = intersectionPoint.twoD
-      const dragSnapping = !allowSnapping(mouseEvent)
+      const snappingCandidate = !allowSnapping(mouseEvent)
         ? null
         : getDragPointSnappingCandidate({
             draggedEntityId: entityUnderCursorId,
@@ -617,7 +614,7 @@ export function createOnDragCallback({
             mousePosition: [twoD.x, twoD.y],
             sceneInfra,
           })
-      onUpdateDragSnapping(dragSnapping?.candidate ?? null)
+      onUpdateDragSnapping(snappingCandidate)
 
       // Calculate drag vector from last successful drag point to current position
       const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
@@ -928,7 +925,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const snapshot = self.getSnapshot()
           const sceneGraphDelta =
             snapshot.context.sketchExecOutcome?.sceneGraphDelta
-          const dragSnapping =
+          const snappingCandidate =
             allowSnapping(mouseEvent) &&
             sceneGraphDelta &&
             intersectionPoint?.twoD
@@ -946,20 +943,20 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          const snapCandidate = dragSnapping?.candidate
-          const result = snapCandidate
+          const result =
+            snappingCandidate && draggedEntityId !== null
             ? await (async () => {
                 const units = baseUnitToNumericSuffix(
                   context.kclManager.fileSettings.defaultLengthUnit
                 )
-                const [x, y] = snapCandidate.position
+                const [x, y] = snappingCandidate.position
 
                 await context.rustContext.editSegments(
                   0,
                   context.sketchId,
                   [
                     {
-                      id: dragSnapping.sourcePointId,
+                      id: draggedEntityId,
                       ctor: {
                         type: 'Point',
                         position: {
@@ -985,10 +982,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId,
                   {
                     type: 'Coincident',
-                    segments: [
-                      dragSnapping.sourcePointId,
-                      snapCandidate.apiObject.id,
-                    ],
+                    segments: [draggedEntityId, snappingCandidate.apiObject.id],
                   },
                   settings
                 )
