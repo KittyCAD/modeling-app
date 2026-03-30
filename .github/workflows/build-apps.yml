@@ -10,7 +10,7 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  IS_STAGING: true
   FORCE_RELEASE_BUILD: true # Set to true to enable codesign in a PR
 
 concurrency:
