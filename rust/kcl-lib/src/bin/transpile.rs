@@ -331,6 +331,7 @@ async fn run_recursive(args: RequiredOutputCommandArgs) -> Result<ExitCode, std:
 
         let out_kcl_path = args.out_dir().join(&rel_path);
 
+
         let log_path = args
             .out_dir()
             .join(rel_path.parent().unwrap_or_else(|| Path::new("")))
@@ -339,7 +340,11 @@ async fn run_recursive(args: RequiredOutputCommandArgs) -> Result<ExitCode, std:
         let transpiled = match transpile_to_output(&file, &out_kcl_path, !args.keep_going()).await {
             Ok(source) => source,
             Err(err) => {
+                if let Some(parent) = log_path.parent() {
+                    fs::create_dir_all(parent)?;
+                }
                 fs::write(&log_path, format!("convert_failed\n{err}\n"))?;
+
                 report.convert_failures.push(RunFailure {
                     path: rel_path.clone(),
                     error: err.clone(),
