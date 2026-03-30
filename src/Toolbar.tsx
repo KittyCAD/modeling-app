@@ -20,10 +20,10 @@ import type {
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarItemResolvedDropdown,
-  ToolbarModeName,
 } from '@src/lib/toolbar'
 import {
   isToolbarItemResolvedDropdown,
+  modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
@@ -87,19 +87,10 @@ const Toolbar_ = memo(
       !props.isStreamAcceptingInput
 
     // Load bearing logic for determining the items in the toolbar
-    // Based on the state of the modeling machine determine what toolbar should be rendered.
-    let toolbarConfigurationName: ToolbarModeName = 'modeling'
-    if (props.state.matches('Sketch no face')) {
-      toolbarConfigurationName = 'onlyCancel'
-    } else if (
-      props.state.matches('sketchSolveMode') ||
-      props.state.matches('animating to sketch solve mode')
-    ) {
-      // Gotcha: match on the animating state otherwise you see a different toolbar
-      toolbarConfigurationName = 'sketchSolve'
-    } else if (props.state.matches('Sketch')) {
-      toolbarConfigurationName = 'sketching'
-    }
+    // Based on the state of the modeling machine determine what toolbar should be rendered
+    const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
+      props.state
+    )
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints

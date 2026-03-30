@@ -29,6 +29,26 @@ type ToolbarMode = {
   items: (ToolbarItem | ToolbarDropdown | 'break')[]
 }
 
+// Load bearing logic for determining the items in the toolbar
+// Based on the state of the modeling machine determine what toolbar should be rendered
+export const modelingMachineStateToToolbarModeName = (
+  state: StateFrom<typeof modelingMachine>
+): ToolbarModeName => {
+  let toolbarConfigurationName: ToolbarModeName = 'modeling'
+  if (state.matches('Sketch no face')) {
+    toolbarConfigurationName = 'onlyCancel'
+  } else if (
+    state.matches('sketchSolveMode') ||
+    state.matches('animating to sketch solve mode')
+  ) {
+    // Gotcha: match on the animating state otherwise you see a different toolbar
+    toolbarConfigurationName = 'sketchSolve'
+  } else if (state.matches('Sketch')) {
+    toolbarConfigurationName = 'sketching'
+  }
+  return toolbarConfigurationName
+}
+
 export type ToolbarDropdown = {
   id: string
   array: ToolbarItem[]

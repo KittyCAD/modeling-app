@@ -36,7 +36,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { ToolbarModeName } from '@src/lib/toolbar'
+import { modelingMachineStateToToolbarModeName } from '@src/lib/toolbar'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -177,18 +177,8 @@ export const ModelingMachineProvider = ({
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
 
-  let toolbarConfigurationName: ToolbarModeName = 'modeling'
-  if (modelingState.matches('Sketch no face')) {
-    toolbarConfigurationName = 'onlyCancel'
-  } else if (
-    modelingState.matches('sketchSolveMode') ||
-    modelingState.matches('animating to sketch solve mode')
-  ) {
-    // Gotcha: match on the animating state otherwise you see a different toolbar
-    toolbarConfigurationName = 'sketchSolve'
-  } else if (modelingState.matches('Sketch')) {
-    toolbarConfigurationName = 'sketching'
-  }
+  const toolbarConfigurationName =
+    modelingMachineStateToToolbarModeName(modelingState)
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
