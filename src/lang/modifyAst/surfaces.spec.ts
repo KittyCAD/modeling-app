@@ -3,6 +3,7 @@ import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
@@ -79,14 +80,14 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
     })
   })
 
-  describe('Testing addJoin', () => {
+  describe('Testing addJoinSurfaces', () => {
     it('should add a simple join call on body selections', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [-0.2, 0], radius = 0.1)
 profile002 = circle(sketch001, center = [0.2, 0], radius = 0.1)
 extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)
 extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
-      const expectedNewLine = `surface001 = join([extrude001, extrude002])`
+      const expectedNewLine = `surface001 = joinSurfaces([extrude001, extrude002])`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
@@ -96,25 +97,7 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
       const pathArtifacts = [...artifactGraph.values()].filter(
         (n) => n.type === 'path'
       )
-      const [firstPathArtifact, secondPathArtifact] = pathArtifacts
-      if (!firstPathArtifact || !secondPathArtifact) {
-        throw new Error('Expected two path artifacts to build join selection')
-      }
-
-      const selection: Selections = {
-        graphSelections: [
-          {
-            artifact: firstPathArtifact,
-            codeRef: firstPathArtifact.codeRef,
-          },
-          {
-            artifact: secondPathArtifact,
-            codeRef: secondPathArtifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      }
-
+      const selection = createSelectionFromPathArtifact(pathArtifacts)
       const result = addJoinSurfaces({
         ast,
         artifactGraph,

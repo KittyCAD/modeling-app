@@ -2803,7 +2803,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     })
   })
 
-  test('Join point-and-click', async ({
+  test('Join Surfaces point-and-click', async ({
     context,
     page,
     homePage,
@@ -2823,7 +2823,7 @@ profile002 = startProfile(sketch002, at = [-2, -3.87])
   |> line(endAbsolute = [0, 0])
 ${firstSurface}
 ${secondSurface}`
-    const joinDeclaration = `surface001 = join([extrude001, extrude002])`
+    const joinDeclaration = `surface001 = joinSurfaces([extrude001, extrude002])`
 
     await test.step('Settle the scene', async () => {
       await context.addInitScript((initialCode) => {
