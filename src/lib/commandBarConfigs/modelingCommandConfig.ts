@@ -1053,7 +1053,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
+        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

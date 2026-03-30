@@ -445,6 +445,65 @@ extrude002 = extrude(profile002, length = 200)
 shell001 = shell(extrude001, faces = capEnd001, thickness = 0.1)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
+
+    it('should add a shell call on a primitive face from subtract result', async () => {
+      const subtract = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 20)
+  |> yLine(length = 20)
+  |> xLine(length = -20)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 20)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [5, 5])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 20)
+solid001 = subtract(extrude001, tools = extrude002)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        subtract,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const compositeSolid = [...artifactGraph.values()].find(
+        (a) => a.type === 'compositeSolid'
+      )
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: compositeSolid?.id,
+        primitiveIndex: 0,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const faces: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const thickness = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${subtract}
+face001 = faceId(solid001, index = 0)
+shell001 = shell(solid001, faces = face001, thickness = 2)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
   })
 
   describe('Testing addDeleteFace', () => {
