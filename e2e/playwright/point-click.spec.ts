@@ -2834,7 +2834,7 @@ ${secondSurface}`
       await scene.settled(cmdBar)
     })
 
-    await test.step('Start Join and select two solids', async () => {
+    await test.step('Start Join and select two surfaces', async () => {
       await toolbar.selectSurface('join-surfaces')
       await cmdBar.expectState({
         stage: 'arguments',
