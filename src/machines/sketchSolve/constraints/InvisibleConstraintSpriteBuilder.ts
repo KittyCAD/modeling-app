@@ -166,7 +166,10 @@ function getInvisibleConstraintWorldPositions(
   // Start from the anchor geometry-derived anchor, then offset it by 15px
   const naturalAnchor = getInvisibleConstraintAnchor(obj, objects)
   const naturalPosition = naturalAnchor
-    ? offsetWorldPosition(naturalAnchor, sceneInfra, { x: -15, y: -15 })
+    ? offsetWorldPosition(group, naturalAnchor, sceneInfra, {
+        x: -15,
+        y: -15,
+      })
     : null
 
   // Global toggle: show hidden constraints at their anchored position.
@@ -190,6 +193,7 @@ function getInvisibleConstraintWorldPositions(
       }
 
       return getConstraintHoverPopupPositions(
+        group,
         popup,
         popupIndex,
         obj.id,
@@ -200,6 +204,7 @@ function getInvisibleConstraintWorldPositions(
   )
   const selectedPopupPositions = selectedPopup
     ? getConstraintHoverPopupPositions(
+        group,
         selectedPopup,
         displayState.constraintHoverPopups.length,
         obj.id,
@@ -234,6 +239,7 @@ function getInvisibleConstraintWorldPositions(
 }
 
 function getConstraintHoverPopupPositions(
+  group: Group,
   popup: ConstraintHoverPopup,
   popupIndex: number,
   objId: number,
@@ -251,6 +257,7 @@ function getConstraintHoverPopupPositions(
     : [
         {
           position: getHoverPreviewWorldPosition(
+            group,
             popup.position,
             hoverPreviewIndex,
             hoverPreviewConstraintIds.length,
@@ -299,16 +306,19 @@ function isSelectedInvisibleConstraintPopup(
 }
 
 function offsetWorldPosition(
-  worldPosition: Vector3,
+  group: Group,
+  localPosition: Vector3,
   sceneInfra: SceneInfra,
   offsetPx: { x: number; y: number }
 ) {
   const [screenX, screenY, projectedZ] = projectWorldPositionToScreen(
-    worldPosition,
+    group,
+    localPosition,
     sceneInfra
   )
 
   return unprojectScreenPosition(
+    group,
     screenX + offsetPx.x,
     screenY + offsetPx.y,
     projectedZ,
@@ -317,18 +327,20 @@ function offsetWorldPosition(
 }
 
 function getHoverPreviewWorldPosition(
+  group: Group,
   constraintHoverPopupPosition: ConstraintHoverPopup['position'],
   hoverPreviewIndex: number,
   hoverPreviewCount: number,
   sceneInfra: SceneInfra
 ) {
-  const previewPosition = new Vector3(
+  const localPreviewPosition = new Vector3(
     constraintHoverPopupPosition[0],
     constraintHoverPopupPosition[1],
     0
   )
   const [baseScreenX, baseScreenY, projectedZ] = projectWorldPositionToScreen(
-    previewPosition,
+    group,
+    localPreviewPosition,
     sceneInfra
   )
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
@@ -352,14 +364,23 @@ function getHoverPreviewWorldPosition(
     clientHeight - viewportPadding - badgeSize / 2
   )
 
-  return unprojectScreenPosition(centerX, centerY, projectedZ, sceneInfra)
+  return unprojectScreenPosition(
+    group,
+    centerX,
+    centerY,
+    projectedZ,
+    sceneInfra
+  )
 }
 
 function projectWorldPositionToScreen(
-  worldPosition: Vector3,
+  group: Group,
+  localPosition: Vector3,
   sceneInfra: SceneInfra
 ) {
-  const projected = worldPosition.clone().project(sceneInfra.camControls.camera)
+  const worldPosition = localPosition.clone()
+  group.localToWorld(worldPosition)
+  const projected = worldPosition.project(sceneInfra.camControls.camera)
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
   return [
@@ -370,6 +391,7 @@ function projectWorldPositionToScreen(
 }
 
 function unprojectScreenPosition(
+  group: Group,
   screenX: number,
   screenY: number,
   projectedZ: number,
@@ -377,11 +399,13 @@ function unprojectScreenPosition(
 ) {
   const { clientWidth, clientHeight } = sceneInfra.renderer.domElement
 
-  return new Vector3(
+  const worldPosition = new Vector3(
     (screenX / clientWidth) * 2 - 1,
     -((screenY / clientHeight) * 2 - 1),
     projectedZ
   ).unproject(sceneInfra.camControls.camera)
+
+  return group.worldToLocal(worldPosition)
 }
 
 function getConstraintBadgeState(
