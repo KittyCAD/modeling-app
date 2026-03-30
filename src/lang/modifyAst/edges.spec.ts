@@ -1213,8 +1213,6 @@ revolve001 = revolve(
               type: 'edgeCut',
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
-              consumedEdgeId: 'mock-consumed-edge-id',
-              edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,
                 pathToNode: edgeTreatmentCodeRef.pathToNode,
@@ -1279,8 +1277,6 @@ revolve001 = revolve(`
               type: 'edgeCut',
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
-              consumedEdgeId: 'mock-consumed-edge-id',
-              edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,
                 pathToNode: edgeTreatmentCodeRef.pathToNode,

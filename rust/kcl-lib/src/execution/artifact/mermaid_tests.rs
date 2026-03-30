@@ -113,7 +113,7 @@ impl Artifact {
             }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
-            Artifact::EdgeCut(a) => a.edge_ids.clone(),
+            Artifact::EdgeCut(_) => Vec::new(),
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => vec![a.source_id],
@@ -165,7 +165,6 @@ impl Artifact {
                 if let Some(edge_cut_id) = a.edge_cut_id {
                     ids.push(edge_cut_id);
                 }
-                ids.extend(&a.common_surface_ids);
                 ids
             }
             Artifact::Solid2d(_) => {
@@ -208,29 +207,20 @@ impl Artifact {
                 // Note: Don't include these since they're parents: path_id.
                 let mut ids = Vec::new();
                 ids.extend(&a.surface_ids);
-                ids.extend(&a.edge_ids);
                 ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Wall(a) => {
                 // Note: Don't include these since they're parents: seg_id,
                 // sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.edge_cut_edge_ids);
-                ids.extend(&a.path_ids);
-                ids
+                a.path_ids.clone()
             }
             Artifact::Cap(a) => {
                 // Note: Don't include these since they're parents: sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.edge_cut_edge_ids);
-                ids.extend(&a.path_ids);
-                ids
+                a.path_ids.clone()
             }
             Artifact::EdgeCut(a) => {
-                // Note: Don't include these since they're parents: edge_ids.
                 let mut ids = Vec::new();
-                ids.extend(&a.edge_ids);
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
                 }
@@ -686,7 +676,6 @@ fn surface_blend_creates_blend_sweep_artifact() {
             sub_type: SweepSubType::Extrusion,
             path_id: path_one_id,
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: source_code_ref.clone(),
             trajectory_id: None,
             method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
@@ -701,7 +690,6 @@ fn surface_blend_creates_blend_sweep_artifact() {
             sub_type: SweepSubType::Extrusion,
             path_id: path_two_id,
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: source_code_ref,
             trajectory_id: None,
             method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
@@ -787,7 +775,6 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
             edge_ids: Vec::new(),
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
-            common_surface_ids: Vec::new(),
         }),
     );
 
@@ -815,7 +802,6 @@ fn primitive_face_does_not_replace_existing_cap_artifact() {
         Artifact::Cap(Cap {
             id: shared_id,
             sub_type: CapSubType::End,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id,
             path_ids: Vec::new(),
             face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
